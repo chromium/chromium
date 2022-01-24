@@ -91,9 +91,11 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
 // static
 bool ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
     base::StringPiece trial_name,
-    base::StringPiece group_name) {
+    base::StringPiece group_name,
+    variations::SyntheticTrialAnnotationMode annotation_mode) {
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      g_browser_process->metrics_service(), trial_name, group_name);
+      g_browser_process->metrics_service(), trial_name, group_name,
+      annotation_mode);
 }
 
 void ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(

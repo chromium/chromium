@@ -16,16 +16,35 @@
 
 namespace variations {
 
+// Specifies when UMA reports should start being annotated with a synthetic
+// field trial.
+enum class SyntheticTrialAnnotationMode {
+  // Start annotating UMA reports with this trial only after the next log opens.
+  // The UMA report that will be generated from the log that is open at the time
+  // of registration will not be annotated with this trial.
+  kNextLog,
+  // Start annotating UMA reports with this trial immediately, including the one
+  // that will be generated from the log that is open at the time of
+  // registration.
+  kCurrentLog,
+};
+
 // A Field Trial and its selected group, which represent a particular
 // Chrome configuration state. For example, the trial name could map to
 // a preference name, and the group name could map to a preference value.
 struct COMPONENT_EXPORT(VARIATIONS) SyntheticTrialGroup {
  public:
-  SyntheticTrialGroup(uint32_t trial, uint32_t group);
+  SyntheticTrialGroup(uint32_t trial,
+                      uint32_t group,
+                      SyntheticTrialAnnotationMode annotation_mode);
   ~SyntheticTrialGroup();
 
   ActiveGroupId id;
   base::TimeTicks start_time;
+
+  // Determines when UMA reports should start being annotated with this trial
+  // group.
+  SyntheticTrialAnnotationMode annotation_mode;
 
   // If this is an external experiment.
   bool is_external = false;

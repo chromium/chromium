@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,11 +69,13 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   SyntheticTrialRegistry registry;
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup trial1(HashName("TestTrial1"), HashName("Group1"));
-  registry.RegisterSyntheticFieldTrial(trial1);
+  SyntheticTrialGroup trial1_group1(HashName("TestTrial1"), HashName("Group1"),
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  registry.RegisterSyntheticFieldTrial(trial1_group1);
 
-  SyntheticTrialGroup trial2(HashName("TestTrial2"), HashName("Group2"));
-  registry.RegisterSyntheticFieldTrial(trial2);
+  SyntheticTrialGroup trial2_group2(HashName("TestTrial2"), HashName("Group2"),
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  registry.RegisterSyntheticFieldTrial(trial2_group2);
   // Ensure that time has advanced by at least a tick before proceeding.
   WaitUntilTimeChanges(base::TimeTicks::Now());
 
@@ -92,25 +95,45 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   WaitUntilTimeChanges(begin_log_time);
 
   // Change the group for the first trial after the log started.
-  SyntheticTrialGroup trial3(HashName("TestTrial1"), HashName("Group2"));
-  registry.RegisterSyntheticFieldTrial(trial3);
+  SyntheticTrialGroup trial1_group2(HashName("TestTrial1"), HashName("Group2"),
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  registry.RegisterSyntheticFieldTrial(trial1_group2);
   registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
   EXPECT_EQ(1U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
 
   // Add a new trial after the log started and confirm that it doesn't show up.
-  SyntheticTrialGroup trial4(HashName("TestTrial3"), HashName("Group3"));
-  registry.RegisterSyntheticFieldTrial(trial4);
+  SyntheticTrialGroup trial3_group3(HashName("TestTrial3"), HashName("Group3"),
+                                    SyntheticTrialAnnotationMode::kNextLog);
+  registry.RegisterSyntheticFieldTrial(trial3_group3);
   registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
   EXPECT_EQ(1U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
 
-  // Start a new log and ensure all three trials appear in it.
+  // Change TestTrial3 to be active immediately, add a new trial that also is
+  // active immediately, and confirm they both show up despite being added after
+  // the log started.
+  SyntheticTrialGroup trial3_group3_current_log(
+      HashName("TestTrial3"), HashName("Group3"),
+      SyntheticTrialAnnotationMode::kCurrentLog);
+  SyntheticTrialGroup trial4_group4_current_log(
+      HashName("TestTrial4"), HashName("Group4"),
+      SyntheticTrialAnnotationMode::kCurrentLog);
+  registry.RegisterSyntheticFieldTrial(trial3_group3_current_log);
+  registry.RegisterSyntheticFieldTrial(trial4_group4_current_log);
+  registry.GetSyntheticFieldTrialsOlderThan(begin_log_time, &synthetic_trials);
+  ASSERT_EQ(3U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial3", "Group3"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial4", "Group4"));
+
+  // Start a new log and ensure all four trials appear in it.
   GetSyntheticTrials(registry, &synthetic_trials);
-  EXPECT_EQ(3U, synthetic_trials.size());
+  ASSERT_EQ(4U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "Group2"));
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial3", "Group3"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial4", "Group4"));
 }
 
 TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_NoAllowlist) {
@@ -199,10 +222,12 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup trial1(HashName("TestTrial1"), HashName("Group1"));
+  SyntheticTrialGroup trial1(HashName("TestTrial1"), HashName("Group1"),
+                             SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial1);
 
-  SyntheticTrialGroup trial2(HashName("TestTrial2"), HashName("Group2"));
+  SyntheticTrialGroup trial2(HashName("TestTrial2"), HashName("Group2"),
+                             SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(trial2);
 
   // Ensure that time has advanced by at least a tick before proceeding.

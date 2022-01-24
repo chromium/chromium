@@ -79,7 +79,9 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
   EXPECT_EQ("8e7abfb0-c16397b7,277f2a3d-d77354d0,", info.experiment_list);
 
   // Add two synthetic trials and confirm that they show up in the list.
-  SyntheticTrialGroup synth_trial(HashName("Trial3"), HashName("Group3"));
+  SyntheticTrialGroup synth_trial(
+      HashName("Trial3"), HashName("Group3"),
+      variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial);
 
   EXPECT_EQ("3", GetNumExperimentsCrashKey());
@@ -106,9 +108,13 @@ TEST_F(VariationsCrashKeysTest, BasicFunctionality) {
       info.experiment_list);
 
   // Replace synthetic trial group and add one more.
-  SyntheticTrialGroup synth_trial2(HashName("Trial3"), HashName("Group3_A"));
+  SyntheticTrialGroup synth_trial2(
+      HashName("Trial3"), HashName("Group3_A"),
+      variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial2);
-  SyntheticTrialGroup synth_trial3(HashName("Trial4"), HashName("Group4"));
+  SyntheticTrialGroup synth_trial3(
+      HashName("Trial4"), HashName("Group4"),
+      variations::SyntheticTrialAnnotationMode::kNextLog);
   registry.RegisterSyntheticFieldTrial(synth_trial3);
 
   EXPECT_EQ("5", GetNumExperimentsCrashKey());

@@ -37,6 +37,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -261,7 +262,11 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
 
   data_reduction_proxy::DataReductionProxySettings::
       SetCallbackToRegisterSyntheticFieldTrial(base::BindRepeating(
-          &ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial));
+          [](base::StringPiece trial_name, base::StringPiece group_name) {
+            return ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+                trial_name, group_name,
+                variations::SyntheticTrialAnnotationMode::kNextLog);
+          }));
   // In M35 and earlier, the Data Reduction Proxy enabled/disabled setting was
   // stored in prefs, so this setting needs to be migrated to the new way of
   // storing the setting. Removing this migration code would cause users

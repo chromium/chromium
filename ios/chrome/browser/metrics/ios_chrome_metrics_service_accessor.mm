@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "components/prefs/pref_service.h"
+#include "components/variations/synthetic_trials.h"
 #include "ios/chrome/browser/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,5 +42,6 @@ bool IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
     const std::string& trial_name,
     const std::string& group_name) {
   return metrics::MetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      GetApplicationContext()->GetMetricsService(), trial_name, group_name);
+      GetApplicationContext()->GetMetricsService(), trial_name, group_name,
+      variations::SyntheticTrialAnnotationMode::kNextLog);
 }
