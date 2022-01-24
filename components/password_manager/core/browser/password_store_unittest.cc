@@ -139,11 +139,12 @@ bool MatchesOrigin(const GURL& origin, const GURL& url) {
   return origin.DeprecatedGetOriginAsURL() == url.DeprecatedGetOriginAsURL();
 }
 
-std::tuple<PasswordStore*, MockPasswordStoreBackend*>
+std::tuple<scoped_refptr<PasswordStore>, MockPasswordStoreBackend*>
 CreateUnownedStoreWithOwnedMockBackend() {
   auto backend = std::make_unique<MockPasswordStoreBackend>();
   MockPasswordStoreBackend* mock_backend = backend.get();
-  return std::make_tuple(new PasswordStore(std::move(backend)), mock_backend);
+  return std::make_tuple(
+      base::MakeRefCounted<PasswordStore>(std::move(backend)), mock_backend);
 }
 
 PasswordFormData CreateTestPasswordFormDataByOrigin(const char* origin_url) {
@@ -993,9 +994,7 @@ INSTANTIATE_TEST_SUITE_P(Federation,
                          testing::Bool());
 
 TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1006,9 +1005,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
 }
 
 TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1021,9 +1018,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
@@ -1048,9 +1043,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
@@ -1075,9 +1068,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
 TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
   const PasswordForm kTestForm = MakePasswordForm(kTestWebRealm1);
   MockPasswordStoreObserver mock_observer;
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
@@ -1109,9 +1100,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
   const PasswordForm kTestForm = *all_credentials[0];
   const PasswordForm kOtherForm = *all_credentials[1];
   MockPasswordStoreObserver mock_observer;
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
@@ -1179,9 +1168,7 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
 }
 
 TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
-  scoped_refptr<PasswordStore> store;
-  MockPasswordStoreBackend* mock_backend;
-  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  auto [store, mock_backend] = CreateUnownedStoreWithOwnedMockBackend();
   // Invoke the store initialization callback to initialize
   // AffiliatedMatchHelper.
   EXPECT_CALL(*mock_backend, InitBackend)
