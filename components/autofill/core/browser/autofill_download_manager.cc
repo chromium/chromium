@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 
 #include <algorithm>
-#include <tuple>
 #include <utility>
 
 #include "base/base64url.h"
@@ -829,9 +828,7 @@ bool AutofillDownloadManager::StartRequest(FormRequestData request_data) {
   DCHECK(url_loader_factory);
 
   // Get the URL and method to use for this request.
-  std::string method;
-  GURL request_url;
-  std::tie(request_url, method) = GetRequestURLAndMethod(request_data);
+  auto [request_url, method] = GetRequestURLAndMethod(request_data);
 
   // Track the URL length for GET queries because the URL length can be in the
   // thousands when rich metadata is enabled.
