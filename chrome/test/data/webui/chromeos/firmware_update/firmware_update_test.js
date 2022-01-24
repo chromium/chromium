@@ -34,9 +34,6 @@ export function firmwareUpdateAppTest() {
     provider = new FakeUpdateProvider();
     setUpdateProviderForTesting(provider);
     provider.setFakeFirmwareUpdates(fakeFirmwareUpdates);
-    page = /** @type {!FirmwareUpdateAppElement} */ (
-        document.createElement('firmware-update-app'));
-    document.body.appendChild(page);
   });
 
   teardown(() => {
@@ -47,6 +44,12 @@ export function firmwareUpdateAppTest() {
     page.remove();
     page = null;
   });
+
+  function initializePage() {
+    page = /** @type {!FirmwareUpdateAppElement} */ (
+        document.createElement('firmware-update-app'));
+    document.body.appendChild(page);
+  }
 
   /** @return {!CrDialogElement} */
   function getUpdateDialog() {
@@ -86,6 +89,7 @@ export function firmwareUpdateAppTest() {
   }
 
   test('LandingPageLoaded', () => {
+    initializePage();
     // TODO(michaelcheco): Remove this stub test once the page has more
     // capabilities to test.
     assertEquals(
@@ -94,6 +98,7 @@ export function firmwareUpdateAppTest() {
   });
 
   test('SettingGettingTestProvider', () => {
+    initializePage();
     let fake_provider =
         /** @type {!UpdateProviderInterface} */ (new FakeUpdateProvider());
     setUpdateProviderForTesting(fake_provider);
@@ -101,6 +106,7 @@ export function firmwareUpdateAppTest() {
   });
 
   test('OpenUpdateDialog', async () => {
+    initializePage();
     await flushTasks();
     // Open dialog for first firmware update card.
     getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
@@ -111,6 +117,7 @@ export function firmwareUpdateAppTest() {
   });
 
   test('SuccessfulUpdate', async () => {
+    initializePage();
     await flushTasks();
     // Open dialog for firmware update.
     getUpdateCards()[1].shadowRoot.querySelector(`#updateButton`).click();
@@ -134,6 +141,7 @@ export function firmwareUpdateAppTest() {
   });
 
   test('UpdateFailed', async () => {
+    initializePage();
     await flushTasks();
     // Open dialog for firmware update. The third fake update in the list
     // will fail.
@@ -155,5 +163,42 @@ export function firmwareUpdateAppTest() {
         `Failed to update ${
             mojoString16ToString(fakeFirmwareUpdate.deviceName)}`,
         getUpdateDialogTitle().innerText.trim());
+  });
+
+  test('InflightUpdate', async () => {
+    // Simulate an inflight update is already in progress.
+    provider.setInflightUpdate(fakeFirmwareUpdates[0][0]);
+    initializePage();
+    await flushTasks();
+    await flushTasks();
+
+    // Simulate InstallProgressChangedObserver being called.
+    controller.beginUpdate();
+    await flushTasks();
+    await flushTasks();
+    // Check that the update dialog is now opened with an update.
+    assertEquals(UpdateState.kUpdating, getUpdateState());
+    const fakeUpdate = getFirmwareUpdateFromDialog();
+    assertEquals(
+        `Updating ${mojoString16ToString(fakeUpdate.deviceName)}`,
+        getUpdateDialogTitle().innerText.trim());
+    // Allow firmware update to complete.
+    await controller.getUpdateCompletedPromiseForTesting();
+    await flushTasks();
+    assertEquals(UpdateState.kSuccess, getUpdateState());
+    assertTrue(getUpdateDialog().open);
+  });
+
+  test('InflightUpdateNoProgressUpdate', async () => {
+    // Simulate an inflight update is already in progress.
+    provider.setInflightUpdate(fakeFirmwareUpdates[0][0]);
+    initializePage();
+    await flushTasks();
+    await flushTasks();
+
+    // Check that the update dialog is now opened with an update.
+    assertEquals(UpdateState.kIdle, getUpdateState());
+    const fakeUpdate = getFirmwareUpdateFromDialog();
+    assertTrue(getUpdateDialog().open);
   });
 }

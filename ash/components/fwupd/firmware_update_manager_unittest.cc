@@ -659,6 +659,14 @@ TEST_F(FirmwareUpdateManagerTest, InvalidFile) {
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+
+  base::RunLoop().RunUntilIdle();
+
   dbus_responses_.push_back(dbus::Response::CreateEmpty());
 
   std::string fake_url = "https://faketesturl/";
