@@ -3111,10 +3111,10 @@ static void PopulateHitTestRegion(viz::HitTestRegion* hit_test_region,
                                   SK_Scalar1 / device_scale_factor);
   surface_to_root_transform.FlattenTo2d();
   // TODO(sunxd): Avoid losing precision by not using inverse if possible.
-  bool ok = surface_to_root_transform.GetInverse(&hit_test_region->transform);
+  [[maybe_unused]] bool ok =
+      surface_to_root_transform.GetInverse(&hit_test_region->transform);
   // Note: If |ok| is false, the |transform| is set to the identity before
   // returning, which is what we want.
-  ALLOW_UNUSED_LOCAL(ok);
 }
 
 absl::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
