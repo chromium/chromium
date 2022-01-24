@@ -31,19 +31,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.CheckCRCResult" enum="CheckCRCResult"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Whether or not the CRC was checked at the moment when the last reference to
-    a read-only entry stream is closed.
-  </summary>
-</histogram>
-
 <histogram base="true" name="SimpleCache.ConsistencyResult"
     enum="SimpleCacheConsistencyResult" expires_after="2022-06-08">
   <owner>wanderview@chromium.org</owner>
@@ -165,91 +152,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.EntryTrailerPrefetchDelta"
-    units="bytes" expires_after="2021-06-08">
-  <obsolete>
-    Removed in June 2021.
-  </obsolete>
-  <owner>wanderview@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The difference between EntryTrailerPrefetchSize and EntryTrailerSize in
-    bytes within a single ReadAndValidateStream0AndMaybe1() method call. If the
-    prefetch read too many bytes then this will be a positive value. If the
-    prefetch did not read enough bytes, then this will be a negative value.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.EntryTrailerPrefetchSize"
-    units="bytes" expires_after="2021-06-08">
-  <obsolete>
-    Removed in June 2021.
-  </obsolete>
-  <owner>wanderview@chromium.org</owner>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The number of bytes prefetched from the end of the entry file in an attempt
-    read the EOF footer and the stream 0 data in a single file operation.
-    Ideally this value should match the EntryTrailerSize histogram indicating
-    the actual trailer size on disk was.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.CacheSizeOnStart2" units="KB"
-    expires_after="M85">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <summary>The size of the cache at the beginning of an eviction.</summary>
-</histogram>
-
 <histogram base="true" name="SimpleCache.Eviction.EntryCount" units="units"
     expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The number of entries to be erased in an eviction.</summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.MaxCacheSizeOnStart2"
-    units="KB" expires_after="M85">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <summary>
-    The maximum allowed size of the cache at the beginning of an eviction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.Result" enum="BooleanSuccess"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>The result of an eviction.</summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.SizeOfEvicted2" units="KB"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>The amount of memory freed in an eviction.</summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.Eviction.SizeWhenDone2" units="KB"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>The size of the cache after running an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.TimeToDone" units="ms"
@@ -320,16 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.IndexNumEntriesOnWrite" units="units"
-    expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>The number of entries written to the index on a flush.</summary>
-</histogram>
-
 <histogram base="true" name="SimpleCache.IndexRestoreTime" units="ms"
     expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
@@ -337,33 +234,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time (as measured on the worker pool) spent restoring the index file by
     iterating directory entries.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.IndexWriteReason"
-    enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The reason an index was written to disk. Recorded every time an index is
-    saved.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.IndexWriteReasonAtLoad"
-    enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
-  <obsolete>
-    Removed in July 2021.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    Recorded immediately after loading a fresh index (INDEX_STATE_FRESH or
-    INDEX_STATE_FRESH_CONCURRENT_UPDATES), the reason the loaded index was
-    written to disk.
   </summary>
 </histogram>
 
@@ -395,19 +265,6 @@ chromium-metrics-reviews@google.com.
     Record the original consistency error produced by a simple DiskCache before
     a retry was attempted and succeeded. This histogram will tell us what kind
     consistency errors can be recovered from in practice.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.PercentFullOnInit" units="%"
-    expires_after="M85">
-  <obsolete>
-    Removed July 2021.
-  </obsolete>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    The fullness (in percent) of the cache at the time that the index has
-    finished initializing. The percentage is calculated as (cache_size * 100) /
-    max_cache_size.
   </summary>
 </histogram>
 
@@ -457,65 +314,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="SimpleCache.SyncCheckEOFResult"
-    enum="SimpleCacheSyncCheckEOFResult" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The result, at the synchronous layer, of checking the EOF record of a cache
-    entry.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.SyncCloseResult"
-    enum="SimpleCacheSyncCloseResult" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The result, at the synchronous layer, of closing a cache entry.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.SyncCreatePlatformFileError"
-    enum="PlatformFileError" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The platform error reported when attempting to create a new cache entry at
-    the synchronous layer.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.SyncOpenPlatformFileError"
-    enum="PlatformFileError" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The platform error reported when attempting to create a new cache entry at
-    the synchronous layer.
-  </summary>
-</histogram>
-
 <histogram base="true" name="SimpleCache.SyncOpenPrefetchMode"
     enum="SimpleCachePrefetchMode" expires_after="2022-06-10">
   <owner>wanderview@chromium.org</owner>
@@ -523,35 +321,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The kind of prefetching performed, if any, when executing
     SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1().
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.SyncOpenResult"
-    enum="SimpleCacheSyncOpenResult" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The result, at the synchronous layer, reported when attempting to open a new
-    cache entry.
-  </summary>
-</histogram>
-
-<histogram base="true" name="SimpleCache.SyncWriteResult"
-    enum="SimpleCacheSyncWriteResult" expires_after="2021-07-01">
-  <obsolete>
-    As of July 2021, no longer logged in UMA data. Kept as a local histogram
-    (data not sent to UMA) so it appears in chrome://histograms for local
-    debugging.
-  </obsolete>
-  <owner>morlovich@chromium.org</owner>
-  <owner>wanderview@chromium.org</owner>
-  <summary>
-    The result, at the synchronous layer, of writing to a cache entry.
   </summary>
 </histogram>
 

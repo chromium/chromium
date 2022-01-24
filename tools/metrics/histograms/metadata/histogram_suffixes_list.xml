@@ -1015,7 +1015,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Code" label="Collected from the V8 Bytecode Cache instance."/>
   <suffix name="Http" label="Collected from the HTTP Cache instance."/>
   <affected-histogram name="SimpleCache.CacheSizeOnInit"/>
-  <affected-histogram name="SimpleCache.CheckCRCResult"/>
   <affected-histogram name="SimpleCache.ConsistencyResult"/>
   <affected-histogram
       name="SimpleCache.ConsistencyResultAfterIndexFilesDeleted"/>
@@ -1035,19 +1034,12 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.EntryCreationTime"/>
   <affected-histogram name="SimpleCache.EntryOpenedAndStream2Removed"/>
   <affected-histogram name="SimpleCache.EntryOperationsPending"/>
-  <affected-histogram name="SimpleCache.EntryTrailerPrefetchDelta"/>
-  <affected-histogram name="SimpleCache.EntryTrailerPrefetchSize"/>
   <affected-histogram name="SimpleCache.EntryTrailerSize"/>
   <affected-histogram name="SimpleCache.Eviction.CacheSizeOnStart"/>
-  <affected-histogram name="SimpleCache.Eviction.CacheSizeOnStart2"/>
   <affected-histogram name="SimpleCache.Eviction.EntryCount"/>
   <affected-histogram name="SimpleCache.Eviction.MaxCacheSizeOnStart"/>
-  <affected-histogram name="SimpleCache.Eviction.MaxCacheSizeOnStart2"/>
-  <affected-histogram name="SimpleCache.Eviction.Result"/>
   <affected-histogram name="SimpleCache.Eviction.SizeOfEvicted"/>
-  <affected-histogram name="SimpleCache.Eviction.SizeOfEvicted2"/>
   <affected-histogram name="SimpleCache.Eviction.SizeWhenDone"/>
-  <affected-histogram name="SimpleCache.Eviction.SizeWhenDone2"/>
   <affected-histogram name="SimpleCache.Eviction.TimeToDone"/>
   <affected-histogram name="SimpleCache.Eviction.TimeToSelectEntries"/>
   <affected-histogram name="SimpleCache.GlobalOpenEntryCount"/>
@@ -1066,12 +1058,9 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.IndexInitializeMethod"/>
   <affected-histogram name="SimpleCache.IndexLoadTime"/>
   <affected-histogram name="SimpleCache.IndexNumEntriesOnInit"/>
-  <affected-histogram name="SimpleCache.IndexNumEntriesOnWrite"/>
   <affected-histogram name="SimpleCache.IndexRestoreTime"/>
   <affected-histogram name="SimpleCache.IndexWriteInterval.Background"/>
   <affected-histogram name="SimpleCache.IndexWriteInterval.Foreground"/>
-  <affected-histogram name="SimpleCache.IndexWriteReason"/>
-  <affected-histogram name="SimpleCache.IndexWriteReasonAtLoad"/>
   <affected-histogram name="SimpleCache.IndexWriteToDiskTime.Background"/>
   <affected-histogram name="SimpleCache.IndexWriteToDiskTime.Foreground"/>
   <affected-histogram name="SimpleCache.KeyMatchedOnOpen"/>
@@ -1082,7 +1071,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.OpenEntryIndexState"/>
   <affected-histogram
       name="SimpleCache.OriginalConsistencyResultBeforeSuccessfulRetry"/>
-  <affected-histogram name="SimpleCache.PercentFullOnInit"/>
   <affected-histogram name="SimpleCache.QueueLatency.CreateEntry"/>
   <affected-histogram name="SimpleCache.QueueLatency.OpenEntry"/>
   <affected-histogram name="SimpleCache.QueueLatency.OpenOrCreateEntry"/>
@@ -1095,17 +1083,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.StaleIndexMissedEntryCount"/>
   <affected-histogram name="SimpleCache.StaleIndexQuality"/>
   <affected-histogram name="SimpleCache.SyncCheckEOFHasCrc"/>
-  <affected-histogram name="SimpleCache.SyncCheckEOFResult"/>
-  <affected-histogram name="SimpleCache.SyncCloseResult"/>
-  <affected-histogram name="SimpleCache.SyncCreatePlatformFileError"/>
   <affected-histogram name="SimpleCache.SyncCreateResult"/>
   <affected-histogram name="SimpleCache.SyncKeySHA256Result"/>
   <affected-histogram name="SimpleCache.SyncOpenDidPrefetch"/>
   <affected-histogram name="SimpleCache.SyncOpenEntryAge"/>
-  <affected-histogram name="SimpleCache.SyncOpenPlatformFileError"/>
   <affected-histogram name="SimpleCache.SyncOpenPrefetchMode"/>
-  <affected-histogram name="SimpleCache.SyncOpenResult"/>
-  <affected-histogram name="SimpleCache.SyncWriteResult"/>
   <affected-histogram name="SimpleCache.WriteDependencyType"/>
   <affected-histogram name="SimpleCache.WriteResult"/>
   <affected-histogram name="SimpleCache.WriteResult2"/>
