@@ -110,7 +110,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testSyncEverythingAndDataTypes() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         ManageSyncSettings fragment = startManageSyncPreferences();
         ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
         Collection<CheckBoxPreference> dataTypes = getDataTypes(fragment).values();
@@ -130,7 +129,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testSettingDataTypes() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         ManageSyncSettings fragment = startManageSyncPreferences();
         ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
         Map<Integer, CheckBoxPreference> dataTypes = getDataTypes(fragment);
@@ -162,7 +160,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testUnsettingAllDataTypesStopsSync() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
         assertSyncOnState(fragment);
@@ -223,7 +220,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testPressingTurnOffSyncAndSignOutShowsSignOutDialog() {
+    public void testPressingSignOutAndTurnOffSyncShowsSignOutDialog() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setChosenDataTypes(true, null);
         mSyncTestRule.startSync();
@@ -231,7 +228,7 @@ public class ManageSyncSettingsTest {
 
         Preference turnOffSyncPreference =
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC);
-        Assert.assertTrue("Turn off sync and sign out button should be shown",
+        Assert.assertTrue("Sign out and turn off sync button should be shown",
                 turnOffSyncPreference.isVisible());
         TestThreadUtils.runOnUiThreadBlocking(
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
@@ -414,7 +411,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testChoosePassphraseTypeWhenSyncIsOff() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         ManageSyncSettings fragment = startManageSyncPreferences();
         Preference encryption = getEncryption(fragment);
         clickPreference(encryption);
@@ -433,7 +429,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testEnterPassphraseWhenSyncIsOff() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         mSyncTestRule.stopSync();
         TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -447,7 +442,6 @@ public class ManageSyncSettingsTest {
     @FlakyTest(message = "https://crbug.com/1188548")
     public void testPassphraseCreation() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferences();
         TestThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -583,7 +577,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testAdvancedSyncFlowPreferencesAndBottomBarShown() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
         Assert.assertTrue(
                 fragment.findPreference(ManageSyncSettings.PREF_SYNCING_CATEGORY).isVisible());
@@ -599,7 +592,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     public void testAdvancedSyncFlowTopView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mRenderTestRule.render(fragment.getView(), "advanced_sync_flow_top_view");
@@ -610,7 +602,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync", "RenderTest"})
     public void testAdvancedSyncFlowBottomView() throws Exception {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
