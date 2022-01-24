@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/cbor/values.h"
 #include "device/fido/cbor_extract.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,15 +29,20 @@ bool VectorSpanEqual(const std::vector<T>& v, base::span<const T> s) {
 }
 
 struct MakeCredRequest {
-  raw_ptr<const std::vector<uint8_t>> client_data_hash;
-  raw_ptr<const std::string> rp_id;
-  raw_ptr<const std::vector<uint8_t>> user_id;
-  raw_ptr<const std::vector<cbor::Value>> cred_params;
-  raw_ptr<const std::vector<cbor::Value>> excluded_credentials;
-  raw_ptr<const bool> resident_key;
-  raw_ptr<const bool> user_verification;
-  raw_ptr<const bool> large_test;
-  raw_ptr<const bool> negative_test;
+  // All fields below are not a raw_ptr<T> because cbor_extract.cc would
+  // cast the raw_ptr<T> to a void*, skipping an AddRef() call and causing a
+  // ref-counting mismatch.
+  const std::vector<uint8_t>* client_data_hash;
+  const std::string* rp_id;
+  const std::vector<uint8_t>* user_id;
+  const std::vector<cbor::Value>* cred_params;
+  const std::vector<cbor::Value>* excluded_credentials;
+  const bool* resident_key;
+  const bool* user_verification;
+  const bool* large_test;
+  const bool* negative_test;
+  const bool* skipped_1;
+  const bool* skipped_2;
 };
 
 TEST(CBORExtract, Basic) {
@@ -156,7 +160,7 @@ TEST(CBORExtract, Basic) {
 
 TEST(CBORExtract, MissingRequired) {
   struct Dummy {
-    raw_ptr<const int64_t> value;
+    const int64_t* value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {
@@ -172,7 +176,7 @@ TEST(CBORExtract, MissingRequired) {
 
 TEST(CBORExtract, WrongType) {
   struct Dummy {
-    raw_ptr<const int64_t> value;
+    const int64_t* value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {
