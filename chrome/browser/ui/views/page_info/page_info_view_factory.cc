@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_about_this_site_content_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_ad_personalization_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
@@ -141,6 +142,13 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateAboutThisSitePageView(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER)),
       std::make_unique<PageInfoAboutThisSiteContentView>(presenter_,
                                                          ui_delegate_, info));
+}
+
+std::unique_ptr<views::View>
+PageInfoViewFactory::CreateAdPersonalizationPageView() {
+  return std::make_unique<PageInfoSubpageView>(
+      CreateSubpageHeader(u"Lorem ipsum dolor"),
+      std::make_unique<PageInfoAdPersonalizationContentView>(presenter_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(

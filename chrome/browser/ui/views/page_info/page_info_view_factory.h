@@ -55,7 +55,8 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
     VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON,
     VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,
-    VIEW_ID_PAGE_INFO_HISTORY_BUTTON
+    VIEW_ID_PAGE_INFO_HISTORY_BUTTON,
+    VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex
@@ -120,6 +121,7 @@ class PageInfoViewFactory {
       ContentSettingsType type);
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSitePageView(
       const page_info::proto::SiteInfo& info);
+  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
 
  private:
   // Creates a subpage header with back button that opens the main page, a

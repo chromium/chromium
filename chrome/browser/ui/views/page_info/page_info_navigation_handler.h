@@ -22,6 +22,7 @@ class PageInfoNavigationHandler {
   virtual void OpenPermissionPage(ContentSettingsType type) = 0;
   virtual void OpenAboutThisSitePage(
       const page_info::proto::SiteInfo& info) = 0;
+  virtual void OpenAdPersonalizationPage() = 0;
   virtual void CloseBubble() = 0;
 };
 

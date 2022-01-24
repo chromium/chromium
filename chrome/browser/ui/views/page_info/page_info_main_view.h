@@ -113,6 +113,10 @@ class PageInfoMainView : public views::View,
   [[nodiscard]] std::unique_ptr<views::View> CreateAboutThisSiteSection(
       const page_info::proto::SiteInfo& info);
 
+  // Creates 'Ad personalization' section which contains a button that opens a
+  // subpage and a separator.
+  [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationSection();
+
   raw_ptr<PageInfo> presenter_;
 
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
@@ -144,6 +148,10 @@ class PageInfoMainView : public views::View,
 
   // The view that contains `SecurityInformationView` and a certificate button.
   raw_ptr<PageInfoSecurityContentView> security_content_view_ = nullptr;
+
+  // The section that contains 'Ad personalization' button that opens a
+  // subpage.
+  raw_ptr<views::View> ads_personalization_section_ = nullptr;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // The view that contains ui related to features on a page, like a presenting

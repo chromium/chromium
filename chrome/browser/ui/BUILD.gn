@@ -4371,6 +4371,8 @@ static_library("ui") {
       "views/page_info/chosen_object_view_observer.h",
       "views/page_info/page_info_about_this_site_content_view.cc",
       "views/page_info/page_info_about_this_site_content_view.h",
+      "views/page_info/page_info_ad_personalization_content_view.cc",
+      "views/page_info/page_info_ad_personalization_content_view.h",
       "views/page_info/page_info_bubble_view.cc",
       "views/page_info/page_info_bubble_view.h",
       "views/page_info/page_info_bubble_view_base.cc",

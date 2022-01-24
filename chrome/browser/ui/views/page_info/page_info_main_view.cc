@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_util.h"
@@ -116,6 +117,12 @@ PageInfoMainView::PageInfoMainView(
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
     about_this_site_section_ = AddChildView(CreateContainerView());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings3)) {
+    ads_personalization_section_ = AddChildView(CreateContainerView());
+    ads_personalization_section_->AddChildView(
+        CreateAdPersonalizationSection());
   }
 
   presenter_->InitializeUiState(this, std::move(initialized_callback));
@@ -538,4 +545,32 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_button->SetSubtitleMultiline(false);
 
   return about_this_site_section;
+}
+
+std::unique_ptr<views::View>
+PageInfoMainView::CreateAdPersonalizationSection() {
+  auto ads_personalization_section = std::make_unique<views::View>();
+  ads_personalization_section
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
+  ads_personalization_section->AddChildView(
+      PageInfoViewFactory::CreateSeparator());
+  // TODO(olesiamarukhno): Use correct icon.
+  // TODO(olesiamarukhno): Use correct strings (title and tooltip).
+  auto* ads_personalization_button = ads_personalization_section->AddChildView(
+      std::make_unique<PageInfoHoverButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view) {
+                // TODO(olesiamarukhno): Open a subpage.
+                view->navigation_handler_->OpenAdPersonalizationPage();
+              },
+              this),
+          PageInfoViewFactory::GetSiteSettingsIcon(),
+          /*title_resource_id=*/0, std::u16string(),
+          PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
+          /*tooltip_text=*/std::u16string(), std::u16string(),
+          PageInfoViewFactory::GetOpenSubpageIcon()));
+  ads_personalization_button->SetTitleText(u"Lorem ipsum dolor");
+
+  return ads_personalization_section;
 }

@@ -221,6 +221,12 @@ void PageInfoBubbleView::OpenAboutThisSitePage(
       view_factory_->CreateAboutThisSitePageView(info));
 }
 
+void PageInfoBubbleView::OpenAdPersonalizationPage() {
+  // TODO(olesiamarukhno): Record an action.
+  page_container_->SwitchToPage(
+      view_factory_->CreateAdPersonalizationPageView());
+}
+
 void PageInfoBubbleView::CloseBubble() {
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
