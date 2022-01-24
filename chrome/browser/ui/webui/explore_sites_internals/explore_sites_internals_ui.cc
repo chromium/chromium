@@ -27,7 +27,7 @@ ExploreSitesInternalsUI::ExploreSitesInternalsUI(content::WebUI* web_ui)
                           IDR_EXPLORE_SITES_INTERNALS_CSS);
   source->AddResourcePath("explore_sites_internals.js",
                           IDR_EXPLORE_SITES_INTERNALS_JS);
-  source->AddResourcePath("explore_sites_internals.mojom-lite.js",
+  source->AddResourcePath("explore_sites_internals.mojom-webui.js",
                           IDR_EXPLORE_SITES_INTERNALS_MOJO_JS);
   source->SetDefaultResource(IDR_EXPLORE_SITES_INTERNALS_HTML);
 

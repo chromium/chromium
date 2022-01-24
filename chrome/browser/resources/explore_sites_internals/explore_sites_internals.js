@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {$} from 'chrome://resources/js/util.m.js';
+import {PageHandler} from './explore_sites_internals.mojom-webui.js';
 
 // Reference to the backend.
 let pageHandler = null;
 
-(function() {
 function delay(ms) {
   return new Promise((resolve, reject) => setTimeout(resolve, ms));
 }
@@ -84,7 +84,7 @@ function forceNetworkRequest() {
 
 document.addEventListener('DOMContentLoaded', function() {
   // Setup backend mojo.
-  pageHandler = exploreSitesInternals.mojom.PageHandler.getRemote();
+  pageHandler = PageHandler.getRemote();
   updatePageWithProperties();
 
   // Set up event listeners.
@@ -92,4 +92,3 @@ document.addEventListener('DOMContentLoaded', function() {
   $('override-country-code').onclick = overrideCountryCode;
   $('force-network-request').onclick = forceNetworkRequest;
 });
-})();
