@@ -407,14 +407,12 @@ void BindDistillerJavaScriptService(
   dom_distiller::DomDistillerService* dom_distiller_service =
       dom_distiller::DomDistillerServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
-  auto* distiller_ui_handle = dom_distiller_service->GetDistillerUIHandle();
 #if defined(OS_ANDROID)
   static_cast<dom_distiller::android::DistillerUIHandleAndroid*>(
-      distiller_ui_handle)
+      dom_distiller_service->GetDistillerUIHandle())
       ->set_render_frame_host(frame_host);
 #endif
-  auto* distilled_page_prefs = dom_distiller_service->GetDistilledPagePrefs();
-  CreateDistillerJavaScriptService(distiller_ui_handle, distilled_page_prefs,
+  CreateDistillerJavaScriptService(dom_distiller_service->GetWeakPtr(),
                                    std::move(receiver));
 }
 
