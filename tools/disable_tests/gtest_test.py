@@ -46,7 +46,7 @@ class GtestTest(unittest.TestCase):
     self.disabler_test(
         'TEST(Suite, Test) {}', 'Suite.Test', ['linux', 'mac'], '''
 #include "build/build_config.h"
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -58,7 +58,7 @@ TEST(Suite, MAYBE_Test) {}
     self.disabler_test(
         'TEST(Suite, DISABLED_Test) {}', 'Suite.Test', ['linux', 'mac'], '''
 #include "build/build_config.h"
-#if defined(OS_LINUX) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -70,7 +70,7 @@ TEST(Suite, MAYBE_Test) {}
     self.disabler_test(
         '''
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -78,7 +78,7 @@ TEST(Suite, MAYBE_Test) {}
 TEST(Suite, MAYBE_Test) {}
 ''', 'Suite.Test', ['linux', 'mac'], '''
 #include "build/build_config.h"
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -89,7 +89,7 @@ TEST(Suite, MAYBE_Test) {}
   def test_enable_conditionally_disabled_test(self):
     self.disabler_test(
         '''
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -101,7 +101,7 @@ TEST(Suite, MAYBE_Test) {}
     self.disabler_test(
         '''
 #include "build/build_config.h"
-#if defined(OS_LINUX) && defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -109,7 +109,7 @@ TEST(Suite, MAYBE_Test) {}
 TEST(Suite, MAYBE_Test) {}
 ''', 'Suite.Test', ['linux'], '''
 #include "build/build_config.h"
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -120,7 +120,7 @@ TEST(Suite, MAYBE_Test) {}
   def test_handle_backslash_line_continuations(self):
     self.disabler_test(
         r'''
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Test \
     DISABLED_Test
 #else
@@ -157,7 +157,7 @@ TEST(Suite,
         'TEST(Suite, ReallyReallyReallyReallyLongTestName) {}',
         'Suite.ReallyReallyReallyReallyLongTestName', ['win'], r'''
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ReallyReallyReallyReallyLongTestName \
   DISABLED_ReallyReallyReallyReallyLongTestName
 #else

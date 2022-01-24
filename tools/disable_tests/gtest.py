@@ -5,6 +5,7 @@
 
 import re
 import subprocess
+import sys
 from typing import List, Optional, Tuple, Union, Any, Dict, TypeVar
 
 import conditions
@@ -420,13 +421,16 @@ BUILDFLAG_TYPE = object()
 
 # Extend conditions.TERMINALS with GTest-specific info.
 for t_name, t_repr in [
-    ('android', GTestInfo(MACRO_TYPE, 'OS_ANDROID', 'build/build_config.h')),
-    ('chromeos', GTestInfo(MACRO_TYPE, 'OS_CHROMEOS', 'build/build_config.h')),
-    ('fuchsia', GTestInfo(MACRO_TYPE, 'OS_FUCHSIA', 'build/build_config.h')),
-    ('ios', GTestInfo(MACRO_TYPE, 'OS_IOS', 'build/build_config.h')),
-    ('linux', GTestInfo(MACRO_TYPE, 'OS_LINUX', 'build/build_config.h')),
-    ('mac', GTestInfo(MACRO_TYPE, 'OS_MAC', 'build/build_config.h')),
-    ('win', GTestInfo(MACRO_TYPE, 'OS_WIN', 'build/build_config.h')),
+    ('android', GTestInfo(BUILDFLAG_TYPE, 'IS_ANDROID',
+                          'build/build_config.h')),
+    ('chromeos', GTestInfo(BUILDFLAG_TYPE, 'IS_CHROMEOS',
+                           'build/build_config.h')),
+    ('fuchsia', GTestInfo(BUILDFLAG_TYPE, 'IS_FUCHSIA',
+                          'build/build_config.h')),
+    ('ios', GTestInfo(BUILDFLAG_TYPE, 'IS_IOS', 'build/build_config.h')),
+    ('linux', GTestInfo(BUILDFLAG_TYPE, 'IS_LINUX', 'build/build_config.h')),
+    ('mac', GTestInfo(BUILDFLAG_TYPE, 'IS_MAC', 'build/build_config.h')),
+    ('win', GTestInfo(BUILDFLAG_TYPE, 'IS_WIN', 'build/build_config.h')),
     ('arm64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_ARM64', 'build/build_config.h')),
     ('x86', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86', 'build/build_config.h')),
     ('x86-64', GTestInfo(MACRO_TYPE, 'ARCH_CPU_X86_64',
@@ -530,7 +534,11 @@ def clang_format(file_contents: str, modified_lines: List[int]) -> str:
   # things simple for the calling code.
   modified_lines = [i + 1 for i in modified_lines]
 
-  p = subprocess.Popen(['clang-format', '--style=file'] +
+  clang_format_bin = 'clang-format'
+  if sys.platform.startswith('win'):
+    clang_format_bin += '.bat'
+
+  p = subprocess.Popen([clang_format_bin, '--style=file'] +
                        [f'--lines={i}:{i}' for i in modified_lines],
                        stdin=subprocess.PIPE,
                        stdout=subprocess.PIPE,
