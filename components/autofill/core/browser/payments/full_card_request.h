@@ -130,9 +130,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
   // time. |last_committed_url_origin| is the full origin of the url where the
   // card retrieval happens. |context_token| is used for providing context of
-  // the request to the server to link related
-  // requests. |last_committed_url_origin| and |context_token| are populated if
-  // the full card request is for a virtual card.
+  // the request to the server to link related requests.
+  // |last_committed_url_origin| and |context_token| are populated if the full
+  // card request is for a virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
