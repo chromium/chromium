@@ -19,6 +19,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
@@ -57,6 +58,14 @@ class CONTENT_EXPORT AuctionRunner {
       const absl::optional<GURL> seller_report_url,
       std::vector<std::string> errors)>;
 
+  // Returns true if `origin` is allowed to use the interest group API. Will be
+  // called on worklet / interest group origins before using them in any
+  // interest group API.
+  using IsInterestGroupApiAllowedCallback = base::RepeatingCallback<bool(
+      ContentBrowserClient::InterestGroupApiOperation
+          interest_group_api_operation,
+      const url::Origin& origin)>;
+
   // Result of an auction. Used for histograms. Only recorded for valid
   // auctions. These are used in histograms, so values of existing entries must
   // not change when adding/removing values, and obsolete values must not be
@@ -92,7 +101,10 @@ class CONTENT_EXPORT AuctionRunner {
     // bid, and the seller must have accepted the bid for this to be logged.
     kWinningBidderWorkletCrashed = 8,
 
-    kMaxValue = kWinningBidderWorkletCrashed
+    // The seller is not allowed to use the interest group API.
+    kSellerRejected = 9,
+
+    kMaxValue = kSellerRejected
   };
 
   explicit AuctionRunner(const AuctionRunner&) = delete;
@@ -122,10 +134,9 @@ class CONTENT_EXPORT AuctionRunner {
   // `auction_config` is the configuration provided by client JavaScript in
   //  the renderer in order to initiate the auction.
   //
-  // `filtered_buyers` owners of bidders allowed to participate in this auction.
-  //  These should be a subset of `auction_config`'s `interest_group_buyers`,
-  //  filtered to account for browser configuration (like cookie blocking). Must
-  //  not be empty.
+  // `is_interest_group_api_allowed_callback` will be called on all buyer and
+  //  seller origins, and those for which it returns false will not be allowed
+  //  to participate in the auction.
   //
   // `browser_signals` signals from the browser about the auction that are the
   //  same for all worklets.
@@ -137,7 +148,7 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
       InterestGroupManager* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
-      std::vector<url::Origin> filtered_buyers,
+      IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
@@ -203,10 +214,17 @@ class CONTENT_EXPORT AuctionRunner {
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
 
-  // Starts retrieving all interest groups owned by `filtered_buyers` from
-  // storage. OnInterestGroupRead() will be invoked with the lookup results for
-  // each buyer.
-  void ReadInterestGroups(std::vector<url::Origin> filtered_buyers);
+  // Checks that the seller is allowed to partipate in an auction, and starts
+  // retrieving all interest groups owned buyer origins listed in
+  // `auction_config_` from storage, except those for which
+  // `is_interest_group_api_allowed_callback` returns false.
+  //
+  // OnInterestGroupRead() will be invoked with the lookup results for each
+  // buyer origin. If the seller may not participate in an auction, or no listed
+  // interest groups buyers may use the interest group API, asynchronously fails
+  // the auction.
+  void StartAuction(
+      IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback);
 
   // Adds `interest_groups` to `bid_states_`. Continues retrieving bidders from
   // `pending_buyers_` if any have not been retrieved yet. Otherwise, invokes
@@ -296,6 +314,9 @@ class CONTENT_EXPORT AuctionRunner {
   void OnWinningBidderWorkletFatalError(
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
+
+  // Invokes FailAuction asynchronously.
+  void FailAuctionAsync(AuctionResult result);
 
   // Completes the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The

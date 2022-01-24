@@ -862,11 +862,12 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
     auction_config->auction_ad_config_non_shared_params =
         blink::mojom::AuctionAdConfigNonSharedParams::New();
-    // This is ignored by AuctionRunner, in favor of its `filtered_buyers`
-    // parameter.
+
     auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
-        blink::mojom::InterestGroupBuyers::NewAllBuyers(
-            blink::mojom::AllBuyers::New());
+        blink::mojom::InterestGroupBuyers::New();
+    auction_config->auction_ad_config_non_shared_params->interest_group_buyers
+        ->set_buyers(std::vector<url::Origin>{kBidder1, kBidder2});
+
     auction_config->auction_ad_config_non_shared_params->auction_signals =
         auction_signals_json;
     auction_config->auction_ad_config_non_shared_params->seller_signals =
@@ -916,7 +917,7 @@ class AuctionRunnerTest : public testing::Test,
     auction_run_loop_ = std::make_unique<base::RunLoop>();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), this, interest_group_manager_.get(),
-        std::move(auction_config), std::vector<url::Origin>{kBidder1, kBidder2},
+        std::move(auction_config), IsInterestGroupApiAllowedCallback(),
         frame_origin_,
         base::BindOnce(&AuctionRunnerTest::OnAuctionComplete,
                        base::Unretained(this)));
@@ -1115,17 +1116,32 @@ class AuctionRunnerTest : public testing::Test,
     auction_process_manager_ = std::move(mock_auction_process_manager);
   }
 
+  // Check histogram values. If `expected_interest_groups` or `expected_owners`
+  // is null, expect the auction to be aborted before the corresponding
+  // histograms are recorded.
   void CheckHistograms(AuctionRunner::AuctionResult expected_result,
-                       int expected_interest_groups,
-                       int expected_owners) {
+                       absl::optional<int> expected_interest_groups,
+                       absl::optional<int> expected_owners) {
     histogram_tester_->ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
                                           expected_result, 1);
-    histogram_tester_->ExpectUniqueSample(
-        "Ads.InterestGroup.Auction.NumInterestGroups", expected_interest_groups,
-        1);
-    histogram_tester_->ExpectUniqueSample(
-        "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
-        expected_owners, 1);
+
+    if (expected_interest_groups.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NumInterestGroups",
+          *expected_interest_groups, 1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          "Ads.InterestGroup.Auction.NumInterestGroups", 0);
+    }
+
+    if (expected_owners.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
+          *expected_owners, 1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups", 0);
+    }
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.AbortTime",
         expected_result == AuctionRunner::AuctionResult::kAborted);
@@ -1136,6 +1152,24 @@ class AuctionRunnerTest : public testing::Test,
     histogram_tester_->ExpectTotalCount(
         "Ads.InterestGroup.Auction.AuctionWithWinnerTime",
         expected_result == AuctionRunner::AuctionResult::kSuccess);
+  }
+
+  AuctionRunner::IsInterestGroupApiAllowedCallback
+  IsInterestGroupApiAllowedCallback() {
+    return base::BindRepeating(&AuctionRunnerTest::IsInterestGroupAPIAllowed,
+                               base::Unretained(this));
+  }
+
+  bool IsInterestGroupAPIAllowed(ContentBrowserClient::InterestGroupApiOperation
+                                     interest_group_api_operation,
+                                 const url::Origin& origin) {
+    if (interest_group_api_operation ==
+        ContentBrowserClient::InterestGroupApiOperation::kSell) {
+      return disallowed_sellers_.find(origin) == disallowed_sellers_.end();
+    }
+    DCHECK_EQ(ContentBrowserClient::InterestGroupApiOperation::kBuy,
+              interest_group_api_operation);
+    return disallowed_buyers_.find(origin) == disallowed_buyers_.end();
   }
 
   const url::Origin top_frame_origin_ =
@@ -1154,6 +1188,11 @@ class AuctionRunnerTest : public testing::Test,
   const url::Origin kBidder2 = url::Origin::Create(kBidder2Url);
   const std::string kBidder2Name{"Another Ad Thing"};
   const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
+
+  // Origins which are not allowed to take part in auctions, as the
+  // corresponding participant types.
+  std::set<url::Origin> disallowed_sellers_;
+  std::set<url::Origin> disallowed_buyers_;
 
   base::test::TaskEnvironment task_environment_;
 
@@ -1596,6 +1635,134 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
   EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
             result_.bidder_report_url);
   EXPECT_THAT(result_.errors, testing::ElementsAre());
+}
+
+// An auction in which the seller origin is not allowed to use the interest
+// group API.
+TEST_F(AuctionRunnerTest, DisallowedSeller) {
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  disallowed_sellers_.insert(url::Origin::Create(kSellerUrl));
+  RunStandardAuction();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSellerRejected,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+
+  // No requests for the bidder worklet URLs should be made.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// An auction in which the buyer origins are not allowed to use the interest
+// group API.
+TEST_F(AuctionRunnerTest, DisallowedBuyers) {
+  // The lack of Javascript responses means the auction should hang if any
+  // script URLs are incorrectly requested.
+  disallowed_buyers_.insert(kBidder1);
+  disallowed_buyers_.insert(kBidder2);
+  RunStandardAuction();
+
+  EXPECT_FALSE(result_.ad_url);
+  EXPECT_FALSE(result_.ad_component_urls);
+  EXPECT_FALSE(result_.seller_report_url);
+  EXPECT_FALSE(result_.bidder_report_url);
+  EXPECT_EQ(5, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/absl::nullopt,
+                  /*expected_owners=*/absl::nullopt);
+
+  // No requests for the seller worklet URL should be made.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// Run the standard auction, but disallow one bidder from participating.
+TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
+  // The lack of a bidder script 2 means that this test should hang if bidder
+  // 2's script is requested.
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
+                    kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+
+  disallowed_buyers_.insert(kBidder2);
+  RunStandardAuction();
+
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_EQ(std::vector<GURL>{GURL("https://ad1.com-component1.com")},
+            result_.ad_component_urls);
+  EXPECT_EQ(GURL("https://reporting.example.com/"), result_.seller_report_url);
+  EXPECT_EQ(GURL("https://buyer-reporting.example.com/"),
+            result_.bidder_report_url);
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  ASSERT_EQ(4u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.bidder1_prev_wins[3]->ad_json);
+  EXPECT_EQ(5, result_.bidder2_bid_count);
+  EXPECT_EQ(3u, result_.bidder2_prev_wins.size());
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1);
+
+  // No requests for bidder2's worklet URL should be made.
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(0, url_loader_factory_.NumPending());
+}
+
+// Disallow bidders as sellers and disallow seller as bidder. Auction should
+// still succeed.
+TEST_F(AuctionRunnerTest, DisallowedAsOtherParticipant) {
+  disallowed_sellers_.insert(kBidder1);
+  disallowed_sellers_.insert(kBidder2);
+  disallowed_buyers_.insert(url::Origin::Create(kSellerUrl));
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript("1", "https://ad1.com/", /*num_ad_components=*/2, kBidder1,
+                    kBidder1Name,
+                    /*has_signals=*/true, "k1", "a"));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript("2", "https://ad2.com/", /*num_ad_components=*/2, kBidder2,
+                    kBidder2Name,
+                    /*has_signals=*/true, "l2", "b"));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder1TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=k1,k2"),
+                                   R"({"k1":"a", "k2": "b", "extra": "c"})");
+  auction_worklet::AddJsonResponse(&url_loader_factory_,
+                                   GURL(kBidder2TrustedSignalsUrl.spec() +
+                                        "?hostname=publisher1.com&keys=l1,l2"),
+                                   R"({"l1":"a", "l2": "b", "extra": "c"})");
+
+  RunStandardAuction();
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2);
 }
 
 // An auction where one bid is successful, another's script 404s.

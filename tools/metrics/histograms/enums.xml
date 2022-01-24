@@ -5029,6 +5029,7 @@ others/histograms.xml -->
   <int value="6" label="No bids"/>
   <int value="7" label="All bids rejected"/>
   <int value="8" label="Winning bidder worklet crashed"/>
+  <int value="9" label="Seller can't use API"/>
 </enum>
 
 <enum name="AudioCaptureDeviceError">

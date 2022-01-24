@@ -25,6 +25,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "net/base/escape.h"
@@ -128,15 +129,14 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
     InterestGroupManager* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
-    std::vector<url::Origin> filtered_buyers,
+    IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     const url::Origin& frame_origin,
     RunAuctionCallback callback) {
-  DCHECK(!filtered_buyers.empty());
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, auction_worklet_manager_delegate,
       interest_group_manager, std::move(auction_config), frame_origin,
       std::move(callback)));
-  instance->ReadInterestGroups(std::move(filtered_buyers));
+  instance->StartAuction(is_interest_group_api_allowed_callback);
   return instance;
 }
 
@@ -169,15 +169,29 @@ void AuctionRunner::FailAuction(AuctionResult result,
                            absl::nullopt, errors_);
 }
 
-void AuctionRunner::ReadInterestGroups(
-    std::vector<url::Origin> filtered_buyers) {
-  num_pending_buyers_ = filtered_buyers.size();
+void AuctionRunner::StartAuction(
+    IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback) {
+  if (!is_interest_group_api_allowed_callback.Run(
+          ContentBrowserClient::InterestGroupApiOperation::kSell,
+          auction_config_->seller)) {
+    FailAuctionAsync(AuctionResult::kSellerRejected);
+    return;
+  }
 
-  for (const url::Origin& buyer : filtered_buyers) {
+  for (const auto& buyer : auction_config_->auction_ad_config_non_shared_params
+                               ->interest_group_buyers->get_buyers()) {
+    if (!is_interest_group_api_allowed_callback.Run(
+            ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer)) {
+      continue;
+    }
     interest_group_manager_->GetInterestGroupsForOwner(
         buyer, base::BindOnce(&AuctionRunner::OnInterestGroupRead,
                               weak_ptr_factory_.GetWeakPtr()));
+    ++num_pending_buyers_;
   }
+
+  if (num_pending_buyers_ == 0)
+    FailAuctionAsync(AuctionResult::kNoInterestGroups);
 }
 
 void AuctionRunner::OnInterestGroupRead(
@@ -590,6 +604,13 @@ void AuctionRunner::OnWinningBidderWorkletFatalError(
     errors_.insert(errors_.end(), errors.begin(), errors.end());
     ReportSuccess();
   }
+}
+
+void AuctionRunner::FailAuctionAsync(AuctionResult result) {
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&AuctionRunner::FailAuction,
+                                weak_ptr_factory_.GetWeakPtr(), result,
+                                std::vector<std::string>{}));
 }
 
 void AuctionRunner::ReportSuccess() {

@@ -294,32 +294,6 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
     return;
   }
 
-  // If the interest group API is not allowed for this seller do nothing.
-  if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kSell,
-          config->seller)) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  // Filter out buyers for whom the interest group API is not allowed.
-  std::vector<url::Origin> filtered_buyers;
-  const auto& buyers = config->auction_ad_config_non_shared_params
-                           ->interest_group_buyers->get_buyers();
-  std::copy_if(
-      buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
-      [this](const url::Origin& buyer) {
-        return IsInterestGroupAPIAllowed(
-            ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer);
-      });
-
-  // If there are no buyers (either due to filtering, or in the original auction
-  // request), fail the auction.
-  if (filtered_buyers.empty()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
   auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
       render_frame_host()->GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
@@ -329,7 +303,10 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, this, &GetInterestGroupManager(),
-      std::move(config), std::move(filtered_buyers), /*frame_origin=*/origin(),
+      std::move(config),
+      base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
+                          base::Unretained(this)),
+      /*frame_origin=*/origin(),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
                      base::Unretained(this), std::move(callback)));
   auctions_.insert(std::move(auction));
