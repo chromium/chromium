@@ -129,6 +129,7 @@ projectorApp.OAuthToken = function() {};
 /**
  * The email of user associated with the oauth token request.
  * @type {string}
+ *
  */
 projectorApp.OAuthToken.prototype.email;
 
@@ -163,7 +164,17 @@ projectorApp.PendingScreencast.prototype.name;
  */
 projectorApp.PendingScreencast.prototype.uploadProgress;
 
-// TODO(b/197015567): Add other screencast fields(duration, createdDate etc.).
+/**
+ * The created time of the screencast video, as the number of milliseconds since
+ * the epoch.
+ * TODO(b/215258794): After adding |createdTime| on Chromium side, remove the
+ * 'undefined' from type definition.
+ * @type {number|undefined}
+ */
+projectorApp.PendingScreencast.prototype.createdTime;
+
+// TODO(b/205334821): We may want to provide duration field to
+// PendingScreencast.
 
 /**
  * Structure for XHR response.
