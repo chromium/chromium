@@ -89,11 +89,6 @@ chromium-metrics-reviews@google.com.
     {AndroidCrashUploadTypes}
   </summary>
   <token key="AndroidCrashUploadTypes">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name="_Browser" summary="Measures browser crash uploads."/>
     <variant name="_GPU" summary="Measures GPU crash uploads."/>
     <variant name="_Other" summary="Measures other crash uploads."/>
@@ -180,19 +175,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.HorizontalSizeClassUsed" enum="iOSSizeClassForReporting"
-    expires_after="M77">
-  <obsolete>
-    Obsolete in M92. Replaced by IOS.MultiWindow.Configuration.
-  </obsolete>
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    [iOS] Used on iOS 9+ iPad to report the usage of Compact or Regular
-    horizontal size class. This is logged at startup and on each size class
-    change.
-  </summary>
-</histogram>
-
 <histogram name="Tab.NewTab" enum="NewTabType" expires_after="2022-06-05">
   <owner>tbergquist@chromium.org</owner>
   <owner>bsep@chromium.org</owner>
@@ -215,45 +197,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="TabNewTabOnload">
     <variant name=""/>
-    <variant name=".Google" summary="New Tab page for Google.">
-      <obsolete>
-        Removed 07/2020, base histogram no longer recorded on dektop.
-      </obsolete>
-    </variant>
-    <variant name=".Local" summary="Local New Tab page.">
-      <obsolete>
-        Removed 07/2020, base histogram no longer recorded on dektop.
-      </obsolete>
-    </variant>
-    <variant name=".LocalGoogle" summary="Local New Tab page for Google.">
-      <obsolete>
-        Removed 06/2017, never worked correctly.
-      </obsolete>
-    </variant>
-    <variant name=".LocalOther"
-        summary="Local New Tab page for a non-Google provider.">
-      <obsolete>
-        Removed 06/2017, never worked correctly.
-      </obsolete>
-    </variant>
-    <variant name=".Other" summary="New Tab page for a non-Google provider.">
-      <obsolete>
-        Removed 07/2020, base histogram no longer recorded on dektop.
-      </obsolete>
-    </variant>
   </token>
-</histogram>
-
-<histogram name="Tab.PageLoadInHorizontalSizeClass"
-    enum="iOSSizeClassForReporting" expires_after="M77">
-  <obsolete>
-    Obsolete in M92. Wasn't being recorded correctly anyway.
-  </obsolete>
-  <owner>pkl@chromium.org</owner>
-  <summary>
-    [iOS] Used on iOS 9+ iPad to report the usage of Compact or Regular
-    horizontal size class. Recorded on page load.
-  </summary>
 </histogram>
 
 <histogram name="Tab.PageLoadInPortrait" enum="DeviceOrientation"
@@ -279,16 +223,6 @@ chromium-metrics-reviews@google.com.
     from the first time the user sees the tab being restored until the load
     completes.
   </summary>
-</histogram>
-
-<histogram name="Tab.Preview.CaptureType" enum="TabPreviewCaptureType"
-    expires_after="M92">
-  <obsolete>
-    Removed August 2021
-  </obsolete>
-  <owner>dfried@chromium.org</owner>
-  <owner>collinbaker@chromium.org</owner>
-  <summary>Records how a tab preview image was generated.</summary>
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
@@ -589,16 +523,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="OffTheRecordType">
     <variant name=""/>
-    <variant name=".NonOTR" summary="Non off-the-record profile">
-      <obsolete>
-        Removed March 2019
-      </obsolete>
-    </variant>
-    <variant name=".OTR" summary="Off-the-record profile">
-      <obsolete>
-        Removed March 2019
-      </obsolete>
-    </variant>
   </token>
 </histogram>
 
@@ -611,31 +535,6 @@ chromium-metrics-reviews@google.com.
     the foreground. This is recorded only for Android right before Chrome
     process goes into the background.
   </summary>
-</histogram>
-
-<histogram name="Tab.Visibility{Visibility}" units="ms" expires_after="M85">
-  <obsolete>
-    Removed 11/2020. Not actively used now that occlusion tracking is shipped to
-    stable on Windows, Mac and ChromeOS.
-  </obsolete>
-  <owner>fdoray@chromium.org</owner>
-  <summary>
-    Time spent by a tab in a given visibility state. Recorded when the
-    visibility changes and when the tab is closed. {Visibility}
-  </summary>
-  <token key="Visibility">
-    <variant name=""/>
-    <variant name=".Hidden"
-        summary="The tab is not visible because it is in a minimized window
-                 (desktop) or background app (mobile), or because it isn't
-                 active in its tab strip."/>
-    <variant name=".Occluded"
-        summary="The tab is fully covered by other windows. ChromeOS and Mac
-                 OS X only."/>
-    <variant name=".Visible"
-        summary="The tab is visible. Except on ChromeOS and Mac OS X, a tab
-                 fully covered by other windows is considered visible."/>
-  </token>
 </histogram>
 
 <histogram name="Tab.VisibleTime" units="ms" expires_after="M77">
@@ -689,19 +588,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.TimeSpentCollapsed" units="ms"
-    expires_after="2021-09-12">
-  <obsolete>
-    Replaced 04/2021 by TimeSpentCollapsed2.
-  </obsolete>
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The time a tab group spends in the collapsed state before the group is
-    either expanded or closed.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
     expires_after="2021-09-12">
   <owner>connily@chromium.org</owner>
@@ -709,19 +595,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time a tab group spends in the collapsed state before the group is
     either expanded or closed.
-  </summary>
-</histogram>
-
-<histogram name="TabGroups.TimeSpentExpanded" units="ms"
-    expires_after="2021-09-12">
-  <obsolete>
-    Replaced 04/2021 by TimeSpentExpanded2.
-  </obsolete>
-  <owner>connily@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    The time a tab group spends in the expanded state before the group is either
-    collapsed or closed.
   </summary>
 </histogram>
 
@@ -1560,16 +1433,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.Freezing.MaybeFreezeOutcome"
-    enum="FreezingAttemptOutcome" expires_after="2021-10-01">
-  <obsolete>
-    Removed 03/2021.
-  </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>Records the outcome of a tab freezing attempt.</summary>
-</histogram>
-
 <histogram name="Tabs.IndependentTabCountInSwitcher" units="tabs"
     expires_after="2020-07-31">
   <owner>mattsimmons@chromium.org</owner>
@@ -2101,11 +1964,6 @@ chromium-metrics-reviews@google.com.
     0. {TabSuggestionType}
   </summary>
   <token key="TabSuggestionType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".ClosingSuggestion"
         summary="This bukect is for the closing suggestion. It suggests users
                  to close the recommended tabs."/>
@@ -2297,18 +2155,7 @@ chromium-metrics-reviews@google.com.
     we don't log a value.
   </summary>
   <token key="TabOffsetOfSwitchComponentList">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name=".GridTabSwitcher" summary="Tab switcher in grid layout"/>
-    <variant name=".TabGridSheet"
-        summary="The bottom sheet that show a list of Tabs in a grid">
-      <obsolete>
-        Unused as of 11/2019, sheet UI is no longer used.
-      </obsolete>
-    </variant>
     <variant name=".TabStrip" summary="The TabStrip componets"/>
   </token>
 </histogram>
@@ -2488,20 +2335,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Tabs.TabSearch.WebUI.InitialTabsRenderTime" units="ms"
-    expires_after="2021-11-21">
-  <obsolete>
-    Deprecated as of 2021/02. Metric is no longer needed.
-  </obsolete>
-  <owner>tluk@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Records the time taken to load the Tab Search WebUI and render (at least)
-    the initial list of tabs. This is roughly equivalent to 'time to first
-    meaningful paint' for the Tab Search UI.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabSearch.WebUI.LoadCompletedTime" units="ms"
     expires_after="2022-03-27">
   <owner>tluk@chromium.org</owner>
@@ -2608,31 +2441,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Filtered" summary="Filtered by user search query."/>
     <variant name="Unfiltered" summary="Unfiltered by user search query."/>
   </token>
-</histogram>
-
-<histogram name="Tabs.TabSearch.WindowDisplayedDuration2" units="ms"
-    expires_after="M90">
-  <obsolete>
-    Deprecated as of 2020/11. The way the metric is emitted has changed.
-  </obsolete>
-  <owner>tluk@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Tab Search is a feature that allows users to better search their browsers
-    for their desired tabs. It can be opened and closed. This records the amount
-    of time between when a Tab Search bubble is opened and when it is closed. It
-    does so by recording the difference in time between when the Tab Search's
-    bubble is first shown and when the bubble's destructor is called.
-
-    The Tab Search UI is a bubble anchored to an element within a browser window
-    and is closed if the user switches to a tab, presses the escape key or
-    performs an action to return focus to the hosting window. The Tab Search UI
-    bubble will also close if the hosting browser window is closed or crashes.
-
-    Users may leave the bubble open for long periods of time without directly
-    interacting with the UI which could result in a long tail of displayed
-    durations.
-  </summary>
 </histogram>
 
 <histogram name="Tabs.TabSearch.WindowDisplayedDuration3" units="ms"
@@ -2799,13 +2607,7 @@ chromium-metrics-reviews@google.com.
     from a given source. This is recorded when entering the tab switcher mode.
     {TabCreatedReason}
   </summary>
-  <token key="TabCreatedReason" variants="TabCreatedReason">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabCreatedReason" variants="TabCreatedReason"/>
 </histogram>
 
 <histogram name="Tabs.Tasks.TabCreated.Percent{TabCreatedReason}" units="%"
@@ -2819,13 +2621,7 @@ chromium-metrics-reviews@google.com.
     currently open tabs. This is recorded when entering the tab switcher mode.
     {TabCreatedReason}
   </summary>
-  <token key="TabCreatedReason" variants="TabCreatedReason">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="TabCreatedReason" variants="TabCreatedReason"/>
 </histogram>
 
 <histogram name="Tabs.Tasks.TabGroupCount" units="groups" expires_after="M85">
@@ -2907,13 +2703,7 @@ chromium-metrics-reviews@google.com.
     this interval. {Tabs_TabUsageIntervalLength}
   </summary>
   <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="Tabs_TabUsageIntervalLength"/>
 </histogram>
 
 <histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
@@ -2927,13 +2717,7 @@ chromium-metrics-reviews@google.com.
     interval. {Tabs_TabUsageIntervalLength}
   </summary>
   <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="Tabs_TabUsageIntervalLength"/>
 </histogram>
 
 <histogram
@@ -2948,13 +2732,7 @@ chromium-metrics-reviews@google.com.
     interval. {Tabs_TabUsageIntervalLength}
   </summary>
   <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="Tabs_TabUsageIntervalLength"/>
 </histogram>
 
 <histogram name="Tabs.UsedInInterval.Count{Tabs_TabUsageIntervalLength}"
@@ -2968,13 +2746,7 @@ chromium-metrics-reviews@google.com.
     interval. {Tabs_TabUsageIntervalLength}
   </summary>
   <token key="Tabs_TabUsageIntervalLength"
-      variants="Tabs_TabUsageIntervalLength">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="Tabs_TabUsageIntervalLength"/>
 </histogram>
 
 <histogram name="Tabs.WindowCount{BatteryState}" units="windows"
@@ -2998,26 +2770,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabStrip.PaintChildrenDuration" units="microseconds"
-    expires_after="M80">
-  <obsolete>
-    Obsolete in M93. Histogram data was not used.
-  </obsolete>
-  <owner>collinbaker@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    Total time spent in each call of TabStrip::PaintChildren(). This comprises
-    the paint time for all parts of the TabStrip that do not paint to their own
-    layers. This is recorded at the end of TabStrip::PaintChildren(), when all
-    child views are finished painting.
-
-    As of writing (May 17, 2019), this always includes the tab backgrounds,
-    strokes, labels, close buttons. The tab icons and new tab button sometimes
-    paint to their own layer; in frames where this is so, their times won't be
-    included here.
-  </summary>
-</histogram>
-
 <histogram name="TabStrip.ReasonToShow" enum="TabStripReasonToShow"
     expires_after="2021-02-01">
   <owner>yusufo@chromium.org</owner>
@@ -3025,19 +2777,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     When conditional tab strip shows, records which kind of intentional
     tab-related action triggered it.
-  </summary>
-</histogram>
-
-<histogram name="TabStrip.Tab.Icon.PaintDuration" units="microseconds"
-    expires_after="M80">
-  <obsolete>
-    Obsolete in M93. Histogram data was not used.
-  </obsolete>
-  <owner>collinbaker@chromium.org</owner>
-  <owner>chrome-desktop-ui-sea@google.com</owner>
-  <summary>
-    Time spent painting a tab icon. This includes a page's favicon and loading
-    animation (when loading). This is recorded at the end of TabIcon::OnPaint().
   </summary>
 </histogram>
 
