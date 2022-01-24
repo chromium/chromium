@@ -37,34 +37,34 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
-AttributionReport::AggregateContributionData::AggregateContributionData(
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
     HistogramContribution contribution,
     absl::optional<Id> id)
     : contribution(std::move(contribution)), id(id) {}
 
-AttributionReport::AggregateContributionData::AggregateContributionData(
-    const AggregateContributionData& other) = default;
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
+    const AggregatableContributionData& other) = default;
 
-AttributionReport::AggregateContributionData&
-AttributionReport::AggregateContributionData::operator=(
-    const AggregateContributionData& other) = default;
+AttributionReport::AggregatableContributionData&
+AttributionReport::AggregatableContributionData::operator=(
+    const AggregatableContributionData& other) = default;
 
-AttributionReport::AggregateContributionData::AggregateContributionData(
-    AggregateContributionData&& other) = default;
+AttributionReport::AggregatableContributionData::AggregatableContributionData(
+    AggregatableContributionData&& other) = default;
 
-AttributionReport::AggregateContributionData&
-AttributionReport::AggregateContributionData::operator=(
-    AggregateContributionData&& other) = default;
+AttributionReport::AggregatableContributionData&
+AttributionReport::AggregatableContributionData::operator=(
+    AggregatableContributionData&& other) = default;
 
-AttributionReport::AggregateContributionData::~AggregateContributionData() =
-    default;
+AttributionReport::AggregatableContributionData::
+    ~AggregatableContributionData() = default;
 
 AttributionReport::AttributionReport(
     StoredSource source,
     base::Time trigger_time,
     base::Time report_time,
     base::GUID external_report_id,
-    absl::variant<EventLevelData, AggregateContributionData> data)
+    absl::variant<EventLevelData, AggregatableContributionData> data)
     : source_(std::move(source)),
       trigger_time_(trigger_time),
       report_time_(report_time),
@@ -93,7 +93,7 @@ GURL AttributionReport::ReportURL() const {
       return kEventEndpointPath;
     }
 
-    const char* operator()(const AggregateContributionData&) {
+    const char* operator()(const AggregatableContributionData&) {
       static constexpr char kAggregateEndpointPath[] =
           "/.well-known/attribution-reporting/report-aggregate-attribution";
       return kAggregateEndpointPath;

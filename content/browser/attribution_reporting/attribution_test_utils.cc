@@ -370,10 +370,11 @@ bool operator==(const HistogramContribution& a,
 }
 
 bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b) {
-  const auto tie = [](const AggregatableAttribution& aggregate_attribution) {
-    return std::make_tuple(
-        aggregate_attribution.source_id, aggregate_attribution.trigger_time,
-        aggregate_attribution.report_time, aggregate_attribution.contributions);
+  const auto tie = [](const AggregatableAttribution& aggregatable_attribution) {
+    return std::make_tuple(aggregatable_attribution.source_id,
+                           aggregatable_attribution.trigger_time,
+                           aggregatable_attribution.report_time,
+                           aggregatable_attribution.contributions);
   };
   return tie(a) == tie(b);
 }
@@ -390,8 +391,8 @@ bool operator==(const AttributionReport::EventLevelData& a,
 
 // Does not compare ID as it is set by the underlying sqlite db and
 // should not be tested.
-bool operator==(const AttributionReport::AggregateContributionData& a,
-                const AttributionReport::AggregateContributionData& b) {
+bool operator==(const AttributionReport::AggregatableContributionData& a,
+                const AttributionReport::AggregatableContributionData& b) {
   return a.contribution == b.contribution;
 }
 
@@ -563,16 +564,17 @@ std::ostream& operator<<(std::ostream& out,
              << ",value=" << contribution.value() << "}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const AggregatableAttribution& aggregate_attribution) {
-  out << "{source_id=" << aggregate_attribution.source_id
-      << ",trigger_time=" << aggregate_attribution.trigger_time
-      << ",report_time=" << aggregate_attribution.report_time
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableAttribution& aggregatable_attribution) {
+  out << "{source_id=" << aggregatable_attribution.source_id
+      << ",trigger_time=" << aggregatable_attribution.trigger_time
+      << ",report_time=" << aggregatable_attribution.report_time
       << ",contributions=[";
 
   const char* separator = "";
   for (const HistogramContribution& contribution :
-       aggregate_attribution.contributions) {
+       aggregatable_attribution.contributions) {
     out << separator << contribution;
     separator = ", ";
   }
@@ -590,7 +592,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionReport::AggregateContributionData& data) {
+    const AttributionReport::AggregatableContributionData& data) {
   return out << "{contribution=" << data.contribution
              << ",id=" << (data.id ? base::NumberToString(**data.id) : "null")
              << "}";
@@ -600,7 +602,8 @@ namespace {
 std::ostream& operator<<(
     std::ostream& out,
     const absl::variant<AttributionReport::EventLevelData,
-                        AttributionReport::AggregateContributionData>& data) {
+                        AttributionReport::AggregatableContributionData>&
+        data) {
   absl::visit([&out](const auto& v) { out << v; }, data);
   return out;
 }

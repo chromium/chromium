@@ -342,8 +342,8 @@ bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b);
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b);
 
-bool operator==(const AttributionReport::AggregateContributionData& a,
-                const AttributionReport::AggregateContributionData& b);
+bool operator==(const AttributionReport::AggregatableContributionData& a,
+                const AttributionReport::AggregatableContributionData& b);
 
 bool operator==(const AttributionReport& a, const AttributionReport& b);
 
@@ -375,15 +375,16 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source);
 std::ostream& operator<<(std::ostream& out,
                          const HistogramContribution& contribution);
 
-std::ostream& operator<<(std::ostream& out,
-                         const AggregatableAttribution& aggregate_attribution);
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableAttribution& aggregatable_attribution);
 
 std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data);
 
 std::ostream& operator<<(
     std::ostream& out,
-    const AttributionReport::AggregateContributionData& data);
+    const AttributionReport::AggregatableContributionData& data);
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
 
