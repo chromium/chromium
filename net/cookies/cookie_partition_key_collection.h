@@ -5,9 +5,8 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_COLLECTION_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_COLLECTION_H_
 
-#include <vector>
-
 #include "base/callback_forward.h"
+#include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_partition_key.h"
 
@@ -30,9 +29,9 @@ class NET_EXPORT CookiePartitionKeyCollection {
   CookiePartitionKeyCollection(CookiePartitionKeyCollection&& other);
   // Creates a key collection with a single element.
   explicit CookiePartitionKeyCollection(const CookiePartitionKey& key);
-  // Creates a set that contains each partition key in the vector.
+  // Creates a set that contains each partition key in the set.
   explicit CookiePartitionKeyCollection(
-      const std::vector<CookiePartitionKey>& keys);
+      base::flat_set<CookiePartitionKey> keys);
 
   CookiePartitionKeyCollection& operator=(
       const CookiePartitionKeyCollection& other);
@@ -81,7 +80,7 @@ class NET_EXPORT CookiePartitionKeyCollection {
 
   // Iterate over all keys in the key collection, do not call this method if
   // `contains_all_keys` is true.
-  const std::vector<CookiePartitionKey>& PartitionKeys() const {
+  const base::flat_set<CookiePartitionKey>& PartitionKeys() const {
     DCHECK(!contains_all_keys_);
     return keys_;
   }
@@ -95,7 +94,7 @@ class NET_EXPORT CookiePartitionKeyCollection {
   bool contains_all_keys_ = false;
   // If `contains_all_keys_` is true, `keys_` must be empty.
   // If `keys_` is not empty, then `contains_all_keys_` must be false.
-  std::vector<CookiePartitionKey> keys_;
+  base::flat_set<CookiePartitionKey> keys_;
 };
 
 }  // namespace net

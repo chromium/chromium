@@ -2749,11 +2749,10 @@ TEST_F(FlushableCookieManagerTest, DeletionFilterToInfo) {
             delete_info.domains_and_ips_to_ignore.end());
   EXPECT_FALSE(delete_info.value_for_testing.has_value());
   EXPECT_FALSE(delete_info.cookie_partition_key_collection.ContainsAllKeys());
-  EXPECT_EQ(1u,
-            delete_info.cookie_partition_key_collection.PartitionKeys().size());
-  EXPECT_EQ(
-      net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")),
-      delete_info.cookie_partition_key_collection.PartitionKeys()[0]);
+  EXPECT_THAT(
+      delete_info.cookie_partition_key_collection.PartitionKeys(),
+      testing::UnorderedElementsAre(net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://www.foo.com"))));
 }
 
 // A test class having cookie store with a persistent backing store. The cookie

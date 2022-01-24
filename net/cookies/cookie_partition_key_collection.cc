@@ -4,10 +4,13 @@
 
 #include "net/cookies/cookie_partition_key_collection.h"
 
+#include <vector>
+
 #include "base/barrier_callback.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_partition_key.h"
 
@@ -22,13 +25,12 @@ CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     CookiePartitionKeyCollection&& other) = default;
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    const CookiePartitionKey& key) {
-  keys_.push_back(key);
-}
+    const CookiePartitionKey& key)
+    : CookiePartitionKeyCollection(base::flat_set<CookiePartitionKey>({key})) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    const std::vector<CookiePartitionKey>& keys)
-    : keys_(keys) {}
+    base::flat_set<CookiePartitionKey> keys)
+    : keys_(std::move(keys)) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     bool contains_all_keys)
@@ -66,12 +68,11 @@ void CookiePartitionKeyCollection::FirstPartySetify(
               const net::CookiePartitionKey& key = key_and_owner.first;
               const absl::optional<SchemefulSite>& first_party_set_owner =
                   key_and_owner.second;
-              if (first_party_set_owner) {
-                keys.push_back(CookiePartitionKey::FromWire(
-                    first_party_set_owner.value(), key.nonce()));
-              } else {
-                keys.push_back(key);
-              }
+              keys.push_back(
+                  first_party_set_owner.has_value()
+                      ? CookiePartitionKey::FromWire(
+                            first_party_set_owner.value(), key.nonce())
+                      : key);
             }
             std::move(callback).Run(CookiePartitionKeyCollection(keys));
           },
