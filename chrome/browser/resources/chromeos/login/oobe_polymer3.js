@@ -27,6 +27,7 @@ import 'chrome://oobe/screens/common/guest_tos.m.js';
 import 'chrome://oobe/screens/common/hw_data_collection.m.js';
 import 'chrome://oobe/screens/common/managed_terms_of_service.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';
+import 'chrome://oobe/screens/common/multidevice_setup.m.js';
 import 'chrome://oobe/screens/common/offline_ad_login.m.js';
 import 'chrome://oobe/screens/common/oobe_reset.m.js';
 import 'chrome://oobe/screens/common/os_install.m.js';

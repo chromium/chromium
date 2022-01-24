@@ -29,6 +29,7 @@ group("polymer3_elements") {
     ":hw_data_collection_module",
     ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
+    ":multidevice_setup_module",
     ":offline_ad_login_module",
     ":oobe_reset_module",
     ":os_install_module",
@@ -49,7 +50,14 @@ group("closure_compile") {
   deps = [ "../../components:closure_compile" ]
 }
 
-js_type_check("closure_compile_module") {
+group("closure_compile_module") {
+  deps = [
+    ":closure_compile_module_local",
+    ":closure_compile_module_multidevice_setup",
+  ]
+}
+
+js_type_check("closure_compile_module_local") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
@@ -83,6 +91,16 @@ js_type_check("closure_compile_module") {
     ":tpm_error.m",
     ":user_creation.m",
     ":wrong_hwid.m",
+  ]
+}
+
+# TODO(crbug.com/1229130) - Figure out why multidevice_setup is requiring its
+# own js_type_check in order not to conflict with chrome externs.
+js_type_check("closure_compile_module_multidevice_setup") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":multidevice_setup.m",
   ]
 }
 
@@ -342,6 +360,22 @@ js_library("marketing_opt_in.m") {
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
   ]
   extra_deps = [ ":marketing_opt_in_module" ]
+}
+
+js_library("multidevice_setup.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/multidevice_setup.m.js" ]
+  deps = [
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:mojo_api.m",
+    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:multidevice_setup.m",
+    "//ui/webui/resources/cr_components/chromeos/multidevice_setup:multidevice_setup_delegate.m",
+  ]
+  extra_deps = [ ":multidevice_setup_module" ]
 }
 
 js_library("offline_ad_login.m") {
@@ -689,6 +723,14 @@ polymer_modulizer("managed_terms_of_service") {
 polymer_modulizer("marketing_opt_in") {
   js_file = "marketing_opt_in.js"
   html_file = "marketing_opt_in.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("multidevice_setup") {
+  js_file = "multidevice_setup.js"
+  html_file = "multidevice_setup.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

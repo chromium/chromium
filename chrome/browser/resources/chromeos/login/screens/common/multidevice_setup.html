@@ -4,19 +4,21 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/mojo_api.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.html">
+<link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_next_button.html">
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/throbber_notice.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/throbber_notice.html">
 
 <!--
   OOBE screen that wraps MultiDevice setup flow when displayed during the
@@ -103,6 +105,7 @@
     <multidevice-setup id="multideviceSetup"
         delegate="[[delegate_]]"
         on-setup-exited="onExitRequested_"
+        on-open-learn-more-webview-requested="onOpenLearnMoreWebviewRequested_"
         on-forward-button-focus-requested="onForwardButtonFocusRequested_"
         forward-button-text-id="{{forwardButtonTextId_}}"
         forward-button-disabled="{{forwardButtonDisabled_}}"
@@ -132,7 +135,8 @@
           </div>
           <webview id="multideviceHelpOverlayWebview"
               hidden$="[[isWebviewLoading_]]"
-              src="[[webviewSrc_]]"></webview>
+              src="[[webviewSrc_]]">
+          </webview>
         </div>
         <div class="multidevice-help-button-strip">
           <!-- TODO(crbug.com/894537): Use string that is specific to
@@ -146,4 +150,5 @@
       </div>
     </div>
   </template>
+  <script src="multidevice_setup.js"></script>
 </dom-module>

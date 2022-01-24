@@ -10,7 +10,6 @@ function loadCommonComponents() {
 // This inclusion is types-only. No actual code to execute.
 
 // <include src="../oobe_screen_assistant_optin_flow.js">
-// <include src="../multidevice_setup_screen.js">
 
 // <include src="components_[OOBE].js">
 // TODO(crbug.com/1111387) - Remove excessive logging.

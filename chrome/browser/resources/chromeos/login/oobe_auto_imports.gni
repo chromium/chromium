@@ -55,6 +55,7 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/keyboard_utils.html|keyboard",
   "chrome/browser/resources/chromeos/login/login_ui_tools.html|addSubmitListener",
   "chrome/browser/resources/gaia_auth_host/authenticator.html|Authenticator,AuthFlow,AuthMode,AuthParams,SUPPORTED_PARAMS",
+  "ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.html|MultiDeviceSetupDelegate",
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
