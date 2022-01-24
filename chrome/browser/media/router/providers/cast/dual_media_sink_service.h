@@ -46,7 +46,6 @@ class DualMediaSinkService {
 
   // Returns the lazily-created leaky singleton instance.
   static DualMediaSinkService* GetInstance();
-  static void SetInstanceForTest(DualMediaSinkService* instance_for_test);
 
   DualMediaSinkService(const DualMediaSinkService&) = delete;
   DualMediaSinkService& operator=(const DualMediaSinkService&) = delete;
@@ -111,8 +110,6 @@ class DualMediaSinkService {
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, InvalidDiscoveryDevice);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, NonOKResultCode);
   friend class MediaRouterDesktopTest;
-
-  static DualMediaSinkService* instance_for_test_;
 
   friend struct std::default_delete<DualMediaSinkService>;
 

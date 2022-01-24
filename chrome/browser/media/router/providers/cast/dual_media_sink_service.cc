@@ -19,24 +19,14 @@
 
 namespace media_router {
 
-DualMediaSinkService* DualMediaSinkService::instance_for_test_ = nullptr;
-
 // static
 DualMediaSinkService* DualMediaSinkService::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (instance_for_test_)
-    return instance_for_test_;
-
   static DualMediaSinkService* instance = new DualMediaSinkService();
   return instance;
 }
 
 // static
-void DualMediaSinkService::SetInstanceForTest(
-    DualMediaSinkService* instance_for_test) {
-  instance_for_test_ = instance_for_test;
-}
-
 DialMediaSinkServiceImpl* DualMediaSinkService::GetDialMediaSinkServiceImpl() {
   return dial_media_sink_service_->impl();
 }
