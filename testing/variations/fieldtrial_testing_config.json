@@ -4759,25 +4759,6 @@
             ]
         }
     ],
-    "OmniboxDocumentProviderNonDogfoodExperiments": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled ",
-                    "enable_features": [
-                        "OmniboxDocumentProvider"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPedalsBatch2NonEnglish": [
         {
             "platforms": [
