@@ -13,6 +13,7 @@ declare_args() {
   # You can set the variable 'build_with_internal_optimization_guide' to true
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
   # cause your build to fail if the internal files are missing.
+  # TODO(crbug/1290461): Re-enable Mac.
   build_with_internal_optimization_guide =
-      is_chrome_branded && !is_android && !is_ios && !is_fuchsia
+      is_chrome_branded && !is_android && !is_ios && !is_fuchsia && !is_mac
 }
