@@ -555,7 +555,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 
   size_t allocated_slots = 0;
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
-  partition_alloc::ScopedGuard guard(root_->lock_);
+  ::partition_alloc::internal::ScopedGuard guard(root_->lock_);
   for (int i = 0; i < count; i++) {
     // Thread cache fill should not trigger expensive operations, to not grab
     // the lock for a long time needlessly, but also to not inflate memory
@@ -634,7 +634,7 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
   // acquisitions can be expensive.
-  partition_alloc::ScopedGuard guard(root_->lock_);
+  ::partition_alloc::internal::ScopedGuard guard(root_->lock_);
   while (head) {
     uintptr_t slot_start = reinterpret_cast<uintptr_t>(head);
     head = head->GetNextForThreadCache(slot_size);

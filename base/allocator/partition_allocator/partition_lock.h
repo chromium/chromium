@@ -15,7 +15,8 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-namespace partition_alloc {
+namespace partition_alloc::internal {
+
 class LOCKABLE Lock {
  public:
   inline constexpr Lock();
@@ -101,8 +102,6 @@ class SCOPED_LOCKABLE ScopedGuard {
   Lock& lock_;
 };
 
-namespace internal {
-
 class SCOPED_LOCKABLE ScopedUnlockGuard {
  public:
   explicit ScopedUnlockGuard(Lock& lock) UNLOCK_FUNCTION(lock) : lock_(lock) {
@@ -114,21 +113,19 @@ class SCOPED_LOCKABLE ScopedUnlockGuard {
   Lock& lock_;
 };
 
-}  // namespace internal
-
 constexpr Lock::Lock() = default;
 
 // We want PartitionRoot to not have a global destructor, so this should not
 // have one.
 static_assert(std::is_trivially_destructible<Lock>::value, "");
 
-}  // namespace partition_alloc
+}  // namespace partition_alloc::internal
 
 namespace base {
 namespace internal {
 
-using PartitionLock = ::partition_alloc::Lock;
-using PartitionAutoLock = ::partition_alloc::ScopedGuard;
+using PartitionLock = ::partition_alloc::internal::Lock;
+using PartitionAutoLock = ::partition_alloc::internal::ScopedGuard;
 
 }  // namespace internal
 }  // namespace base

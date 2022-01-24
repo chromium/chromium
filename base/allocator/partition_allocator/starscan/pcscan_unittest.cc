@@ -327,7 +327,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
   {
     auto* value_root = ThreadSafePartitionRoot::FromAddrInFirstSuperpage(
         reinterpret_cast<uintptr_t>(value));
-    ::partition_alloc::ScopedGuard guard{value_root->lock_};
+    ::partition_alloc::internal::ScopedGuard guard{value_root->lock_};
 
     auto super_page = reinterpret_cast<uintptr_t>(value) & kSuperPageBaseMask;
     ASSERT_EQ(super_page,

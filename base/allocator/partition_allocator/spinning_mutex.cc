@@ -38,7 +38,7 @@
 
 #endif  // !defined(PA_HAS_FAST_MUTEX)
 
-namespace partition_alloc {
+namespace partition_alloc::internal {
 
 void SpinningMutex::Reinit() {
 #if !BUILDFLAG(IS_APPLE)
@@ -154,4 +154,4 @@ void SpinningMutex::LockSlowSpinLock() {
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
-}  // namespace partition_alloc
+}  // namespace partition_alloc::internal

@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
-namespace partition_alloc {
+namespace partition_alloc::internal {
 
 namespace {
 
@@ -122,4 +122,4 @@ TEST(PartitionLockPerfTest, WithCompetingThreads) {
   reporter.AddResult(kMetricLockUnlockLatency, 1e9 / timer.LapsPerSecond());
 }
 
-}  // namespace partition_alloc
+}  // namespace partition_alloc::internal

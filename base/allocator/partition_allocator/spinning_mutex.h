@@ -49,7 +49,8 @@ extern "C" {
 PA_WEAK void os_unfair_lock_lock(os_unfair_lock_t lock);
 PA_WEAK bool os_unfair_lock_trylock(os_unfair_lock_t lock);
 PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
-}
+
+}  // extern "C"
 
 #pragma clang diagnostic pop
 
@@ -59,7 +60,7 @@ PA_WEAK void os_unfair_lock_unlock(os_unfair_lock_t lock);
 #include <lib/sync/mutex.h>
 #endif
 
-namespace partition_alloc {
+namespace partition_alloc::internal {
 
 // The behavior of this class depends on whether PA_HAS_FAST_MUTEX is defined.
 // 1. When it is defined:
@@ -330,6 +331,6 @@ ALWAYS_INLINE void SpinningMutex::LockSlow() {
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
-}  // namespace partition_alloc
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SPINNING_MUTEX_H_

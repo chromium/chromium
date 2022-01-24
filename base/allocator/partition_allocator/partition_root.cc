@@ -539,7 +539,7 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
              (SystemPageSize() == (size_t{1} << 14)));
 #endif
 
-    ::partition_alloc::ScopedGuard guard{lock_};
+    ::partition_alloc::internal::ScopedGuard guard{lock_};
     if (initialized)
       return;
 
@@ -667,7 +667,7 @@ PartitionRoot<thread_safe>::~PartitionRoot() {
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
 #if defined(PA_THREAD_CACHE_SUPPORTED)
-  ::partition_alloc::ScopedGuard guard{lock_};
+  ::partition_alloc::internal::ScopedGuard guard{lock_};
   PA_CHECK(!with_thread_cache);
   // By the time we get there, there may be multiple threads created in the
   // process. Since `with_thread_cache` is accessed without a lock, it can
@@ -885,7 +885,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     bool success = false;
     bool tried_in_place_for_direct_map = false;
     {
-      ::partition_alloc::ScopedGuard guard{old_root->lock_};
+      ::partition_alloc::internal::ScopedGuard guard{old_root->lock_};
       // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
       PA_DCHECK(IsValidSlotSpan(slot_span));
       old_usable_size = slot_span->GetUsableSize(old_root);
@@ -931,7 +931,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   {
-    ::partition_alloc::ScopedGuard guard{lock_};
+    ::partition_alloc::internal::ScopedGuard guard{lock_};
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
     // takes snapshot of all allocated pages, decommitting pages here (even
     // under the lock) is racy.
@@ -1008,7 +1008,7 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   // Collect data with the lock held, cannot allocate or call third-party code
   // below.
   {
-    ::partition_alloc::ScopedGuard guard{lock_};
+    ::partition_alloc::internal::ScopedGuard guard{lock_};
     PA_DCHECK(total_size_of_allocated_bytes <= max_size_of_allocated_bytes);
 
     stats.total_mmapped_bytes =
@@ -1106,7 +1106,7 @@ void PartitionRoot<thread_safe>::DeleteForTesting(
 
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
-  ::partition_alloc::ScopedGuard guard{lock_};
+  ::partition_alloc::internal::ScopedGuard guard{lock_};
   max_size_of_allocated_bytes = total_size_of_allocated_bytes;
   max_size_of_committed_pages.store(total_size_of_committed_pages);
 }

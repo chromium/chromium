@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace partition_alloc {
+namespace partition_alloc::internal {
 namespace {
 
 class LambdaThreadDelegate : public base::PlatformThread::Delegate {
@@ -163,4 +163,4 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
 #endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 
 }  // namespace
-}  // namespace partition_alloc
+}  // namespace partition_alloc::internal

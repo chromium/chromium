@@ -16,17 +16,17 @@ class RandomGenerator {
   constexpr RandomGenerator() {}
 
   uint32_t RandomValue() {
-    ::partition_alloc::ScopedGuard guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     return GetGenerator()->RandUint32();
   }
 
   void SeedForTesting(uint64_t seed) {
-    ::partition_alloc::ScopedGuard guard(lock_);
+    ::partition_alloc::internal::ScopedGuard guard(lock_);
     GetGenerator()->ReseedForTesting(seed);
   }
 
  private:
-  ::partition_alloc::Lock lock_ = {};
+  ::partition_alloc::internal::Lock lock_ = {};
   bool initialized_ GUARDED_BY(lock_) = false;
   union {
     base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
