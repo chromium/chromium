@@ -180,10 +180,7 @@ int SystemHostResolverCall(const std::string& host,
     !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_ANDROID))
   DnsReloaderMaybeReload();
 #endif
-  absl::optional<AddressInfo> ai;
-  int err = 0;
-  int os_error = 0;
-  std::tie(ai, err, os_error) = AddressInfo::Get(host, hints);
+  auto [ai, err, os_error] = AddressInfo::Get(host, hints);
   bool should_retry = false;
   // If the lookup was restricted (either by address family, or address
   // detection), and the results where all localhost of a single family,

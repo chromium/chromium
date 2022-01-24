@@ -43,9 +43,7 @@ using MetricsTestParamTuple = std::tuple<bool, HttpssvcFeatureTuple>;
 // Create a comma-separated list of |domains| with the given |quirks|.
 std::string FlattenDomainList(const std::vector<std::string>& domains,
                               DomainListQuirksTuple quirks) {
-  int num_domains;
-  bool leading_comma, trailing_comma;
-  std::tie(num_domains, leading_comma, trailing_comma) = quirks;
+  auto [num_domains, leading_comma, trailing_comma] = quirks;
 
   CHECK_EQ(static_cast<size_t>(num_domains), domains.size());
   std::string flattened = base::JoinString(domains, ",");
@@ -111,11 +109,8 @@ class HttpssvcDomainParsingTest
     : public ::testing::TestWithParam<ParsingTestParamTuple> {
  public:
   void SetUp() override {
-    DomainListQuirksTuple domain_quirks_experimental;
-    DomainListQuirksTuple domain_quirks_control;
-    HttpssvcFeatureTuple httpssvc_feature;
-    std::tie(domain_quirks_experimental, domain_quirks_control,
-             httpssvc_feature) = GetParam();
+    auto [domain_quirks_experimental, domain_quirks_control, httpssvc_feature] =
+        GetParam();
 
     expected_experiment_domains_ = GenerateDomainList(
         "experiment", std::get<0>(domain_quirks_experimental));
