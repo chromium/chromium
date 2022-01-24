@@ -15,6 +15,10 @@
 namespace optimization_guide {
 
 // The type of annotation that is being done on the given input.
+//
+// Each of these is used in UMA histograms so please update the variants there
+// when any changes are made.
+// //tools/metrics/histograms/metadata/optimization/histograms.xml
 enum class AnnotationType {
   kUnknown,
 

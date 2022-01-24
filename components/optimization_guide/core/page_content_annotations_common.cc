@@ -13,6 +13,9 @@
 
 namespace optimization_guide {
 
+// Each of these string values is used in UMA histograms so please update the
+// variants there when any changes are made.
+// //tools/metrics/histograms/metadata/optimization/histograms.xml
 std::string AnnotationTypeToString(AnnotationType type) {
   switch (type) {
     case AnnotationType::kUnknown:
