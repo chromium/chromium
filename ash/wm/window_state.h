@@ -153,7 +153,11 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool CanMaximize() const;
   bool CanMinimize() const;
   bool CanResize() const;
-  bool CanSnap() const;
+  // CanSnap() checks if the window can be snapped on the display which
+  // currently the window is on, whereas CanSnapOnDisplay() checks the
+  // snappability on the given |display|.
+  bool CanSnap();
+  bool CanSnapOnDisplay(display::Display display) const;
   bool CanActivate() const;
 
   // Returns true if the window has restore bounds.
@@ -505,6 +509,8 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
                              const gfx::Rect& old_bounds,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
+
+  bool CanUnresizableSnapOnDisplay(display::Display display) const;
 
   // The owner of this window settings.
   aura::Window* window_;

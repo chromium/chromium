@@ -44,6 +44,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(chromeos::WindowStateType,
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(bool, kMinimizeOnBackKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPipOriginalWindowKey, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(float, kPipSnapFractionKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size,
+                                   kUnresizableSnappedSizeKey,
+                                   nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRenderTitleAreaProperty, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
                                    kRestoreBoundsOverrideKey,

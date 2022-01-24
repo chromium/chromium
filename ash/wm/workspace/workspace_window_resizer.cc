@@ -1597,7 +1597,7 @@ WorkspaceWindowResizer::SnapType WorkspaceWindowResizer::GetSnapType(
   switch (snap_type) {
     case SnapType::kPrimary:
     case SnapType::kSecondary:
-      if (!window_state()->CanSnap())
+      if (!window_state()->CanSnapOnDisplay(display))
         snap_type = SnapType::kNone;
       break;
     case SnapType::kMaximize:

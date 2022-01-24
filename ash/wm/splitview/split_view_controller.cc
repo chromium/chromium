@@ -795,8 +795,11 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
   if (!ShouldAllowSplitView())
     return false;
 
-  if (!WindowState::Get(window)->CanSnap())
+  if (!WindowState::Get(window)->CanSnapOnDisplay(
+          display::Screen::GetScreen()->GetDisplayNearestWindow(
+              const_cast<aura::Window*>(root_window_)))) {
     return false;
+  }
 
   // Windows created by window restore are not activatable while being restored.
   // However, we still want to be able to snap these windows at this point.
@@ -1075,6 +1078,20 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
         ++window_size;
     } else {
       window_size = minimum;
+    }
+  }
+
+  if (window_for_minimum_size && !in_tablet) {
+    // Apply the unresizable snapping constraint to the snapped bounds if we're
+    // in the clamshell mode.
+    const gfx::Size* preferred_size =
+        window_for_minimum_size->GetProperty(kUnresizableSnappedSizeKey);
+    if (preferred_size &&
+        !WindowState::Get(window_for_minimum_size)->CanResize()) {
+      if (horizontal && preferred_size->width() > 0)
+        window_size = preferred_size->width();
+      if (!horizontal && preferred_size->height() > 0)
+        window_size = preferred_size->height();
     }
   }
 

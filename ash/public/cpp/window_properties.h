@@ -129,6 +129,15 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<float*>* const
     kPipSnapFractionKey;
 
+// A property key which stores the preferred size used when the unresizable
+// window is snapped in clamshell mode. Setting this property can make the
+// window snappable even if it's unresizable. Please note that the window
+// doesn't become snappable if the width (height if in the portrait snap mode)
+// of the property value is bigger than one of the workspace or is equal to 0.
+// Also, setting the zero size (width=0 and height=0) causes DCHECK failure.
+ASH_PUBLIC_EXPORT extern const aura::WindowProperty<gfx::Size*>* const
+    kUnresizableSnappedSizeKey;
+
 // Maps to ws::mojom::WindowManager::kRenderParentTitleArea_Property.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
     kRenderTitleAreaProperty;
