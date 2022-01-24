@@ -763,6 +763,7 @@ public final class Fido2Api {
         byte[] clientDataJson = null;
         byte[] authenticatorData = null;
         byte[] signature = null;
+        byte[] userHandle = null;
 
         while (parcel.dataPosition() < endPosition) {
             header = readHeader(parcel);
@@ -781,6 +782,10 @@ public final class Fido2Api {
 
                 case 5:
                     signature = parcel.createByteArray();
+                    break;
+
+                case 6:
+                    userHandle = parcel.createByteArray();
                     break;
 
                 default:
@@ -803,6 +808,7 @@ public final class Fido2Api {
         GetAssertionAuthenticatorResponse response = new GetAssertionAuthenticatorResponse();
         response.info = info;
         response.signature = signature;
+        response.userHandle = userHandle;
 
         return response;
     }

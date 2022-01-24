@@ -751,6 +751,7 @@ public class Fido2CredentialRequestTest {
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
+
     @Test
     @SmallTest
     public void testGetAssertionWithUvmRequestedWithoutUvmResponded_success() {
@@ -786,6 +787,23 @@ public class Fido2CredentialRequestTest {
         Assert.assertTrue(response.echoUserVerificationMethods);
         Fido2ApiTestHelper.validateGetAssertionResponse(response);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertionWithUserId_success() {
+        mWindowAndroid.setResponseIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUserId());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mRequest.setWindowForTesting(mWindowAndroid));
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        GetAssertionAuthenticatorResponse response = mCallback.getGetAssertionResponse();
+        Assert.assertArrayEquals(response.userHandle, Fido2ApiTestHelper.TEST_USER_HANDLE);
     }
 
     @Test
