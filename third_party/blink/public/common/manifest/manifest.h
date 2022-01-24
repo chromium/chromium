@@ -153,9 +153,9 @@ class BLINK_COMMON_EXPORT Manifest {
 
     bool operator==(const TranslationItem& other) const;
 
-    absl::optional<std::u16string> name;
-    absl::optional<std::u16string> short_name;
-    absl::optional<std::u16string> description;
+    absl::optional<std::string> name;
+    absl::optional<std::string> short_name;
+    absl::optional<std::string> description;
   };
 };
 

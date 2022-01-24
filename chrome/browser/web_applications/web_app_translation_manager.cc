@@ -27,15 +27,13 @@ LocaleOverrides ConvertTranslationItemToLocaleOverrides(
     blink::Manifest::TranslationItem translation) {
   LocaleOverrides locale_overrides;
   if (translation.name) {
-    locale_overrides.set_name(base::UTF16ToUTF8(translation.name.value()));
+    locale_overrides.set_name(translation.name.value());
   }
   if (translation.short_name) {
-    locale_overrides.set_short_name(
-        base::UTF16ToUTF8(translation.short_name.value()));
+    locale_overrides.set_short_name(translation.short_name.value());
   }
   if (translation.description) {
-    locale_overrides.set_description(
-        base::UTF16ToUTF8(translation.description.value()));
+    locale_overrides.set_description(translation.description.value());
   }
   return locale_overrides;
 }
@@ -44,18 +42,18 @@ blink::Manifest::TranslationItem ConvertLocaleOverridesToTranslationItem(
     LocaleOverrides locale_overrides) {
   blink::Manifest::TranslationItem translation_item;
 
-  std::u16string name = base::UTF8ToUTF16(locale_overrides.name());
-  translation_item.name =
-      name.empty() ? absl::nullopt : absl::make_optional(name);
+  if (locale_overrides.has_name()) {
+    translation_item.name = locale_overrides.name();
+  }
 
-  std::u16string short_name = base::UTF8ToUTF16(locale_overrides.short_name());
-  translation_item.short_name =
-      short_name.empty() ? absl::nullopt : absl::make_optional(short_name);
+  if (locale_overrides.has_short_name()) {
+    translation_item.short_name = locale_overrides.short_name();
+  }
 
-  std::u16string description =
-      base::UTF8ToUTF16(locale_overrides.description());
-  translation_item.description =
-      description.empty() ? absl::nullopt : absl::make_optional(description);
+  if (locale_overrides.has_description()) {
+    translation_item.description = locale_overrides.description();
+  }
+
   return translation_item;
 }
 

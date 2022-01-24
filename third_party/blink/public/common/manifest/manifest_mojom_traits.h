@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -30,6 +31,14 @@ inline absl::optional<base::StringPiece16> TruncateOptionalString16(
     return absl::nullopt;
 
   return TruncateString16(*string);
+}
+
+inline absl::optional<base::StringPiece16> ConvertAndTruncateOptionalString(
+    const absl::optional<std::string>& string) {
+  if (!string)
+    return absl::nullopt;
+
+  return TruncateOptionalString16(base::UTF8ToUTF16(string.value()));
 }
 
 }  // namespace internal
@@ -212,17 +221,17 @@ struct BLINK_COMMON_EXPORT
                  ::blink::Manifest::TranslationItem> {
   static absl::optional<base::StringPiece16> name(
       const ::blink::Manifest::TranslationItem& translation) {
-    return internal::TruncateOptionalString16(translation.name);
+    return internal::ConvertAndTruncateOptionalString(translation.name);
   }
 
   static absl::optional<base::StringPiece16> short_name(
       const ::blink::Manifest::TranslationItem& translation) {
-    return internal::TruncateOptionalString16(translation.short_name);
+    return internal::ConvertAndTruncateOptionalString(translation.short_name);
   }
 
   static absl::optional<base::StringPiece16> description(
       const ::blink::Manifest::TranslationItem& translation) {
-    return internal::TruncateOptionalString16(translation.description);
+    return internal::ConvertAndTruncateOptionalString(translation.description);
   }
 
   static bool Read(blink::mojom::ManifestTranslationItemDataView data,
