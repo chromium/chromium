@@ -4563,7 +4563,13 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   }
 
   if (shader_spec == SH_WEBGL2_SPEC) {
-    resources.ANGLE_base_vertex_base_instance =
+    // The gl_BaseVertex/BaseInstance shader builtins is disabled in ANGLE for
+    // WebGL As they are removed in
+    // https://github.com/KhronosGroup/WebGL/pull/3278
+    // To re-enable the shader
+    // builtins add back SH_EMULATE_GL_BASE_VERTEX_BASE_INSTANCE to
+    // ShCompileOptions in ANGLE
+    resources.ANGLE_base_vertex_base_instance_shader_builtin =
         (draw_instanced_base_vertex_base_instance_explicitly_enabled_ &&
          features().webgl_draw_instanced_base_vertex_base_instance) ||
         (multi_draw_instanced_base_vertex_base_instance_explicitly_enabled_ &&
