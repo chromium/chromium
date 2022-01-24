@@ -4595,27 +4595,6 @@
             ]
         }
     ],
-    "MojoSharedMemoryChannelLinux": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "MojoLinuxChannelSharedMemEfdZeroOnWake": "true",
-                        "MojoLinuxChannelSharedMemPages": "2"
-                    },
-                    "enable_features": [
-                        "MojoLinuxChannelSharedMem"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoStructuredMetrics": [
         {
             "platforms": [
