@@ -4648,24 +4648,6 @@
             ]
         }
     ],
-    "MultipleBlinkIsolates": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "mode": "per_render_process_host"
-                    },
-                    "enable_features": [
-                        "MBIMode"
-                    ]
-                }
-            ]
-        }
-    ],
     "MuteNotificationSnoozeAction": [
         {
             "platforms": [
