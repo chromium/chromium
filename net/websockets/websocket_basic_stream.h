@@ -39,6 +39,53 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
  public:
   typedef WebSocketMaskingKey (*WebSocketMaskingKeyGeneratorFunction)();
 
+  enum class BufferSize : uint8_t {
+    kSmall,
+    kLarge,
+  };
+
+  // A class that calculates whether the associated WebSocketBasicStream
+  // should use a small buffer or large buffer, given the timing information
+  // or Read calls. This class is public for testing.
+  class NET_EXPORT_PRIVATE BufferSizeManager final {
+   public:
+    BufferSizeManager();
+    BufferSizeManager(const BufferSizeManager&) = delete;
+    BufferSizeManager& operator=(const BufferSizeManager&) = delete;
+    ~BufferSizeManager();
+
+    // Called when the associated WebSocketBasicStream starts reading data
+    // into a buffer.
+    void OnRead(base::TimeTicks now);
+
+    // Called when the Read operation completes. `size` must be positive.
+    void OnReadComplete(base::TimeTicks now, int size);
+
+    // Returns the appropriate buffer size the associated WebSocketBasicStream
+    // should use.
+    BufferSize buffer_size() const { return buffer_size_; }
+
+    // Set the rolling average window for tests.
+    void set_window_for_test(size_t size) { rolling_average_window_ = size; }
+
+   private:
+    // This keeps the best read buffer size.
+    BufferSize buffer_size_ = BufferSize::kSmall;
+
+    // The number of results to calculate the throughput. This is a variable so
+    // that unittests can set other values.
+    size_t rolling_average_window_ = 100;
+
+    // This keeps the timestamps to calculate the throughput.
+    base::queue<base::TimeTicks> read_start_timestamps_;
+
+    // The sum of the last few read size.
+    int rolling_byte_total_ = 0;
+
+    // This keeps the read size.
+    base::queue<int> recent_read_sizes_;
+  };
+
   // Adapter that allows WebSocketBasicStream to use
   // either a TCP/IP or TLS socket, or an HTTP/2 stream.
   class Adapter {
@@ -191,6 +238,12 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   // The extensions negotiated with the remote server.
   const std::string extensions_;
 
+  // This is used for adaptive read buffer size.
+  BufferSizeManager buffer_size_manager_;
+
+  // This keeps the current read buffer size.
+  BufferSize buffer_size_ = buffer_size_manager_.buffer_size();
+
   // This can be overridden in tests to make the output deterministic. We don't
   // use a Callback here because a function pointer is faster and good enough
   // for our purposes.
@@ -199,15 +252,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   // User callback saved for asynchronous writes and reads.
   CompletionOnceCallback write_callback_;
   CompletionOnceCallback read_callback_;
-
-  // This keeps the timestamps to calculate the throughput.
-  base::queue<base::TimeTicks> read_start_timestamps_;
-
-  // The sum of the last few read size.
-  int rolling_byte_total_ = 0;
-
-  // This keeps the read size.
-  base::queue<int> recent_read_sizes_;
 };
 
 }  // namespace net

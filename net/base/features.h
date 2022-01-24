@@ -382,21 +382,6 @@ NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
 // Android.
 NET_EXPORT extern const base::Feature kRecordRadioWakeupTrigger;
 
-// When enabled, the size of read buffer in WebSocket is changed dynamically
-// according to the type of traffic, and a small read buffer size can be set for
-// performance tests.
-NET_EXPORT extern const base::Feature kSwitchWebSocketReadBufferSize;
-NET_EXPORT extern const base::FeatureParam<int> kSmallReadBufferSize;
-
-// When enabled, the rolling average window in WebSocket can be changed for
-// performance tests.
-NET_EXPORT extern const base::Feature kSwitchWebSocketThroughputWindow;
-NET_EXPORT extern const base::FeatureParam<int> kRollingAverageWindow;
-
-// When enabled, certain operations in the HTTP cache are brokerd to allow
-// the network process to be sandboxed.
-NET_EXPORT extern const base::Feature kSandboxHttpCache;
-
 }  // namespace features
 }  // namespace net
 

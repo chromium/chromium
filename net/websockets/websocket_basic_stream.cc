@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
-#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/client_socket_handle.h"
@@ -59,7 +58,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // WebSocketFrameHeader::payload_length in websocket_frame.h.
 constexpr uint64_t kMaxControlFramePayload = 125;
 
-// The number of bytes to attempt to read at a time.
+// The number of bytes to attempt to read at a time. It's used only for high
+// throughput connections.
 // TODO(ricea): See if there is a better number or algorithm to fulfill our
 // requirements:
 //  1. We would like to use minimal memory on low-bandwidth or idle connections
@@ -75,6 +75,10 @@ constexpr size_t kLargeReadBufferSize = 32 * 1024;
 // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.
 constexpr size_t kLargeReadBufferSize = 131000;
 #endif
+
+// The number of bytes to attempt to read at a time. It's set as an initial read
+// buffer size and used for low throughput connections.
+constexpr size_t kSmallReadBufferSize = 1000;
 
 // The threshold to decide whether to switch the read buffer size.
 constexpr double kThresholdInBytesPerSecond = 1200 * 1000;
@@ -101,34 +105,40 @@ int CalculateSerializedSizeAndTurnOnMaskBit(
   return static_cast<int>(total_size);
 }
 
-// Shows whether the size switching is on or not.
-bool ShouldSwitchReadBufferSize() {
-  static bool is_enabled =
-      base::FeatureList::IsEnabled(features::kSwitchWebSocketReadBufferSize);
-  return is_enabled;
+}  // namespace
+
+WebSocketBasicStream::BufferSizeManager::BufferSizeManager() = default;
+
+WebSocketBasicStream::BufferSizeManager::~BufferSizeManager() = default;
+
+void WebSocketBasicStream::BufferSizeManager::OnRead(base::TimeTicks now) {
+  read_start_timestamps_.push(now);
 }
 
-// Returns the number of bytes to attempt to read at a time. If the switching
-// algorithm is enabled, a small size is used for low throughput connections
-// instead of a large size.
-size_t GetSmallReadBufferSize() {
-  if (ShouldSwitchReadBufferSize()) {
-    static size_t small_read_buffer_size =
-        static_cast<size_t>(features::kSmallReadBufferSize.Get());
-    return small_read_buffer_size;
-  } else {
-    return kLargeReadBufferSize;
+void WebSocketBasicStream::BufferSizeManager::OnReadComplete(
+    base::TimeTicks now,
+    int size) {
+  DCHECK_GT(size, 0);
+  // This cannot overflow because the result is at most
+  // kLargeReadBufferSize*rolling_average_window_.
+  rolling_byte_total_ += size;
+  recent_read_sizes_.push(size);
+  DCHECK_LE(read_start_timestamps_.size(), rolling_average_window_);
+  if (read_start_timestamps_.size() == rolling_average_window_) {
+    DCHECK_EQ(read_start_timestamps_.size(), recent_read_sizes_.size());
+    base::TimeDelta duration = now - read_start_timestamps_.front();
+    base::TimeDelta threshold_duration =
+        base::Seconds(rolling_byte_total_ / kThresholdInBytesPerSecond);
+    read_start_timestamps_.pop();
+    rolling_byte_total_ -= recent_read_sizes_.front();
+    recent_read_sizes_.pop();
+    if (threshold_duration < duration) {
+      buffer_size_ = BufferSize::kSmall;
+    } else {
+      buffer_size_ = BufferSize::kLarge;
+    }
   }
 }
-
-// Get the number of the results to calculate the throughput.
-size_t GetRollingAverageWindow() {
-  static size_t rolling_average_window =
-      static_cast<size_t>(features::kRollingAverageWindow.Get());
-  return rolling_average_window;
-}
-
-}  // namespace
 
 WebSocketBasicStream::WebSocketBasicStream(
     std::unique_ptr<Adapter> connection,
@@ -136,7 +146,7 @@ WebSocketBasicStream::WebSocketBasicStream(
     const std::string& sub_protocol,
     const std::string& extensions)
     : read_buffer_(
-          base::MakeRefCounted<IOBufferWithSize>(GetSmallReadBufferSize())),
+          base::MakeRefCounted<IOBufferWithSize>(kSmallReadBufferSize)),
       target_read_buffer_size_(read_buffer_->size()),
       connection_(std::move(connection)),
       http_read_buffer_(http_read_buffer),
@@ -254,14 +264,13 @@ int WebSocketBasicStream::ReadEverything(
 
   // Run until socket stops giving us data or we get some frames.
   while (true) {
-    if (ShouldSwitchReadBufferSize()) {
-      if (target_read_buffer_size_ !=
-          static_cast<size_t>(read_buffer_->size())) {
-        read_buffer_ =
-            base::MakeRefCounted<IOBufferWithSize>(target_read_buffer_size_);
-      }
-      read_start_timestamps_.push(base::TimeTicks::Now());
+    if (buffer_size_manager_.buffer_size() != buffer_size_) {
+      read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(
+          buffer_size_manager_.buffer_size() == BufferSize::kSmall
+              ? kSmallReadBufferSize
+              : kLargeReadBufferSize);
     }
+    buffer_size_manager_.OnRead(base::TimeTicks::Now());
 
     // base::Unretained(this) here is safe because net::Socket guarantees not to
     // call any callbacks after Disconnect(), which we call from the destructor.
@@ -335,25 +344,7 @@ int WebSocketBasicStream::HandleReadResult(
   if (result == 0)
     return ERR_CONNECTION_CLOSED;
 
-  if (ShouldSwitchReadBufferSize()) {
-    // This cannot overflow because the result is at most
-    // kLargeReadBufferSize*100.
-    rolling_byte_total_ += result;
-    recent_read_sizes_.push(result);
-    if (read_start_timestamps_.size() >= GetRollingAverageWindow()) {
-      base::TimeDelta duration =
-          base::TimeTicks::Now() - read_start_timestamps_.front();
-      base::TimeDelta threshold_duration =
-          base::Seconds(rolling_byte_total_ / kThresholdInBytesPerSecond);
-      rolling_byte_total_ -= recent_read_sizes_.front();
-      DCHECK_EQ(recent_read_sizes_.size(), read_start_timestamps_.size());
-      recent_read_sizes_.pop();
-      read_start_timestamps_.pop();
-      target_read_buffer_size_ = threshold_duration < duration
-                                     ? GetSmallReadBufferSize()
-                                     : kLargeReadBufferSize;
-    }
-  }
+  buffer_size_manager_.OnReadComplete(base::TimeTicks::Now(), result);
 
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
   if (!parser_.Decode(read_buffer_->data(), result, &frame_chunks))
