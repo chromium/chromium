@@ -164,6 +164,13 @@ const base::Feature kSyncUndecryptablePasswordsLinux = {
     "SyncUndecryptablePasswordsLinux", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables the experiment to automatically submit a form after filling by
+// TouchToFill
+const base::Feature kTouchToFillPasswordSubmission = {
+    "TouchToFillPasswordSubmission", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {

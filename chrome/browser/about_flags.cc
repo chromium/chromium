@@ -7203,6 +7203,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBiometricReauthForPasswordFillingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
+    {"touch-to-fill-password-submission",
+     flag_descriptions::kTouchToFillPasswordSubmissionName,
+     flag_descriptions::kTouchToFillPasswordSubmissionDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kTouchToFillPasswordSubmission)},
+
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
