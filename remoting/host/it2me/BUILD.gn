@@ -91,6 +91,7 @@ source_set("common") {
     "//remoting/signaling",
     "//services/network/public/cpp:cpp",
   ]
+
   if (is_linux && !is_chromeos_lacros) {
     deps += [
       "//build/config/linux/gtk",

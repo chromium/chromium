@@ -13,6 +13,7 @@ include_rules = [
   "+mojo/core/embedder",
   "+net",
   "+remoting/codec",
+  "+remoting/host/chromeos",
   "+remoting/protocol",
   "+remoting/signaling",
   "+remoting/tools",

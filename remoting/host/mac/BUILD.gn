@@ -59,8 +59,8 @@ executable("remoting_me2me_host_service") {
     ":constants",
     "//base",
     "//remoting/base",
-    "//remoting/host/base",
     "//remoting/host:remoting_version",
+    "//remoting/host/base",
   ]
 }
 

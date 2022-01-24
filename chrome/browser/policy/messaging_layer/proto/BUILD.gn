@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("session_affiliated_user") {
+  sources = [ "synced/session_affiliated_user.proto" ]
+}
+
+proto_library("crd_event_proto") {
+  sources = [ "synced/crd_event.proto" ]
+  deps = [ ":session_affiliated_user" ]
+}

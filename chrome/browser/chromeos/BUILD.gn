@@ -185,6 +185,7 @@ source_set("chromeos") {
     "//chrome/browser/nearby_sharing/common",
     "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/policy:onc",
+    "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
@@ -4908,7 +4909,9 @@ proto_library("user_activity_event_proto") {
 proto_library("add_remove_user_event_proto") {
   sources =
       [ "../policy/messaging_layer/proto/synced/add_remove_user_event.proto" ]
-  deps = [ ":session_affiliated_user" ]
+  deps = [
+    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
+  ]
 }
 
 proto_library("device_configuration_proto") {
@@ -4934,17 +4937,9 @@ proto_library("print_job_info_proto") {
 proto_library("login_logout_event_proto") {
   sources =
       [ "../policy/messaging_layer/proto/synced/login_logout_event.proto" ]
-  deps = [ ":session_affiliated_user" ]
-}
-
-proto_library("crd_event_proto") {
-  sources = [ "../policy/messaging_layer/proto/synced/crd_event.proto" ]
-  deps = [ ":session_affiliated_user" ]
-}
-
-proto_library("session_affiliated_user") {
-  sources =
-      [ "../policy/messaging_layer/proto/synced/session_affiliated_user.proto" ]
+  deps = [
+    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
+  ]
 }
 
 proto_library("user_event_reporter_testing_record_proto") {
