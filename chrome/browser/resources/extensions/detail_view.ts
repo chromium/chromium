@@ -303,8 +303,24 @@ export class ExtensionsDetailViewElement extends
         this.hasRuntimeHostPermissions_();
   }
 
+  private getNoPermissionsString_(): string {
+    const showPermissionsAndSiteAccessStrings =
+        this.enableEnhancedSiteControls && !this.showSiteAccessContent_();
+    return loadTimeData.getString(
+        showPermissionsAndSiteAccessStrings ?
+            'itemPermissionsAndSiteAccessEmpty' :
+            'itemPermissionsEmpty');
+  }
+
   private hasRuntimeHostPermissions_(): boolean {
     return !!this.data.permissions.runtimeHostPermissions;
+  }
+
+  // Returns whether the site access section should be shown. This includes the
+  // "no site access" message shown in the section if
+  // |enableEnhancedSiteControls| is not enabled.
+  private showSiteAccessSection_(): boolean {
+    return !this.enableEnhancedSiteControls || this.showSiteAccessContent_();
   }
 
   private showSiteAccessContent_(): boolean {

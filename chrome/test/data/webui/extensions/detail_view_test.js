@@ -6,6 +6,7 @@
 
 import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -22,6 +23,8 @@ extension_detail_view_tests.TestNames = {
   ClickableElements: 'clickable elements',
   Indicator: 'indicator',
   Warnings: 'warnings',
+  NoSiteAccessWithEnhancedSiteControls:
+      'no site access with enhanced site controls',
 };
 
 suite(extension_detail_view_tests.suiteName, function() {
@@ -116,7 +119,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     expectEquals(
         2,
         item.shadowRoot.querySelector('#permissions-list')
-            .querySelectorAll('li')
+            .querySelectorAll('li:not([hidden])')
             .length);
     expectFalse(testIsVisible('#no-permissions'));
     expectFalse(testIsVisible('#host-access'));
@@ -475,4 +478,40 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#update-required-warning', false);
     testWarningVisible('#allowlist-warning', false);
   });
+
+  test(
+      assert(extension_detail_view_tests.TestNames
+                 .NoSiteAccessWithEnhancedSiteControls),
+      function() {
+        const testIsVisible = isChildVisible.bind(null, item);
+
+        // Ensure that if the enableEnhancedSiteControls flag is enabled, then
+        // the no site access message is in the permissions section and not in
+        // the site access section.
+        item.set('data.dependentExtensions', []);
+        item.set('data.permissions', {simplePermissions: []});
+        item.enableEnhancedSiteControls = true;
+        flush();
+
+        expectTrue(testIsVisible('#no-permissions'));
+        expectTrue(item.$['no-permissions'].textContent.includes(
+            loadTimeData.getString('itemPermissionsAndSiteAccessEmpty')));
+        expectFalse(testIsVisible('#no-site-access'));
+
+        item.set(
+            'data.permissions',
+            {simplePermissions: ['Permission 1', 'Permission 2']});
+        flush();
+
+        // The permissions list should contain the above 2 permissions as well
+        // as an item for no additional site permissions.
+        expectTrue(testIsVisible('#permissions-list'));
+        expectEquals(
+            3,
+            item.shadowRoot.querySelector('#permissions-list')
+                .querySelectorAll('li:not([hidden])')
+                .length);
+        expectFalse(testIsVisible('#no-permissions'));
+        expectTrue(testIsVisible('#permissions-list li:last-of-type'));
+      });
 });

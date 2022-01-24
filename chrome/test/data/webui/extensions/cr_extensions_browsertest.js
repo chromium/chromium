@@ -291,6 +291,13 @@ TEST_F('CrExtensionsDetailViewTest', 'Warnings', function() {
   this.runMochaTest(extension_detail_view_tests.TestNames.Warnings);
 });
 
+TEST_F(
+    'CrExtensionsDetailViewTest', 'NoSiteAccessWithEnhancedSiteControls',
+    function() {
+      this.runMochaTest(extension_detail_view_tests.TestNames
+                            .NoSiteAccessWithEnhancedSiteControls);
+    });
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 

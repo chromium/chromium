@@ -296,7 +296,7 @@
       </div>
       <div class="section-content">
         <span id="no-permissions" hidden$="[[hasPermissions_(data.*)]]">
-          $i18n{itemPermissionsEmpty}
+          [[getNoPermissionsString_(data.*, enableEnhancedSiteControls)]]
         </span>
         <ul id="permissions-list"
             hidden$="[[!data.permissions.simplePermissions.length]]">
@@ -311,37 +311,44 @@
               </ul>
             </li>
           </template>
+          <li hidden$="[[showSiteAccessSection_(data.*,
+              enableEnhancedSiteControls)]]">
+            $i18n{itemSiteAccessEmpty}
+          </li>
         </ul>
       </div>
     </div>
-    <div class="section hr">
-      <div class="section-title" role="heading" aria-level="2">
-        $i18n{itemSiteAccess}
+    <template is="dom-if" if="[[showSiteAccessSection_(data.*,
+        enableEnhancedSiteControls)]]">
+      <div class="section hr">
+        <div class="section-title" role="heading" aria-level="2">
+          $i18n{itemSiteAccess}
+        </div>
+        <div class="section-content">
+          <span id="no-site-access"
+              hidden$="[[showSiteAccessContent_(data.*)]]">
+            $i18n{itemSiteAccessEmpty}
+          </span>
+          <template is="dom-if"
+              if="[[showFreeformRuntimeHostPermissions_(data.*)]]">
+            <extensions-runtime-host-permissions
+                permissions="[[data.permissions.runtimeHostPermissions]]"
+                enable-enhanced-site-controls="[[enableEnhancedSiteControls]]"
+                delegate="[[delegate]]"
+                item-id="[[data.id]]">
+            </extensions-runtime-host-permissions>
+          </template>
+          <template is="dom-if"
+              if="[[showHostPermissionsToggleList_(data.*)]]">
+            <extensions-host-permissions-toggle-list
+                permissions="[[data.permissions.runtimeHostPermissions]]"
+                delegate="[[delegate]]"
+                item-id="[[data.id]]">
+            </extensions-host-permissions-toggle-list>
+          </template>
+        </div>
       </div>
-      <div class="section-content">
-        <span id="no-site-access"
-            hidden$="[[showSiteAccessContent_(data.*)]]">
-          $i18n{itemSiteAccessEmpty}
-        </span>
-        <template is="dom-if"
-            if="[[showFreeformRuntimeHostPermissions_(data.*)]]">
-          <extensions-runtime-host-permissions
-              permissions="[[data.permissions.runtimeHostPermissions]]"
-              enable-enhanced-site-controls="[[enableEnhancedSiteControls]]"
-              delegate="[[delegate]]"
-              item-id="[[data.id]]">
-          </extensions-runtime-host-permissions>
-        </template>
-        <template is="dom-if"
-            if="[[showHostPermissionsToggleList_(data.*)]]">
-          <extensions-host-permissions-toggle-list
-              permissions="[[data.permissions.runtimeHostPermissions]]"
-              delegate="[[delegate]]"
-              item-id="[[data.id]]">
-          </extensions-host-permissions-toggle-list>
-        </template>
-      </div>
-    </div>
+    </template>
     <template is="dom-if"
         if="[[hasDependentExtensions_(data.dependentExtensions.splices)]]">
       <div class="section hr">
