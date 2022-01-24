@@ -50,8 +50,9 @@ class FooUI : public content::WebUIController, public ::test::mojom::Foo {
     content::WebUIDataSource* data_source =
         content::WebUIDataSource::Create("foo");
     data_source->SetDefaultResource(IDR_MOJO_JS_INTERFACE_BROKER_TEST_FOO_HTML);
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
 
     // Allow Foo to embed chrome-untrusted://bar.
     data_source->OverrideContentSecurityPolicy(
@@ -98,8 +99,9 @@ class BarUI : public ui::UntrustedWebUIController, public ::test::mojom::Bar {
     // Allow Foo to embed this UI.
     data_source->AddFrameAncestor(GURL(kFooURL));
 
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     // If requested path is "error", trigger an error page.
     data_source->SetRequestFilter(
         base::BindRepeating(
@@ -290,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
   ASSERT_TRUE(NavigateToURL(web_contents, GURL(kFooURL)));
 
   EXPECT_EQ("foo", EvalStatement("(async () => {"
-                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
                                  "  return resp.value;"
                                  "})()"));
@@ -307,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
       web_contents->GetWebUI()->GetController()->broker_for_testing();
   EXPECT_NE(broker1, broker2);
   EXPECT_EQ("foo", EvalStatement("(async () => {"
-                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
                                  "  return resp.value;"
                                  "})()"));
@@ -319,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, FooWorks) {
       web_contents->GetWebUI()->GetController()->broker_for_testing();
   EXPECT_EQ(broker2, broker3);
   EXPECT_EQ("foo", EvalStatement("(async () => {"
-                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
                                  "  return resp.value;"
                                  "})()"));
@@ -350,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest,
   EXPECT_FALSE(content::ExecuteScriptAndExtractString(
       web_contents,
       "(async () => {"
-      "  let barRemote = test.mojom.Bar.getRemote();"
+      "  let barRemote = window.Bar.getRemote();"
       "  let resp = await barRemote.getBar();"
       "  domAutomationController.send(resp.value);"
       "})()",
@@ -370,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
 
   // Foo page gets Foo Mojo API.
   EXPECT_EQ("foo", EvalStatement("(async () => {"
-                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
                                  "  return resp.value;"
                                  "})()"));
@@ -384,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
   ASSERT_EQ(GURL(kBarURL), bar_frame->GetLastCommittedURL());
 
   EXPECT_EQ("bar", EvalStatement("(async () => {"
-                                 "  let barRemote = test.mojom.Bar.getRemote();"
+                                 "  let barRemote = window.Bar.getRemote();"
                                  "  let resp = await barRemote.getBar();"
                                  "  return resp.value;"
                                  "})()",
@@ -396,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, IframeBarWorks) {
   observer.Wait();
 
   EXPECT_EQ("bar", EvalStatement("(async () => {"
-                                 "  let barRemote = test.mojom.Bar.getRemote();"
+                                 "  let barRemote = window.Bar.getRemote();"
                                  "  let resp = await barRemote.getBar();"
                                  "  return resp.value;"
                                  "})()",
@@ -448,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, MojoInterceptorWorks) {
           "(async function() {"
           "  window.intercepted = false;"
           "  window.interceptor = new "
-          "MojoInterfaceInterceptor('test.mojom.Foo', 'context_js');"
+          "MojoInterfaceInterceptor('window.Foo', 'context_js');"
           "  interceptor.oninterfacerequest = _ => window.intercepted = true;"
           "  return 'success';"
           "})()"));
@@ -460,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, MojoInterceptorWorks) {
                           "  window.intercepted = false;"
                           ""
                           "  const r = Mojo.createMessagePipe();"
-                          "  Mojo.bindInterface('test.mojom.Foo', r.handle1);"
+                          "  Mojo.bindInterface('window.Foo', r.handle1);"
                           "  if (window.intercepted) {"
                           "    return \"Interface isn't intercepted\";"
                           "  }"
@@ -472,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(MojoJSInterfaceBrokerBrowserTest, MojoInterceptorWorks) {
   // browser.
   EXPECT_EQ("foo", EvalStatement("(async () => {"
                                  "window.interceptor.stop();"
-                                 "  let fooRemote = test.mojom.Foo.getRemote();"
+                                 "  let fooRemote = window.Foo.getRemote();"
                                  "  let resp = await fooRemote.getFoo();"
                                  "  return resp.value;"
                                  "})()"));

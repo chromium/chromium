@@ -43,8 +43,9 @@ class FooUI : public ui::MojoWebUIController, public ::test::mojom::Foo {
         content::WebUIDataSource::Create("foo");
     data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                   data_source);
   }
@@ -82,8 +83,9 @@ class FooBarUI : public ui::MojoWebUIController,
         content::WebUIDataSource::Create("foobar");
     data_source->SetDefaultResource(IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML);
     data_source->DisableContentSecurityPolicy();
-    data_source->AddResourcePath("foobar.mojom-lite.js",
-                                 IDR_FOOBAR_MOJO_LITE_JS);
+    data_source->AddResourcePath("foobar.mojom-webui.js",
+                                 IDR_FOOBAR_MOJOM_WEBUI_JS);
+    data_source->AddResourcePath("main.js", IDR_MOJO_MAIN_JS);
     content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                   data_source);
   }
@@ -207,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, BindingsAccess) {
   EXPECT_EQ("foobarfoo",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let fooRemote = test.mojom.Foo.getRemote();"
+                            "  let fooRemote = window.Foo.getRemote();"
                             "  let resp = await fooRemote.getFoo();"
                             "  return resp.value;"
                             "})()"));
@@ -215,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, BindingsAccess) {
   EXPECT_EQ("foobarbar",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let barRemote = test.mojom.Bar.getRemote();"
+                            "  let barRemote = window.Bar.getRemote();"
                             "  let resp = await barRemote.getBar();"
                             "  return resp.value;"
                             "})()"));
@@ -232,19 +234,19 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest,
   EXPECT_EQ("foofoo",
             content::EvalJs(web_contents,
                             "(async () => {"
-                            "  let fooRemote = test.mojom.Foo.getRemote();"
+                            "  let fooRemote = window.Foo.getRemote();"
                             "  let resp = await fooRemote.getFoo();"
                             "  return resp.value;"
                             "})()"));
 
   content::ScopedAllowRendererCrashes allow;
-  content::RenderProcessHostWatcher watcher(web_contents,
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  content::RenderProcessHostWatcher watcher(
+      web_contents, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
 
   // Attempt to get a remote for a disallowed interface.
   EXPECT_FALSE(content::EvalJs(web_contents,
                                "(async () => {"
-                               "  let barRemote = test.mojom.Bar.getRemote();"
+                               "  let barRemote = window.Bar.getRemote();"
                                "  let resp = await barRemote.getBar();"
                                "  return resp.value;"
                                "})()")
@@ -268,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(MojoWebUIControllerBrowserTest, CrashForNoBinder) {
   // Attempt to bind an interface with no browser binders registered.
   EXPECT_FALSE(content::EvalJs(web_contents,
                                "(async () => {"
-                               "  let bazRemote = test.mojom.Baz.getRemote();"
+                               "  let bazRemote = window.Baz.getRemote();"
                                "  let resp = await bazRemote.getBaz();"
                                "  return resp.value;"
                                "})()")
