@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/bind.h"
@@ -43,10 +44,11 @@ bool FastPairFeatureUsageMetricsLogger::IsEligible() const {
   // Devices that do not have hardware filtering support are not eligible for
   // Fast Pair.
   return bluetooth_adapter_.get() && bluetooth_adapter_->IsPresent() &&
-         bluetooth_adapter_
-                 ->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
-             device::BluetoothAdapter::
-                 LowEnergyScanSessionHardwareOffloadingStatus::kSupported;
+         (features::IsFastPairSoftwareScanningEnabled() ||
+          bluetooth_adapter_
+                  ->GetLowEnergyScanSessionHardwareOffloadingStatus() ==
+              device::BluetoothAdapter::
+                  LowEnergyScanSessionHardwareOffloadingStatus::kSupported);
 }
 
 absl::optional<bool> FastPairFeatureUsageMetricsLogger::IsAccessible() const {
