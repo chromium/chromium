@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -24,16 +23,6 @@ namespace ash {
 namespace {
 const char kFirmwareUpdateNotificationId[] =
     "cros_firmware_update_notification_id";
-
-// A mock implementation of |NewWindowDelegate| for use in tests.
-class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
- public:
-  // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
-};
 
 }  // namespace
 
