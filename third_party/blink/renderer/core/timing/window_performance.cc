@@ -474,9 +474,6 @@ void WindowPerformance::ReportEventTimings(
     base::TimeDelta time_to_next_paint =
         base::Milliseconds(end_time - entry->processingEnd());
     entry->SetDuration(duration_in_ms);
-    TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
-                 entry->ToTracedValue(), "frame",
-                 ToTraceValue(DomWindow()->GetFrame()));
     if (entry->name() == "pointerdown") {
       pending_pointer_down_input_delay_ = input_delay;
       pending_pointer_down_processing_time_ = processing_time;
@@ -547,6 +544,9 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
       !IsEventTimingBufferFull()) {
     AddEventTimingBuffer(*entry);
   }
+  TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
+               entry->ToTracedValue(), "frame",
+               ToTraceValue(DomWindow()->GetFrame()));
 }
 
 void WindowPerformance::MaybeNotifyInteractionAndAddEventTimingBuffer(

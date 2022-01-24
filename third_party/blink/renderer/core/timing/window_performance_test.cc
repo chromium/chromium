@@ -938,6 +938,60 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
   EXPECT_EQ(url, "url");
 }
 
+TEST_F(WindowPerformanceTest, InteractionIdInTrace) {
+  using trace_analyzer::Query;
+  trace_analyzer::Start("*");
+  base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
+  base::TimeTicks processing_start = start_time + base::Milliseconds(10);
+  base::TimeTicks processing_end = processing_start + base::Milliseconds(10);
+  RegisterPointerEvent("pointerdown", start_time, processing_start,
+                       processing_end, 4);
+
+  base::TimeTicks start_time2 = start_time + base::Microseconds(200);
+  RegisterPointerEvent("pointerup", start_time2, processing_start,
+                       processing_end, 4);
+  base::TimeTicks swap_time = start_time + base::Microseconds(100);
+  SimulateSwapPromise(swap_time);
+
+  base::TimeTicks start_time3 = start_time2 + base::Microseconds(2000);
+  RegisterPointerEvent("click", start_time3, processing_start, processing_end,
+                       4);
+
+  base::TimeTicks swap_time2 = start_time + base::Microseconds(4000);
+  SimulateSwapPromise(swap_time2);
+
+  // Only the longer event should have been reported.
+  auto analyzer = trace_analyzer::Stop();
+  trace_analyzer::TraceEventVector events;
+  Query q = Query::EventNameIs("EventTiming");
+  analyzer->FindEvents(q, &events);
+  EXPECT_EQ(3u, events.size());
+  EXPECT_EQ("devtools.timeline", events[0]->category);
+  EXPECT_EQ("devtools.timeline", events[1]->category);
+
+  EXPECT_TRUE(events[0]->HasArg("data"));
+  base::Value arg;
+  EXPECT_TRUE(events[0]->GetArgAsValue("data", &arg));
+  base::DictionaryValue* arg_dict;
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
+  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
+  std::string event_name;
+  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
+  EXPECT_EQ(event_name, "pointerdown");
+
+  EXPECT_TRUE(events[1]->GetArgAsValue("data", &arg));
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
+  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
+  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
+  EXPECT_EQ(event_name, "pointerup");
+
+  EXPECT_TRUE(events[2]->GetArgAsValue("data", &arg));
+  EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
+  EXPECT_GT(arg_dict->FindIntKey("interactionId").value_or(-1), 0);
+  EXPECT_TRUE(arg_dict->GetString("type", &event_name));
+  EXPECT_EQ(event_name, "click");
+}
+
 TEST_F(WindowPerformanceTest, InteractionID) {
   // Keyboard with max duration 25, total duration 40.
   PerformanceEventTiming* keydown_entry =
