@@ -1423,6 +1423,9 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_CARD_HEADER" desc="Header of the history sync card in the privacy review.">
     Choose whether to sync history
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_SETTING_LABEL" desc="Label of the history sync settings toggle in the privacy review.">
+    History sync
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION1" desc="A part of the feature description of history sync in the privacy review.">
     You'll have your history on all your synced devices so you can continue what you were doing
   </message>
