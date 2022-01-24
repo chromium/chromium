@@ -501,121 +501,7 @@ TEST_F(AMPPageLoadMetricsObserverTest,
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest,
-       SubFrameResponsivenessMetricsNormalizationWithoutSendingAllLatencies) {
-  GURL amp_url("https://ampviewer.com/page");
-  NavigationSimulator::CreateRendererInitiated(GURL("https://ampviewer.com/"),
-                                               main_rfh())
-      ->Commit();
-  NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())
-      ->CommitSameDocument();
-
-  content::RenderFrameHost* subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("https://ampsubframe.com/page"
-               "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage"),
-          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
-              ->AppendChild("subframe"));
-
-  page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.behavior_flags =
-      blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
-  tester()->SimulateMetadataUpdate(metadata, subframe);
-
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 10;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(100));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(120));
-  tester()->SimulateInputTimingUpdate(input_timing, subframe);
-
-  // Navigate the main frame to trigger metrics recording.
-  NavigationSimulator::CreateRendererInitiated(
-      GURL("https://ampviewer.com/other"), main_rfh())
-      ->CommitSameDocument();
-
-  ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
-  tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
-
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventduration",
-      100);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventduration",
-      120);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "MaxEventDuration.Subframe",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventDuration.Subframe",
-      1);
-}
-
-TEST_F(
-    AMPPageLoadMetricsObserverTest,
-    SubFrameResponsivenessMetricsNormalizationWithoutSendingAllLatencies_FullNavigation) {
-  GURL amp_url("https://ampviewer.com/page");
-
-  NavigationSimulator::CreateRendererInitiated(amp_url, main_rfh())->Commit();
-
-  content::RenderFrameHost* subframe =
-      NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("https://ampsubframe.com/page"
-               "?amp_js_v=0.1#viewerUrl=https%3A%2F%2Fampviewer.com%2Fpage"),
-          content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
-              ->AppendChild("subframe"));
-
-  page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.behavior_flags =
-      blink::LoadingBehaviorFlag::kLoadingBehaviorAmpDocumentLoaded;
-  tester()->SimulateMetadataUpdate(metadata, subframe);
-
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 10;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(100));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(120));
-  tester()->SimulateInputTimingUpdate(input_timing, subframe);
-
-  // Navigate the main frame to trigger metrics recording.
-  NavigationSimulator::CreateRendererInitiated(
-      GURL("https://ampviewer.com/other"), main_rfh())
-      ->CommitSameDocument();
-  ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
-  tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
-
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.InteractiveTiming.WorstUserInteractionLatency.MaxEventduration",
-      100);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(),
-      "SubFrame.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventduration",
-      120);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "MaxEventDuration.Subframe.FullNavigation",
-      1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.WorstUserInteractionLatency."
-      "TotalEventDuration.Subframe.FullNavigation",
-      1);
-}
-
-TEST_F(AMPPageLoadMetricsObserverTest,
-       SubFrameResponsivenessMetricsNormalizationWithSendingAllLatencies) {
+       SubFrameResponsivenessMetricsNormalization) {
   // Flip the flag to send all user interaction latencies to the browser.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -762,9 +648,8 @@ TEST_F(AMPPageLoadMetricsObserverTest,
   }
 }
 
-TEST_F(
-    AMPPageLoadMetricsObserverTest,
-    SubFrameResponsivenessMetricsNormalizationWithSendingAllLatencies_FullNavigation) {
+TEST_F(AMPPageLoadMetricsObserverTest,
+       SubFrameResponsivenessMetricsNormalizations) {
   // Flip the flag to send all user interaction latencies to the browser.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

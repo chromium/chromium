@@ -1174,32 +1174,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   TestAllFramesLCP(990, LargestContentTextOrImage::kText);
 }
 
-TEST_F(UmaPageLoadMetricsObserverTest,
-       NormalizedResponsivenessMetricsWithoutSendingAllLatencies) {
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(21));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(56));
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateInputTimingUpdate(input_timing);
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::kHistogramWorstUserInteractionLatencyMaxEventDuration),
-      testing::ElementsAre(base::Bucket(21, 1)));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::kHistogramWorstUserInteractionLatencyTotalEventDuration),
-      testing::ElementsAre(base::Bucket(50, 1)));
-}
-
-TEST_F(UmaPageLoadMetricsObserverTest,
-       NormalizedResponsivenessMetricsWithSendingAllLatencies) {
+TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
   // Flip the flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

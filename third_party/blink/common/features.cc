@@ -1027,7 +1027,7 @@ const base::Feature kUsePageViewportInLCP{"UsePageViewportInLCP",
 
 // Send all user interaction latency data from renderer to the browser process.
 const base::Feature kSendAllUserInteractionLatencies{
-    "SendAllUserInteractionLatencies", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SendAllUserInteractionLatencies", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable `Sec-CH-UA-Platform` client hint and request header to be sent by
 // default

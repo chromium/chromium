@@ -36,59 +36,6 @@ class ResponsivenessMetricsNormalizationTest : public testing::Test {
       responsiveness_metrics_normalization_;
 };
 
-TEST_F(ResponsivenessMetricsNormalizationTest, OnlySendWorstInteractions) {
-  UserInteractionLatenciesPtr max_event_duration1 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(120));
-  UserInteractionLatenciesPtr total_event_durations1 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(140));
-  AddNewUserInteractions(1, *max_event_duration1, *total_event_durations1);
-
-  UserInteractionLatenciesPtr max_event_duration2 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(200));
-  UserInteractionLatenciesPtr total_event_durations2 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(250));
-  AddNewUserInteractions(2, *max_event_duration2, *total_event_durations2);
-
-  UserInteractionLatenciesPtr max_event_duration3 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(70));
-  UserInteractionLatenciesPtr total_event_durations3 =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(70));
-  AddNewUserInteractions(3, *max_event_duration3, *total_event_durations3);
-
-  EXPECT_EQ(normalized_responsiveness_metrics().num_user_interactions, 6u);
-  // When the flag is disabled, only worst_latency has a meaningful value and
-  // other metrics should have default values.
-  auto& normalized_max_event_durations =
-      normalized_responsiveness_metrics().normalized_max_event_durations;
-  EXPECT_EQ(normalized_max_event_durations.worst_latency,
-            base::Milliseconds(200));
-  EXPECT_EQ(normalized_max_event_durations.worst_latency_over_budget,
-            base::Milliseconds(0));
-  EXPECT_EQ(normalized_max_event_durations.sum_of_latency_over_budget,
-            base::Milliseconds(0));
-  EXPECT_EQ(
-      normalized_max_event_durations.pseudo_second_worst_latency_over_budget,
-      base::Milliseconds(0));
-
-  auto& normalized_total_event_durations =
-      normalized_responsiveness_metrics().normalized_total_event_durations;
-  EXPECT_EQ(normalized_total_event_durations.worst_latency,
-            base::Milliseconds(250));
-  EXPECT_EQ(normalized_total_event_durations.worst_latency_over_budget,
-            base::Milliseconds(0));
-  EXPECT_EQ(normalized_total_event_durations.sum_of_latency_over_budget,
-            base::Milliseconds(0));
-  EXPECT_EQ(
-      normalized_total_event_durations.pseudo_second_worst_latency_over_budget,
-      base::Milliseconds(0));
-}
-
 TEST_F(ResponsivenessMetricsNormalizationTest, SendAllInteractions) {
   // Flip the flag to send all user interaction latencies to browser.
   base::test::ScopedFeatureList feature_list;
