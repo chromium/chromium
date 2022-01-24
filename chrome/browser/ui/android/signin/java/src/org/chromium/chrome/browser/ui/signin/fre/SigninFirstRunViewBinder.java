@@ -81,6 +81,7 @@ class SigninFirstRunViewBinder {
                 model.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED);
         view.getProgressSpinnerView().setVisibility(
                 areNativeAndPolicyLoaded ? View.GONE : View.VISIBLE);
+        if (areNativeAndPolicyLoaded) view.onNativeAndPoliciesLoaded();
 
         final int selectedAccountVisibility = areNativeAndPolicyLoaded
                         && model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) != null
