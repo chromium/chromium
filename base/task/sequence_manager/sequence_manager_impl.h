@@ -57,7 +57,6 @@ class TimeDomain;
 
 namespace internal {
 
-class RealTimeDomain;
 class TaskQueueImpl;
 class DefaultWakeUpQueue;
 class ThreadControllerImpl;
@@ -180,11 +179,6 @@ class BASE_EXPORT SequenceManagerImpl
   // Requests that a task to process work is scheduled.
   void ScheduleWork();
 
-  // Schedules next wake-up at the given time, canceling any previous requests.
-  // Use absl::nullopt to cancel a wake-up. Must be called on the thread this
-  // class was created on. Must be called from a TimeDomain only.
-  void SetNextWakeUp(LazyNow* lazy_now, absl::optional<WakeUp> wake_up);
-
   // Returns the currently executing TaskQueue if any. Must be called on the
   // thread this class was created on.
   internal::TaskQueueImpl* currently_executing_task_queue() const;
@@ -295,7 +289,7 @@ class BASE_EXPORT SequenceManagerImpl
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-    std::unique_ptr<RealTimeDomain> real_time_domain;
+    const base::TickClock* const default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
     std::unique_ptr<WakeUpQueue> wake_up_queue;
@@ -354,6 +348,11 @@ class BASE_EXPORT SequenceManagerImpl
   // RunLoop::NestingObserver:
   void OnBeginNestedRunLoop() override;
   void OnExitNestedRunLoop() override;
+
+  // Schedules next wake-up at the given time, canceling any previous requests.
+  // Use absl::nullopt to cancel a wake-up. Must be called on the thread this
+  // class was created on.
+  void SetNextWakeUp(LazyNow* lazy_now, absl::optional<WakeUp> wake_up);
 
   // Called by the task queue to inform this SequenceManager of a task that's
   // about to be queued. This SequenceManager may use this opportunity to add
@@ -417,9 +416,17 @@ class BASE_EXPORT SequenceManagerImpl
   // native work.
   bool ShouldRunTaskOfPriority(TaskQueue::QueuePriority priority) const;
 
-  // Ignores any immediate work.
-  TimeTicks GetNextDelayedTaskTimeImpl(LazyNow* lazy_now,
-                                       SelectTaskOption option) const;
+  // Returns a wake-up for the next delayed task which is not ripe for
+  // execution, or nullopt if `option` is `kSkipDelayedTask` or there
+  // are no such tasks (immediate tasks don't count).
+  absl::optional<WakeUp> GetNextWakeUpWithOption(SelectTaskOption option) const;
+
+  // Given a `wake_up` describing when the next delayed task should run, returns
+  // the time at which the thread should wake up. is_immediate() if the next
+  // task can run immediately, or nullopt if there are no delayed tasks or a
+  // `time_domain` is used.
+  TimeTicks AdjustWakeUp(absl::optional<WakeUp> wake_up,
+                         LazyNow* lazy_now) const;
 
 #if DCHECK_IS_ON()
   void LogTaskDebugInfo(const internal::WorkQueue* work_queue) const;
@@ -460,9 +467,9 @@ class BASE_EXPORT SequenceManagerImpl
     return main_thread_only_;
   }
 
-  // |clock_| refers to the TickClock representation of |time_domain| (same
-  // object). It is maintained as an atomic pointer here for multi-threaded
-  // usage.
+  // |clock_| either refers to the TickClock representation of |time_domain|
+  // (same object) if any, or to |default_clock| otherwise. It is maintained as
+  // an atomic pointer here for multi-threaded usage.
   std::atomic<const base::TickClock*> clock_;
   const base::TickClock* main_thread_clock() const {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);

@@ -224,24 +224,6 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
 
   // sequence_manager::TimeDomain:
 
-  base::TimeTicks GetNextDelayedTaskTime(
-      sequence_manager::WakeUp next_wake_up,
-      sequence_manager::LazyNow* lazy_now) const override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    // Check if we have a task that should be running now. Reading |now_ticks_|
-    // from the main thread doesn't require the lock.
-    if (next_wake_up.time <= TS_UNCHECKED_READ(now_ticks_))
-      return base::TimeTicks();
-
-    // The next task is a future delayed task. Since we're using mock time, we
-    // don't want an actual OS level delayed wake up scheduled, so pretend we
-    // have no more work. This will result in appearing idle, TaskEnvironment
-    // will decide what to do based on that (return to caller or fast-forward
-    // time).
-    return base::TimeTicks::Max();
-  }
-
   // This method is called when the underlying message pump has run out of
   // non-delayed work. Advances time to the next task unless
   // |quit_when_idle_requested| or TaskEnvironment controls mock time.

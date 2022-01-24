@@ -70,9 +70,6 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
   base::TimeTicks NowTicks() const override;
 
   // TimeDomain implementation:
-  base::TimeTicks GetNextDelayedTaskTime(
-      base::sequence_manager::WakeUp delayed_wakeup,
-      base::sequence_manager::LazyNow* lazy_now) const override;
   bool MaybeFastForwardToWakeUp(
       absl::optional<base::sequence_manager::WakeUp> wakeup,
       bool quit_when_idle_requested) override;

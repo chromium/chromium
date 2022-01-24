@@ -29,14 +29,6 @@ class BASE_EXPORT TimeDomain : public TickClock {
   TimeDomain& operator=(const TimeDomain&) = delete;
   ~TimeDomain() override = default;
 
-  // Returns the desired ready time based on the predetermined `next_wake_up`,
-  // is_null() if ready immediately, or is_max() to ignore the wake-up. This is
-  // typically aligned with `next_wake_up.time` but virtual time domains may
-  // elect otherwise. Can be called from main thread only.
-  // TODO(857101): Pass `lazy_now` by reference.
-  virtual TimeTicks GetNextDelayedTaskTime(WakeUp next_wake_up,
-                                           LazyNow* lazy_now) const = 0;
-
   // Invoked when the thread reaches idle. Gives an opportunity to a virtual
   // time domain impl to fast-forward time and return true to indicate that
   // there's more work to run. If RunLoop::QuitWhenIdle has been called then
@@ -53,7 +45,7 @@ class BASE_EXPORT TimeDomain : public TickClock {
   virtual const char* GetName() const = 0;
 
   // Tells SequenceManager that internal policy might have changed to
-  // re-evaluate GetNextDelayedTaskTime()/MaybeFastForwardToWakeUp().
+  // re-evaluate MaybeFastForwardToWakeUp().
   void NotifyPolicyChanged();
 
   // Called when the TimeDomain is assigned to a SequenceManagerImpl.

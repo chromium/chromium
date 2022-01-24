@@ -705,8 +705,6 @@ mixed_component("base") {
     "task/sequence_manager/lazily_deallocated_deque.h",
     "task/sequence_manager/lazy_now.cc",
     "task/sequence_manager/lazy_now.h",
-    "task/sequence_manager/real_time_domain.cc",
-    "task/sequence_manager/real_time_domain.h",
     "task/sequence_manager/sequence_manager.cc",
     "task/sequence_manager/sequence_manager.h",
     "task/sequence_manager/sequence_manager_impl.cc",

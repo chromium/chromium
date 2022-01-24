@@ -27,7 +27,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
-#include "base/task/sequence_manager/real_time_domain.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
@@ -2249,10 +2248,34 @@ TEST_P(SequenceManagerTest, TimeDomainMigrationWithIncomingImmediateTasks) {
   sequence_manager()->SetTimeDomain(domain_a.get());
   std::vector<EnqueueOrder> run_order;
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(&TestTask, 1, &run_order));
+  sequence_manager()->ResetTimeDomain();
   sequence_manager()->SetTimeDomain(domain_b.get());
 
   RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, ElementsAre(1u));
+
+  queue->ShutdownTaskQueue();
+}
+
+// Test that no wake up is scheduled for a delayed task in the future when a
+// time domain is present.
+TEST_P(SequenceManagerTest, TimeDomainDoesNotCauseWakeUp) {
+  auto queue = CreateTaskQueue();
+
+  std::unique_ptr<MockTimeDomain> domain =
+      std::make_unique<MockTimeDomain>(sequence_manager()->NowTicks());
+  sequence_manager()->SetTimeDomain(domain.get());
+
+  std::vector<EnqueueOrder> run_order;
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(10));
+  LazyNow lazy_now1(domain.get());
+  EXPECT_EQ(TimeTicks::Max(), sequence_manager()->GetNextTaskTime(&lazy_now1));
+  EXPECT_EQ(TimeDelta::Max(), NextPendingTaskDelay());
+
+  domain->SetNowTicks(sequence_manager()->NowTicks() + Milliseconds(10));
+  LazyNow lazy_now2(domain.get());
+  EXPECT_EQ(TimeTicks(), sequence_manager()->GetNextTaskTime(&lazy_now2));
 
   queue->ShutdownTaskQueue();
 }
@@ -2263,24 +2286,23 @@ TEST_P(SequenceManagerTest,
 
   std::vector<EnqueueOrder> run_order;
 
-  std::unique_ptr<internal::RealTimeDomain> domain_a =
-      std::make_unique<internal::RealTimeDomain>(mock_tick_clock());
-  std::unique_ptr<internal::RealTimeDomain> domain_b =
-      std::make_unique<internal::RealTimeDomain>(mock_tick_clock());
+  std::unique_ptr<sequence_manager::MockTimeDomain> domain =
+      std::make_unique<sequence_manager::MockTimeDomain>(
+          mock_tick_clock()->NowTicks());
 
-  sequence_manager()->SetTimeDomain(domain_a.get());
+  sequence_manager()->SetTimeDomain(domain.get());
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(40));
 
-  sequence_manager()->SetTimeDomain(domain_b.get());
+  sequence_manager()->ResetTimeDomain();
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(30));
 
-  sequence_manager()->SetTimeDomain(domain_a.get());
+  sequence_manager()->SetTimeDomain(domain.get());
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(20));
 
-  sequence_manager()->SetTimeDomain(domain_b.get());
+  sequence_manager()->ResetTimeDomain();
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 4, &run_order), Milliseconds(10));
 
@@ -4677,10 +4699,6 @@ class MockTimeDomain : public TimeDomain {
   TimeTicks NowTicks() const override { return now_; }
 
   // TimeDomain:
-  TimeTicks GetNextDelayedTaskTime(WakeUp delayed_wakeup,
-                                   LazyNow* lazy_now) const override {
-    return TimeTicks();
-  }
   bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wakeup,
                                 bool quit_when_idle_requested) override {
     return MaybeFastForwardToWakeUp(quit_when_idle_requested);

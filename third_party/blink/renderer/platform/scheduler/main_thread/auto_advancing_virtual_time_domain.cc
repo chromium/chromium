@@ -56,19 +56,6 @@ base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {
   return now_ticks_;
 }
 
-base::TimeTicks AutoAdvancingVirtualTimeDomain::GetNextDelayedTaskTime(
-    base::sequence_manager::WakeUp next_wake_up,
-    base::sequence_manager::LazyNow* lazy_now) const {
-  // We may have advanced virtual time past the next task when a
-  // WebScopedVirtualTimePauser unpauses.
-  if (next_wake_up.time <= NowTicks())
-    return base::TimeTicks();
-
-  // Rely on MaybeFastForwardToWakeUp to be called to advance
-  // virtual time.
-  return base::TimeTicks::Max();
-}
-
 bool AutoAdvancingVirtualTimeDomain::MaybeFastForwardToWakeUp(
     absl::optional<base::sequence_manager::WakeUp> wakeup,
     bool quit_when_idle_requested) {
