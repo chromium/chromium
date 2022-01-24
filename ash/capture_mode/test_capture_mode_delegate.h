@@ -22,6 +22,8 @@ class RecordingServiceTestApi;
 
 namespace ash {
 
+class FakeVideoSourceProvider;
+
 class TestCaptureModeDelegate : public CaptureModeDelegate {
  public:
   TestCaptureModeDelegate();
@@ -31,6 +33,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
 
   recording::RecordingServiceTestApi* recording_service() const {
     return recording_service_.get();
+  }
+  FakeVideoSourceProvider* video_source_provider() {
+    return video_source_provider_.get();
   }
   void set_on_session_state_changed_callback(base::OnceClosure callback) {
     on_session_state_changed_callback_ = std::move(callback);
@@ -94,9 +99,13 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   base::FilePath GetAndroidFilesPath() const override;
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const override;
+  void ConnectToVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
+      override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
+  std::unique_ptr<FakeVideoSourceProvider> video_source_provider_;
   base::FilePath fake_downloads_dir_;
   base::OnceClosure on_session_state_changed_callback_;
   base::OnceClosure on_recording_started_callback_;

@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace aura {
@@ -23,17 +24,17 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
-namespace media {
-namespace mojom {
+namespace media::mojom {
 class AudioStreamFactory;
-}  // namespace mojom
-}  // namespace media
+}  // namespace media::mojom
 
-namespace recording {
-namespace mojom {
+namespace recording::mojom {
 class RecordingService;
-}  // namespace mojom
-}  // namespace recording
+}  // namespace recording::mojom
+
+namespace video_capture::mojom {
+class VideoSourceProvider;
+}  // namespace video_capture::mojom
 
 namespace ash {
 
@@ -148,6 +149,12 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // such as annotations.
   virtual std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const = 0;
+
+  // Connects the given `receiver` to the VideoSourceProvider implementation in
+  // the video capture service.
+  virtual void ConnectToVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>
+          receiver) = 0;
 };
 
 }  // namespace ash

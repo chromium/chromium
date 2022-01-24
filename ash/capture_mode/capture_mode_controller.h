@@ -39,6 +39,7 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+class CaptureModeCameraController;
 class CaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
@@ -80,6 +81,9 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  CaptureModeCameraController* camera_controller() {
+    return camera_controller_.get();
+  }
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
   CaptureModeSession* capture_mode_session() const {
@@ -434,6 +438,10 @@ class ASH_EXPORT CaptureModeController
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
+
+  // Controls the selfie camera feature of capture mode. This is only available
+  // when the feature `kCaptureModeSelfieCamera` is enabled.
+  std::unique_ptr<CaptureModeCameraController> camera_controller_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;

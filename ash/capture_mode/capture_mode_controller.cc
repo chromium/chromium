@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_notification_view.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -360,11 +361,19 @@ base::FilePath GetTempDir() {
   return temp_dir;
 }
 
+std::unique_ptr<CaptureModeCameraController> MaybeCreateCameraController(
+    CaptureModeDelegate* delegate) {
+  if (!features::IsCaptureModeSelfieCameraEnabled())
+    return nullptr;
+  return std::make_unique<CaptureModeCameraController>(delegate);
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
     std::unique_ptr<CaptureModeDelegate> delegate)
     : delegate_(std::move(delegate)),
+      camera_controller_(MaybeCreateCameraController(delegate_.get())),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           // A task priority of BEST_EFFORT is good enough for this runner,
           // since it's used for blocking file IO such as saving the screenshots
