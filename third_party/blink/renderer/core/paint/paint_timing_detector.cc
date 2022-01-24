@@ -265,7 +265,7 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   if (image_record) {
     Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
     HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
-    if (!image_node->IsInShadowTree() && element &&
+    if (element && !image_node->IsInShadowTree() &&
         element->IsChangedShortlyAfterMouseover()) {
       largest_contentful_paint_type_ |=
           LargestContentfulPaintType::kLCPTypeAfterMouseover;
