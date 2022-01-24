@@ -12,9 +12,11 @@ load("//project.star", "settings")
 try_.defaults.set(
     builder_group = "tryserver.chromium.mac",
     builderless = True,
+    orchestrator_cores = 2,
     executable = try_.DEFAULT_EXECUTABLE,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
+    compilator_goma_jobs = goma.jobs.J150,
     os = os.MAC_ANY,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
@@ -54,17 +56,20 @@ try_.builder(
     tryjob = try_.job(),
 )
 
-try_.orchestrator_pair_builders(
+try_.orchestrator_builder(
     name = "mac-rel-orchestrator",
+    compilator = "mac-rel-compilator",
     main_list_view = "try",
     use_clang_coverage = True,
-    orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(
+    tryjob = try_.job(
         experiment_percentage = 1,
     ),
-    compilator_goma_jobs = goma.jobs.J150,
+)
+
+try_.compilator_builder(
+    name = "mac-rel-compilator",
+    main_list_view = "try",
     os = os.MAC_DEFAULT,
-    compilator_name = "mac-rel-compilator",
 )
 
 try_.builder(
