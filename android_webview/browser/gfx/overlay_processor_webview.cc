@@ -694,8 +694,8 @@ void OverlayProcessorWebView::CheckOverlaySupportImpl(
   }
 
   // Check candidates if they can be used with surface control.
-  OverlayProcessorSurfaceControl::CheckOverlaySupport(primary_plane,
-                                                      candidates);
+  OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(primary_plane,
+                                                          candidates);
 }
 
 void OverlayProcessorWebView::TakeOverlayCandidates(
