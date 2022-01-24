@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_internal_observer.h"
+
+#include "base/check.h"
+#include "base/observer_list_types.h"
 
 namespace content {
 
