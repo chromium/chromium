@@ -298,9 +298,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   if (!encoded_image_data)
     encoded_image_data = ddljson->FindStringKey("data_uri");
   if (encoded_image_data) {
-    std::string mime_type;
-    scoped_refptr<base::RefCountedString> data;
-    std::tie(mime_type, data) = ParseEncodedImageData(*encoded_image_data);
+    auto [mime_type, data] = ParseEncodedImageData(*encoded_image_data);
     if (!data)
       return nullptr;
     logo->metadata.mime_type = mime_type;
@@ -312,9 +310,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(
   if (!dark_encoded_image_data)
     dark_encoded_image_data = ddljson->FindStringKey("dark_data_uri");
   if (dark_encoded_image_data) {
-    std::string mime_type;
-    scoped_refptr<base::RefCountedString> data;
-    std::tie(mime_type, data) = ParseEncodedImageData(*dark_encoded_image_data);
+    auto [mime_type, data] = ParseEncodedImageData(*dark_encoded_image_data);
 
     if (data)
       logo->metadata.dark_mime_type = mime_type;
