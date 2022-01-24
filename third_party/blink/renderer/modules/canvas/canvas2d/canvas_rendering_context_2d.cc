@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/common/features.h"
@@ -657,6 +658,8 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
     int sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.GetImageData.WillReadFrequently",
+                        CreationAttributes().will_read_frequently);
   return BaseRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
 }

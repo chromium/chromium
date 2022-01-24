@@ -116,6 +116,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.2DLayerBridge.WillReadFrequently"
+    enum="BooleanWillReadFrequently" expires_after="2023-01-24">
+  <owner>aaronhk@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
+  <summary>
+    Records the state of the willReadFrequently flag upon creation of a Canvas2D
+    layer bridge, as this is the moment when it determines whether the canvas
+    will be accelerated.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.2DPrintingAsVector" enum="BooleanSuccess"
     expires_after="2022-01-31">
   <owner>fserb@chromium.org</owner>
@@ -143,6 +154,15 @@ chromium-metrics-reviews@google.com.
   <owner>aaronhk@chromium.org</owner>
   <summary>
     The source from which an ImageBitmap is created by a createImageBitmap call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.GetImageData.WillReadFrequently"
+    enum="BooleanWillReadFrequently" expires_after="2023-01-24">
+  <owner>aaronhk@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
+  <summary>
+    Records the state of the willReadFrequently flag during Canvas2D readback.
   </summary>
 </histogram>
 
@@ -455,6 +475,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Canvas.WillReadFrequently"
     enum="BooleanWillReadFrequently" expires_after="2021-01-31">
+  <obsolete>
+    Expired on 2021-01-31. This metric was replaced with
+    Blink.Canvas.2DLayerBridge.WillReadFrequently
+  </obsolete>
   <owner>fserb@chromium.org</owner>
   <summary>
     Logs if the canvas is initialized to be read frequently or not.
