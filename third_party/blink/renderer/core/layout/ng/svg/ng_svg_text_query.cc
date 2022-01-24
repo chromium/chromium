@@ -84,9 +84,7 @@ FragmentItemsInLogicalOrder(const LayoutObject& query_root) {
 std::tuple<const NGFragmentItem*, StringView, unsigned, unsigned>
 FindFragmentItemForAddressableCodeUnitIndex(const LayoutObject& query_root,
                                             unsigned index) {
-  Vector<const NGFragmentItem*> item_list;
-  const NGFragmentItems* items;
-  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root);
+  auto [item_list, items] = FragmentItemsInLogicalOrder(query_root);
 
   unsigned character_index = 0;
   for (const auto* item : item_list) {
@@ -134,10 +132,7 @@ float InlineSize(const NGFragmentItem& item,
 std::tuple<const NGFragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
     const LayoutObject& query_root,
     unsigned code_unit_index) {
-  const NGFragmentItem* item;
-  unsigned start_ifc_offset, end_ifc_offset;
-  StringView item_text;
-  std::tie(item, item_text, start_ifc_offset, end_ifc_offset) =
+  auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root, code_unit_index);
   DCHECK(item);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
@@ -153,9 +148,7 @@ enum class QueryPosition { kStart, kEnd };
 gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
                                unsigned index,
                                QueryPosition pos) {
-  const NGFragmentItem* item;
-  gfx::RectF char_rect;
-  std::tie(item, char_rect) = ScaledCharacterRectInContainer(query_root, index);
+  auto [item, char_rect] = ScaledCharacterRectInContainer(query_root, index);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
   if (item->IsHiddenForPaint())
     return gfx::PointF();
@@ -184,9 +177,7 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
 }  // namespace
 
 unsigned NGSvgTextQuery::NumberOfCharacters() const {
-  Vector<const NGFragmentItem*> item_list;
-  const NGFragmentItems* items;
-  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root_);
+  auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   unsigned addressable_code_unit_count = 0;
   for (const auto* item : item_list)
@@ -198,9 +189,7 @@ float NGSvgTextQuery::SubStringLength(unsigned start_index,
                                       unsigned length) const {
   if (length <= 0)
     return 0.0f;
-  Vector<const NGFragmentItem*> item_list;
-  const NGFragmentItems* items;
-  std::tie(item_list, items) = FragmentItemsInLogicalOrder(query_root_);
+  auto [item_list, items] = FragmentItemsInLogicalOrder(query_root_);
 
   float total_length = 0.0f;
   // Starting addressable code unit index for the current NGFragmentItem.
@@ -234,10 +223,7 @@ gfx::PointF NGSvgTextQuery::EndPositionOfCharacter(unsigned index) const {
 }
 
 gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
-  const NGFragmentItem* item;
-  gfx::RectF char_rect;
-  std::tie(item, char_rect) =
-      ScaledCharacterRectInContainer(query_root_, index);
+  auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
   if (item->IsHiddenForPaint())
     return gfx::RectF();
@@ -248,10 +234,7 @@ gfx::RectF NGSvgTextQuery::ExtentOfCharacter(unsigned index) const {
 }
 
 float NGSvgTextQuery::RotationOfCharacter(unsigned index) const {
-  const NGFragmentItem* item;
-  unsigned start_ifc_offset, end_ifc_offset;
-  StringView item_text;
-  std::tie(item, item_text, start_ifc_offset, end_ifc_offset) =
+  auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
   DCHECK_EQ(item->Type(), NGFragmentItem::kSvgText);
@@ -282,9 +265,7 @@ int NGSvgTextQuery::CharacterNumberAtPosition(
   // The specification says we should do hit-testing in logical order.
   // However, this does it in visual order in order to match to the legacy SVG
   // <text> behavior.
-  Vector<const NGFragmentItem*> item_list;
-  const NGFragmentItems* items;
-  std::tie(item_list, items) = FragmentItemsInVisualOrder(query_root_);
+  auto [item_list, items] = FragmentItemsInVisualOrder(query_root_);
 
   const NGFragmentItem* hit_item = nullptr;
   for (const auto* item : item_list) {
