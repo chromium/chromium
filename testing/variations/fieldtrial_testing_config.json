@@ -2349,26 +2349,6 @@
             ]
         }
     ],
-    "ContinuousSearchNavigation": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "singleRow_TriggerAlways_20210726",
-                    "params": {
-                        "permanent_dismissal_threshold": "3",
-                        "show_result_title": "false",
-                        "trigger_mode": "0"
-                    },
-                    "enable_features": [
-                        "ContinuousSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSEnforceSystemAecNsAgc": [
         {
             "platforms": [
