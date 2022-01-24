@@ -57,10 +57,9 @@ void ManagedConfigurationStore::SetCurrentPolicy(
   std::vector<std::string> removed_keys;
 
   bool store_updated = false;
-  for (base::DictionaryValue::Iterator it(previous_policy); !it.IsAtEnd();
-       it.Advance()) {
-    if (!current_configuration.HasKey(it.key()))
-      removed_keys.push_back(it.key());
+  for (auto kv : previous_policy.DictItems()) {
+    if (!current_configuration.FindKey(kv.first))
+      removed_keys.push_back(kv.first);
   }
   value_store::ValueStoreChangeList changes;
   value_store::LeveldbValueStore::WriteResult result =
