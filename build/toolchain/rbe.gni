@@ -33,7 +33,7 @@ if (!use_remoteexec && use_rbe) {
 }
 
 # Configuration file selection based on operating system.
-if (is_linux || is_android || is_chromeos) {
+if (is_linux || is_android || is_chromeos || is_fuchsia) {
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
 }
 if (is_win) {
