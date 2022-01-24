@@ -25,7 +25,7 @@ struct NGPhysicalBoxStrut;
 // PhysicalRect is the position and size of a rect (typically a fragment)
 // relative to its parent rect in the physical coordinate system.
 // For more information about physical and logical coordinate systems, see:
-// https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 struct CORE_EXPORT PhysicalRect {
   constexpr PhysicalRect() = default;
   constexpr PhysicalRect(const PhysicalOffset& offset, const PhysicalSize& size)

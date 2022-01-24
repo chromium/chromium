@@ -4,7 +4,7 @@ This directory contains the paint system to work with
 the Blink's new layout engine [LayoutNG].
 
 This README can be viewed in formatted form
-[here](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/paint/ng/README.md).
+[here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/paint/ng/README.md).
 
 ## NGPaintFragment ##
 

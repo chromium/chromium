@@ -3,7 +3,7 @@
 This directory contains the inline layout implementation
 of Blink's new layout engine "LayoutNG".
 
-This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/ng/inline/README.md).
+This README can be viewed in formatted form [here](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/ng/inline/README.md).
 
 Other parts of LayoutNG is explained [here](../README.md).
 

@@ -402,7 +402,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             # We may be rebaselining only a subset of all platforms, in which
             # case we need to copy any existing baselines first to avoid clobbering
             # results from platforms that were not run. See
-            # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_baseline_fallback.md#rebaseline
+            # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_baseline_fallback.md#rebaseline
             #
             # However when running in modes that don't interact with the optimizer,
             # we don't want to do this copying.

@@ -23,7 +23,7 @@ struct LogicalSize;
 // PhysicalSize is the size of a rect (typically a fragment) in the physical
 // coordinate system.
 // For more information about physical and logical coordinate systems, see:
-// https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
+// https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/layout/README.md#coordinate-spaces
 struct CORE_EXPORT PhysicalSize {
   constexpr PhysicalSize() = default;
   constexpr PhysicalSize(LayoutUnit width, LayoutUnit height)
