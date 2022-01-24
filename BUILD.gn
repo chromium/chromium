@@ -1215,6 +1215,7 @@ if (!is_ios) {
   _common_web_test_args += [
     "--seed",
     "4",
+    "--debug-rwt-logging",
     "--no-show-results",
     "--zero-tests-executed-ok",
     "--clobber-old-results",
