@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -250,7 +249,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
 
     version_->set_cross_origin_embedder_policy(
         response_head->parsed_headers
-            ? CoepFromMainResponse(request_url_, response_head.get())
+            ? response_head->parsed_headers->cross_origin_embedder_policy
             : network::CrossOriginEmbedderPolicy());
 
     if (response_head->network_accessed)

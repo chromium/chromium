@@ -51,7 +51,6 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/browser/renderer_host/cookie_utils.h"
-#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -6658,7 +6657,7 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   // 2. If environment is a non-secure context, then return policy.
   if (network::IsUrlPotentiallyTrustworthy(top_level_creation_url)) {
     if (response_head_) {
-      return CoepFromMainResponse(url, response_head_.get());
+      return response_head_->parsed_headers->cross_origin_embedder_policy;
     }
   }
   return network::CrossOriginEmbedderPolicy();

@@ -41,7 +41,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
         {
             // Enabled:
             network::features::kCrossOriginOpenerPolicy,
-            network::features::kCrossOriginEmbedderPolicyCredentialless,
             // SharedArrayBuffer is needed for these tests.
             features::kSharedArrayBuffer,
         },

@@ -2492,8 +2492,6 @@ void URLLoader::SetRequestCredentials(const GURL& url) {
   // As a workaround until a solution is implemented, the cached responses
   // aren't used for those requests.
   if (!coep_allow_credentials) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kCrossOriginEmbedderPolicyCredentialless));
     url_request_->SetLoadFlags(url_request_->load_flags() |
                                net::LOAD_BYPASS_CACHE);
   }
@@ -2527,9 +2525,6 @@ bool URLLoader::CoepAllowCredentials(const GURL& url) {
           .value != mojom::CrossOriginEmbedderPolicyValue::kCredentialless) {
     return true;
   }
-
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kCrossOriginEmbedderPolicyCredentialless));
 
   // [spec]: 4. If request’s origin is same origin with request’s current URL’s
   //            origin and request does not have a redirect-tainted origin, then

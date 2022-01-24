@@ -50,7 +50,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -94,18 +93,14 @@ class WorkerTest : public ContentBrowserTest,
     switch (GetParam()) {
       case 0:  // Base case.
         feature_list_.InitWithFeatures(
-            {
-                network::features::kCrossOriginEmbedderPolicyCredentialless,
-            },
-            {
-                blink::features::kPlzDedicatedWorker,
-                blink::features::kCOEPForSharedWorker,
-            });
+            {}, {
+                    blink::features::kPlzDedicatedWorker,
+                    blink::features::kCOEPForSharedWorker,
+                });
         break;
       case 1:  // PlzDedicatedWorker
         feature_list_.InitWithFeatures(
             {
-                network::features::kCrossOriginEmbedderPolicyCredentialless,
                 blink::features::kPlzDedicatedWorker,
                 features::kPrivateNetworkAccessForWorkers,
             },
@@ -116,7 +111,6 @@ class WorkerTest : public ContentBrowserTest,
       case 2:  // CoepForSharedWorker
         feature_list_.InitWithFeatures(
             {
-                network::features::kCrossOriginEmbedderPolicyCredentialless,
                 blink::features::kCOEPForSharedWorker,
                 features::kPrivateNetworkAccessForWorkers,
             },
@@ -127,7 +121,6 @@ class WorkerTest : public ContentBrowserTest,
       case 3:  // PrivateNetworkAccessForWorkers
         feature_list_.InitWithFeatures(
             {
-                network::features::kCrossOriginEmbedderPolicyCredentialless,
                 blink::features::kPlzDedicatedWorker,
                 blink::features::kCOEPForSharedWorker,
                 features::kPrivateNetworkAccessForWorkers,

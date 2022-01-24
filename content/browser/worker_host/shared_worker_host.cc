@@ -19,7 +19,6 @@
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/renderer_host/cross_origin_embedder_policy.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -254,8 +253,8 @@ void SharedWorkerHost::Start(
         // > 13.7 Otherwise, set worker global scope's embedder policy to the
         // result of obtaining an embedder policy from response.
         worker_client_security_state_->cross_origin_embedder_policy =
-            CoepFromMainResponse(final_response_url,
-                                 main_script_load_params->response_head.get());
+            main_script_load_params->response_head->parsed_headers
+                ->cross_origin_embedder_policy;
       }
       switch (
           worker_client_security_state_->cross_origin_embedder_policy.value) {

@@ -10,7 +10,6 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -159,10 +158,6 @@ TEST(CrossOriginResourcePolicyTest, ShouldAllowSameSite) {
 }
 
 TEST(CrossOriginResourcePolicyTest, WithCOEP) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCrossOriginEmbedderPolicyCredentialless}, {});
-
   mojom::URLResponseHead corp_none;
   mojom::URLResponseHead corp_same_origin;
   mojom::URLResponseHead corp_cross_origin;
@@ -357,10 +352,6 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
 }
 
 TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCrossOriginEmbedderPolicyCredentialless}, {});
-
   mojom::URLResponseHead corp_none;
   mojom::URLResponseHead corp_same_origin;
   mojom::URLResponseHead corp_cross_origin;
