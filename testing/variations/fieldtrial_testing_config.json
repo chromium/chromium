@@ -6374,25 +6374,6 @@
             ]
         }
     ],
-    "ScrollResamplingRollout": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "predictor": "linear_resampling"
-                    },
-                    "enable_features": [
-                        "ResamplingScrollEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "SendAllUserInteractionLatencies": [
         {
             "platforms": [
