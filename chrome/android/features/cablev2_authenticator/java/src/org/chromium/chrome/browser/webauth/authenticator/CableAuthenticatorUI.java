@@ -99,6 +99,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     private enum State {
         QR_CONFIRM,
         ENABLE_BLUETOOTH,
+        ENABLE_BLUETOOTH_PENDING,
+        BLUETOOTH_CONNECT_PERMISSION_REQUESTED,
         ENABLE_BLUETOOTH_REQUESTED,
         BLUETOOTH_PERMISSION,
         BLUETOOTH_PERMISSION_REQUESTED,
@@ -324,51 +326,68 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     private void enableBluetooth() {
         assert mState == State.ENABLE_BLUETOOTH;
 
-        mState = State.ENABLE_BLUETOOTH_REQUESTED;
+        mState = State.ENABLE_BLUETOOTH_PENDING;
         PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mAuthenticator != null) {
-                startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-                        ENABLE_BLUETOOTH_REQUEST_CODE);
+                enableBluetoothAfterDelay();
             }
         }, BLE_SCREEN_DELAY_SECS * 1000);
+    }
+
+    /**
+     * Request Bluetooth permissions, if needed.
+     *
+     * @return true if permissions were requested.
+     */
+    @TargetApi(31)
+    private boolean requestBluetoothPermissions() {
+        final String connect = permission.BLUETOOTH_CONNECT;
+        final String advertise = permission.BLUETOOTH_ADVERTISE;
+        final int granted = PackageManager.PERMISSION_GRANTED;
+
+        if (getContext().checkSelfPermission(connect) != granted
+                || getContext().checkSelfPermission(advertise) != granted) {
+            if (shouldShowRequestPermissionRationale(connect)
+                    || shouldShowRequestPermissionRationale(advertise)) {
+                // Since the user took explicit action to make a connection to their
+                // computer, and there's a big "Enabling Bluetooth" or "Connecting to your computer"
+                // in the background, the rationale should be clear. However, these functions must
+                // always be called otherwise the permission will be automatically refused.
+            }
+
+            requestPermissions(new String[] {connect, advertise}, /* requestCode= */ 1);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void enableBluetoothAfterDelay() {
+        assert mState == State.ENABLE_BLUETOOTH_PENDING
+                || mState == State.BLUETOOTH_CONNECT_PERMISSION_REQUESTED;
+
+        if (BuildInfo.isAtLeastS() && requestBluetoothPermissions()) {
+            mState = State.BLUETOOTH_CONNECT_PERMISSION_REQUESTED;
+            // This function will be called again when `onRequestPermissionsResult` has been called
+            // with a positive result. Next time around `requestBluetoothPermissions` will return
+            // false because the permissions have been granted.
+            return;
+        }
+
+        mState = State.ENABLE_BLUETOOTH_REQUESTED;
+        startActivityForResult(
+                new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), ENABLE_BLUETOOTH_REQUEST_CODE);
     }
 
     // Called when the Bluetooth adapter has been enabled, or was already enabled.
     private void onBluetoothEnabled() {
         // In Android 12 and above there is a new BLUETOOTH_ADVERTISE runtime permission.
-        if (BuildInfo.isAtLeastS()) {
-            maybeGetBluetoothPermission();
+        if (BuildInfo.isAtLeastS() && requestBluetoothPermissions()) {
+            mState = State.BLUETOOTH_PERMISSION_REQUESTED;
             return;
         }
 
         onHaveBluetoothPermission();
-    }
-
-    // Called on Android 12 or later after the Bluetooth adaptor is enabled.
-    @TargetApi(31)
-    private void maybeGetBluetoothPermission() {
-        mState = State.BLUETOOTH_PERMISSION;
-        final String advertise = permission.BLUETOOTH_ADVERTISE;
-
-        if (getContext().checkSelfPermission(advertise) == PackageManager.PERMISSION_GRANTED) {
-            onHaveBluetoothPermission();
-            return;
-        }
-
-        if (shouldShowRequestPermissionRationale(advertise)) {
-            // Since the user took explicit action to make a connection to their
-            // computer, and there's a big "Connecting to your computer" in the
-            // background, the rationale should be clear. However, this
-            // function must always be called otherwise the permission will be
-            // automatically refused.
-        }
-
-        // The |Fragment| method |requestPermissions| is called rather than
-        // the method on |mPermissionDelegate| because the latter routes the
-        // |onRequestPermissionsResult| callback to the Activity, and not
-        // this fragment.
-        mState = State.BLUETOOTH_PERMISSION_REQUESTED;
-        requestPermissions(new String[] {advertise}, 1);
     }
 
     // Called once the BLUETOOTH_ADVERTISE permission has been granted, or if
@@ -456,24 +475,31 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                 grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
         switch (mState) {
+            case BLUETOOTH_CONNECT_PERMISSION_REQUESTED:
+                if (granted) {
+                    enableBluetoothAfterDelay();
+                    return;
+                }
+                break;
+
             case BLUETOOTH_PERMISSION_REQUESTED:
                 if (granted) {
-                    assert permissions[0].equals(permission.BLUETOOTH_ADVERTISE);
                     onHaveBluetoothPermission();
-                } else {
-                    mState = State.ERROR;
-
-                    mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
-                    fillOutErrorUI(mErrorCode);
-                    ViewGroup top = (ViewGroup) getView();
-                    top.removeAllViews();
-                    top.addView(mErrorView);
+                    return;
                 }
                 break;
 
             default:
                 assert false;
         }
+
+        mState = State.ERROR;
+
+        mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
+        fillOutErrorUI(mErrorCode);
+        ViewGroup top = (ViewGroup) getView();
+        top.removeAllViews();
+        top.addView(mErrorView);
     }
 
     @Override
