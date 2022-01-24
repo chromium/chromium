@@ -5126,21 +5126,6 @@
             ]
         }
     ],
-    "OptimizedRealtimeThreadingMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizedRealtimeThreadingMac"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptionalToolbarButton": [
         {
             "platforms": [
