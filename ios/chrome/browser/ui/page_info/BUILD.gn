@@ -105,6 +105,22 @@ source_set("coordinator") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "page_info_permissions_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common",
+    "//ios/web/public/permissions",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest:gtest",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
@@ -117,12 +133,11 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common",
+    "//ios/web/public/permissions",
     "//ui/base",
-  ]
-  frameworks = [
-    "UIKit.framework",
-    "XCTest.framework",
   ]
 }
