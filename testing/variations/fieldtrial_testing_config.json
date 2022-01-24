@@ -5831,27 +5831,6 @@
             ]
         }
     ],
-    "ProbabilisticCryptidRenderer": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_empty",
-                    "params": {
-                        "asset-key": "empty",
-                        "max-probability-per-million": "10000",
-                        "moratorium-length-millis": "345600000",
-                        "ramp-up-length-millis": "1814400000"
-                    },
-                    "enable_features": [
-                        "ProbabilisticCryptidRenderer"
-                    ]
-                }
-            ]
-        }
-    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
