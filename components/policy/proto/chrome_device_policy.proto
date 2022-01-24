@@ -656,43 +656,30 @@ message AttestationSettingsProto {
 }
 
 message AccessibilitySettingsProto {
-  // Sets the default state of the large cursor accessibility feature on the
-  // login screen. If this policy is set to true, the large cursor will be
-  // enabled when the login screen is shown. If this policy is set to false, the
-  // large cursor will be disabled when the login screen is shown. Users can
-  // temporarily override this setting by enabling or disabling the large
-  // cursor. However, the user's choice is not persistent and the default is
+  // Sets the default state of the following accessibility features on the login
+  // screen:
+  //
+  // 1) Large cursor: login_screen_default_large_cursor_enabled
+  // 2) Spoken feedback: login_screen_default_spoken_feedback_enabled
+  // 3) High contrast: login_screen_default_high_contrast_enabled
+  // 4) Screen magnifier: login_screen_default_screen_magnifier_type
+  // 5) Virtual keyboard: login_screen_default_virtual_keyboard_enabled
+  //
+  // Each acts as follows: If the corresponding policy is set to true, the
+  // associated accessibility feature will be enabled when the login screen is
+  // shown. If this policy is set to false, the accessibility feature will be
+  // disabled when the login screen is shown. Users can temporarily override
+  // this setting by enabling or disabling the corresponding accessibiilty
+  // feature. However, the user's choice is not persistent and the default is
   // restored whenever the login screen is shown anew or the user remains idle
-  // on the login screen for a minute. If this policy is left unset, the large
-  // cursor is disabled when the login screen is first shown. Users can enable
-  // or disable the large cursor anytime and its status on the login screen is
-  // persisted between users.
+  // on the login screen for a minute. If this policy is left unset, the
+  // corresponding accessibiilty feature is disabled when the login screen is
+  // first shown. Users can enable or disable the corresponding accessibiilty
+  // feature anytime and its status on the login screen is persisted between
+  // users.
+
   optional bool login_screen_default_large_cursor_enabled = 1;
-
-  // Sets the default state of the spoken feedback accessibility feature on the
-  // login screen. If this policy is set to true, spoken feedback will be
-  // enabled when the login screen is shown. If this policy is set to false,
-  // spoken feedback will be disabled when the login screen is shown. Users can
-  // temporarily override this setting by enabling or disabling spoken feedback.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, spoken feedback is
-  // disabled when the login screen is first shown. Users can enable or disable
-  // spoken feedback anytime and its status on the login screen is persisted
-  // between users.
   optional bool login_screen_default_spoken_feedback_enabled = 2;
-
-  // Sets the default state of the high contrast mode accessibility feature on
-  // the login screen. If this policy is set to true, high contrast mode will be
-  // enabled when the login screen is shown. If this policy is set to false,
-  // high contrast mode will be disabled when the login screen is shown. Users
-  // can temporarily override this setting by enabling or disabling high
-  // contrast mode. However, the user's choice is not persistent and the default
-  // is restored whenever the login screen is shown anew or the user remains
-  // idle on the login screen for a minute. If this policy is left unset, high
-  // contrast mode is disabled when the login screen is first shown. Users can
-  // enable or disable high contrast mode anytime and its status on the login
-  // screen is persisted between users.
   optional bool login_screen_default_high_contrast_enabled = 3;
 
   // Enumerates the screen magnifier types.
@@ -702,30 +689,8 @@ message AccessibilitySettingsProto {
     // Full-screen magnifier enabled.
     SCREEN_MAGNIFIER_TYPE_FULL = 1;
   }
-
-  // Sets the default type of screen magnifier that is enabled on the login
-  // screen. If this policy is set, it controls the type of screen magnifier
-  // that is enabled when the login screen is shown. Users can temporarily
-  // override this setting by enabling or disabling the screen magnifier.
-  // However, the user's choice is not persistent and the default is restored
-  // whenever the login screen is shown anew or the user remains idle on the
-  // login screen for a minute. If this policy is left unset, the screen
-  // magnifier is disabled when the login screen is first shown. Users can
-  // enable or disable the screen magnifier anytime and its status on the login
-  // screen is persisted between users.
   optional ScreenMagnifierType login_screen_default_screen_magnifier_type = 4;
 
-  // Sets the default state of the on-screen keyboard accessibility feature on
-  // the login screen. If this policy is set to true, the on-screen keyboard
-  // will be enabled when the login screen is shown. If this policy is set to
-  // false, the on-screen keyboard will be disabled when the login screen is
-  // shown. Users can temporarily override this setting by enabling or disabling
-  // the on-screen keyboard. However, the user's choice is not persistent and
-  // the default is restored whenever the login screen is shown anew or the user
-  // remains idle on the login screen for a minute. If this policy is left
-  // unset, the on-screen keyboard is disabled when the login screen is first
-  // shown. Users can enable or disable the on-screen keyboard anytime and its
-  // status on the login screen is persisted between users.
   optional bool login_screen_default_virtual_keyboard_enabled = 5;
 
   // Sets the state of the large cursor accessibility feature on the login
