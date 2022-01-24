@@ -6714,24 +6714,6 @@
             ]
         }
     ],
-    "TabSearchEntrypointChevronIcon": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabSearchChevronIcon"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabSearchEntrypointWindowsEntrypoint": [
         {
             "platforms": [
