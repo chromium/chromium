@@ -69,15 +69,8 @@ void TranslateService::Initialize() {
 }
 
 // static
-void TranslateService::Shutdown(bool cleanup_pending_fetcher) {
-  translate::TranslateDownloadManager* download_manager =
-      translate::TranslateDownloadManager::GetInstance();
-  if (cleanup_pending_fetcher) {
-    download_manager->Shutdown();
-  } else {
-    // This path is only used by browser tests.
-    download_manager->set_url_loader_factory(nullptr);
-  }
+void TranslateService::Shutdown() {
+  translate::TranslateDownloadManager::GetInstance()->Shutdown();
 }
 
 // static
