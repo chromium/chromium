@@ -3587,21 +3587,6 @@
             ]
         }
     ],
-    "HashedLoggingForHindsight": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "HashedLoggingForHindsight",
-                    "enable_features": [
-                        "CrOSActionStructuredMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsArcGames": [
         {
             "platforms": [
