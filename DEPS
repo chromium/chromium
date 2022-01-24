@@ -1529,8 +1529,8 @@ deps = {
   'src/third_party/aemu-linux-x64': {
       'packages': [
           {
-              'package': 'fuchsia/third_party/aemu/linux-amd64',
-              'version': 'vRCm89BzABss-_H8vC-tLjcSf6uusZA9IBSSYtdw4_kC'
+              'package': 'fuchsia/third_party/android/aemu/release/linux-amd64',
+              'version': 'ZHubblq54Fi2PetAhwzq6VgyFs9vbTi03BjhCmiS59cC'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',
@@ -1540,8 +1540,8 @@ deps = {
   'src/third_party/aemu-mac-x64': {
       'packages': [
           {
-              'package': 'fuchsia/third_party/aemu/mac-amd64',
-              'version': 'guAtTBQ1SKIjr06srbTOjNWiYxrM4nK1AbfeQo1gBmQC'
+              'package': 'fuchsia/third_party/android/aemu/release/mac-amd64',
+              'version': 'en5IYbZukTkSmHUnmAKiFkHZrGz1BCQhCecHEggxAqUC'
           },
       ],
       'condition': 'host_os == "mac" and checkout_fuchsia',
