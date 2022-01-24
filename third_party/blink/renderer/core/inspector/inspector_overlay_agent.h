@@ -280,6 +280,8 @@ class CORE_EXPORT InspectorOverlayAgent final
   float WindowToViewportScale() const;
   void ScheduleUpdate();
 
+  float EmulationScaleFactor() const;
+
  private:
   class InspectorOverlayChromeClient;
   class InspectorPageOverlayDelegate;

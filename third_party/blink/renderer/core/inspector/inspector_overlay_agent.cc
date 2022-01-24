@@ -277,13 +277,20 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
     overlay_->PaintOverlayPage();
 
-    layer_->SetBounds(size);
+    // The emulation scale factor is baked in the contents of the overlay layer,
+    // so the size of the layer also needs to be scaled.
+    layer_->SetBounds(
+        gfx::ScaleToCeiledSize(size, overlay_->EmulationScaleFactor()));
     DEFINE_STATIC_LOCAL(
         Persistent<LiteralDebugNameClient>, debug_name_client,
         (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
+    // The overlay layer needs to be in the root property tree state (instead of
+    // the default FrameOverlay state which is under the emulation scale
+    // transform node) because the emulation scale is baked in the layer.
+    const auto* property_tree_state = &PropertyTreeState::Root();
     RecordForeignLayer(graphics_context, *debug_name_client,
                        DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                       gfx::Point(), &PropertyTreeState::Root());
+                       gfx::Point(), property_tree_state);
   }
 
   void Invalidate() override {
@@ -1115,9 +1122,13 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   LocalFrame* overlay_frame = OverlayMainFrame();
   blink::VisualViewport& visual_viewport =
       frame->GetPage()->GetVisualViewport();
-  gfx::Size viewport_size = visual_viewport.Size();
+  // The emulation scale factor is backed in the overlay frame.
+  gfx::Size viewport_size =
+      gfx::ScaleToCeiledSize(visual_viewport.Size(), EmulationScaleFactor());
   overlay_frame->SetPageZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
+  OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
+      DocumentUpdateReason::kInspector);
 
   Reset(viewport_size, frame->View()->ViewportSizeForMediaQueries());
 
@@ -1140,6 +1151,13 @@ void InspectorOverlayAgent::PaintOverlayPage() {
 
   OverlayMainFrame()->View()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kInspector);
+}
+
+float InspectorOverlayAgent::EmulationScaleFactor() const {
+  return GetFrame()
+      ->GetPage()
+      ->GetChromeClient()
+      .InputEventsScaleForEmulation();
 }
 
 static std::unique_ptr<protocol::DictionaryValue> BuildObjectForSize(
@@ -1260,9 +1278,7 @@ void InspectorOverlayAgent::Reset(
   std::unique_ptr<protocol::DictionaryValue> reset_data =
       protocol::DictionaryValue::create();
   reset_data->setDouble("deviceScaleFactor", WindowToViewportScale());
-  reset_data->setDouble(
-      "emulationScaleFactor",
-      GetFrame()->GetPage()->GetChromeClient().InputEventsScaleForEmulation());
+  reset_data->setDouble("emulationScaleFactor", EmulationScaleFactor());
   reset_data->setDouble("pageScaleFactor",
                         GetFrame()->GetPage()->GetVisualViewport().Scale());
 
