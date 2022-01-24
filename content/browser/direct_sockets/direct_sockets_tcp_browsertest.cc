@@ -273,7 +273,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
-    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
     DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
 
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());

@@ -2012,7 +2012,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/device_chooser_browsertest.cc",
-      "../browser/ui/views/direct_sockets_connection_bubble_dialog_browsertest.cc",
       "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",

@@ -69,8 +69,9 @@ class MODULES_EXPORT NavigatorSocket final
   void EnsureServiceConnected(LocalDOMWindow&);
 
   static mojom::blink::DirectSocketOptionsPtr CreateSocketOptions(
-      const SocketOptions*,
-      NavigatorSocket::ProtocolType);
+      const SocketOptions* options,
+      NavigatorSocket::ProtocolType socket_type,
+      ExceptionState& exception_state);
 
   ScriptPromise openTCPSocket(ScriptState*,
                               const TCPSocketOptions*,

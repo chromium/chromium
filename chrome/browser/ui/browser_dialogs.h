@@ -62,7 +62,7 @@ class AuthChallengeInfo;
 namespace permissions {
 class ChooserController;
 enum class PermissionAction;
-}
+}  // namespace permissions
 
 namespace safe_browsing {
 class ChromeCleanerController;
@@ -514,13 +514,6 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
 // provided.
 using OnProceedCallback = base::OnceCallback<
     void(bool accepted, const std::string& address, const std::string& port)>;
-
-// Show dialog to accept remote address and port number information, which will
-// be used to make a socket connection. The window is automatically destroyed
-// when it is closed.
-void ShowDirectSocketsConnectionDialog(Browser* browser,
-                                       const std::string& address,
-                                       OnProceedCallback callback);
 
 }  // namespace chrome
 

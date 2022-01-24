@@ -72,8 +72,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   static net::MutableNetworkTrafficAnnotationTag TrafficAnnotation();
 
-  static void SetConnectionDialogBypassForTesting(bool bypass);
-
   static void SetEnterpriseManagedForTesting(bool enterprise_managed);
 
   static void SetPermissionCallbackForTesting(PermissionCallback callback);
@@ -94,24 +92,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   // Returns net::OK if the options are valid and the connection is permitted.
   net::Error ValidateOptions(const blink::mojom::DirectSocketOptions& options);
-
-  // DirectSocketsRequestDialogController:
-  void OnDialogProceedTcp(
-      blink::mojom::DirectSocketOptionsPtr options,
-      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-      mojo::PendingRemote<network::mojom::SocketObserver> observer,
-      OpenTcpSocketCallback callback,
-      bool accepted,
-      const std::string& address,
-      const std::string& port);
-  void OnDialogProceedUdp(
-      blink::mojom::DirectSocketOptionsPtr options,
-      mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
-      mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
-      OpenUdpSocketCallback callback,
-      bool accepted,
-      const std::string& address,
-      const std::string& port);
 
   raw_ptr<RenderFrameHost> frame_host_;
   mojo::UniqueReceiverSet<blink::mojom::DirectUDPSocket>

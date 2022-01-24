@@ -13,7 +13,7 @@
     <script>
       'use strict';
 
-      const options = { remotePort: 53 };
+      const options = { remoteAddress: '127.0.0.1', remotePort: 53 };
 
       direct_sockets_test(async (t, mockDirectSocketsService) => {
         // Not activated by user gesture, so not allowed!

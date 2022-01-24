@@ -15,12 +15,12 @@
 
       direct_sockets_test(async (t, mockDirectSocketsService) => {
         await test_driver.bless("open socket");
-        await promise_rejects_dom(t, "NetworkError", navigator.openTCPSocket({ remotePort: 53 }));
+        await promise_rejects_dom(t, "NetworkError", navigator.openTCPSocket({ remoteAddress: '127.0.0.1', remotePort: 53 }));
       }, "direct sockets (TCP) do not get blocked on permissions policy direct-sockets=(self)");
 
       direct_sockets_test(async (t, mockDirectSocketsService) => {
         await test_driver.bless("open socket");
-        await promise_rejects_dom(t, "NetworkError", navigator.openUDPSocket({ remotePort: 53 }));
+        await promise_rejects_dom(t, "NetworkError", navigator.openUDPSocket({ remoteAddress: '127.0.0.1', remotePort: 53 }));
       }, "direct sockets (UDP) do not get blocked by permissions policy on direct-sockets=(self)");
     </script>
   </body>

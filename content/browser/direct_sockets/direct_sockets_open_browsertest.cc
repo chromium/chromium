@@ -450,7 +450,6 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
-    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
     DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
 
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
@@ -529,29 +528,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_CannotEvadeCors) {
       blink::mojom::DirectSocketFailureType::kCORS, 1);
 }
 
-// Permission Denied failures(user dialog) should be triggered if connection
-// dialog is not accepted.
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_ConnectionDialogNotAccepted) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kUserDialog, 0);
-
-  DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(false);
-
-  const std::string script =
-      "openTcp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kUserDialog, 1);
-}
-
 // Remote address should be provided or TEST will fail with NotAllowedError. In
 // actual use scenario, it can be obtained from the user's input in connection
 // dialog.
@@ -561,20 +537,35 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   const std::string script = "openTcp({remotePort: 993})";
 
-  EXPECT_EQ("openTcp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
+  const std::string expected_result =
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': Incomplete remote address specified.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_RemotePortCurrentlyRequired) {
+                       OpenTcp_CompleteRemoteAddressRequired) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   const std::string script = "openTcp({})";
 
-  EXPECT_EQ(
+  const std::string expected_result =
       "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
-      "'Navigator': remotePort was not specified.",
-      EvalJs(shell(), script));
+      "'Navigator': Complete remote address is always required for TCP.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_LocalAddressInsufficient) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script =
+      "openTcp({localAddress: '127.0.0.1', localPort: 228})";
+
+  const std::string expected_result =
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': Complete remote address is always required for TCP.";
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -811,29 +802,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_CannotEvadeCors) {
       blink::mojom::DirectSocketFailureType::kCORS, 1);
 }
 
-// Permission Denied failures(user dialog) should be triggered if connection
-// dialog is not accepted.
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_ConnectionDialogNotAccepted) {
-  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kUserDialog, 0);
-
-  DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(false);
-
-  const std::string script =
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993})";
-
-  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kUserDialog, 1);
-}
-
 // Remote address should be provided or TEST will fail with NotAllowedError. In
 // actual use scenario, it can be obtained from the user's input in connection
 // dialog.
@@ -843,8 +811,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   const std::string script = "openUdp({remotePort: 993})";
 
-  EXPECT_EQ("openUdp failed: NetworkError: Network error.",
-            EvalJs(shell(), script));
+  const std::string expected_result =
+      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
+      "'Navigator': Incomplete remote address specified.";
+
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
@@ -853,10 +824,27 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   const std::string script = "openUdp({remoteAddress: '127.0.0.1'})";
 
-  EXPECT_EQ(
+  const std::string expected_result =
       "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
-      "'Navigator': remotePort was not specified.",
-      EvalJs(shell(), script));
+      "'Navigator': Incomplete remote address specified.";
+
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenUdp_EitherRemoteAddressOrLocalAddress) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script =
+      "openUdp({remoteAddress: '127.0.0.1', remotePort: 993, localAddress: "
+      "'127.0.0.1', localPort: 993})";
+
+  const std::string expected_result =
+      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
+      "'Navigator': Both remote address and local address specified -- "
+      "please choose only one.";
+
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,

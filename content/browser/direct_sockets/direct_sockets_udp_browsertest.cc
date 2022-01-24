@@ -27,7 +27,6 @@
 // The tests in this file use the Network Service implementation of
 // NetworkContext, to test sending and receiving of data over UDP sockets.
 
-
 namespace content {
 
 namespace {
@@ -57,7 +56,6 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
-    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
     DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
 
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());

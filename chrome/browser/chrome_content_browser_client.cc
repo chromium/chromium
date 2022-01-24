@@ -5459,26 +5459,6 @@ ChromeContentBrowserClient::GetWebAuthenticationRequestDelegate(
   return AuthenticatorRequestScheduler::CreateRequestDelegate(
       render_frame_host);
 }
-
-void ChromeContentBrowserClient::ShowDirectSocketsConnectionDialog(
-    content::RenderFrameHost* owner,
-    const std::string& address,
-    base::OnceCallback<void(bool, const std::string&, const std::string&)>
-        callback) {
-  auto* contents = content::WebContents::FromRenderFrameHost(owner);
-  if (!contents)
-    return;
-
-  auto* browser = chrome::FindBrowserWithWebContents(contents);
-  if (!browser ||
-      browser->tab_strip_model()->GetActiveWebContents() != contents) {
-    std::move(callback).Run(false, std::string(), std::string());
-    return;
-  }
-
-  chrome::ShowDirectSocketsConnectionDialog(browser, address,
-                                            std::move(callback));
-}
 #endif
 
 std::unique_ptr<net::ClientCertStore>

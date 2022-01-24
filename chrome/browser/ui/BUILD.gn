@@ -3183,7 +3183,6 @@ static_library("ui") {
       "autofill/payments/webauthn_dialog_model_observer.h",
       "autofill/payments/webauthn_dialog_state.h",
       "autofill/payments/webauthn_dialog_view.h",
-      "browser_dialogs_desktop.cc",
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
       "signin_modal_dialog.cc",
