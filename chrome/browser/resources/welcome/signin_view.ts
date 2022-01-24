@@ -10,10 +10,11 @@ import './shared/onboarding_background.js';
 import './shared/splash_pages_shared_css.js';
 import '../strings.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NavigationMixin} from './navigation_mixin.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
+import {getTemplate} from './signin_view.html.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
@@ -29,6 +30,10 @@ const SigninViewElementBase = NavigationMixin(PolymerElement);
 export class SigninViewElement extends SigninViewElementBase {
   static get is() {
     return 'signin-view';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   private finalized_: boolean = false;
@@ -77,10 +82,6 @@ export class SigninViewElement extends SigninViewElementBase {
     this.finalized_ = true;
     this.signinViewProxy_.recordSkip();
     this.welcomeBrowserProxy_.handleUserDecline();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

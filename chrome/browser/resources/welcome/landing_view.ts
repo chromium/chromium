@@ -10,8 +10,9 @@ import './shared/splash_pages_shared_css.js';
 import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './landing_view.html.js';
 import {LandingViewProxy, LandingViewProxyImpl} from './landing_view_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
@@ -29,6 +30,10 @@ const LandingViewElementBase = NavigationMixin(PolymerElement);
 export class LandingViewElement extends LandingViewElementBase {
   static get is() {
     return 'landing-view';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -81,10 +86,6 @@ export class LandingViewElement extends LandingViewElementBase {
     this.finalized_ = true;
     this.landingViewProxy_.recordNewUser();
     navigateTo(Routes.NEW_USER, 1);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 customElements.define(LandingViewElement.is, LandingViewElement);

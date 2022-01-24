@@ -7,12 +7,17 @@
  * animated and responsive background for any page that contains it.
  */
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './onboarding_background.html.js';
 
 /** @polymer */
 export class OnboardingBackgroundElement extends PolymerElement {
   static get is() {
     return 'onboarding-background';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   private animations_: Animation[] = [];
@@ -107,10 +112,6 @@ export class OnboardingBackgroundElement extends PolymerElement {
 
   play() {
     this.animations_.forEach(animation => animation.play());
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 customElements.define(

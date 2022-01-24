@@ -14,11 +14,12 @@ import '../strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
 import {DefaultBrowserInfo, stepIndicatorModel} from '../shared/nux_types.js';
 
+import {getTemplate} from './nux_set_as_default.html.js';
 import {NuxSetAsDefaultProxy, NuxSetAsDefaultProxyImpl} from './nux_set_as_default_proxy.js';
 
 export interface NuxSetAsDefaultElement {
@@ -34,6 +35,10 @@ const NuxSetAsDefaultElementBase =
 export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   static get is() {
     return 'nux-set-as-default';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -138,10 +143,6 @@ export class NuxSetAsDefaultElement extends NuxSetAsDefaultElementBase {
   private finished_() {
     this.finalized_ = true;
     this.navigateToNextStep();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
