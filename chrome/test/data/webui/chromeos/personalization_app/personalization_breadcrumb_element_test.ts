@@ -89,6 +89,14 @@ export function PersonalizationBreadcrumbTest() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
         breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+  });
+
+  test('click home button goes back to root page', async () => {
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+
+    breadcrumbElement =
+        initElement(PersonalizationBreadcrumb, {'path': Paths.Collections});
+    await waitAfterNextRender(breadcrumbElement);
 
     // navigate to main page when Home icon is clicked on.
     const original = PersonalizationRouter.instance;
@@ -109,6 +117,29 @@ export function PersonalizationBreadcrumbTest() {
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.Root, path);
     assertDeepEquals({}, queryParams);
+  });
+
+  test('back button hidden if personalization hub feature is on', async () => {
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
+
+    breadcrumbElement = initElement(
+        PersonalizationBreadcrumb, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(breadcrumbElement);
+
+    assertTrue(
+        !!breadcrumbElement!.shadowRoot!.getElementById('backButton'),
+        'back button should be visible');
+
+    // Recreate the element with the hub feature on.
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+    breadcrumbElement.remove();
+    breadcrumbElement =
+        initElement(PersonalizationBreadcrumb, {'path': Paths.Collections});
+    await waitAfterNextRender(breadcrumbElement);
+
+    assertTrue(
+        !breadcrumbElement!.shadowRoot!.getElementById('backButton'),
+        'no back button');
   });
 
   test('shows collection name when collection is selected', async () => {

@@ -142,10 +142,8 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   }
 
   private computeShowBackButton_(path: string): boolean {
-    if (isPersonalizationHubEnabled()) {
-      return path !== Paths.Root;
-    }
-    return path !== Paths.Collections;
+    // Do not show the back button if hub is enabled.
+    return !isPersonalizationHubEnabled() && path !== Paths.Collections;
   }
 
   private showHomeButton_(): boolean {
