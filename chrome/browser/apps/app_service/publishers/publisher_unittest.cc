@@ -212,7 +212,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  const std::vector<std::string>& additional_search_terms,
                  base::Time last_launch_time,
                  base::Time install_time,
-                 const apps::Permissions& permissions) {
+                 const apps::Permissions& permissions,
+                 absl::optional<bool> is_platform_app = absl::nullopt) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -234,6 +235,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     }
     if (!permissions.empty()) {
       EXPECT_TRUE(IsEqual(permissions, cache.states_[app_id]->permissions));
+    }
+    if (is_platform_app.has_value()) {
+      EXPECT_EQ(is_platform_app, cache.states_[app_id]->is_platform_app);
     }
   }
 
@@ -366,9 +370,11 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     StandaloneBrowserExtensionApps* chrome_apps =
         StandaloneBrowserExtensionAppsFactory::GetForProfile(profile());
     std::vector<mojom::AppPtr> apps;
-    apps.push_back(MakeMojomApp(mojom::AppType::kStandaloneBrowserChromeApp,
-                                /*app_id=*/"a",
-                                /*name=*/"TestApp", mojom::Readiness::kReady));
+    auto app = MakeMojomApp(mojom::AppType::kStandaloneBrowserChromeApp,
+                            /*app_id=*/"a",
+                            /*name=*/"TestApp", mojom::Readiness::kReady);
+    app->is_platform_app = mojom::OptionalBool::kTrue;
+    apps.push_back(std::move(app));
     chrome_apps->OnApps(std::move(apps));
   }
 
@@ -405,7 +411,8 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
   ExtensionAppsOnApps();
   VerifyApp(AppType::kStandaloneBrowserChromeApp, "a", "TestApp",
             Readiness::kReady, InstallReason::kUser, InstallSource::kSync, {},
-            base::Time(), base::Time(), apps::Permissions());
+            base::Time(), base::Time(), apps::Permissions(),
+            /*is_platform_app=*/true);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
@@ -429,7 +436,8 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   app_service_test.SetUp(profile());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            base::Time(), base::Time(), apps::Permissions());
+            base::Time(), base::Time(), apps::Permissions(),
+            /*is_platform_app=*/false);
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
@@ -443,14 +451,16 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   service_->AddExtension(store.get());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            base::Time(), base::Time(), apps::Permissions());
+            base::Time(), base::Time(), apps::Permissions(),
+            /*is_platform_app=*/false);
 
   // Test OnExtensionLastLaunchTimeChanged.
   extensions::ExtensionPrefs::Get(profile())->SetLastLaunchTime(
       store->id(), kLastLaunchTime);
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
-            kLastLaunchTime, base::Time(), apps::Permissions());
+            kLastLaunchTime, base::Time(), apps::Permissions(),
+            /*is_platform_app=*/false);
 }
 
 TEST_F(PublisherTest, WebAppsOnApps) {

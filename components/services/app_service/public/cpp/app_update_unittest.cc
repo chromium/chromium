@@ -79,6 +79,8 @@ class AppUpdateTest : public testing::Test {
 
   std::string expect_policy_id_;
 
+  absl::optional<bool> expect_is_platform_app_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -116,6 +118,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_policy_id_, u.GetPolicyId());
 
+    EXPECT_EQ(expect_is_platform_app_, u.GetIsPlatformApp());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -140,6 +144,7 @@ class AppUpdateTest : public testing::Test {
     expect_install_reason_ = InstallReason::kUnknown;
     expect_install_source_ = InstallSource::kUnknown;
     expect_policy_id_ = "";
+    expect_is_platform_app_ = absl::nullopt;
     CheckExpects(u);
 
     if (delta) {
@@ -387,6 +392,7 @@ class AppUpdateTest : public testing::Test {
     }
 
     // InstallReason tests.
+
     if (state) {
       state->install_reason = InstallReason::kUser;
       expect_install_reason_ = InstallReason::kUser;
@@ -406,6 +412,7 @@ class AppUpdateTest : public testing::Test {
     }
 
     // InstallSource tests.
+
     if (state) {
       state->install_source = InstallSource::kPlayStore;
       expect_install_source_ = InstallSource::kPlayStore;
@@ -425,6 +432,7 @@ class AppUpdateTest : public testing::Test {
     }
 
     // PolicyId tests.
+
     if (state) {
       state->policy_id = "https://app.site/alpha";
       expect_policy_id_ = "https://app.site/alpha";
@@ -440,6 +448,26 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_policy_id_, state->policy_id);
+      CheckExpects(u);
+    }
+
+    // IsPlatformApp tests.
+
+    if (state) {
+      state->is_platform_app = false;
+      expect_is_platform_app_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->is_platform_app = true;
+      expect_is_platform_app_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_is_platform_app_, state->is_platform_app);
       CheckExpects(u);
     }
   }

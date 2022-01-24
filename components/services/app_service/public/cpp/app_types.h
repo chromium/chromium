@@ -145,6 +145,10 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // For web apps, it contains the install URL.
   absl::optional<std::string> policy_id;
 
+  // Whether the app is an extensions::Extensions where is_platform_app()
+  // returns true.
+  absl::optional<bool> is_platform_app;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

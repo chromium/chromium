@@ -35,6 +35,8 @@ std::unique_ptr<App> App::Clone() const {
 
   app->policy_id = policy_id;
 
+  app->is_platform_app = is_platform_app;
+
   return app;
 }
 
@@ -204,6 +206,11 @@ std::unique_ptr<App> ConvertMojomAppToApp(
       ConvertMojomInstallSourceToInstallSource(mojom_app->install_source);
 
   app->policy_id = mojom_app->policy_id;
+
+  if (mojom_app->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
+    app->is_platform_app =
+        mojom_app->is_platform_app == apps::mojom::OptionalBool::kTrue;
+  }
 
   return app;
 }

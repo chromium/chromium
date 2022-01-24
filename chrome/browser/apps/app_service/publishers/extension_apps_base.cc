@@ -228,6 +228,8 @@ std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
     }
   }
 
+  app->is_platform_app = extension->is_platform_app();
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

@@ -205,6 +205,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_ENUM_VALUE(install_reason, InstallReason::kUnknown);
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
   SET_OPTIONAL_VALUE(policy_id);
+  SET_OPTIONAL_VALUE(is_platform_app);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -590,6 +591,10 @@ apps::mojom::OptionalBool AppUpdate::IsPlatformApp() const {
     return mojom_state_->is_platform_app;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetIsPlatformApp() const {
+  GET_VALUE_WITH_FALLBACK(is_platform_app, absl::nullopt)
 }
 
 bool AppUpdate::IsPlatformAppChanged() const {
