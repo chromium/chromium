@@ -23,6 +23,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/client_update_protocol/ecdsa.h"
@@ -308,6 +309,10 @@ void NetworkTimeTracker::OverrideNonceForTesting(uint32_t nonce) {
   query_signer_->OverrideNonceForTesting(kKeyVersion, nonce);
 }
 
+void NetworkTimeTracker::OverrideUMANoiseFactorForTesting(double noise_factor) {
+  uma_noise_factor_ = noise_factor;
+}
+
 base::TimeDelta NetworkTimeTracker::GetTimerDelayForTesting() const {
   DCHECK(timer_.IsRunning());
   return timer_.GetCurrentDelay();
@@ -558,7 +563,7 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
   // Compute the skew by comparing the reference clock to the system clock. Note
   // that the server processed our query roughly `fetch_latency/2` units of time
   // in the past. Adjust the `current_time` accordingly.
-  const base::TimeDelta system_clock_skew =
+  base::TimeDelta system_clock_skew =
       base::Time::NowFromSystemTime() - (current_time + fetch_latency / 2);
 
   enum class ClockSkewRange {
@@ -578,6 +583,10 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
       return ClockSkewRange::TooSmall;
     return ClockSkewRange::InRange;
   };
+
+  // Add noise for privacy reasons.
+  system_clock_skew +=
+      system_clock_skew * (2 * base::RandDouble() - 1) * uma_noise_factor_;
 
   // Explicitly record clock skew of zero in the "positive" histograms.
   if (system_clock_skew >= base::TimeDelta()) {
