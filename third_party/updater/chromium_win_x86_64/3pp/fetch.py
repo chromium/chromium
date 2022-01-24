@@ -13,7 +13,7 @@ import six.moves.urllib.request
 # MIN_VERSION is the earliest working version of the updater for self-update
 # testing. If a backwards-incompatible change to the updater is made, it may be
 # necessary to increase the version.
-MIN_VERSION = 958813
+MIN_VERSION = 962503
 
 def get_platform():
     return 'Win_x64'

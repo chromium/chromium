@@ -11,8 +11,4 @@ set -o pipefail
 # The commands below should output the built product to this directory.
 PREFIX="$1"
 
-if [ -f "updater/UpdaterSetup_test.exe" ]; then
-  mv updater/UpdaterSetup_test.exe "$PREFIX"
-elif [ -f "updater/UpdaterSetup.exe" ]; then
-  mv updater/UpdaterSetup.exe "$PREFIX"
-fi
+mv UpdaterSetup_test.exe "$PREFIX"
