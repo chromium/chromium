@@ -49,6 +49,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -370,7 +372,6 @@ class CastSocketTestBase : public testing::Test {
  protected:
   CastSocketTestBase()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        url_request_context_(true),
         logger_(new Logger()),
         observer_(new MockCastSocketObserver()),
         socket_open_params_(CreateIPEndPointForTest(),
@@ -385,11 +386,13 @@ class CastSocketTestBase : public testing::Test {
   void SetUp() override {
     EXPECT_CALL(*observer_, OnMessage(_, _)).Times(0);
 
-    url_request_context_.set_client_socket_factory(&client_socket_factory_);
-    url_request_context_.Init();
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_client_socket_factory_for_testing(
+        &client_socket_factory_);
+    url_request_context_ = context_builder->Build();
     network_context_ = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote_.BindNewPipeAndPassReceiver(),
-        &url_request_context_,
+        url_request_context_.get(),
         /*cors_exempt_header_list=*/std::vector<std::string>());
   }
 
@@ -402,7 +405,7 @@ class CastSocketTestBase : public testing::Test {
   TestSocketFactory* client_socket_factory() { return &client_socket_factory_; }
 
   content::BrowserTaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   raw_ptr<Logger> logger_;

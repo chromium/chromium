@@ -38,6 +38,8 @@
 #include "net/test/gtest_util.h"
 #include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,8 +70,10 @@ class DomainReliabilityMonitorTest : public testing::Test {
   typedef DomainReliabilityMonitor::RequestInfo RequestInfo;
 
   DomainReliabilityMonitorTest()
-      : time_(new MockTime()),
-        monitor_(&url_request_context_,
+      : url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        time_(new MockTime()),
+        monitor_(url_request_context_.get(),
                  "test-reporter",
                  DomainReliabilityContext::UploadAllowedCallback(),
                  std::unique_ptr<MockableTime>(time_)) {
@@ -121,7 +125,7 @@ class DomainReliabilityMonitorTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   raw_ptr<MockTime> time_;
   DomainReliabilityMonitor monitor_;
   DomainReliabilityMonitor::RequestInfo request_;
@@ -594,9 +598,9 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
 
   net::TestDelegate test_delegate;
   std::unique_ptr<net::URLRequest> url_request =
-      url_request_context_.CreateRequest(test_server.GetURL("/close-socket"),
-                                         net::DEFAULT_PRIORITY, &test_delegate,
-                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+      url_request_context_->CreateRequest(test_server.GetURL("/close-socket"),
+                                          net::DEFAULT_PRIORITY, &test_delegate,
+                                          TRAFFIC_ANNOTATION_FOR_TESTS);
   url_request->set_isolation_info(kIsolationInfo);
   url_request->Start();
 
