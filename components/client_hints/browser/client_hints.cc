@@ -10,7 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/client_hints/common/client_hints.h"
 #include "components/client_hints/common/switches.h"
@@ -170,11 +170,13 @@ void ClientHints::PersistClientHints(
     return;
   }
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   base::Value::ListStorage client_hints_list;
   client_hints_list.reserve(client_hints.size());
 
-  for (const auto& entry : client_hints)
+  for (const auto& entry : client_hints) {
     client_hints_list.push_back(base::Value(static_cast<int>(entry)));
+  }
 
   auto client_hints_dictionary = std::make_unique<base::DictionaryValue>();
   client_hints_dictionary->SetKey(kClientHintsSettingKey,
@@ -187,8 +189,11 @@ void ClientHints::PersistClientHints(
       base::Value::FromUniquePtrValue(std::move(client_hints_dictionary)),
       {base::Time(), content_settings::SessionModel::UserSession});
 
-  UMA_HISTOGRAM_EXACT_LINEAR("ClientHints.UpdateEventCount", 1, 2);
-  UMA_HISTOGRAM_COUNTS_100("ClientHints.UpdateSize", client_hints.size());
+  // Record the time spent getting the client hints.
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+  base::UmaHistogramTimes("ClientHints.StoreLatency", duration);
+  base::UmaHistogramExactLinear("ClientHints.UpdateEventCount", 1, 2);
+  base::UmaHistogramCounts100("ClientHints.UpdateSize", client_hints.size());
 }
 
 void ClientHints::SetAdditionalClientHints(

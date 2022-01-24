@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -546,6 +547,7 @@ struct ClientHintsExtendedData {
           main_frame->GetLastCommittedOrigin());
     }
 
+    const base::TimeTicks start_time = base::TimeTicks::Now();
     delegate->GetAllowedClientHintsFromSource(main_frame_url, &hints);
 
     // If this is not a top-level frame, then check if any of the ancestors
@@ -556,6 +558,10 @@ struct ClientHintsExtendedData {
       is_embedder_ua_reduced = IsUserAgentReductionEnabledForEmbeddedFrame(
           url, main_frame_url, frame_tree_node, delegate);
     }
+
+    // Record the time spent getting the client hints.
+    base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+    base::UmaHistogramTimes("ClientHints.FetchLatency", duration);
   }
 
   blink::EnabledClientHints hints;
