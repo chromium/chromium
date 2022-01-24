@@ -67,8 +67,8 @@ EntityAnnotatorNativeLibrary::Create() {
     base_dir = base::mac::FrameworkBundlePath().Append("Libraries");
   } else {
 #endif
-    if (!base::PathService::Get(base::DIR_EXE, &base_dir)) {
-      LOG(ERROR) << "Error getting app exe dir";
+    if (!base::PathService::Get(base::DIR_MODULE, &base_dir)) {
+      LOG(ERROR) << "Error getting app dir";
       return nullptr;
     }
 #if BUILDFLAG(IS_MAC)
