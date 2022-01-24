@@ -2924,6 +2924,13 @@ bool Element::SkipStyleRecalcForContainer(
     }
   }
 
+  // Don't skip style recalc for form controls. The reason for skipping is a
+  // baseline inconsistency issue laying out an input element with a placeholder
+  // when interleaving layout and style recalc. This bigger cannon is to avoid
+  // potential issues with other peculiarities inside form controls.
+  if (IsFormControlElement())
+    return false;
+
   // If we are moving the ::backdrop element to the top layer while laying out
   // its originating element, it means we will add a layout-dirty box as a
   // preceding sibling of the originating element's box which means we will not
