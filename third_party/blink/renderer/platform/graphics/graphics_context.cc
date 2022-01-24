@@ -528,7 +528,9 @@ void GraphicsContext::DrawLineForText(const gfx::PointF& pt,
   auto stroke_style = GetStrokeStyle();
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, StrokeThickness());
+    gfx::Point start;
+    gfx::Point end;
+    std::tie(start, end) = GetPointsForTextLine(pt, width, StrokeThickness());
     DrawLine(start, end, auto_dark_mode, true, paint_flags);
   } else {
     if (paint_flags) {
@@ -1226,7 +1228,9 @@ Path GraphicsContext::GetPathForTextLine(const gfx::PointF& pt,
   Path path;
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    auto [start, end] = GetPointsForTextLine(pt, width, stroke_thickness);
+    gfx::Point start;
+    gfx::Point end;
+    std::tie(start, end) = GetPointsForTextLine(pt, width, stroke_thickness);
     path.MoveTo(gfx::PointF(start));
     path.AddLineTo(gfx::PointF(end));
   } else {

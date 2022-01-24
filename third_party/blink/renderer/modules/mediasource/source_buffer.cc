@@ -219,7 +219,9 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
   DCHECK(web_source_buffer_);
   DCHECK(source_);
 
-  auto [attachment, tracer] = source_->AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
 
   if (GetExecutionContext()->IsWindow()) {
@@ -1229,7 +1231,9 @@ void SourceBuffer::RemoveMediaTracks() {
   DCHECK(HTMLMediaElement::MediaTracksEnabledInternally());
   DCHECK(source_);
 
-  auto [attachment, tracer] = source_->AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
 
   // One path leading to here is from |source_|'s ContextDestroyed(), so we
@@ -1341,7 +1345,9 @@ void SourceBuffer::RemoveMediaTracks() {
 
 double SourceBuffer::GetMediaTime() {
   DCHECK(source_);
-  auto [attachment, tracer] = source_->AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
   return attachment->GetRecentMediaTime(tracer).InSecondsF();
 }
@@ -1515,7 +1521,9 @@ bool SourceBuffer::InitializationSegmentReceived(
   DCHECK(source_);
   source_->AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
-  auto [attachment, tracer] = source_->AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
   DCHECK_EQ(!tracer, !IsMainThread());
 
@@ -1923,7 +1931,9 @@ bool SourceBuffer::PrepareAppend(double media_time,
   // 3. If the HTMLMediaElement.error attribute is not null, then throw an
   //    InvalidStateError exception and abort these steps.
   DCHECK(source_);
-  auto [attachment, tracer] = source_->AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
   DCHECK(attachment);
   DCHECK_EQ(!tracer, !IsMainThread());
   if (attachment->GetElementError(tracer)) {

@@ -1357,11 +1357,14 @@ void ResourceLoader::RequestSynchronously(const ResourceRequestHead& request) {
   WebBlobInfo downloaded_blob;
 
   if (CanHandleDataURLRequestLocally(request)) {
-    // We don't have to verify mime type again since it's allowed to handle
+    ResourceResponse response;
+    scoped_refptr<SharedBuffer> data;
+    int result;
+    // It doesn't have to verify mime type again since it's allowed to handle
     // the data url with invalid mime type in some cases.
     // CanHandleDataURLRequestLocally() has already checked if the data url can
     // be handled here.
-    auto [result, response, data] =
+    std::tie(result, response, data) =
         network_utils::ParseDataURL(resource_->Url(), request.HttpMethod());
     if (result != net::OK) {
       error_out = WebURLError(result, resource_->Url());
@@ -1584,11 +1587,14 @@ void ResourceLoader::HandleDataUrl() {
   }
 
   // Extract a ResourceResponse from the data url.
-  // We don't have to verify mime type again since it's allowed to handle the
+  ResourceResponse response;
+  scoped_refptr<SharedBuffer> data;
+  int result;
+  // We doesn't have to verify mime type again since it's allowed to handle the
   // data url with invalid mime type in some cases.
   // CanHandleDataURLRequestLocally() has already checked if the data url can be
   // handled here.
-  auto [result, response, data] = network_utils::ParseDataURL(
+  std::tie(result, response, data) = network_utils::ParseDataURL(
       resource_->Url(), resource_->GetResourceRequest().HttpMethod());
   if (result != net::OK) {
     HandleError(ResourceError(result, resource_->Url(), absl::nullopt));

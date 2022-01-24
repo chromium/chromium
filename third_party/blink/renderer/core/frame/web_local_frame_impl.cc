@@ -2190,7 +2190,9 @@ std::pair<RemoteFrame*, PortalToken> WebLocalFrameImpl::CreatePortal(
     HTMLPortalElement* portal,
     mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal_receiver,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient> portal_client) {
-  auto [portal_frame, portal_token] = client_->CreatePortal(
+  WebRemoteFrame* portal_frame;
+  PortalToken portal_token;
+  std::tie(portal_frame, portal_token) = client_->CreatePortal(
       std::move(portal_receiver), std::move(portal_client), portal);
   return {To<WebRemoteFrameImpl>(portal_frame)->GetFrame(), portal_token};
 }

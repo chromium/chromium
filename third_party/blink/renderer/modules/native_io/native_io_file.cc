@@ -621,7 +621,9 @@ void NativeIOFile::DoGetLength(
       << "File I/O operation queued after file closed";
   DCHECK(resolver_task_runner);
 
-  auto [length, get_length_error] = file_state->GetLength();
+  int64_t length;
+  base::File::Error get_length_error;
+  std::tie(length, get_length_error) = file_state->GetLength();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -678,7 +680,9 @@ void NativeIOFile::DoSetLength(
   DCHECK(resolver_task_runner);
   DCHECK_GE(expected_length, 0);
 
-  auto [actual_length, set_length_error] =
+  int64_t actual_length;
+  base::File::Error set_length_error;
+  std::tie(actual_length, set_length_error) =
       file_state->SetLength(expected_length);
 
   PostCrossThreadTask(
@@ -810,7 +814,9 @@ void NativeIOFile::DoRead(
   DCHECK_LE(static_cast<size_t>(read_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  auto [read_bytes, read_error] =
+  int read_bytes;
+  base::File::Error read_error;
+  std::tie(read_bytes, read_error) =
       file_state->Read(result_buffer_data.get(), file_offset, read_size);
 
   PostCrossThreadTask(
@@ -873,7 +879,10 @@ void NativeIOFile::DoWrite(
   DCHECK_LE(static_cast<size_t>(write_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  auto [actual_file_length_on_failure, written_bytes, write_error] =
+  int written_bytes;
+  int64_t actual_file_length_on_failure = 0;
+  base::File::Error write_error;
+  std::tie(actual_file_length_on_failure, written_bytes, write_error) =
       file_state->Write(result_buffer_data.get(), file_offset, write_size);
 
   PostCrossThreadTask(

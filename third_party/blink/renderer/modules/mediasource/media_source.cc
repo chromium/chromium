@@ -682,7 +682,9 @@ ExecutionContext* MediaSource::GetExecutionContext() const {
 // method directly.
 bool MediaSource::RunUnlessElementGoneOrClosingUs(
     MediaSourceAttachmentSupplement::RunExclusivelyCB cb) {
-  auto [attachment, tracer] = AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = AttachmentAndTracer();
   DCHECK(IsMainThread() ||
          !tracer);  // Cross-thread attachments do not use a tracer.
 
@@ -1058,7 +1060,9 @@ void MediaSource::DurationChangeAlgorithm(
 
   // 6. Update the media controller duration to new duration and run the
   //    HTMLMediaElement duration change algorithm.
-  auto [attachment, tracer] = AttachmentAndTracer();
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = AttachmentAndTracer();
   attachment->NotifyDurationChanged(tracer, new_duration);
 }
 
@@ -1296,7 +1300,9 @@ void MediaSource::EndOfStreamAlgorithm(
     // to just mark end of stream, and move the duration reduction logic to here
     // so we can just run DurationChangeAlgorithm(...) here.
     double new_duration = GetDuration_Locked(pass_key);
-    auto [attachment, tracer] = AttachmentAndTracer();
+    scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+    MediaSourceTracer* tracer;
+    std::tie(attachment, tracer) = AttachmentAndTracer();
     attachment->NotifyDurationChanged(tracer, new_duration);
   } else {
     // Even though error didn't change duration, the transition to kEnded
