@@ -5,30 +5,6 @@
   <script>
     'use strict';
 
-    async function sendLoop(writer, requiredBytes) {
-      let bytesWritten = 0;
-      let chunkLength = 0;
-      const encoder = new TextEncoder();
-
-      while (bytesWritten < requiredBytes) {
-        chunkLength = Math.min(chunkLength + 1,
-                               requiredBytes - bytesWritten);
-        bytesWritten += chunkLength;
-        const view = encoder.encode('a'.repeat(chunkLength));
-        await writer.write({ data: view.buffer });
-      }
-      return 'send succeeded';
-    }
-
-    async function sendUdp(options, requiredBytes) {
-      try {
-        let udpSocket = await navigator.openUDPSocket(options);
-        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
-      } catch(error) {
-        return ('sendUdp failed: ' + error);
-      }
-    }
-
     async function closeUdp(options) {
       try {
         let udpSocket = await navigator.openUDPSocket(options);
@@ -36,16 +12,6 @@
         return 'closeUdp succeeded';
       } catch(error) {
         return ('closeUdp failed: ' + error);
-      }
-    }
-
-    async function sendUdpAfterClose(options, requiredBytes) {
-      try {
-        let udpSocket = await navigator.openUDPSocket(options);
-        await udpSocket.close();
-        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
-      } catch(error) {
-        return ('send failed: ' + error);
       }
     }
 
