@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <map>
 #include <numeric>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -220,7 +221,9 @@ int CalculateScore(const std::u16string& input,
       SplitByColon(String16VectorFromString16(input, false, nullptr));
 
   for (const auto& word : input_words) {
-    (void)std::find_if(
+    // FieldMatches::Includes() updates state, so it is OK to ignore the result
+    // of `find_if`.
+    std::ignore = std::find_if(
         field_matches_vec.begin(), field_matches_vec.end(),
         [word](auto& field_matches) { return field_matches.Includes(word); });
   }
