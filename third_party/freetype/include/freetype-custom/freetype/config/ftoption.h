@@ -531,6 +531,20 @@ FT_BEGIN_HEADER
 
   /**************************************************************************
    *
+   * OpenType SVG Glyph Support
+   *
+   *   Setting this macro enables support for OpenType SVG glyphs.  By
+   *   default, FreeType can only fetch SVG documents.  However, it can also
+   *   render them if external rendering hook functions are plugged in at
+   *   runtime.
+   *
+   *   More details on the hooks can be found in file `otsvg.h`.
+   */
+/* #define FT_CONFIG_OPTION_SVG */
+
+
+  /**************************************************************************
+   *
    * Error Strings
    *
    *   If this macro is set, `FT_Error_String` will return meaningful
@@ -1008,8 +1022,8 @@ FT_BEGIN_HEADER
 #error "Invalid CFF darkening parameters!"
 #endif
 
-FT_END_HEADER
 
+FT_END_HEADER
 
 #endif /* FTOPTION_H_ */
 
