@@ -4,6 +4,8 @@
 
 package org.chromium;
 
+import org.chromium.IsReadyToPayServiceCallback;
+
 /**
  * Interface to determine whether a payment app
  * is ready for payment.

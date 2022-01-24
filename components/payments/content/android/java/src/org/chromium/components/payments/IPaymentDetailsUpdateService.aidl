@@ -6,7 +6,7 @@ package org.chromium.components.payments;
 
 import android.os.Bundle;
 
-import IPaymentDetailsUpdateServiceCallback;
+import org.chromium.components.payments.IPaymentDetailsUpdateServiceCallback;
 
 /**
  * Helper interface used by the invoked native payment app to notify the
