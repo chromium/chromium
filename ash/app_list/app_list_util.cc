@@ -128,8 +128,8 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon,
 }
 
 void PaintFocusBar(gfx::Canvas* canvas,
-                   const gfx::Point content_origin,
-                   const int height) {
+                   const gfx::Point& content_origin,
+                   int height) {
   SkPath path;
   gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
                              content_origin.y(), kFocusBarThickness * 2,
@@ -146,6 +146,18 @@ void PaintFocusBar(gfx::Canvas* canvas,
   gfx::Point top_point = content_origin;
   gfx::Point bottom_point = content_origin + gfx::Vector2d(0, height);
   canvas->DrawLine(top_point, bottom_point, flags);
+}
+
+void PaintFocusRing(gfx::Canvas* canvas,
+                    const gfx::Point& content_origin,
+                    int outer_radius) {
+  cc::PaintFlags circle_flags;
+  circle_flags.setAntiAlias(true);
+  circle_flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  circle_flags.setStyle(cc::PaintFlags::kStroke_Style);
+  circle_flags.setStrokeWidth(kFocusBorderThickness);
+  canvas->DrawCircle(content_origin, outer_radius - kFocusBorderThickness,
+                     circle_flags);
 }
 
 void SetViewIgnoredForAccessibility(views::View* view, bool ignored) {
