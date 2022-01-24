@@ -129,9 +129,6 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   PCHECK(0 == IGNORE_EINTR(close(kNaClZygoteDescriptor)));
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(IS_CHROMEOS)
-  AddVerboseLoggingInNaclSwitch(command_line);
-#endif
   if (command_line->HasSwitch(switches::kVerboseLoggingInNacl)) {
     base::Environment::Create()->SetVar(
         "NACLVERBOSITY",
@@ -426,6 +423,15 @@ int main(int argc, char* argv[]) {
                                             sysconf(_SC_NPROCESSORS_ONLN)};
 
   CheckRDebug(argv[0]);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  AddVerboseLoggingInNaclSwitch(command_line);
+  if (command_line->HasSwitch(switches::kVerboseLoggingInNacl)) {
+    if (!freopen("/tmp/nacl.log", "a", stderr))
+      LOG(WARNING) << "Could not open /tmp/nacl.log";
+  }
+#endif
 
   std::unique_ptr<nacl::NaClSandbox> nacl_sandbox(new nacl::NaClSandbox);
   // Make sure that the early initialization did not start any spurious
