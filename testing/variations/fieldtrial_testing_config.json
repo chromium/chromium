@@ -3189,21 +3189,6 @@
             ]
         }
     ],
-    "EarlyLibraryLoad": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EarlyLibraryLoad"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableDangerousDownloadDialog": [
         {
             "platforms": [
