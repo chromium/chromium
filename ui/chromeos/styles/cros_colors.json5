@@ -356,6 +356,14 @@
     },
     menu_item_background_hover: "$ripple_color",
 
+    /* scroll bar */
+    app_scrollbar_color_hover: {
+      light: "$google_grey_600",
+      dark: "$google_grey_400",
+    },
+    app_scrollbar_color:
+      "rgba($app_scrollbar_color_hover_rgb, $disabled_opacity)",
+
     /* slider */
     slider_color_active: "$color_prominent",
     slider_color_inactive: "$color_secondary",

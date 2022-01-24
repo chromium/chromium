@@ -237,12 +237,13 @@ iron-icon {
 }
 
 ::-webkit-scrollbar {
+  background-color: var(--cros-app-scrollbar-color);
   width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: rgb(118, 118, 121);
+  background-color: var(--cros-app-scrollbar-color-hover);
   border: 2.5px solid transparent;
   width: 5px;
 }
