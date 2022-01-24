@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../../assert.js';
-import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
-import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
-import {Mode} from '../../type.js';
+import {assert, assertInstanceof} from '../assert.js';
+import {Mode} from '../type.js';
 
+import {Camera3DeviceInfo} from './camera3_device_info.js';
+import {DeviceInfoUpdater} from './device_info_updater.js';
 import {CaptureHandler} from './mode/index.js';
 
 export interface ModeConstraints {
@@ -44,4 +44,11 @@ export class CameraInfo {
     const info = this.idToCamera3DeviceInfo.get(deviceId);
     return assertInstanceof(info, Camera3DeviceInfo);
   }
+}
+
+export interface CameraUI {
+  onUpdateCapability?(cameraInfo: CameraInfo): void;
+  onUpdateConfig?(): void|Promise<void>;
+  onCameraUnavailable?(): void;
+  onCameraAvailble?(): void;
 }

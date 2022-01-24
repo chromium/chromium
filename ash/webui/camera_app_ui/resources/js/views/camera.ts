@@ -7,7 +7,16 @@ import {
   assert,
   assertInstanceof,
 } from '../assert.js';
-import {DeviceInfoUpdater} from '../device/device_info_updater.js';
+import {CameraManager} from '../device/index.js';
+import {
+  CameraViewUI,
+  getDefaultScanCorners,
+  GifResult,
+  PhotoResult,
+  PortraitResult,
+  setAvc1Parameters,
+  VideoResult,
+} from '../device/index.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import {Flag} from '../flag.js';
@@ -44,20 +53,10 @@ import {
 import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
-import {CameraManager} from './camera/camera_manager.js';
 import {Layout} from './camera/layout.js';
-import {
-  getDefaultScanCorners,
-  PhotoResult,
-  setAvc1Parameters,
-  VideoResult,
-} from './camera/mode/index.js';
-import {PortraitResult} from './camera/mode/portrait.js';
-import {GifResult} from './camera/mode/video.js';
 import {Options} from './camera/options.js';
 import {ScanOptions} from './camera/scan_options.js';
 import * as timertick from './camera/timertick.js';
-import {CameraViewUI, ModeConstraints} from './camera/type.js';
 import {VideoEncoderOptions} from './camera/video_encoder_options.js';
 import {CropDocument} from './crop_document.js';
 import {Dialog} from './dialog.js';
@@ -82,8 +81,6 @@ export class Camera extends View implements CameraViewUI {
   private readonly layoutHandler = new Layout();
 
   private readonly scanOptions: ScanOptions;
-
-  readonly cameraManager: CameraManager;
 
   private readonly videoEncoderOptions =
       new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
@@ -118,15 +115,10 @@ export class Camera extends View implements CameraViewUI {
 
   constructor(
       protected readonly resultSaver: ResultSaver,
-      private readonly infoUpdater: DeviceInfoUpdater,
+      private readonly cameraManager: CameraManager,
       readonly perfLogger: PerfLogger,
-      defaultFacing: Facing,
-      modeConstraints: ModeConstraints,
   ) {
     super(ViewName.CAMERA);
-
-    this.cameraManager = new CameraManager(
-        infoUpdater, perfLogger, this, defaultFacing, modeConstraints);
 
     this.subViews = [
       new PrimarySettings(this.cameraManager),
@@ -221,8 +213,6 @@ export class Camera extends View implements CameraViewUI {
    * Initializes camera view.
    */
   async initialize(): Promise<void> {
-    await this.cameraManager.initialize();
-
     state.addObserver(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT, () => {
       this.cameraManager.reconfigure();
     });
@@ -840,7 +830,7 @@ export class Camera extends View implements CameraViewUI {
       return;
     }
     this.activeDeviceId = newDeviceId;
-    const info = this.infoUpdater.getDeviceInfo(newDeviceId);
+    const info = this.cameraManager.getCameraInfo().getDeviceInfo(newDeviceId);
     if (info !== null) {
       speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
     }

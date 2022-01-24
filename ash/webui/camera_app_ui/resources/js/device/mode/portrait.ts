@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {I18nString} from '../../../i18n_string.js';
-import {CrosImageCapture} from '../../../mojo/image_capture.js';
-import {Effect} from '../../../mojo/type.js';
-import * as toast from '../../../toast.js';
+import {I18nString} from '../../i18n_string.js';
+import {CrosImageCapture} from '../../mojo/image_capture.js';
+import {Effect} from '../../mojo/type.js';
+import * as toast from '../../toast.js';
 import {
   Facing,
   Metadata,
   PreviewVideo,
   Resolution,
-} from '../../../type.js';
-import * as util from '../../../util.js';
-import {WaitableEvent} from '../../../waitable_event.js';
+} from '../../type.js';
+import * as util from '../../util.js';
+import {WaitableEvent} from '../../waitable_event.js';
+import {StreamConstraints} from '../stream_constraints.js';
 
 import {ModeBase} from './mode_base.js';
 import {

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {Point} from '../../../geometry.js';
+import {Point} from '../../geometry.js';
 import {
   Facing,
   PreviewVideo,
   Resolution,
-} from '../../../type.js';
+} from '../../type.js';
+import {StreamConstraints} from '../stream_constraints.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {

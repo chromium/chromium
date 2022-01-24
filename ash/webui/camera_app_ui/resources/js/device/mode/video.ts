@@ -5,26 +5,22 @@
 import {
   assert,
   assertInstanceof,
-} from '../../../assert.js';
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {
-  StreamManager,
-} from '../../../device/stream_manager.js';
-import * as dom from '../../../dom.js';
-import {reportError} from '../../../error.js';
-import * as h264 from '../../../h264.js';
-import {I18nString} from '../../../i18n_string.js';
-import {Filenamer} from '../../../models/file_namer.js';
-import * as loadTimeData from '../../../models/load_time_data.js';
+} from '../../assert.js';
+import * as dom from '../../dom.js';
+import {reportError} from '../../error.js';
+import * as h264 from '../../h264.js';
+import {I18nString} from '../../i18n_string.js';
+import {Filenamer} from '../../models/file_namer.js';
+import * as loadTimeData from '../../models/load_time_data.js';
 import {
   GifSaver,
   VideoSaver,
-} from '../../../models/video_saver.js';
-import {DeviceOperator} from '../../../mojo/device_operator.js';
-import {CrosImageCapture} from '../../../mojo/image_capture.js';
-import * as sound from '../../../sound.js';
-import * as state from '../../../state.js';
-import * as toast from '../../../toast.js';
+} from '../../models/video_saver.js';
+import {DeviceOperator} from '../../mojo/device_operator.js';
+import {CrosImageCapture} from '../../mojo/image_capture.js';
+import * as sound from '../../sound.js';
+import * as state from '../../state.js';
+import * as toast from '../../toast.js';
 import {
   CanceledError,
   ErrorLevel,
@@ -34,8 +30,12 @@ import {
   PreviewVideo,
   Resolution,
   VideoType,
-} from '../../../type.js';
-import {WaitableEvent} from '../../../waitable_event.js';
+} from '../../type.js';
+import {WaitableEvent} from '../../waitable_event.js';
+import {StreamConstraints} from '../stream_constraints.js';
+import {
+  StreamManager,
+} from '../stream_manager.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {GifRecordTime, RecordTime} from './record_time.js';

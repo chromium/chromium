@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../../../assert.js';
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import * as error from '../../../error.js';
+import {assertInstanceof} from '../../assert.js';
+import * as error from '../../error.js';
 import {
   CanceledError,
   ErrorLevel,
@@ -12,7 +11,8 @@ import {
   Facing,
   PreviewVideo,
   Resolution,
-} from '../../../type.js';
+} from '../../type.js';
+import {StreamConstraints} from '../stream_constraints.js';
 
 /**
  * Base class for controlling capture sequence in different camera modes.

@@ -4,16 +4,14 @@
 
 import {
   assertInstanceof,
-} from '../../assert.js';
-import {ConstraintsPreferrer} from '../../device/constraints_preferrer.js';
-import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
-import * as error from '../../error.js';
-import {Point} from '../../geometry.js';
-import {ChromeHelper} from '../../mojo/chrome_helper.js';
-import {ScreenState} from '../../mojo/type.js';
-import * as nav from '../../nav.js';
-import {PerfLogger} from '../../perf.js';
-import * as state from '../../state.js';
+} from '../assert.js';
+import * as error from '../error.js';
+import {Point} from '../geometry.js';
+import {ChromeHelper} from '../mojo/chrome_helper.js';
+import {ScreenState} from '../mojo/type.js';
+import * as nav from '../nav.js';
+import {PerfLogger} from '../perf.js';
+import * as state from '../state.js';
 import {
   ErrorLevel,
   ErrorType,
@@ -23,24 +21,22 @@ import {
   PreviewVideo,
   Resolution,
   ViewName,
-} from '../../type.js';
-import * as util from '../../util.js';
-import {WaitableEvent} from '../../waitable_event.js';
-import {windowController} from '../../window_controller.js';
-import {WarningType} from '.././warning.js';
+} from '../type.js';
+import * as util from '../util.js';
+import {WarningType} from '../views/warning.js';
+import {WaitableEvent} from '../waitable_event.js';
+import {windowController} from '../window_controller.js';
 
 import {EventListener, OperationScheduler} from './camera_operation.js';
+import {ConstraintsPreferrer} from './constraints_preferrer.js';
+import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Preview} from './preview.js';
-import {CameraInfo, CameraViewUI, ModeConstraints} from './type.js';
-
-export {CameraInfo};
-
-export interface CameraUI {
-  onUpdateCapability?(cameraInfo: CameraInfo): void;
-  onUpdateConfig?(): void|Promise<void>;
-  onCameraUnavailable?(): void;
-  onCameraAvailble?(): void;
-}
+import {
+  CameraInfo,
+  CameraUI,
+  CameraViewUI,
+  ModeConstraints,
+} from './type.js';
 
 class ResumeStateWatchdog {
   private trialDone: WaitableEvent<boolean>;
@@ -95,14 +91,16 @@ export class CameraManager implements EventListener {
 
   private watchdog: ResumeStateWatchdog|null = null;
 
+  private readonly infoUpdater = new DeviceInfoUpdater();
+
+  private cameraViewUI: CameraViewUI;
+
   private readonly cameraUIs: CameraUI[] = [];
 
   private readonly preview: Preview;
 
   constructor(
-      private readonly infoUpdater: DeviceInfoUpdater,
       private readonly perfLogger: PerfLogger,
-      cameraViewUI: CameraViewUI,
       defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
@@ -114,7 +112,6 @@ export class CameraManager implements EventListener {
         this.infoUpdater,
         this,
         this.preview,
-        cameraViewUI,
         defaultFacing,
         modeConstraints,
     );
@@ -227,7 +224,8 @@ export class CameraManager implements EventListener {
     return this.screenOffAuto && !this.hasExternalScreen;
   }
 
-  async initialize(): Promise<void> {
+  async initialize(cameraViewUI: CameraViewUI): Promise<void> {
+    this.cameraViewUI = cameraViewUI;
     const helper = ChromeHelper.getInstance();
 
     const setTablet = (isTablet) => state.set(state.State.TABLET, isTablet);
@@ -263,7 +261,7 @@ export class CameraManager implements EventListener {
         await helper.initExternalScreenMonitor(updateExternalScreen);
     updateExternalScreen(hasExternalScreen);
 
-    await this.scheduler.initialize();
+    await this.scheduler.initialize(this.cameraViewUI);
   }
 
   requestSuspend(): Promise<boolean> {

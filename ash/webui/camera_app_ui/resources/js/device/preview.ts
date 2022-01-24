@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../../assert.js';
-import {
-  StreamConstraints,
-  toMediaStreamConstraints,
-} from '../../device/stream_constraints.js';
-import * as dom from '../../dom.js';
-import {reportError} from '../../error.js';
-import {FaceOverlay} from '../../face.js';
-import {Point} from '../../geometry.js';
-import * as loadTimeData from '../../models/load_time_data.js';
-import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
+import {assert, assertInstanceof} from '../assert.js';
+import * as dom from '../dom.js';
+import {reportError} from '../error.js';
+import {FaceOverlay} from '../face.js';
+import {Point} from '../geometry.js';
+import * as loadTimeData from '../models/load_time_data.js';
+import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
   AndroidControlAeMode,
@@ -24,23 +20,28 @@ import {
   AndroidStatisticsFaceDetectMode,
   CameraMetadataTag,
   StreamType,
-} from '../../mojo/type.js';
+} from '../mojo/type.js';
 import {
   closeEndpoint,
   MojoEndpoint,
-} from '../../mojo/util.js';
-import * as nav from '../../nav.js';
-import * as state from '../../state.js';
+} from '../mojo/util.js';
+import * as nav from '../nav.js';
+import * as state from '../state.js';
 import {
   ErrorLevel,
   ErrorType,
   Facing,
   PreviewVideo,
   Resolution,
-} from '../../type.js';
-import * as util from '../../util.js';
-import {WaitableEvent} from '../../waitable_event.js';
-import {windowController} from '../../window_controller.js';
+} from '../type.js';
+import * as util from '../util.js';
+import {WaitableEvent} from '../waitable_event.js';
+import {windowController} from '../window_controller.js';
+
+import {
+  StreamConstraints,
+  toMediaStreamConstraints,
+} from './stream_constraints.js';
 
 /**
  * Creates a controller for the video preview of Camera view.

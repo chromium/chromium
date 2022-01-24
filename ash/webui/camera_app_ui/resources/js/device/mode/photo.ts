@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
-import {CrosImageCapture} from '../../../mojo/image_capture.js';
+import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
+import {CrosImageCapture} from '../../mojo/image_capture.js';
 import {
   CameraMetadataTag,
   StreamType,
-} from '../../../mojo/type.js';
+} from '../../mojo/type.js';
 import {
   closeEndpoint,
   MojoEndpoint,
-} from '../../../mojo/util.js';
-import * as state from '../../../state.js';
+} from '../../mojo/util.js';
+import * as state from '../../state.js';
 import {
   CanceledError,
   Facing,
@@ -21,9 +20,10 @@ import {
   PerfEvent,
   PreviewVideo,
   Resolution,
-} from '../../../type.js';
-import * as util from '../../../util.js';
-import {WaitableEvent} from '../../../waitable_event.js';
+} from '../../type.js';
+import * as util from '../../util.js';
+import {WaitableEvent} from '../../waitable_event.js';
+import {StreamConstraints} from '../stream_constraints.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 

@@ -6,30 +6,30 @@ import {
   assert,
   assertInstanceof,
   assertString,
-} from '../../assert.js';
-import {Camera3DeviceInfo} from '../../device/camera3_device_info.js';
-import {
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from '../../device/constraints_preferrer.js';
-import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
-import {StreamConstraints} from '../../device/stream_constraints.js';
-import {StreamManager} from '../../device/stream_manager.js';
-import * as error from '../../error.js';
-import {DeviceOperator} from '../../mojo/device_operator.js';
-import * as state from '../../state.js';
+} from '../assert.js';
+import * as error from '../error.js';
+import {DeviceOperator} from '../mojo/device_operator.js';
+import * as state from '../state.js';
 import {
   ErrorLevel,
   ErrorType,
   Facing,
   Mode,
   Resolution,
-} from '../../type.js';
-import * as util from '../../util.js';
-import {CancelableEvent, WaitableEvent} from '../../waitable_event.js';
+} from '../type.js';
+import * as util from '../util.js';
+import {CancelableEvent, WaitableEvent} from '../waitable_event.js';
 
+import {Camera3DeviceInfo} from './camera3_device_info.js';
+import {
+  PhotoConstraintsPreferrer,
+  VideoConstraintsPreferrer,
+} from './constraints_preferrer.js';
+import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
+import {StreamConstraints} from './stream_constraints.js';
+import {StreamManager} from './stream_manager.js';
 import {CameraInfo, CameraViewUI, ModeConstraints} from './type.js';
 
 
@@ -299,7 +299,6 @@ export class OperationScheduler {
       private readonly infoUpdater: DeviceInfoUpdater,
       private readonly listener: EventListener,
       preview: Preview,
-      cameraViewUI: CameraViewUI,
       defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
@@ -307,7 +306,7 @@ export class OperationScheduler {
         modeConstraints.exact ?? modeConstraints.default ?? Mode.PHOTO;
     this.modes = new Modes(
         defaultMode, this.photoPreferrer, this.videoPreferrer,
-        async () => this.reconfigure(), cameraViewUI);
+        async () => this.reconfigure());
     this.reconfigurer = new Reconfigurer(
         preview,
         this.modes,
@@ -326,7 +325,8 @@ export class OperationScheduler {
     });
   }
 
-  async initialize(): Promise<void> {
+  async initialize(cameraViewUI: CameraViewUI): Promise<void> {
+    this.modes.initialize(cameraViewUI);
     await StreamManager.getInstance().deviceUpdate();
     await this.firstInfoUpdate.wait();
   }

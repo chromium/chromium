@@ -6,8 +6,8 @@ import {
   Facing,
   PreviewVideo,
   Resolution,
-} from '../../../type.js';
-import * as util from '../../../util.js';
+} from '../../type.js';
+import * as util from '../../util.js';
 
 import {ModeBase} from './mode_base.js';
 import {

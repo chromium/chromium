@@ -4,6 +4,7 @@
 
 import {assert} from '../../assert.js';
 import * as barcodeChip from '../../barcode_chip.js';
+import {CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
@@ -11,7 +12,6 @@ import * as state from '../../state.js';
 import {Mode, PreviewVideo} from '../../type.js';
 import {assertEnumVariant} from '../../util.js';
 
-import {CameraManager, CameraUI} from './camera_manager.js';
 import {DocumentCornerOverlay} from './document_corner_overlay.js';
 
 enum ScanType {

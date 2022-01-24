@@ -5,24 +5,24 @@
 import {
   assert,
   assertInstanceof,
-} from '../../../assert.js';
+} from '../../assert.js';
+import * as dom from '../../dom.js';
+import {DeviceOperator} from '../../mojo/device_operator.js';
+import {CaptureIntent} from '../../mojo/type.js';
+import * as state from '../../state.js';
+import {
+  Facing,
+  Mode,
+  Resolution,
+} from '../../type.js';
+import {assertEnumVariant} from '../../util.js';
 import {
   CaptureCandidate,
   ConstraintsPreferrer,
   PhotoConstraintsPreferrer,
   VideoConstraintsPreferrer,
-} from '../../../device/constraints_preferrer.js';
-import {StreamConstraints} from '../../../device/stream_constraints.js';
-import * as dom from '../../../dom.js';
-import {DeviceOperator} from '../../../mojo/device_operator.js';
-import {CaptureIntent} from '../../../mojo/type.js';
-import * as state from '../../../state.js';
-import {
-  Facing,
-  Mode,
-  Resolution,
-} from '../../../type.js';
-import {assertEnumVariant} from '../../../util.js';
+} from '../constraints_preferrer.js';
+import {StreamConstraints} from '../stream_constraints.js';
 
 import {
   ModeBase,
@@ -44,8 +44,15 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
+export {PortraitResult} from './portrait.js';
 export {getDefaultScanCorners, ScanHandler} from './scan.js';
-export {setAvc1Parameters, Video, VideoHandler, VideoResult} from './video.js';
+export {
+  GifResult,
+  setAvc1Parameters,
+  Video,
+  VideoHandler,
+  VideoResult,
+} from './video.js';
 
 /**
  * Callback to trigger mode switching. Should return whether mode switching
@@ -124,6 +131,8 @@ export class Modes {
    * Mode classname and related functions and attributes.
    */
   private readonly allModes: {[mode in Mode]: ModeConfig};
+
+  private handler: CaptureHandler|null = null;
   /**
    * @param defaultMode Default mode to be switched to.
    */
@@ -132,7 +141,6 @@ export class Modes {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       private readonly doSwitchMode: DoSwitchMode,
-      handler: CaptureHandler,
   ) {
     /**
      * Returns a set of general constraints for fake cameras.
@@ -192,7 +200,7 @@ export class Modes {
           const params = this.getCaptureParams();
           return new VideoFactory(
               params.constraints, params.captureResolution,
-              params.videoSnapshotResolution, handler);
+              params.videoSnapshotResolution, this.handler);
         },
         isSupported: async () => true,
         isSupportPTZ: () => true,
@@ -239,7 +247,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new PhotoFactory(
-              params.constraints, params.captureResolution, handler);
+              params.constraints, params.captureResolution, this.handler);
         },
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
@@ -254,7 +262,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new SquareFactory(
-              params.constraints, params.captureResolution, handler);
+              params.constraints, params.captureResolution, this.handler);
         },
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
@@ -269,7 +277,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new PortraitFactory(
-              params.constraints, params.captureResolution, handler);
+              params.constraints, params.captureResolution, this.handler);
         },
         isSupported: async (deviceId) => {
           if (deviceId === null) {
@@ -293,7 +301,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new ScanFactory(
-              params.constraints, params.captureResolution, handler);
+              params.constraints, params.captureResolution, this.handler);
         },
         isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,
@@ -332,6 +340,10 @@ export class Modes {
 
     // Set default mode when app started.
     this.updateModeUI(defaultMode);
+  }
+
+  initialize(handler: CaptureHandler): void {
+    this.handler = handler;
   }
 
   private get allModeNames(): Mode[] {

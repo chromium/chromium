@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../assert.js';
-import {DeviceInfoUpdater} from '../device/device_info_updater.js';
+import {CameraManager, PhotoResult, VideoResult} from '../device/index.js';
 import {I18nString} from '../i18n_string.js';
 import {Intent} from '../intent.js';
 import * as metrics from '../metrics.js';
@@ -11,11 +11,10 @@ import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {PerfLogger} from '../perf.js';
 import {scaleImage} from '../thumbnailer.js';
-import {Mode, Resolution} from '../type.js';
+import {Resolution} from '../type.js';
 import * as util from '../util.js';
 
 import {Camera} from './camera.js';
-import {PhotoResult, VideoResult} from './camera/mode/index.js';
 import * as review from './review.js';
 
 /**
@@ -37,8 +36,7 @@ export class CameraIntent extends Camera {
 
   constructor(
       private readonly intent: Intent,
-      infoUpdater: DeviceInfoUpdater,
-      mode: Mode,
+      cameraManager: CameraManager,
       perfLogger: PerfLogger,
   ) {
     super(
@@ -66,8 +64,7 @@ export class CameraIntent extends Camera {
             assertNotReached();
           },
         },
-        infoUpdater, perfLogger,
-        /* facing= */ null, /* modeConstraints= */ {exact: mode});
+        cameraManager, perfLogger);
   }
 
   private reviewIntentResult(metricArgs: MetricArgs): Promise<void> {

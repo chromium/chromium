@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertInstanceof} from '../assert.js';
+import {CameraManager} from '../device/index.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import {setExpertMode} from '../expert.js';
@@ -22,7 +23,6 @@ import {
 } from '../type.js';
 import * as util from '../util.js';
 
-import {CameraManager} from './camera/camera_manager.js';
 import {View} from './view.js';
 
 /**

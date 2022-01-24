@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
+import {CameraInfo, CameraManager, CameraUI} from '../../device/index.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
@@ -10,8 +11,6 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, ViewName} from '../../type.js';
 import * as util from '../../util.js';
-
-import {CameraInfo, CameraManager, CameraUI} from './camera_manager.js';
 
 /**
  * All supported constant fps options of video recording.

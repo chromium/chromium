@@ -6,7 +6,7 @@ import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
-import {DeviceInfoUpdater} from './device/device_info_updater.js';
+import {CameraManager} from './device/index.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as focusRing from './focus_ring.js';
@@ -55,7 +55,7 @@ const appWindow = window.appWindow;
 export class App {
   private perfLogger: PerfLogger;
   private intent: Intent|null;
-  private infoUpdater: DeviceInfoUpdater;
+  private readonly cameraManager: CameraManager;
   private galleryButton = new GalleryButton();
   private cameraView: Camera;
 
@@ -68,19 +68,23 @@ export class App {
     this.perfLogger = perfLogger;
 
     this.intent = intent;
+    const shouldHandleIntentResult = this.intent?.shouldHandleResult === true;
+    state.set(
+        state.State.SHOULD_HANDLE_INTENT_RESULT, shouldHandleIntentResult);
 
-    this.infoUpdater = new DeviceInfoUpdater();
+    const modeConstraints = shouldHandleIntentResult ?
+        {exact: defaultMode} :
+        {default: defaultMode ?? Mode.PHOTO};
+    this.cameraManager =
+        new CameraManager(this.perfLogger, facing, modeConstraints);
 
     this.cameraView = (() => {
-      const mode = defaultMode ?? Mode.PHOTO;
-      if (this.intent !== null && this.intent.shouldHandleResult) {
-        state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
+      if (shouldHandleIntentResult) {
         return new CameraIntent(
-            this.intent, this.infoUpdater, mode, this.perfLogger);
+            this.intent, this.cameraManager, this.perfLogger);
       } else {
         return new Camera(
-            this.galleryButton, this.infoUpdater, this.perfLogger, facing,
-            /* modeConstraints= */ {default: mode});
+            this.galleryButton, this.cameraManager, this.perfLogger);
       }
     })();
 
@@ -235,6 +239,7 @@ export class App {
         // CCA must get camera usage for completing its initialization when
         // first launched.
         notifyCameraResourceReady();
+        await this.cameraManager.initialize(this.cameraView);
         await this.cameraView.initialize();
         cameraResourceInitialized.signal();
       }
@@ -248,11 +253,10 @@ export class App {
 
     const startCamera = (async () => {
       await cameraResourceInitialized.wait();
-      const isSuccess = await this.cameraView.cameraManager.requestResume();
+      const isSuccess = await this.cameraManager.requestResume();
 
       if (isSuccess) {
-        const {aspectRatio} =
-            this.cameraView.cameraManager.getPreviewResolution();
+        const {aspectRatio} = this.cameraManager.getPreviewResolution();
         const {width, height} = getDefaultWindowSize(aspectRatio);
         window.resizeTo(width, height);
       }
@@ -311,7 +315,7 @@ export class App {
    * Suspends app and hides app window.
    */
   async suspend(): Promise<void> {
-    await this.cameraView.cameraManager.requestSuspend();
+    await this.cameraManager.requestSuspend();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
@@ -319,7 +323,7 @@ export class App {
    * Resumes app from suspension and shows app window.
    */
   resume(): void {
-    this.cameraView.cameraManager.requestResume();
+    this.cameraManager.requestResume();
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
