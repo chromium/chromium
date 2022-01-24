@@ -440,9 +440,12 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
       android_focused_id_ = new_focus->GetId();
   }
 
-  if (android_focused_id_ && !GetFromId(*android_focused_id_)) {
-    // We lost focus. Reset it.
-    android_focused_id_.reset();
+  if (!android_focused_id_ || !GetFromId(*android_focused_id_)) {
+    // Because we only handle events from the focused window, let's reset the
+    // focus to the root window.
+    AccessibilityInfoDataWrapper* root = GetRoot();
+    DCHECK(IsValid(root));
+    android_focused_id_ = root_id_;
   }
 
   if (android_focused_id_.has_value()) {

@@ -910,7 +910,7 @@ TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
   EXPECT_EQ(node->id, data.focus_id);
 
   // An a11y focus cleared event from an action unrelated to focus (e.g. scroll)
-  // should sync the focus.
+  // should clear the focus, and moves the focus up to the root.
   SetProperty(event.get(), AXEventIntProperty::ACTION,
               static_cast<int32_t>(AXActionType::SCROLL_FORWARD));
 
@@ -918,7 +918,7 @@ TEST_F(AXTreeSourceArcTest, OnClearA11yFocusEvent) {
 
   data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
-  EXPECT_EQ(ui::kInvalidAXNodeID, data.focus_id);
+  EXPECT_EQ(root_window->window_id, data.focus_id);
 }
 
 TEST_F(AXTreeSourceArcTest, OnDrawerOpened) {
@@ -1208,7 +1208,8 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
   EXPECT_TRUE(CallGetTreeData(&data));
   EXPECT_EQ(node1->id, data.focus_id);
 
-  // When the focused node disappeared from the tree, reset the focus.
+  // When the focused node disappeared from the tree, reset the focus to the
+  // root.
   root->int_list_properties->clear();
   event->node_data.resize(1);
 
@@ -1217,7 +1218,7 @@ TEST_F(AXTreeSourceArcTest, SyncFocus) {
 
   data = ui::AXTreeData();
   EXPECT_TRUE(CallGetTreeData(&data));
-  EXPECT_EQ(ui::kInvalidAXNodeID, data.focus_id);
+  EXPECT_EQ(root_window->window_id, data.focus_id);
 }
 
 TEST_F(AXTreeSourceArcTest, StateDescriptionChangedEvent) {
