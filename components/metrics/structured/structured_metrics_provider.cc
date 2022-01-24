@@ -106,9 +106,11 @@ void StructuredMetricsProvider::OnWrite(const WriteStatus status) {
 void StructuredMetricsProvider::OnExternalMetricsCollected(
     const EventsProto& events) {
   DCHECK(base::CurrentUIThread::IsSet());
-  events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
-  events_.get()->get()->mutable_non_uma_events()->MergeFrom(
-      events.non_uma_events());
+  if (recording_enabled_) {
+    events_.get()->get()->mutable_uma_events()->MergeFrom(events.uma_events());
+    events_.get()->get()->mutable_non_uma_events()->MergeFrom(
+        events.non_uma_events());
+  }
 }
 
 void StructuredMetricsProvider::Purge() {
