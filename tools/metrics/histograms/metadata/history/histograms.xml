@@ -647,7 +647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.Cluster.{ClusterAction}"
-    units="index" expires_after="2022-02-25">
+    units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -668,7 +668,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.UIActions.RelatedSearch.{RelatedSearchAction}"
-    units="index" expires_after="2022-02-25">
+    units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.ToggledVisibility"
-    enum="BooleanVisible" expires_after="2022-02-25">
+    enum="BooleanVisible" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -694,7 +694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.{VisitType}Visit.{VisitAction}"
-    units="index" expires_after="2022-02-25">
+    units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
