@@ -108,6 +108,7 @@ as
 See the GTK documentation for more:
 .IP
 <http://library.gnome.org/devel/gtk/stable/gtk-running.html>
+.IP
 <http://library.gnome.org/devel/gtk/stable/gtk-x11.html>
 
 .SH ENVIRONMENT
