@@ -8,8 +8,8 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.View;
 
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.WebContents;
@@ -33,14 +33,15 @@ public class AssistantOverlayCoordinator {
     private boolean mScrimSuppressed;
 
     public AssistantOverlayCoordinator(Context context,
-            BrowserControlsStateProvider browserControls, View rootView, ScrimCoordinator scrim,
-            AssistantOverlayModel model, AccessibilityUtil accessibilityUtil) {
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+            ScrimCoordinator scrim, AssistantOverlayModel model,
+            AccessibilityUtil accessibilityUtil) {
         mModel = model;
         mRootView = rootView;
         mScrim = scrim;
         mAccessibilityUtil = accessibilityUtil;
-        mEventFilter = new AssistantOverlayEventFilter(context, browserControls, rootView);
-        mDrawable = new AssistantOverlayDrawable(context, browserControls);
+        mEventFilter = new AssistantOverlayEventFilter(context, browserControlsFactory, rootView);
+        mDrawable = new AssistantOverlayDrawable(context, browserControlsFactory);
 
         // Listen for changes in the state.
         // TODO(crbug.com/806868): Bind model to view through a ViewBinder instead.

@@ -86,11 +86,6 @@ public class AssistantDependenciesChrome
     }
 
     @Override
-    public BrowserControlsStateProvider getBrowserControls() {
-        return mBrowserControls;
-    }
-
-    @Override
     public KeyboardVisibilityDelegate getKeyboardVisibilityDelegate() {
         return mKeyboardVisibilityDelegate;
     }

@@ -112,7 +112,10 @@ public class BottomSheetOnboardingCoordinatorTest {
         AssistantStaticDependencies staticDependencies =
                 new AssistantDependenciesFactoryChrome().createStaticDependencies();
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
-                mBottomSheetController, mActivity.getBrowserControlsManager(),
+                mBottomSheetController,
+                ()
+                        -> new AssistantBrowserControlsChrome(
+                                mActivity.getBrowserControlsManager()),
                 mActivity.getCompositorViewHolderForTesting(),
                 staticDependencies.getAccessibilityUtil(), staticDependencies.createInfoPageUtil());
     }

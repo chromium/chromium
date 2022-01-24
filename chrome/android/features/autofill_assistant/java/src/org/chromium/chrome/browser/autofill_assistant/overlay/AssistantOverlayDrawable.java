@@ -31,8 +31,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControls;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
@@ -59,7 +60,7 @@ import java.util.List;
  * {@link RenderCoordinatesImpl} receive proper updates when scrolling.
  */
 class AssistantOverlayDrawable extends Drawable
-        implements BrowserControlsStateProvider.Observer, GestureStateListenerWithScroll {
+        implements AssistantBrowserControls.Observer, GestureStateListenerWithScroll {
     private static final int FADE_DURATION_MS = 250;
 
     /** '…' in UTF-8. */
@@ -78,7 +79,7 @@ class AssistantOverlayDrawable extends Drawable
     private static final int BOX_CORNER_DP = 8;
 
     private final Context mContext;
-    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final AssistantBrowserControls mBrowserControls;
 
     private final Paint mBackground;
     private int mBackgroundAlpha;
@@ -121,9 +122,9 @@ class AssistantOverlayDrawable extends Drawable
     private AssistantOverlayImage mOverlayImage;
 
     AssistantOverlayDrawable(
-            Context context, BrowserControlsStateProvider browserControlsStateProvider) {
+            Context context, AssistantBrowserControlsFactory browserControlsFactory) {
         mContext = context;
-        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControls = browserControlsFactory.createBrowserControls();
 
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
 
@@ -149,7 +150,7 @@ class AssistantOverlayDrawable extends Drawable
         mCornerPx = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, BOX_CORNER_DP, displayMetrics);
 
-        mBrowserControlsStateProvider.addObserver(this);
+        mBrowserControls.setObserver(this);
 
         // Inherit font from AssistantBlackBody style. This is done by letting a temporary text view
         // resolve the target typeface, because resolving it manually with ResourcesCompat.getFont()
@@ -189,7 +190,7 @@ class AssistantOverlayDrawable extends Drawable
     }
 
     void destroy() {
-        mBrowserControlsStateProvider.removeObserver(this);
+        mBrowserControls.destroy();
         if (mWebContents != null) {
             GestureListenerManager.fromWebContents(mWebContents).removeListener(this);
         }
@@ -305,13 +306,12 @@ class AssistantOverlayDrawable extends Drawable
     public void draw(Canvas canvas) {
         Rect bounds = getBounds();
         int width = bounds.width();
-        int yTop = mBrowserControlsStateProvider.getContentOffset();
-        int yBottom = bounds.height() - mBrowserControlsStateProvider.getBottomControlsHeight()
-                - mBrowserControlsStateProvider.getBottomControlOffset();
+        int yTop = mBrowserControls.getContentOffset();
+        int yBottom = bounds.height() - mBrowserControls.getBottomControlsHeight()
+                - mBrowserControls.getBottomControlOffset();
 
         // Don't draw over the top or bottom bars.
-        canvas.clipRect(
-                0, mBrowserControlsStateProvider.getTopVisibleContentOffset(), width, yBottom);
+        canvas.clipRect(0, mBrowserControls.getTopVisibleContentOffset(), width, yBottom);
 
         canvas.drawPaint(mBackground);
 

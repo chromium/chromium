@@ -13,8 +13,9 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControls;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayModel.AssistantOverlayRect;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListenerWithScroll;
@@ -51,7 +52,7 @@ class AssistantOverlayEventFilter
     }
 
     private AssistantOverlayDelegate mDelegate;
-    private final BrowserControlsStateProvider mBrowserControls;
+    private final AssistantBrowserControls mBrowserControls;
     private final View mRootView;
 
     /**
@@ -118,11 +119,11 @@ class AssistantOverlayEventFilter
     /** Times, in millisecond, of unexpected taps detected outside of the allowed area. */
     private final List<Long> mUnexpectedTapTimes = new ArrayList<>();
 
-    AssistantOverlayEventFilter(
-            Context context, BrowserControlsStateProvider browserControls, View rootView) {
+    AssistantOverlayEventFilter(Context context,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView) {
         super(context, new SimpleOnGestureListener());
 
-        mBrowserControls = browserControls;
+        mBrowserControls = browserControlsFactory.createBrowserControls();
         mRootView = rootView;
 
         mTapDetector = new GestureDetector(context, new SimpleOnGestureListener() {

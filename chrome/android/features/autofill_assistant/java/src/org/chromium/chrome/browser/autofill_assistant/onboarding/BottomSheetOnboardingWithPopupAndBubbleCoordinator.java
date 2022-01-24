@@ -12,9 +12,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantDimension;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -44,9 +44,10 @@ public class BottomSheetOnboardingWithPopupAndBubbleCoordinator
 
     BottomSheetOnboardingWithPopupAndBubbleCoordinator(AssistantInfoPageUtil infoPageUtil,
             String experimentIds, Map<String, String> parameters, Context context,
-            BottomSheetController controller, BrowserControlsStateProvider browserControls,
-            View rootView, ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
-        super(infoPageUtil, experimentIds, parameters, context, controller, browserControls,
+            BottomSheetController controller,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+            ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
+        super(infoPageUtil, experimentIds, parameters, context, controller, browserControlsFactory,
                 rootView, scrim, accessibilityUtil);
     }
 

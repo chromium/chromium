@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -33,7 +32,7 @@ public class AssistantCoordinator {
             @Nullable AssistantOverlayCoordinator overlayCoordinator,
             AssistantKeyboardCoordinator.Delegate keyboardCoordinatorDelegate,
             @NonNull KeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
-            @NonNull BrowserControlsStateProvider browserControls,
+            @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil) {
@@ -42,14 +41,14 @@ public class AssistantCoordinator {
             mOverlayCoordinator = overlayCoordinator;
         } else {
             mModel = new AssistantModel();
-            mOverlayCoordinator = new AssistantOverlayCoordinator(activity, browserControls,
+            mOverlayCoordinator = new AssistantOverlayCoordinator(activity, browserControlsFactory,
                     rootView, controller.getScrimCoordinator(), mModel.getOverlayModel(),
                     accessibilityUtil);
         }
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
-                browserControls, accessibilityUtil, infoPageUtil, profileImageUtil);
+                browserControlsFactory, accessibilityUtil, infoPageUtil, profileImageUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

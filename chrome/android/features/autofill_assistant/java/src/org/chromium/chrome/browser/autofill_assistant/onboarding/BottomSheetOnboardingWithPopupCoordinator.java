@@ -16,8 +16,8 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.util.AccessibilityUtil;
@@ -44,9 +44,10 @@ public class BottomSheetOnboardingWithPopupCoordinator extends BottomSheetOnboar
 
     BottomSheetOnboardingWithPopupCoordinator(AssistantInfoPageUtil infoPageUtil,
             String experimentIds, Map<String, String> parameters, Context context,
-            BottomSheetController controller, BrowserControlsStateProvider browserControls,
-            View rootView, ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
-        super(infoPageUtil, experimentIds, parameters, context, controller, browserControls,
+            BottomSheetController controller,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+            ScrimCoordinator scrim, AccessibilityUtil accessibilityUtil) {
+        super(infoPageUtil, experimentIds, parameters, context, controller, browserControlsFactory,
                 rootView, scrim, accessibilityUtil);
     }
 

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.autofill_assistant.infobox.AssistantInfoBoxCo
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -100,7 +99,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             AssistantOverlayCoordinator overlayCoordinator, BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
             @Nullable AssistantTabObscuringUtil tabObscuringUtil,
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil) {
         mAccessibilityUtil = accessibilityUtil;
@@ -124,7 +123,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mRootViewContainer =
                 (AssistantRootViewContainer) LayoutUtils.createInflater(activity).inflate(
                         R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
-        mRootViewContainer.initialize(browserControlsStateProvider, accessibilityUtil);
+        mRootViewContainer.initialize(browserControlsFactory, accessibilityUtil);
         mScrollableContent = mRootViewContainer.findViewById(R.id.scrollable_content);
         ViewGroup scrollableContentContainer =
                 mScrollableContent.findViewById(R.id.scrollable_content_container);

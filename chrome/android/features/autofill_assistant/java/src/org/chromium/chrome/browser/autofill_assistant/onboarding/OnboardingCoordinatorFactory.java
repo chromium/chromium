@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.autofill_assistant.onboarding;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.util.AccessibilityUtil;
 
@@ -26,18 +26,18 @@ public class OnboardingCoordinatorFactory {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final BrowserControlsStateProvider mBrowserControls;
+    private final AssistantBrowserControlsFactory mBrowserControlsFactory;
     private final View mRootView;
     private final AccessibilityUtil mAccessibilityUtil;
     private final AssistantInfoPageUtil mInfoPageUtil;
 
     public OnboardingCoordinatorFactory(Context context,
             BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls, View rootView,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mBrowserControls = browserControls;
+        mBrowserControlsFactory = browserControlsFactory;
         mRootView = rootView;
         mAccessibilityUtil = accessibilityUtil;
         mInfoPageUtil = infoPageUtil;
@@ -51,16 +51,17 @@ public class OnboardingCoordinatorFactory {
         List<String> experimentIdsList = Arrays.asList(experimentIds.split(","));
         if (experimentIdsList.contains(SPLIT_ONBOARDING_VARIANT_A_EXPERIMENT_ID)) {
             return new BottomSheetOnboardingWithPopupCoordinator(mInfoPageUtil, experimentIds,
-                    parameters, mContext, mBottomSheetController, mBrowserControls, mRootView,
-                    mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
+                    parameters, mContext, mBottomSheetController, mBrowserControlsFactory,
+                    mRootView, mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
         } else if (experimentIdsList.contains(SPLIT_ONBOARDING_VARIANT_B_EXPERIMENT_ID)) {
             return new BottomSheetOnboardingWithPopupAndBubbleCoordinator(mInfoPageUtil,
-                    experimentIds, parameters, mContext, mBottomSheetController, mBrowserControls,
-                    mRootView, mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
+                    experimentIds, parameters, mContext, mBottomSheetController,
+                    mBrowserControlsFactory, mRootView,
+                    mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
         }
 
         return new BottomSheetOnboardingCoordinator(mInfoPageUtil, experimentIds, parameters,
-                mContext, mBottomSheetController, mBrowserControls, mRootView,
+                mContext, mBottomSheetController, mBrowserControlsFactory, mRootView,
                 mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
     }
 

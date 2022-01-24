@@ -10,7 +10,6 @@ import android.view.View;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -39,8 +38,6 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
     WindowAndroid getWindowAndroid();
 
     BottomSheetController getBottomSheetController();
-
-    BrowserControlsStateProvider getBrowserControls();
 
     KeyboardVisibilityDelegate getKeyboardVisibilityDelegate();
 

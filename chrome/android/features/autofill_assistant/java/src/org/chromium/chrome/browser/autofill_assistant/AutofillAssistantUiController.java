@@ -100,7 +100,7 @@ public class AutofillAssistantUiController {
         mCoordinator = new AssistantCoordinator(mActivity, dependencies.getBottomSheetController(),
                 tabObscuringUtil, overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 dependencies.getKeyboardVisibilityDelegate(), dependencies.getRootView(),
-                dependencies.getBrowserControls(), dependencies.getBottomInsetProvider(),
+                dependencies.createBrowserControlsFactory(), dependencies.getBottomInsetProvider(),
                 dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
                 dependencies.createProfileImageUtilOrNull(mActivity));
 

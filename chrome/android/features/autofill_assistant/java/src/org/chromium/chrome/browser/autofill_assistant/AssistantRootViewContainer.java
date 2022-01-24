@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
@@ -22,9 +21,9 @@ import org.chromium.ui.util.AccessibilityUtil;
  * bar.
  */
 public class AssistantRootViewContainer
-        extends LinearLayout implements BrowserControlsStateProvider.Observer {
+        extends LinearLayout implements AssistantBrowserControls.Observer {
     private final Activity mActivity;
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private AssistantBrowserControls mBrowserControls;
     private AccessibilityUtil mAccessibilityUtil;
     private Rect mVisibleViewportRect = new Rect();
     private float mTalkbackSheetSizeFraction;
@@ -35,11 +34,11 @@ public class AssistantRootViewContainer
         mActivity = ContextUtils.activityFromContext(context);
     }
 
-    /** Initializes the object with the given {@link BrowserControlsStateProvider}. */
-    public void initialize(@NonNull BrowserControlsStateProvider browserControlsStateProvider,
+    /** Initializes the object with the given {@link AssistantBrowserControls}. */
+    public void initialize(@NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil) {
-        mBrowserControlsStateProvider = browserControlsStateProvider;
-        mBrowserControlsStateProvider.addObserver(this);
+        mBrowserControls = browserControlsFactory.createBrowserControls();
+        mBrowserControls.setObserver(this);
         mAccessibilityUtil = accessibilityUtil;
     }
 
@@ -68,19 +67,18 @@ public class AssistantRootViewContainer
     }
 
     void destroy() {
-        if (mBrowserControlsStateProvider != null) {
-            mBrowserControlsStateProvider.removeObserver(this);
+        if (mBrowserControls != null) {
+            mBrowserControls.destroy();
         }
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        int browserControlsOffset = mBrowserControlsStateProvider == null
+        int browserControlsOffset = mBrowserControls == null
                 ? 0
-                : -mBrowserControlsStateProvider.getContentOffset()
-                        - mBrowserControlsStateProvider.getBottomControlsHeight()
-                        - mBrowserControlsStateProvider.getBottomControlOffset();
+                : -mBrowserControls.getContentOffset() - mBrowserControls.getBottomControlsHeight()
+                        - mBrowserControls.getBottomControlOffset();
         int availableHeight = mVisibleViewportRect.height() - browserControlsOffset;
 
         int targetHeight;

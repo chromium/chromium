@@ -114,7 +114,9 @@ public class AutofillAssistantUiTest {
                     /* keyboardCoordinatorDelegate= */ null,
                     getActivity().getWindowAndroid().getKeyboardDelegate(),
                     getActivity().getCompositorViewHolderForTesting(),
-                    getActivity().getBrowserControlsManager(),
+                    ()
+                            -> new AssistantBrowserControlsChrome(
+                                    getActivity().getBrowserControlsManager()),
                     getActivity().getWindowAndroid().getApplicationBottomInsetProvider(),
                     staticDependencies.getAccessibilityUtil(),
                     staticDependencies.createInfoPageUtil(),
