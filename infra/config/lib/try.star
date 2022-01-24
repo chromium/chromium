@@ -271,9 +271,7 @@ def _orchestrator_builder(
     kwargs.setdefault("cores", defaults.orchestrator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
-    # TODO(gbeaty) After prod freeze, remove goma details, the
-    # orchestrator doesn't compile
-    # kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("goma_backend", None)
     kwargs.setdefault("os", os.LINUX_BIONIC_SWITCH_TO_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
