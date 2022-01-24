@@ -154,8 +154,7 @@ function testDataset(getTestElement) {
 	}
 
 	test (function() {
-		// TODO(jochen): Reenable this once it behaves correctly
-		//assert_true(testNativeDelete('-r-2-', false));
+		assert_throws_dom("SyntaxError", function() { testNativeDelete('-r-2-', false); }, '"SyntaxError: Failed to set a named property on \'DOMStringMap\': \'-r-2-\' is not a valid property name."');
 		assert_true(testNativeDelete('foo', true));
 	},'Tests Native Delete');
 
