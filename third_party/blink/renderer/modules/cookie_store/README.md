@@ -6,7 +6,7 @@ This module contains the implementation of the
 ## Testing
 
 The Cookie Store API is primarily tested in
-[Web Platform Tests](https://source.chromium.org/chromium/chromium/src/+/master:third_party/blink/web_tests/external/wpt/cookie-store/).
+[Web Platform Tests](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/external/wpt/cookie-store/).
 
 ## Design Documents
 
