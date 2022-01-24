@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../assert.js';
-import {
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from '../device/constraints_preferrer.js';
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import {I18nString} from '../i18n_string.js';
 import {Intent} from '../intent.js';
@@ -42,8 +38,6 @@ export class CameraIntent extends Camera {
   constructor(
       private readonly intent: Intent,
       infoUpdater: DeviceInfoUpdater,
-      photoPreferrer: PhotoConstraintsPreferrer,
-      videoPreferrer: VideoConstraintsPreferrer,
       mode: Mode,
       perfLogger: PerfLogger,
   ) {
@@ -72,7 +66,7 @@ export class CameraIntent extends Camera {
             assertNotReached();
           },
         },
-        infoUpdater, photoPreferrer, videoPreferrer, perfLogger,
+        infoUpdater, perfLogger,
         /* facing= */ null, /* modeConstraints= */ {exact: mode});
   }
 

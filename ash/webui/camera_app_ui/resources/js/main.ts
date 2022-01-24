@@ -6,10 +6,6 @@ import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
-import {
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from './device/constraints_preferrer.js';
 import {DeviceInfoUpdater} from './device/device_info_updater.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
@@ -59,8 +55,6 @@ const appWindow = window.appWindow;
 export class App {
   private perfLogger: PerfLogger;
   private intent: Intent|null;
-  private photoPreferrer: PhotoConstraintsPreferrer;
-  private videoPreferrer: VideoConstraintsPreferrer;
   private infoUpdater: DeviceInfoUpdater;
   private galleryButton = new GalleryButton();
   private cameraView: Camera;
@@ -75,28 +69,17 @@ export class App {
 
     this.intent = intent;
 
-    this.photoPreferrer = new PhotoConstraintsPreferrer(async () => {
-      await this.cameraView.cameraManager.reconfigure();
-    });
-
-    this.videoPreferrer = new VideoConstraintsPreferrer(async () => {
-      await this.cameraView.cameraManager.reconfigure();
-    });
-
-    this.infoUpdater =
-        new DeviceInfoUpdater(this.photoPreferrer, this.videoPreferrer);
+    this.infoUpdater = new DeviceInfoUpdater();
 
     this.cameraView = (() => {
       const mode = defaultMode ?? Mode.PHOTO;
       if (this.intent !== null && this.intent.shouldHandleResult) {
         state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
         return new CameraIntent(
-            this.intent, this.infoUpdater, this.photoPreferrer,
-            this.videoPreferrer, mode, this.perfLogger);
+            this.intent, this.infoUpdater, mode, this.perfLogger);
       } else {
         return new Camera(
-            this.galleryButton, this.infoUpdater, this.photoPreferrer,
-            this.videoPreferrer, this.perfLogger, facing,
+            this.galleryButton, this.infoUpdater, this.perfLogger, facing,
             /* modeConstraints= */ {default: mode});
       }
     })();

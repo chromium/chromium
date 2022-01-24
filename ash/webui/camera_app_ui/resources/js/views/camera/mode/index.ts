@@ -362,6 +362,17 @@ export class Modes {
   }
 
   /**
+   * Gets current mode. Should only be called when mode is properly configured.
+   */
+  getMode(): Mode {
+    return assertEnumVariant(Mode, this.captureParams?.mode);
+  }
+
+  getCaptureResolution(): Resolution {
+    return assertInstanceof(this.captureParams?.captureResolution, Resolution);
+  }
+
+  /**
    * Gets all mode candidates. Desired trying sequence of candidate modes is
    * reflected in the order of the returned array.
    */

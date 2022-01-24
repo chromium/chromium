@@ -30,7 +30,7 @@ import {CancelableEvent, WaitableEvent} from '../../waitable_event.js';
 
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
-import {CameraViewUI, ModeConstraints} from './type.js';
+import {CameraInfo, CameraViewUI, ModeConstraints} from './type.js';
 
 
 interface ConfigureCandidate {
@@ -42,37 +42,8 @@ interface ConfigureCandidate {
 }
 
 export interface EventListener {
-  onConfigureComplete(): Promise<void>;
-}
-
-class CameraInfo {
-  readonly devicesInfo: Array<MediaDeviceInfo>;
-  readonly camera3DevicesInfo: Array<Camera3DeviceInfo>|null;
-
-  private readonly idToDeviceInfo: Map<string, MediaDeviceInfo>;
-  private readonly idToCamera3DeviceInfo: Map<string, Camera3DeviceInfo>|null;
-
-  constructor(updater: DeviceInfoUpdater) {
-    this.devicesInfo = updater.getDevicesInfo();
-    this.camera3DevicesInfo = updater.getCamera3DevicesInfo();
-    this.idToDeviceInfo = new Map(this.devicesInfo.map((d) => [d.deviceId, d]));
-    this.idToCamera3DeviceInfo = this.camera3DevicesInfo &&
-        new Map(this.camera3DevicesInfo.map((d) => [d.deviceId, d]));
-  }
-
-  getDeviceInfo(deviceId: string): MediaDeviceInfo {
-    const info = this.idToDeviceInfo.get(deviceId);
-    assert(info !== undefined);
-    return info;
-  }
-
-  getCamera3DeviceInfo(deviceId: string): Camera3DeviceInfo|null {
-    if (this.idToCamera3DeviceInfo === null) {
-      return null;
-    }
-    const info = this.idToCamera3DeviceInfo.get(deviceId);
-    return assertInstanceof(info, Camera3DeviceInfo);
-  }
+  onUpdateConfig(): Promise<void>;
+  onUpdateCapability(cameraInfo: CameraInfo): void;
 }
 
 class Reconfigurer {
@@ -83,8 +54,8 @@ class Reconfigurer {
 
   constructor(
       private readonly preview: Preview, private readonly modes: Modes,
-      private readonly modeConstraints: ModeConstraints,
       private readonly postConfigure: () => Promise<void>,
+      private readonly modeConstraints: ModeConstraints,
       public facing: Facing) {}
 
   setShouldSuspend(value: boolean) {
@@ -312,7 +283,7 @@ enum OperationType {
 }
 
 export class OperationScheduler {
-  private cameraInfo: CameraInfo|null = null;
+  public cameraInfo: CameraInfo|null = null;
   private pendingUpdateInfo: CameraInfo|null = null;
   private firstInfoUpdate = new WaitableEvent();
 
@@ -320,30 +291,31 @@ export class OperationScheduler {
   readonly capturer: Capturer;
   private ongoingOperationType: OperationType|null = null;
   private pendingReconfigureWaiters: CancelableEvent<boolean>[] = [];
+  public readonly photoPreferrer = new PhotoConstraintsPreferrer();
+  public readonly videoPreferrer = new VideoConstraintsPreferrer();
+  public readonly modes: Modes;
 
   constructor(
       private readonly infoUpdater: DeviceInfoUpdater,
       private readonly listener: EventListener,
       preview: Preview,
       cameraViewUI: CameraViewUI,
-      photoPreferrer: PhotoConstraintsPreferrer,
-      videoPreferrer: VideoConstraintsPreferrer,
       defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
     const defaultMode =
         modeConstraints.exact ?? modeConstraints.default ?? Mode.PHOTO;
-    const modes = new Modes(
-        defaultMode, photoPreferrer, videoPreferrer,
+    this.modes = new Modes(
+        defaultMode, this.photoPreferrer, this.videoPreferrer,
         async () => this.reconfigure(), cameraViewUI);
     this.reconfigurer = new Reconfigurer(
         preview,
-        modes,
+        this.modes,
+        async () => this.listener.onUpdateConfig(),
         modeConstraints,
-        async () => this.listener.onConfigureComplete(),
         defaultFacing,
     );
-    this.capturer = new Capturer(modes);
+    this.capturer = new Capturer(this.modes);
     this.infoUpdater.addDeviceChangeListener(async (updater) => {
       const info = new CameraInfo(updater);
       if (this.ongoingOperationType !== null) {
@@ -360,10 +332,16 @@ export class OperationScheduler {
   }
 
   private doUpdate(cameraInfo: CameraInfo) {
-    if (this.cameraInfo === null) {
+    const isFirstUpdate = this.cameraInfo === null;
+    this.cameraInfo = cameraInfo;
+    if (cameraInfo.camera3DevicesInfo !== null) {
+      this.photoPreferrer.updateDevicesInfo(cameraInfo.camera3DevicesInfo);
+      this.videoPreferrer.updateDevicesInfo(cameraInfo.camera3DevicesInfo);
+    }
+    this.listener.onUpdateCapability(cameraInfo);
+    if (isFirstUpdate) {
       this.firstInfoUpdate.signal();
     }
-    this.cameraInfo = cameraInfo;
   }
 
   async reconfigure(): Promise<boolean> {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import * as animate from '../../animation.js';
-import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
 import {I18nString} from '../../i18n_string.js';
 import * as localStorage from '../../models/local_storage.js';
@@ -11,7 +10,13 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Facing, ViewName} from '../../type.js';
 import * as util from '../../util.js';
-import {CameraManager, CameraUI} from './camera_manager.js';
+
+import {CameraInfo, CameraManager, CameraUI} from './camera_manager.js';
+
+/**
+ * All supported constant fps options of video recording.
+ */
+const SUPPORTED_CONSTANT_FPS = [30, 60];
 
 /**
  * Creates a controller for the options of Camera view.
@@ -19,6 +24,9 @@ import {CameraManager, CameraUI} from './camera_manager.js';
 export class Options implements CameraUI {
   private readonly toggleMic = dom.get('#toggle-mic', HTMLInputElement);
   private readonly toggleMirror = dom.get('#toggle-mirror', HTMLInputElement);
+  private readonly toggleFps = dom.get('#toggle-fps', HTMLInputElement);
+  private readonly switchDeviceButton =
+      dom.get('#switch-device', HTMLButtonElement);
 
   /**
    * Device id of the camera device currently used or selected.
@@ -35,24 +43,22 @@ export class Options implements CameraUI {
    */
   private audioTrack: MediaStreamTrack|null = null;
 
+  private cameraAvailble = false;
+
   /**
    * @param doSwitchDevice Callback to trigger device switching.
    */
-  constructor(
-      private readonly infoUpdater: DeviceInfoUpdater,
-      private readonly cameraManager: CameraManager,
-  ) {
+  constructor(private readonly cameraManager: CameraManager) {
     this.cameraManager.registerCameraUI(this);
-    dom.get('#switch-device', HTMLButtonElement)
-        .addEventListener('click', () => {
-          if (state.get(state.State.TAKING)) {
-            return;
-          }
-          const switching = this.cameraManager.switchCamera();
-          if (switching !== null) {
-            animate.play(dom.get('#switch-device', HTMLElement));
-          }
-        });
+    this.switchDeviceButton.addEventListener('click', () => {
+      if (state.get(state.State.TAKING) || !this.cameraAvailble) {
+        return;
+      }
+      const switching = this.cameraManager.switchCamera();
+      if (switching !== null) {
+        animate.play(dom.get('#switch-device', HTMLElement));
+      }
+    });
     dom.get('#open-settings', HTMLButtonElement)
         .addEventListener('click', () => nav.open(ViewName.SETTINGS));
 
@@ -71,9 +77,38 @@ export class Options implements CameraUI {
     // Remove the deprecated values.
     localStorage.remove('effectIndex', 'toggleMulti', 'toggleMirror');
 
-    this.infoUpdater.addDeviceChangeListener((updater) => {
-      state.set(state.State.MULTI_CAMERA, updater.getDevicesInfo().length >= 2);
+    state.addObserver(state.State.TAKING, () => {
+      this.updateOptionAvailability();
     });
+    this.toggleFps.addEventListener('click', (e) => {
+      if (state.get(state.State.TAKING) || !this.cameraAvailble) {
+        e.preventDefault();
+        return;
+      }
+    });
+    this.toggleFps.addEventListener('change', () => {
+      const prefFps = this.toggleFps.checked ? 60 : 30;
+      this.updateVideoConstFpsOption(prefFps);
+      const reconfiguring = this.cameraManager.setPrefVideoConstFps(prefFps);
+      if (reconfiguring === null) {
+        return;
+      }
+      state.set(state.State.MODE_SWITCHING, true);
+      (async () => {
+        const hasError = !await reconfiguring;
+        state.set(state.State.MODE_SWITCHING, false, {hasError});
+      })();
+    });
+  }
+
+  private updateVideoConstFpsOption(prefFps: number) {
+    this.toggleFps.checked = prefFps === 60;
+    SUPPORTED_CONSTANT_FPS.forEach(
+        (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
+  }
+
+  onUpdateCapability(cameraInfo: CameraInfo): void {
+    state.set(state.State.MULTI_CAMERA, cameraInfo.devicesInfo.length >= 2);
   }
 
   onConfigureComplete(): void {
@@ -81,6 +116,39 @@ export class Options implements CameraUI {
     this.updateMirroring(this.cameraManager.getFacing());
     this.audioTrack = this.cameraManager.getAudioTrack();
     this.updateAudioByMic();
+
+    this.toggleFps.hidden = (() => {
+      if (this.cameraManager.getFacing() !== Facing.EXTERNAL) {
+        return true;
+      }
+      const info = this.cameraManager.getCameraInfo().getCamera3DeviceInfo(
+          this.videoDeviceId);
+      if (info === null) {
+        return true;
+      }
+      const constFpses = info.fpsRanges.filter(
+          ({minFps, maxFps}) =>
+              minFps === maxFps && SUPPORTED_CONSTANT_FPS.includes(minFps));
+      return constFpses.length <= 1;
+    })();
+    if (!this.toggleFps.hidden) {
+      this.updateVideoConstFpsOption(this.cameraManager.getConstFps());
+    }
+  }
+
+  onCameraAvailble(): void {
+    this.cameraAvailble = true;
+    this.updateOptionAvailability();
+  }
+
+  onCameraUnavailable(): void {
+    this.cameraAvailble = false;
+    this.updateOptionAvailability();
+  }
+
+  private updateOptionAvailability(): void {
+    this.toggleFps.disabled =
+        !this.cameraAvailble || state.get(state.State.TAKING);
   }
 
   /**

@@ -98,7 +98,7 @@ export class ScanOptions implements CameraUI {
   }
 
   // Overrides |CameraUI|.
-  async onConfigureComplete(): Promise<void> {
+  async onUpdateConfig(): Promise<void> {
     assert(!this.previewAvailable());
 
     this.video = this.cameraManager.getPreviewVideo();

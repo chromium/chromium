@@ -7,10 +7,6 @@ import {
   assert,
   assertInstanceof,
 } from '../assert.js';
-import {
-  PhotoConstraintsPreferrer,
-  VideoConstraintsPreferrer,
-} from '../device/constraints_preferrer.js';
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
@@ -46,6 +42,7 @@ import {
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
+import {WaitableEvent} from '../waitable_event.js';
 
 import {CameraManager} from './camera/camera_manager.js';
 import {Layout} from './camera/layout.js';
@@ -108,12 +105,9 @@ export class Camera extends View implements CameraViewUI {
   protected shutterType = metrics.ShutterType.UNKNOWN;
 
   /**
-   * Promise for the camera stream configuration process. It's resolved to
-   * boolean for whether the configuration is failed and kick out another
-   * round of reconfiguration. Sets to null once the configuration is
-   * completed.
+   * Event for tracking camera availability state.
    */
-  private configuring: Promise<boolean>|null = null;
+  private cameraReady: WaitableEvent = new WaitableEvent();
 
   /**
    * Promise for the current take of photo or recording.
@@ -125,26 +119,23 @@ export class Camera extends View implements CameraViewUI {
   constructor(
       protected readonly resultSaver: ResultSaver,
       private readonly infoUpdater: DeviceInfoUpdater,
-      photoPreferrer: PhotoConstraintsPreferrer,
-      videoPreferrer: VideoConstraintsPreferrer,
       readonly perfLogger: PerfLogger,
       defaultFacing: Facing,
       modeConstraints: ModeConstraints,
   ) {
     super(ViewName.CAMERA);
 
+    this.cameraManager = new CameraManager(
+        infoUpdater, perfLogger, this, defaultFacing, modeConstraints);
+
     this.subViews = [
-      new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
+      new PrimarySettings(this.cameraManager),
       new PTZPanel(),
       this.review,
       this.cropDocument,
       this.docModeDialogView,
       new View(ViewName.FLASH),
     ];
-
-    this.cameraManager = new CameraManager(
-        infoUpdater, perfLogger, photoPreferrer, videoPreferrer, this,
-        defaultFacing, modeConstraints);
 
     this.scanOptions = new ScanOptions(this.cameraManager);
 
@@ -153,7 +144,7 @@ export class Camera extends View implements CameraViewUI {
     // currently won't interact with the view. To prevent typescript checker
     // complainting about the unused reference, it's left here without any
     // reference point to it.
-    new Options(this.infoUpdater, this.cameraManager);
+    new Options(this.cameraManager);
 
     /**
      * Gets type of ways to trigger shutter from click event.
@@ -211,10 +202,16 @@ export class Camera extends View implements CameraViewUI {
     });
 
     this.cameraManager.registerCameraUI({
-      onConfigureComplete: () => {
+      onUpdateConfig: () => {
         nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
         this.facing = this.cameraManager.getFacing();
         this.updateActiveCamera(this.cameraManager.getDeviceId());
+      },
+      onCameraUnavailable: () => {
+        this.cameraReady = new WaitableEvent();
+      },
+      onCameraAvailble: () => {
+        this.cameraReady.signal();
       },
     });
     this.initOpenPTZPanel();
@@ -263,7 +260,7 @@ export class Camera extends View implements CameraViewUI {
     };
 
     this.cameraManager.registerCameraUI({
-      onConfigureComplete: () => {
+      onUpdateConfig: () => {
         const ptzToastKey = 'isPTZToastShown';
         if (!state.get(state.State.ENABLE_PTZ) ||
             state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
@@ -281,7 +278,7 @@ export class Camera extends View implements CameraViewUI {
   private initVideoEncoderOptions() {
     const options = this.videoEncoderOptions;
     this.cameraManager.registerCameraUI({
-      onConfigureComplete: () => {
+      onUpdateConfig: () => {
         if (state.get(Mode.VIDEO)) {
           const {width, height, frameRate} =
               this.cameraManager.getPreviewVideo().getVideoSettings();
@@ -320,7 +317,7 @@ export class Camera extends View implements CameraViewUI {
     const docModeDialogKey = 'isDocModeDialogShown';
     if (!localStorage.getBool(docModeDialogKey)) {
       this.cameraManager.registerCameraUI({
-        onConfigureComplete: () => {
+        onUpdateConfig: () => {
           if (localStorage.getBool(docModeDialogKey) || !state.get(Mode.SCAN) ||
               !this.scanOptions.isDocumentModeEanbled()) {
             return;
@@ -353,7 +350,7 @@ export class Camera extends View implements CameraViewUI {
 
   focus(): void {
     (async () => {
-      await this.configuring;
+      await this.cameraReady.wait();
 
       // Check the view is still on the top after await.
       if (!nav.isTopMostView(ViewName.CAMERA)) {
