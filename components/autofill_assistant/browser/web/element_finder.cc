@@ -17,8 +17,7 @@ namespace autofill_assistant {
 
 namespace {
 // Javascript code to get document root element.
-const char kGetDocumentElement[] =
-    "(function() { return document.documentElement; }())";
+const char kGetDocumentElement[] = "document.documentElement;";
 
 const char kGetArrayElement[] = "function(index) { return this[index]; }";
 
@@ -240,6 +239,8 @@ void ElementFinder::ExecuteNextTask() {
     }
 
     case SelectorProto::Filter::kNthMatch: {
+      // TODO(b/205676462): This could be done with javascript like in
+      // |SelectorObserver|.
       std::string object_id;
       if (!ConsumeMatchAtOrFail(filter.nth_match().index(), object_id))
         return;

@@ -25,11 +25,13 @@ class JsFilterBuilder {
 
   // Builds the argument list for the function.
   std::vector<std::unique_ptr<runtime::CallArgument>> BuildArgumentList() const;
+  std::unique_ptr<base::Value> BuildArgumentArray() const;
 
   // Return the JavaScript function.
   std::string BuildFunction() const;
   // Adds a filter, if possible.
   bool AddFilter(const SelectorProto::Filter& filter);
+  void ClearResultsIfMoreThanOneResult();
 
  private:
   std::vector<std::string> arguments_;

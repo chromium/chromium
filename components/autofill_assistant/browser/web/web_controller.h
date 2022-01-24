@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
-#include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_input.h"
@@ -30,6 +29,7 @@
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_position_getter.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
+#include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/send_keyboard_input_worker.h"
 #include "components/autofill_assistant/browser/web/web_controller_worker.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -105,6 +105,12 @@ class WebController {
   // will be ELEMENT_RESOLUTION_FAILED.
   virtual void FindAllElements(const Selector& selector,
                                ElementFinder::Callback callback);
+
+  virtual ClientStatus ObserveSelectors(
+      const std::vector<SelectorObserver::ObservableSelector>& selectors,
+      base::TimeDelta timeout_ms,
+      base::TimeDelta periodic_check_interval,
+      SelectorObserver::Callback callback);
 
   // Scroll the |element| into view. |animation| defines the transition
   // animation, |vertical_alignment| defines the vertical alignment,
@@ -414,6 +420,8 @@ class WebController {
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
                            std::unique_ptr<ElementFinder::Result> result);
+
+  void OnSelectorObserverFinished(SelectorObserver* observer);
   void OnFindElementForRetrieveElementFormAndFieldData(
       base::OnceCallback<void(const ClientStatus&,
                               const autofill::FormData& form_data,

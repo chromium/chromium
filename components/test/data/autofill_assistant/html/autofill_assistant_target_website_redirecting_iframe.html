@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--
+Copyright 2022 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autofill Assistant Test</title>
+    <script>
+      function redirect() {
+        location.href = "http://localhost:8081/autofill_assistant_external_iframe.html";
+      }
+    </script>
+  </head>
+  <body onload="setTimeout(redirect, 2000)">
+    Redirecting you soon...
+  </body>
+</html>

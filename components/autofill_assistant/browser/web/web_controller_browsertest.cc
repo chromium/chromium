@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 #include <chrono>
@@ -3045,6 +3046,125 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RunElementFinderFromOOPIF) {
   EXPECT_EQ(ACTION_APPLIED, js_click_status.proto_status());
 
   WaitForElementRemove(Selector({"#iframeExternal", "#div"}));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectorObserver) {
+  base::RunLoop run_loop;
+  // Selector ids can be any number as long as unique.
+  const SelectorObserver::SelectorId button_id(11);
+  const SelectorObserver::SelectorId iframe_button_id(1234);
+  const SelectorObserver::SelectorId dynamic_id(0);
+
+  std::vector<base::flat_set<std::pair<SelectorObserver::SelectorId, bool>>>
+      expected_updates = {
+          {
+              // Initial state.
+              std::make_pair(button_id, /* match = */ true),
+              std::make_pair(iframe_button_id, /* match = */ true),
+              std::make_pair(dynamic_id, /* match = */ false),
+          },
+          {
+              // Dynamic element matches about 2s in.
+              std::make_pair(dynamic_id, /* match = */ true),
+          },
+          {
+              // Then shortly stops matching.
+              std::make_pair(dynamic_id, /* match = */ false),
+          }};
+
+  auto element_callback = base::BindLambdaForTesting(
+      [&](const ClientStatus& status,
+          const base::flat_map<SelectorObserver::SelectorId,
+                               DomObjectFrameStack>& elements) {
+        EXPECT_TRUE(status.ok());
+        EXPECT_EQ(elements.size(), 1u);
+        EXPECT_EQ(elements.count(iframe_button_id), 1u);
+        run_loop.Quit();
+      });
+
+  int button_element_id = -1;
+  SelectorObserver::Callback update_callback = base::BindLambdaForTesting(
+      [&](const ClientStatus& status,
+          const std::vector<SelectorObserver::Update>& updates,
+          SelectorObserver* observer) {
+        EXPECT_TRUE(status.ok());
+        EXPECT_FALSE(expected_updates.empty());
+        for (auto& update : updates) {
+          auto removed = expected_updates[0].erase(
+              std::make_pair(update.selector_id, update.match));
+          EXPECT_EQ(removed, 1u);
+          if (update.selector_id == iframe_button_id) {
+            button_element_id = update.element_id;
+          }
+        }
+        if (expected_updates[0].empty()) {
+          expected_updates.erase(expected_updates.begin());
+        }
+        if (expected_updates.empty()) {
+          // Done receiving updates
+          observer->GetElementsAndStop(
+              {{SelectorObserver::SelectorId(iframe_button_id),
+                /* element_id */ button_element_id}},
+              std::move(element_callback));
+        } else {
+          observer->Continue();
+        }
+      });
+
+  web_controller_->ObserveSelectors(
+      {{/* selector_id = */ button_id,
+        /* proto = */ Selector({"#button"}).proto,
+        /* strict = */ true},
+       {/* selector_id = */ iframe_button_id,
+        /* proto = */ Selector({"#iframe", "#button"}).proto,
+        /* strict = */ true},
+       {/* selector_id = */ dynamic_id,
+        /* proto = */
+        Selector({"#iframeExternal", ".dynamic.about-2-seconds"}).proto,
+        /* strict = */ true}},
+      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
+
+  run_loop.Run();
+  ASSERT_TRUE(expected_updates.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       SelectorObserverRedirectIframe) {
+  base::RunLoop run_loop;
+  bool received_no_match_update = false;
+  const SelectorObserver::SelectorId button_id(15);
+
+  auto element_callback = base::BindLambdaForTesting(
+      [&](const ClientStatus& status,
+          const base::flat_map<SelectorObserver::SelectorId,
+                               DomObjectFrameStack>& elements) {
+        EXPECT_TRUE(status.ok());
+        run_loop.Quit();
+      });
+
+  SelectorObserver::Callback update_callback = base::BindLambdaForTesting(
+      [&](const ClientStatus& status,
+          const std::vector<SelectorObserver::Update>& updates,
+          SelectorObserver* observer) {
+        EXPECT_TRUE(status.ok());
+        EXPECT_EQ(updates.size(), 1u);
+        EXPECT_EQ(updates[0].selector_id, button_id);
+        if (updates[0].match) {
+          EXPECT_TRUE(received_no_match_update);
+          observer->GetElementsAndStop({}, std::move(element_callback));
+        } else {
+          received_no_match_update = true;
+          observer->Continue();
+        }
+      });
+
+  web_controller_->ObserveSelectors(
+      {{/* selector_id = */ button_id,
+        /* proto = */ Selector({"#iframeRedirecting", "#button"}).proto,
+        /* strict = */ true}},
+      base::Milliseconds(30000), base::Milliseconds(1000), update_callback);
+
+  run_loop.Run();
 }
 
 }  // namespace autofill_assistant

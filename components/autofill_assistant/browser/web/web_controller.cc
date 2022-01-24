@@ -7,6 +7,7 @@
 #include <math.h>
 #include <algorithm>
 #include <ctime>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -29,6 +30,8 @@
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/element.h"
+#include "components/autofill_assistant/browser/web/selector_observer.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -871,6 +874,26 @@ void WebController::OnFindElementResult(
     return worker.get() == finder_to_release;
   });
   std::move(callback).Run(status, std::move(result));
+}
+
+ClientStatus WebController::ObserveSelectors(
+    const std::vector<SelectorObserver::ObservableSelector>& selectors,
+    base::TimeDelta timeout_ms,
+    base::TimeDelta periodic_check_interval,
+    SelectorObserver::Callback callback) {
+  auto observer = std::make_unique<SelectorObserver>(
+      selectors, timeout_ms, periodic_check_interval, web_contents_,
+      devtools_client_.get(), user_data_, std::move(callback));
+  auto* ptr = observer.get();
+  pending_workers_.emplace_back(std::move(observer));
+  return ptr->Start(base::BindOnce(&WebController::OnSelectorObserverFinished,
+                                   weak_ptr_factory_.GetWeakPtr(), ptr));
+}
+
+void WebController::OnSelectorObserverFinished(SelectorObserver* observer) {
+  base::EraseIf(pending_workers_, [observer](const auto& worker) {
+    return worker.get() == observer;
+  });
 }
 
 void WebController::FillAddressForm(

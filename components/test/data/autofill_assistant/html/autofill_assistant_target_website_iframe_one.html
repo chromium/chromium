@@ -55,14 +55,14 @@ found in the LICENSE file.
         position: absolute;
       }
       #overlay_in_frame {
-          visibility: hidden;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
+          background-color: rgb(255, 0, 0);
           bottom: 0;
+          left: 0;
+          position: fixed;
+          right: 0;
+          top: 0;
+          visibility: hidden;
           z-index: 9999;
-          background-color: #ff0000;
       }
     </style>
   </head>
@@ -150,5 +150,18 @@ found in the LICENSE file.
     <div id="overlay_in_frame">
       This is an overlay that covers the whole frame.
     </div>
+
+    <div class="dynamic less-than-2-seconds">Dynamic element</div>
+    <script>
+      setTimeout(() => {
+        const el = document.querySelector('.dynamic');
+        el.classList.remove('less-than-2-seconds');
+        el.classList.add('about-2-seconds');
+        setTimeout(() => {
+          el.classList.remove('about-2-seconds');
+          el.classList.add('more-than-2-seconds');
+        }, 200);
+      }, 2000);
+    </script>
   </body>
 </html>

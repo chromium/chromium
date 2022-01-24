@@ -9,24 +9,29 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/user_data_util.h"
 
 namespace autofill_assistant {
 
 JsFilterBuilder::JsFilterBuilder() = default;
 JsFilterBuilder::~JsFilterBuilder() = default;
 
-std::vector<std::unique_ptr<runtime::CallArgument>>
-JsFilterBuilder::BuildArgumentList() const {
+std::unique_ptr<base::Value> JsFilterBuilder::BuildArgumentArray() const {
   auto str_array_arg = std::make_unique<base::Value>(base::Value::Type::LIST);
   for (const std::string& str : arguments_) {
     str_array_arg->Append(str);
   }
+  return str_array_arg;
+}
+
+std::vector<std::unique_ptr<runtime::CallArgument>>
+JsFilterBuilder::BuildArgumentList() const {
   std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  arguments.emplace_back(runtime::CallArgument::Builder()
-                             .SetValue(std::move(str_array_arg))
-                             .Build());
+  arguments.emplace_back(
+      runtime::CallArgument::Builder().SetValue(BuildArgumentArray()).Build());
   return arguments;
 }
 
@@ -145,12 +150,22 @@ bool JsFilterBuilder::AddFilter(const SelectorProto::Filter& filter) {
       AddLine("});");
       return true;
 
+    case SelectorProto::Filter::kNthMatch: {
+      std::string index = base::NumberToString(filter.nth_match().index());
+      AddLine({"elements = ", index, " < elements.length ? [elements[", index,
+               "]] : [];"});
+      return true;
+    }
+
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kPseudoType:
-    case SelectorProto::Filter::kNthMatch:
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }
+}
+
+void JsFilterBuilder::ClearResultsIfMoreThanOneResult() {
+  AddLine("if (elements.length > 1) return [];");
 }
 
 std::string JsFilterBuilder::AddRegexpInstance(const TextFilter& filter) {
@@ -205,5 +220,4 @@ void JsFilterBuilder::DefineQueryAllDeduplicated() {
     }
   )");
 }
-
 }  // namespace autofill_assistant
