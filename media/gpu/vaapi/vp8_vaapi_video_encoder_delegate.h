@@ -63,7 +63,11 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
  private:
   void InitializeFrameHeader();
-  void SetFrameHeader(VP8Picture& picture, bool keyframe);
+
+  void SetFrameHeader(
+      size_t frame_num,
+      VP8Picture& picture,
+      std::array<bool, kNumVp8ReferenceBuffers>& ref_frames_used);
   void UpdateReferenceFrames(scoped_refptr<VP8Picture> picture);
   void Reset();
 
@@ -81,6 +85,8 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   gfx::Size visible_size_;
   gfx::Size coded_size_;  // Macroblock-aligned.
+
+  uint8_t num_temporal_layers_ = 1;
 
   // Frame count since last keyframe, reset to 0 every keyframe period.
   size_t frame_num_ = 0;

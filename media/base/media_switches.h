@@ -199,6 +199,7 @@ MEDIA_EXPORT extern const base::Feature kVaapiVP9Encoder;
 MEDIA_EXPORT extern const base::Feature kGlobalVaapiLock;
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kVaapiH264TemporalLayerHWEncoding;
+MEDIA_EXPORT extern const base::Feature kVaapiVp8TemporalLayerHWEncoding;
 MEDIA_EXPORT extern const base::Feature kVaapiVp9kSVCHWEncoding;
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kVideoBlitColorAccuracy;
