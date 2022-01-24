@@ -18,6 +18,7 @@ DlpContentManagerAshTestHelper::DlpContentManagerAshTestHelper() {
   reporting_manager_ = new DlpReportingManager();
   DCHECK(reporting_manager_);
   manager_->SetReportingManagerForTesting(reporting_manager_);
+  manager_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
   DlpContentManagerAsh::SetDlpContentManagerAshForTesting(manager_);
 }
 

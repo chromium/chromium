@@ -178,14 +178,6 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  // TODO(https://crbug.com/1283065): Remove this.
-  // Currently, setting the notifier explicitly is needed since otherwise, due
-  // to a wrongly initialized notifier, calling the virtual
-  // ShowDlpWarningDialog() method causes a crash.
-  void SetWarnNotifier() {
-    helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
-  }
-
   void StartDesktopScreenShare(
       content::WebContents* web_contents,
       blink::mojom::MediaStreamRequestResult expected_result) {
@@ -598,7 +590,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureNotStoppedWhenConfidentialWindowHidden) {
   SetupReporting();
-  SetWarnNotifier();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -654,7 +645,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureWarnedAtEndAllowed) {
   SetupReporting();
-  SetWarnNotifier();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -720,7 +710,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureWarnedAtEndCancelled) {
   SetupReporting();
-  SetWarnNotifier();
   aura::Window* root_window =
       browser()->window()->GetNativeWindow()->GetRootWindow();
 
@@ -886,7 +875,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  SetWarnNotifier();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -935,7 +923,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  SetWarnNotifier();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -1456,7 +1443,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   SetupDlpRulesManager();
   SetupReportQueue();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  SetWarnNotifier();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
