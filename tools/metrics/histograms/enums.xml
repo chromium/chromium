@@ -54075,6 +54075,7 @@ from previous Chrome versions.
   <int value="259812169" label="OmniboxSuggestionsWrapAround:disabled"/>
   <int value="261245835" label="ContextualSearchLiteralTapSearch:disabled"/>
   <int value="262382944" label="GuestViewCrossProcessFrames:disabled"/>
+  <int value="264609083" label="PasswordDomainCapabilitiesFetching:disabled"/>
   <int value="265140282" label="Prerender2:disabled"/>
   <int value="265449858" label="WebBluetoothRequestLargerMtu:enabled"/>
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
@@ -54147,6 +54148,7 @@ from previous Chrome versions.
   <int value="304588364" label="TextureLayerSkipWaitForActivation:enabled"/>
   <int value="304901781" label="NewUsbBackend:enabled"/>
   <int value="305356014" label="WebViewMeasureScreenCoverage:disabled"/>
+  <int value="305786802" label="PasswordDomainCapabilitiesFetching:enabled"/>
   <int value="306565540" label="UseOfHashAffiliationFetcher:enabled"/>
   <int value="306641800" label="AndroidSiteSettingsUIRefresh:disabled"/>
   <int value="306834044" label="webui-tab-strip"/>

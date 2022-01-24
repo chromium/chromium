@@ -1931,6 +1931,11 @@ const char kPasswordsAccountStorageRevisedOptInFlowDescription[] =
     "Enables the revised opt-in flow for the account-scoped passwords storage "
     "during first-time save.";
 
+const char kPasswordDomainCapabilitiesFetchingName[] =
+    "Fetch credentials' password change capabilities";
+const char kPasswordDomainCapabilitiesFetchingDescription[] =
+    "Fetches credentials' password change capabilities from the server.";
+
 const char kPasswordScriptsFetchingName[] = "Fetch password scripts";
 const char kPasswordScriptsFetchingDescription[] =
     "Fetches scripts for password change flows.";

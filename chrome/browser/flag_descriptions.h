@@ -1101,6 +1101,9 @@ extern const char kPasswordImportDescription[];
 extern const char kPasswordsAccountStorageRevisedOptInFlowName[];
 extern const char kPasswordsAccountStorageRevisedOptInFlowDescription[];
 
+extern const char kPasswordDomainCapabilitiesFetchingName[];
+extern const char kPasswordDomainCapabilitiesFetchingDescription[];
+
 extern const char kPasswordScriptsFetchingName[];
 extern const char kPasswordScriptsFetchingDescription[];
 

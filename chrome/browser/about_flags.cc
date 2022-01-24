@@ -6324,6 +6324,12 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kPasswordChangeInSettings,
          kPasswordChangeInSettingsFeatureVariations,
          "PasswordChangeInSettingsFeatureVariations")},
+    {"password-domain-capabilities-fetching",
+     flag_descriptions::kPasswordDomainCapabilitiesFetchingName,
+     flag_descriptions::kPasswordDomainCapabilitiesFetchingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordDomainCapabilitiesFetching)},
     {"password-scripts-fetching",
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,

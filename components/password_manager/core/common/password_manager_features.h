@@ -37,6 +37,7 @@ extern const base::Feature kLeakDetectionUnauthenticated;
 extern const base::Feature kPasswordChange;
 extern const base::Feature kPasswordChangeOnlyRecentCredentials;
 extern const base::Feature kPasswordChangeInSettings;
+extern const base::Feature kPasswordDomainCapabilitiesFetching;
 extern const base::Feature kPasswordImport;
 extern const base::Feature kPasswordReuseDetectionEnabled;
 extern const base::Feature kPasswordsAccountStorageRevisedOptInFlow;

@@ -4505,6 +4505,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "password-domain-capabilities-fetching",
+    "owners": [ "vizcay", "treib" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "password-import",
     "owners": [ "//components/password_manager/OWNERS" ],
     // The feature is already extensively used externally.

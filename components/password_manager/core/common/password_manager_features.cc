@@ -108,6 +108,11 @@ const base::Feature kPasswordChangeOnlyRecentCredentials = {
 const base::Feature kPasswordChangeInSettings = {
     "PasswordChangeInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables fetching credentials capabilities from server for the
+// |PasswordChangeInSettings| and |PasswordChange| features.
+const base::Feature kPasswordDomainCapabilitiesFetching = {
+    "PasswordDomainCapabilitiesFetching", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls the ability to import passwords from Chrome's settings page.
 const base::Feature kPasswordImport = {"PasswordImport",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
