@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"

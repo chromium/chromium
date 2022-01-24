@@ -7,8 +7,6 @@ import("//build/config/chrome_build.gni")
 source_set("user_signin") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "gradient_view.h",
-    "gradient_view.mm",
     "user_signin_constants.h",
     "user_signin_constants.mm",
     "user_signin_coordinator.h",
@@ -45,6 +43,7 @@ source_set("user_signin") {
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert:confirmation_alert",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

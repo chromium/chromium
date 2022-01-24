@@ -7,6 +7,7 @@
 #include "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -32,6 +33,9 @@ NSString* const kConfirmationAlertBarPrimaryActionAccessibilityIdentifier =
     @"kConfirmationAlertBarPrimaryActionAccessibilityIdentifier";
 
 namespace {
+
+// Gradient height.
+const CGFloat kGradientHeight = 40.;
 
 constexpr CGFloat kScrollViewBottomInsets = 20;
 constexpr CGFloat kStackViewSpacing = 8;
@@ -228,6 +232,19 @@ constexpr CGFloat kContentMaxWidth = 500;
                      multiplier:imageAspectRatio];
     self.imageViewAspectRatioConstraint.active = YES;
   }
+
+  GradientView* gradientView = [self createGradientView];
+  [self.view addSubview:gradientView];
+
+  // GradientView  constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [gradientView.bottomAnchor constraintEqualToAnchor:scrollView.bottomAnchor],
+    [gradientView.leadingAnchor
+        constraintEqualToAnchor:scrollView.leadingAnchor],
+    [gradientView.trailingAnchor
+        constraintEqualToAnchor:scrollView.trailingAnchor],
+    [gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
+  ]];
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -455,6 +472,13 @@ constexpr CGFloat kContentMaxWidth = 500;
   scrollView.showsHorizontalScrollIndicator = NO;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   return scrollView;
+}
+
+// Helper to create the gradient view.
+- (GradientView*)createGradientView {
+  GradientView* gradientView = [[GradientView alloc] init];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  return gradientView;
 }
 
 // Helper to create the stack view.

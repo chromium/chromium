@@ -7,13 +7,19 @@ import("//build/config/ios/ios_sdk.gni")
 
 source_set("elements") {
   sources = [
+    "gradient_view.h",
+    "gradient_view.mm",
     "highlight_button.h",
     "highlight_button.mm",
   ]
 
   frameworks = [ "UIKit.framework" ]
 
-  deps = [ "//ios/chrome/common:timing" ]
+  deps = [
+    "//base",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/colors",
+  ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
