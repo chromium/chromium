@@ -69,6 +69,8 @@ public class ImmersiveModeControllerTest {
         when(mActivity.getWindow()).thenReturn(mWindow);
         when(mWindow.getDecorView()).thenReturn(mDecorView);
         when(mWindow.getAttributes()).thenReturn(mLayoutParams);
+        when(mDecorView.getRootView()).thenReturn(mDecorView);
+        when(mDecorView.getLayoutParams()).thenReturn(mLayoutParams);
 
         // Reflect mSystemUiVisibility in the DecorView.
         when(mDecorView.getSystemUiVisibility()).thenAnswer(invocation -> mSystemUiVisibility);
