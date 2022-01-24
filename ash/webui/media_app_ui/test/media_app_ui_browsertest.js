@@ -1433,3 +1433,17 @@ MediaAppUIBrowserTest.GuestHasFocus = async () => {
   // By the time this tests runs the iframe should already have been loaded.
   assertEquals(document.activeElement, guest);
 };
+
+// Check the body element's background color when the DarkLightMode feature is
+// enabled.
+MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  assertEquals(actualBackgroundColor, 'rgb(255, 255, 255)');  // White.
+};
+
+// Check the body element's background color when the DarkLightMode feature is
+// disabled.
+MediaAppUIBrowserTest.BodyHasCorrectBackgroundColorWithoutDarkLight = () => {
+  const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
+  assertEquals(actualBackgroundColor, 'rgb(32, 33, 36)');  // Grey 900.
+};

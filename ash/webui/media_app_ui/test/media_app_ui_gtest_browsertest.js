@@ -8,6 +8,7 @@
 GEN('#include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "third_party/blink/public/common/features.h"');
 
@@ -56,6 +57,34 @@ var MediaAppUIWithAudioGtestBrowserTest =
         ...super.featureList.enabled,
         'ash::features::kMediaAppHandlesAudio',
       ]
+    };
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var MediaAppUIWithDarkLightModeGtestBrowserTest =
+    class extends MediaAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        ...super.featureList.enabled,
+        'chromeos::features::kDarkLightMode',
+      ]
+    };
+  }
+};
+
+// js2gtest fixtures require var here (https://crbug.com/1033337).
+// eslint-disable-next-line no-var
+var MediaAppUIWithoutDarkLightModeGtestBrowserTest =
+    class extends MediaAppUIGtestBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: super.featureList.enabled,
+      disabled: ['chromeos::features::kDarkLightMode'],
     };
   }
 };
@@ -112,6 +141,12 @@ TEST_F('MediaAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
         .testCaseBodies,
     ...(/** @type {{testCaseBodies: Object}} */ (
             MediaAppUIWithAudioGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
+            MediaAppUIWithDarkLightModeGtestBrowserTest))
+        .testCaseBodies,
+    ...(/** @type {{testCaseBodies: Object}} */ (
+            MediaAppUIWithoutDarkLightModeGtestBrowserTest))
         .testCaseBodies,
   };
   for (const f in MediaAppUIBrowserTest) {
@@ -288,6 +323,18 @@ TEST_F('MediaAppUIGtestBrowserTest', 'GetFileNotCalledOnAllFiles', () => {
 TEST_F('MediaAppUIGtestBrowserTest', 'GuestHasFocus', () => {
   runMediaAppTest('GuestHasFocus');
 });
+
+TEST_F(
+    'MediaAppUIWithDarkLightModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorWithDarkLight', () => {
+      runMediaAppTest('BodyHasCorrectBackgroundColorWithDarkLight');
+    });
+
+TEST_F(
+    'MediaAppUIWithoutDarkLightModeGtestBrowserTest',
+    'BodyHasCorrectBackgroundColorWithoutDarkLight', () => {
+      runMediaAppTest('BodyHasCorrectBackgroundColorWithoutDarkLight');
+    });
 
 // Test cases injected into the guest context.
 // See implementations in media_app_guest_ui_browsertest.js.

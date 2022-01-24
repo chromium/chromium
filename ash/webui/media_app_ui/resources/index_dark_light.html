@@ -15,7 +15,17 @@
     position: relative;
   }
 
-  /* Any changes to this file should also be copied to index_dark_light.html. */
+  /*
+   * Any changes to this file except for these media queries should also be
+   * copied to index.html.
+   */
+  @media (prefers-color-scheme: dark) {
+    body { background-color: #202124 }
+  }
+
+  @media (prefers-color-scheme: light) {
+    body { background-color: white }
+  }
 
   /*
    * This is the <iframe> style set for sandboxed guests that use

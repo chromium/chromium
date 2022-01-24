@@ -10,6 +10,7 @@
 #include "ash/webui/media_app_ui/media_app_page_handler.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -36,7 +37,11 @@ content::WebUIDataSource* CreateHostDataSource() {
       content::WebUIDataSource::Create(kChromeUIMediaAppHost);
 
   // Add resources from ash_media_app_resources.pak.
-  source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    source->SetDefaultResource(IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML);
+  } else {
+    source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
+  }
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
 
   source->AddLocalizedStrings(kLocalizedStrings);
