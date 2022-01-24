@@ -4149,21 +4149,6 @@
             ]
         }
     ],
-    "IntentBlockExternalFormRedirectsNoGesture": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20200323",
-                    "enable_features": [
-                        "IntentBlockExternalFormRedirectsNoGesture"
-                    ]
-                }
-            ]
-        }
-    ],
     "IsolatePasswordSites": [
         {
             "platforms": [
