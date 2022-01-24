@@ -116,6 +116,7 @@ typedef struct {
   absl::optional<FetchStatus> accounts_response;
   AccountList accounts;
   absl::optional<FetchStatus> token_response;
+  absl::optional<bool> customized_dialog;
 } MockMediatedConfiguration;
 
 typedef struct {
@@ -585,7 +586,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     }
 
     if (conf.accounts_response == FetchStatus::kSuccess &&
-        !prefer_auto_sign_in) {
+        !prefer_auto_sign_in && !conf.customized_dialog) {
       // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
       // even though the bit is set we may not exercise the AutoSignIn flow.
       // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
@@ -1138,6 +1139,119 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
 
   auto status = PerformRevokeRequest(kAccountId);
   EXPECT_EQ(RevokeStatus::kError, status);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       TimingMetricsForSuccessfulSignUpCase) {
+  base::HistogramTester histogram_tester;
+
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Sets specific expectations for sharing permission.
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(auth_response.second.value(), kToken);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       TimingMetricsForSuccessfulSignInCase) {
+  base::HistogramTester histogram_tester;
+
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Sets specific expectations for sharing permission.
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  // Pretends that the sharing permission has been granted for this account.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .WillOnce(Return(true));
+
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, TimingMetricsForNotSelectingAccount) {
+  base::HistogramTester histogram_tester;
+
+  AccountList displayed_accounts;
+  const AuthRequestTestCase test_case = {
+      "Failed mediated flow due to user not selecting an account",
+      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
+       kNotPreferAutoSignIn},
+      {RequestIdTokenStatus::kSuccess, kToken},
+      {kToken,
+       absl::nullopt,
+       FetchStatus::kSuccess,
+       kSuccessfulClientId,
+       "",
+       kAccountsEndpoint,
+       kTokenEndpoint,
+       kClientIdMetadataEndpoint,
+       kPermissionNoop,
+       {FetchStatus::kSuccess, kAccounts, absl::nullopt,
+        /*customized_dialog=*/true}}};
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Sets specific expectations for sharing permission:
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  EXPECT_CALL(*mock_dialog_controller(),
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents,
+              content::WebContents* idp_web_contents,
+              const GURL& idp_signin_url,
+              base::span<const content::IdentityRequestAccount> accounts,
+              const IdentityProviderMetadata& idp_metadata,
+              const ClientIdData& client_id_data, SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected) {
+            displayed_accounts = AccountList(accounts.begin(), accounts.end());
+            // Pretends that the user did not select any account.
+            std::move(on_selected).Run("", /*is_sign_in=*/false);
+          }));
+
+  EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+
+  ASSERT_FALSE(displayed_accounts.empty());
+  EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 }
 
 }  // namespace content

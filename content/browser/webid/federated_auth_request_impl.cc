@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/webid_utils.h"
@@ -111,6 +112,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
   nonce_ = nonce;
   mode_ = mode;
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
+  start_time_ = base::TimeTicks::Now();
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
@@ -602,6 +604,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // TODO(cbiesinger): Check that the URLs are valid.
       ClientIdData data{GURL(client_id_metadata_.terms_of_service_url),
                         GURL(client_id_metadata_.privacy_policy_url)};
+      show_accounts_dialog_time_ = base::TimeTicks::Now();
+      RecordShowAccountsDialogTime(show_accounts_dialog_time_ - start_time_);
+
       request_dialog_controller_->ShowAccountsDialog(
           rp_web_contents, idp_web_contents_.get(), provider_, accounts,
           idp_metadata, data,
@@ -620,6 +625,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
                                                  bool is_sign_in) {
   // This could happen if user didn't select any accounts.
   if (account_id.empty()) {
+    base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
+    RecordCancelOnDialogTime(dismiss_dialog_time - show_accounts_dialog_time_);
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
@@ -632,7 +639,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   }
 
   account_id_ = account_id;
-  id_token_request_time_ = base::TimeTicks::Now();
+  select_account_time_ = base::TimeTicks::Now();
+  RecordContinueOnDialogTime(select_account_time_ - show_accounts_dialog_time_);
+
   network_manager_->SendTokenRequest(
       endpoints_.token, account_id_,
       FormatRequestParamsWithoutScope(client_id_, nonce_, account_id,
@@ -648,8 +657,8 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // takes a long time due to latency etc.. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // |kIdTokenRequestDelay| seconds for better UX.
-  base::TimeTicks response_receive_time = base::TimeTicks::Now();
-  base::TimeDelta fetch_time = response_receive_time - id_token_request_time_;
+  base::TimeTicks id_token_response_time_ = base::TimeTicks::Now();
+  base::TimeDelta fetch_time = id_token_response_time_ - select_account_time_;
   if (fetch_time >= kIdTokenRequestDelay) {
     CompleteIdTokenRequest(status, id_token);
     return;
@@ -665,6 +674,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
 void FederatedAuthRequestImpl::CompleteIdTokenRequest(
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
+  DCHECK(!start_time_.is_null());
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenHttpNotFound,
@@ -711,6 +721,9 @@ void FederatedAuthRequestImpl::CompleteIdTokenRequest(
             origin_, url::Origin::Create(provider_), account_id_);
       }
 
+      RecordIdTokenResponseAndTurnaroundTime(
+          id_token_response_time_ - select_account_time_,
+          id_token_response_time_ - start_time_);
       id_token_ = id_token;
       CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
       return;
@@ -774,14 +787,26 @@ void FederatedAuthRequestImpl::CompleteRequest(
     blink::mojom::RequestIdTokenStatus status,
     const std::string& id_token) {
   DCHECK(status == RequestIdTokenStatus::kSuccess || id_token.empty());
+
+  CleanUp();
+
+  if (auth_request_callback_) {
+    RecordMetrics(status);
+    std::move(auth_request_callback_).Run(status, id_token);
+  }
+}
+
+void FederatedAuthRequestImpl::CleanUp() {
   request_dialog_controller_.reset();
   network_manager_.reset();
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   idp_web_contents_.reset();
   account_id_ = std::string();
-  if (auth_request_callback_)
-    std::move(auth_request_callback_).Run(status, id_token);
+  start_time_ = base::TimeTicks();
+  show_accounts_dialog_time_ = base::TimeTicks();
+  select_account_time_ = base::TimeTicks();
+  id_token_response_time_ = base::TimeTicks();
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(
@@ -864,6 +889,11 @@ FederatedAuthRequestImpl::GetSharingPermissionContext() {
             ->GetFederatedIdentitySharingPermissionContext();
   }
   return sharing_permission_delegate_;
+}
+
+void FederatedAuthRequestImpl::RecordMetrics(
+    blink::mojom::RequestIdTokenStatus status) {
+  // TODO(yigu): Record id token fetching status.
 }
 
 }  // namespace content
