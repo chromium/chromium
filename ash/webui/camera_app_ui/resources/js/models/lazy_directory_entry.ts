@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../assert.js';
 import {
   DirectoryAccessEntry,
   FileAccessEntry,
@@ -82,9 +83,9 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
 
   async removeEntry(name: string): Promise<void> {
     if (this.directory === null) {
-      return null;
+      return;
     }
-    return this.directory.removeEntry(name);
+    await this.directory.removeEntry(name);
   }
 
   /**
@@ -93,8 +94,13 @@ class LazyDirectoryEntry implements DirectoryAccessEntry {
    */
   private async getRealDirectory(): Promise<DirectoryAccessEntry> {
     if (this.creatingDirectory === null) {
-      this.creatingDirectory =
-          this.parent.getDirectory({name: this.name, createIfNotExist: true});
+      this.creatingDirectory = (async () => {
+        const directory = await this.parent.getDirectory(
+            {name: this.name, createIfNotExist: true});
+        // createIfNotExist is set so the return value will never be null.
+        assert(directory !== null);
+        return directory;
+      })();
     }
     this.directory = await this.creatingDirectory;
     return this.directory;
