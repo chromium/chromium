@@ -8,11 +8,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_help_app_resources.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -38,8 +40,20 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
 
       },
       *info);
-  info->theme_color = 0xffffffff;
-  info->background_color = 0xffffffff;
+
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    auto* color_provider = ash::AshColorProvider::Get();
+    info->theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/false);
+    info->dark_mode_theme_color =
+        color_provider->GetBackgroundColorInMode(/*use_dark_mode=*/true);
+    info->background_color = info->theme_color;
+    info->dark_mode_background_color = info->dark_mode_theme_color;
+  } else {
+    info->theme_color = 0xffffffff;
+    info->background_color = 0xffffffff;
+  }
+
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return info;
