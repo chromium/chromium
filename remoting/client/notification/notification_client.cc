@@ -4,6 +4,8 @@
 
 #include "remoting/client/notification/notification_client.h"
 
+#include <algorithm>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/hash/hash.h"
@@ -171,14 +173,38 @@ class MessageAndLinkTextResults
       NotifyFetchFailed();
       return;
     }
-    if (!FindKeyAndGet(*translations, locale_, string_to_update)) {
+    bool is_translation_found = false;
+    is_translation_found =
+        FindKeyAndGet(*translations, locale_, string_to_update);
+    if (!is_translation_found) {
       LOG(WARNING) << "Failed to find translation for locale " << locale_
-                   << ". Falling back to default locale: " << kDefaultLocale;
-      if (!FindKeyAndGet(*translations, kDefaultLocale, string_to_update)) {
-        LOG(ERROR) << "Failed to find translation for default locale";
-        NotifyFetchFailed();
-        return;
+                   << ". Looking for parent locales instead.";
+      std::vector<std::string> parent_locales;
+      l10n_util::GetParentLocales(locale_, &parent_locales);
+      for (auto parent_locale : parent_locales) {
+        // Locales returned by GetParentLocales() use "_" instead of "-", which
+        // need to be fixed.
+        std::replace(parent_locale.begin(), parent_locale.end(), '_', '-');
+        if (FindKeyAndGet(*translations, parent_locale, string_to_update)) {
+          LOG(WARNING) << "Locale " << parent_locale
+                       << " is being used instead.";
+          is_translation_found = true;
+          break;
+        }
       }
+    }
+    if (!is_translation_found) {
+      LOG(WARNING)
+          << "No parent locale for " << locale_
+          << " is found in translations. Falling back to default locale: "
+          << kDefaultLocale;
+      is_translation_found =
+          FindKeyAndGet(*translations, kDefaultLocale, string_to_update);
+    }
+    if (!is_translation_found) {
+      LOG(ERROR) << "Failed to find translation for default locale";
+      NotifyFetchFailed();
+      return;
     }
     if (done_ && is_message_translation_fetched_ &&
         is_link_translation_fetched_) {
