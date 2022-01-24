@@ -1754,10 +1754,7 @@ void RemoveFormsToBeDeleted(
       break;
     }
     case ItemTypeOnDeviceEncryptionOptedInDescription: {
-      GURL url = google_util::AppendGoogleLocaleParam(
-          GURL(kOnDeviceEncryptionLearnMoreURL),
-          GetApplicationContext()->GetApplicationLocale());
-      // TODO(crbug.com/1202088): Check whether local is necessary.
+      GURL url = GURL(kOnDeviceEncryptionLearnMoreURL);
       BlockToOpenURL(self, self.dispatcher)(url);
       break;
     }
