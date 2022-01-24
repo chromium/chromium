@@ -412,33 +412,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.FetchEvent.WaitUntil.Time" units="ms"
-    expires_after="2021-06-30">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The time taken between dispatching a FetchEvent to a Service Worker and
-    finishing the FetchEvent. Includes the time for the waitUntil() promise to
-    settle. If there is no waitUntil promise, this will be almost the same with
-    HasResponse.Time or Fallback.Time.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.GetAllOriginsInfoTime" units="ms"
-    expires_after="2021-01-24">
-  <obsolete>
-    Removed 2021-01-12.
-  </obsolete>
-  <owner>bashi@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    Execution time of ServiceWorkerContextWrapper::GetAllOriginsInfo().
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
     expires_after="2022-06-26">
   <owner>wanderview@chromium.org</owner>
@@ -480,21 +453,6 @@ chromium-metrics-reviews@google.com.
     <variant name="WithFetch"
         summary="install events that made network fetches"/>
   </token>
-</histogram>
-
-<histogram name="ServiceWorker.InternalsPageAccessed"
-    enum="ServiceWorkerInternalsLinkQuery" expires_after="M94">
-  <obsolete>
-    Removed 2021-08-03.
-  </obsolete>
-  <owner>bashi@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The method that the user takes to arrive at
-    chrome://serviceworker-internals, based on the query string. Specifically,
-    it logs if a user accessed it through the DevTools link in the Application
-    Panel, or not.
-  </summary>
 </histogram>
 
 <histogram
@@ -689,36 +647,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.LookupRegistration.MainResource.Time" units="ms"
-    expires_after="2022-09-20">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The time taken from (a) a resource loading request is routed to service
-    worker path, to (b) existance of a registered service worker is looked up.
-    This metric only cares about looking up a registration for navigation. This
-    doesn't include look-ups for updating a service worker.
-
-    Please refer to the suffixed histograms for each of the cases where a
-    registration is found, not found, and an error happens.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.MainFramePageLoad" enum="ServiceWorkerSite"
-    expires_after="2021-10-17">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    Counts main frame page loads controlled by a service worker.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.NotificationClickEvent.Time" units="ms"
     expires_after="M96">
   <owner>peter@chromium.org</owner>
@@ -739,30 +667,6 @@ chromium-metrics-reviews@google.com.
     Worker and receiving a message that it finished handling the event. Includes
     the time for the waitUntil() promise to settle.
   </summary>
-</histogram>
-
-<histogram name="ServiceWorker.OfflineCapable.Reason"
-    enum="OfflineCapableReason" expires_after="2022-01-02">
-  <obsolete>
-    Removed 2021-12-14.
-  </obsolete>
-  <owner>asamidoi@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    Recorded for service workers that are deemed to be offline capable. Records
-    the reason it was deemed so. The reason may be that the service worker
-    responded with 2xx..., 3xx..., or the check timed out.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.PageLoad" enum="ServiceWorkerSite"
-    expires_after="2021-12-26">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>Counts page loads controlled by a service worker.</summary>
 </histogram>
 
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
@@ -812,19 +716,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.RegisteredOriginCount" units="origins"
-    expires_after="2021-01-31">
-  <obsolete>
-    Removed 2021-04-29.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The number of origins that have a service worker registration. Recorded near
-    browser startup, when the service worker storage system is initialized.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.RegisteredStorageKeyCount" units="origins"
     expires_after="2022-07-03">
   <owner>wanderview@chromium.org</owner>
@@ -833,121 +724,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of StorageKeys that have a service worker registration. Recorded
     near browser startup, when the service worker storage system is initialized.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.Runtime" units="ms" expires_after="2020-07-30">
-  <obsolete>
-    Expired in July 2020. Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The amount of time a service worker ran for (wall time). Starts recording
-    when the service worker finished starting, and stops when the service worker
-    finished stopping. Not recorded if DevTools was attached to the service
-    worker at some point while it was running.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ScriptCachedMetadataSize" units="bytes"
-    expires_after="2021-12-19">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The length of cached metadata of Service Worker scripts. Logged on each load
-    of Service Worker script only when the cached metadata is available. It
-    doesn't include the size of imported scripts. This histogram is only
-    recorded for classic workers, not module workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ScriptCachedMetadataTotalSize" units="bytes"
-    expires_after="2021-05-18">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The total length of cached metadata of Service Worker scripts. Logged on
-    each start of Service Worker only when the cached metadata is available. It
-    includes the main script and imported scripts. This histogram is only
-    recorded for classic workers, not module workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ScriptCount" units="count"
-    expires_after="2021-05-18">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The counts of scripts per Service Worker. Logged on each start of Service
-    Worker. It includes the main script and imported scripts. This histogram is
-    only recorded for classic workers, not module workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ScriptSize" units="bytes"
-    expires_after="2021-05-18">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The length of Service Worker scripts. Logged on each load of Service Worker
-    script. It doesn't include the size of imported scripts. This histogram is
-    only recorded for classic workers, not module workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.ScriptTotalSize" units="bytes"
-    expires_after="2021-05-18">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The total length of Service Worker scripts. Logged on each start of Service
-    Worker. It includes the main script and imported scripts. This histogram is
-    only recorded for classic workers, not module workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.SendStopWorker.Status"
-    enum="ServiceWorkerStatusCode" expires_after="M85">
-  <obsolete>
-    Removed from the code in April 2017.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The result of trying to send the IPC message to a renderer process telling
-    it to stop an embedded worker. Recorded in EmbeddedWorkerInstance::Stop.
-    This was previously recorded for both the IPC and Mojo service worker
-    implementations, but as of Jan 2017, this is only recorded for the IPC
-    implementation. This histogram will be removed after the IPC implementation
-    is removed.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.StartForNavigationHint.Result"
-    enum="ServiceWorkerStartForNavigationHintResult" expires_after="2021-02-16">
-  <obsolete>
-    Removed September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The result of starting a service worker for a navigation hint.
   </summary>
 </histogram>
 
@@ -964,28 +740,6 @@ chromium-metrics-reviews@google.com.
     See also ServiceWorker.StartWorker.Time for installed workers.
 
     This histogram was expired between approximately Feb through Sep 2021.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.StartTiming.BrowserThreadHopTime"
-    units="microseconds" expires_after="M80">
-  <obsolete>
-    No longer emitted since ServiceWorkerOnUI shipped in September 2020 (M86):
-    https://crbug.com/824858
-  </obsolete>
-  <owner>kinuko@chromium.org</owner>
-  <summary>
-    The sum of all the times spent posting tasks between the UI and IO threads
-    during ServiceWorker startup. Recorded on a successful startup and when
-    DevTools was not attached.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-
-    Also note that this one's recorded slightly different from others as it's
-    recorded even if the inter-process timings were inconsistent (see
-    ServiceWorker.StartTiming.ClockConsistency).
   </summary>
 </histogram>
 
@@ -1132,46 +886,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.StartWorker.AfterFailureStreak"
-    enum="ServiceWorkerStatusCode" expires_after="2021-01-31">
-  <obsolete>
-    Expired in January 2021. Removed from the code in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The result of trying to start a service worker after it has failed
-    consecutively. Recorded only for installed workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.StartWorker.FailureStreak" units="count"
-    expires_after="2021-01-31">
-  <obsolete>
-    Expired in January 2021. Removed from the code in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The number of consecutive startup failures of a service worker. Recorded
-    each time the service worker failed (so there is double counting: failing
-    twice results in 1 and 2 being logged). Only for installed workers.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.StartWorker.FailureStreakEnded" units="count"
-    expires_after="2021-01-31">
-  <obsolete>
-    Expired in January 2021. Removed from the code in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    When a worker startup succeeded after failing, the number of times the
-    worker had consecutively failed. Recorded only for installed workers.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorker.StartWorker.Purpose"
     enum="ServiceWorkerMetrics.EventType" expires_after="2022-09-01">
   <owner>wanderview@chromium.org</owner>
@@ -1250,16 +964,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.StopWorker.Time" units="ms"
-    expires_after="2020-07-30">
-  <obsolete>
-    Expired in July 2020. Removed from the code in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>The time taken to stop a Service Worker.</summary>
-</histogram>
-
 <histogram name="ServiceWorker.Storage.DeleteAndStartOverResult"
     enum="ServiceWorkerDeleteAndStartOverResult" expires_after="M110">
   <owner>bashi@chromium.org</owner>
@@ -1287,33 +991,6 @@ chromium-metrics-reviews@google.com.
     a recovery, or the maximum number of retries is exceeded. See
     ServiceWorkerRegistry::OnRemoteStorageDisconnected() for the maximum number
     of retries.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.WorkerForMessageFound" enum="Boolean"
-    expires_after="M85">
-  <obsolete>
-    Removed from the code in March 2018.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    True if a message from the renderer intended for a browser-side embedded
-    worker instance found its recipient. False if the instance did not exist
-    when the message was received (e.g., it was a detached worker). Recorded in
-    EmbeddedWorkerRegistry::GetWorkerForMessage.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorker.WorkerStopped" enum="ServiceWorkerStoppedStatus"
-    expires_after="2021-08-09">
-  <obsolete>
-    Removed in September 2021.
-  </obsolete>
-  <owner>falken@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The mechanism by which a service worker entered running status STOPPED.
   </summary>
 </histogram>
 
@@ -1398,22 +1075,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="ServiceWorkerCache.DidGenerateCacheableMetadataMessageInCacheStorage.OriginAllowed"
-    enum="Boolean" expires_after="2020-12-31">
-  <obsolete>
-    Removed 2021-01-01.
-  </obsolete>
-  <owner>wanderview@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Whether the origin provided in the
-    DidGenerateCacheableMetadataInCacheStorage message is allowed for the given
-    renderer process. This message is sent when the renderer has generated code
-    cache for a script and wants to store it in cache_storage.
-  </summary>
-</histogram>
-
 <histogram name="ServiceWorkerCache.ErrorStorageType"
     enum="CacheStorageErrorStorageType" expires_after="2022-12-02">
   <owner>wanderview@chromium.org</owner>
@@ -1472,20 +1133,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of operations in the scheduling queue just before enqueuing a new
     operation.
-  </summary>
-</histogram>
-
-<histogram name="ServiceWorkerCache.UsedIndexFileSize" enum="Boolean"
-    expires_after="2021-06-01">
-  <obsolete>
-    Removed in June 2021.
-  </obsolete>
-  <owner>wanderview@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Whether the size was calculated using the values stored in the origin's
-    index file. If this is false, then the size was recalculated by loading all
-    of the individual cache backends.
   </summary>
 </histogram>
 
