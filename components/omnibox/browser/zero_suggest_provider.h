@@ -118,7 +118,8 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Contains the implementation to start a request for suggestions.
   void Start(const AutocompleteInput& input,
              bool minimal_changes,
-             bool is_prefetch);
+             bool is_prefetch,
+             bool bypass_cache);
 
   // BaseSearchProvider:
   const TemplateURL* GetTemplateURL(bool is_keyword) const override;

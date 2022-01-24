@@ -156,16 +156,19 @@ void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes) {
-  Start(input, minimal_changes, /*is_prefetch=*/false);
+  Start(input, minimal_changes, /*is_prefetch=*/false, /*bypass_cache=*/false);
 }
 
 void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
-  Start(input, /*minimal_changes=*/false, /*is_prefetch=*/true);
+  Start(input, /*minimal_changes=*/false, /*is_prefetch=*/true,
+        /*bypass_cache=*/
+        OmniboxFieldTrial::kZeroSuggestPrefetchBypassCache.Get());
 }
 
 void ZeroSuggestProvider::Start(const AutocompleteInput& input,
                                 bool minimal_changes,
-                                bool is_prefetch) {
+                                bool is_prefetch,
+                                bool bypass_cache) {
   TRACE_EVENT0("omnibox", "ZeroSuggestProvider::Start");
   matches_.clear();
   Stop(true, false);
@@ -194,6 +197,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   if (cache_duration_sec > 0) {
     search_terms_args.zero_suggest_cache_duration_sec = cache_duration_sec;
   }
+  search_terms_args.bypass_cache = bypass_cache;
   GURL suggest_url = RemoteSuggestionsService::EndpointUrl(
       search_terms_args, client()->GetTemplateURLService());
   if (!suggest_url.is_valid())

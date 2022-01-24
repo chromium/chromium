@@ -570,6 +570,11 @@ extern const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual;
 // prefetching and theoretically works with any caching mechanism. If no valid
 // HTTP cache duration is provided the existing caching mechanism is used.
 extern const base::FeatureParam<int> kZeroSuggestCacheDurationSec;
+// Indicates whether the zero suggest prefetch requests should bypass the HTTP
+// cache, i.e., not get loaded from the HTTP cache. This helps ensure the HTTP
+// cache duration clock is reset and the subsequent non-prefetch zero suggest
+// requests, depending on the cache duration, are loaded from the HTTP cache.
+extern const base::FeatureParam<bool> kZeroSuggestPrefetchBypassCache;
 
 // New params should be inserted above this comment and formatted as:
 // - Short comment categorizing the relevant features & params.

@@ -257,6 +257,10 @@ class TemplateURLRef {
     // The cache duration to be sent as a query string parameter in the zero
     // suggest requests, if non-zero.
     uint32_t zero_suggest_cache_duration_sec = 0;
+
+    // Whether the request should bypass the HTTP cache, i.e., a "shift-reload".
+    // If true, the net::LOAD_BYPASS_CACHE load flag will be set on the request.
+    bool bypass_cache = false;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);
