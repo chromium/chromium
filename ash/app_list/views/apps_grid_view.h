@@ -286,6 +286,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // example, the drag view for which a drag icon proxy has been created).
   bool IsViewHiddenForDrag(const views::View* view) const;
 
+  // Returns true if the apps grid is under the reorder animation process. This
+  // function is public for testing.
+  bool IsUnderReorderAnimation() const;
+
   // Passes scroll information from a parent view, so that subclasses may scroll
   // or switch pages.
   virtual void HandleScrollFromParentView(const gfx::Vector2d& offset,
@@ -479,9 +483,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   void BeginHideCurrentGhostImageView();
 
-  // Returns true if a fade in or fade out animation is active.
-  bool IsUnderReorderAnimation() const;
-
   bool ignore_layout() const { return ignore_layout_; }
   views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
   views::View* items_container() { return items_container_; }
@@ -573,6 +574,10 @@ class ASH_EXPORT AppsGridView : public views::View,
 
     // The animation that fades out the obsolete layout is active.
     kFadeOutAnimation,
+
+    // After the fade out animation ends and before the fade in animation
+    // starts.
+    kIntermediaryState,
 
     // The animation that fades in the new layout after reordering is active.
     kFadeInAnimation

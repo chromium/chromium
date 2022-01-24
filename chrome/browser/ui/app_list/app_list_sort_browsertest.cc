@@ -284,6 +284,10 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_EQ(expected_reorder_animation_stats_,
               saved_reorder_animation_stats_);
 
+    // There should be no active reorder animations.
+    EXPECT_FALSE(app_list_test_api_.GetTopLevelAppsGridView()
+                     ->IsUnderReorderAnimation());
+
     extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
 

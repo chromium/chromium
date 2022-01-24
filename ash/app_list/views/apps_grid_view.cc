@@ -1924,11 +1924,9 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
 }
 
 void AppsGridView::FadeInVisibleItemsForReorder() {
-  // Abort the running reorder animation if any.
-  MaybeAbortReorderingAnimation();
-
-  // Cancel the active bounds animations on item views if any.
-  bounds_animator_->Cancel();
+  DCHECK_EQ(ReorderAnimationStatus::kIntermediaryState,
+            reorder_animation_status_);
+  DCHECK(!bounds_animator_->IsAnimating());
 
   reorder_animation_status_ = ReorderAnimationStatus::kFadeInAnimation;
   const absl::optional<VisibleItemIndexRange> range =
@@ -2378,7 +2376,7 @@ void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
 
   // Return early if the item views' layers are used by the active reorder
   // animation
-  if (reorder_animation_status_ != ReorderAnimationStatus::kEmpty)
+  if (IsUnderReorderAnimation())
     return;
 
   items_need_layer_for_drag_ = false;
@@ -2428,6 +2426,10 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
 
 bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
   return drag_view_hider_ && drag_view_hider_->drag_view() == view;
+}
+
+bool AppsGridView::IsUnderReorderAnimation() const {
+  return reorder_animation_status_ != ReorderAnimationStatus::kEmpty;
 }
 
 AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
@@ -2813,10 +2815,6 @@ void AppsGridView::BeginHideCurrentGhostImageView() {
     current_ghost_view_->FadeOut();
 }
 
-bool AppsGridView::IsUnderReorderAnimation() const {
-  return reorder_animation_status_ != ReorderAnimationStatus::kEmpty;
-}
-
 void AppsGridView::OnAppListItemViewActivated(
     AppListItemView* pressed_item_view,
     const ui::Event& event) {
@@ -2857,7 +2855,7 @@ void AppsGridView::OnHostDragStartTimerFired() {
 void AppsGridView::OnFadeOutAnimationEnded(
     ReorderAnimationCallback callback_from_caller,
     bool aborted) {
-  reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
+  reorder_animation_status_ = ReorderAnimationStatus::kIntermediaryState;
 
   // Reset with the identical transformation. Because the apps grid view is
   // translucent now, setting the layer transform does not bring noticeable
@@ -2884,8 +2882,10 @@ void AppsGridView::OnFadeOutAnimationEnded(
 
   // When the fade out animation is abortted, the fade in animation should not
   // run. Hence, the reorder animation ends.
-  if (aborted)
+  if (aborted) {
+    reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
     MaybeRunFrontReorderAnimationCallbackForTest(/*aborted=*/true);
+  }
 }
 
 void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
@@ -2904,12 +2904,14 @@ void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
 void AppsGridView::MaybeAbortReorderingAnimation() {
   switch (reorder_animation_status_) {
     case ReorderAnimationStatus::kEmpty:
+    case ReorderAnimationStatus::kIntermediaryState:
       // No active reorder animation so nothing to do.
       break;
     case ReorderAnimationStatus::kFadeOutAnimation:
     case ReorderAnimationStatus::kFadeInAnimation:
       DCHECK(reorder_animation_abort_handle_);
       reorder_animation_abort_handle_.reset();
+      break;
   }
 }
 
