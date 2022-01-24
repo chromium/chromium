@@ -24,6 +24,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
+#include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -42,6 +43,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
+#include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -668,9 +671,19 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   if (!package_name.has_value())
     return;
 
-  for (const auto& app_id : prefs->GetAppsForPackage(package_name.value())) {
-    proxy->StopApp(app_id);
-  }
+  ChromeShelfController* chrome_shelf_controller =
+      ChromeShelfController::instance();
+  if (!chrome_shelf_controller)
+    return;
+
+  auto* arc_tracker =
+      chrome_shelf_controller->app_service_app_window_controller()
+          ->app_service_arc_tracker();
+  if (!arc_tracker)
+    return;
+
+  for (const auto& app_id : prefs->GetAppsForPackage(package_name.value()))
+    arc_tracker->CloseWindows(app_id);
 }
 
 void ChromeNewWindowClient::OpenArcCustomTab(

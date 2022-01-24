@@ -61,6 +61,9 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   // Invoked by controller to notify |window| is destroying.
   void HandleWindowDestroying(aura::Window* window);
 
+  // Close all windows for 'app_id'.
+  void CloseWindows(const std::string& app_id);
+
   // ArcAppListPrefs::Observer:
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;

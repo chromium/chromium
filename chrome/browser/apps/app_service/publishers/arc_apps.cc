@@ -34,6 +34,7 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -523,6 +524,14 @@ apps::mojom::OptionalBool IsResizeLocked(ArcAppListPrefs* prefs,
     case arc::mojom::ArcResizeLockState::FULLY_LOCKED:
       return apps::mojom::OptionalBool::kUnknown;
   }
+}
+
+bool IsWebAppShellPackage(Profile* profile,
+                          const ArcAppListPrefs::AppInfo& app_info) {
+  ash::ApkWebAppService* apk_web_app_service =
+      ash::ApkWebAppService::Get(profile);
+  return apk_web_app_service &&
+         apk_web_app_service->IsWebAppShellPackage(app_info.package_name);
 }
 
 }  // namespace
@@ -1158,7 +1167,7 @@ void ArcApps::OnSupportedLinksPreferenceChanged(const std::string& app_id,
 void ArcApps::OnAppRegistered(const std::string& app_id,
                               const ArcAppListPrefs::AppInfo& app_info) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (prefs) {
+  if (prefs && !IsWebAppShellPackage(profile_, app_info)) {
     PublisherBase::Publish(Convert(prefs, app_id, app_info), subscribers_);
     AppPublisher::Publish(CreateApp(prefs, app_id, app_info));
   }
@@ -1167,7 +1176,7 @@ void ArcApps::OnAppRegistered(const std::string& app_id,
 void ArcApps::OnAppStatesChanged(const std::string& app_id,
                                  const ArcAppListPrefs::AppInfo& app_info) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (!prefs) {
+  if (!prefs || IsWebAppShellPackage(profile_, app_info)) {
     return;
   }
 
@@ -1221,7 +1230,7 @@ void ArcApps::OnAppLastLaunchTimeUpdated(const std::string& app_id) {
     return;
   }
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  if (!app_info) {
+  if (!app_info || IsWebAppShellPackage(profile_, *app_info)) {
     return;
   }
   apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
@@ -1257,7 +1266,7 @@ void ArcApps::OnPackageListInitialRefreshed() {
   static constexpr bool update_icon = false;
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    if (app_info) {
+    if (app_info && !IsWebAppShellPackage(profile_, *app_info)) {
       PublisherBase::Publish(Convert(prefs, app_id, *app_info, update_icon),
                              subscribers_);
       AppPublisher::Publish(CreateApp(prefs, app_id, *app_info, update_icon));
@@ -1634,7 +1643,7 @@ void ArcApps::ConvertAndPublishPackageApps(
          prefs->GetAppsForPackage(package_info.package_name)) {
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
           prefs->GetApp(app_id);
-      if (app_info) {
+      if (app_info && !IsWebAppShellPackage(profile_, *app_info)) {
         PublisherBase::Publish(Convert(prefs, app_id, *app_info, update_icon),
                                subscribers_);
         AppPublisher::Publish(CreateApp(prefs, app_id, *app_info, update_icon));
@@ -1663,7 +1672,7 @@ void ArcApps::SetIconEffect(const std::string& app_id) {
     return;
   }
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  if (!app_info) {
+  if (!app_info || IsWebAppShellPackage(profile_, *app_info)) {
     return;
   }
 

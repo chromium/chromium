@@ -114,6 +114,24 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
   return app ? app->IsWebAppStoreInstalledApp() : false;
 }
 
+bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
+  DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                        kWebAppToApkDictPref);
+
+  // Search the pref dict for any web app id that has a value matching the
+  // provided package name.
+  for (const auto it : web_apps_to_apks->DictItems()) {
+    const base::Value* v =
+        it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
+    if (v && (v->GetString() == package_name))
+      return true;
+  }
+
+  // If there is no associated web app id, the package name is not a
+  // web app shell package.
+  return false;
+}
+
 absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
     const web_app::AppId& app_id) {
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),

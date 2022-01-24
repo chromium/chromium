@@ -196,6 +196,12 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
   }
 }
 
+void AppServiceAppWindowArcTracker::CloseWindows(const std::string& app_id) {
+  const std::vector<int> task_ids = GetTaskIdsForApp(app_id);
+  for (const auto task_id : task_ids)
+    arc::CloseTask(task_id);
+}
+
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info) {

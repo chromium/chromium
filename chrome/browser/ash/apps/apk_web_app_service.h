@@ -55,6 +55,8 @@ class ApkWebAppService : public KeyedService,
 
   bool IsWebAppInstalledFromArc(const web_app::AppId& web_app_id);
 
+  bool IsWebAppShellPackage(const std::string& package_name);
+
   absl::optional<std::string> GetPackageNameForWebApp(
       const web_app::AppId& app_id);
 

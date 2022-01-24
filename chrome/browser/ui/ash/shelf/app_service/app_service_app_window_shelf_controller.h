@@ -95,6 +95,10 @@ class AppServiceAppWindowShelfController
     return app_service_instance_helper_.get();
   }
 
+  AppServiceAppWindowArcTracker* app_service_arc_tracker() {
+    return arc_tracker_.get();
+  }
+
   AppServiceAppWindowCrostiniTracker* app_service_crostini_tracker() {
     return crostini_tracker_.get();
   }
