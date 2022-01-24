@@ -726,7 +726,8 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Disabled due to flakiness https://crbug.com/1229601
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
   DISABLED_CreativeOriginStatusWithThrottlingNestedThrottled
 #else
