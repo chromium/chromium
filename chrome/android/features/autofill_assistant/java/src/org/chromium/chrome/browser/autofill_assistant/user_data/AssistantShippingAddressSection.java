@@ -157,11 +157,5 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
     @Override
     protected void addOrUpdateItem(AddressModel model, boolean select, boolean notify) {
         super.addOrUpdateItem(model, select, notify);
-
-        // Update autocomplete information in the editor.
-        if (mEditor == null) {
-            return;
-        }
-        mEditor.addPhoneNumberIfValid(model.mOption.getProfile().getPhoneNumber());
     }
 }
