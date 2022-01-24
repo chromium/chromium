@@ -210,7 +210,7 @@ if (include_js_tests) {
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
 
-    if (is_chromeos_ash || is_win) {
+    if (is_chromeos_ash || is_win || is_mac) {
       deps += [ "inline_login:preprocess" ]
       data += [ "$root_gen_dir/chrome/test/data/webui/inline_login/inline_login_test_util.js" ]
     }
