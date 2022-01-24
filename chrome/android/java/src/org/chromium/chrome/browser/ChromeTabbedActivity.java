@@ -2216,7 +2216,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 return true;
             }
         } else if (shouldCloseTab) {
-            currentTab.getWebContents().dispatchBeforeUnload(false);
+            if (webContents != null) webContents.dispatchBeforeUnload(false);
             return true;
         }
 
