@@ -11,6 +11,7 @@
 #include "base/task/task_features.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -143,6 +144,56 @@ TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
     // In any case, the task never actually ran.
     EXPECT_FALSE(task_ran);
   }
+}
+
+// Tests that a task posted through `PostCancelableDelayedTask()`, while the
+// RemoveCanceledDelayedTasksInTaskQueue feature is enabled, is not considered
+// canceled once it has reached the |delayed_work_queue| and is therefore
+// not removed.
+//
+// This is a regression test for a bug in `Task::IsCanceled()`
+// (see https://crbug.com/1288882). Note that this function is only called on
+// tasks inside the |delayed_work_queue|, and not for tasks in the
+// |delayed_incoming_queue|. This is because a task posted through
+// `PostCancelableDelayedTask()` is always valid while it is in the
+// |delayed_incoming_queue|, since canceling it would remove it from the queue.
+TEST(TaskQueueTest, ValidCancelableTaskIsNotCanceled) {
+  ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks(true);
+
+  auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
+      MessagePump::Create(MessagePumpType::DEFAULT));
+  auto queue = sequence_manager->CreateTaskQueue(TaskQueue::Spec("test"));
+
+  // Get the default task runner.
+  auto task_runner = queue->task_runner();
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 0u);
+
+  // RunLoop requires the ThreadTaskRunnerHandle to be set.
+  ThreadTaskRunnerHandle thread_task_runner_handle(task_runner);
+  RunLoop run_loop;
+
+  // To reach the |delayed_work_queue|, the task must be posted with a non-
+  // zero delay, which is then moved to the |delayed_work_queue| when it is
+  // ripe. To achieve this, run the RunLoop for exactly the same delay of the
+  // cancelable task. Since real time waiting happens, chose a very small delay.
+  constexpr TimeDelta kTestDelay = Microseconds(1);
+  task_runner->PostDelayedTask(FROM_HERE, run_loop.QuitClosure(), kTestDelay);
+
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE, DoNothing(),
+          kTestDelay);
+  run_loop.Run();
+
+  // Now only the cancelable delayed task remains and it is ripe.
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
+
+  // ReclaimMemory doesn't remove the task because it is valid (not canceled).
+  sequence_manager->ReclaimMemory();
+  EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
+
+  // Clean-up.
+  delayed_task_handle.CancelTask();
 }
 
 }  // namespace

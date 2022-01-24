@@ -77,11 +77,7 @@ bool Task::IsCanceled() const {
     return true;
   }
 
-  if (delayed_task_handle_delegate_) {
-    return true;
-  }
-
-  return false;
+  return delayed_task_handle_delegate_.WasInvalidated();
 }
 
 void Task::WillRunTask() {
