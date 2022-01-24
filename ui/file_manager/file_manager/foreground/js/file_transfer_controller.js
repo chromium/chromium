@@ -10,7 +10,7 @@ import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {FileType} from '../../common/js/file_type.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {strf, util} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -460,8 +460,8 @@ export class FileTransferController {
     // TODO(crbug.com/1259202): Add Dlp logic
     if (!isPasteAllowed) {
       this.filesToast_.show(
-          'Pasting this file is blocked by your administrator', {
-            text: 'Learn more',
+          str('DLP_BLOCK_COPY_TOAST'), {
+            text: str('DLP_TOAST_BUTTON_LABEL'),
             callback: () => {
               util.visitURL(
                   'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
