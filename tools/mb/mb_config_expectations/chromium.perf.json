@@ -39,8 +39,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_os": "android",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "android_arm64-builder-perf": {
@@ -55,8 +54,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "chromecast-linux-builder-perf": {
@@ -84,7 +82,6 @@
       "symbol_level": 1,
       "target_os": "chromeos",
       "use_goma": true,
-      "use_py3_for_perf": true,
       "use_thin_lto": true
     }
   },
@@ -96,8 +93,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "linux-builder-perf-rel": {
@@ -121,8 +117,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
       "target_cpu": "arm64",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "mac-builder-perf": {
@@ -134,8 +129,7 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "win32-builder-perf": {
@@ -146,8 +140,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "win64-builder-perf": {
@@ -157,8 +150,7 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   }
 }

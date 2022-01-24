@@ -52,12 +52,6 @@ import("//ui/views/features.gni")
 import("//ui/webui/webui_features.gni")
 import("//v8/gni/v8.gni")
 
-declare_args() {
-  # Add the new arg to allow perf waterfall to selectively run
-  # benchmarks in python 3.
-  use_py3_for_perf = false
-}
-
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 if (is_android) {
@@ -4333,11 +4327,6 @@ template("performance_test_suite_template_base") {
                            "data_deps",
                          ])
   script_test(target_name) {
-    if (use_py3_for_perf) {
-      run_under_python2 = false
-    } else {
-      run_under_python2 = true
-    }
     script = "//testing/scripts/run_performance_tests.py"
     if (is_chromeos_device) {
       if (defined(override_board)) {

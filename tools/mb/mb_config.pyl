@@ -567,21 +567,21 @@
     'chromium.perf': {
       'Android Builder Perf': 'official_goma_minimal_symbols_android',
       'Android arm64 Builder Perf': 'official_goma_minimal_symbols_android_arm64',
-      'android_arm64-builder-perf': 'official_goma_minimal_symbols_android_arm64_py3',
-      'android-builder-perf': 'official_goma_minimal_symbols_android_py3',
+      'android_arm64-builder-perf': 'official_goma_minimal_symbols_android_arm64',
+      'android-builder-perf': 'official_goma_minimal_symbols_android',
       'chromecast-linux-builder-perf': 'cast_binary_size',
-      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_py3',
-      'linux-builder-perf': 'official_goma_linux_perf_py3',
+      'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official',
+      'linux-builder-perf': 'official_goma_linux_perf',
       'linux-builder-perf-rel': 'official_goma_linux_perf',
-      'mac-builder-perf': 'official_goma_mac_perf_py3',
-      'mac-arm-builder-perf': 'official_goma_mac_arm_perf_py3',
-      'win32-builder-perf': 'official_goma_x86_perf_py3',
-      'win64-builder-perf': 'official_goma_perf_py3',
+      'mac-builder-perf': 'official_goma_mac_perf',
+      'mac-arm-builder-perf': 'official_goma_mac_arm_perf',
+      'win32-builder-perf': 'official_goma_x86_perf',
+      'win64-builder-perf': 'official_goma_perf',
     },
 
     'chromium.perf.calibration': {
-      'linux-perf-calibration': 'official_goma_linux_perf_py3',
-      'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64_py3',
+      'linux-perf-calibration': 'official_goma_linux_perf',
+      'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64',
     },
 
     'chromium.perf.fyi': {
@@ -1836,10 +1836,6 @@
       'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
-    'chromeos_amd64-generic_lacros_official_py3': [
-      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'use_py3_for_perf',
-    ],
-
     # This is the same as 'chromeos_amd64-generic_lacros_official', except for
     # the 'is_skylab' arg. Please keep them in sync.
     'chromeos_amd64-generic_lacros_official_skylab': [
@@ -2763,24 +2759,12 @@
       'official', 'goma', 'minimal_symbols', 'pgo_phase_0',
     ],
 
-    'official_goma_perf_py3': [
-      'official', 'goma', 'minimal_symbols', 'pgo_phase_0', 'use_py3_for_perf'
-    ],
-
     'official_goma_mac_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
     ],
 
-    'official_goma_mac_perf_py3': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0', 'use_py3_for_perf'
-    ],
-
     'official_goma_mac_arm_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
-    ],
-
-    'official_goma_mac_arm_perf_py3': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0', 'use_py3_for_perf'
     ],
 
     'official_goma_mac_arm_pgo': [
@@ -2793,10 +2777,6 @@
 
     'official_goma_linux_perf': [
       'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0',
-    ],
-
-    'official_goma_linux_perf_py3': [
-      'official', 'goma', 'no_gnome_keyring', 'minimal_symbols', 'pgo_phase_0', 'use_py3_for_perf'
     ],
 
     'official_goma_fuchsia_arm64_perf': [
@@ -2815,16 +2795,8 @@
       'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
     ],
 
-    'official_goma_minimal_symbols_android_py3': [
-      'official', 'goma', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo', 'use_py3_for_perf'
-    ],
-
     'official_goma_minimal_symbols_android_arm64': [
       'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
-    ],
-
-    'official_goma_minimal_symbols_android_arm64_py3': [
-      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'use_py3_for_perf'
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [
@@ -2849,10 +2821,6 @@
 
     'official_goma_x86_perf': [
       'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_0',
-    ],
-
-    'official_goma_x86_perf_py3': [
-      'official', 'goma', 'x86', 'minimal_symbols', 'pgo_phase_0', 'use_py3_for_perf'
     ],
 
     'official_goma_x86_pgo': [
@@ -4070,10 +4038,6 @@
 
     'use_javascript_coverage': {
       'gn_args': 'use_javascript_coverage=true',
-    },
-
-    'use_py3_for_perf': {
-      'gn_args': 'use_py3_for_perf=true',
     },
 
     'v8_simulate_arm': {

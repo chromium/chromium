@@ -11,8 +11,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "linux-perf-calibration": {
@@ -23,8 +22,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_gnome_keyring": false,
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   }
 }
