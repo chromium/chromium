@@ -183,21 +183,19 @@
     </cros-button>
     <cros-button id="next" primary on-click="onNextButtonClick_"
         aria-describedby="title" aria-details="prompt-message"
-        hidden="[[!showNextButton_(state_)]]">
+        autofocus="true" hidden="[[!showNextButton_(state_)]]">
       $i18n{next}
     </cros-button>
     <cros-button
-      id="install" primary
-      on-click="onInstallButtonClick_" aria-describedby="title"
-      aria-details="prompt-message"
-      hidden="[[!showInstallButton_(state_, error_)]]"
-      disabled="[[disableInstallButton_(state_, username_, usernameError_)]]">
+        id="install" primary on-click="onInstallButtonClick_"
+        aria-describedby="title" aria-details="prompt-message"
+        hidden="[[!showInstallButton_(state_, error_)]]"
+        disabled="[[disableInstallButton_(state_, username_, usernameError_)]]">
       [[getInstallButtonLabel_(state_)]]
     </cros-button>
-    <cros-button id="settings" primary
-               on-click="onSettingsButtonClick_" aria-describedby="title"
-               aria-details="prompt-message"
-               hidden="[[!showSettingsButton_(state_, error_)]]">
+    <cros-button id="settings" primary on-click="onSettingsButtonClick_"
+        aria-describedby="title" aria-details="prompt-message"
+        hidden="[[!showSettingsButton_(state_, error_)]]">
       $i18n{settings}
     </cros-button>
   </div>
