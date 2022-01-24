@@ -89,6 +89,14 @@ void GenerateCertificateWithOptionalExpiration(
     ExecutionContext& context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(key_params.IsValid());
+  if (context.IsContextDestroyed()) {
+    // If the context is destroyed we won't be able to access the
+    // PeerConnectionDependencyFactory. Reject the promise by returning a null
+    // certificate.
+    std::move(completion_callback).Run(nullptr);
+    return;
+  }
+
   auto& pc_dependency_factory =
       blink::PeerConnectionDependencyFactory::From(context);
   pc_dependency_factory.EnsureInitialized();
