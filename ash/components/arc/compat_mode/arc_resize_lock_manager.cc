@@ -286,21 +286,29 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
 
   const auto app_id = GetAppId(window);
   DCHECK(app_id);
+  const bool is_fully_locked =
+      window->GetProperty(ash::kArcResizeLockTypeKey) ==
+      ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
   // The state is |ArcResizeLockState::READY| only when we enable the resize
   // lock for an app for the first time.
   if (pref_delegate_->GetResizeLockState(*app_id) ==
       mojom::ArcResizeLockState::READY) {
     if (ShouldShowSplashScreenDialog(pref_delegate_)) {
-      const bool is_for_unresizable =
-          window->GetProperty(ash::kArcResizeLockTypeKey) ==
-          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE;
       WindowActivationObserver::RunOnActivated(
           window, base::BindOnce(&ArcSplashScreenDialogView::Show, window,
-                                 is_for_unresizable));
+                                 is_fully_locked));
     }
   }
 
   UpdateResizeLockState(window);
+
+  if (!is_fully_locked &&
+      base::FeatureList::IsEnabled(arc::kCompatSnapFeature)) {
+    window->SetProperty(ash::kUnresizableSnappedSizeKey,
+                        new gfx::Size(GetPortraitPhoneSizeWidth(), 0));
+  } else {
+    window->ClearProperty(ash::kUnresizableSnappedSizeKey);
+  }
 }
 
 void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
@@ -315,6 +323,8 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
 
   if (touch_mode_mouse_rewriter_)
     touch_mode_mouse_rewriter_->DisableForWindow(window);
+
+  window->ClearProperty(ash::kUnresizableSnappedSizeKey);
 }
 
 void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {

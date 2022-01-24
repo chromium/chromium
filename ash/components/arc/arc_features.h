@@ -13,6 +13,7 @@ namespace arc {
 
 // Please keep alphabetized.
 extern const base::Feature kBootCompletedBroadcastFeature;
+extern const base::Feature kCompatSnapFeature;
 extern const base::Feature kCustomTabsExperimentFeature;
 extern const base::Feature kDocumentsProviderUnknownSizeFeature;
 extern const base::Feature kEnableArcNearbyShare;

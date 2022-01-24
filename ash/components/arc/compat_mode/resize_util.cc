@@ -203,4 +203,8 @@ bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {
   return true;
 }
 
+int GetPortraitPhoneSizeWidth() {
+  return kPortraitPhoneDp.width();
+}
+
 }  // namespace arc

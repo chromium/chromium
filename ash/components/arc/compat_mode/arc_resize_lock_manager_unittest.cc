@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "ash/constants/app_types.h"
@@ -17,6 +18,7 @@
 #include "base/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -421,6 +423,54 @@ TEST_F(ArcResizeLockManagerTest, UpdateCompatModeButton) {
       ResetUpdateCompatModeButtonCalled();
     }
   }
+}
+
+// Tests that compatible window snapping is properly enabled for resize-locked
+// windows.
+TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnap) {
+  base::test::ScopedFeatureList feature_list{arc::kCompatSnapFeature};
+
+  auto arc_window = CreateFakeWindow(true);
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
+
+  // Resize locking the window makes it compat snappable.
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+  const gfx::Size* prop =
+      arc_window->GetProperty(ash::kUnresizableSnappedSizeKey);
+  EXPECT_TRUE(prop->width() > 0);
+
+  // Non-resize locked window can't be snapped.
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::NONE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
+
+  // Fully-locked window can't be snapped.
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
+}
+
+// TODO(b/215063759): Remove this test after the launch.
+// Tests that compatible window snapping is properly disabled if the flag is
+// disabled.
+TEST_F(ArcResizeLockManagerTest, TestCompatWindowSnapWithFlagDisabled) {
+  auto arc_window = CreateFakeWindow(true);
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
+  arc_window->SetProperty(aura::client::kResizeBehaviorKey,
+                          aura::client::kResizeBehaviorNone);
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::NONE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
+
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kUnresizableSnappedSizeKey), nullptr);
 }
 
 }  // namespace arc

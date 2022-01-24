@@ -40,6 +40,8 @@ ResizeCompatMode PredictCurrentMode(const aura::Window* window);
 
 bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate);
 
+int GetPortraitPhoneSizeWidth();
+
 }  // namespace arc
 
 #endif  // ASH_COMPONENTS_ARC_COMPAT_MODE_RESIZE_UTIL_H_
