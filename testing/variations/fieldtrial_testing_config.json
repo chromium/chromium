@@ -7900,21 +7900,6 @@
             ]
         }
     ],
-    "VisualFeaturesInPasswordProtectionPingsAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VisualFeaturesInPasswordProtectionAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "Vulkan": [
         {
             "platforms": [
