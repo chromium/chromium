@@ -41,11 +41,6 @@ using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::WithArg;
 
-std::unique_ptr<base::Value> UniqueValueFromJson(const std::string& json) {
-  return std::make_unique<base::Value>(
-      std::move(*base::JSONReader::Read(json)));
-}
-
 class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
  public:
   MockJsFlowExecutorImplDelegate() = default;
@@ -54,7 +49,8 @@ class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
   MOCK_METHOD(
       void,
       RunNativeAction,
-      (std::unique_ptr<base::Value> native_action,
+      (int,
+       const std::string&,
        base::OnceCallback<void(const ClientStatus& result_status,
                                std::unique_ptr<base::Value> result_value)>
            callback),
@@ -159,15 +155,17 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
         )")));
 
   EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce([&](std::unique_ptr<base::Value> value, auto callback) {
-        EXPECT_EQ(*value, base::Value("test"));
+      .WillOnce([&](int action_id, const std::string& action, auto callback) {
+        EXPECT_EQ(12, action_id);
+        EXPECT_EQ("test", action);
         std::move(callback).Run(ClientStatus(ACTION_APPLIED),
                                 std::move(native_return_value));
       });
 
   std::unique_ptr<base::Value> js_return_value;
   EXPECT_THAT(RunTest(R"(
-                        let [status, value] = await runNativeAction("test");
+                        let [status, value] = await runNativeAction(
+                            12, "dGVzdA==" /*test*/);
                         if (status != 2) { // ACTION_APPLIED
                           return status;
                         }
@@ -198,16 +196,17 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
     )"));
 }
 
-IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsSimpleString) {
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeAction) {
   EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, base::Value("test"));
+      .WillOnce([&](int action_id, const std::string& action, auto callback) {
+        EXPECT_EQ(12, action_id);
+        EXPECT_EQ("test", action);
         std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
       });
 
   std::unique_ptr<base::Value> result;
   EXPECT_THAT(RunTest(R"(
-      let [status, value] = await runNativeAction("test");
+      let [status, value] = await runNativeAction(12, "dGVzdA==" /*test*/);
       return status;
   )",
                       result),
@@ -223,32 +222,16 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsSimpleString) {
     )"));
 }
 
-IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsJsonData) {
-  EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value,
-                  *UniqueValueFromJson(R"([1, null, "test", {"foo": "bar"}])"));
-        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
-      });
-
-  std::unique_ptr<base::Value> result;
-  EXPECT_THAT(RunTest(R"(
-      let arg = [1, null, "test", {"foo": "bar"}];
-      let [status, value] = await runNativeAction(arg);
-      return status;
-  )",
-                      result),
-              Property(&ClientStatus::proto_status, ACTION_APPLIED));
-}
-
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleNativeActions) {
   EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, base::Value("action1"));
+      .WillOnce([&](int action_id, const std::string& action, auto callback) {
+        EXPECT_EQ(1, action_id);
+        EXPECT_EQ("test1", action);
         std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
       })
-      .WillOnce([&](auto value, auto callback) {
-        EXPECT_EQ(*value, base::Value("action2"));
+      .WillOnce([&](int action_id, const std::string& action, auto callback) {
+        EXPECT_EQ(2, action_id);
+        EXPECT_EQ("test2", action);
         std::move(callback).Run(ClientStatus(OTHER_ACTION_STATUS), nullptr);
       });
 
@@ -257,9 +240,11 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleNativeActions) {
   // OTHER_ACTION_STATUS, i.e., 3.
   std::unique_ptr<base::Value> result;
   EXPECT_THAT(RunTest(R"(
-                        let [status, value] = await runNativeAction("action1");
+                        let [status, value] = await runNativeAction(
+                            1, "dGVzdDE=" /*test1*/);
                         if (status == 2) { // ACTION_APPLIED
-                          [status, value] = await runNativeAction("action2");
+                          [status, value] = await runNativeAction(
+                            2, "dGVzdDI=" /*test2*/);
                         }
                         return status;
                       )",
@@ -416,24 +401,38 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunMultipleConsecutiveFlows) {
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
-                       UnserializableRunNativeActionArgument) {
+                       UnserializableRunNativeActionString) {
   std::unique_ptr<base::Value> result;
   EXPECT_CALL(mock_delegate_, RunNativeAction).Times(0);
   ClientStatus status = RunTest(
       R"(
-        // NaN cannot be serialized as a JSON object, so this should fail.
-        let [status, result] = await runNativeAction(NaN);
+        // {} is not a string, so this should fail.
+        let [status, result] = await runNativeAction(1, {});
         return status;
       )",
       result);
   EXPECT_EQ(result, nullptr);
-  EXPECT_EQ(status.proto_status(), UNEXPECTED_JS_ERROR);
-  EXPECT_TRUE(status.details().has_unexpected_error_info());
+  EXPECT_EQ(status.proto_status(), INVALID_ACTION);
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
+                       UnserializableRunNativeActionId) {
+  std::unique_ptr<base::Value> result;
+  EXPECT_CALL(mock_delegate_, RunNativeAction).Times(0);
+  ClientStatus status = RunTest(
+      R"(
+        // {} is not a number, so this should fail.
+        let [status, result] = await runNativeAction({}, "");
+        return status;
+      )",
+      result);
+  EXPECT_EQ(result, nullptr);
+  EXPECT_EQ(status.proto_status(), INVALID_ACTION);
 }
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
   EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce(WithArg<1>([&](auto callback) {
+      .WillOnce(WithArg<2>([&](auto callback) {
         // Starting a second flow while the first one is running should fail.
         EXPECT_EQ(RunTest(std::string()).proto_status(), INVALID_ACTION);
 
@@ -444,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
   std::unique_ptr<base::Value> result;
   ClientStatus status = RunTest(
       R"(
-      let [status, result] = await runNativeAction("");
+      let [status, result] = await runNativeAction(1, "dGVzdA==" /*test*/);
       return status;
       )",
       result);

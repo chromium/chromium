@@ -35,16 +35,18 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   // Flows may request additional native actions from the delegate, using the
   // following syntax:
   //
-  // let [status, result] = await runNativeAction('request')
+  // let [status, result] = await runNativeAction(id, action)
   //
+  // - [id] is a field tag number in the ActionProto.action_info oneof
+  // - [action] is a string containing a base64-encoded serialized proto of the
+  //            type appropriate for [id]
   // - |status| is an int corresponding to a ProcessedActionStatusProto.
   // - [result] is a struct containing the result value, or an empty struct if
   //            no result was returned. The specific contents depend on the
   //            native action.
-  // - |runNativeAction| is provided automatically and takes a single argument.
-  //                     The type of the argument will depend on what the native
-  //                     delegate expects, but will typically be a serialized
-  //                     protobuffer.
+  //
+  // The function runNativeAction() is guaranteed to be available when the
+  // JavaScript snippet |js_flow| is run.
   //
   // The flow result is one of the following, depending on the |js_flow|:
   // (1) ACTION_APPLIED and a base::Value dictionary containing the 'result' key

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
+namespace autofill_assistant {
 namespace {
 
 // Initializes a |globalFlowState| variable on first run, and renews the
@@ -32,8 +34,6 @@ constexpr char kFulfillActionPromise[] = R"(
 constexpr char kMainFrame[] = "";
 
 }  // namespace
-
-namespace autofill_assistant {
 
 JsFlowExecutorImpl::JsFlowExecutorImpl(content::WebContents* web_contents,
                                        Delegate* delegate)
@@ -115,10 +115,11 @@ void JsFlowExecutorImpl::InternalStart() {
   // original js source.
   js_flow_ = std::make_unique<std::string>(base::StrCat({
       R"((async function() {
-        function runNativeAction(native_action) {
+        function runNativeAction(native_action_id, native_action) {
           return new Promise(
               (fulfill, reject) => {
-                   globalFlowState.runNativeAction([native_action, fulfill])
+                   globalFlowState.runNativeAction(
+                       [{id: native_action_id, action: native_action}, fulfill])
               }
           )
         }
@@ -185,18 +186,9 @@ void JsFlowExecutorImpl::OnNativeActionRequestActionRetrieved(
 
   auto* remote_object = result->GetResult();
   if (!remote_object->HasValue()) {
-    ClientStatus status(UNEXPECTED_JS_ERROR);
-    auto* details = status.mutable_details()->mutable_unexpected_error_info();
-    details->set_source_file(__FILE__);
-    details->set_source_line_number(__LINE__);
-
-    std::string stringified_result;
-    base::JSONWriter::Write(*remote_object->Serialize(), &stringified_result);
-    details->set_devtools_error_message(
-        base::StrCat({"runNativeAction expected single JSON-compatible "
-                      "argument, but was called with ",
-                      stringified_result}));
-    RunCallback(status, nullptr);
+    // This shouldn't be possible, as the argument is built by
+    // JsFlowExecutorImpl::InternalStart()
+    RunCallback(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr);
     return;
   }
 
@@ -228,18 +220,43 @@ void JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved(
   if (!fulfill_promise_object->HasObjectId()) {
     // This should never happen, since the fulfill promise is programmatically
     // provided.
-    ClientStatus status(OTHER_ACTION_STATUS);
-    auto* details = status.mutable_details()->mutable_unexpected_error_info();
-    details->set_source_file(__FILE__);
-    details->set_source_line_number(__LINE__);
-    details->set_devtools_error_message(
-        "Native action requested, but no fulfill promise provided");
-    RunCallback(status, nullptr);
+    RunCallback(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr);
     return;
   }
 
+  absl::optional<int> id;
+  absl::optional<std::string> action;
+  if (action_request->is_dict()) {
+    id = action_request->FindIntKey("id");
+
+    if (auto* value = action_request->FindStringKey("action");
+        value != nullptr) {
+      action = *value;
+    }
+  }
+  if (!id) {
+    DVLOG(1) << "id passed to runNativeAction(id, action) is not a number in "
+             << action_request->DebugString();
+    RunCallback(ClientStatus(INVALID_ACTION), nullptr);
+    return;
+  }
+  if (!action) {
+    DVLOG(1)
+        << "action passed to runNativeAction(id, action) is not a string in "
+        << action_request->DebugString();
+    RunCallback(ClientStatus(INVALID_ACTION), nullptr);
+    return;
+  }
+  std::string action_bytes;
+  if (!base::Base64Decode(*action, &action_bytes)) {
+    DVLOG(1) << "action passed to runNativeAction(id, action) is not a "
+                "base64-encoded string in "
+             << action_request->DebugString();
+    RunCallback(ClientStatus(INVALID_ACTION), nullptr);
+    return;
+  }
   delegate_->RunNativeAction(
-      std::move(action_request),
+      *id, action_bytes,
       base::BindOnce(&JsFlowExecutorImpl::OnNativeActionFinished,
                      weak_ptr_factory_.GetWeakPtr(),
                      fulfill_promise_object->GetObjectId()));

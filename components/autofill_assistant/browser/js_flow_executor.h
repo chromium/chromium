@@ -21,11 +21,11 @@ class JsFlowExecutor {
    public:
     virtual ~Delegate() = default;
 
-    // Asks the delegate to run |native_action| and call |finished_callback|
-    // when done. The contents of |native_action| depend on the JS script, but
-    // will typically be a serialized protobuffer.
+    // Asks the delegate to run |action| and call |finished_callback| when done.
+    // |action| is a serialized proto whose type is defined by |action_id|.
     virtual void RunNativeAction(
-        std::unique_ptr<base::Value> native_action,
+        int action_id,
+        const std::string& action,
         base::OnceCallback<void(const ClientStatus& result_status,
                                 std::unique_ptr<base::Value> result_value)>
             finished_callback) = 0;
