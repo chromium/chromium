@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoActi
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.ExploreIconProvider;
@@ -159,7 +160,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             @NonNull ExploreIconProvider exploreIconProvider,
             @Nullable UserEducationHelper userEducationHelper,
             @Nullable Supplier<MerchantTrustSignalsCoordinator>
-                    merchantTrustSignalsCoordinatorSupplier) {
+                    merchantTrustSignalsCoordinatorSupplier,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
@@ -183,11 +185,11 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator, windowAndroid.getKeyboardDelegate(), isIncognito);
-        mAutocompleteCoordinator =
-                new AutocompleteCoordinator(mLocationBarLayout, this, this, mUrlCoordinator,
-                        modalDialogManagerSupplier, activityTabSupplier, shareDelegateSupplier,
-                        locationBarDataProvider, profileObservableSupplier, bringTabToFrontCallback,
-                        tabWindowManagerSupplier, bookmarkState, jankTracker, exploreIconProvider);
+        mAutocompleteCoordinator = new AutocompleteCoordinator(mLocationBarLayout, this, this,
+                mUrlCoordinator, modalDialogManagerSupplier, activityTabSupplier,
+                shareDelegateSupplier, locationBarDataProvider, profileObservableSupplier,
+                bringTabToFrontCallback, tabWindowManagerSupplier, bookmarkState, jankTracker,
+                exploreIconProvider, omniboxPedalDelegate);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
                 incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,

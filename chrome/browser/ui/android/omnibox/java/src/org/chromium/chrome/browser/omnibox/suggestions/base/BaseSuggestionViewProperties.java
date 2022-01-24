@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -78,6 +79,10 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<List<Action>> ACTIONS =
             new WritableObjectPropertyKey();
 
+    /** Omnibox Pedal description. */
+    public static final WritableObjectPropertyKey<OmniboxPedal> PEDAL =
+            new WritableObjectPropertyKey();
+
     /** Callback invoked when the Suggestion view is highlighted. */
     public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
             new WritableObjectPropertyKey<>();
@@ -90,8 +95,12 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_LONG_CLICK =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {ACTIONS, ICON, ON_CLICK, ON_LONG_CLICK, ON_FOCUS_VIA_SELECTION};
+    /** Callback invoked when user clicks the pedal. */
+    public static final WritableObjectPropertyKey<Runnable> ON_PEDAL_CLICK =
+            new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
+            ICON, ACTIONS, PEDAL, ON_FOCUS_VIA_SELECTION, ON_CLICK, ON_LONG_CLICK, ON_PEDAL_CLICK};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

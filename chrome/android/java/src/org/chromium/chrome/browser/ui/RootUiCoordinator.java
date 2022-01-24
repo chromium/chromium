@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.messages.MessagesResourceMapperInitializer;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
@@ -249,6 +250,7 @@ public class RootUiCoordinator
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final OneshotSupplier<TabReparentingController> mTabReparentingControllerSupplier;
+    private final OmniboxPedalDelegate mOmniboxPedalDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
 
     /**
@@ -329,6 +331,7 @@ public class RootUiCoordinator
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             boolean initializeUiWithIncognitoColors) {
         mJankTracker = jankTracker;
         mCallbackController = new CallbackController();
@@ -357,6 +360,7 @@ public class RootUiCoordinator
         mStatusBarColorProvider = statusBarColorProvider;
         mIntentRequestTracker = intentRequestTracker;
         mTabReparentingControllerSupplier = tabReparentingControllerSupplier;
+        mOmniboxPedalDelegate = omniboxPedalDelegate;
         mInitializeUiWithIncognitoColors = initializeUiWithIncognitoColors;
 
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
@@ -947,7 +951,7 @@ public class RootUiCoordinator
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
-                    mInitializeUiWithIncognitoColors);
+                    mOmniboxPedalDelegate, mInitializeUiWithIncognitoColors);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

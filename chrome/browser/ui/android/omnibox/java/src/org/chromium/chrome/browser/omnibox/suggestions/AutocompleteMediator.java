@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
@@ -84,6 +85,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private final @NonNull Callback<Tab> mBringTabToFrontCallback;
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final @NonNull JankTracker mJankTracker;
+    private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -149,7 +151,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState, @NonNull JankTracker jankTracker,
-            @NonNull ExploreIconProvider exploreIconProvider) {
+            @NonNull ExploreIconProvider exploreIconProvider,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -165,6 +168,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                 activityTabSupplier, bookmarkState, exploreIconProvider);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager = new DropdownItemViewInfoListManager(mSuggestionModels);
+        mOmniboxPedalDelegate = omniboxPedalDelegate;
     }
 
     /**
@@ -445,6 +449,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mBringTabToFrontCallback.onResult(tab);
         }
         recordMetrics(position, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
+    }
+
+    @Override
+    public void onPedalClicked(@OmniboxPedalType int omniboxPedalType) {
+        mOmniboxPedalDelegate.executeAction(omniboxPedalType);
     }
 
     @Override

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.url.GURL;
 
 /**
@@ -15,16 +16,16 @@ import org.chromium.url.GURL;
  * please check on OmniboxAction class definition on native side.
  */
 public class OmniboxPedal {
-    private final int mId;
+    private final @OmniboxPedalType int mId;
     private final @NonNull String mHint;
     private final @NonNull String mSuggestionContents;
     private final @NonNull String mAccessibilitySuffix;
     private final @NonNull String mAccessibilityHint;
     private final @Nullable GURL mUrl;
 
-    public OmniboxPedal(int id, @NonNull String hint, @NonNull String suggestionContents,
-            @NonNull String accessibilitySuffix, @NonNull String accessibilityHint,
-            @Nullable GURL url) {
+    public OmniboxPedal(@OmniboxPedalType int id, @NonNull String hint,
+            @NonNull String suggestionContents, @NonNull String accessibilitySuffix,
+            @NonNull String accessibilityHint, @Nullable GURL url) {
         mId = id;
         mHint = hint;
         mSuggestionContents = suggestionContents;
@@ -36,7 +37,7 @@ public class OmniboxPedal {
     /**
      * @return an ID used to identify some actions. Not defined for all Actions.
      */
-    public int getID() {
+    public @OmniboxPedalType int getID() {
         return mId;
     }
 

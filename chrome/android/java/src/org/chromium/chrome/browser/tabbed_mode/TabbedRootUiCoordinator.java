@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -286,6 +287,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
+            @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             boolean initializeUiWithIncognitoColors) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkBridgeSupplier, contextualSearchManagerSupplier,
@@ -299,7 +301,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, shouldShowOverviewPageOnStartSupplier,
                 isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
-                intentRequestTracker, tabReparentingControllerSupplier,
+                intentRequestTracker, tabReparentingControllerSupplier, omniboxPedalDelegate,
                 initializeUiWithIncognitoColors);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mControlContainerHeightResource = controlContainerHeightResource;

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.On
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
@@ -117,6 +118,8 @@ public class VoiceRecognitionHandlerTest {
     AutocompleteController.Natives mControllerJniMock;
     @Mock
     AutocompleteMatch mMatch;
+    @Mock
+    OmniboxPedalDelegate mPedalDelegate;
 
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
@@ -420,7 +423,7 @@ public class VoiceRecognitionHandlerTest {
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider,
                     () -> mModalDialogManager, null, null, mDataProvider,
                     mProfileSupplier, (tab) -> {}, null, (url) -> false, new DummyJankTracker(),
-                    (pixelSize, callback) -> {});
+                    (pixelSize, callback) -> {}, mPedalDelegate);
             // clang-format on
         }
 

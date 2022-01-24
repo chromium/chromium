@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.app.Activity;
+import android.support.test.InstrumentationRegistry;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -20,15 +22,28 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
+import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
+import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
+import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
+import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.settings.MainSettings;
+import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.WaitForFocusHelper;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -42,11 +57,13 @@ public class OmniboxPedalsTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private OmniboxTestUtils mOmniboxUtils;
+    private OmniboxPedalDelegate mOmniboxPedalDelegate;
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mOmniboxUtils = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        mOmniboxPedalDelegate = new OmniboxPedalDelegateImpl(mActivityTestRule.getActivity());
     }
 
     /**
@@ -89,63 +106,136 @@ public class OmniboxPedalsTest {
         return null;
     }
 
+    private void clickOnPedal(
+            LocationBarLayout locationBarLayout, @OmniboxPedalType int omniboxPedalType) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AutocompleteMatch matchSuggestion =
+                    findOmniboxPedalSuggestion(locationBarLayout, omniboxPedalType);
+            mOmniboxPedalDelegate.executeAction(matchSuggestion.getOmniboxPedal().getID());
+        });
+    }
+
+    /**
+     * Ensure the |pedalType| pedal suggestion was shown.
+     *
+     * @param locationBarLayout The layout which omnibox suggestions will show in.
+     * @param pedalType The Omnibox pedal type to be found.
+     */
+    private void ensurePedalWasShown(
+            LocationBarLayout locationBarLayout, @OmniboxPedalType int pedalType) {
+        CriteriaHelper.pollUiThread(() -> {
+            AutocompleteMatch matchSuggestion =
+                    findOmniboxPedalSuggestion(locationBarLayout, pedalType);
+            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+        });
+    }
+
+    /**
+     * click on the pedal to open the SettingsActivity, and return the SettingsActivity.
+     *
+     * @param activityType The class type of the activity.
+     * @param locationBarLayout The layout which omnibox suggestions will show in.
+     * @param pedalType The Omnibox pedal type to be found.
+     * @return The opened SettingsActivity.
+     */
+    private <T> T clickOnPedalToSettings(final Class<T> activityType,
+            LocationBarLayout locationBarLayout, @OmniboxPedalType int pedalType) {
+        return ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
+                activityType, () -> { clickOnPedal(locationBarLayout, pedalType); });
+    }
+
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testClearBrowsingDataOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the clear browsing data pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Clear data");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(
+                SettingsActivity.class, locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the clear browsing data setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.CLEAR_BROWSING_DATA);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(ClearBrowsingDataTabsFragment.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testManagePasswordsOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the manage passwords pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Manage passwords");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(
+                SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the manage passwords setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.MANAGE_PASSWORDS);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(PasswordSettings.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testManagePaymentMethodsOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the manage payment methods pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Manage payment methods");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(
+                SettingsActivity.class, locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the manage passwords setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.UPDATE_CREDIT_CARD);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(AutofillPaymentMethodsFragment.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testOpenIncognitoTabOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the open incognito pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Open Incognito");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO);
+
+        clickOnPedal(locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO);
+
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.LAUNCH_INCOGNITO);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
         });
     }
 
@@ -153,60 +243,95 @@ public class OmniboxPedalsTest {
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testRunChromeSafetyCheckOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the run chrome safety check pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Run safety check");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class,
+                locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the chrome safety check setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(SafetyCheckSettingsFragment.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testManageSiteSettingsOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the manage site setting pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Change site permissions");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(
+                SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the manage site setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.MANAGE_SITE_SETTINGS);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(SiteSettings.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testManageChromeSettingsOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the manage chrome settings pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "manage settings");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(
+                SettingsActivity.class, locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the chrome setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.MANAGE_CHROME_SETTINGS);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(MainSettings.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testViewYourChromeHistoryOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the view chrome history pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "view chrome history");
 
-        CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
-        });
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY);
+
+        HistoryActivity historyActivity = clickOnPedalToSettings(
+                HistoryActivity.class, locationBarLayout, OmniboxPedalType.VIEW_CHROME_HISTORY);
+
+        // Make sure the history setting page was opened.
+        Assert.assertNotNull("Could not find the history activity", historyActivity);
+
+        historyActivity.finish();
     }
 
     @Test
@@ -214,29 +339,46 @@ public class OmniboxPedalsTest {
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testManageAccessibilitySettingsOmniboxPedalSuggestion()
             throws InterruptedException {
+        // Generate the manage accessibility setting pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Chrome accessibility");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+
+        SettingsActivity settingsActivity = clickOnPedalToSettings(SettingsActivity.class,
+                locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
+        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+
+        // Make sure the manage accessibility setting page was opened.
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Fragment fragment =
+                    settingsActivity.getSupportFragmentManager().findFragmentById(R.id.content);
+            Criteria.checkThat(fragment, Matchers.instanceOf(AccessibilitySettings.class));
         });
+
+        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
     public void testPlayChromeDinoGameOmniboxPedalSuggestion() throws InterruptedException {
+        // Generate the play chrome dino game pedal.
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
         typeInOmnibox(mActivityTestRule.getActivity(), "Dino game");
 
+        ensurePedalWasShown(locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+
+        // Click the pedal.
+        clickOnPedal(locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
+
         CriteriaHelper.pollUiThread(() -> {
-            AutocompleteMatch matchSuggestion = findOmniboxPedalSuggestion(
-                    locationBarLayout, OmniboxPedalType.PLAY_CHROME_DINO_GAME);
-            Criteria.checkThat(matchSuggestion, Matchers.notNullValue());
+            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+            Criteria.checkThat(
+                    tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.CHROME_DINO_URL));
         });
     }
 }

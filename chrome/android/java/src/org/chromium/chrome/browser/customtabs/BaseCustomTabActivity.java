@@ -25,6 +25,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -165,7 +166,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 this::isInOverviewMode, this::shouldShowOverviewPageOnStart, this::isWarmOnResume,
                 /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
                 getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController,
-                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher());
+                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher(),
+                new OmniboxPedalDelegateImpl(this));
         // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }
