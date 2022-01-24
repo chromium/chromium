@@ -4725,33 +4725,6 @@
             ]
         }
     ],
-    "OfflineIndicator": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledBottom",
-                    "params": {
-                        "bottom_offline_indicator": "true"
-                    },
-                    "enable_features": [
-                        "OfflineIndicator"
-                    ]
-                },
-                {
-                    "name": "EnabledTop",
-                    "params": {
-                        "bottom_offline_indicator": "false"
-                    },
-                    "enable_features": [
-                        "OfflineIndicator"
-                    ]
-                }
-            ]
-        }
-    ],
     "OfflineIndicatorV2": [
         {
             "platforms": [
