@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/null_resource_fetcher_properties.h"
@@ -560,9 +559,6 @@ int WorkerOrWorkletGlobalScope::GetOutstandingThrottledLimit() const {
 }
 
 String WorkerOrWorkletGlobalScope::GetAcceptLanguages() const {
-  if (!web_worker_fetch_context_) {
-    return DefaultLanguage();
-  }
   // TODO(crbug.com/1286059): Turn this CHECK into a DCHECK when the investigation is done.
   CHECK(web_worker_fetch_context_);
   return web_worker_fetch_context_->GetAcceptLanguages();
