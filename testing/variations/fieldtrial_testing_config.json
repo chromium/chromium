@@ -5865,22 +5865,6 @@
             ]
         }
     ],
-    "RadioThrottleOnWeakSignalAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ThrottleAllPreconnect",
-                    "enable_features": [
-                        "NoNavigationPreconnectOnWeakSignal",
-                        "NoPreconnectToSearchOnWeakSignal"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReadLater": [
         {
             "platforms": [
