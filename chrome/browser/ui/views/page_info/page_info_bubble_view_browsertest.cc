@@ -301,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        StopShowingBubbleWhenWebContentsDestroyed) {
   // Open a new tab so the whole browser does not close once we close
   // the tab via WebContents::Close() below.
-  AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
+                            ui::PAGE_TRANSITION_TYPED));
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
             PageInfoBubbleView::GetShownBubbleType());
