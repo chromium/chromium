@@ -1440,9 +1440,7 @@ void CloudPolicyClient::OnRemoteCommandsFetched(
     DeviceManagementStatus status,
     int net_error,
     const em::DeviceManagementResponse& response) {
-  DeviceManagementStatus decoded_status;
-  std::vector<em::SignedData> commands;
-  std::tie(decoded_status, commands) = DecodeRemoteCommands(status, response);
+  auto [decoded_status, commands] = DecodeRemoteCommands(status, response);
 
   std::move(callback).Run(decoded_status, commands);
   RemoveJob(job);
