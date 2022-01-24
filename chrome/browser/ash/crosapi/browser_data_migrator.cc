@@ -683,9 +683,21 @@ void BrowserDataMigratorImpl::DryRunToCollectUMA(
                                  need_copy_items.total_size / 1024 / 1024, 1,
                                  10000, 100);
 
-  browser_data_migrator_util::RecordTotalSize(
+  const int64_t total_items_size =
       need_copy_items.total_size + lacros_items.total_size +
-      remain_in_ash_items.total_size + deletable_items.total_size);
+      remain_in_ash_items.total_size + deletable_items.total_size;
+  browser_data_migrator_util::RecordTotalSize(total_items_size);
+
+  const int64_t total_copy_size_for_copy_migration =
+      need_copy_items.total_size + lacros_items.total_size;
+  const int64_t total_copy_size_for_move_migration = need_copy_items.total_size;
+
+  base::UmaHistogramCustomCounts(
+      kDryRunCopyMigrationTotalCopySize,
+      total_copy_size_for_copy_migration / 1024 / 1024, 1, 10000, 100);
+  base::UmaHistogramCustomCounts(
+      kDryRunMoveMigrationTotalCopySize,
+      total_copy_size_for_move_migration / 1024 / 1024, 1, 10000, 100);
 
   RecordTargetItemSizes(deletable_items.items);
   RecordTargetItemSizes(remain_in_ash_items.items);
@@ -708,6 +720,21 @@ void BrowserDataMigratorImpl::DryRunToCollectUMA(
                             HasEnoughDiskSpace(need_copy_items.total_size -
                                                    deletable_items.total_size,
                                                profile_data_dir));
+
+  const int64_t free_disk_space =
+      base::SysInfo::AmountOfFreeDiskSpace(profile_data_dir);
+  const int64_t extra_space_reserved_for_move_migration =
+      free_disk_space - need_copy_items.total_size +
+      deletable_items.total_size - kBuffer;
+  if (extra_space_reserved_for_move_migration > 0) {
+    base::UmaHistogramCustomCounts(
+        kDryRunMoveMigrationExtraSpaceReserved,
+        extra_space_reserved_for_move_migration / 1024 / 1024, 1, 10000, 100);
+  } else {
+    base::UmaHistogramCustomCounts(
+        kDryRunMoveMigrationExtraSpaceRequired,
+        -extra_space_reserved_for_move_migration / 1024 / 1024, 1, 10000, 100);
+  }
 }
 
 // staic

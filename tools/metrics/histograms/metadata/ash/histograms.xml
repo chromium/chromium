@@ -359,6 +359,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.DryRunExtraSizeRequiredMB.Move"
+    units="MB" expires_after="M104">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Extra disk space that has to be freed up to carry out move migration.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunExtraSizeReservedMB.Move"
+    units="MB" expires_after="M104">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>Free disk space after move migration.</summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.{Mode}"
     enum="Boolean" expires_after="M101">
   <owner>ythjkt@chromium.org</owner>
@@ -403,6 +419,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Copy" units="MB"
+    expires_after="M104">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The total size of data that has to be copied for copy migration.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Move" units="MB"
+    expires_after="M104">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The total size of data that has to be copied for move migration.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataMigrator.FinalStatus"
     enum="BrowserDataMigratorFinalStatus" expires_after="M101">
   <owner>ythjkt@chromium.org</owner>
@@ -437,6 +471,16 @@ chromium-metrics-reviews@google.com.
   <owner>hidehiko@chromium.org</owner>
   <summary>
     The size of profile data that is identified to be deletable such as cache.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.TotalCopySizeWhenNotEnoughSpace"
+    units="MB" expires_after="M104">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The total size of data that has to be copied. Collected for cases when the
+    migration fails due to lack of disk space.
   </summary>
 </histogram>
 

@@ -50,6 +50,8 @@ constexpr char kCommonDataTime[] =
     "Ash.BrowserDataMigrator.CommonDataTimeTakenMS";
 constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
+constexpr char kTotalCopySizeWhenNotEnoughSpace[] =
+    "Ash.BrowserDataMigrator.TotalCopySizeWhenNotEnoughSpace";
 
 // The following UMAs are recorded from
 // `BrowserDataMigratorImpl::DryRunToCollectUMA()`.
@@ -61,6 +63,14 @@ constexpr char kDryRunLacrosDataSize[] =
     "Ash.BrowserDataMigrator.DryRunLacrosDataSizeMB";
 constexpr char kDryRunCommonDataSize[] =
     "Ash.BrowserDataMigrator.DryRunCommonDataSizeMB";
+constexpr char kDryRunCopyMigrationTotalCopySize[] =
+    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Copy";
+constexpr char kDryRunMoveMigrationTotalCopySize[] =
+    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Move";
+constexpr char kDryRunMoveMigrationExtraSpaceReserved[] =
+    "Ash.BrowserDataMigrator.DryRunExtraSizeReservedMB.Move";
+constexpr char kDryRunMoveMigrationExtraSpaceRequired[] =
+    "Ash.BrowserDataMigrator.DryRunExtraSizeRequiredMB.Move";
 
 constexpr char kDryRunCopyMigrationHasEnoughDiskSpace[] =
     "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Copy";
