@@ -34,6 +34,10 @@ constexpr char kDisconnectOldPlaceholder[] = "DisconnectOld";
 // Value returned for the the RSSI or TX power if it cannot be read.
 const int kUnknownPower = 127;
 
+// TODO(b/213229904): Remove this constant and replace with
+// |bluetooth_device::kConnectClassic| once it has been uprev'd.
+constexpr char kConnectClassicPlaceholder[] = "ConnectClassic";
+
 std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
     dbus::MessageReader* struct_reader) {
   uint8_t type_val;
@@ -301,6 +305,30 @@ class BluetoothDeviceClientImpl : public BluetoothDeviceClient,
     }
 
     // Connect may take an arbitrary length of time, so use no timeout.
+    object_proxy->CallMethodWithErrorCallback(
+        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+        base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+        base::BindOnce(&BluetoothDeviceClientImpl::OnError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
+  }
+
+  // BluetoothDeviceClient override.
+  void ConnectClassic(const dbus::ObjectPath& object_path,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(bluetooth_device::kBluetoothDeviceInterface,
+                                 kConnectClassicPlaceholder);
+
+    dbus::ObjectProxy* object_proxy =
+        object_manager_->GetObjectProxy(object_path);
+    if (!object_proxy) {
+      std::move(error_callback).Run(kUnknownDeviceError, "");
+      return;
+    }
+
+    // ConnectClassic may take an arbitrary length of time, so use no timeout.
     object_proxy->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
         base::BindOnce(&BluetoothDeviceClientImpl::OnSuccess,

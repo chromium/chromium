@@ -60,7 +60,9 @@ void DeviceOperationHandlerImpl::PerformConnect(const std::string& device_id) {
     return;
   }
 
-  device->Connect(
+  // Explicitly create Bluetooth classic connections to avoid wrongfully
+  // establishing low-energy connections to a disconnected audio-capable device.
+  device->ConnectClassic(
       /*delegate=*/nullptr,
       base::BindOnce(&DeviceOperationHandlerImpl::OnDeviceConnect,
                      weak_ptr_factory_.GetWeakPtr(), device->GetType()));

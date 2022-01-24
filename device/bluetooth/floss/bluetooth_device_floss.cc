@@ -228,6 +228,15 @@ void BluetoothDeviceFloss::Connect(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDeviceFloss::ConnectClassic(
+    device::BluetoothDevice::PairingDelegate* pairing_delegate,
+    ConnectCallback callback) {
+  // TODO(b/215621933): Explicitly create a classic Bluetooth connection.
+  NOTIMPLEMENTED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothDeviceFloss::SetPinCode(const std::string& pincode) {
   std::vector<uint8_t> pin(pincode.begin(), pincode.end());
   FlossDBusManager::Get()->GetAdapterClient()->SetPin(

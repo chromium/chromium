@@ -102,7 +102,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
             mock_adapter_.get(), kTestBluetoothClass, kTestBluetoothName,
             address, /*paired=*/false, /*connected=*/false);
 
-    ON_CALL(*mock_device, Connect_(testing::_, testing::_))
+    ON_CALL(*mock_device, ConnectClassic_(testing::_, testing::_))
         .WillByDefault(testing::Invoke(
             [this](device::BluetoothDevice::PairingDelegate* pairing_delegate,
                    device::BluetoothDevice::ConnectCallback& callback) {

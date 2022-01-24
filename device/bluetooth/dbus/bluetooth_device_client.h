@@ -199,6 +199,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceClient : public BluezDBusClient {
                        base::OnceClosure callback,
                        ErrorCallback error_callback) = 0;
 
+  // Connects to the device with object path |object_path| via classic
+  // Bluetooth, connecting any profiles that can be connected to and have been
+  // flagged as auto-connected; may be used to connect additional profiles for
+  // an already connected device, and succeeds if at least one profile is
+  // connected.
+  virtual void ConnectClassic(const dbus::ObjectPath& object_path,
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) = 0;
+
   // Connects to the device with object path |object_path| via BLE,
   // connecting any profiles that can be connected to and have been flagged as
   // auto-connected; may be used to connect additional profiles for an already

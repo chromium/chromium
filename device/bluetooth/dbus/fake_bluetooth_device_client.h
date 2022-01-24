@@ -85,6 +85,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
   void Connect(const dbus::ObjectPath& object_path,
                base::OnceClosure callback,
                ErrorCallback error_callback) override;
+  void ConnectClassic(const dbus::ObjectPath& object_path,
+                      base::OnceClosure callback,
+                      ErrorCallback error_callback) override;
   void ConnectLE(const dbus::ObjectPath& object_path,
                  base::OnceClosure callback,
                  ErrorCallback error_callback) override;

@@ -580,6 +580,38 @@ void BluetoothDeviceBlueZ::Connect(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDeviceBlueZ::ConnectClassic(
+    BluetoothDevice::PairingDelegate* pairing_delegate,
+    ConnectCallback callback) {
+  if (num_connecting_calls_++ == 0)
+    adapter()->NotifyDeviceChanged(this);
+
+  BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Connecting with classic, "
+                       << num_connecting_calls_ << " in progress";
+
+  if (IsPaired() || !pairing_delegate) {
+    // No need to pair, or unable to, skip straight to connection.
+    ConnectClassicInternal(std::move(callback));
+  } else {
+    // Initiate high-security connection with pairing.
+    BeginPairing(pairing_delegate);
+
+    // This callback is only called once but is passed to two different places.
+    auto split_callback = base::SplitOnceCallback(std::move(callback));
+
+    bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->Pair(
+        object_path_,
+        base::BindOnce(&BluetoothDeviceBlueZ::OnPairDuringConnectClassic,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_callback.first)),
+        base::BindOnce(&BluetoothDeviceBlueZ::OnPairDuringConnectError,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(split_callback.second)));
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothDeviceBlueZ::Pair(
     BluetoothDevice::PairingDelegate* pairing_delegate,
     ConnectCallback callback) {
@@ -1010,6 +1042,21 @@ void BluetoothDeviceBlueZ::ConnectInternal(ConnectCallback callback) {
                      std::move(split_callback.second)));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDeviceBlueZ::ConnectClassicInternal(ConnectCallback callback) {
+  BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Connecting with classic";
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->ConnectClassic(
+      object_path_,
+      base::BindOnce(&BluetoothDeviceBlueZ::OnConnect,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&BluetoothDeviceBlueZ::OnConnectError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void BluetoothDeviceBlueZ::OnConnect(ConnectCallback callback) {
   BLUETOOTH_LOG(EVENT) << object_path_.value()
                        << ": Unpausing discovery after connection";
@@ -1061,6 +1108,17 @@ void BluetoothDeviceBlueZ::OnPairDuringConnect(ConnectCallback callback) {
 
   ConnectInternal(std::move(callback));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void BluetoothDeviceBlueZ::OnPairDuringConnectClassic(
+    ConnectCallback callback) {
+  BLUETOOTH_LOG(EVENT) << object_path_.value() << ": Paired";
+
+  EndPairing();
+
+  ConnectClassicInternal(std::move(callback));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void BluetoothDeviceBlueZ::OnPairDuringConnectError(
     ConnectCallback callback,

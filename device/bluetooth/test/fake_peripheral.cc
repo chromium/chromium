@@ -235,6 +235,13 @@ void FakePeripheral::Connect(PairingDelegate* pairing_delegate,
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void FakePeripheral::ConnectClassic(PairingDelegate* pairing_delegate,
+                                    ConnectCallback callback) {
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void FakePeripheral::SetPinCode(const std::string& pincode) {
   NOTREACHED();
 }
