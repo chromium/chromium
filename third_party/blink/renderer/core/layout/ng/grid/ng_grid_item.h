@@ -31,8 +31,9 @@ struct OutOfFlowItemPlacement {
 struct CORE_EXPORT GridItemData {
   DISALLOW_NEW();
 
-  explicit GridItemData(const NGBlockNode node)
-      : node(node), is_sizing_dependent_on_block_size(false) {}
+  GridItemData(const NGBlockNode node,
+               const ComputedStyle& container_style,
+               const WritingMode container_writing_mode);
 
   void SetAlignmentFallback(const GridTrackSizingDirection track_direction,
                             const ComputedStyle& container_style,

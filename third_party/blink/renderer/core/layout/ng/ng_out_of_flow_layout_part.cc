@@ -373,17 +373,16 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
 
     if (requires_grid_placement) {
       const auto& container_style = container_builder_->Style();
-      auto grid_item = NGGridLayoutAlgorithm::InitializeGridItem(
-          candidate.Node(), container_style,
-          default_writing_direction_.GetWritingMode());
+      const auto& placement_data =
+          To<LayoutNGGrid>(container_object)->CachedPlacementData();
 
-      NGGridPlacement grid_placement(
-          container_style,
-          To<LayoutNGGrid>(container_object)->CachedPlacementData());
+      GridItemData grid_item(candidate.Node(), container_style,
+                             default_writing_direction_.GetWritingMode());
 
       return {default_writing_direction_,
               NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-                  grid_placement, container_builder_->GridLayoutData(),
+                  NGGridPlacement(container_style, placement_data),
+                  container_builder_->GridLayoutData(),
                   container_builder_->Borders(),
                   container_builder_->InitialBorderBoxSize(),
                   container_builder_->FragmentsTotalBlockSize(), &grid_item)};

@@ -43,11 +43,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   scoped_refptr<const NGLayoutResult> Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
-  static GridItemData InitializeGridItem(
-      const NGBlockNode node,
-      const ComputedStyle& container_style,
-      const WritingMode container_writing_mode);
-
   // Computes the containing block rect of out of flow items from stored data in
   // |NGGridLayoutData|.
   static LogicalRect ComputeOutOfFlowItemContainingRect(
