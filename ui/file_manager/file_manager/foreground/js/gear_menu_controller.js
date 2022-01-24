@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getSizeStats} from '../../common/js/api.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
@@ -125,12 +126,7 @@ export class GearMenuController {
       return;
     }
 
-    this.gearMenu_.setSpaceInfo(
-        new Promise(fulfill => {
-          chrome.fileManagerPrivate.getSizeStats(
-              currentVolumeInfo.volumeId, fulfill);
-        }),
-        true);
+    this.gearMenu_.setSpaceInfo(getSizeStats(currentVolumeInfo.volumeId), true);
   }
 
   /**

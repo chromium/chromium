@@ -21,7 +21,7 @@ export async function promisify(fn, ...args) {
   return new Promise((resolve, reject) => {
     const callback = (result) => {
       if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+        reject(chrome.runtime.lastError.message);
       } else {
         resolve(result);
       }
@@ -66,6 +66,16 @@ export async function getPreferences() {
 export async function validatePathNameLength(parentEntry, name) {
   return promisify(
       chrome.fileManagerPrivate.validatePathNameLength, parentEntry, name);
+}
+
+/**
+ * Wrap the chrome.fileManagerPrivate.getSizeStats function in an async/await
+ * compatible style.
+ * @param {string} volumeId The volumeId to retrieve the size stats for.
+ * @returns {!Promise<(!chrome.fileManagerPrivate.MountPointSizeStats|undefined)>}
+ */
+export async function getSizeStats(volumeId) {
+  return promisify(chrome.fileManagerPrivate.getSizeStats, volumeId);
 }
 
 

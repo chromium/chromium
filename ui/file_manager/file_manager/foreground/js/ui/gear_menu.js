@@ -68,7 +68,7 @@ export class GearMenu {
 
     /**
      * Volume space info.
-     * @type {Promise<chrome.fileManagerPrivate.MountPointSizeStats>}
+     * @type {Promise<chrome.fileManagerPrivate.MountPointSizeStats|undefined>}
      * @private
      */
     this.spaceInfoPromise_ = null;
@@ -86,7 +86,7 @@ export class GearMenu {
   }
 
   /**
-   * @param {Promise<chrome.fileManagerPrivate.MountPointSizeStats>}
+   * @param {Promise<chrome.fileManagerPrivate.MountPointSizeStats|undefined>}
    * spaceInfoPromise Promise to be fulfilled with space info.
    * @param {boolean} showLoadingCaption Whether show loading caption or not.
    */

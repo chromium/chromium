@@ -4,6 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
+import {getSizeStats} from '../../common/js/api.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
@@ -899,18 +900,6 @@ export function isBelowThreshold(threshold, sizeStats) {
     return false;
   }
   return true;
-}
-
-/**
- * Wrap the chrome.fileManagerPrivate.getSizeStats function in an async/await
- * compatible style.
- * @param {string} volumeId The volumeId to retrieve the size stats for.
- * @returns {!Promise<(!chrome.fileManagerPrivate.MountPointSizeStats|undefined)>}
- */
-async function getSizeStats(volumeId) {
-  return new Promise((resolve) => {
-    chrome.fileManagerPrivate.getSizeStats(volumeId, resolve);
-  });
 }
 
 /**
