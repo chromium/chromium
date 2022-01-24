@@ -21,7 +21,8 @@ class AwDarkMode : public content::WebContentsObserver,
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs,
                               int force_dark_mode,
-                              int force_dark_behavior);
+                              int force_dark_behavior,
+                              bool allow_algorithmic_darkening);
 
   void DetachFromJavaObject(
       JNIEnv* env,
@@ -36,6 +37,10 @@ class AwDarkMode : public content::WebContentsObserver,
       const content::LoadCommittedDetails& load_details) override;
   void InferredColorSchemeUpdated(
       absl::optional<blink::mojom::PreferredColorScheme> color_scheme) override;
+
+  void PopulateWebPreferencesForPreT(blink::web_pref::WebPreferences* web_prefs,
+                                     int force_dark_mode,
+                                     int force_dark_behavior);
 
   bool IsAppUsingDarkTheme();
 

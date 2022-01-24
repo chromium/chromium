@@ -21,7 +21,13 @@ using base::android::ScopedJavaLocalRef;
 namespace android_webview {
 namespace {
 const void* const kAwDarkModeUserDataKey = &kAwDarkModeUserDataKey;
+bool sShouldEnableSimplifiedDarkMode = false;
+
+bool IsForceDarkEnabled(content::WebContents* web_contents) {
+  AwContents* contents = AwContents::FromWebContents(web_contents);
+  return contents && contents->GetViewTreeForceDarkState();
 }
+}  // namespace
 
 // static
 jlong JNI_AwDarkMode_Init(JNIEnv* env,
@@ -31,6 +37,10 @@ jlong JNI_AwDarkMode_Init(JNIEnv* env,
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
   return reinterpret_cast<intptr_t>(new AwDarkMode(env, caller, web_contents));
+}
+
+void JNI_AwDarkMode_EnableSimplifiedDarkMode(JNIEnv* env) {
+  sShouldEnableSimplifiedDarkMode = true;
 }
 
 AwDarkMode* AwDarkMode::FromWebContents(content::WebContents* contents) {
@@ -55,6 +65,33 @@ AwDarkMode::~AwDarkMode() {
 void AwDarkMode::PopulateWebPreferences(
     blink::web_pref::WebPreferences* web_prefs,
     int force_dark_mode,
+    int force_dark_behavior,
+    bool allow_algorithmic_darkening) {
+  if (!sShouldEnableSimplifiedDarkMode) {
+    PopulateWebPreferencesForPreT(web_prefs, force_dark_mode,
+                                  force_dark_behavior);
+    return;
+  }
+  prefers_dark_from_theme_ = IsAppUsingDarkTheme();
+  web_prefs->preferred_color_scheme =
+      prefers_dark_from_theme_ ? blink::mojom::PreferredColorScheme::kDark
+                               : blink::mojom::PreferredColorScheme::kLight;
+  web_prefs->force_dark_mode_enabled = false;
+  is_dark_mode_ = false;
+  if (IsForceDarkEnabled(web_contents())) {
+    is_dark_mode_ = true;
+    web_prefs->force_dark_mode_enabled = true;
+    web_prefs->preferred_color_scheme =
+        blink::mojom::PreferredColorScheme::kDark;
+  } else if (prefers_dark_from_theme_) {
+    is_dark_mode_ = allow_algorithmic_darkening;
+    web_prefs->force_dark_mode_enabled = allow_algorithmic_darkening;
+  }
+}
+
+void AwDarkMode::PopulateWebPreferencesForPreT(
+    blink::web_pref::WebPreferences* web_prefs,
+    int force_dark_mode,
     int force_dark_behavior) {
   prefers_dark_from_theme_ = false;
   switch (force_dark_mode) {
@@ -65,8 +102,7 @@ void AwDarkMode::PopulateWebPreferences(
       is_dark_mode_ = true;
       break;
     case AwSettings::ForceDarkMode::FORCE_DARK_AUTO: {
-      AwContents* contents = AwContents::FromWebContents(web_contents());
-      is_dark_mode_ = contents && contents->GetViewTreeForceDarkState();
+      is_dark_mode_ = IsForceDarkEnabled(web_contents());
       if (!is_dark_mode_)
         prefers_dark_from_theme_ = IsAppUsingDarkTheme();
       break;

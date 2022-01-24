@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.AwNetworkChangeNotifierRegistrationPolicy;
 import org.chromium.android_webview.AwProxyController;
@@ -256,6 +257,11 @@ public class WebViewChromiumAwInit {
             }
 
             mFactory.getRunQueue().drainQueue();
+
+            if (BuildInfo.isAtLeastT() ? mFactory.shouldEnableSimplifiedDarkMode()
+                                       : BuildInfo.targetsAtLeastT()) {
+                AwDarkMode.enableSimplifiedDarkMode();
+            }
 
             if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_VERBOSE_LOGGING)) {
                 logCommandLineAndActiveTrials();
