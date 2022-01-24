@@ -2367,8 +2367,11 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of Chrome OS update page.">
         Make sure Chrome OS is up to date
       </message>
-      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_INVALID_COMPONENTS" translateable="false" desc="Description when components could not be validated.">
-        An unrecognized component has been found. Unrecognized devices will not be configured correctly and may be unusable. Updating to the latest version of Chrome OS may resolve this issue.
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_TOP" translateable="false" desc="Description when components not qualified for Chrome OS are detected.">
+        <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> found. To make sure all qualified componets are identified, update your Chrome OS to the latest version.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_BOTTOM" translateable="false" desc="Description when components not qualified for Chrome OS are detected.">
+        If you still see the issue after the update, it's possible the component is newly qualified and hasn't made it to the database yet.
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is too many versions behind the update.">
         Chrome OS needs an additional update to get fully up to date

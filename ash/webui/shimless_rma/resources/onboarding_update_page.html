@@ -14,7 +14,8 @@
   <div slot="header">
     <h1>[[i18n('osUpdateTitleText')]]</h1>
     <div hidden$="[[isCompliant_]]">
-      [[i18n('osUpdateInvalidComponentsDescriptionText')]]
+      <div inner-h-t-m-l="[[verificationFailedMessage_]]"></div>
+      <div>[[i18n('osUpdateUnqualifiedComponentsBottomText')]]</div>
     </div>
     <div hidden$="[[!isCompliant_]]">[[updateNoticeMessage_]]</div>
     <div id="versionInfo">
@@ -43,3 +44,14 @@
     <iron-icon icon="shimless:update" class="large-icon"></iron-icon>
   </div>
 </base-page>
+
+<cr-dialog id="unqualifiedComponentsDialog" on-cancel="closeDialog_"
+    ignore-popstate>
+  <div slot="title">[[i18n('unqualifiedComponentsTitle')]]</div>
+  <div slot="body" id="dialogBody">[[unqualifiedComponentsText_]]</div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="closeDialog_">
+      [[i18n('okButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

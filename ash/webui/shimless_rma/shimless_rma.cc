@@ -110,8 +110,10 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"newOwnerDescriptionText", IDS_SHIMLESS_RMA_NEW_OWNER_DESCRIPTION},
       // OS update page
       {"osUpdateTitleText", IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE},
-      {"osUpdateInvalidComponentsDescriptionText",
-       IDS_SHIMLESS_RMA_UPDATE_OS_INVALID_COMPONENTS},
+      {"osUpdateUnqualifiedComponentsTopText",
+       IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_TOP},
+      {"osUpdateUnqualifiedComponentsBottomText",
+       IDS_SHIMLESS_RMA_UPDATE_OS_UNQUALIFIED_COMPONENTS_BOTTOM},
       {"osUpdateVeryOutOfDateDescriptionText",
        IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE},
       {"osUpdateOutOfDateDescriptionText",

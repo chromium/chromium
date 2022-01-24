@@ -8,7 +8,7 @@ import {OnboardingUpdatePageElement} from 'chrome://shimless-rma/onboarding_upda
 import {OsUpdateOperation} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function onboardingUpdatePageTest() {
   /** @type {?OnboardingUpdatePageElement} */
@@ -217,5 +217,47 @@ export function onboardingUpdatePageTest() {
     document.body.appendChild(component);
     await flushTasks();
     assertEquals('skipButtonLabel', buttonLabelKey);
+  });
+
+  test('UpdatePageShowHideLinkWithoutError', () => {
+    const version = '90.1.2.3';
+    const update = true;
+
+    return initializeUpdatePage(version, update)
+        .then(() => {
+          service.triggerHardwareVerificationStatusObserver(true, '', 0);
+          return flushTasks();
+        })
+        .then(() => {
+          assertFalse(isVisible(component.shadowRoot.querySelector(
+              '#unqualifiedComponentsLink')));
+        });
+  });
+
+  test('UpdatePageShowLinkOpenDialogOnError', () => {
+    const version = '90.1.2.3';
+    const update = true;
+    const failedComponent = 'Keyboard';
+
+    return initializeUpdatePage(version, update)
+        .then(() => {
+          service.triggerHardwareVerificationStatusObserver(
+              false, failedComponent, 0);
+          return flushTasks();
+        })
+        .then(() => {
+          const unqualifiedComponentsLink =
+              component.shadowRoot.querySelector('#unqualifiedComponentsLink');
+          assertTrue(isVisible(unqualifiedComponentsLink));
+          unqualifiedComponentsLink.click();
+
+          assertTrue(
+              component.shadowRoot.querySelector('#unqualifiedComponentsDialog')
+                  .open);
+          assertEquals(
+              failedComponent,
+              component.shadowRoot.querySelector('#dialogBody')
+                  .textContent.trim());
+        });
   });
 }

@@ -104,7 +104,23 @@ export class OnboardingUpdatePageElement extends
       updateVersion_: {
         type: String,
         value: '',
-      }
+      },
+
+      /** @protected */
+      verificationFailedMessage_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * A string containing a list of the unqualified component identifiers
+       * separated by new lines.
+       * @protected
+       */
+      unqualifiedComponentsText_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -248,6 +264,11 @@ export class OnboardingUpdatePageElement extends
    */
   onHardwareVerificationResult(isCompliant, errorMessage) {
     this.isCompliant_ = isCompliant;
+
+    if (!this.isCompliant_) {
+      this.unqualifiedComponentsText_ = errorMessage;
+      this.setVerificationFailedMessage_();
+    }
   }
 
   /** @protected */
@@ -269,6 +290,28 @@ export class OnboardingUpdatePageElement extends
     return this.updateAvailable_ ?
         this.i18n('osUpdateOutOfDateDescriptionText') :
         '';
+  }
+
+  /** @private */
+  setVerificationFailedMessage_() {
+    this.verificationFailedMessage_ = this.i18nAdvanced(
+        'osUpdateUnqualifiedComponentsTopText', {attrs: ['id']});
+
+    // The #unqualifiedComponentsLink identifier is sourced from the string
+    // attached to `osUpdateUnqualifiedComponentsTopText` in the related .grd
+    // file.
+    const linkElement =
+        this.shadowRoot.querySelector('#unqualifiedComponentsLink');
+    linkElement.setAttribute('href', '#');
+    linkElement.addEventListener(
+        'click',
+        () => this.shadowRoot.querySelector('#unqualifiedComponentsDialog')
+                  .showModal());
+  }
+
+  /** @private */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
   }
 }
 
