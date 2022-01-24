@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../assert.js';
+import {assert, assertExists, assertNotReached} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
 import {reportError} from '../error.js';
 import {Point} from '../geometry.js';
@@ -15,7 +15,7 @@ import {
   ResolutionList,
   VideoConfig,
 } from '../type.js';
-import {WaitableEvent} from '../waitable_event.js';
+import {CancelableEvent, WaitableEvent} from '../waitable_event.js';
 
 import {
   AndroidInfoSupportedHardwareLevel,
@@ -561,7 +561,7 @@ export class DeviceOperator {
     const reprocessEvents = new Map;
     const callbacks = [];
     for (const effect of effects) {
-      const event = new WaitableEvent<Blob>();
+      const event = new CancelableEvent<Blob>();
       reprocessEvents.set(effect, event);
       callbacks.push(event.wait());
     }
@@ -570,12 +570,9 @@ export class DeviceOperator {
         wrapEndpoint(new ReprocessResultListenerCallbackRouter());
     listenerCallbacksRouter.onReprocessDone.addListener(
         (effect, status, blob) => {
-          const event = reprocessEvents.get(effect);
-          if (event === undefined) {
-            throw new Error(`Reprocess done with unexpected effect: ${effect}`);
-          }
+          const event = assertExists(reprocessEvents.get(effect));
           if (blob === null || status !== 0) {
-            event.signal(new Error(`Set reprocess failed: ${status}`));
+            event.signalError(new Error(`Set reprocess failed: ${status}`));
           } else {
             const {data, mimeType} = blob;
             event.signal(new Blob([new Uint8Array(data)], {type: mimeType}));
