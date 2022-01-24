@@ -4831,7 +4831,7 @@ bool Element::ForceLegacyLayoutInFormattingContext(
     // CSSContainerQueries rely on LayoutNG being fully shipped before shipping.
     // In the meantime, make sure we do not mark containers for re-attachment
     // since we might be in the process of laying out the container.
-    if (style->IsContainerForContainerQueries(*this))
+    if (style->IsContainerForContainerQueries(*ancestor))
       break;
 
     found_fc = DefinitelyNewFormattingContext(*ancestor, *style);
@@ -5434,7 +5434,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
     ancestors.pop_back();
     const ComputedStyle* style =
         ancestor->EnsureOwnComputedStyle(style_recalc_context, kPseudoIdNone);
-    if (style->IsContainerForContainerQueries(*this))
+    if (style->IsContainerForContainerQueries(*ancestor))
       style_recalc_context.container = ancestor;
   }
 
