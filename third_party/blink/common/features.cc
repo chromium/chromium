@@ -1187,5 +1187,9 @@ const base::Feature kLazyInitializeTimeZoneController{
 const base::Feature kCompositedCaret{"CompositedCaret",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Initialize CSSDefaultStyleSheets early in renderer startup.
+const base::Feature kDefaultStyleSheetsEarlyInit{
+    "DefaultStyleSheetsEarlyInit", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

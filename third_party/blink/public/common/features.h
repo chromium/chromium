@@ -583,6 +583,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kCompositedCaret;
 
+BLINK_COMMON_EXPORT extern const base::Feature kDefaultStyleSheetsEarlyInit;
+
 }  // namespace features
 }  // namespace blink
 
