@@ -32,33 +32,25 @@
 
 namespace payments {
 
-class PaymentRequestStateTest : public testing::Test,
-                                public PaymentRequestState::Observer,
-                                public PaymentRequestState::Delegate {
+class PaymentRequestStateTestBase : public testing::Test,
+                                    public PaymentRequestState::Observer,
+                                    public PaymentRequestState::Delegate {
  protected:
-  PaymentRequestStateTest()
+  PaymentRequestStateTestBase()
       : num_on_selected_information_changed_called_(0),
         test_payment_request_delegate_(/*task_executor=*/nullptr,
                                        &test_personal_data_manager_),
         journey_logger_(test_payment_request_delegate_.IsOffTheRecord(),
                         ukm::UkmRecorder::GetNewSourceID()),
-        address_(autofill::test::GetFullProfile()),
-        credit_card_visa_(autofill::test::GetCreditCard()) {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kServiceWorkerPaymentApps);
-
+        address_(autofill::test::GetFullProfile()) {
     // Must be initialized after scoped_feature_list_ (crbug.com/1172599)
     web_contents_ = web_contents_factory_.CreateWebContents(&context_);
 
-    test_personal_data_manager_.SetAutofillCreditCardEnabled(true);
     test_personal_data_manager_.SetAutofillProfileEnabled(true);
     test_personal_data_manager_.SetAutofillWalletImportEnabled(true);
     test_personal_data_manager_.AddProfile(address_);
-    credit_card_visa_.set_billing_address_id(address_.guid());
-    credit_card_visa_.set_use_count(5u);
-    test_personal_data_manager_.AddCreditCard(credit_card_visa_);
   }
-  ~PaymentRequestStateTest() override {}
+  ~PaymentRequestStateTestBase() override = default;
 
   // PaymentRequestState::Observer:
   void OnGetAllPaymentAppsFinished() override {}
@@ -100,13 +92,6 @@ class PaymentRequestStateTest : public testing::Test,
     state_->AddObserver(this);
   }
 
-  // Convenience method to create a PaymentRequestState with default details
-  // (one shipping option) and method data (only supports visa).
-  void RecreateStateWithOptions(mojom::PaymentOptionsPtr options) {
-    RecreateStateWithOptionsAndDetails(
-        std::move(options), CreateDefaultDetails(), GetMethodDataForVisa());
-  }
-
   // Convenience method that returns a dummy PaymentDetails with a single
   // shipping option.
   mojom::PaymentDetailsPtr CreateDefaultDetails() {
@@ -119,16 +104,6 @@ class PaymentRequestStateTest : public testing::Test,
     details->shipping_options = std::move(shipping_options);
     details->id = "test_id";
     return details;
-  }
-
-  // Convenience method that returns MethodData that supports Visa.
-  std::vector<mojom::PaymentMethodDataPtr> GetMethodDataForVisa() {
-    std::vector<mojom::PaymentMethodDataPtr> method_data;
-    mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
-    entry->supported_method = "basic-card";
-    entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-    method_data.push_back(std::move(entry));
-    return method_data;
   }
 
   PaymentRequestState* state() { return state_.get(); }
@@ -146,8 +121,6 @@ class PaymentRequestStateTest : public testing::Test,
     return &test_payment_request_delegate_;
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -164,8 +137,48 @@ class PaymentRequestStateTest : public testing::Test,
 
   // Test data.
   autofill::AutofillProfile address_;
+  base::WeakPtrFactory<PaymentRequestStateTestBase> weak_ptr_factory_{this};
+};
+
+class PaymentRequestStateTest : public PaymentRequestStateTestBase {
+ protected:
+  PaymentRequestStateTest()
+      : credit_card_visa_(autofill::test::GetCreditCard()) {
+    scoped_feature_list_.InitWithFeatures(
+        {::features::kPaymentRequestBasicCard},
+        {features::kServiceWorkerPaymentApps});
+
+    // Must be initialized after scoped_feature_list_ (crbug.com/1172599)
+    web_contents_ = web_contents_factory_.CreateWebContents(&context_);
+
+    test_personal_data_manager_.SetAutofillCreditCardEnabled(true);
+    credit_card_visa_.set_billing_address_id(address_.guid());
+    credit_card_visa_.set_use_count(5u);
+    test_personal_data_manager_.AddCreditCard(credit_card_visa_);
+  }
+  ~PaymentRequestStateTest() override = default;
+
+  // Convenience method to create a PaymentRequestState with default details
+  // (one shipping option) and method data (only supports visa).
+  void RecreateStateWithOptions(mojom::PaymentOptionsPtr options) {
+    RecreateStateWithOptionsAndDetails(
+        std::move(options), CreateDefaultDetails(), GetMethodDataForVisa());
+  }
+
+  // Convenience method that returns MethodData that supports Visa.
+  std::vector<mojom::PaymentMethodDataPtr> GetMethodDataForVisa() {
+    std::vector<mojom::PaymentMethodDataPtr> method_data;
+    mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
+    entry->supported_method = "basic-card";
+    entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
+    method_data.push_back(std::move(entry));
+    return method_data;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Test data.
   autofill::CreditCard credit_card_visa_;
-  base::WeakPtrFactory<PaymentRequestStateTest> weak_ptr_factory_{this};
 };
 
 TEST_F(PaymentRequestStateTest, CanMakePayment) {
@@ -549,6 +562,102 @@ TEST_F(PaymentRequestStateTest, RetryWithPayerErrors) {
 
   EXPECT_FALSE(state()->selected_contact_profile());
   EXPECT_TRUE(state()->invalid_contact_profile());
+}
+
+// The tests in this class correspond to the tests of the same name in
+// PaymentRequestStateTest, with the basic-card being disabled. Parameterized
+// tests are not used because the test setup for both tests are too different.
+class PaymentRequestStateBasicCardDisabledTest
+    : public PaymentRequestStateTestBase {
+ protected:
+  PaymentRequestStateBasicCardDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kPaymentRequestBasicCard);
+    // Must be initialized after scoped_feature_list_ (crbug.com/1172599)
+    web_contents_ = web_contents_factory_.CreateWebContents(&context_);
+
+    test_personal_data_manager_.SetAutofillProfileEnabled(true);
+    test_personal_data_manager_.SetAutofillWalletImportEnabled(true);
+    test_personal_data_manager_.AddProfile(address_);
+  }
+  ~PaymentRequestStateBasicCardDisabledTest() override = default;
+
+  // Convenience method to create a PaymentRequestState with default details
+  // (one shipping option) and method data (only supports a url method).
+  void RecreateStateWithOptions(mojom::PaymentOptionsPtr options) {
+    RecreateStateWithOptionsAndDetails(std::move(options),
+                                       CreateDefaultDetails(),
+                                       GetMethodDataForUrlMethod());
+  }
+
+  // Convenience method that returns MethodData that supports a url method.
+  std::vector<mojom::PaymentMethodDataPtr> GetMethodDataForUrlMethod() {
+    std::vector<mojom::PaymentMethodDataPtr> method_data;
+    mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
+    entry->supported_method = "https://www.chromium.org";
+    method_data.push_back(std::move(entry));
+    return method_data;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PaymentRequestStateBasicCardDisabledTest, CanMakePayment) {
+  // Default options.
+  RecreateStateWithOptions(mojom::PaymentOptions::New());
+
+  state()->HasEnrolledInstrument(
+      base::BindOnce([](bool has_enrolled_instrument) {
+        EXPECT_TRUE(has_enrolled_instrument);
+      }));
+
+  // CanMakePayment returns true because the requested method is supported.
+  state()->CanMakePayment(base::BindOnce(
+      [](bool can_make_payment) { EXPECT_TRUE(can_make_payment); }));
+}
+
+TEST_F(PaymentRequestStateBasicCardDisabledTest,
+       CanMakePayment_NoEnrolledInstrument) {
+  // The method data requires MasterCard.
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
+  entry->supported_method = "https://www.chromium.org";
+  method_data.push_back(std::move(entry));
+  RecreateStateWithOptionsAndDetails(mojom::PaymentOptions::New(),
+                                     mojom::PaymentDetails::New(),
+                                     std::move(method_data));
+
+  state()->HasEnrolledInstrument(
+      base::BindOnce([](bool has_enrolled_instrument) {
+        EXPECT_FALSE(has_enrolled_instrument);
+      }));
+
+  // CanMakePayment returns true because the requested method is supported, even
+  // though the payment app is not ready to pay.
+  state()->CanMakePayment(base::BindOnce(
+      [](bool can_make_payment) { EXPECT_TRUE(can_make_payment); }));
+}
+
+TEST_F(PaymentRequestStateBasicCardDisabledTest,
+       CanMakePayment_UnsupportedPaymentMethod) {
+  std::vector<mojom::PaymentMethodDataPtr> method_data;
+  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
+  entry->supported_method = "unsupported_method";
+  method_data.push_back(std::move(entry));
+  RecreateStateWithOptionsAndDetails(mojom::PaymentOptions::New(),
+                                     mojom::PaymentDetails::New(),
+                                     std::move(method_data));
+
+  state()->HasEnrolledInstrument(
+      base::BindOnce([](bool has_enrolled_instrument) {
+        EXPECT_FALSE(has_enrolled_instrument);
+      }));
+
+  // CanMakePayment returns true because the requested method is supported, even
+  // though the payment app is not ready to pay.
+  state()->CanMakePayment(base::BindOnce(
+      [](bool can_make_payment) { EXPECT_FALSE(can_make_payment); }));
 }
 
 }  // namespace payments
