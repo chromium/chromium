@@ -888,14 +888,14 @@ chrome.fileManagerPrivate.removeMount = function(volumeId) {};
 chrome.fileManagerPrivate.getVolumeMetadataList = function(callback) {};
 
 /**
- * Returns the list of files which aren't allowed to be copied. If the source is
- * a directory, it will check all its files recursively. |entry| Entry of the
- * source entry to be copied. |parentEntry| Entry of the destination directory.
- * |callback| Result callback.
+ * Returns a list of files not allowed to be transferred. |entries| list of
+ * source entries to be transferred. If any of |entries| is a directory, it will
+ * check all its files recursively. |destinationEntry| Entry of the destination
+ * directory.
  * @param {!Array<!Entry>} entries
  * @param {!DirectoryEntry} destinationEntry
  * @param {!Array<!Entry>} callback Entries of the files not allowed to be
- *     copied.
+ *     transferred.
  */
 chrome.fileManagerPrivate.getDisallowedTransfers = function(
     entries, destinationEntry, callback) {};

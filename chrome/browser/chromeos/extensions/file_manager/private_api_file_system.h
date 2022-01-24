@@ -18,6 +18,7 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/extension_function.h"
@@ -50,6 +51,10 @@ struct HashAndFilePath {
   std::string hash;
   base::FilePath path;
 };
+
+namespace policy {
+class DlpFilesController;
+}  // namespace policy
 
 }  // namespace drive
 
@@ -275,14 +280,22 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
       FILEMANAGERPRIVATEINTERNAL_GETDISALLOWEDTRANSFERS)
 
  protected:
-  ~FileManagerPrivateInternalGetDisallowedTransfersFunction() override =
-      default;
+  ~FileManagerPrivateInternalGetDisallowedTransfersFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
  private:
-  storage::FileSystemURL source_url_;
+  void OnGetDisallowedFiles(
+      std::vector<storage::FileSystemURL> disallowed_files);
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  Profile* profile_ = nullptr;
+
+  std::unique_ptr<policy::DlpFilesController> files_controller_;
+  std::vector<storage::FileSystemURL> source_urls_;
   storage::FileSystemURL destination_url_;
 };
 

@@ -1288,12 +1288,12 @@ interface Functions {
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
 
   // Returns the list of files not allowed to be transfered.
-  // |entires| List of the source entries to be transfered.
+  // |entries| List of the source entries to be transfered.
   // |destinationEntry| Entry for the destination (parent) directory.
   // |callback| Result callback.
   [nocompile]
-  static void GetDisallowedTransfers(
-      [instanceOf=Entry] object[] entires,
+  static void getDisallowedTransfers(
+      [instanceOf=Entry] object[] entries,
       [instanceOf=DirectoryEntry] object destinationEntry,
       GetDisallowedTransfersCallback callback);
 
