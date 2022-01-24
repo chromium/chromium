@@ -30,12 +30,12 @@ namespace {
 // should be enough to trigger the watchdog kill. However, it can cause test
 // flakiness when the time is too short.
 
-constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(500);
-constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(2000);
+constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(240);
+constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(1000);
 
 // For slow machines like Win 7 and Mac 10.xx.
-constexpr auto kGpuWatchdogTimeoutForTestingSlow = base::Milliseconds(1000);
-constexpr auto kExtraGPUJobTimeForTestingSlow = base::Milliseconds(4000);
+constexpr auto kGpuWatchdogTimeoutForTestingSlow = base::Milliseconds(500);
+constexpr auto kExtraGPUJobTimeForTestingSlow = base::Milliseconds(2000);
 
 // On Windows, the gpu watchdog check if the main thread has used the full
 // thread time. We want to detect the case in which the main thread is swapped
