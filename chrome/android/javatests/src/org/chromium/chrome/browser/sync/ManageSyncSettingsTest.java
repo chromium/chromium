@@ -222,8 +222,6 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     public void testPressingSignOutAndTurnOffSyncShowsSignOutDialog() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.setChosenDataTypes(true, null);
-        mSyncTestRule.startSync();
         ManageSyncSettings fragment = startManageSyncPreferences();
 
         Preference turnOffSyncPreference =
@@ -234,6 +232,20 @@ public class ManageSyncSettingsTest {
                 fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC)::performClick);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    public void testSignOutAndTurnOffSyncDisabledForChildUser() {
+        mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        assertSyncOnState(fragment);
+        Preference turnOffSyncPreference =
+                fragment.findPreference(ManageSyncSettings.PREF_TURN_OFF_SYNC);
+        Assert.assertFalse("Sign out and turn off sync button should not be shown",
+                turnOffSyncPreference.isVisible());
     }
 
     @Test
