@@ -71,8 +71,6 @@ ArcMemoryPressureBridge::~ArcMemoryPressureBridge() {
 void ArcMemoryPressureBridge::OnMemoryPressure(
     chromeos::ResourcedClient::PressureLevelArcVm level,
     uint64_t reclaim_target_kb) {
-  LOG(ERROR) << "ArcMemoryPressureBridge::OnMemoryPressure("
-             << static_cast<int>(level) << ", " << reclaim_target_kb << ")";
   if (memory_pressure_in_flight_)
     return;
   memory_pressure_in_flight_ = true;
@@ -109,8 +107,6 @@ void ArcMemoryPressureBridge::OnHostMemoryPressureComplete(uint32_t killed,
   memory_pressure_in_flight_ = false;
   arc_metrics_service_->ReportMemoryPressureArcVmKills(killed,
                                                        reclaimed / 1024);
-  LOG(ERROR) << "ARC Killed " << killed << " processes to reclaim " << reclaimed
-             << " bytes";
 }
 
 }  // namespace arc
