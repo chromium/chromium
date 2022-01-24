@@ -86,6 +86,7 @@ void DlpWarnNotifier::ShowDlpWarningDialog(
 }
 
 void DlpWarnNotifier::RemoveWidget(views::Widget* widget) {
+  widget->RemoveObserver(this);
   base::EraseIf(widgets_, [=](views::Widget* widget_ptr) -> bool {
     return widget_ptr == widget;
   });

@@ -2,61 +2,76 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 
 #include <memory>
 
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_lacros.h"
+#endif
+
 namespace policy {
 
-DlpContentManagerAshTestHelper::DlpContentManagerAshTestHelper() {
+DlpContentManagerTestHelper::DlpContentManagerTestHelper() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   manager_ = new DlpContentManagerAsh();
+#else
+  manager_ = new DlpContentManagerLacros();
+#endif
   DCHECK(manager_);
   reporting_manager_ = new DlpReportingManager();
   DCHECK(reporting_manager_);
   manager_->SetReportingManagerForTesting(reporting_manager_);
   manager_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
-  DlpContentManagerAsh::SetDlpContentManagerAshForTesting(manager_);
+  scoped_dlp_content_observer_ =
+      new ScopedDlpContentObserverForTesting(manager_);
 }
 
-DlpContentManagerAshTestHelper::~DlpContentManagerAshTestHelper() {
+DlpContentManagerTestHelper::~DlpContentManagerTestHelper() {
+  delete scoped_dlp_content_observer_;
   delete reporting_manager_;
+  delete manager_;
 }
 
-void DlpContentManagerAshTestHelper::ChangeConfidentiality(
+void DlpContentManagerTestHelper::ChangeConfidentiality(
     content::WebContents* web_contents,
     const DlpContentRestrictionSet& restrictions) {
   DCHECK(manager_);
   manager_->OnConfidentialityChanged(web_contents, restrictions);
 }
 
-void DlpContentManagerAshTestHelper::ChangeVisibility(
+void DlpContentManagerTestHelper::ChangeVisibility(
     content::WebContents* web_contents) {
   DCHECK(manager_);
   manager_->OnVisibilityChanged(web_contents);
 }
 
-void DlpContentManagerAshTestHelper::DestroyWebContents(
+void DlpContentManagerTestHelper::DestroyWebContents(
     content::WebContents* web_contents) {
   DCHECK(manager_);
   manager_->OnWebContentsDestroyed(web_contents);
 }
 
-void DlpContentManagerAshTestHelper::SetWarnNotifierForTesting(
+void DlpContentManagerTestHelper::SetWarnNotifierForTesting(
     std::unique_ptr<DlpWarnNotifier> notifier) {
   DCHECK(manager_);
   manager_->SetWarnNotifierForTesting(std::move(notifier));
 }
 
-void DlpContentManagerAshTestHelper::ResetWarnNotifierForTesting() {
+void DlpContentManagerTestHelper::ResetWarnNotifierForTesting() {
   DCHECK(manager_);
   manager_->ResetWarnNotifierForTesting();
 }
 
-bool DlpContentManagerAshTestHelper::HasContentCachedForRestriction(
+bool DlpContentManagerTestHelper::HasContentCachedForRestriction(
     content::WebContents* web_contents,
     DlpRulesManager::Restriction restriction) const {
   DCHECK(manager_);
@@ -64,34 +79,34 @@ bool DlpContentManagerAshTestHelper::HasContentCachedForRestriction(
                                                          restriction);
 }
 
-bool DlpContentManagerAshTestHelper::HasAnyContentCached() const {
+bool DlpContentManagerTestHelper::HasAnyContentCached() const {
   DCHECK(manager_);
   return manager_->user_allowed_contents_cache_.GetSizeForTesting() != 0;
 }
 
-void DlpContentManagerAshTestHelper::EnableScreenShareWarningMode() {
+void DlpContentManagerTestHelper::EnableScreenShareWarningMode() {
   DCHECK(manager_);
   manager_->SetIsScreenShareWarningModeEnabledForTesting(/*is_enabled=*/true);
 }
 
-int DlpContentManagerAshTestHelper::ActiveWarningDialogsCount() const {
+int DlpContentManagerTestHelper::ActiveWarningDialogsCount() const {
   DCHECK(manager_);
   return manager_->warn_notifier_->ActiveWarningDialogsCountForTesting();
 }
 
-base::TimeDelta DlpContentManagerAshTestHelper::GetPrivacyScreenOffDelay()
-    const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
   DCHECK(manager_);
-  return manager_->GetPrivacyScreenOffDelayForTesting();
+  return static_cast<DlpContentManagerAsh*>(manager_)
+      ->GetPrivacyScreenOffDelayForTesting();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-DlpContentManagerAsh* DlpContentManagerAshTestHelper::GetContentManager()
-    const {
+DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
   return manager_;
 }
 
-DlpReportingManager* DlpContentManagerAshTestHelper::GetReportingManager()
-    const {
+DlpReportingManager* DlpContentManagerTestHelper::GetReportingManager() const {
   return manager_->reporting_manager_;
 }
 

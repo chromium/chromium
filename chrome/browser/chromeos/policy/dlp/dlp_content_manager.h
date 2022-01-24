@@ -64,6 +64,14 @@ class DlpContentManager : public DlpContentObserver {
       OnDlpRestrictionCheckedCallback callback) = 0;
 
  protected:
+  friend class DlpContentManagerTestHelper;
+
+  void SetReportingManagerForTesting(DlpReportingManager* manager);
+
+  void SetWarnNotifierForTesting(
+      std::unique_ptr<DlpWarnNotifier> warn_notifier);
+  void ResetWarnNotifierForTesting();
+
   void SetIsScreenShareWarningModeEnabledForTesting(bool is_enabled);
 
   // Structure that relates a list of confidential contents to the

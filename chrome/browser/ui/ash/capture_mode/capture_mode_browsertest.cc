@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
@@ -170,10 +170,10 @@ class CaptureModeBrowserTest : public InProcessBrowserTest {
   ~CaptureModeBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    // Instantiate |DlpContentManagerAshTestHelper| after main thread has been
+    // Instantiate |DlpContentManagerTestHelper| after main thread has been
     // set up because |DlpReportingManager| needs a sequenced task runner handle
     // to set up the report queue.
-    helper_ = std::make_unique<policy::DlpContentManagerAshTestHelper>();
+    helper_ = std::make_unique<policy::DlpContentManagerTestHelper>();
 
     // TODO(https://crbug.com/1283065): Remove this.
     // Currently, setting the notifier explicitly is needed since otherwise, due
@@ -201,7 +201,7 @@ class CaptureModeBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
-  std::unique_ptr<policy::DlpContentManagerAshTestHelper> helper_;
+  std::unique_ptr<policy::DlpContentManagerTestHelper> helper_;
   std::vector<DlpPolicyEvent> events_;
 };
 

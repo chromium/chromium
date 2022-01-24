@@ -37,10 +37,6 @@ class WebContents;
 
 namespace policy {
 
-class DlpReportingManager;
-
-class DlpWarnNotifier;
-
 // System-wide class that tracks the set of currently known confidential
 // WebContents and whether any of them are currently visible.
 // If any confidential WebContents is visible, the corresponding restrictions
@@ -136,15 +132,10 @@ class DlpContentManagerAsh : public DlpContentManager,
       DlpContentManagerAsh* dlp_content_manager);
   static void ResetDlpContentManagerAshForTesting();
 
- protected:
-  void SetReportingManagerForTesting(DlpReportingManager* manager);
-
-  void SetWarnNotifierForTesting(
-      std::unique_ptr<DlpWarnNotifier> warn_notifier);
-  void ResetWarnNotifierForTesting();
-
  private:
   friend class DlpContentManagerAshTestHelper;
+  friend class DlpContentManagerTestHelper;
+  friend class DlpContentObserver;
   friend class DlpContentTabHelper;
   friend class MockDlpContentManagerAsh;
 

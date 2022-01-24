@@ -72,11 +72,9 @@ static DlpContentManagerAsh* g_dlp_content_manager = nullptr;
 
 // static
 DlpContentManagerAsh* DlpContentManagerAsh::Get() {
-  if (!g_dlp_content_manager) {
-    g_dlp_content_manager = new DlpContentManagerAsh();
-    g_dlp_content_manager->Init();
-  }
-  return g_dlp_content_manager;
+  if (g_dlp_content_manager)
+    return g_dlp_content_manager;
+  return static_cast<DlpContentManagerAsh*>(DlpContentObserver::Get());
 }
 
 void DlpContentManagerAsh::OnWindowOcclusionChanged(aura::Window* window) {
@@ -825,21 +823,6 @@ void DlpContentManagerAsh::CheckRunningScreenShares() {
       screen_share->MaybeUpdateNotifications();
     }
   }
-}
-
-void DlpContentManagerAsh::SetReportingManagerForTesting(
-    DlpReportingManager* reporting_manager) {
-  reporting_manager_ = reporting_manager;
-}
-
-void DlpContentManagerAsh::SetWarnNotifierForTesting(
-    std::unique_ptr<DlpWarnNotifier> warn_notifier) {
-  DCHECK(warn_notifier);
-  warn_notifier_ = std::move(warn_notifier);
-}
-
-void DlpContentManagerAsh::ResetWarnNotifierForTesting() {
-  warn_notifier_ = std::make_unique<DlpWarnNotifier>();
 }
 
 // static

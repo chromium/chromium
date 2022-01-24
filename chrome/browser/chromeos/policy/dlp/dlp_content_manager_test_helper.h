@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_TEST_HELPER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_
 
 #include <memory>
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
@@ -20,12 +20,12 @@ namespace policy {
 
 class DlpReportingManager;
 
-// This class is an interface to DlpContentManagerAsh and is used in tests to
+// This class is an interface to DlpContentManager and is used in tests to
 // access some of its private methods.
-class DlpContentManagerAshTestHelper {
+class DlpContentManagerTestHelper {
  public:
-  DlpContentManagerAshTestHelper();
-  ~DlpContentManagerAshTestHelper();
+  DlpContentManagerTestHelper();
+  ~DlpContentManagerTestHelper();
 
   void ChangeConfidentiality(content::WebContents* web_contents,
                              const DlpContentRestrictionSet& restrictions);
@@ -48,16 +48,19 @@ class DlpContentManagerAshTestHelper {
 
   int ActiveWarningDialogsCount() const;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::TimeDelta GetPrivacyScreenOffDelay() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  DlpContentManagerAsh* GetContentManager() const;
+  DlpContentManager* GetContentManager() const;
   DlpReportingManager* GetReportingManager() const;
 
  private:
-  DlpContentManagerAsh* manager_;
+  DlpContentManager* manager_;
   DlpReportingManager* reporting_manager_;
+  ScopedDlpContentObserverForTesting* scoped_dlp_content_observer_;
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_MANAGER_ASH_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_MANAGER_TEST_HELPER_H_

@@ -107,10 +107,14 @@ void ShowDlpScreenShareDisabledNotification(const std::u16string& app_title) {
 }
 
 void HideDlpScreenSharePausedNotification(const std::string& share_id) {
-  NotificationDisplayService::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Close(NotificationHandler::Type::TRANSIENT,
-              GetScreenSharePausedNotificationId(share_id));
+  auto* notification_display_service =
+      NotificationDisplayService::GetForProfile(
+          ProfileManager::GetActiveUserProfile());
+  if (notification_display_service) {
+    notification_display_service->Close(
+        NotificationHandler::Type::TRANSIENT,
+        GetScreenSharePausedNotificationId(share_id));
+  }
 }
 
 void ShowDlpScreenSharePausedNotification(const std::string& share_id,
@@ -123,10 +127,14 @@ void ShowDlpScreenSharePausedNotification(const std::string& share_id,
 }
 
 void HideDlpScreenShareResumedNotification(const std::string& share_id) {
-  NotificationDisplayService::GetForProfile(
-      ProfileManager::GetActiveUserProfile())
-      ->Close(NotificationHandler::Type::TRANSIENT,
-              GetScreenShareResumedNotificationId(share_id));
+  auto* notification_display_service =
+      NotificationDisplayService::GetForProfile(
+          ProfileManager::GetActiveUserProfile());
+  if (notification_display_service) {
+    notification_display_service->Close(
+        NotificationHandler::Type::TRANSIENT,
+        GetScreenShareResumedNotificationId(share_id));
+  }
 }
 
 void ShowDlpScreenShareResumedNotification(const std::string& share_id,

@@ -41,6 +41,9 @@ class DlpContentManagerLacros : public DlpContentManager,
       OnDlpRestrictionCheckedCallback callback) override;
 
  private:
+  friend class DlpContentManagerTestHelper;
+  friend class DlpContentObserver;
+
   DlpContentManagerLacros();
   ~DlpContentManagerLacros() override;
 

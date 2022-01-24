@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
@@ -152,13 +152,15 @@ class DlpContentManagerAshTest : public testing::Test {
     ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
   }
 
-  DlpContentManagerAsh* GetManager() { return helper_.GetContentManager(); }
+  DlpContentManagerAsh* GetManager() {
+    return static_cast<DlpContentManagerAsh*>(helper_.GetContentManager());
+  }
 
   TestingProfile* profile() { return profile_; }
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  DlpContentManagerAshTestHelper helper_;
+  DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
   MockDlpRulesManager* mock_rules_manager_ = nullptr;

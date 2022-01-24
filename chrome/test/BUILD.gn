@@ -541,6 +541,13 @@ static_library("test_support") {
   }
 
   if (is_chromeos_lacros) {
+    public_deps += [
+      "//chrome/browser:dlp_policy_event_proto",
+      "//components/reporting/client:report_queue",
+      "//components/reporting/client:test_support",
+      "//components/reporting/storage:test_support",
+      "//components/reporting/util:test_callbacks_support",
+    ]
     deps += [
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
@@ -2394,11 +2401,18 @@ if (!is_android && !is_fuchsia) {
 
     if (is_chromeos_lacros) {
       sources += [
+        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",
+        "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h",
         "../browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
+        "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.cc",
+        "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
@@ -3450,6 +3464,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service_browsertest.cc",
         "../browser/chrome_main_browsertest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_manager_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",

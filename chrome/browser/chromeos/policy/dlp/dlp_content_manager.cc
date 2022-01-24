@@ -122,6 +122,23 @@ void DlpContentManager::CheckPrintingRestriction(
   std::move(callback).Run(true);
 }
 
+void DlpContentManager::SetReportingManagerForTesting(
+    DlpReportingManager* reporting_manager) {
+  DCHECK(!reporting_manager_);
+  DCHECK(reporting_manager);
+  reporting_manager_ = reporting_manager;
+}
+
+void DlpContentManager::SetWarnNotifierForTesting(
+    std::unique_ptr<DlpWarnNotifier> warn_notifier) {
+  DCHECK(warn_notifier);
+  warn_notifier_ = std::move(warn_notifier);
+}
+
+void DlpContentManager::ResetWarnNotifierForTesting() {
+  warn_notifier_ = std::make_unique<DlpWarnNotifier>();
+}
+
 void DlpContentManager::SetIsScreenShareWarningModeEnabledForTesting(
     bool is_enabled) {
   is_screen_share_warning_mode_enabled_ = is_enabled;

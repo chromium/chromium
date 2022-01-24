@@ -16,7 +16,6 @@
 namespace policy {
 
 namespace {
-static DlpContentManagerLacros* g_dlp_content_manager = nullptr;
 
 crosapi::mojom::DlpRestrictionLevel ConvertLevelToMojo(
     DlpRulesManager::Level level) {
@@ -62,11 +61,7 @@ crosapi::mojom::DlpRestrictionSetPtr ConvertRestrictionSetToMojo(
 
 // static
 DlpContentManagerLacros* DlpContentManagerLacros::Get() {
-  if (!g_dlp_content_manager) {
-    g_dlp_content_manager = new DlpContentManagerLacros();
-    g_dlp_content_manager->Init();
-  }
-  return g_dlp_content_manager;
+  return static_cast<DlpContentManagerLacros*>(DlpContentObserver::Get());
 }
 
 void DlpContentManagerLacros::CheckScreenShareRestriction(
@@ -87,7 +82,13 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
 }
 
 DlpContentManagerLacros::DlpContentManagerLacros() = default;
-DlpContentManagerLacros::~DlpContentManagerLacros() = default;
+
+DlpContentManagerLacros::~DlpContentManagerLacros() {
+  // Clean up still observed windows.
+  for (const auto& window_pair : window_webcontents_) {
+    window_pair.first->RemoveObserver(this);
+  }
+}
 
 void DlpContentManagerLacros::OnConfidentialityChanged(
     content::WebContents* web_contents,
