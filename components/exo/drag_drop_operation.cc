@@ -388,8 +388,6 @@ void DragDropOperation::OnDragStarted() {
     delete this;
 }
 
-void DragDropOperation::OnDragEnded() {}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void DragDropOperation::OnDragActionsChanged(int actions) {
   if (!started_by_this_object_)
