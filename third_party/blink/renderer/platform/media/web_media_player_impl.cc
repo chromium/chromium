@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/web_media_player_impl.h"
+#include "third_party/blink/renderer/platform/media/web_media_player_impl.h"
 
 #include <algorithm>
 #include <cmath>
@@ -35,8 +35,10 @@
 #include "cc/layers/video_layer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/audio/null_audio_sink.h"
+#include "media/base/audio_renderer_sink.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_context.h"
+#include "media/base/demuxer.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/limits.h"
 #include "media/base/media_content_type.h"
@@ -44,6 +46,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_url_demuxer.h"
 #include "media/base/memory_dump_provider_proxy.h"
+#include "media/base/routing_token_callback.h"
 #include "media/base/text_renderer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -64,6 +67,7 @@
 #include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/url_index.h"
+#include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
@@ -399,46 +403,65 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
     UrlIndex* url_index,
     std::unique_ptr<VideoFrameCompositor> compositor,
-    scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces,
-    std::unique_ptr<WebMediaPlayerParams> params)
+    std::unique_ptr<media::MediaLog> media_log,
+    WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
+    scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::TaskRunner> worker_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        video_frame_compositor_task_runner,
+    WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
+    WebContentDecryptionModule* initial_cdm,
+    media::RequestRoutingTokenCallback request_routing_token_cb,
+    base::WeakPtr<media::MediaObserver> media_observer,
+    bool enable_instant_source_buffer_gc,
+    bool embedded_media_experience_enabled,
+    mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
+    CreateSurfaceLayerBridgeCB create_bridge_callback,
+    scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+    WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+    bool is_background_suspend_enabled,
+    bool is_background_video_playback_enabled,
+    bool is_background_video_track_optimization_supported,
+    std::unique_ptr<media::Demuxer> demuxer_override,
+    scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces)
     : frame_(frame),
       main_task_runner_(frame->GetTaskRunner(TaskType::kMediaElementEvent)),
-      media_task_runner_(params->media_task_runner()),
-      worker_task_runner_(params->worker_task_runner()),
-      media_log_(params->take_media_log()),
+      media_task_runner_(std::move(media_task_runner)),
+      worker_task_runner_(std::move(worker_task_runner)),
+      media_log_(std::move(media_log)),
       client_(client),
       encrypted_client_(encrypted_client),
       delegate_(delegate),
       delegate_has_audio_(HasUnmutedAudio()),
-      defer_load_cb_(params->defer_load_cb()),
-      adjust_allocated_memory_cb_(params->adjust_allocated_memory_cb()),
+      defer_load_cb_(std::move(defer_load_cb)),
+      adjust_allocated_memory_cb_(std::move(adjust_allocated_memory_cb)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       url_index_(url_index),
-      raster_context_provider_(params->raster_context_provider()),
-      vfc_task_runner_(params->video_frame_compositor_task_runner()),
+      raster_context_provider_(std::move(raster_context_provider)),
+      vfc_task_runner_(std::move(video_frame_compositor_task_runner)),
       compositor_(std::move(compositor)),
       renderer_factory_selector_(std::move(renderer_factory_selector)),
-      observer_(params->media_observer()),
-      enable_instant_source_buffer_gc_(
-          params->enable_instant_source_buffer_gc()),
-      embedded_media_experience_enabled_(
-          params->embedded_media_experience_enabled()),
-      surface_layer_mode_(params->use_surface_layer_for_video()),
-      create_bridge_callback_(params->create_bridge_callback()),
-      request_routing_token_cb_(params->request_routing_token_cb()),
-      media_metrics_provider_(params->take_metrics_provider()),
-      is_background_suspend_enabled_(params->IsBackgroundSuspendEnabled()),
+      observer_(std::move(media_observer)),
+      enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
+      embedded_media_experience_enabled_(embedded_media_experience_enabled),
+      surface_layer_mode_(surface_layer_mode),
+      create_bridge_callback_(std::move(create_bridge_callback)),
+      request_routing_token_cb_(std::move(request_routing_token_cb)),
+      media_metrics_provider_(std::move(metrics_provider)),
+      is_background_suspend_enabled_(is_background_suspend_enabled),
       is_background_video_playback_enabled_(
-          params->IsBackgroundVideoPlaybackEnabled()),
+          is_background_video_playback_enabled),
       is_background_video_track_optimization_supported_(
-          params->IsBackgroundVideoTrackOptimizationSupported()),
+          is_background_video_track_optimization_supported),
       simple_watch_timer_(
           base::BindRepeating(&WebMediaPlayerImpl::OnSimpleWatchTimerTick,
                               base::Unretained(this)),
           base::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
                               base::Unretained(this))),
       will_play_helper_(nullptr),
-      demuxer_override_(params->TakeDemuxerOverride()) {
+      demuxer_override_(std::move(demuxer_override)) {
   DVLOG(1) << __func__;
   DCHECK(adjust_allocated_memory_cb_);
   DCHECK(renderer_factory_selector_);
@@ -507,8 +530,8 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   media_log_->SetProperty<MediaLogProperty::kFrameTitle>(
       SanitizeUserStringProperty(frame_->GetDocument().Title()));
 
-  if (params->initial_cdm())
-    SetCdmInternal(params->initial_cdm());
+  if (initial_cdm)
+    SetCdmInternal(initial_cdm);
 
   // Report a false "EncrytpedEvent" here as a baseline.
   RecordEncryptedEvent(false);
@@ -525,7 +548,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/434861
   audio_source_provider_ = new WebAudioSourceProviderImpl(
-      params->audio_renderer_sink(), media_log_.get(),
+      std::move(audio_renderer_sink), media_log_.get(),
       std::move(on_audio_source_provider_set_client_callback));
 
   if (observer_)

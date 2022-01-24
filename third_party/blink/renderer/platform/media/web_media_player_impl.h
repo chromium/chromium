@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_
 
 #include <stdint.h>
 
@@ -30,10 +30,13 @@
 #include "media/base/overlay_info.h"
 #include "media/base/pipeline_impl.h"
 #include "media/base/renderer_factory_selector.h"
+#include "media/base/routing_token_callback.h"
 #include "media/base/simple_watch_timer.h"
 #include "media/base/text_track.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -42,7 +45,7 @@
 #include "third_party/blink/public/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/public/platform/media/smoothness_helper.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
-#include "third_party/blink/public/platform/media/web_media_player_params.h"
+#include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -72,9 +75,11 @@ class LearningTaskController;
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
+class Demuxer;
 class MediaLog;
 class MemoryDumpProviderProxy;
 class PipelineController;
+class SwitchableAudioRendererSink;
 }  // namespace media
 
 namespace viz {
@@ -89,6 +94,7 @@ class VideoDecodeStatsReporter;
 class VideoFrameCompositor;
 class WatchTimeReporter;
 class WebAudioSourceProviderImpl;
+class WebContentDecryptionModule;
 class WebLocalFrame;
 class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
@@ -114,8 +120,29 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
       std::unique_ptr<media::RendererFactorySelector> renderer_factory_selector,
       UrlIndex* url_index,
       std::unique_ptr<VideoFrameCompositor> compositor,
-      scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces,
-      std::unique_ptr<WebMediaPlayerParams> params);
+      std::unique_ptr<media::MediaLog> media_log,
+      WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
+      scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::TaskRunner> worker_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          video_frame_compositor_task_runner,
+      WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb,
+      WebContentDecryptionModule* initial_cdm,
+      media::RequestRoutingTokenCallback request_routing_token_cb,
+      base::WeakPtr<media::MediaObserver> media_observer,
+      bool enable_instant_source_buffer_gc,
+      bool embedded_media_experience_enabled,
+      mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
+      CreateSurfaceLayerBridgeCB create_bridge_callback,
+      scoped_refptr<viz::RasterContextProvider> raster_context_provider,
+      WebMediaPlayer::SurfaceLayerMode surface_layer_mode,
+      bool is_background_suspend_enabled,
+      bool is_background_video_play_enabled,
+      bool is_background_video_track_optimization_supported,
+      std::unique_ptr<media::Demuxer> demuxer_override,
+      scoped_refptr<ThreadSafeBrowserInterfaceBrokerProxy> remote_interfaces);
   WebMediaPlayerImpl(const WebMediaPlayerImpl&) = delete;
   WebMediaPlayerImpl& operator=(const WebMediaPlayerImpl&) = delete;
   ~WebMediaPlayerImpl() override;
@@ -741,12 +768,12 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   DelegateState delegate_state_ = DelegateState::GONE;
   bool delegate_has_audio_ = false;
 
-  WebMediaPlayerParams::DeferLoadCB defer_load_cb_;
+  WebMediaPlayerBuilder::DeferLoadCB defer_load_cb_;
 
   // Members for notifying upstream clients about internal memory usage.  The
   // |adjust_allocated_memory_cb_| must only be called on |main_task_runner_|.
   base::RepeatingTimer memory_usage_reporting_timer_;
-  WebMediaPlayerParams::AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
+  WebMediaPlayerBuilder::AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
   int64_t last_reported_memory_usage_ = 0;
   std::unique_ptr<media::MemoryDumpProviderProxy> main_thread_mem_dumper_;
   std::unique_ptr<media::MemoryDumpProviderProxy> media_thread_mem_dumper_;
@@ -1046,4 +1073,4 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WEB_MEDIA_PLAYER_IMPL_H_

@@ -55,8 +55,7 @@
 #include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
-#include "third_party/blink/public/platform/media/web_media_player_impl.h"
-#include "third_party/blink/public/platform/media/web_media_player_params.h"
+#include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
@@ -494,15 +493,24 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
   }
 
-  auto params = std::make_unique<blink::WebMediaPlayerParams>(
+  auto vfc = std::make_unique<blink::VideoFrameCompositor>(
+      video_frame_compositor_task_runner, std::move(submitter));
+
+  std::unique_ptr<media::Demuxer> demuxer_override =
+      GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
+                                                            media_task_runner);
+
+  return blink::WebMediaPlayerBuilder::Build(
+      web_frame, client, encrypted_client, delegate,
+      std::move(factory_selector), url_index_.get(), std::move(vfc),
       std::move(media_log),
       base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
                           base::Unretained(render_frame_),
                           delegate->has_played_media()),
-      audio_renderer_sink, media_task_runner,
+      std::move(audio_renderer_sink), std::move(media_task_runner),
       render_thread->GetWorkerTaskRunner(),
       render_thread->compositor_task_runner(),
-      video_frame_compositor_task_runner,
+      std::move(video_frame_compositor_task_runner),
       base::BindRepeating(&v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
                           base::Unretained(blink::MainThreadIsolate())),
       initial_cdm, request_routing_token_cb_, media_observer,
@@ -519,19 +527,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           .is_background_video_playback_enabled,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
           .is_background_video_track_optimization_supported,
-      GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
-                                                            media_task_runner));
-
-  auto vfc = std::make_unique<blink::VideoFrameCompositor>(
-      params->video_frame_compositor_task_runner(), std::move(submitter));
-
-  auto* media_player = new blink::WebMediaPlayerImpl(
-      web_frame, client, encrypted_client, delegate,
-      std::move(factory_selector), url_index_.get(), std::move(vfc),
-      blink::Platform::Current()->GetBrowserInterfaceBroker(),
-      std::move(params));
-
-  return media_player;
+      std::move(demuxer_override),
+      blink::Platform::Current()->GetBrowserInterfaceBroker());
 }
 
 blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/media/web_media_player_impl.h"
+#include "third_party/blink/renderer/platform/media/web_media_player_impl.h"
 
 #include <stdint.h>
 
@@ -54,7 +54,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/platform/media/web_media_player_params.h"
+#include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
@@ -421,8 +421,14 @@ class WebMediaPlayerImplTest
     url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_,
                                             media_thread_.task_runner());
 
-    auto params = std::make_unique<WebMediaPlayerParams>(
-        std::move(media_log), WebMediaPlayerParams::DeferLoadCB(), audio_sink_,
+    auto compositor = std::make_unique<NiceMock<MockVideoFrameCompositor>>(
+        media_thread_.task_runner());
+    compositor_ = compositor.get();
+
+    wmpi_ = std::make_unique<WebMediaPlayerImpl>(
+        GetWebLocalFrame(), &client_, &encrypted_client_, &delegate_,
+        std::move(factory_selector), url_index_.get(), std::move(compositor),
+        std::move(media_log), WebMediaPlayerBuilder::DeferLoadCB(), audio_sink_,
         media_thread_.task_runner(), media_thread_.task_runner(),
         media_thread_.task_runner(), media_thread_.task_runner(),
         base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
@@ -434,16 +440,7 @@ class WebMediaPlayerImplTest
         viz::TestContextProvider::Create(),
         WebMediaPlayer::SurfaceLayerMode::kAlways,
         is_background_suspend_enabled_, is_background_video_playback_enabled_,
-        true, std::move(demuxer_override));
-
-    auto compositor = std::make_unique<NiceMock<MockVideoFrameCompositor>>(
-        params->video_frame_compositor_task_runner());
-    compositor_ = compositor.get();
-
-    wmpi_ = std::make_unique<WebMediaPlayerImpl>(
-        GetWebLocalFrame(), &client_, &encrypted_client_, &delegate_,
-        std::move(factory_selector), url_index_.get(), std::move(compositor),
-        nullptr, std::move(params));
+        true, std::move(demuxer_override), nullptr);
   }
 
   std::unique_ptr<WebSurfaceLayerBridge> CreateMockSurfaceLayerBridge(

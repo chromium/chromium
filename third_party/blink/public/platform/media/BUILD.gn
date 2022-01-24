@@ -21,7 +21,7 @@ source_set("media") {
     "url_index.h",
     "video_frame_compositor.h",
     "web_encrypted_media_client_impl.h",
-    "web_media_player_params.h",
+    "web_media_player_builder.h",
   ]
   public_deps = [
     "//base",
@@ -44,11 +44,7 @@ source_set("media") {
       "learning_experiment_helper.h",
       "multi_buffer_data_source.h",
       "smoothness_helper.h",
-      "web_media_player_impl.h",
     ]
-    public_deps += [
-      "//media/learning/common",
-      "//services/media_session/public/cpp:base_cpp",
-    ]
+    public_deps += [ "//media/learning/common" ]
   }
 }
