@@ -114,8 +114,6 @@ public class CustomTabExternalNavigationTest {
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
-        Assert.assertTrue("A dummy activity should have been started to handle the special url.",
-                mNavigationDelegate.hasExternalActivityStarted());
     }
 
     /**
@@ -133,8 +131,6 @@ public class CustomTabExternalNavigationTest {
                 .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
         Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
-        Assert.assertFalse("External activities should not be started to handle the url",
-                mNavigationDelegate.hasExternalActivityStarted());
     }
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {

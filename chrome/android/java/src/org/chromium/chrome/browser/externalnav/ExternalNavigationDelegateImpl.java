@@ -145,15 +145,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public void didStartActivity(Intent intent) {}
-
-    @Override
-    public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-            Intent intent, boolean proxy) {
-        return StartActivityIfNeededResult.DID_NOT_HANDLE;
-    }
-
-    @Override
     public boolean canLoadUrlInCurrentTab() {
         return !(mTab == null || mTab.isClosing() || !mTab.isInitialized());
     }

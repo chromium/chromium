@@ -147,7 +147,7 @@ public class ExternalNavigationHandler {
     }
 
     // A Supplier that only evaluates when needed then caches the value.
-    private abstract static class LazySupplier<T> implements Supplier<T> {
+    protected abstract static class LazySupplier<T> implements Supplier<T> {
         private T mValue;
         private Supplier<T> mInnerSupplier;
 
@@ -176,13 +176,13 @@ public class ExternalNavigationHandler {
     }
 
     // Used to ensure we only call queryIntentActivities when we really need to.
-    private class QueryIntentActivitiesSupplier extends LazySupplier<List<ResolveInfo>> {
+    protected class QueryIntentActivitiesSupplier extends LazySupplier<List<ResolveInfo>> {
         public QueryIntentActivitiesSupplier(Intent intent) {
             super(() -> queryIntentActivities(intent));
         }
     }
 
-    private static class ResolveActivitySupplier extends LazySupplier<ResolveInfo> {
+    protected static class ResolveActivitySupplier extends LazySupplier<ResolveInfo> {
         public ResolveActivitySupplier(Intent intent) {
             super(()
                             -> PackageManagerUtils.resolveActivity(
@@ -1767,7 +1767,7 @@ public class ExternalNavigationHandler {
      * @param proxy Whether we need to proxy the intent through AuthenticatedProxyActivity (this is
      *              used by Instant Apps intents).
      */
-    private void startActivity(Intent intent, boolean proxy) {
+    protected void startActivity(Intent intent, boolean proxy) {
         try {
             forcePdfViewerAsIntentHandlerIfNeeded(intent);
             if (proxy) {
@@ -1786,8 +1786,6 @@ public class ExternalNavigationHandler {
         } catch (RuntimeException e) {
             Log.e(TAG, "Could not start Activity for intent " + intent.toString(), e);
         }
-
-        mDelegate.didStartActivity(intent);
     }
 
     /**
@@ -1811,27 +1809,9 @@ public class ExternalNavigationHandler {
         // Only touches disk on Kitkat. See http://crbug.com/617725 for more context.
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
-            boolean withoutPackage = TextUtils.isEmpty(intent.getPackage());
-
-            // TODO(https://crbug.com/1251722): Rename this delegate function and require
-            // the delegate to defer to the code below to actually launch the Activity.
-            @ExternalNavigationDelegate.StartActivityIfNeededResult
-            int delegateResult = mDelegate.maybeHandleStartActivityIfNeeded(intent, proxy);
-
-            switch (delegateResult) {
-                case ExternalNavigationDelegate.StartActivityIfNeededResult
-                        .HANDLED_WITH_ACTIVITY_START:
-                    return OverrideUrlLoadingResult.forExternalIntent();
-                case ExternalNavigationDelegate.StartActivityIfNeededResult
-                        .HANDLED_WITHOUT_ACTIVITY_START:
-                    return OverrideUrlLoadingResult.forNoOverride();
-                case ExternalNavigationDelegate.StartActivityIfNeededResult.DID_NOT_HANDLE:
-                    return startActivityIfNeededInternal(intent, proxy, resolvingInfos,
-                            resolveActivity, requiresIntentChooser, browserFallbackUrl,
-                            intentDataUrl, referrerUrl);
-                default:
-                    assert false;
-            }
+            return startActivityIfNeededInternal(intent, proxy, requiresIntentChooser,
+                    resolvingInfos, resolveActivity, browserFallbackUrl, intentDataUrl,
+                    referrerUrl);
         } catch (SecurityException e) {
             // https://crbug.com/808494: Handle the URL internally if dispatching to another
             // application fails with a SecurityException. This happens due to malformed
@@ -1856,9 +1836,9 @@ public class ExternalNavigationHandler {
      * Implementation of startActivityIfNeeded() that is used when the delegate does not handle the
      * event.
      */
-    private OverrideUrlLoadingResult startActivityIfNeededInternal(Intent intent, boolean proxy,
-            List<ResolveInfo> resolvingInfos, ResolveActivitySupplier resolveActivity,
-            boolean requiresIntentChooser, GURL browserFallbackUrl, GURL intentDataUrl,
+    protected OverrideUrlLoadingResult startActivityIfNeededInternal(Intent intent, boolean proxy,
+            boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
+            ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl, GURL intentDataUrl,
             GURL referrerUrl) {
         forcePdfViewerAsIntentHandlerIfNeeded(intent);
         if (proxy) {
@@ -1882,7 +1862,6 @@ public class ExternalNavigationHandler {
     private OverrideUrlLoadingResult doStartActivityIfNeeded(Intent intent, Activity activity) {
         if (DEBUG) Log.i(TAG, "startActivity");
         activity.startActivity(intent);
-        mDelegate.didStartActivity(intent);
         recordExternalNavigationDispatched(intent);
         return OverrideUrlLoadingResult.forExternalIntent();
     }

@@ -92,8 +92,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
 
-        private boolean mHasActivityStarted;
-
         /**
          * Constructs a new instance of {@link CustomTabNavigationDelegate}.
          */
@@ -104,26 +102,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mExternalAuthUtils = authUtils;
             mVerifier = verifier;
             mActivityType = activityType;
-        }
-
-        @Override
-        public void didStartActivity(Intent intent) {
-            mHasActivityStarted = true;
-        }
-
-        @Override
-        public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-                Intent intent, boolean proxy) {
-            // Note: This method will not be called if shouldDisableExternalIntentRequestsForUrl()
-            // returns false.
-            if (proxy) {
-                dispatchAuthenticatedIntent(intent);
-                mHasActivityStarted = true;
-                return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
-            } else {
-                // Defer to ExternalNavigationHandler to call startActivityIfNeeded.
-                return StartActivityIfNeededResult.DID_NOT_HANDLE;
-            }
         }
 
         @Override
@@ -150,14 +128,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (!mExternalAuthUtils.isGoogleSigned(mClientPackageName)) return false;
 
             return isPackageSpecializedHandler(mClientPackageName, intent);
-        }
-
-        /**
-         * @return Whether an external activity has started to handle a url. For testing only.
-         */
-        @VisibleForTesting
-        public boolean hasExternalActivityStarted() {
-            return mHasActivityStarted;
         }
 
         @Override

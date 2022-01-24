@@ -64,38 +64,6 @@ public interface ExternalNavigationDelegate {
     void dispatchAuthenticatedIntent(Intent intent);
 
     /**
-     * Informs the delegate that an Activity was started for an external intent (some embedders wish
-     * to log this information, primarily for testing purposes).
-     */
-    void didStartActivity(Intent intent);
-
-    /**
-     * Used by maybeHandleStartActivityIfNeeded() below.
-     */
-    @IntDef({StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START,
-            StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START,
-            StartActivityIfNeededResult.DID_NOT_HANDLE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface StartActivityIfNeededResult {
-        int HANDLED_WITH_ACTIVITY_START = 0;
-        int HANDLED_WITHOUT_ACTIVITY_START = 1;
-        int DID_NOT_HANDLE = 2;
-    }
-
-    /**
-     * Gives the embedder the opportunity to handle starting an activity for the intent. Used for
-     * intents that may be handled internally or externally. If the embedder handles this intent,
-     * this method should return StartActivityIfNeededResult.HANDLED_{WITH, WITHOUT}_ACTIVITY_START
-     * as appropriate. To have ExternalNavigationHandler handle this intent, return
-     * StartActivityIfNeededResult.NOT_HANDLED.
-     * @param intent The intent we want to send.
-     * @param proxy Whether we need to proxy the intent through AuthenticatedProxyActivity (this is
-     *              used by Instant Apps intents).
-     */
-    @StartActivityIfNeededResult
-    int maybeHandleStartActivityIfNeeded(Intent intent, boolean proxy);
-
-    /**
      * Loads a URL as specified by |loadUrlParams| if possible. May fail in exceptional conditions
      * (e.g., if there is no valid tab).
      * @param loadUrlParams parameters of the URL to be loaded

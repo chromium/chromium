@@ -67,19 +67,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public void didStartActivity(Intent intent) {}
-
-    @Override
-    public @StartActivityIfNeededResult int maybeHandleStartActivityIfNeeded(
-            Intent intent, boolean proxy) {
-        assert !proxy
-            : "|proxy| should be true only for instant apps, which WebLayer doesn't handle";
-
-        // Defer to ExternalNavigationHandler's default logic.
-        return StartActivityIfNeededResult.DID_NOT_HANDLE;
-    }
-
-    @Override
     public boolean shouldAvoidDisambiguationDialog(Intent intent) {
         // Don't show the disambiguation dialog if WebLayer can handle the intent.
         return UrlUtilities.isAcceptedScheme(intent.toUri(0));
