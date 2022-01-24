@@ -64,6 +64,10 @@ struct BLINK_CONDITION_VARIABLE {
 #include <pthread.h>
 #endif
 
+namespace blink {
+class DeferredTaskHandler;
+}
+
 namespace WTF {
 
 #if BUILDFLAG(IS_WIN)
@@ -125,8 +129,15 @@ class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
 // https://crbug.com/856641
 class WTF_EXPORT RecursiveMutex : public MutexBase {
  public:
-  RecursiveMutex() : MutexBase(true) {}
   bool TryLock();
+
+ private:
+  // Private constructor to ensure that no new users appear. This class will be
+  // removed.
+  RecursiveMutex() : MutexBase(true) {}
+
+  // DO NOT ADD any new caller.
+  friend class ::blink::DeferredTaskHandler;
 };
 
 class SCOPED_LOCKABLE MutexLocker final {
@@ -183,11 +194,11 @@ class WTF_EXPORT ThreadCondition final {
 
 }  // namespace WTF
 
-using WTF::MutexBase;
 using WTF::Mutex;
-using WTF::RecursiveMutex;
+using WTF::MutexBase;
 using WTF::MutexLocker;
 using WTF::MutexTryLocker;
+using WTF::RecursiveMutex;
 using WTF::ThreadCondition;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
