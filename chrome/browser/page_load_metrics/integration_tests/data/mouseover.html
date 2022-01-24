@@ -17,6 +17,9 @@ const loadImage = size => {
   }
 };
 
+// Turn off BFCache to see if it helps with BFCache bot flakes.
+window.addEventListener("unload", () => { console.log("Turn off BFCache"); });
+
 window.image_event_listener = loadImage("100x50");
 image.addEventListener("mouseover", window.image_event_listener);
 span.addEventListener("mouseover", loadImage("256x256"));
