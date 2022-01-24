@@ -71,8 +71,7 @@ The following arguments are supported:
                         "h264main, "h264high", "vp8" and "vp9".
                         H264 Baseline is selected if unspecified.
   --num_temporal_layers the number of temporal layers of the encoded
-                        bitstream. Only used in --codec=vp9 and
-                        h264(baseline)|h264main|h264high currently.
+                        bitstream. A default value is 1.
   --num_spatial_layers  the number of spatial layers of the encoded
                         bitstream. Only used in --codec=vp9 currently.
                         Spatial SVC encoding is applied only in

@@ -144,10 +144,13 @@ void BitstreamFileWriter::ProcessBitstream(
 
   if (temporal_layer_index_to_write_) {
     uint8_t temporal_idx = 255;
-    if (bitstream->metadata.vp9)
-      temporal_idx = bitstream->metadata.vp9->temporal_idx;
-    else if (bitstream->metadata.h264)
+    if (bitstream->metadata.h264)
       temporal_idx = bitstream->metadata.h264->temporal_idx;
+    else if (bitstream->metadata.vp8)
+      temporal_idx = bitstream->metadata.vp8->temporal_idx;
+    else if (bitstream->metadata.vp9)
+      temporal_idx = bitstream->metadata.vp9->temporal_idx;
+
     CHECK_NE(temporal_idx, 255) << "No metadata about temporal idx";
 
     if (temporal_idx > *temporal_layer_index_to_write_) {

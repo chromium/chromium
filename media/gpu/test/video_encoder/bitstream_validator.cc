@@ -228,6 +228,10 @@ void BitstreamValidator::ProcessBitstreamTask(
     const H264Metadata& metadata = *bitstream->metadata.h264;
     should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
     should_flush = frame_index == last_frame_index_;
+  } else if (bitstream->metadata.vp8) {
+    const Vp8Metadata& metadata = *bitstream->metadata.vp8;
+    should_decode = metadata.temporal_idx <= *temporal_layer_index_to_decode_;
+    should_flush = frame_index == last_frame_index_;
   }
 
   if (should_flush) {

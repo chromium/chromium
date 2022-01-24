@@ -66,8 +66,7 @@ The following arguments are supported:
                         bitstream. A default value is 1. Only affected
                         if --codec=vp9 currently.
   --num_temporal_layers the number of temporal layers of the encoded
-                        bitstream. A default value is 1. Only affected
-                        if --codec=vp9 currently.
+                        bitstream. A default value is 1.
   --reverse             the stream plays backwards if the stream reaches
                         end of stream. So the input stream to be encoded
                         is consecutive. By default this is false.
