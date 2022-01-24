@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatRemoteViewsService;
 /** See {@link BookmarkWidgetServiceImpl}. */
 public class BookmarkWidgetService extends SplitCompatRemoteViewsService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetServiceImpl";
 
     public BookmarkWidgetService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

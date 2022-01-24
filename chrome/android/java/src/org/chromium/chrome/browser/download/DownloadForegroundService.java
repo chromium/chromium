@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 /** See {@link DownloadForegroundServiceImpl}. */
 public class DownloadForegroundService extends SplitCompatService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.download.DownloadForegroundServiceImpl";
 
     public DownloadForegroundService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

@@ -12,10 +12,10 @@ public class MinidumpUploadService extends SplitCompatIntentService {
     private static final String TAG = "MinidmpUploadService";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl";
 
     public MinidumpUploadService() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 }

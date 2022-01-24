@@ -12,10 +12,10 @@ public class IncognitoNotificationService extends SplitCompatIntentService {
     private static final String TAG = "incognito_notification";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.incognito.IncognitoNotificationServiceImpl";
 
     public IncognitoNotificationService() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 }

@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatMinidumpUploadJobService;
 /** See {@link ChromeMinidumpUploadJobServiceImpl}. */
 public class ChromeMinidumpUploadJobService extends SplitCompatMinidumpUploadJobService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobServiceImpl";
 
     public ChromeMinidumpUploadJobService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

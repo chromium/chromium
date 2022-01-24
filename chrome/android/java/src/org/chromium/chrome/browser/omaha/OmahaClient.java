@@ -12,10 +12,9 @@ public class OmahaClient extends SplitCompatIntentService {
     private static final String TAG = "omaha";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
-            "org.chromium.chrome.browser.omaha.OmahaClientImpl";
+    private static String sImplClassName = "org.chromium.chrome.browser.omaha.OmahaClientImpl";
 
     public OmahaClient() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 }

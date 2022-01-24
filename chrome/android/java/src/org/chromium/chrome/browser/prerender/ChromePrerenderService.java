@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatService;
 /** See {@link ChromePrerenderServiceImpl}. */
 public class ChromePrerenderService extends SplitCompatService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.prerender.ChromePrerenderServiceImpl";
 
     public ChromePrerenderService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

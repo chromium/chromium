@@ -17,11 +17,11 @@ public class NotificationService extends SplitCompatIntentService {
     private static final String TAG = NotificationService.class.getSimpleName();
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationServiceImpl";
 
     public NotificationService() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 
     /**

@@ -16,10 +16,10 @@ import org.chromium.chrome.browser.base.SplitCompatGcmListenerService;
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class ChromeGcmListenerService extends SplitCompatGcmListenerService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.services.gcm.ChromeGcmListenerServiceImpl";
 
     public ChromeGcmListenerService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

@@ -30,8 +30,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private static final String TAG = "SplitChromeApp";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
-            "org.chromium.chrome.browser.ChromeApplicationImpl";
+    private static String sImplClassName = "org.chromium.chrome.browser.ChromeApplicationImpl";
 
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
@@ -39,7 +38,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private String mChromeApplicationClassName;
 
     public SplitChromeApplication() {
-        this(IMPL_CLASS_NAME);
+        this(sImplClassName);
     }
 
     public SplitChromeApplication(String chromeApplicationClassName) {

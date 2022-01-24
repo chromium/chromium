@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatContentProvider;
 /** See {@link AttributionReportingProviderImpl}. */
 public class AttributionReportingProvider extends SplitCompatContentProvider {
     @IdentifierNameString
-    private static final String IMPL_CLASS = "org.chromium.chrome.browser.attribution_reporting"
+    private static String sImplClass = "org.chromium.chrome.browser.attribution_reporting"
             + ".AttributionReportingProviderImpl";
 
     public AttributionReportingProvider() {
-        super(IMPL_CLASS);
+        super(sImplClass);
     }
 }

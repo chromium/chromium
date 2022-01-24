@@ -12,10 +12,10 @@ public class GCMBackgroundService extends SplitCompatIntentService {
     private static final String TAG = "GCMBackgroundService";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.services.gcm.GCMBackgroundServiceImpl";
 
     public GCMBackgroundService() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 }

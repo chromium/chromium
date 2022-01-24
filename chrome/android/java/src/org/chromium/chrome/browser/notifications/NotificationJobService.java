@@ -10,10 +10,10 @@ import org.chromium.chrome.browser.base.SplitCompatJobService;
 /** See {@link NotificationJobServiceImpl}. */
 public class NotificationJobService extends SplitCompatJobService {
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.notifications.NotificationJobServiceImpl";
 
     public NotificationJobService() {
-        super(IMPL_CLASS_NAME);
+        super(sImplClassName);
     }
 }

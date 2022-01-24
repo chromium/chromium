@@ -12,10 +12,10 @@ public class TracingNotificationService extends SplitCompatIntentService {
     private static final String TAG = "tracing_notification";
 
     @IdentifierNameString
-    private static final String IMPL_CLASS_NAME =
+    private static String sImplClassName =
             "org.chromium.chrome.browser.tracing.TracingNotificationServiceImpl";
 
     public TracingNotificationService() {
-        super(IMPL_CLASS_NAME, TAG);
+        super(sImplClassName, TAG);
     }
 }
