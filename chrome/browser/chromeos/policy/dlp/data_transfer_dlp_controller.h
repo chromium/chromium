@@ -51,6 +51,11 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
   explicit DataTransferDlpController(const DlpRulesManager& dlp_rules_manager);
   ~DataTransferDlpController() override;
 
+  // Returns maximal time for which reporting can be skipped.
+  // See LastReportedEndpoints for details.
+  // Should be overridden in tests (increased).
+  virtual base::TimeDelta GetSkipReportingTimeout();
+
  private:
   virtual void NotifyBlockedPaste(
       const ui::DataTransferEndpoint* const data_src,

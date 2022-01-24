@@ -139,6 +139,13 @@ class FakeDlpController : public DataTransferDlpController,
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
   bool force_paste_on_warn_ = false;
+
+ protected:
+  base::TimeDelta GetSkipReportingTimeout() override {
+    // Override with a very high value to ensure that tests are passing on slow
+    // debug builds.
+    return base::Milliseconds(1000);
+  }
 };
 
 class MockDlpRulesManager : public DlpRulesManagerImpl {
@@ -851,8 +858,12 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 
 // Test case for crbug.com/1213143
 // Flaky on MSan bots: crbug.com/1230617
-// Also flaky on linux-chromeos-dbg: crbug.com/1281659
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_Reporting DISABLED_Reporting
+#else
+#define MAYBE_Reporting Reporting
+#endif
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());

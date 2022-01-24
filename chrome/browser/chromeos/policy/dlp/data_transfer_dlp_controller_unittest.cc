@@ -76,6 +76,13 @@ class MockDlpController : public DataTransferDlpController {
                void(const ui::DataTransferEndpoint* const data_src,
                     const ui::DataTransferEndpoint* const data_dst,
                     base::OnceClosure drop_cb));
+
+ protected:
+  base::TimeDelta GetSkipReportingTimeout() override {
+    // Override with a very high value to ensure that tests are passing on slow
+    // debug builds.
+    return base::Milliseconds(1000);
+  }
 };
 
 absl::optional<ui::DataTransferEndpoint> CreateEndpoint(

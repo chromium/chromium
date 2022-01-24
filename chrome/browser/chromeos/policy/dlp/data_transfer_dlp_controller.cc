@@ -380,6 +380,10 @@ DataTransferDlpController::DataTransferDlpController(
 
 DataTransferDlpController::~DataTransferDlpController() = default;
 
+base::TimeDelta DataTransferDlpController::GetSkipReportingTimeout() {
+  return kSkipReportingTimeout;
+}
+
 void DataTransferDlpController::NotifyBlockedPaste(
     const ui::DataTransferEndpoint* const data_src,
     const ui::DataTransferEndpoint* const data_dst) {
@@ -445,7 +449,7 @@ bool DataTransferDlpController::ShouldSkipReporting(
     base::UmaHistogramTimes(
         GetDlpHistogramPrefix() + dlp::kDataTransferReportingTimeDiffUMA,
         time_diff);
-    return time_diff < kSkipReportingTimeout;
+    return time_diff < GetSkipReportingTimeout();
   }
   return false;
 }
