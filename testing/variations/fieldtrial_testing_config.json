@@ -1386,58 +1386,6 @@
             ]
         }
     ],
-    "BrowserPrioritizeNativeWorkStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "BrowserPrioritizeNative2000msAndInputQueue2",
-                    "params": {
-                        "prioritize_for_next_ms": "2000ms"
-                    },
-                    "enable_features": [
-                        "BrowserPrioritizeInputQueue",
-                        "BrowserPrioritizeNativeWork"
-                    ]
-                },
-                {
-                    "name": "BrowserPrioritizeNativeWorkAlwaysOn2",
-                    "params": {
-                        "prioritize_for_next_ms": "inf"
-                    },
-                    "enable_features": [
-                        "BrowserPrioritizeNativeWork"
-                    ],
-                    "disable_features": [
-                        "BrowserPrioritizeInputQueue"
-                    ]
-                },
-                {
-                    "name": "BrowserPrioritizeNativeWork2000msAfterInput2",
-                    "params": {
-                        "prioritize_for_next_ms": "2000ms"
-                    },
-                    "enable_features": [
-                        "BrowserPrioritizeNativeWork"
-                    ],
-                    "disable_features": [
-                        "BrowserPrioritizeInputQueue"
-                    ]
-                },
-                {
-                    "name": "BrowserPrioritizeInputQueue2",
-                    "enable_features": [
-                        "BrowserPrioritizeInputQueue"
-                    ],
-                    "disable_features": [
-                        "BrowserPrioritizeNativeWork"
-                    ]
-                }
-            ]
-        }
-    ],
     "BrowsingDataLifetimeManager": [
         {
             "platforms": [
