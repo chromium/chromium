@@ -11,6 +11,8 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -91,8 +93,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

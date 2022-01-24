@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {

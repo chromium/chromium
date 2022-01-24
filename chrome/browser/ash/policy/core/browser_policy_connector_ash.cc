@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/components/attestation/attestation_flow_adaptive.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/settings/timezone_settings.h"
@@ -71,7 +72,6 @@
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"

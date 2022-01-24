@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"

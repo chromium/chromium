@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/policy/enrollment_status.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"

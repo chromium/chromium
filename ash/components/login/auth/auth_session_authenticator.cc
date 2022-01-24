@@ -4,6 +4,10 @@
 
 #include "ash/components/login/auth/auth_session_authenticator.h"
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "ash/components/login/auth/user_context.h"
@@ -11,10 +15,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/device_event_log/device_event_log.h"

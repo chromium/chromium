@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Used as a GetSystemSaltCallback.
@@ -63,4 +63,4 @@ TEST_F(SystemSaltGetterTest, GetSystemSalt) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

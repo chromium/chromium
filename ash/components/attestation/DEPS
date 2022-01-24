@@ -1,8 +1,8 @@
 noparent = True
 
 include_rules = [
+  "+ash/components/cryptohome",
   "+base",
-  "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+components/account_id",
   "+crypto",

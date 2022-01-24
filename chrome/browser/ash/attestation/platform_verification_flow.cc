@@ -9,6 +9,7 @@
 
 #include "ash/components/attestation/attestation_flow.h"
 #include "ash/components/attestation/attestation_flow_adaptive.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "chromeos/dbus/attestation/interface.pb.h"

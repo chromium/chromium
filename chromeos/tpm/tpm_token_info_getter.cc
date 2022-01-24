@@ -8,11 +8,11 @@
 
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/task_runner.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

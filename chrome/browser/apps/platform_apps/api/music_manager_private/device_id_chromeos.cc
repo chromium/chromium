@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/callback.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 
 namespace chrome_apps {
 namespace api {

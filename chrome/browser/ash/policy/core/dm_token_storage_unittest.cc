@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "content/public/test/browser_task_environment.h"

@@ -8,9 +8,9 @@
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/bind.h"
 #include "base/memory/singleton.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/arc_quota_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

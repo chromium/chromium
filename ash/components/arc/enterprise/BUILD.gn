@@ -26,10 +26,10 @@ static_library("enterprise") {
 
   deps = [
     "//ash/components/arc:prefs",
+    "//ash/components/cryptohome",
     "//ash/components/policy",
     "//ash/constants",
     "//base",
-    "//chromeos/cryptohome",
     "//chromeos/dbus:dbus",
     "//chromeos/dbus/arc:arc",
     "//chromeos/dbus/power",

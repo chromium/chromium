@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_remove_keys_operation.h"
 
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 

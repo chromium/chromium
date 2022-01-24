@@ -16,6 +16,7 @@
 
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/auth_session_authenticator.h"
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
 #include "ash/components/login/auth/stub_authenticator_builder.h"
@@ -121,7 +122,6 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/assistant/buildflags.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"

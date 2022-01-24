@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"

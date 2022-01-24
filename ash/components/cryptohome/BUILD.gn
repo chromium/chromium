@@ -5,10 +5,10 @@
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+assert(is_chromeos_ash)
 
 component("cryptohome") {
-  defines = [ "IS_CHROMEOS_CRYPTOHOME_IMPL" ]
+  defines = [ "IS_ASH_COMPONENTS_CRYPTOHOME_IMPL" ]
   deps = [
     "//ash/components/login/auth:challenge_response_key",
     "//base",

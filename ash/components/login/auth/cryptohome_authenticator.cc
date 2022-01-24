@@ -9,6 +9,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/cryptohome_parameter_utils.h"
@@ -21,10 +25,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/login_state/login_state.h"

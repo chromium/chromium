@@ -6912,7 +6912,7 @@ static_library("browser") {
       "//services/network/public/mojom",
     ]
     if (is_chromeos_ash) {
-      deps += [ "//chromeos/cryptohome" ]
+      deps += [ "//ash/components/cryptohome" ]
     }
   }
 

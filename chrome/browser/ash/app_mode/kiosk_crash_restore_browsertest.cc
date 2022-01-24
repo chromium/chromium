@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -24,13 +25,11 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-
 
 namespace ash {
 

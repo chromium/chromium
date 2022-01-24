@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "ash/components/settings/cros_settings_names.h"
@@ -48,7 +49,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"

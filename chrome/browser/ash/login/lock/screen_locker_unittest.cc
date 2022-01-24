@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
@@ -31,7 +32,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

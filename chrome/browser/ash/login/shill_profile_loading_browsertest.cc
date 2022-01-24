@@ -14,6 +14,7 @@
 // This test case verifies that chrome triggers LoadShillProfile for the
 // unmanaged user case and the managed user with/without network policy cases.
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"

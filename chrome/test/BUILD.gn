@@ -532,9 +532,9 @@ static_library("test_support") {
       "//ui/chromeos/resources:resources_grit",
     ]
     deps += [
+      "//ash/components/cryptohome",
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
-      "//chromeos/cryptohome",
       "//chromeos/dbus",
       "//chromeos/dbus/power",
     ]
@@ -3697,6 +3697,7 @@ if (!is_android && !is_fuchsia) {
         "//ash/components/attestation",
         "//ash/components/attestation:test_support",
         "//ash/components/audio",
+        "//ash/components/cryptohome",
         "//ash/components/disks",
         "//ash/components/disks:test_support",
         "//ash/components/drivefs",
@@ -3755,7 +3756,6 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/assistant:buildflags",
         "//chromeos/components/onc:test_support",
         "//chromeos/components/quick_answers/public/cpp:cpp",
-        "//chromeos/cryptohome",
         "//chromeos/dbus:test_support",
         "//chromeos/dbus/attestation",
         "//chromeos/dbus/attestation:attestation_proto",
@@ -6301,6 +6301,7 @@ test("unit_tests") {
         "//ash/assistant/model",
         "//ash/assistant/util",
         "//ash/components/audio",
+        "//ash/components/cryptohome",
         "//ash/components/disks",
         "//ash/components/disks:test_support",
         "//ash/components/login/auth:test_support",
@@ -6334,7 +6335,6 @@ test("unit_tests") {
         "//chromeos/components/feature_usage:feature_usage",
         "//chromeos/components/multidevice:test_support",
         "//chromeos/components/sync_wifi",
-        "//chromeos/cryptohome",
         "//chromeos/dbus",
         "//chromeos/dbus/attestation",
         "//chromeos/dbus/cicerone",
@@ -8192,10 +8192,10 @@ if (!is_android) {
       deps += [
         "//ash",
         "//ash:test_support",
+        "//ash/components/cryptohome",
         "//ash/constants",
         "//ash/public/cpp",
         "//chrome/browser/chromeos",
-        "//chromeos/cryptohome",
         "//chromeos/services/device_sync",
         "//chromeos/services/device_sync:test_support",
       ]

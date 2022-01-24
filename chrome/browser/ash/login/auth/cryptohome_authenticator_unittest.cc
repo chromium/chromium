@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/auth/mock_auth_status_consumer.h"
@@ -33,9 +36,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"

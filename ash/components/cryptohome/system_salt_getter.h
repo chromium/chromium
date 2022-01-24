@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
-#define CHROMEOS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#ifndef ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#define ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
 
 #include <stdint.h>
 
@@ -16,10 +16,10 @@
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class is used to get the system salt from cryptohome and cache it.
-class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
+class COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) SystemSaltGetter {
  public:
   using GetSystemSaltCallback =
       base::OnceCallback<void(const std::string& system_salt)>;
@@ -75,12 +75,12 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   base::WeakPtrFactory<SystemSaltGetter> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source code migration is finished.
-namespace ash {
-using ::chromeos::SystemSaltGetter;
+namespace chromeos {
+using ::ash::SystemSaltGetter;
 }
 
-#endif  // CHROMEOS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_
+#endif  // ASH_COMPONENTS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_

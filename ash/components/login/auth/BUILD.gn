@@ -12,10 +12,10 @@ component("auth") {
   defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
   public_deps = [ ":challenge_response_key" ]
   deps = [
+    "//ash/components/cryptohome",
     "//ash/constants",
     "//base",
     "//base:i18n",
-    "//chromeos/cryptohome",
     "//chromeos/dbus/authpolicy",
     "//chromeos/dbus/authpolicy:authpolicy_proto",
     "//chromeos/dbus/constants",
@@ -108,7 +108,7 @@ source_set("test_support") {
 }
 
 # This is a separate targat to avoid a circular dependency with
-# chromeos/cryptohome.
+# ash/components/cryptohome.
 source_set("challenge_response_key") {
   defines = [ "IS_ASH_LOGIN_AUTH_IMPL" ]
   deps = [ "//base" ]

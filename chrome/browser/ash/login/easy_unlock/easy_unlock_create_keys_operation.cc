@@ -9,6 +9,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/login/auth/key.h"
 #include "base/base64url.h"
 #include "base/bind.h"
@@ -17,9 +20,6 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

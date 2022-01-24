@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_pref_names.h"
@@ -85,7 +86,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/onc/certificate_scope.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"

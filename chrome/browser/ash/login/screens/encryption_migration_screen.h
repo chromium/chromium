@@ -15,9 +15,9 @@
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "chrome/browser/ash/login/ui/login_feedback.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

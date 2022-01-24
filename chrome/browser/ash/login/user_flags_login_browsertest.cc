@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/test/bind.h"
 #include "chrome/browser/about_flags.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/flags_ui/feature_entry_macros.h"
 #include "components/flags_ui/flags_state.h"

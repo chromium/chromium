@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/files/file_path.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/arc/arc_camera_client.h"
 #include "chromeos/dbus/arc/arc_sensor_service_client.h"
 #include "chromeos/dbus/attestation/attestation_client.h"

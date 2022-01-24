@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/cryptohome/cryptohome_util.h"
+#include "ash/components/cryptohome/cryptohome_util.h"
 
 #include <string>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/components/login/auth/challenge_response_key.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using chromeos::ChallengeResponseKey;
-
 namespace cryptohome {
+
+using ::chromeos::ChallengeResponseKey;
 
 constexpr char kKeyLabel[] = "key_label";
 

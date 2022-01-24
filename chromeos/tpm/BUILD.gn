@@ -17,8 +17,11 @@ component("tpm") {
   defines = [ "IS_CHROMEOS_TPM_IMPL" ]
   deps = [
     ":buildflags",
+
+    # TODO(https://crbug.com/1164001): temporary dependency until chromeos/tpm
+    # is moved to ash/.
+    "//ash/components/cryptohome",
     "//base",
-    "//chromeos/cryptohome",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
@@ -63,8 +66,8 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":tpm",
+    "//ash/components/cryptohome",
     "//base/test:test_support",
-    "//chromeos/cryptohome:cryptohome",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/cryptohome",

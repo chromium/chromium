@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/cryptohome/userdataauth_util.h"
+#include "ash/components/cryptohome/userdataauth_util.h"
 
+#include "ash/components/cryptohome/cryptohome_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "chromeos/cryptohome/cryptohome_util.h"
 #include "components/device_event_log/device_event_log.h"
-
-using google::protobuf::RepeatedPtrField;
 
 namespace user_data_auth {
 
 namespace {
+
+using ::google::protobuf::RepeatedPtrField;
 
 template <typename ReplyType>
 bool IsEmpty(const absl::optional<ReplyType>& reply) {
@@ -45,26 +45,26 @@ CryptohomeErrorCode ReplyToCryptohomeError(
 }
 
 // Instantiate ReplyToMountError and export them for types actually used.
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<RemoveReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<UnmountReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<MountReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<MigrateKeyReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<GetKeyDataReply>&);
 
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<MountReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<StartAuthSessionReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<AuthenticateAuthSessionReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<AddCredentialsReply>&);
-template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+template COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<UnmountReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(

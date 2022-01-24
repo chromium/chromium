@@ -15,6 +15,8 @@
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/device_activity/device_activity_controller.h"
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/drivefs/fake_drivefs_launcher_client.h"
@@ -188,8 +190,6 @@
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"

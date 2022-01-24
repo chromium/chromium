@@ -1,9 +1,9 @@
 include_rules = [
+  "+ash/components/cryptohome",
   "+ash/components/policy",
   "+ash/constants",
   "+ash/public/cpp",
   "+chromeos/components/sensors",
-  "+chromeos/cryptohome",
   "+chromeos/dbus",
   "+chromeos/memory",
   "+chromeos/system",

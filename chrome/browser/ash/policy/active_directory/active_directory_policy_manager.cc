@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/components/onc/variable_expander.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/login_manager/policy_descriptor.pb.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"

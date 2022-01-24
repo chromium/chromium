@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,10 +15,11 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 
-using chromeos::ChallengeResponseKey;
-
 namespace cryptohome {
+
 namespace {
+
+using ::chromeos::ChallengeResponseKey;
 
 const std::string GetCryptohomeId(const AccountId& account_id) {
   switch (account_id.GetAccountType()) {
@@ -107,8 +108,7 @@ AccountId GetAccountIdFromAccountIdentifier(
 KeyDefinition::ProviderData::ProviderData() = default;
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name)
-    : name(name) {
-}
+    : name(name) {}
 
 KeyDefinition::ProviderData::ProviderData(const ProviderData& other)
     : name(other.name) {
@@ -124,14 +124,12 @@ KeyDefinition::ProviderData::ProviderData(const std::string& name,
 
 KeyDefinition::ProviderData::ProviderData(const std::string& name,
                                           const std::string& bytes)
-    : name(name),
-      bytes(new std::string(bytes)) {
-}
+    : name(name), bytes(new std::string(bytes)) {}
 
 void KeyDefinition::ProviderData::operator=(const ProviderData& other) {
   name = other.name;
-  number.reset(other.number ? new int64_t(*other.number) : NULL);
-  bytes.reset(other.bytes ? new std::string(*other.bytes) : NULL);
+  number.reset(other.number ? new int64_t(*other.number) : nullptr);
+  bytes.reset(other.bytes ? new std::string(*other.bytes) : nullptr);
 }
 
 KeyDefinition::ProviderData::~ProviderData() = default;
@@ -197,14 +195,10 @@ bool KeyDefinition::operator==(const KeyDefinition& other) const {
 }
 
 Authorization::Authorization(const std::string& key, const std::string& label)
-    : key(key),
-      label(label) {
-}
+    : key(key), label(label) {}
 
 Authorization::Authorization(const KeyDefinition& key_def)
-    : key(key_def.secret),
-      label(key_def.label) {
-}
+    : key(key_def.secret), label(key_def.label) {}
 
 bool Authorization::operator==(const Authorization& other) const {
   return key == other.key && label == other.label;

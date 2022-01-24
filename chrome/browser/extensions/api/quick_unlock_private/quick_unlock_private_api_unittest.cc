@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "ash/components/cryptohome/system_salt_getter.h"
 #include "ash/components/login/auth/fake_extended_authenticator.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -39,7 +40,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"

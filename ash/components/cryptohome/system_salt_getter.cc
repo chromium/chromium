@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/cryptohome/system_salt_getter.h"
+#include "ash/components/cryptohome/system_salt_getter.h"
 
 #include <stdint.h>
 
@@ -17,14 +17,15 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace {
 
-SystemSaltGetter* g_system_salt_getter = NULL;
+SystemSaltGetter* g_system_salt_getter = nullptr;
 
 }  // namespace
 
-SystemSaltGetter::SystemSaltGetter() {}
+SystemSaltGetter::SystemSaltGetter() = default;
 
 SystemSaltGetter::~SystemSaltGetter() = default;
 
@@ -108,7 +109,7 @@ bool SystemSaltGetter::IsInitialized() {
 void SystemSaltGetter::Shutdown() {
   CHECK(g_system_salt_getter);
   delete g_system_salt_getter;
-  g_system_salt_getter = NULL;
+  g_system_salt_getter = nullptr;
 }
 
 // static
@@ -125,4 +126,4 @@ std::string SystemSaltGetter::ConvertRawSaltToHexString(
       base::HexEncode(reinterpret_cast<const void*>(salt.data()), salt.size()));
 }
 
-}  // namespace chromeos
+}  // namespace ash
