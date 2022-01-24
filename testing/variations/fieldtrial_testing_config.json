@@ -3168,36 +3168,6 @@
             ]
         }
     ],
-    "DynamicTcmallocThreadCache": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledAggressive_08222019",
-                    "params": {
-                        "DynamicTcmallocScaleInvisibleTimeSec": "600",
-                        "DynamicTcmallocTuneTimeSec": "120"
-                    },
-                    "enable_features": [
-                        "DynamicTcmallocTuning"
-                    ]
-                },
-                {
-                    "name": "EnabledConservative_08222019",
-                    "params": {
-                        "DynamicTcmallocScaleInvisibleTimeSec": "-1",
-                        "DynamicTcmallocTuneTimeSec": "120"
-                    },
-                    "enable_features": [
-                        "DynamicTcmallocTuning"
-                    ]
-                }
-            ]
-        }
-    ],
     "EarlyEstablishGpuChannel": [
         {
             "platforms": [
