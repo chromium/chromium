@@ -266,5 +266,8 @@ const base::Feature kSwitchWebSocketThroughputWindow{
 const base::FeatureParam<int> kRollingAverageWindow{
     &kSwitchWebSocketThroughputWindow, "RollingAverageWindow", 100};
 
+const base::Feature kSandboxHttpCache("SandboxHttpCache",
+                                      base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace net

@@ -393,6 +393,10 @@ NET_EXPORT extern const base::FeatureParam<int> kSmallReadBufferSize;
 NET_EXPORT extern const base::Feature kSwitchWebSocketThroughputWindow;
 NET_EXPORT extern const base::FeatureParam<int> kRollingAverageWindow;
 
+// When enabled, certain operations in the HTTP cache are brokerd to allow
+// the network process to be sandboxed.
+NET_EXPORT extern const base::Feature kSandboxHttpCache;
+
 }  // namespace features
 }  // namespace net
 
