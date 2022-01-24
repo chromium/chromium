@@ -1916,24 +1916,6 @@
             ]
         }
     ],
-    "ChromeOSReinstallApps": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled0DayDelay",
-                    "params": {
-                        "interaction_grace_hours": "0"
-                    },
-                    "enable_features": [
-                        "EnableAppReinstallZeroState"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSSharingHub": [
         {
             "platforms": [
