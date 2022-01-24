@@ -169,6 +169,13 @@ struct URLRequestContextConfig {
   // On iOS, corresponds to NSThread::setThreadPriority values.
   const absl::optional<double> network_thread_priority;
 
+  // Whether the connection status of active bidirectional streams should be
+  // monitored.
+  bool bidi_stream_detect_broken_connection;
+  // If |bidi_stream_detect_broken_connection_| is true, this suggests the
+  // period of the heartbeat signal.
+  base::TimeDelta heartbeat_interval;
+
   static bool ExperimentalOptionsParsingIsAllowedToFail() {
     return DCHECK_IS_ON();
   }
@@ -251,6 +258,10 @@ struct URLRequestContextConfig {
   // Returns null if the operation was unsuccessful.
   static std::unique_ptr<base::DictionaryValue> ParseExperimentalOptions(
       std::string unparsed_experimental_options);
+
+  // Makes appropriate changes to settings in |this|.
+  // Returns whether the operation was successful.
+  void SetContextConfigExperimentalOptions();
 
   // Makes appropriate changes to settings in the URLRequestContextBuilder.
   void SetContextBuilderExperimentalOptions(

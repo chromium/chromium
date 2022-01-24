@@ -146,7 +146,10 @@ CronetURLRequestContext::CronetURLRequestContext(
     std::unique_ptr<URLRequestContextConfig> context_config,
     std::unique_ptr<Callback> callback,
     scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
-    : default_load_flags_(
+    : bidi_stream_detect_broken_connection_(
+          context_config->bidi_stream_detect_broken_connection),
+      heartbeat_interval_(context_config->heartbeat_interval),
+      default_load_flags_(
           net::LOAD_NORMAL |
           (context_config->load_disable_cache ? net::LOAD_DISABLE_CACHE : 0)),
       network_tasks_(

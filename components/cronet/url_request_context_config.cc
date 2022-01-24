@@ -167,6 +167,14 @@ const char kDisableTlsZeroRtt[] = "disable_tls_zero_rtt";
 // underlying OS.
 const char kSpdyGoAwayOnIpChange[] = "spdy_go_away_on_ip_change";
 
+// Whether the connection status of all bidirectional streams (created through
+// the Cronet engine) should be monitored.
+// The value must be an integer (> 0) and will be interpreted as a suggestion
+// for the period of the heartbeat signal. See
+// SpdySession#EnableBrokenConnectionDetection for more info.
+const char kBidiStreamDetectBrokenConnection[] =
+    "bidi_stream_detect_broken_connection";
+
 // "goaway_sessions_on_ip_change" is default on for iOS unless overridden via
 // experimental options explicitly.
 #if BUILDFLAG(IS_IOS)
@@ -275,7 +283,11 @@ URLRequestContextConfig::URLRequestContextConfig(
           bypass_public_key_pinning_for_local_trust_anchors),
       effective_experimental_options(experimental_options->CreateDeepCopy()),
       experimental_options(std::move(experimental_options)),
-      network_thread_priority(network_thread_priority) {}
+      network_thread_priority(network_thread_priority),
+      bidi_stream_detect_broken_connection(false),
+      heartbeat_interval(base::Seconds(0)) {
+  SetContextConfigExperimentalOptions();
+}
 
 URLRequestContextConfig::~URLRequestContextConfig() {}
 
@@ -346,6 +358,26 @@ URLRequestContextConfig::ParseExperimentalOptions(
   }
 
   return experimental_options;
+}
+
+void URLRequestContextConfig::SetContextConfigExperimentalOptions() {
+  absl::optional<base::Value> heartbeat_interval_value =
+      experimental_options->ExtractKey(kBidiStreamDetectBrokenConnection);
+  if (!heartbeat_interval_value)
+    return;
+
+  if (!heartbeat_interval_value.value().is_int()) {
+    LOG(ERROR) << "\"" << kBidiStreamDetectBrokenConnection
+               << "\" config params \"" << heartbeat_interval_value.value()
+               << "\" is not an int";
+    effective_experimental_options->RemoveKey(
+        kBidiStreamDetectBrokenConnection);
+    return;
+  }
+
+  int heartbeat_interval_secs = heartbeat_interval_value->GetInt();
+  heartbeat_interval = base::Seconds(heartbeat_interval_secs);
+  bidi_stream_detect_broken_connection = heartbeat_interval_secs > 0;
 }
 
 void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
