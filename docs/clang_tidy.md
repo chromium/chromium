@@ -257,7 +257,7 @@ Questions about the local flow? Reach out to rdevlin.cronin@chromium.org,
 thakis@chromium.org, or gbiv@chromium.org.
 
 Questions about the Gerrit flow? Email tricium-dev@google.com or
-infra-dev+tricium@chromium.org, or file a bug against `Infra>Platform>Tricium`.
+infra-dev+tricium@chromium.org, or file a bug against `Infra>LUCI>BuildService>PreSubmit>Tricium`.
 Please CC gbiv@chromium.org on any of these.
 
 Discoveries? Update the doc!
