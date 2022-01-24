@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_entrypoints.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/url_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
@@ -73,6 +75,11 @@ void LensSidePanelController::OpenWithURL(
     browser_view_->toolbar()->side_panel_button()->HideSidePanel();
   }
 
+  if (browser_view_->toolbar()->side_panel_button()) {
+    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  }
+
   side_panel_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
   if (side_panel_->GetVisible()) {
@@ -98,6 +105,10 @@ void LensSidePanelController::Close() {
         std::string());
     side_panel_->SetVisible(false);
     base::RecordAction(base::UserMetricsAction("LensSidePanel.Hide"));
+  }
+  if (browser_view_->toolbar()->side_panel_button()) {
+    browser_view_->toolbar()->side_panel_button()->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
   }
   std::move(close_callback_).Run();
 }
