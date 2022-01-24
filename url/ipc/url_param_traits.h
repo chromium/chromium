@@ -5,9 +5,16 @@
 #ifndef URL_IPC_URL_PARAM_TRAITS_H_
 #define URL_IPC_URL_PARAM_TRAITS_H_
 
-#include "ipc/ipc_message_utils.h"
+#include <string>
+
+#include "ipc/ipc_param_traits.h"
 #include "url/gurl.h"
 #include "url/ipc/url_ipc_export.h"
+
+namespace base {
+class Pickle;
+class PickleIterator;
+}  // namespace base
 
 namespace IPC {
 

@@ -4,7 +4,11 @@
 
 #include "url/ipc/url_param_traits.h"
 
+#include <string>
+
+#include "base/pickle.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace IPC {
 
