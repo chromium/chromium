@@ -30,6 +30,11 @@ MockGooglePhotosAlbumsFetcher::MockGooglePhotosAlbumsFetcher(Profile* profile)
                 FROM_HERE,
                 base::BindOnce(std::move(callback), std::move(response)));
           });
+
+  ON_CALL(*this, ParseResponse)
+      .WillByDefault([this](absl::optional<base::Value> value) {
+        return GooglePhotosAlbumsFetcher::ParseResponse(std::move(value));
+      });
 }
 
 MockGooglePhotosAlbumsFetcher::~MockGooglePhotosAlbumsFetcher() = default;

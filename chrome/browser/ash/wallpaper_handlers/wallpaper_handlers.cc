@@ -603,7 +603,7 @@ GooglePhotosAlbumsCbkArgs GooglePhotosAlbumsFetcher::ParseResponse(
     int64_t num_photos;
     if (!album_id || !title || !num_photos_string ||
         !base::StringToInt64(*num_photos_string, &num_photos) ||
-        num_photos == 0 ||
+        num_photos < 1 ||
         cover_photo_url_iter == cover_photo_urls_by_id.end()) {
       continue;
     }

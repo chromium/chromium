@@ -232,7 +232,7 @@ class GooglePhotosAlbumsFetcher
       const absl::optional<std::string>& resume_token,
       base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback);
 
- private:
+ protected:
   // GooglePhotosFetcher:
   GooglePhotosAlbumsCbkArgs ParseResponse(
       absl::optional<base::Value> response) override;

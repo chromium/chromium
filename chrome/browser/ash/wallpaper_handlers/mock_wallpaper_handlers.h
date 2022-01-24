@@ -30,6 +30,11 @@ class MockGooglePhotosAlbumsFetcher : public GooglePhotosAlbumsFetcher {
               (const absl::optional<std::string>& resume_token,
                base::OnceCallback<void(GooglePhotosAlbumsCbkArgs)> callback),
               (override));
+
+  MOCK_METHOD(GooglePhotosAlbumsCbkArgs,
+              ParseResponse,
+              (absl::optional<base::Value> response),
+              (override));
 };
 
 // Fetcher that returns a dummy value for the number of photos in a user's
