@@ -10,10 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_identifier.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

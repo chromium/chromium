@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
 
 #include "ash/public/cpp/message_center_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-#include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom.h"
+#include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -67,4 +67,4 @@ class AppNotificationHandler
 }  // namespace settings
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_

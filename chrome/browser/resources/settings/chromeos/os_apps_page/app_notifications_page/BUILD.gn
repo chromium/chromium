@@ -33,7 +33,7 @@ js_library("app_notifications_subpage") {
     "../..:os_route.m",
     "../..:route_observer_behavior",
     "../../..:router",
-    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -48,7 +48,7 @@ js_library("app_notification_row") {
 
 js_library("mojo_interface_provider") {
   deps = [
-    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }

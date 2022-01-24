@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/settings/chromeos/printing_section.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.h"
-#include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
