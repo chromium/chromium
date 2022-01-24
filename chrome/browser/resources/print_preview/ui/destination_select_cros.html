@@ -8,6 +8,9 @@
     white-space: nowrap;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <print-preview-settings-section>
   <span slot="title">$i18n{destinationLabel}</span>
   <div slot="controls">

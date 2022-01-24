@@ -6,6 +6,9 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
+// </if>
 import './icons.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
@@ -70,6 +73,10 @@ export class PrintPreviewDestinationListItemElement extends
       },
 
       // <if expr="chromeos_ash or chromeos_lacros">
+
+      // Holds status of iron-media-query (prefers-color-scheme: dark).
+      isDarkModeActive_: Boolean,
+
       isDestinationCrosLocal_: {
         type: Boolean,
         computed: 'computeIsDestinationCrosLocal_(destination)',
@@ -112,6 +119,7 @@ export class PrintPreviewDestinationListItemElement extends
   private statusText_: string;
 
   // <if expr="chromeos_ash or chromeos_lacros">
+  private isDarkModeActive_: boolean;
   private isDestinationCrosLocal_: boolean;
   private configurationStatus_: DestinationConfigStatus;
   // </if>
@@ -229,7 +237,7 @@ export class PrintPreviewDestinationListItemElement extends
     if (this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
           this.destination.printerStatusReason,
-          this.destination.isEnterprisePrinter);
+          this.destination.isEnterprisePrinter, this.isDarkModeActive_);
     }
     // </if>
 

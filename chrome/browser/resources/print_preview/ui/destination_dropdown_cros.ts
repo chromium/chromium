@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 // TODO(gavinwill): Remove iron-dropdown dependency https://crbug.com/1082587.
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import './print_preview_vars_css.js';
 
@@ -68,6 +69,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
 
       destinationIcon: String,
 
+      isDarkModeActive_: Boolean,
+
       /**
        * Index of the highlighted item in the dropdown.
        */
@@ -92,6 +95,7 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   pdfDestinationKey: string;
   pdfPrinterDisabled: boolean;
   destinationStatusText: string;
+  private isDarkModeActive_: boolean;
   private highlightedIndex_: number;
   private dropdownLength_: number;
 
@@ -337,7 +341,8 @@ export class PrintPreviewDestinationDropdownCrosElement extends
   private getPrinterStatusIcon_(
       printerStatusReason: PrinterStatusReason,
       isEnterprisePrinter: boolean): string {
-    return getPrinterStatusIcon(printerStatusReason, isEnterprisePrinter);
+    return getPrinterStatusIcon(
+        printerStatusReason, isEnterprisePrinter, this.isDarkModeActive_);
   }
 }
 

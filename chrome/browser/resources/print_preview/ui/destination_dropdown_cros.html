@@ -98,6 +98,9 @@
     width: 100%;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <div id="destinationDropdown" on-keydown="onKeyDown_" tabindex="0"
     on-blur="onBlur_" on-click="onClick_" role="button" aria-haspopup="true"
     aria-label="$i18n{destinationLabel} [[value.displayName]]"
@@ -125,7 +128,8 @@
               aria-description$="[[getPrinterStatusErrorString_(
                   item.printerStatusReason)]]">
             <iron-icon icon="[[getPrinterStatusIcon_(
-                item.printerStatusReason, item.isEnterprisePrinter)]]">
+                item.printerStatusReason, item.isEnterprisePrinter,
+                isDarkModeActive_)]]">
             </iron-icon>
             <span class="printer-display-name">[[item.displayName]]</span>
           </button>
