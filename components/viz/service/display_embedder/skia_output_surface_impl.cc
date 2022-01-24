@@ -15,6 +15,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -382,6 +383,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
+  TRACE_EVENT0("viz", "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
   images_in_current_paint_.push_back(
       static_cast<ImageContextImpl*>(image_context));
@@ -1081,6 +1083,8 @@ void SkiaOutputSurfaceImpl::EnqueueGpuTask(
 }
 
 void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
+   TRACE_EVENT1("viz", "SkiaOutputSurfaceImpl::FlushGpuTasks",
+                "wait_for_finish", wait_for_finish);
   // If |wait_for_finish| is true, a GPU task will be always scheduled to make
   // sure all pending tasks are finished on the GPU thread.
   if (gpu_tasks_.empty() && !wait_for_finish)
