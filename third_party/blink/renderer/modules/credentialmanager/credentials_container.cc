@@ -1195,7 +1195,8 @@ ScriptPromise CredentialsContainer::get(
         // TODO(yigu): Ideally the logic should be handled in CredentialManager
         // via Get. However currently it's only for password management and we
         // should refactor the logic to make it generic.
-        if (!RuntimeEnabledFeatures::WebIDEnabled()) {
+        if (!RuntimeEnabledFeatures::WebIDEnabled(
+                ExecutionContext::From(script_state))) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
           return promise;

@@ -108,7 +108,8 @@ ScriptPromise FederatedCredential::logout(
     ScriptState* script_state,
     const HeapVector<Member<FederatedCredentialLogoutRequest>>&
         logout_endpoints) {
-  if (!RuntimeEnabledFeatures::WebIDEnabled()) {
+  if (!RuntimeEnabledFeatures::WebIDEnabled(
+          ExecutionContext::From(script_state))) {
     return ScriptPromise::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kNotSupportedError,
