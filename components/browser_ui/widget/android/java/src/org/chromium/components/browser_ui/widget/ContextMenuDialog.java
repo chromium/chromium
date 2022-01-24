@@ -184,6 +184,12 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                         mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
                     }
                     mPopupWindow.setOutsideTouchable(false);
+                    // Set popup focusable so the screen reader can announce the popup properly.
+                    mPopupWindow.setFocusable(true);
+                    // If the popup is dismissed, dismiss this dialog as well. This is required when
+                    // the popup is dismissed through backpress / hardware accessiries where the
+                    // #dismiss is not triggered by #onTouchEvent.
+                    mPopupWindow.addOnDismissListener(ContextMenuDialog.this::dismiss);
                     mPopupWindow.show();
                 } else {
                     // Otherwise, the menu will already be in the hierarchy, and we need to make
