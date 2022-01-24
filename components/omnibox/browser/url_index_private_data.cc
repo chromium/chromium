@@ -859,9 +859,7 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
 
 void URLIndexPrivateData::AddWordToIndex(const std::u16string& term,
                                          HistoryID history_id) {
-  WordMap::iterator word_pos;
-  bool is_new;
-  std::tie(word_pos, is_new) = word_map_.insert(std::make_pair(term, WordID()));
+  auto [word_pos, is_new] = word_map_.insert(std::make_pair(term, WordID()));
 
   // Adding a new word (i.e. a word that is not already in the word index).
   if (is_new) {
