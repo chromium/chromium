@@ -31,14 +31,24 @@ class SandboxFeatureTest
           ::testing::tuple</* renderer app container feature */ bool,
                            /* ktm mitigation feature */ bool>> {
  public:
+  enum TestParameter { kEnableRendererAppContainer, kEnableKtmMitigation };
+
   SandboxFeatureTest();
+
+  virtual IntegrityLevel GetExpectedIntegrityLevel();
+  virtual TokenLevel GetExpectedLockdownTokenLevel();
+  virtual TokenLevel GetExpectedInitialTokenLevel();
+
+  virtual MitigationFlags GetExpectedMitigationFlags();
+  virtual MitigationFlags GetExpectedDelayedMitigationFlags();
 
   // App Containers are only available in Windows 8 and up
   virtual AppContainerType GetExpectedAppContainerType();
+  virtual std::vector<base::win::Sid> GetExpectedCapabilities();
 
-  virtual MitigationFlags GetExpectedMitigationFlags();
-
-  virtual MitigationFlags GetExpectedDelayedMitigationFlags();
+  void ValidateSecurityLevels(const scoped_refptr<TargetPolicy>& policy);
+  void ValidatePolicyFlagSettings(const scoped_refptr<TargetPolicy>& policy);
+  void ValidateAppContainerSettings(const scoped_refptr<TargetPolicy>& policy);
 
   base::test::ScopedFeatureList feature_list_;
 };

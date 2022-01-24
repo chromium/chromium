@@ -73,25 +73,9 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
           handles_to_inherit, &test_renderer_delegate, policy);
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
-  EXPECT_EQ(policy->GetIntegrityLevel(),
-            ::sandbox::IntegrityLevel::INTEGRITY_LEVEL_LOW);
-  EXPECT_EQ(policy->GetLockdownTokenLevel(),
-            ::sandbox::TokenLevel::USER_LOCKDOWN);
-  EXPECT_EQ(policy->GetInitialTokenLevel(),
-            ::sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS);
-  EXPECT_EQ(policy->GetProcessMitigations(), GetExpectedMitigationFlags());
-  EXPECT_EQ(policy->GetDelayedProcessMitigations(),
-            GetExpectedDelayedMitigationFlags());
-
-  if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kLowbox) {
-    EXPECT_EQ(GetExpectedAppContainerType(),
-              policy->GetAppContainer()->GetAppContainerType());
-
-    ::sandbox::policy::EqualSidList(
-        policy->GetAppContainer()->GetCapabilities(), {});
-  } else {
-    EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
-  }
+  ValidateSecurityLevels(policy);
+  ValidatePolicyFlagSettings(policy);
+  ValidateAppContainerSettings(policy);
 }
 
 INSTANTIATE_TEST_SUITE_P(

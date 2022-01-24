@@ -11,12 +11,12 @@ SandboxFeatureTest::SandboxFeatureTest() {
   std::vector<base::Feature> enabled_features;
   std::vector<base::Feature> disabled_features;
 
-  if (::testing::get<0>(GetParam()))
+  if (::testing::get<TestParameter::kEnableRendererAppContainer>(GetParam()))
     enabled_features.push_back(features::kRendererAppContainer);
   else
     disabled_features.push_back(features::kRendererAppContainer);
 
-  if (::testing::get<1>(GetParam()))
+  if (::testing::get<TestParameter::kEnableKtmMitigation>(GetParam()))
     enabled_features.push_back(features::kWinSboxDisableKtmComponent);
   else
     disabled_features.push_back(features::kWinSboxDisableKtmComponent);
@@ -24,8 +24,16 @@ SandboxFeatureTest::SandboxFeatureTest() {
   feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
-AppContainerType SandboxFeatureTest::GetExpectedAppContainerType() {
-  return AppContainerType::kNone;
+IntegrityLevel SandboxFeatureTest::GetExpectedIntegrityLevel() {
+  return IntegrityLevel::INTEGRITY_LEVEL_LOW;
+}
+
+TokenLevel SandboxFeatureTest::GetExpectedLockdownTokenLevel() {
+  return TokenLevel::USER_LOCKDOWN;
+}
+
+TokenLevel SandboxFeatureTest::GetExpectedInitialTokenLevel() {
+  return TokenLevel::USER_RESTRICTED_SAME_ACCESS;
 }
 
 MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
@@ -47,7 +55,7 @@ MitigationFlags SandboxFeatureTest::GetExpectedMitigationFlags() {
     flags = flags | ::sandbox::MITIGATION_WIN32K_DISABLE;
 #endif
 
-  if (::testing::get<1>(GetParam()))
+  if (::testing::get<TestParameter::kEnableKtmMitigation>(GetParam()))
     flags = flags | ::sandbox::MITIGATION_KTM_COMPONENT;
 
   return flags;
@@ -58,5 +66,39 @@ MitigationFlags SandboxFeatureTest::GetExpectedDelayedMitigationFlags() {
          ::sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
 }
 
+AppContainerType SandboxFeatureTest::GetExpectedAppContainerType() {
+  return AppContainerType::kNone;
+}
+
+std::vector<base::win::Sid> SandboxFeatureTest::GetExpectedCapabilities() {
+  return {};
+}
+
+void SandboxFeatureTest::ValidateSecurityLevels(
+    const scoped_refptr<TargetPolicy>& policy) {
+  EXPECT_EQ(policy->GetIntegrityLevel(), GetExpectedIntegrityLevel());
+  EXPECT_EQ(policy->GetLockdownTokenLevel(), GetExpectedLockdownTokenLevel());
+  EXPECT_EQ(policy->GetInitialTokenLevel(), GetExpectedInitialTokenLevel());
+}
+
+void SandboxFeatureTest::ValidatePolicyFlagSettings(
+    const scoped_refptr<TargetPolicy>& policy) {
+  EXPECT_EQ(policy->GetProcessMitigations(), GetExpectedMitigationFlags());
+  EXPECT_EQ(policy->GetDelayedProcessMitigations(),
+            GetExpectedDelayedMitigationFlags());
+}
+
+void SandboxFeatureTest::ValidateAppContainerSettings(
+    const scoped_refptr<TargetPolicy>& policy) {
+  if (GetExpectedAppContainerType() == ::sandbox::AppContainerType::kLowbox) {
+    EXPECT_EQ(GetExpectedAppContainerType(),
+              policy->GetAppContainer()->GetAppContainerType());
+
+    EqualSidList(policy->GetAppContainer()->GetCapabilities(),
+                 GetExpectedCapabilities());
+  } else {
+    EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
+  }
+}
 }  // namespace policy
 }  // namespace sandbox
