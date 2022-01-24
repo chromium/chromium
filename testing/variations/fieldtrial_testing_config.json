@@ -7917,22 +7917,6 @@
             ]
         }
     ],
-    "WebOtpCrossDeviceSimpleString": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebOtpCrossDeviceSimpleString"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebProtectSaveAs": [
         {
             "platforms": [
