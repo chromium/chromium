@@ -4,6 +4,9 @@
 
 #include "components/viz/service/display_embedder/gl_output_surface_buffer_queue.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
@@ -34,6 +37,47 @@ using testing::SetArgPointee;
 using testing::StrictMock;
 
 namespace viz {
+namespace {
+
+class TestVizProcessContextProvider : public VizProcessContextProvider {
+ public:
+  TestVizProcessContextProvider(std::unique_ptr<TestContextSupport> support,
+                                std::unique_ptr<TestGLES2Interface> gl)
+      : support_(std::move(support)), context_gl_(std::move(gl)) {}
+  TestVizProcessContextProvider(const TestVizProcessContextProvider&) = delete;
+  TestVizProcessContextProvider& operator=(
+      const TestVizProcessContextProvider&) = delete;
+
+  // ContextProvider implementation.
+  gpu::gles2::GLES2Interface* ContextGL() override { return context_gl_.get(); }
+  gpu::ContextSupport* ContextSupport() override { return support_.get(); }
+  const gpu::Capabilities& ContextCapabilities() const override {
+    return gpu_capabilities_;
+  }
+
+  const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override {
+    return gpu_feature_info_;
+  }
+
+  void SetUpdateVSyncParametersCallback(
+      UpdateVSyncParametersCallback callback) override {}
+  void SetGpuVSyncCallback(GpuVSyncCallback callback) override {}
+  void SetGpuVSyncEnabled(bool enabled) override {}
+  bool UseRGB565PixelFormat() const override { return false; }
+  uint32_t GetCopyTextureInternalFormat() override { return 0u; }
+  base::ScopedClosureRunner GetCacheBackBufferCb() override {
+    return base::ScopedClosureRunner(base::DoNothing());
+  }
+
+ protected:
+  ~TestVizProcessContextProvider() override = default;
+
+ private:
+  std::unique_ptr<TestContextSupport> support_;
+  std::unique_ptr<TestGLES2Interface> context_gl_;
+  gpu::Capabilities gpu_capabilities_;
+  gpu::GpuFeatureInfo gpu_feature_info_;
+};
 
 class MockGLES2Interface : public TestGLES2Interface {
  public:
@@ -53,9 +97,7 @@ class MockGLES2Interface : public TestGLES2Interface {
 
 class MockBufferQueue : public BufferQueue {
  public:
-  MockBufferQueue()
-      : BufferQueue(/*sii_=*/nullptr,
-                    gpu::kNullSurfaceHandle) {}
+  MockBufferQueue() : BufferQueue(/*sii_=*/nullptr, gpu::kNullSurfaceHandle) {}
   ~MockBufferQueue() override = default;
 
   MOCK_METHOD2(GetCurrentBuffer,
@@ -75,6 +117,8 @@ class MockBufferQueue : public BufferQueue {
     DoSetSyncTokenProvider();
   }
 };
+
+}  // namespace
 
 class GLOutputSurfaceBufferQueueTest : public ::testing::Test,
                                        public OutputSurfaceClient {

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -226,38 +225,6 @@ class TestContextProvider
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<TestContextProvider> weak_ptr_factory_{this};
-};
-
-class TestVizProcessContextProvider : public VizProcessContextProvider {
- public:
-  TestVizProcessContextProvider(std::unique_ptr<TestContextSupport> support,
-                                std::unique_ptr<TestGLES2Interface> gl);
-  TestVizProcessContextProvider(const TestVizProcessContextProvider&) = delete;
-  TestVizProcessContextProvider& operator=(
-      const TestVizProcessContextProvider&) = delete;
-
-  // ContextProvider implementation.
-  gpu::gles2::GLES2Interface* ContextGL() override;
-  gpu::ContextSupport* ContextSupport() override;
-  const gpu::Capabilities& ContextCapabilities() const override;
-  const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
-
-  void SetUpdateVSyncParametersCallback(
-      UpdateVSyncParametersCallback callback) override;
-  void SetGpuVSyncCallback(GpuVSyncCallback callback) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  bool UseRGB565PixelFormat() const override;
-  uint32_t GetCopyTextureInternalFormat() override;
-  base::ScopedClosureRunner GetCacheBackBufferCb() override;
-
- protected:
-  ~TestVizProcessContextProvider() override;
-
- private:
-  std::unique_ptr<TestContextSupport> support_;
-  std::unique_ptr<TestGLES2Interface> context_gl_;
-  gpu::Capabilities gpu_capabilities_;
-  gpu::GpuFeatureInfo gpu_feature_info_;
 };
 
 }  // namespace viz
