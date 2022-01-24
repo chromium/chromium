@@ -156,13 +156,13 @@ bool AutofillAssistantModelExecutor::Preprocess(
 // TODO(b/204841212): Implement this with use of ModelMetadata.
 absl::optional<std::string> AutofillAssistantModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
-  static const base::NoDestructor<std::vector<std::string>> output_roles(
+  static const base::NoDestructor<std::vector<std::string>> output_roles{
       {"UNKNOWN_ROLE", "NAME_FIRST", "NAME_LAST", "NAME_FULL", "ADDRESS_LINE1",
        "ADDRESS_LINE2", "CITY", "STATE", "COUNTRY", "POSTAL_CODE",
        "CREDIT_CARD_NUMBER", "CREDIT_CARD_EXP_MONTH",
        "CREDIT_CARD_VERIFICATION_CODE", "ORGANIZATION",
        "CREDIT_CARD_EXPIRATION", "PHONE_NUMBER", "USERNAME_OR_EMAIL",
-       "CREDIT_CARD_EXP_YEAR"});
+       "CREDIT_CARD_EXP_YEAR"}};
 
   DCHECK_GE(output_tensors.size(), 1u);
   std::vector<float> data;
