@@ -13,25 +13,12 @@ import '../common/styles.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from './personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {setDarkModeEnabledAction} from './theme/theme_actions.js';
 import {setColorModePref} from './theme/theme_controller.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
+import {ThemeObserver} from './theme/theme_observer.js';
 
-/**
- * Set up the observer to listen for color mode changes.
- */
-function initThemeObserver(
-    themeProvider: ThemeProviderInterface,
-    target: ThemeObserverInterface): ThemeObserverReceiver {
-  const receiver = new ThemeObserverReceiver(target);
-  themeProvider.setThemeObserver(receiver.$.bindNewPipeAndPassRemote());
-  return receiver;
-}
-
-export class PersonalizationThemeElement extends WithPersonalizationStore
-    implements ThemeObserverInterface {
+export class PersonalizationThemeElement extends WithPersonalizationStore {
   static get is() {
     return 'personalization-theme';
   }
@@ -47,31 +34,13 @@ export class PersonalizationThemeElement extends WithPersonalizationStore
   }
 
   private darkModeEnabled_: boolean;
-  private themeProvider_: ThemeProviderInterface;
-  private themeObserver_: ThemeObserverReceiver|null;
-
-  constructor() {
-    super();
-    this.themeProvider_ = getThemeProvider();
-    this.themeObserver_ = null;
-  }
 
   connectedCallback() {
     super.connectedCallback();
-    this.themeObserver_ = initThemeObserver(this.themeProvider_, this);
+    ThemeObserver.initThemeObserverIfNeeded();
     this.watch<PersonalizationThemeElement['darkModeEnabled_']>(
         'darkModeEnabled_', state => state.theme.darkModeEnabled);
     this.updateFromStore();
-  }
-
-  disconnectedCallback() {
-    if (this.themeObserver_) {
-      this.themeObserver_.$.close();
-    }
-  }
-
-  onColorModeChanged(darkModeEnabled: boolean) {
-    this.dispatch(setDarkModeEnabledAction(darkModeEnabled));
   }
 
   private getLightAriaPressed_(darkModeEnabled: boolean) {
@@ -85,8 +54,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore
   private onClickColorModeButton_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const colorMode = eventTarget.dataset['colorMode'];
-    setColorModePref(
-        colorMode === 'DARK', this.themeProvider_, this.getStore());
+    setColorModePref(colorMode === 'DARK', getThemeProvider(), this.getStore());
   }
 }
 

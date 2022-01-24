@@ -7,6 +7,7 @@
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {PersonalizationThemeElement} from 'chrome://personalization/trusted/personalization_theme_element.js';
 import {SetDarkModeEnabledAction, ThemeActionName} from 'chrome://personalization/trusted/theme/theme_actions.js';
+import {ThemeObserver} from 'chrome://personalization/trusted/theme/theme_observer.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -23,6 +24,7 @@ export function PersonalizationThemeTest() {
     const mocks = baseSetup();
     themeProvider = mocks.themeProvider;
     personalizationStore = mocks.personalizationStore;
+    ThemeObserver.initThemeObserverIfNeeded();
   });
 
   teardown(async () => {
@@ -30,6 +32,7 @@ export function PersonalizationThemeTest() {
       personalizationThemeElement.remove();
     }
     personalizationThemeElement = null;
+    ThemeObserver.shutdown();
     await flushTasks();
   });
 
