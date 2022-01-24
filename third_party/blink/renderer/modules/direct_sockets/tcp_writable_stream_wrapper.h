@@ -50,8 +50,6 @@ class MODULES_EXPORT TCPWritableStreamWrapper final
     return writable_;
   }
 
-  ScriptState* GetScriptState() { return script_state_; }
-
   void Reset();
 
   State GetState() const { return state_; }
