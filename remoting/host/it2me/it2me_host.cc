@@ -27,6 +27,7 @@
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/ftl_signaling_connector.h"
 #include "remoting/host/host_event_logger.h"
+#include "remoting/host/host_event_reporter.h"
 #include "remoting/host/host_secret.h"
 #include "remoting/host/host_status_logger.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
@@ -274,6 +275,9 @@ void It2MeHost::ConnectOnNetworkThread(
   // Create event logger.
   host_event_logger_ =
       HostEventLogger::Create(host_->status_monitor(), kApplicationName);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_ = HostEventReporter::Create(host_->status_monitor());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Connect signaling and start the host.
   signal_strategy_->Connect();
@@ -611,6 +615,9 @@ void It2MeHost::DisconnectOnNetworkThread(protocol::ErrorCode error_code) {
         kDestroySignalingDelay);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  host_event_reporter_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   host_event_logger_ = nullptr;
 
   // Post tasks to delete UI objects on the UI thread.
