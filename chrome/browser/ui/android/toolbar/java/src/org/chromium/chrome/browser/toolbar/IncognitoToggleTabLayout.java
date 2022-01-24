@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.widget.ChromeImageView;
 
 /**
@@ -55,7 +56,8 @@ public class IncognitoToggleTabLayout extends TabLayout implements TabCountObser
                 getContext(), R.color.default_control_color_active_dark);
 
         mStandardButtonIcon = new ChromeImageView(getContext());
-        mTabSwitcherDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(getContext(), false);
+        mTabSwitcherDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(
+                getContext(), BrandedColorScheme.APP_DEFAULT);
         mStandardButtonIcon.setImageDrawable(mTabSwitcherDrawable);
         mStandardButtonIcon.setContentDescription(
                 getResources().getString(R.string.accessibility_tab_switcher_standard_stack));

@@ -17,6 +17,7 @@ import android.text.TextPaint;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 
 import java.util.Locale;
@@ -38,18 +39,20 @@ public class TabSwitcherDrawable extends TintedDrawable {
     /**
      * Creates a {@link TabSwitcherDrawable}.
      * @param context A {@link Context} instance.
-     * @param useLight  Whether or not to use light or dark textures and text colors.
+     * @param brandedColorScheme The {@link BrandedColorScheme} used to tint the drawable.
      * @return          A {@link TabSwitcherDrawable} instance.
      */
-    public static TabSwitcherDrawable createTabSwitcherDrawable(Context context, boolean useLight) {
+    public static TabSwitcherDrawable createTabSwitcherDrawable(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
         Bitmap icon = BitmapFactory.decodeResource(
                 context.getResources(), R.drawable.btn_tabswitcher_modern);
-        return new TabSwitcherDrawable(context, useLight, icon);
+        return new TabSwitcherDrawable(context, brandedColorScheme, icon);
     }
 
-    private TabSwitcherDrawable(Context context, boolean useLight, Bitmap bitmap) {
+    private TabSwitcherDrawable(
+            Context context, @BrandedColorScheme int brandedColorScheme, Bitmap bitmap) {
         super(context, bitmap);
-        setTint(ThemeUtils.getThemedToolbarIconTint(context, useLight));
+        setTint(ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme));
         mSingleDigitTextSize =
                 context.getResources().getDimension(R.dimen.toolbar_tab_count_text_size_1_digit);
         mDoubleDigitTextSize =

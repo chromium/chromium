@@ -12,20 +12,22 @@ import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
 import org.chromium.chrome.browser.toolbar.NewTabButton;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -33,7 +35,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
 /** The tab switcher mode top toolbar */
@@ -56,9 +57,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     private @Nullable ToggleTabStackButton mToggleTabStackButton;
 
     private int mPrimaryColor;
-    private boolean mUseLightIcons;
-    private ColorStateList mLightIconTint;
-    private ColorStateList mDarkIconTint;
+    private @BrandedColorScheme int mBrandedColorScheme;
 
     private boolean mIsIncognito;
     private boolean mShouldShowNewTabVariation;
@@ -291,40 +290,34 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
             setBackgroundColor(primaryColor);
         }
 
-        boolean useLightIcons;
+        @BrandedColorScheme
+        int brandedColorScheme;
         if (primaryColor == Color.TRANSPARENT) {
             // If the toolbar is transparent, the icon tint will depend on the background color of
             // the tab switcher, which is the standard mode background. Note that horizontal tab
             // switcher is an exception, which uses the correspond background color for standard
             // and incognito mode.
-            int backgroundColor = ChromeColors.getPrimaryBackgroundColor(getContext(), false);
-            useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(backgroundColor);
+            brandedColorScheme = BrandedColorScheme.APP_DEFAULT;
         } else {
-            useLightIcons = ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
+            brandedColorScheme = OmniboxResourceProvider.getBrandedColorScheme(
+                    getContext(), mIsIncognito, primaryColor);
         }
 
-        if (mUseLightIcons == useLightIcons) return;
+        if (mBrandedColorScheme == brandedColorScheme) return;
 
-        mUseLightIcons = useLightIcons;
-
-        if (mLightIconTint == null) {
-            mLightIconTint = AppCompatResources.getColorStateList(
-                    getContext(), R.color.default_icon_color_light_tint_list);
-            mDarkIconTint = AppCompatResources.getColorStateList(
-                    getContext(), R.color.default_icon_color_tint_list);
-        }
+        mBrandedColorScheme = brandedColorScheme;
 
         if (mToggleTabStackButton != null) {
-            mToggleTabStackButton.setUseLightDrawables(useLightIcons);
+            mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
         }
 
         if (mNewTabViewButton != null) {
-            ApiCompatibilityUtils.setImageTintList(
-                    mNewTabViewButton.findViewById(R.id.new_tab_view_button),
-                    useLightIcons ? mLightIconTint : mDarkIconTint);
+            final ColorStateList tint =
+                    ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme);
+            ((ImageView) mNewTabViewButton.findViewById(R.id.new_tab_view_button))
+                    .setImageTintList(tint);
             final TextView newTabViewDesc = mNewTabViewButton.findViewById(R.id.new_tab_view_desc);
-            newTabViewDesc.setTextColor(useLightIcons ? mLightIconTint.getDefaultColor()
-                                                      : mDarkIconTint.getDefaultColor());
+            newTabViewDesc.setTextColor(tint.getDefaultColor());
         }
     }
 

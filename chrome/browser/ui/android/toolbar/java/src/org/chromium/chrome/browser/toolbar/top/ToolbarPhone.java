@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -261,7 +262,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private float mPreTextureCaptureAlpha = 1f;
     private int mPreTextureCaptureVisibility;
-    private boolean mIsOverlayTabStackDrawableLight;
+    private @BrandedColorScheme int mOverlayTabStackDrawableScheme;
 
     private AnimatorSet mOptionalButtonAnimator;
     private boolean mOptionalButtonAnimationRunning;
@@ -1636,21 +1637,16 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    public void onThemeColorChanged(int color, boolean shouldAnimate) {
-        if (mToggleTabStackButton != null) {
-            final boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
-            mToggleTabStackButton.setUseLightDrawables(useLight);
-        }
-    }
-
-    @Override
     public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
         if (mHomeButton != null) {
             ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
         }
 
-        if (mToggleTabStackButton != null && mTabSwitcherAnimationTabStackDrawable != null) {
-            mTabSwitcherAnimationTabStackDrawable.setTint(tint);
+        if (mToggleTabStackButton != null) {
+            mToggleTabStackButton.setBrandedColorScheme(brandedColorScheme);
+            if (mTabSwitcherAnimationTabStackDrawable != null) {
+                mTabSwitcherAnimationTabStackDrawable.setTint(tint);
+            }
         }
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
@@ -2177,15 +2173,16 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         if (mToggleTabStackButton == null) return;
 
-        boolean useTabStackDrawableLight =
-                isIncognito || ColorUtils.shouldUseLightForegroundOnBackground(getTabThemeColor());
+        @BrandedColorScheme
+        int overlayTabStackDrawableScheme = OmniboxResourceProvider.getBrandedColorScheme(
+                getContext(), isIncognito, getTabThemeColor());
         if (mTabSwitcherAnimationTabStackDrawable == null
-                || mIsOverlayTabStackDrawableLight != useTabStackDrawableLight) {
+                || mOverlayTabStackDrawableScheme != overlayTabStackDrawableScheme) {
             mTabSwitcherAnimationTabStackDrawable = TabSwitcherDrawable.createTabSwitcherDrawable(
-                    getContext(), useTabStackDrawableLight);
+                    getContext(), overlayTabStackDrawableScheme);
             int[] stateSet = {android.R.attr.state_enabled};
             mTabSwitcherAnimationTabStackDrawable.setState(stateSet);
-            mIsOverlayTabStackDrawableLight = useTabStackDrawableLight;
+            mOverlayTabStackDrawableScheme = overlayTabStackDrawableScheme;
         }
 
         if (mTabSwitcherAnimationTabStackDrawable != null) {

@@ -49,7 +49,6 @@ import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
@@ -592,16 +591,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public @ColorRes int getSecurityIconColorStateList() {
-        int securityLevel = getSecurityLevel();
-        int color = getPrimaryColor();
-        boolean needLightIcon = ColorUtils.shouldUseLightForegroundOnBackground(color);
+        final @ColorInt int color = getPrimaryColor();
+        final @BrandedColorScheme int brandedColorScheme =
+                OmniboxResourceProvider.getBrandedColorScheme(mContext, isIncognito(), color);
 
-        if (isIncognito() || needLightIcon) {
-            // For a dark theme color, use light icons.
-            return ThemeUtils.getThemedToolbarIconTintRes(true);
-        }
-
-        return ThemeUtils.getThemedToolbarIconTintRes(false);
+        return ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme);
     }
 
     public void notifySecurityStateChanged() {
