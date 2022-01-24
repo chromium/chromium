@@ -372,8 +372,6 @@ void BrowserServiceLacros::NewFullscreenWindowWithProfile(
 
   browser->window()->Show();
 
-  // TODO(crbug/1247638): we'd better figure out a better solution to move this
-  // special logic for web Kiosk out of this method.
   if (chromeos::LacrosService::Get()->init_params()->session_type ==
       crosapi::mojom::SessionType::kWebKioskSession) {
     KioskSessionServiceLacros::Get()->InitWebKioskSession(browser);
