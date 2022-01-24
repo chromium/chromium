@@ -11,9 +11,6 @@
 
 namespace base32 {
 
-constexpr char kEncoding[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-constexpr char kPaddingChar = '=';
-
 enum class Base32EncodePolicy {
   // Include the trailing padding in the output, when necessary.
   INCLUDE_PADDING,

@@ -15,6 +15,9 @@ namespace base32 {
 
 namespace {
 
+constexpr char kEncoding[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+constexpr char kPaddingChar = '=';
+
 // Returns a 5 bit number between [0,31] matching the provided base 32 encoded
 // character. Returns 0xff on error.
 uint8_t ReverseMapping(char input_char) {
