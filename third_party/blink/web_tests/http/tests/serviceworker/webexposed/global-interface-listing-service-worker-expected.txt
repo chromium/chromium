@@ -791,6 +791,37 @@ interface MediaCapabilities
     method constructor
     method decodingInfo
     method encodingInfo
+interface MediaStreamTrack : EventTarget
+    attribute @@toStringTag
+    getter contentHint
+    getter enabled
+    getter id
+    getter kind
+    getter label
+    getter muted
+    getter oncapturehandlechange
+    getter onended
+    getter onmute
+    getter onunmute
+    getter readyState
+    method applyConstraints
+    method clone
+    method constructor
+    method getCapabilities
+    method getCaptureHandle
+    method getConstraints
+    method getSettings
+    method stop
+    setter contentHint
+    setter enabled
+    setter oncapturehandlechange
+    setter onended
+    setter onmute
+    setter onunmute
+interface MediaStreamTrackGenerator : MediaStreamTrack
+    attribute @@toStringTag
+    getter writable
+    method constructor
 interface MessageChannel
     attribute @@toStringTag
     getter port1

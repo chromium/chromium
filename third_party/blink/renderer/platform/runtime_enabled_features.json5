@@ -1495,6 +1495,17 @@
       status: "stable",
       origin_trial_feature_name: "WebCodecs"
     },
+    {
+      // Feature added "guarding" the already launched exposure of
+      // MediaStreamTracks in the Window contexts, to allow exposure in other
+      // contexts to be feature controlled, crbug.com/c/1290274.
+      name: "MediaStreamTrackInWindow",
+      status: "stable",
+    },
+    {
+      name: "MediaStreamTrackInWorker",
+      status: "test",
+    },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {
