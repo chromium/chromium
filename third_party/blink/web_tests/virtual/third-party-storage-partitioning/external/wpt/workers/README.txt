@@ -1,0 +1,1 @@
+This suite runs worker tests with ThirdPartyStoragePartitioning enabled.
