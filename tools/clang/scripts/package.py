@@ -317,8 +317,6 @@ def main():
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a.syms',
-        'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_static.a',
-        'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_static.a',
 
         # AddressSanitizer C++ runtime.
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_cxx.a',
@@ -329,9 +327,6 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
-        'lib/clang/$V/lib/linux/libclang_rt.asan_static-aarch64-android.a',
-        'lib/clang/$V/lib/linux/libclang_rt.asan_static-arm-android.a',
-        'lib/clang/$V/lib/linux/libclang_rt.asan_static-i686-android.a',
 
         # Builtins for Android.
         'lib/clang/$V/lib/linux/libclang_rt.builtins-aarch64-android.a',
