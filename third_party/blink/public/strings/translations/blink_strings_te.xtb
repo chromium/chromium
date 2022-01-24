@@ -88,7 +88,7 @@
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="3845063161460806746">థంబ్స్‌అప్ చిహ్నం, లైక్ అని దీని అర్థం కావచ్చు</translation>
-<translation id="3846214748874656680">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="3904695548697879411">Twitter చిహ్నం</translation>
 <translation id="405782047075994056">ఎడమ వైపు బాణం చిహ్నం, వెనుకకు అని దీని అర్థం కావచ్చు</translation>
 <translation id="4103419683916926126">మిల్లీసెకన్లు</translation>
@@ -108,7 +108,7 @@
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'కి తర్వాత ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
 <translation id="4679853894970977730">కెమెరా చిహ్నం, ఫోటో తీయమని దీని అర్థం కావచ్చు</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
-<translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు పూర్తి స్క్రీన్‌ని సక్రియం చేస్తుంది</translation>
+<translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు ఫుల్-స్క్రీన్‌ను సక్రియం చేస్తుంది</translation>
 <translation id="4763480195061959176">వీడియో</translation>
 <translation id="4812940957355064477">దయచేసి సంఖ్యను నమోదు చేయండి.</translation>
 <translation id="4832245585893280119">వాతావరణ చిహ్నం</translation>
@@ -135,7 +135,7 @@
 <translation id="5378437566635403538">విస్తరించబడింది, డైలాగ్ తెరవబడింది.</translation>
 <translation id="5425179576310518467">ప్రస్తుత తేదీ</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
-<translation id="5468998798572797635">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="5468998798572797635">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5546461542133609677">అన్‌మ్యూట్ చేయి</translation>
