@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/network_time/historical_latencies_container.h"
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
@@ -244,6 +245,10 @@ class NetworkTimeTracker {
 
   // Callbacks to run when the in-progress time fetch completes.
   std::vector<base::OnceClosure> fetch_completion_callbacks_;
+
+  // Computes statistics over a sliding window of the most recent fetch
+  // latencies.
+  HistoricalLatenciesContainer historical_latencies_;
 
   base::ThreadChecker thread_checker_;
 };

@@ -536,6 +536,9 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   // between time fetches.
   base::TimeDelta latency = tick_clock_->NowTicks() - fetch_started_;
   LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
+
+  historical_latencies_.Record(latency);
+
   if (!last_fetched_time_.is_null()) {
     LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
                                  current_time - last_fetched_time_,
@@ -588,6 +591,15 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
                           magnitude);
     LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Negative",
                                 DetermineClockSkewRange(magnitude));
+  }
+
+  LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.FetchLatency",
+                        fetch_latency);
+  absl::optional<base::TimeDelta> latency_jitter =
+      historical_latencies_.StdDeviation();
+  if (latency_jitter.has_value()) {
+    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.FetchLatencyJitter",
+                          latency_jitter.value());
   }
 }
 
