@@ -55,6 +55,8 @@ static constexpr const char* kServices[] = {
     "fuchsia.process.Launcher",
     "fuchsia.settings.Display",
     "fuchsia.sysmem.Allocator",
+    "fuchsia.ui.composition.Allocator",
+    "fuchsia.ui.composition.Flatland",
     "fuchsia.ui.input3.Keyboard",
     "fuchsia.ui.scenic.Scenic",
     "fuchsia.vulkan.loader.Loader",
