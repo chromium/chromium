@@ -2,34 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getToastManager} from 'chrome://extensions/extensions.js';
+import {ExtensionsToolbarElement, getToastManager} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+// <if expr="is_mac or chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+// </if>
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 
 /** @fileoverview Suite of tests for extension-toolbar. */
-window.extension_toolbar_tests = {};
-extension_toolbar_tests.suiteName = 'ExtensionToolbarTest';
-/** @enum {string} */
-extension_toolbar_tests.TestNames = {
-  Layout: 'layout',
-  ClickHandlers: 'click handlers',
-  DevModeToggle: 'dev mode toggle',
-  KioskMode: 'kiosk mode button',
-  FailedUpdateFiresLoadError: 'failed local extension update files load error'
+const extension_toolbar_tests = {
+  suiteName: 'ExtensionToolbarTest',
+  TestNames: {
+    Layout: 'layout',
+    ClickHandlers: 'click handlers',
+    DevModeToggle: 'dev mode toggle',
+    // <if expr="chromeos_ash">
+    KioskMode: 'kiosk mode button',
+    // </if>
+    FailedUpdateFiresLoadError:
+        'failed local extension update files load error',
+  },
 };
 
-suite(extension_toolbar_tests.suiteName, function() {
-  /** @type {MockDelegate} */
-  let mockDelegate;
+Object.assign(window, {extension_toolbar_tests});
 
-  /** @type {ExtensionsToolbarElement} */
-  let toolbar;
+suite(extension_toolbar_tests.suiteName, function() {
+  let mockDelegate: TestService;
+  let toolbar: ExtensionsToolbarElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -38,9 +42,11 @@ suite(extension_toolbar_tests.suiteName, function() {
     toolbar.inDevMode = false;
     toolbar.devModeControlledByPolicy = false;
     toolbar.isChildAccount = false;
-    if (isChromeOS) {
-      toolbar.kioskEnabled = false;
-    }
+
+    // <if expr="chromeos_ash">
+    toolbar.kioskEnabled = false;
+    // </if>
+
     mockDelegate = new TestService();
     toolbar.set('delegate', mockDelegate);
 
@@ -134,19 +140,18 @@ suite(extension_toolbar_tests.suiteName, function() {
         .then(function() {
           assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
           assertFalse(
-              !!toolbar.shadowRoot.querySelector('extensions-pack-dialog'));
+              !!toolbar.shadowRoot!.querySelector('extensions-pack-dialog'));
           toolbar.$.packExtensions.click();
           flush();
           const dialog =
-              toolbar.shadowRoot.querySelector('extensions-pack-dialog');
+              toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
           assertTrue(!!dialog);
 
-          if (!isMac) {
-            const whenFocused =
-                eventToPromise('focus', toolbar.$.packExtensions);
-            dialog.$.dialog.cancel();
-            return whenFocused;
-          }
+          // <if expr="is_mac">
+          const whenFocused = eventToPromise('focus', toolbar.$.packExtensions);
+          dialog!.$.dialog.cancel();
+          return whenFocused;
+          // </if>
         });
   });
 
@@ -172,14 +177,14 @@ suite(extension_toolbar_tests.suiteName, function() {
           firedLoadError = true;
         }, {once: true});
 
-        const verifyLoadErrorFired = function(expectCalled) {
-          return new Promise((resolve, reject) => {
+        function verifyLoadErrorFired(assertCalled: boolean): Promise<void> {
+          return new Promise<void>(resolve => {
             setTimeout(() => {
-              expectEquals(expectCalled, firedLoadError);
+              assertEquals(assertCalled, firedLoadError);
               resolve();
             });
           });
-        };
+        }
 
         toolbar.$.devMode.click();
         toolbar.$.updateNow.click();
@@ -198,16 +203,16 @@ suite(extension_toolbar_tests.suiteName, function() {
             });
       });
 
-  if (isChromeOS) {
-    test(assert(extension_toolbar_tests.TestNames.KioskMode), function() {
-      const button = toolbar.$.kioskExtensions;
-      expectTrue(button.hidden);
-      toolbar.kioskEnabled = true;
-      expectFalse(button.hidden);
+  // <if expr="chromeos_ash">
+  test(assert(extension_toolbar_tests.TestNames.KioskMode), function() {
+    const button = toolbar.$.kioskExtensions;
+    assertTrue(button.hidden);
+    toolbar.kioskEnabled = true;
+    assertFalse(button.hidden);
 
-      const whenTapped = eventToPromise('kiosk-tap', toolbar);
-      button.click();
-      return whenTapped;
-    });
-  }
+    const whenTapped = eventToPromise('kiosk-tap', toolbar);
+    button.click();
+    return whenTapped;
+  });
+  // </if>
 });

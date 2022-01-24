@@ -330,4 +330,10 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-item': ExtensionsItemElement;
+  }
+}
+
 customElements.define(ExtensionsItemElement.is, ExtensionsItemElement);

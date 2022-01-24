@@ -12,13 +12,13 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {navigation, Page} from './navigation_helper.js';
 
-interface ExtensionsSidebarElement {
+export interface ExtensionsSidebarElement {
   $: {
     sectionMenu: IronSelectorElement,
   };
 }
 
-class ExtensionsSidebarElement extends PolymerElement {
+export class ExtensionsSidebarElement extends PolymerElement {
   static get is() {
     return 'extensions-sidebar';
   }
@@ -63,6 +63,12 @@ class ExtensionsSidebarElement extends PolymerElement {
 
   private onMoreExtensionsTap_() {
     chrome.metricsPrivate.recordUserAction('Options_GetMoreExtensions');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-sidebar': ExtensionsSidebarElement;
   }
 }
 

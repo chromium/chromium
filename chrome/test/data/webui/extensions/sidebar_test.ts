@@ -3,26 +3,26 @@
 // found in the LICENSE file.
 
 /** @fileoverview Suite of tests for extension-sidebar. */
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {ExtensionsSidebarElement, navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {testVisible} from './test_util.js';
 
-window.extension_sidebar_tests = {};
-extension_sidebar_tests.suiteName = 'ExtensionSidebarTest';
-
-/** @enum {string} */
-extension_sidebar_tests.TestNames = {
-  LayoutAndClickHandlers: 'layout and click handlers',
-  SetSelected: 'set selected',
+const extension_sidebar_tests = {
+  suiteName: 'ExtensionSidebarTest',
+  TestNames: {
+    LayoutAndClickHandlers: 'layout and click handlers',
+    SetSelected: 'set selected',
+  },
 };
 
+Object.assign(window, {extension_sidebar_tests});
+
 suite(extension_sidebar_tests.suiteName, function() {
-  /** @type {extensions.Sidebar} */
-  let sidebar;
+  let sidebar: ExtensionsSidebarElement;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -33,7 +33,7 @@ suite(extension_sidebar_tests.suiteName, function() {
 
   test(assert(extension_sidebar_tests.TestNames.SetSelected), function() {
     const selector = '.section-item.iron-selected';
-    expectFalse(!!sidebar.shadowRoot.querySelector(selector));
+    assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');
     document.body.innerHTML = '';
@@ -43,8 +43,8 @@ suite(extension_sidebar_tests.suiteName, function() {
     flush();
     return whenSelected
         .then(function() {
-          expectEquals(
-              sidebar.shadowRoot.querySelector(selector).id,
+          assertEquals(
+              sidebar.shadowRoot!.querySelector(selector)!.id,
               'sections-shortcuts');
 
           window.history.replaceState(undefined, '', '/');
@@ -57,8 +57,8 @@ suite(extension_sidebar_tests.suiteName, function() {
           return whenSelected;
         })
         .then(function() {
-          expectEquals(
-              sidebar.shadowRoot.querySelector(selector).id,
+          assertEquals(
+              sidebar.shadowRoot!.querySelector(selector)!.id,
               'sections-extensions');
         });
   });
@@ -84,17 +84,21 @@ suite(extension_sidebar_tests.suiteName, function() {
           currentPage = newPage;
         });
 
-        sidebar.shadowRoot.querySelector('#sections-shortcuts').click();
-        expectDeepEquals(currentPage, {page: Page.SHORTCUTS});
+        sidebar.shadowRoot!.querySelector<HTMLElement>(
+                               '#sections-shortcuts')!.click();
+        assertDeepEquals(currentPage, {page: Page.SHORTCUTS});
 
-        sidebar.shadowRoot.querySelector('#sections-extensions').click();
-        expectDeepEquals(currentPage, {page: Page.LIST});
+        sidebar.shadowRoot!.querySelector<HTMLElement>(
+                               '#sections-extensions')!.click();
+        assertDeepEquals(currentPage, {page: Page.LIST});
 
-        sidebar.shadowRoot.querySelector('#sections-site-permissions').click();
-        expectDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS});
+        sidebar.shadowRoot!
+            .querySelector<HTMLElement>('#sections-site-permissions')!.click();
+        assertDeepEquals(currentPage, {page: Page.SITE_PERMISSIONS});
 
         // Clicking on the link for the current page should close the dialog.
         sidebar.addEventListener('close-drawer', () => done());
-        sidebar.shadowRoot.querySelector('#sections-extensions').click();
+        sidebar.shadowRoot!.querySelector<HTMLElement>(
+                               '#sections-extensions')!.click();
       });
 });

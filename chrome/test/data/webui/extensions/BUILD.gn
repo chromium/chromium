@@ -4,10 +4,70 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(enable_extensions, "enable extensions check failed")
+
+# Test files that contain // <if expr> and therefore require preprocessing.
+preprocessed_files = [ "toolbar_test.ts" ]
+
+# Test files that do not require preprocessing. If adding // <if expr> to any
+# file below, move it to the list above.
+non_preprocessed_files = [
+  "activity_log_history_item_test.js",
+  "activity_log_history_test.js",
+  "activity_log_stream_item_test.js",
+  "activity_log_stream_test.js",
+  "activity_log_test.js",
+  "code_section_test.js",
+  "detail_view_test.js",
+  "error_console_test.js",
+  "error_page_test.js",
+  "extension_options_dialog_test.js",
+  "host_permissions_toggle_list_test.js",
+  "item_list_test.js",
+  "item_test.js",
+  "keyboard_shortcuts_test.js",
+  "load_error_test.js",
+  "manager_test.js",
+  "manager_test_with_activity_log_flag.js",
+  "manager_test_with_id_query_param.js",
+  "manager_unit_test.js",
+  "manager_unit_test_with_activity_log_flag.js",
+  "navigation_helper_test.js",
+  "options_dialog_test.js",
+  "pack_dialog_test.ts",
+  "runtime_host_permissions_test.js",
+  "runtime_hosts_dialog_test.js",
+  "shortcut_input_test.ts",
+  "sidebar_test.ts",
+  "test_service.ts",
+  "test_util.ts",
+  "toggle_row_test.ts",
+]
+
+if (is_chromeos_ash) {
+  non_preprocessed_files += [
+    "kiosk_mode_manager_unit_test.js",
+    "kiosk_mode_test.js",
+    "test_kiosk_browser_proxy.ts",
+  ]
+}
+
+preprocessed_folder = "$target_gen_dir/preprocessed"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocessed_folder
+  in_files = preprocessed_files
+}
+
+copy("copy") {
+  sources = non_preprocessed_files
+  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+}
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_extensions"
@@ -19,7 +79,7 @@ generate_grd("build_grdp") {
 }
 
 ts_library("build_ts") {
-  root_dir = "./"
+  root_dir = preprocessed_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   path_mappings = [
@@ -30,52 +90,16 @@ ts_library("build_ts") {
         rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                     target_gen_dir),
   ]
-  in_files = [
-    "activity_log_history_item_test.js",
-    "activity_log_history_test.js",
-    "activity_log_stream_item_test.js",
-    "activity_log_stream_test.js",
-    "activity_log_test.js",
-    "code_section_test.js",
-    "detail_view_test.js",
-    "error_console_test.js",
-    "error_page_test.js",
-    "extension_options_dialog_test.js",
-    "host_permissions_toggle_list_test.js",
-    "item_list_test.js",
-    "item_test.js",
-    "keyboard_shortcuts_test.js",
-    "load_error_test.js",
-    "manager_test.js",
-    "manager_test_with_activity_log_flag.js",
-    "manager_test_with_id_query_param.js",
-    "manager_unit_test.js",
-    "manager_unit_test_with_activity_log_flag.js",
-    "navigation_helper_test.js",
-    "options_dialog_test.js",
-    "pack_dialog_test.js",
-    "runtime_host_permissions_test.js",
-    "runtime_hosts_dialog_test.js",
-    "shortcut_input_test.js",
-    "sidebar_test.js",
-    "test_service.ts",
-    "test_util.ts",
-    "toggle_row_test.ts",
-    "toolbar_test.js",
-  ]
-
-  if (is_chromeos_ash) {
-    in_files += [
-      "kiosk_mode_manager_unit_test.js",
-      "kiosk_mode_test.js",
-      "test_kiosk_browser_proxy.ts",
-    ]
-  }
+  in_files = preprocessed_files + non_preprocessed_files
 
   deps = [ "//chrome/browser/resources/extensions:build_ts" ]
   definitions = [
     "//tools/typescript/definitions/developer_private.d.ts",
     "//tools/typescript/definitions/activity_log_private.d.ts",
   ]
-  extra_deps = [ "..:generate_definitions" ]
+  extra_deps = [
+    ":copy",
+    ":preprocess",
+    "..:generate_definitions",
+  ]
 }

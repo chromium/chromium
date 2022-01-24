@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -25,16 +26,16 @@ enum ShortcutError {
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
 
-interface ExtensionsShortcutInputElement {
+export interface ExtensionsShortcutInputElement {
   $: {
-    input: HTMLElement,
+    input: CrInputElement,
     edit: HTMLElement,
   };
 }
 
 const ExtensionsShortcutInputElementBase = I18nMixin(PolymerElement);
 
-class ExtensionsShortcutInputElement extends
+export class ExtensionsShortcutInputElement extends
     ExtensionsShortcutInputElementBase {
   static get is() {
     return 'extensions-shortcut-input';
@@ -279,6 +280,12 @@ class ExtensionsShortcutInputElement extends
     this.clearShortcut_();
     this.readonly_ = false;
     this.$.input.focus();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-shortcut-input': ExtensionsShortcutInputElement;
   }
 }
 

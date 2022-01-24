@@ -158,15 +158,14 @@ export function testVisible(
 
 /**
  * Creates an ExtensionInfo object.
- * @param opt_properties A set of properties that will be used on the resulting
+ * @param properties A set of properties that will be used on the resulting
  *     ExtensionInfo (otherwise defaults will be used).
  */
 export function createExtensionInfo(
-    opt_properties: Partial<chrome.developerPrivate.ExtensionInfo>):
+    properties?: Partial<chrome.developerPrivate.ExtensionInfo>):
     chrome.developerPrivate.ExtensionInfo {
-  const id = opt_properties && opt_properties.hasOwnProperty('id') ?
-      opt_properties['id']! :
-      'a'.repeat(32);
+  const id = properties && properties.hasOwnProperty('id') ? properties['id']! :
+                                                             'a'.repeat(32);
   const baseUrl = 'chrome-extension://' + id + '/';
   return Object.assign(
       {
@@ -213,7 +212,7 @@ export function createExtensionInfo(
         webStoreUrl: '',
         showSafeBrowsingAllowlistWarning: false,
       },
-      opt_properties);
+      properties || {});
 }
 
 /**

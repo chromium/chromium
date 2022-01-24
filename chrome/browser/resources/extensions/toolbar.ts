@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './pack_dialog.js';
 
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -30,16 +31,23 @@ export interface ToolbarDelegate {
       Promise<void>;
 }
 
-interface ExtensionsToolbarElement {
+export interface ExtensionsToolbarElement {
   $: {
     devDrawer: HTMLElement,
+    devMode: CrToggleElement,
+    loadUnpacked: HTMLElement,
     packExtensions: HTMLElement,
+    updateNow: HTMLElement,
+
+    // <if expr="chromeos_ash">
+    kioskExtensions: HTMLElement,
+    // </if>
   };
 }
 
 const ExtensionsToolbarElementBase = I18nMixin(PolymerElement);
 
-class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
+export class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
   static get is() {
     return 'extensions-toolbar';
   }
@@ -208,6 +216,12 @@ class ExtensionsToolbarElement extends ExtensionsToolbarElementBase {
               toastManager.hide();
               this.isUpdating_ = false;
             });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-toolbar': ExtensionsToolbarElement;
   }
 }
 
