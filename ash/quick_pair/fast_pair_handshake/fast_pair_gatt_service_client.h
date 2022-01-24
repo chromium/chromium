@@ -58,6 +58,9 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       base::OnceCallback<
           void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
           write_account_key_callback) = 0;
+
+  // Returns whether or not this client has an active GATT connection.
+  virtual bool IsConnected() = 0;
 };
 
 }  // namespace quick_pair

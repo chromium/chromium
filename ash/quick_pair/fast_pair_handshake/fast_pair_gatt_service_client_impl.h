@@ -66,6 +66,8 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
 
   device::BluetoothRemoteGattService* gatt_service() override;
 
+  bool IsConnected() override;
+
   void WriteRequestAsync(uint8_t message_type,
                          uint8_t flags,
                          const std::string& provider_address,

@@ -24,6 +24,8 @@ class FastPairHandshakeImpl : public FastPairHandshake {
   FastPairHandshakeImpl& operator=(const FastPairHandshakeImpl&) = delete;
   ~FastPairHandshakeImpl() override;
 
+  bool IsConnected() override;
+
  private:
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
   void OnDataEncryptorCreateAsync(

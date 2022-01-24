@@ -363,6 +363,10 @@ FastPairGattServiceClientImpl::CreatePasskeyBlock(uint8_t message_type,
   return data_to_write;
 }
 
+bool FastPairGattServiceClientImpl::IsConnected() {
+  return gatt_connection_ && gatt_connection_->IsConnected();
+}
+
 void FastPairGattServiceClientImpl::WriteRequestAsync(
     uint8_t message_type,
     uint8_t flags,

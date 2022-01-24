@@ -60,6 +60,11 @@ void FastPairHandshakeImpl::OnGattClientInitializedCallback(
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
+bool FastPairHandshakeImpl::IsConnected() {
+  return fast_pair_gatt_service_client_ &&
+         fast_pair_gatt_service_client_->IsConnected();
+}
+
 void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
     base::TimeTicks encryptor_create_start_time,
     std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor) {

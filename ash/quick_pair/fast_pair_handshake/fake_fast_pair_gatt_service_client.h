@@ -32,6 +32,9 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
 
   device::BluetoothRemoteGattService* gatt_service() override;
 
+  bool IsConnected() override;
+  void SetConnected(bool is_connected);
+
   void WriteRequestAsync(uint8_t message_type,
                          uint8_t flags,
                          const std::string& provider_address,
@@ -71,6 +74,7 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
           absl::nullopt);
 
  private:
+  bool is_connected_ = false;
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>

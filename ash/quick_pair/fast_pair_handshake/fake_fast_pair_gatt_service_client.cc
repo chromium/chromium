@@ -32,6 +32,14 @@ FakeFastPairGattServiceClient::gatt_service() {
   return nullptr;
 }
 
+bool FakeFastPairGattServiceClient::IsConnected() {
+  return is_connected_;
+}
+
+void FakeFastPairGattServiceClient::SetConnected(bool is_connected) {
+  is_connected_ = is_connected;
+}
+
 void FakeFastPairGattServiceClient::WriteRequestAsync(
     uint8_t message_type,
     uint8_t flags,

@@ -26,7 +26,13 @@ class FakeFastPairHandshake : public FastPairHandshake {
   FakeFastPairHandshake& operator=(const FakeFastPairHandshake&) = delete;
   ~FakeFastPairHandshake() override;
 
+  bool IsConnected() override;
+  void SetConnected(bool is_connected);
+
   void InvokeCallback(absl::optional<PairFailure> failure = absl::nullopt);
+
+ private:
+  bool is_connected_ = false;
 };
 
 }  // namespace quick_pair
