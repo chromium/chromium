@@ -8,8 +8,8 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
@@ -334,7 +334,7 @@ class ChromeOSPerUserManagedDeviceTest
 
   // Policy and device state.
   policy::DevicePolicyCrosTestHelper device_policy_helper_;
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

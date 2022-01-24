@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,13 +58,11 @@ void LoginPolicyTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 
 void LoginPolicyTestBase::SetUpInProcessBrowserTestFixture() {
   OobeBaseTest::SetUpInProcessBrowserTestFixture();
-  base::DictionaryValue mandatory;
-  GetMandatoryPoliciesValue(&mandatory);
-  base::DictionaryValue recommended;
-  GetRecommendedPoliciesValue(&recommended);
+  enterprise_management::CloudPolicySettings settings;
+  GetPolicySettings(&settings);
   user_policy_helper_ = std::make_unique<UserPolicyTestHelper>(
-      account_id().GetUserEmail(), &local_policy_server_);
-  user_policy_helper_->SetPolicy(mandatory, recommended);
+      account_id().GetUserEmail(), &policy_test_server_mixin_);
+  user_policy_helper_->SetPolicy(settings);
 }
 
 void LoginPolicyTestBase::SetUpOnMainThread() {
@@ -90,11 +89,8 @@ Profile* LoginPolicyTestBase::GetProfileForActiveUser() {
   return ash::ProfileHelper::Get()->GetProfileByUser(user);
 }
 
-void LoginPolicyTestBase::GetMandatoryPoliciesValue(
-    base::DictionaryValue* policy) const {}
-
-void LoginPolicyTestBase::GetRecommendedPoliciesValue(
-    base::DictionaryValue* policy) const {}
+void LoginPolicyTestBase::GetPolicySettings(
+    enterprise_management::CloudPolicySettings* settings) const {}
 
 void LoginPolicyTestBase::SetMergeSessionParams() {
   FakeGaia::MergeSessionParams params;

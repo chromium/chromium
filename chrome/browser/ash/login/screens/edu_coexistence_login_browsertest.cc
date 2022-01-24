@@ -6,8 +6,8 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -148,7 +148,7 @@ class EduCoexistenceLoginChildBrowserTest
   }
 
  private:
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),

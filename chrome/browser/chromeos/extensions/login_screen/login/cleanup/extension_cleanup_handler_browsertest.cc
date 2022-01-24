@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -84,7 +84,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
     device_local_accounts->set_auto_login_id(kAccountId);
     device_local_accounts->set_auto_login_delay(0);
     RefreshDevicePolicy();
-    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
+    policy_test_server_mixin_.UpdateDevicePolicy(proto);
   }
 
   void AddExemptExtensionToUserPolicyBuilder(
@@ -194,7 +194,7 @@ class ExtensionCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
     }
   }
 
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 
@@ -222,8 +222,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCleanupHandlerTest,
   // Force install an app and extension. The extension is exempt from the
   // cleanup procedure. This also waits for the app and extension to be
   // installed.
-  extension_force_install_mixin_.InitWithLocalPolicyMixin(
-      profile, &local_policy_mixin_, &user_policy_builder, kAccountId,
+  extension_force_install_mixin_.InitWithEmbeddedPolicyMixin(
+      profile, &policy_test_server_mixin_, &user_policy_builder, kAccountId,
       policy::dm_protocol::kChromePublicAccountPolicyType);
   ForceInstallExtensionCrx(kAppCrxPath);
   ForceInstallExtensionCrx(kExemptExtensionCrxPath);

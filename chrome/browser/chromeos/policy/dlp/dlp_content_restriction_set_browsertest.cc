@@ -49,11 +49,10 @@ class DlpContentRestrictionSetBrowserTest : public LoginPolicyTestBase {
     std::string json;
     base::JSONWriter::Write(rules, &json);
 
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    enterprise_management::CloudPolicySettings policy;
+    policy.mutable_dataleakpreventionruleslist()->set_value(json);
     user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
+        policy, ProfileManager::GetActiveUserProfile());
   }
 };
 

@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -148,7 +148,7 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
 
  private:
   base::DictionaryValue config_;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {

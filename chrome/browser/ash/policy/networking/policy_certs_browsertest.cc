@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -58,6 +59,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -782,10 +784,10 @@ class PolicyProvidedCertsOnUserSessionInitTest : public LoginPolicyTestBase {
  protected:
   PolicyProvidedCertsOnUserSessionInitTest() {}
 
-  void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override {
+  void GetPolicySettings(
+      enterprise_management::CloudPolicySettings* policy) const override {
     std::string user_policy_blob = GetTestCertsFileContents(kRootCaCertOnc);
-    policy->SetKey(key::kOpenNetworkConfiguration,
-                   base::Value(user_policy_blob));
+    policy->mutable_opennetworkconfiguration()->set_value(user_policy_blob);
   }
 
   Profile* active_user_profile() {

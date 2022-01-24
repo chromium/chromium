@@ -6,12 +6,12 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_helper_mixin.h"
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/hid_controller_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -132,7 +132,7 @@ class OobeConfigurationEnrollmentTest : public OobeConfigurationTest {
   ~OobeConfigurationEnrollmentTest() override = default;
 
  protected:
-  LocalPolicyTestServerMixin policy_server_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_{&mixin_host_};
   // We need fake gaia to fetch device local account tokens.
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};

@@ -54,13 +54,6 @@ static_library("test_support") {
     "test_server_helpers.h",
   ]
 
-  if (!is_android) {
-    sources += [
-      "local_policy_test_server.cc",
-      "local_policy_test_server.h",
-    ]
-  }
-
   public_deps = [ "//net:test_support" ]
   deps = [
     "//base",

@@ -82,11 +82,9 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
 
   std::string value;
   ASSERT_TRUE(base::JSONWriter::Write(*metadata_, &value));
-  std::unique_ptr<base::DictionaryValue> policy =
-      std::make_unique<base::DictionaryValue>();
-  policy->SetKey(key::kWallpaperImage, base::Value(value));
-  user_policy_helper()->SetPolicyAndWait(*policy, base::DictionaryValue(),
-                                         profile);
+  enterprise_management::CloudPolicySettings policy;
+  policy.mutable_wallpaperimage()->set_value(value);
+  user_policy_helper()->SetPolicyAndWait(policy, profile);
 
   UserCloudPolicyManagerAsh* policy_manager =
       profile->GetUserCloudPolicyManagerAsh();

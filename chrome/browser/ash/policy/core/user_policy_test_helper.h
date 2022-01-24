@@ -14,12 +14,7 @@ class Profile;
 
 namespace ash {
 class EmbeddedPolicyTestServerMixin;
-class LocalPolicyTestServerMixin;
 }  // namespace ash
-
-namespace base {
-class Value;
-}
 
 namespace enterprise_management {
 class CloudPolicySettings;
@@ -31,8 +26,6 @@ namespace policy {
 // BrowserTest.
 class UserPolicyTestHelper {
  public:
-  UserPolicyTestHelper(const std::string& account_id,
-                       ash::LocalPolicyTestServerMixin* local_policy_server);
   UserPolicyTestHelper(
       const std::string& account_id,
       ash::EmbeddedPolicyTestServerMixin* embedded_policy_server);
@@ -42,9 +35,6 @@ class UserPolicyTestHelper {
 
   virtual ~UserPolicyTestHelper();
 
-  // Can only be used when constructed with LocalPolicyTestServerMixin.
-  void SetPolicy(const base::Value& mandatory, const base::Value& recommended);
-  // Can only be used when constructed with EmbeddedPolicyTestServerMixin.
   void SetPolicy(const enterprise_management::CloudPolicySettings& policy);
 
   // Can be optionally used to wait for the initial policy to be applied to the
@@ -53,15 +43,7 @@ class UserPolicyTestHelper {
   void WaitForInitialPolicy(Profile* profile);
 
   // Updates the policy test server with the given policy. Then calls
-  // RefreshPolicyAndWait(). Can only be used when constructed with
-  // LocalPolicyTestServerMixin.
-  void SetPolicyAndWait(const base::Value& mandatory_policy,
-                        const base::Value& recommended_policy,
-                        Profile* profile);
-
-  // Updates the policy test server with the given policy. Then calls
-  // RefreshPolicyAndWait(). Can only be used when constructed with
-  // EmbeddedPolicyTestServerMixin.
+  // RefreshPolicyAndWait().
   void SetPolicyAndWait(
       const enterprise_management::CloudPolicySettings& policy,
       Profile* profile);
@@ -71,7 +53,6 @@ class UserPolicyTestHelper {
 
  private:
   const std::string account_id_;
-  ash::LocalPolicyTestServerMixin* local_policy_server_ = nullptr;
   ash::EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
 };
 

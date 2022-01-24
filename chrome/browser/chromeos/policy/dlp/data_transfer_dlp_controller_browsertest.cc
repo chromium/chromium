@@ -30,6 +30,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -176,11 +177,10 @@ class DataTransferDlpBrowserTest : public LoginPolicyTestBase {
     std::string json;
     base::JSONWriter::Write(rules, &json);
 
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    enterprise_management::CloudPolicySettings policy;
+    policy.mutable_dataleakpreventionruleslist()->set_value(json);
     user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
+        policy, ProfileManager::GetActiveUserProfile());
   }
 
   void SetupCrostini() {

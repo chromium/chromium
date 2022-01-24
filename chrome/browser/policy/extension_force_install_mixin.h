@@ -38,8 +38,8 @@ class MockConfigurationPolicyProvider;
 
 namespace ash {
 class DeviceStateMixin;
-class LocalPolicyTestServerMixin;
-}
+class EmbeddedPolicyTestServerMixin;
+}  // namespace ash
 
 namespace policy {
 class DevicePolicyCrosTestHelper;
@@ -128,9 +128,9 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   void InitWithDevicePolicyCrosTestHelper(
       Profile* profile,
       policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper);
-  void InitWithLocalPolicyMixin(
+  void InitWithEmbeddedPolicyMixin(
       Profile* profile,
-      ash::LocalPolicyTestServerMixin* local_policy_mixin,
+      ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin,
       policy::UserPolicyBuilder* user_policy_builder,
       const std::string& account_id,
       const std::string& policy_type);
@@ -243,9 +243,10 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DeviceStateMixin* device_state_mixin_ = nullptr;
   policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper_ = nullptr;
-  ash::LocalPolicyTestServerMixin* local_policy_mixin_ = nullptr;
+  ash::EmbeddedPolicyTestServerMixin* policy_test_server_mixin_ = nullptr;
   policy::UserPolicyBuilder* user_policy_builder_ = nullptr;
-  // |account_id_| and |policy_type_| are only used with |local_policy_mixin_|.
+  // |account_id_| and |policy_type_| are only used with
+  // |policy_test_server_mixin_|.
   std::string account_id_;
   std::string policy_type_;
 #endif

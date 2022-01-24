@@ -19,9 +19,9 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/marketing_backend_connector.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -601,7 +601,7 @@ class MarketingOptInScreenTestChildUser : public MarketingOptInScreenTest {
   void PerformLogin() override { login_manager_mixin_.LoginAsNewChildUser(); }
 
  private:
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),

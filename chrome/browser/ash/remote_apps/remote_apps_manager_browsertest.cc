@@ -23,7 +23,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -288,7 +288,7 @@ class RemoteAppsManagerBrowsertest
   RemoteAppsManager* manager_ = nullptr;
   MockImageDownloader* image_downloader_ = nullptr;
   Profile* profile_ = nullptr;
-  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {

@@ -3763,8 +3763,6 @@ static_library("test_support") {
     "../ash/login/test/fake_gaia_mixin.h",
     "../ash/login/test/js_checker.cc",
     "../ash/login/test/js_checker.h",
-    "../ash/login/test/local_policy_test_server_mixin.cc",
-    "../ash/login/test/local_policy_test_server_mixin.h",
     "../ash/login/test/logged_in_user_mixin.cc",
     "../ash/login/test/logged_in_user_mixin.h",
     "../ash/login/test/login_manager_mixin.cc",

@@ -30,11 +30,10 @@ class DlpRulesPolicyTest : public LoginPolicyTestBase {
     std::string json;
     base::JSONWriter::Write(rules, &json);
 
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    enterprise_management::CloudPolicySettings policy;
+    policy.mutable_dataleakpreventionruleslist()->set_value(json);
     user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
+        policy, ProfileManager::GetActiveUserProfile());
   }
 };
 
@@ -65,10 +64,9 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
 }
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingEnabled) {
-  base::DictionaryValue policy;
-  policy.SetBoolKey(key::kDataLeakPreventionReportingEnabled, true);
-  user_policy_helper()->SetPolicy(policy,
-                                  /*recommended=*/base::DictionaryValue());
+  enterprise_management::CloudPolicySettings policy;
+  policy.mutable_dataleakpreventionreportingenabled()->set_value(true);
+  user_policy_helper()->SetPolicy(policy);
 
   SkipToLoginScreen();
   LogIn();
@@ -80,10 +78,9 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingEnabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingDisabled) {
-  base::DictionaryValue policy;
-  policy.SetBoolKey(key::kDataLeakPreventionReportingEnabled, false);
-  user_policy_helper()->SetPolicy(policy,
-                                  /*recommended=*/base::DictionaryValue());
+  enterprise_management::CloudPolicySettings policy;
+  policy.mutable_dataleakpreventionreportingenabled()->set_value(false);
+  user_policy_helper()->SetPolicy(policy);
 
   SkipToLoginScreen();
   LogIn();

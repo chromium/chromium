@@ -13,9 +13,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -54,7 +54,7 @@ class PinSetupScreenTest
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
       policy_server_ =
-          std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
+          std::make_unique<EmbeddedPolicyTestServerMixin>(&mixin_host_);
       user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
           &mixin_host_, test_child_user_.account_id, policy_server_.get());
     }
@@ -133,7 +133,7 @@ class PinSetupScreenTest
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   std::unique_ptr<FakeGaiaMixin> fake_gaia_;
-  std::unique_ptr<LocalPolicyTestServerMixin> policy_server_;
+  std::unique_ptr<EmbeddedPolicyTestServerMixin> policy_server_;
   std::unique_ptr<UserPolicyMixin> user_policy_mixin_;
 
  private:
@@ -349,7 +349,8 @@ class PinSetupForManagedUsers : public PinForLoginSetupScreenTest {
   PinSetupForManagedUsers() : PinForLoginSetupScreenTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kPinSetupForManagedUsers);
-    policy_server_ = std::make_unique<LocalPolicyTestServerMixin>(&mixin_host_);
+    policy_server_ =
+        std::make_unique<EmbeddedPolicyTestServerMixin>(&mixin_host_);
     fake_gaia_ = std::make_unique<FakeGaiaMixin>(&mixin_host_);
     user_policy_mixin_ = std::make_unique<UserPolicyMixin>(
         &mixin_host_, managed_test_user_.account_id, policy_server_.get());

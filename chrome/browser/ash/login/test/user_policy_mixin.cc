@@ -9,10 +9,10 @@
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
@@ -27,13 +27,6 @@ namespace ash {
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id)
     : InProcessBrowserTestMixin(mixin_host), account_id_(account_id) {}
-
-UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
-                                 const AccountId& account_id,
-                                 LocalPolicyTestServerMixin* policy_server)
-    : InProcessBrowserTestMixin(mixin_host),
-      account_id_(account_id),
-      local_policy_server_(policy_server) {}
 
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id,
@@ -111,10 +104,7 @@ void UserPolicyMixin::SetUpPolicy() {
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id, policy_blob);
 
-  if (local_policy_server_) {
-    local_policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
-                                           account_id_.GetUserEmail());
-  } else if (embedded_policy_server_) {
+  if (embedded_policy_server_) {
     embedded_policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
                                               account_id_.GetUserEmail());
   }

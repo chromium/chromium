@@ -41,18 +41,19 @@ class RestoreOnStartupTest : public LoginPolicyTestBase {
   RestoreOnStartupTest& operator=(const RestoreOnStartupTest&) = delete;
 
   // LoginPolicyTestBase:
-  void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override;
+  void GetPolicySettings(
+      enterprise_management::CloudPolicySettings* policy) const override;
 
   void VerifyStartUpURLs();
 };
 
-void RestoreOnStartupTest::GetMandatoryPoliciesValue(
-    base::DictionaryValue* policy) const {
-  policy->SetIntKey(key::kRestoreOnStartup, SessionStartupPref::kPrefValueURLs);
-  base::ListValue urls;
-  urls.Append(kStartUpURL1);
-  urls.Append(kStartUpURL2);
-  policy->SetKey(key::kRestoreOnStartupURLs, std::move(urls));
+void RestoreOnStartupTest::GetPolicySettings(
+    enterprise_management::CloudPolicySettings* policy) const {
+  policy->mutable_restoreonstartup()->set_value(
+      SessionStartupPref::kPrefValueURLs);
+  auto* urls = policy->mutable_restoreonstartupurls()->mutable_value();
+  urls->add_entries(kStartUpURL1);
+  urls->add_entries(kStartUpURL2);
 }
 
 void RestoreOnStartupTest::VerifyStartUpURLs() {

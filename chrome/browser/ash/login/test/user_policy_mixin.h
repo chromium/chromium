@@ -15,7 +15,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 
 namespace ash {
-class LocalPolicyTestServerMixin;
 class EmbeddedPolicyTestServerMixin;
 
 // Mixin for setting up user policy for a test user.
@@ -26,9 +25,6 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
  public:
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id);
-  UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
-                  const AccountId& account_id,
-                  LocalPolicyTestServerMixin* policy_server);
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id,
                   EmbeddedPolicyTestServerMixin* policy_server);
@@ -73,7 +69,6 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   // Policy server that can optionally be passed into UserPolicyMixin. If set
   // user policy changes done by RequestPolicyUpdate() will also be forwarded
   // to the policy server.
-  LocalPolicyTestServerMixin* local_policy_server_ = nullptr;
   EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
 
   policy::UserPolicyBuilder user_policy_builder_;
