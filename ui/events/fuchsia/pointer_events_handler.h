@@ -104,15 +104,19 @@ class EVENTS_EXPORT PointerEventsHandler {
   fit::function<void(std::vector<fuchsia::ui::pointer::MouseEvent>)>
       mouse_responder_;
 
-  // The set of mouse devices that are currently interacting with the UI with
-  // this high-level algorithm:
+  // Each MouseDeviceId maps to the bitmap of currently pressed buttons for that
+  // mouse. For example, if the 11th bit is set in a given |mouse_down[id]|,
+  // then the left mouse button is pressed, since EF_LEFT_MOUSE_BUTTON == 1 <<
+  // 11, as defined in ui/events/event_constants.h.
+  //
+  // The high level algorithm for any given mouse and button is:
   //   if !mouse_down[id] && !button then: change = ET_MOUSE_MOVED
   //   if !mouse_down[id] &&  button then: change = ET_MOUSE_PRESSED;
-  //       mouse_down.add(id)
+  //       mouse_down[id] |= button // sets button bit to 1
   //   if  mouse_down[id] &&  button then: change = ET_MOUSE_DRAGGED
   //   if  mouse_down[id] && !button then: change = ET_MOUSE_RELEASED;
-  //       mouse_down.remove(id)
-  base::flat_set<MouseDeviceId> mouse_down_;
+  //       mouse_down[id] ^= button // sets button bit to 0
+  base::flat_map<MouseDeviceId, /*pressed_buttons_flags=*/int> mouse_down_;
 
   // For each mouse device, its device-specific information, such as mouse
   // button priority order.

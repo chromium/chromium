@@ -68,6 +68,28 @@ bool HasValidMouseSample(const fup::MouseEvent& event) {
   return true;
 }
 
+inline int FuchsiaButtonVectorToChromeButtonBitmap(
+    const std::vector<uint8_t>& pressed_buttons,
+    const std::vector<uint8_t>& possible_buttons) {
+  int result = 0;
+  const size_t num_buttons = possible_buttons.size();
+
+  for (auto button : pressed_buttons) {
+    // 0 maps to kPrimaryButton, and so on.
+    if (num_buttons > 0 && button == possible_buttons[0]) {
+      result |= EF_LEFT_MOUSE_BUTTON;
+    }
+    if (num_buttons > 1 && button == possible_buttons[1]) {
+      result |= EF_RIGHT_MOUSE_BUTTON;
+    }
+    if (num_buttons > 2 && button == possible_buttons[2]) {
+      result |= EF_MIDDLE_MOUSE_BUTTON;
+    }
+  }
+
+  return result;
+}
+
 std::array<float, 2> ViewportToViewCoordinates(
     std::array<float, 2> viewport_coordinates,
     const std::array<float, 9>& viewport_to_view_transform) {
@@ -128,28 +150,6 @@ std::array<float, 2> ClampToViewSpace(const float x,
   return {clamped_x, clamped_y};
 }
 
-EventType ComputeMouseEventType(bool any_button_down,
-                                base::flat_set<uint32_t>& mouse_down,
-                                uint32_t id) {
-  bool mouse_is_down = mouse_down.count(id);
-  if (!mouse_is_down && !any_button_down) {
-    return ET_MOUSE_MOVED;
-  } else if (!mouse_is_down && any_button_down) {
-    mouse_down.insert(id);
-    return ET_MOUSE_PRESSED;
-  } else if (mouse_is_down && any_button_down) {
-    return ET_MOUSE_DRAGGED;
-  } else if (mouse_is_down && !any_button_down) {
-    mouse_down.erase(id);
-    return ET_MOUSE_RELEASED;
-  }
-
-  // TODO(fxbug.dev/88581): Compute ET_MOUSE_ENTERED and ET_MOUSE_EXITED types.
-
-  NOTREACHED();
-  return ET_MOUSE_RELEASED;
-}
-
 // It returns a "draft" because the coordinates are logical. FlatlandWindow
 // might apply view pixel ratio to obtain physical coordinates.
 //
@@ -203,6 +203,8 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
 // event's coordinate to start within the logical view.
 MouseEvent CreateMouseEventDraft(const fup::MouseEvent& event,
                                  const EventType event_type,
+                                 const int pressed_buttons_flags,
+                                 const int changed_buttons_flags,
                                  const fup::ViewParameters& view_parameters,
                                  const fup::MouseDeviceInfo& device_info) {
   DCHECK(HasValidMouseSample(event)) << "precondition";
@@ -220,31 +222,13 @@ MouseEvent CreateMouseEventDraft(const fup::MouseEvent& event,
     logical = ClampToViewSpace(logical[0], logical[1], view_parameters);
   }
 
-  int buttons_flags = 0;
-  if (sample.has_pressed_buttons()) {
-    const auto& pressed = sample.pressed_buttons();
-    for (auto& button : pressed) {
-      DCHECK(device_info.has_buttons()) << "API guarantee";
-      // 0 maps to kPrimaryButton, and so on.
-      if (button == device_info.buttons()[0]) {
-        buttons_flags |= EF_LEFT_MOUSE_BUTTON;
-      }
-      if (button == device_info.buttons()[1]) {
-        buttons_flags |= EF_RIGHT_MOUSE_BUTTON;
-      }
-      if (button == device_info.buttons()[2]) {
-        buttons_flags |= EF_MIDDLE_MOUSE_BUTTON;
-      }
-    }
-    DCHECK(buttons_flags != 0);
-  }
-
   // TODO(fxbug.dev/88580): Use ui::MouseWheelEvent to signal scroll.
 
   return MouseEvent(event_type, gfx::PointF(logical[0], logical[1]),
                     gfx::PointF(sample.position_in_viewport()[0],
                                 sample.position_in_viewport()[1]),
-                    timestamp, buttons_flags, buttons_flags, pointer_details);
+                    timestamp, pressed_buttons_flags, changed_buttons_flags,
+                    pointer_details);
 }
 
 }  // namespace
@@ -362,16 +346,65 @@ void PointerEventsHandler::OnMouseSourceWatchResult(
     if (HasValidMouseSample(event)) {
       const auto& sample = event.pointer_sample();
       const auto& id = sample.device_id();
-      const bool any_button_down = sample.has_pressed_buttons();
       DCHECK(mouse_view_parameters_.has_value()) << "API guarantee";
       DCHECK(mouse_device_info_.count(id) > 0) << "API guarantee";
 
-      const auto event_type =
-          ComputeMouseEventType(any_button_down, mouse_down_, id);
-      auto draft = CreateMouseEventDraft(event, event_type,
-                                         mouse_view_parameters_.value(),
-                                         mouse_device_info_[id]);
-      event_callback_.Run(&draft);
+      int pressed_buttons =
+          sample.has_pressed_buttons()
+              ? FuchsiaButtonVectorToChromeButtonBitmap(
+                    sample.pressed_buttons(), mouse_device_info_[id].buttons())
+              : 0;
+      int previous_buttons = mouse_down_[id];
+      int changed_buttons = pressed_buttons ^ previous_buttons;
+
+      // Update mouse_down_ for the next Fuchsia event.
+      mouse_down_[id] = pressed_buttons;
+
+      // Handle the default case: moved buttons.
+      // This is when there are no buttons pressed either previously or
+      // currently.
+      if (changed_buttons == 0 && pressed_buttons == 0) {
+        // Handle the moved case.
+        auto draft = CreateMouseEventDraft(
+            event, ET_MOUSE_MOVED, pressed_buttons, changed_buttons,
+            mouse_view_parameters_.value(), mouse_device_info_[id]);
+        event_callback_.Run(&draft);
+      } else {
+        // Iterate through possible mouse buttons and potentially emit an event
+        // for each one.
+        for (int button = EF_LEFT_MOUSE_BUTTON; button <= EF_RIGHT_MOUSE_BUTTON;
+             button = button << 1) {
+          DCHECK(button == EF_LEFT_MOUSE_BUTTON ||
+                 button == EF_MIDDLE_MOUSE_BUTTON ||
+                 button == EF_RIGHT_MOUSE_BUTTON);
+          bool prev_down = previous_buttons & button;
+          bool curr_down = pressed_buttons & button;
+
+          if (!prev_down && !curr_down) {
+            // We already handled move events and don't want to send extraneous
+            // ones.
+            continue;
+          } else if (!prev_down && curr_down) {
+            auto event_type = ET_MOUSE_PRESSED;
+            auto draft = CreateMouseEventDraft(
+                event, event_type, button, changed_buttons,
+                mouse_view_parameters_.value(), mouse_device_info_[id]);
+            event_callback_.Run(&draft);
+          } else if (prev_down && curr_down) {
+            auto event_type = ET_MOUSE_DRAGGED;
+            auto draft = CreateMouseEventDraft(
+                event, event_type, button, changed_buttons,
+                mouse_view_parameters_.value(), mouse_device_info_[id]);
+            event_callback_.Run(&draft);
+          } else if (prev_down && !curr_down) {
+            auto event_type = ET_MOUSE_RELEASED;
+            auto draft = CreateMouseEventDraft(
+                event, event_type, button, changed_buttons,
+                mouse_view_parameters_.value(), mouse_device_info_[id]);
+            event_callback_.Run(&draft);
+          }
+        }
+      }
     }
   }
 

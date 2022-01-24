@@ -23,6 +23,7 @@
 #include "ui/events/fuchsia/fakes/fake_mouse_source.h"
 #include "ui/events/fuchsia/fakes/fake_touch_source.h"
 #include "ui/events/fuchsia/fakes/pointer_event_utility.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 namespace {
@@ -174,7 +175,7 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventTypesAreSynthesized) {
 
   ASSERT_EQ(mouse_events.size(), 1u);
   EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_RELEASED);
-  EXPECT_EQ(mouse_events[0].flags(), EF_NONE);
+  EXPECT_EQ(mouse_events[0].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 
   // Release Fuchsia button -> Chrome ET_MOUSE_MOVED
@@ -224,9 +225,11 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagsAreSynthesized) {
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
 
-  ASSERT_EQ(mouse_events.size(), 1u);
-  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_DRAGGED);
+  ASSERT_EQ(mouse_events.size(), 2u);
+  EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
   EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_RELEASED);
+  EXPECT_EQ(mouse_events[1].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 }
 
@@ -238,8 +241,8 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
       }));
   RunLoopUntilIdle();  // Server gets watch call.
 
-  // Fuchsia button press -> Chrome ET_MOUSE_PRESSED and EF_LEFT_MOUSE_BUTTON
-  // with EF_RIGHT_MOUSE_BUTTON
+  // Fuchsia button press -> Chrome ET_MOUSE_PRESSED on EF_LEFT_MOUSE_BUTTON
+  // and EF_RIGHT_MOUSE_BUTTON
   std::vector<fup::MouseEvent> events =
       MouseEventBuilder()
           .AddTime(1111789u)
@@ -250,10 +253,11 @@ TEST_F(PointerEventsHandlerTest, Phase_ChromeMouseEventFlagCombo) {
   mouse_source_->ScheduleCallback(std::move(events));
   RunLoopUntilIdle();
 
-  ASSERT_EQ(mouse_events.size(), 1u);
+  ASSERT_EQ(mouse_events.size(), 2u);
   EXPECT_EQ(mouse_events[0].type(), ET_MOUSE_PRESSED);
-  EXPECT_EQ(mouse_events[0].flags(),
-            EF_LEFT_MOUSE_BUTTON | EF_RIGHT_MOUSE_BUTTON);
+  EXPECT_EQ(mouse_events[0].flags(), EF_LEFT_MOUSE_BUTTON);
+  EXPECT_EQ(mouse_events[1].type(), ET_MOUSE_PRESSED);
+  EXPECT_EQ(mouse_events[1].flags(), EF_RIGHT_MOUSE_BUTTON);
   mouse_events.clear();
 }
 
