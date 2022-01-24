@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
@@ -63,6 +64,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   void FindFirstPartySetOwner(
       const net::SchemefulSite& site,
       base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+      const override;
+  void FindFirstPartySetOwners(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
       const override;
   void RetrieveFirstPartySets(
       base::OnceCallback<void(

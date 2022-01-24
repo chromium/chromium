@@ -263,6 +263,21 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   return FindOwner(site, /*infer_singleton_sets=*/false);
 }
 
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
+FirstPartySets::FindOwners(
+    const base::flat_set<net::SchemefulSite>& sites) const {
+  std::vector<std::pair<net::SchemefulSite, net::SchemefulSite>>
+      sites_to_owners;
+  for (const net::SchemefulSite& site : sites) {
+    const absl::optional<net::SchemefulSite> owner = FindOwner(site);
+    if (owner.has_value()) {
+      sites_to_owners.emplace_back(site, owner.value());
+    }
+  }
+
+  return sites_to_owners;
+}
+
 void FirstPartySets::Sets(
     base::OnceCallback<
         void(base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>

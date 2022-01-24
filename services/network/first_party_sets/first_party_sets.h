@@ -97,12 +97,22 @@ class FirstPartySets {
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
 
-  // Returns nullopt if First-Party Sets are disabled or if the input is not in
+  // Returns nullopt if First-Party Sets is disabled or if the input is not in
   // a nontrivial set.
-  // If FPS are enabled and the input site is in a nontrivial set, then this
+  // If FPS is enabled and the input site is in a nontrivial set, then this
   // returns the owner site of that set.
   const absl::optional<net::SchemefulSite> FindOwner(
       const net::SchemefulSite& site) const;
+
+  // Batched version of `FindOwner`. Returns the mapping of sites to owners for
+  // the given input sites (if an owner exists).
+  //
+  // When FPS is disabled, returns an empty map.
+  // When FPS is enabled, this maps each input site to its owner (if one
+  // exists), and returns the resulting mapping. If a site isn't in a
+  // non-trivial First-Party Set, it is not added to the output map.
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> FindOwners(
+      const base::flat_set<net::SchemefulSite>& sites) const;
 
  private:
   // Returns whether the `site` is same-party with the `party_context`, and

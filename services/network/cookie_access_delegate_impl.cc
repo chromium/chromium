@@ -8,6 +8,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -82,6 +83,18 @@ void CookieAccessDelegateImpl::FindFirstPartySetOwner(
     return;
   }
   std::move(callback).Run(first_party_sets_->FindOwner(site));
+}
+
+void CookieAccessDelegateImpl::FindFirstPartySetOwners(
+    const base::flat_set<net::SchemefulSite>& sites,
+    base::OnceCallback<
+        void(base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
+    const {
+  if (!first_party_sets_) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::move(callback).Run(first_party_sets_->FindOwners(sites));
 }
 
 void CookieAccessDelegateImpl::RetrieveFirstPartySets(

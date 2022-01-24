@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/canonical_cookie.h"
@@ -69,6 +70,17 @@ class NET_EXPORT CookieAccessDelegate {
   virtual void FindFirstPartySetOwner(
       const net::SchemefulSite& site,
       base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
+      const = 0;
+
+  // Computes the owners of a set of sites' First-Party Sets if the site are in
+  // non-trivial sets. If a given site is not in a non-trivial set, the output
+  // does not contain a corresponding owner.
+  //
+  // `callback` may be invoked either synchronously or asynchronously.
+  virtual void FindFirstPartySetOwners(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(
+          base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
       const = 0;
 
   // Creates a CookiePartitionKey that takes whether the top-frame site is in a

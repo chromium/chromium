@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
@@ -49,6 +50,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const net::SchemefulSite& site,
       base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
       const override;
+  void FindFirstPartySetOwners(
+      const base::flat_set<SchemefulSite>& sites,
+      base::OnceCallback<void(base::flat_map<SchemefulSite, SchemefulSite>)>
+          callback) const override;
   void RetrieveFirstPartySets(
       base::OnceCallback<void(
           base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
@@ -81,6 +86,11 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
  private:
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
+
+  // Invokes the given `callback` synchronously or asynchronously, depending on
+  // the configuration of this instance.
+  template <class T>
+  void RunMaybeAsync(T result, base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;
