@@ -149,6 +149,51 @@ static CSSValue* ParseSimpleLengthValue(CSSPropertyID property_id,
   return CSSNumericLiteralValue::Create(number, unit);
 }
 
+template <typename CharacterType>
+static inline bool ParseSimpleAngle(const CharacterType* characters,
+                                    unsigned length,
+                                    CSSPrimitiveValue::UnitType& unit,
+                                    double& number) {
+  if (length > 3 && (characters[length - 3] | 0x20) == 'd' &&
+      (characters[length - 2] | 0x20) == 'e' &&
+      (characters[length - 1] | 0x20) == 'g') {
+    length -= 3;
+    unit = CSSPrimitiveValue::UnitType::kDegrees;
+  } else if (length > 4 && (characters[length - 4] | 0x20) == 'g' &&
+             (characters[length - 3] | 0x20) == 'r' &&
+             (characters[length - 2] | 0x20) == 'a' &&
+             (characters[length - 1] | 0x20) ==
+                 'd') {  // Note: 'grad' must be checked before 'rad'.
+    length -= 4;
+    unit = CSSPrimitiveValue::UnitType::kGradians;
+  } else if (length > 3 && (characters[length - 3] | 0x20) == 'r' &&
+             (characters[length - 2] | 0x20) == 'a' &&
+             (characters[length - 1] | 0x20) == 'd') {
+    length -= 3;
+    unit = CSSPrimitiveValue::UnitType::kRadians;
+  } else if (length > 4 && (characters[length - 4] | 0x20) == 't' &&
+             (characters[length - 3] | 0x20) == 'u' &&
+             (characters[length - 2] | 0x20) == 'r' &&
+             (characters[length - 1] | 0x20) == 'n') {
+    length -= 4;
+    unit = CSSPrimitiveValue::UnitType::kTurns;
+  } else {
+    // Only valid for zero (we'll check that in the caller).
+    unit = CSSPrimitiveValue::UnitType::kNumber;
+  }
+
+  // We rely on charactersToDouble for validation as well. The function
+  // will set "ok" to "false" if the entire passed-in character range does
+  // not represent a double.
+  bool ok;
+  number = CharactersToDouble(characters, length, &ok);
+  if (!ok)
+    return false;
+  number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
+                           std::numeric_limits<float>::max());
+  return true;
+}
+
 static inline bool IsColorPropertyID(CSSPropertyID property_id) {
   switch (property_id) {
     case CSSPropertyID::kCaretColor:
@@ -1215,6 +1260,26 @@ static bool ParseTransformTranslateArguments(
 }
 
 template <typename CharType>
+static bool ParseTransformRotateArgument(CharType*& pos,
+                                         CharType* end,
+                                         CSSFunctionValue* transform_value) {
+  wtf_size_t delimiter =
+      WTF::Find(pos, static_cast<wtf_size_t>(end - pos), ')');
+  if (delimiter == kNotFound)
+    return false;
+  unsigned argument_length = static_cast<unsigned>(delimiter);
+  CSSPrimitiveValue::UnitType unit = CSSPrimitiveValue::UnitType::kNumber;
+  double number;
+  if (!ParseSimpleAngle(pos, argument_length, unit, number))
+    return false;
+  if (unit == CSSPrimitiveValue::UnitType::kNumber && number != 0.0)
+    return false;
+  transform_value->Append(*CSSNumericLiteralValue::Create(number, unit));
+  pos += argument_length + 1;
+  return true;
+}
+
+template <typename CharType>
 static bool ParseTransformNumberArguments(CharType*& pos,
                                           CharType* end,
                                           unsigned expected_count,
@@ -1245,6 +1310,12 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
                                                    CharType* end) {
   if (end - pos < kShortestValidTransformStringLength)
     return nullptr;
+
+  // TODO(crbug.com/841960): Many of these use CharactersToDouble(),
+  // which accepts numbers in scientific notation that do not end
+  // in a digit; e.g., 1.e10px. (1.0e10px is allowed.) This means that
+  // the fast path accepts some invalid lengths that the regular path
+  // does not.
 
   const bool is_translate =
       ToASCIILower(pos[0]) == 't' && ToASCIILower(pos[1]) == 'r' &&
@@ -1314,6 +1385,21 @@ static CSSFunctionValue* ParseSimpleTransformValue(CharType*& pos,
     return transform_value;
   }
 
+  const bool is_rotate =
+      ToASCIILower(pos[0]) == 'r' && ToASCIILower(pos[1]) == 'o' &&
+      ToASCIILower(pos[2]) == 't' && ToASCIILower(pos[3]) == 'a' &&
+      ToASCIILower(pos[4]) == 't' && ToASCIILower(pos[5]) == 'e' &&
+      pos[6] == '(';
+
+  if (is_rotate) {
+    pos += 7;
+    CSSFunctionValue* transform_value =
+        MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kRotate);
+    if (!ParseTransformRotateArgument(pos, end, transform_value))
+      return nullptr;
+    return transform_value;
+  }
+
   return nullptr;
 }
 
@@ -1351,8 +1437,14 @@ static bool TransformCanLikelyUseFastPath(const CharType* chars,
           return false;
         i += 7;
         break;
+      case 'r':
+        // rotate.
+        if (ToASCIILower(chars[i + 5]) != 'e')
+          return false;
+        i += 6;
+        break;
       default:
-        // All other things, ex. rotate.
+        // All other things, ex. skew.
         return false;
     }
     wtf_size_t arguments_end = WTF::Find(chars, length, ')', i);
