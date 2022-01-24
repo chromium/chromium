@@ -415,6 +415,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Os padrões de correspondência de origem usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em http://www.chromium.org/administrators/url-blocklist-filter-format (link em inglês).
 
       Entretanto, os padrões de correspondência de origem para esta política não podem conter elementos "/path" ou "@query". Todos os padrões que contiverem um elemento "/path" ou "@query" serão ignorados.</translation>
+<translation id="1508588104835702000">Desativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="1509377996969000672">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="NATIVE_PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:
@@ -944,6 +945,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
 <translation id="2086944573376916479">Uma conta gerenciada precisa ser a principal e não pode ter contas secundárias</translation>
+<translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="2090304907729569435">Desativar a exibição de resultados da <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> em um painel lateral do navegador.</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
 
@@ -2021,6 +2023,16 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Esta política não impede que administradores corporativos se conectem a dispositivos Chrome OS gerenciados.
 
           Esta política não terá efeito se for ativada, deixada vazia ou não for definida.</translation>
+<translation id="3246744067327836077">
+      Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" /> de um perfil gerenciado específico.
+
+      Quando a política é deixada sem definição ou é desativada, os dados não são coletados nem enviados por upload.
+      Quando a política é ativada, os dados são coletados e enviados por upload para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      O relatório contém informações sobre o uso e o estado do perfil, incluindo, entre outros, a versão do sistema operacional, a versão do navegador, as extensões instaladas e as políticas aplicadas.
+
+      Esta política só pode ser definida como política do usuário em nuvem.
+      </translation>
 <translation id="3251500716404598358">Configura políticas para alternar entre navegadores.
 
       Os sites configurados serão abertos automaticamente em um navegador diferente de <ph name="PRODUCT_NAME" />.</translation>
@@ -3945,6 +3957,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for deixada sem definição, os GPOs armazenados em cache poderão ser reutilizados por até 25 horas.
 
       Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja limpo.</translation>
+<translation id="5717973246079053225">Desativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="572155275267014074">Configurações do Android</translation>
 <translation id="5728154254076636808">Permite a criação de cópias em roaming dos dados de perfil do <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Senha do Kerberos. O marcador <ph name="PASSWORD_PLACEHOLDER" /> é substituído pela senha de login.</translation>
@@ -4712,6 +4725,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for definida como "Desativada" ou for deixada sem definição, os comandos de impressão acionarão a tela de visualização de impressão.</translation>
 <translation id="6658245400435704251">Especifica o número de segundos que um dispositivo pode chegar a atrasar aleatoriamente o download de uma atualização a partir do momento em que a atualização foi lançada no servidor. O dispositivo pode esperar uma parte desse intervalo de tempo em tempo cronológico e o restante contado em número de verificações de atualizações. Em todo caso, a dispersão tem como limite máximo uma quantidade constante de tempo para que o dispositivo nunca fique parado indefinidamente esperando para fazer o download de uma atualização.</translation>
 <translation id="6659537776197644458">Não acionar fluxos de autenticação para a sincronização de senhas</translation>
+<translation id="6661178198729301029">Ativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="6665670272107384733">Definir com que frequência o usuário precisa digitar a senha para usar o desbloqueio rápido</translation>
 <translation id="6667586534922258705">Exibir o botão "mostrar senha" na tela de login e de bloqueio</translation>
 <translation id="6669700740683748046">Este recurso ativa a exibição do URL completo na barra de endereço.
@@ -6696,6 +6710,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8917070657147922192">Permite que o usuário gerencie os certificados de CA instalados.</translation>
 <translation id="8919100556245407184">O tempo, em dias, após a postagem de expiração da atualização automática até o usuário ser desconectado se a versão do <ph name="PRODUCT_OS_NAME" /> for menor que a <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> especificada.</translation>
 <translation id="8919369436496201075">Permitir que o dispositivo receba atualizações de LTS</translation>
+<translation id="8921669704201370845">Ativar os relatórios de nuvem do <ph name="PRODUCT_NAME" /> do perfil gerenciado</translation>
 <translation id="8930064580550462145">Durante o login pela tela de bloqueio, o <ph name="PRODUCT_OS_NAME" /> pode fazer a autenticação por um servidor (on-line) ou usando uma senha armazenada em cache (off-line).
 
       Quando esta política é definida como -2, ela corresponde ao valor do limite de tempo de login off-line da tela de login definido pela <ph name="POLICY" />.
@@ -6943,6 +6958,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="9220314833408124365">Usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="922540222991413931">Configurar extensão, aplicativo e origens de instalação do script do usuário</translation>
 <translation id="924557436754151212">Importar senhas salvas do navegador padrão na primeira execução</translation>
+<translation id="926104720905645793">Esta política controla os relatórios de nuvem do <ph name="PRODUCT_NAME" />, que faz upload de informações sobre a operação do navegador para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Quando a política é deixada sem definição ou é desativada, os dados não são coletados nem enviados por upload.
+      Quando a política é ativada, os dados são coletados e enviados por upload para o <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+      Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+      Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="927384371566552478">Se a política for definida como "Ativada" ou não for definida, a IU de exportação/importação ficará disponível para o usuário. Se a política for definida como "Desativada", a IU de exportação/importação não ficará disponível para o usuário.</translation>
 <translation id="927444535723396977">Se a política for definida como 1, os sites poderão executar o JavaScript. Se for definida como 2, o JavaScript não será executado.
 

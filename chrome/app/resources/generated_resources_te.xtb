@@ -511,6 +511,7 @@
 <translation id="1521442365706402292">సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
 <translation id="1521774566618522728">ఈ రోజు యాక్టివ్‌గా ఉంది</translation>
 <translation id="152234381334907219">ఎప్పటికి సేవ్ చెయ్యబడవు</translation>
+<translation id="1523279371236772909">గత నెలలో చూశారు</translation>
 <translation id="1523978563989812243">టెక్ట్స్-టు-స్పీచ్ ఇంజిన్‌లు</translation>
 <translation id="1524430321211440688">కీబోర్డ్</translation>
 <translation id="1524563461097350801">వద్దు, ధన్యవాదాలు</translation>
@@ -1252,6 +1253,7 @@
 <translation id="2232876851878324699">ఫైల్ దిగుమతి చెయ్యని ఒక ప్రమాణపత్రాన్ని కలిగి ఉంది:</translation>
 <translation id="2233502537820838181">&amp;మరింత సమాచారం</translation>
 <translation id="223356358902285214">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
+<translation id="2234827758954819389">గోప్యతా గైడ్</translation>
 <translation id="2234876718134438132">సింక్, Google సర్వీసులు</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2238379619048995541">తరచుదనం స్థితి డేటా</translation>
@@ -3109,6 +3111,7 @@
 <translation id="4095264805865317199">సెల్యులార్ యాక్టివేషన్ UIని తెరువు</translation>
 <translation id="4095507791297118304">ప్రాథమిక డిస్‌ప్లే</translation>
 <translation id="4096508467498758490">డెవలపర్ మోడ్ ఎక్స్‌టెన్ష‌న్‌లను నిలిపివేయండి</translation>
+<translation id="4096797685681362305">గత వారంలో చూశారు</translation>
 <translation id="4097406557126260163">యాప్‌లు, ఎక్స్‌టెన్షన్‌లు</translation>
 <translation id="409742781329613461">Chrome కోసం చిట్కాలు</translation>
 <translation id="4097560579602855702">Googleలో వెతకండి</translation>
@@ -3666,6 +3669,7 @@
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4699357559218762027">(ఆటోమేటిక్‌గా ప్రారంభించబడింది)</translation>
 <translation id="4701025263201366865">తల్లి/తండ్రి సైన్ ఇన్</translation>
+<translation id="4701335814944566468">నిన్న చూశారు</translation>
 <translation id="4708794300267213770">నిద్రావస్థ నుండి సక్రియం అవుతున్నప్పుడు లాక్ స్క్రీన్‌ని చూపు</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> నిష్క్రమించు</translation>
 <translation id="4711638718396952945">సెట్టింగ్‌లను పునరుద్ధరించు</translation>
@@ -3733,6 +3737,7 @@
 <translation id="479536056609751218">వెబ్‌పేజీ, HTML మాత్రమే</translation>
 <translation id="4796142525425001238">ఎల్లప్పుడూ రీస్టోర్ చేయండి</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />బ్లూటూత్ లాగ్‌లు<ph name="END_LINK" />ని జోడించు (Google అంతర్గతం)</translation>
+<translation id="479863874072008121">పరికరాలను మేనేజ్ చేయండి</translation>
 <translation id="4800839971935185386">పేరు &amp; చిహ్నం అప్‌డేట్‌లను రివ్యూ చేయండి</translation>
 <translation id="4801448226354548035">ఖాతాలను దాచు</translation>
 <translation id="4801512016965057443">మొబైల్ డేటా రోమింగ్‌ను అనుమతించు</translation>
@@ -6461,6 +6466,7 @@
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7659154729610375585">ఏదేమైనా అజ్ఞాత మోడ్ నుండి నిష్క్రమించాలా?</translation>
 <translation id="7659297516559011665">ఈ పరికరంలో ఉన్న పాస్‌వర్డ్‌‌లు మాత్రమే</translation>
+<translation id="7659336857671800422">గోప్యతా గైడ్‌ను ఉపయోగించండి</translation>
 <translation id="7659584679870740384">ఈ పరికరాన్ని ఉపయోగించడానికి మీకు అధికారం లేదు. దయచేసి సైన్-ఇన్ అనుమతి కోసం నిర్వాహకుడిని సంప్రదించండి.</translation>
 <translation id="7661259717474717992">కుక్కీ డేటాను సేవ్ చేయడానికి మరియు చదవడానికి సైట్‌లను అనుమతించు</translation>
 <translation id="7661451191293163002">నమోదు ప్రమాణపత్రాన్ని పొందడం సాధ్యపడలేదు.</translation>
@@ -7979,6 +7985,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" />, <ph name="FOLDERNAME" />‌లోని ఫైళ్లను ఎడిట్ చేయగలదు</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />ని వెతుకు</translation>
 <translation id="9201023452444595544">ఏదైనా ఆఫ్‌లైన్ డేటా ఉంటే తీసివేయబడుతుంది</translation>
+<translation id="9201117361710210082">గతంలో చూశారు</translation>
 <translation id="9201220332032049474">స్క్రీన్ లాక్ ఎంపికలు</translation>
 <translation id="9201842707396338580">ఏదో తప్పు జరిగింది. మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను దయచేసి సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;ప్రొఫైలింగ్ అనుమతించబడింది</translation>

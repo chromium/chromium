@@ -1217,6 +1217,9 @@
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Крыніца медыя без назвы</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Для зручнасці карыстальнікаў <ph name="DEVICE_OS" /> збірае даныя аб апаратным забеспячэнні прылад і абагульвае іх з Google, што дазваляе выяўляць, якія абнаўленні неабходна ўсталяваць. Вы таксама можаце дазволіць Google выкарыстоўваць гэтыя даныя і ў іншых мэтах, напрыклад, каб удасканальваць работу <ph name="DEVICE_OS" /> і аказваць карыстальнікам падтрымку.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Каб паглядзець, якія звесткі адпраўляюцца ў Google для фільтрацыі абнаўленняў і для якіх яшчэ мэт можна перадаваць нам даныя, увайдзіце ва ўліковы запіс на гэтай прыладзе і азнаёмцеся з раздзелам CLOUDREADY_HARDWARE_INFO на старонцы chrome://system.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Падрабязную інфармацыю пра даныя, якія <ph name="DEVICE_OS" /> можа абагульваць з Google, і іх выкарыстанне чытайце на старонцы g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Гэта налада належыць карыстальніку <ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">Неабходна выбраць у мастацкай галерэі як мінімум адзін альбом</translation>
 <translation id="2224551243087462610">Змена назвы папкі</translation>
@@ -1764,6 +1767,15 @@
 <translation id="2766161002040448006">Папрасіць дазвол у бацькоў</translation>
 <translation id="2767077837043621282">Не ўдалося абнавіць Chromebook. Паўтарыце спробу пазней.</translation>
 <translation id="2767127727915954024">Сайт <ph name="ORIGIN" /> зможа змяняць файл <ph name="FILENAME" />, пакуль вы не закрыеце ўсе ўкладкі гэтага сайта</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Паспрабуйце знайсці і выправіць непаладку наступным чынам:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />упэўніцеся, што прылада мае ўнутранае сховішча (напрыклад, HDD, SSD, або eMMC) і яно працуе;
+    <ph name="LIST_ITEM" />упэўніцеся, што аб'ём унутранага сховішча прылады не меншы за 16 ГБ;
+    <ph name="LIST_ITEM" />праверце падключэнне да ўнутранага сховішча, калі гэта магчыма зрабіць фізічна;
+    <ph name="LIST_ITEM" />упэўніцеся, што выкарыстоўваеце сертыфікаваную мадэль прылады, і азнаёмцеся з нататкамі па ўсталяванні.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на сайце: g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Выдаліць са спіса</translation>
 <translation id="2770690685823456775">Экспартуйце свае паролі ў іншую папку</translation>
 <translation id="2770929488047004208">Раздзяляльнасць манітора</translation>
@@ -2985,6 +2997,7 @@
 <translation id="4005817994523282006">Спосаб выяўлення часавага пояса</translation>
 <translation id="4007856537951125667">Схаваць ярлыкі</translation>
 <translation id="4008291085758151621">Звесткі сайта недаступныя ў VR</translation>
+<translation id="4009955655170295852">Перад запускам упэўніцеся, што вашы даныя маюць рэзервовую копію. Пры ўсталяванні <ph name="DEVICE_OS" /> даныя на цвёрдым дыску будуць перазапісаны. Даведайцеся больш на старонцы g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Каб карыстацца сваімі закладкамі на мабільнай прыладзе, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Выправіць "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">У вас ёсць пашырэнні? <ph name="BEGIN_LINK" />Кіруйце пашырэннямі<ph name="END_LINK" /> з лёгкасцю з аднаго месца.</translation>
@@ -3707,6 +3720,9 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Выдалена 1 закладка}one{Выдалена {COUNT} закладка}few{Выдалена {COUNT} закладкі}many{Выдалена {COUNT} закладак}other{Выдалена {COUNT} закладкі}}</translation>
 <translation id="4819607494758673676">Апавяшчэнні Памочніка Google</translation>
 <translation id="4820236583224459650">Задаць білет у якасці актыўнага</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Перад рэгістрацыяй неабходна ачысціць TPM, каб аперацыйная сістэма <ph name="DEVICE_OS" /> змагла атрымаць права ўласнасці на прыладу.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Таксама можна зусім выключыць TPM на прыладзе. Вашы даныя і далей будуць захоўвацца ў бяспецы дзякуючы выкарыстанню шыфравання праграмнага забеспячэння, але пэўныя функцыі бяспекі (напрыклад, забяспечаныя апаратнымі сродкамі сертыфікаты) будуць адключаны.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Змяніць налады TPM можна, выканаўшы перазагрузку і ўвайшоўшы ў налады BIOS/UEFI. Этапы могуць адрознівацца ў залежнасці ад мадэлі прылады. Каб атрымаць дадатковую інфармацыю, перад перазагрузкай адкрыйце дакументацыю <ph name="DEVICE_OS" /> на асобнай прыладзе: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Прафіліраванне ўключана</translation>
 <translation id="4823484602432206655">Прагляд і змяненне налад прылады і карыстальніка</translation>
 <translation id="4824037980212326045">Рэзервовае капіраванне і аднаўленне Linux</translation>
@@ -5613,6 +5629,7 @@
 <translation id="6834652994408928492">Цёмны рэжым уключыцца аўтаматычна пасля захаду сонца</translation>
 <translation id="6835762382653651563">Каб абнавіць <ph name="DEVICE_TYPE" />, падключыцеся да інтэрнэту.</translation>
 <translation id="6839225236531462745">Памылка пры выдаленні сертыфіката</translation>
+<translation id="6839882458129755986">Кампанія Google не нясе адказнасці за магчымую страту даных і не гарантуе, што <ph name="DEVICE_OS" /> будзе працаваць на несертыфікаваных мадэлях прылад. Даведайцеся больш на старонцы g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Працэдура ўваходу змянілася</translation>
 <translation id="6840155290835956714">Запытваць перад адпраўкай</translation>
 <translation id="6840184929775541289">Не з'яўляецца цэнтрам сертыфікацыі</translation>
@@ -5930,6 +5947,7 @@
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7180865173735832675">Наладзіць</translation>
 <translation id="7182791023900310535">Перамясціце пароль</translation>
+<translation id="7183193772170782394">Дазволіць Google выкарыстоўваць даныя аб апаратным забеспячэнні для паляпшэння <ph name="DEVICE_OS" />. Калі вы не паставіце гэту птушку, Google усё роўна будзе атрымліваць гэтыя даныя, каб своечасова выяўляць неабходнасць усталявання патрэбных абнаўленняў, але не будзе захоўваць іх або выкарыстоўваць у іншых мэтах. Даведайцеся больш на старонцы g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Адкрыць або закрыць бакавую панэль пошуку. Бакавая панэль пошуку не актывавана.</translation>
 <translation id="7186088072322679094">Пакінуць у панэлі інструментаў</translation>
 <translation id="7186303001964993981">Сайт <ph name="ORIGIN" /> не можа адкрываць гэту папку, бо ў ёй знаходзяцца сістэмныя файлы</translation>
@@ -7015,6 +7033,8 @@
 <translation id="8260864402787962391">Мыш</translation>
 <translation id="8261378640211443080">Гэта пашырэнне не значыцца ў спісе <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, яно магло быць дададзена без вашага ведама.</translation>
 <translation id="8261506727792406068">Выдаліць</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на старонцы g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Дайце назву гэтай групе</translation>
 <translation id="8263744495942430914">Сайт <ph name="FULLSCREEN_ORIGIN" /> выключыў курсор мышы.</translation>
 <translation id="8264024885325823677">Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
@@ -7490,6 +7510,7 @@
 Па правілах дамена <ph name="DOMAIN" /> разумная картка павінна быць устаўлена.}}</translation>
 <translation id="8777259617149177596">Зарад акумулятара чахла: <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="8777628254805677039">root-пароль</translation>
+<translation id="8779944680596936487">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры толькі на сваіх старонках</translation>
 <translation id="8780123805589053431">Атрымліваць апісанні відарысаў ад Google</translation>
 <translation id="8780443667474968681">Галасавы пошук выключаны.</translation>
 <translation id="8781834595282316166">Стварыць у групе новую ўкладку</translation>

@@ -1224,6 +1224,7 @@
           <ph name="LIST_ITEM" />रोजगारदाता वा विद्यालयले ब्राउजर प्रयोग गरी गरिएको क्रियाकलापसम्बन्धी विवरण हेर्न सक्छन्<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />इन्टरनेट सेवा प्रदायकहरूले वेब ट्राफिकको निरीक्षण गर्न सक्छन्<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">क्लाउडका प्रयोगकर्ताले मात्र नीति तय गर्न मिल्ने भएकाले वेवास्ता गरिएको छ।</translation>
 <translation id="483241715238664915">चेतावनी देखाउने सुविधा अन गर्नुहोस्</translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
 <translation id="4840250757394056958">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>

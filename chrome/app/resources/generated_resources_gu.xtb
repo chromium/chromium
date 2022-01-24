@@ -506,6 +506,7 @@
 <translation id="1521442365706402292">પ્રમાણપત્રો મેનેજ કરો</translation>
 <translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="152234381334907219">ક્યારેય ન સચવાયેલું</translation>
+<translation id="1523279371236772909">ગયા મહિને જોઈ હતી</translation>
 <translation id="1523978563989812243">ટેક્સ્ટ ટૂ સ્પીચ એન્જિન</translation>
 <translation id="1524430321211440688">કીબોર્ડ</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
@@ -1236,6 +1237,7 @@
 <translation id="2232876851878324699">ફાઇલમાં એક પ્રમાણપત્ર શામેલ છે કે જે આયાત કર્યું ન હતું:</translation>
 <translation id="2233502537820838181">&amp;વધુ માહિતી</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
+<translation id="2234827758954819389">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા</translation>
 <translation id="2234876718134438132">સિંક અને Google સેવાઓ</translation>
 <translation id="2235344399760031203">ત્રીજા પક્ષની કુકી બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2238379619048995541">ફ્રીક્વેંસી સ્થિતિ ડેટા</translation>
@@ -3090,6 +3092,7 @@
 <translation id="4095264805865317199">સેલ્યુલર સક્રિયકરણ UI ખોલો</translation>
 <translation id="4095507791297118304">પ્રાથમિક ડિસ્પ્લે</translation>
 <translation id="4096508467498758490">ડેવલપર મોડ એક્સ્ટેન્શન બંધ કરો</translation>
+<translation id="4096797685681362305">ગયા અઠવાડિયે જોઈ હતી</translation>
 <translation id="4097406557126260163">ઍપ અને એક્સ્ટેંશન</translation>
 <translation id="409742781329613461">Chrome માટે ટિપ</translation>
 <translation id="4097560579602855702">Google પર શોધો</translation>
@@ -3645,6 +3648,7 @@
 <translation id="4699172675775169585">કૅશ કરેલી છબીઓ અને ફાઇલો</translation>
 <translation id="4699357559218762027">(સ્વતઃ-લોંચ કરેલું)</translation>
 <translation id="4701025263201366865">માતાપિતા સાઇન ઇન કરે</translation>
+<translation id="4701335814944566468">ગઈકાલે જોઈ હતી</translation>
 <translation id="4708794300267213770">નિષ્ક્રિયતામાંથી બહાર આવવા પર લૉક સ્ક્રીન બતાવો</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
 <translation id="4711638718396952945">સેટિંગ રિસ્ટોર કરો</translation>
@@ -3712,6 +3716,7 @@
 <translation id="479536056609751218">વેબપેજ, ફક્ત HTML</translation>
 <translation id="4796142525425001238">હંમેશાં રિસ્ટોર કરો</translation>
 <translation id="4798236378408895261">જોડો <ph name="BEGIN_LINK" />બ્લૂટૂથ લૉગ<ph name="END_LINK" /> (Google આંતરિક)</translation>
+<translation id="479863874072008121">ડિવાઇસ મેનેજ કરો</translation>
 <translation id="4800839971935185386">નામ અને આઇકનની અપડેટનો રિવ્યૂ કરો</translation>
 <translation id="4801448226354548035">એકાઉન્ટ્સ છુપાવો</translation>
 <translation id="4801512016965057443">મોબાઇલ ડેટા રોમિંગને મંજૂરી આપો</translation>
@@ -6437,6 +6442,7 @@ USB ડિવાઇસ</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7659154729610375585">છૂપો મોડ બંધ કરી જ દઈએ?</translation>
 <translation id="7659297516559011665">માત્ર આ ડિવાઇસ પર સ્ટોર કરેલા પાસવર્ડ</translation>
+<translation id="7659336857671800422">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાનો રિવ્યૂ કરો</translation>
 <translation id="7659584679870740384">તમે આ ઉપકરણ વાપરવા માટે અધિકૃત નથી. કૃપા કરીને સાઇન ઇન કરવાની પરવાનગી માટે વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7661259717474717992">સાઇટને કુકી ડેટા સાચવવા તથા વાંચવાની મંજૂરી આપો</translation>
 <translation id="7661451191293163002">નોંધણી પ્રમાણપત્ર મેળવી શકાયું નથી.</translation>
@@ -7954,6 +7960,7 @@ USB ડિવાઇસ</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" />માં રહેલી ફાઇલોમાં ફેરફાર કરી શકશે</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />માં શોધો</translation>
 <translation id="9201023452444595544">બધો ઑફલાઇન ડેટા સાફ કરવામાં આવશે</translation>
+<translation id="9201117361710210082">અગાઉ જોઈ હતી</translation>
 <translation id="9201220332032049474">સ્ક્રીન લૉકના વિકલ્પો</translation>
 <translation id="9201842707396338580">કંઈક ખોટું થયું. કૃપા કરીને તમારા ડિવાઇસના માલિક અથવા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;પ્રોફાઇલિંગ સક્ષમ</translation>

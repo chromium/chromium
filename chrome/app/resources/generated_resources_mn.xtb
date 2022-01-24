@@ -508,6 +508,7 @@
 <translation id="1521442365706402292">Гэрчилгээг удирдан зохион байгуулах</translation>
 <translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="152234381334907219">Огт хадгалаагүй</translation>
+<translation id="1523279371236772909">Өнгөрсөн сард үзсэн</translation>
 <translation id="1523978563989812243">Бичвэрийг-ярианд-хувиргах хөдөлгүүр</translation>
 <translation id="1524430321211440688">Гар</translation>
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
@@ -1249,6 +1250,7 @@
 <translation id="2232876851878324699">Файлд импортолж аваагүй нэг гэрчилгээ агуулагдсан байна:</translation>
 <translation id="2233502537820838181">&amp; Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="223356358902285214">Веб, аппын үйл ажиллагаа</translation>
+<translation id="2234827758954819389">Нууцлалын хөтөч</translation>
 <translation id="2234876718134438132">Синк болон Google-н үйлчилгээ</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2238379619048995541">Хадгалагдсан мэдээллийн давтамж</translation>
@@ -3105,6 +3107,7 @@
 <translation id="4095264805865317199">Үүрэн сүлжээг идэвхжүүлэх UI-г нээх</translation>
 <translation id="4095507791297118304">Үндсэн дэлгэц</translation>
 <translation id="4096508467498758490">Хөгжүүлэгч горимын өргөтгөлүүдийг идэвхгүй болгох</translation>
+<translation id="4096797685681362305">Өнгөрсөн долоо хоногт үзсэн</translation>
 <translation id="4097406557126260163">Аппууд болон өргөтгөлүүд</translation>
 <translation id="409742781329613461">Chrome-н зөвлөгөө</translation>
 <translation id="4097560579602855702">Google-р хайх</translation>
@@ -3662,6 +3665,7 @@
 <translation id="4699172675775169585">Кэшлсэн дүрс ба файл</translation>
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
+<translation id="4701335814944566468">Өчигдөр үзсэн</translation>
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
@@ -3729,6 +3733,7 @@
 <translation id="479536056609751218">Цахим хуудас, зөвхөн HTML</translation>
 <translation id="4796142525425001238">Үргэлж сэргээ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth Логыг<ph name="END_LINK" /> хавсаргана уу (Google дотоод)</translation>
+<translation id="479863874072008121">Төхөөрөмжүүдийг удирдах</translation>
 <translation id="4800839971935185386">Нэр болон дүрс тэмдгийн шинэчлэлтүүдийг шалгах</translation>
 <translation id="4801448226354548035">Данснуудыг нуух</translation>
 <translation id="4801512016965057443">Үүрэн холбооны дата роуминг зөвшөөрөх</translation>
@@ -6457,6 +6462,7 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7659154729610375585">Нууцлалтай горимоос ямартай ч гарах уу?</translation>
 <translation id="7659297516559011665">Зөвхөн энэ төхөөрөмж дээрх нууц үгнүүд</translation>
+<translation id="7659336857671800422">Нууцлалын хөтөч авах</translation>
 <translation id="7659584679870740384">Та энэ төхөөрөмжийг ашиглах эрхгүй байна. Нэвтрэх зөвшөөрөл авахын тулд администратортой холбогдоно уу.</translation>
 <translation id="7661259717474717992">Күүки өгөгдлийг уншиж, хадгалахыг сайтад зөвшөөрөх</translation>
 <translation id="7661451191293163002">Бүртгэлийн гэрчилгээг авах боломжгүй байна.</translation>
@@ -7974,6 +7980,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> дахь файлуудыг засах боломжтой болно</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> хайх</translation>
 <translation id="9201023452444595544">Офлайн аливаа өгөгдлийг устгах болно</translation>
+<translation id="9201117361710210082">Өмнө нь үзсэн</translation>
 <translation id="9201220332032049474">Дэлгэцийн түгжээний сонголт</translation>
 <translation id="9201842707396338580">Алдаа гарлаа. Төхөөрөмж өмчлөгч эсвэл администратортайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiling идэвхжсэн</translation>

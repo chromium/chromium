@@ -1018,6 +1018,7 @@
 <translation id="2022395138980869975">छेउमा खुलेको Google Search पेज टगल गर्नुहोस्</translation>
 <translation id="2023167225947895179">PIN को अनुमान लगाउन सजिलो हुन सक्छ</translation>
 <translation id="202352106777823113">डाउनलोड गर्न अत्यन्त लामो समय लियो र सञ्जालबाट रोकिएको थियो।</translation>
+<translation id="2024195579772565064">सर्च इन्जिन मेटाउनुहोस्</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> क्र्यास भएको छ। एक्स्टेन्सनलाई पुन: लोड गर्न यो बलुनलाई क्लिक गर्नुहोस्।</translation>
 <translation id="2028449514182362831">मोसन सेन्सरहरू प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
 <translation id="202918510990975568">सुरक्षा तथा साइन इन गर्ने प्रक्रिया कन्फिगर गर्न आफ्नो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
@@ -1159,6 +1160,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi थप्नुहोस्...</translation>
 <translation id="2162155940152307086">तपाईंले सिंकसम्बन्धी सेटिङहरूको पृष्ठ छोडेपछि सिंक सुरु हुने छ</translation>
+<translation id="2162926944953615670">कुनै पनि eSIM प्रोफाइल उपलब्ध छैन</translation>
 <translation id="2163470535490402084">तपाईँको <ph name="DEVICE_TYPE" /> मा साइन इन गर्न कृपया इन्टरनेट कनेक्ट गर्नुहोस्।</translation>
 <translation id="2163937499206714165">अँध्यारो मोड अन गर्नुहोस्</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> र थप एउटा स्विच</translation>
@@ -1851,6 +1853,7 @@
 <translation id="2828650939514476812">Wi-Fi नेटवर्कसँग कनेक्ट गर्नुहोस्</translation>
 <translation id="2831430281393059038">डिभाइस प्रयोग गर्न मिल्ने हुनु पर्छ</translation>
 <translation id="2832124733806557606">तपाईंका बच्चा PIN प्रयोग गरेर यो डिभाइस अनलक गर्न वा यसमा साइन इन गर्न सक्छन्।</translation>
+<translation id="2835177225987815960">तपाईंले स्क्यान गर्नका निम्ति तय गरेको हालको सेटअप रिसेट हुने छ। साथै, तोकिएका स्विच तथा अटो-स्क्यानको गतिसम्बन्धी प्राथमिकताहरू पनि रिसेट हुने छन्।</translation>
 <translation id="2835547721736623118">वाक् पहिचान सेवा</translation>
 <translation id="2836269494620652131">क्र्यास</translation>
 <translation id="2836635946302913370">यो प्रयोगकर्ता नामद्वारा साइन इन तपाईंको प्रशासकद्वारा असक्षम गरिएको छ।</translation>
@@ -3496,6 +3499,7 @@
 <translation id="4547659257713117923">अन्य यन्त्रहरूबाट कुनै ट्याबहरू छैनन्</translation>
 <translation id="4547672827276975204">स्वतः सेट गर्नुहोस्</translation>
 <translation id="4549791035683739768">तपाईंको सुरक्षा साँचोमा कुनै पनि फिंगरप्रिन्ट भण्डारण गरिएको छैन</translation>
+<translation id="4550926046134589611">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" /> मा खुल्ने छन्।</translation>
 <translation id="4551763574344810652">अन्डू गर्न <ph name="MODIFIER_KEY_DESCRIPTION" /> थिच्नुहोस्</translation>
 <translation id="4553526521109675518">तपाईंले आफ्नो Chromebook को भाषा परिवर्तन यसलाई रिस्टार्ट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी खोज्न फोटोहरूमाथि ड्र्याग गर्नुहोस्</translation>
@@ -3784,6 +3788,7 @@
 <translation id="48704129375571883">थप सुविधाहरू थप्नुहोस्</translation>
 <translation id="4870758487381879312">कन्फिगुरेसनसम्बन्धी जानकारी प्राप्त गर्न प्रशासकले उपलब्ध गराउनुभएको पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="4870903493621965035">जोडा बनाइएको कुनै यन्त्र छैन</translation>
+<translation id="4870995365819149457">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> र अर्को एउटा एपमा खुल्ने छन्।</translation>
 <translation id="4871308555310586478">Chrome वेब भण्डारबाट होइन।</translation>
 <translation id="4871322859485617074">PIN मा अमान्य वर्णहरू छन्</translation>
 <translation id="4871370605780490696">पृष्ठमञ्जूषा थप्नुहोस्</translation>
@@ -4818,6 +4823,7 @@
 <translation id="5969728632630673489">किबोर्डको सर्टकटसम्बन्धी सूचना खारेज गरियो</translation>
 <translation id="5971037678316050792">ब्लूटूथ एडेप्टर स्थिति तथा पेयरिङलाई नियन्त्रण गर्नुहोस्</translation>
 <translation id="597235323114979258">थप गन्तव्यहरू हेर्नुहोस्</translation>
+<translation id="5972543790327947908">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> वा <ph name="APP_NAME_3" /> मा खुल्ने छन्।</translation>
 <translation id="5972666587303800813">No-op सेवा</translation>
 <translation id="5972708806901999743">सिरानमा सार्नुहोस्</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> सुरु गर्नुहोस्</translation>
@@ -5189,6 +5195,7 @@
 <translation id="6355789186038748882">परीक्षणका क्रममा रहेको (अल्फा गुणस्तरको) ब्राउजर! केही सुविधाहरू अपूर्ण हुन सक्छन् वा उपलब्ध नहुन सक्छन्। यहाँ गई यस ब्राउजरमा देखिएका समस्याका बारेमा रिपोर्ट गर्नुहोस्: मद्दत &gt; "समस्याका बारेमा रिपोर्ट गर्नुहोस्..."।</translation>
 <translation id="635609604405270300">यन्त्रलाई सक्रिय राख्नुहोस्</translation>
 <translation id="63566973648609420">तपाईंको इन्क्रिप्ट गरिएको डेटालाई तपाईंको पासफ्रेज भएको व्यक्तिले मात्र पढ्न सक्छ। पासफ्रेजलाई Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिदैन। यदि तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा यस सेटिङलाई परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले <ph name="BEGIN_LINK" />सिंकलाई रिसेट<ph name="END_LINK" /> गर्नुपर्ने हुन्छ।</translation>
+<translation id="6357305427698525450">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" /> मा वा  <ph name="APP_NAME_2" /> मा खुल्ने छन्।</translation>
 <translation id="6358884629796491903">ड्रागन</translation>
 <translation id="6359706544163531585">उज्यालो थिम अफ गर्नुहोस्</translation>
 <translation id="6361850914223837199">त्रुटि विवरणहरू:</translation>
@@ -5707,6 +5714,7 @@
 <translation id="6900284862687837908">पृष्ठभूमिका एप: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">उन्नत सुरक्षा</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> अपडेट गर्न फेरि साइन इन गर्नुहोस्</translation>
+<translation id="6900654715912436255">तपाईंले यो सर्च इन्जिन मेटाउन चाहनुभएकै हो?</translation>
 <translation id="6902066522699286937">आवाजको पूर्वावलोकन</translation>
 <translation id="6902336033320348843">यो खण्ड प्रयोग गर्न मिल्दैन: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">यन्त्रलाई डोमेनमा सामेल गर्नुहोस्</translation>
@@ -5977,6 +5985,7 @@
 <translation id="7189234443051076392">कृपया आफ्नो यन्त्रमा पर्याप्त खाली ठाउँ रहेको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7189451821249468368">तपाईंले यो डिभाइस दर्ता गर्नका निम्ति पर्याप्त स्तरवृद्धि गर्नुभएको छैन। कृपया थप स्तरवृद्धि खरिद गर्न बिक्री प्रतिनिधिसँग सम्पर्क गर्नुहोस्। तपाईंलाई यो सन्देश त्रुटिपूर्ण हिसाबले देख्नु हुँदैछ जस्तो लाग्छ भने कृपया ग्राहक सेवा विभागमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="7189965711416741966">फिंगरप्रिन्ट हालियो।</translation>
+<translation id="7191063546666816478">खोल्न मिल्ने केही लिंकहरू अझै पनि <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> र अन्य <ph name="NUMBER_OF_OTHER_APPS" /> वटा एपमा खुल्ने छन्।</translation>
 <translation id="7191159667348037">अज्ञात प्रिन्टर (USB)</translation>
 <translation id="7193051357671784796">तपाईंको सङ्गठनले यो एप थपेको हो। एपको स्थापना पूरा गर्न यसलाई पुनः सुचारु गर्नुहोस्।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> का लागि कुनै पनि पासवर्ड सुरक्षित गरिएको छैन</translation>

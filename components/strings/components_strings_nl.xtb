@@ -1220,6 +1220,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <ph name="LIST_ITEM" />Werkgevers of scholen kunnen browse-activiteit bijhouden.<ph name="END_LIST_ITEM" />
 <ph name="LIST_ITEM" />Internetproviders kunnen webverkeer monitoren.<ph name="END_LIST_ITEM" />
 <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="483241715238664915">Waarschuwingen aanzetten</translation>
 <translation id="4838327282952368871">Dromerig</translation>
 <translation id="4840250757394056958">Je Chrome-geschiedenis bekijken</translation>
@@ -1323,6 +1324,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="5138227688689900538">Minder bekijken</translation>
 <translation id="5145883236150621069">Foutcode aanwezig in de beleidsreactie</translation>
 <translation id="5146995429444047494">Meldingen voor <ph name="ORIGIN" /> zijn geblokkeerd</translation>
+<translation id="514704532284964975"><ph name="URL" /> wil informatie zien en wijzigen op NFC-apparaten waarop je met je telefoon tikt</translation>
 <translation id="5148809049217731050">Met de bedrukte zijde omhoog</translation>
 <translation id="515292512908731282">C4 (envelop)</translation>
 <translation id="5158275234811857234">Omslag</translation>

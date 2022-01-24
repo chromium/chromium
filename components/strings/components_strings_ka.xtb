@@ -1219,6 +1219,7 @@
           <ph name="LIST_ITEM" />დამსაქმებლებს ან სასწავლებლებს შეუძლიათ ვების დათვალიერების აქტივობის გაკონტროლება<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ინტერნეტპროვაიდერებს შეუძლია ვებტრაფიკის მონიტორინგი<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">იგნორირებულია, რადგან წესების განსაზღვრა შეუძლია მხოლოდ ღრუბლოვან სამომხმარებლო წესებს.</translation>
 <translation id="483241715238664915">გაფრთხილებების ჩართვა</translation>
 <translation id="4838327282952368871">არაამქვეყნიური</translation>
 <translation id="4840250757394056958">თქვენი Chrome-ის ისტორიის ნახვა</translation>

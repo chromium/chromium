@@ -508,6 +508,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1521442365706402292">Upravljaj potvrdama</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="152234381334907219">Nikada nije sačuvano</translation>
+<translation id="1523279371236772909">Pregledano u proteklom mjesecu</translation>
 <translation id="1523978563989812243">Programi za pretvaranje teksta u govor</translation>
 <translation id="1524430321211440688">Tastatura</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
@@ -1245,6 +1246,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2232876851878324699">Fajl je sadržavao jednu potvrdu, koja nije uvezena:</translation>
 <translation id="2233502537820838181">&amp;Više informacija</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
+<translation id="2234827758954819389">Vodič za privatnost</translation>
 <translation id="2234876718134438132">Sinhronizacija i Googleove usluge</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238379619048995541">Podaci o stanju frekvencije</translation>
@@ -3088,6 +3090,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4095264805865317199">Otvori korisnički interfejs za aktiviranje mobilne mreže</translation>
 <translation id="4095507791297118304">Primarni ekran</translation>
 <translation id="4096508467498758490">Onemogućite ekstenzije u načinu rada za programere</translation>
+<translation id="4096797685681362305">Pregledano u protekloj sedmici</translation>
 <translation id="4097406557126260163">Aplikacije i ekstenzije</translation>
 <translation id="409742781329613461">Savjeti za Chrome</translation>
 <translation id="4097560579602855702">Pretražite Google</translation>
@@ -3643,6 +3646,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4699172675775169585">Slike i fajlovi u keš memoriji</translation>
 <translation id="4699357559218762027">(pokrenuto automatski)</translation>
 <translation id="4701025263201366865">Prijavljivanje roditelja</translation>
+<translation id="4701335814944566468">Pregledano jučer</translation>
 <translation id="4708794300267213770">Prikaži zaključan zaslon prilikom vraćanja iz mirovanja</translation>
 <translation id="4708849949179781599">Napusti preglednik <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Vrati postavke</translation>
@@ -3710,6 +3714,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="479536056609751218">Web stranica, samo HTML</translation>
 <translation id="4796142525425001238">Uvijek vraćaj</translation>
 <translation id="4798236378408895261">Priloži <ph name="BEGIN_LINK" />Bluetooth zapisnike<ph name="END_LINK" /> (Google interno)</translation>
+<translation id="479863874072008121">Upravljajte uređajima</translation>
 <translation id="4800839971935185386">Pregledajte ažuriranja naziva i ikone</translation>
 <translation id="4801448226354548035">Sakrij račune</translation>
 <translation id="4801512016965057443">Omogući roming mobilnih podataka</translation>
@@ -6425,6 +6430,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7659154729610375585">Svejedno izaći iz anonimnog načina rada?</translation>
 <translation id="7659297516559011665">Isključivo lozinke na ovom uređaju</translation>
+<translation id="7659336857671800422">Pokreni vodič za privatnost</translation>
 <translation id="7659584679870740384">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu.</translation>
 <translation id="7661259717474717992">Dopusti web-lokacijama spremanje i čitanje podataka kolačića</translation>
 <translation id="7661451191293163002">Certifikat za registraciju nije dohvaćen.</translation>
@@ -7944,6 +7950,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9200339982498053969"><ph name="ORIGIN" /> će moći uređivati sve fajlove u folderu <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Pretraži <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Obrisat će se svi offline podaci</translation>
+<translation id="9201117361710210082">Prethodno pregledano</translation>
 <translation id="9201220332032049474">Opcije zaključavanja ekrana</translation>
 <translation id="9201842707396338580">Nešto nije uredu. Kontaktirajte vlasnika ili administratora uređaja. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profiliranje je omogućeno</translation>

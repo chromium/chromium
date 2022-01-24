@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1351937230027495976">Скупи мени</translation>
 <translation id="1364382257761975320">Да бисте откључали Chromebook, користите отисак прста</translation>
+<translation id="1364618750746929654">Генерисање транскрипције није успело</translation>
 <translation id="1383597849754832576">Преузимање фајлова говора није успело. Пробајте касније.</translation>
 <translation id="1383876407941801731">Претражи</translation>
 <translation id="1391102559483454063">Укључено</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">Управљани</translation>
 <translation id="5465662442746197494">Потребна вам је помоћ?</translation>
 <translation id="547979256943495781">Полица на десној страни</translation>
+<translation id="5491186829646618080">Доступна су ажурирања фирмвера</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администратор је уклонио све eSIM профиле. Додатне информације потражите од администратора.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> се повезује.</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>
+<translation id="888982883502837004">Доступна су ажурирања фирмвера за уређај. Кликните да бисте их прегледали и ажурирали.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> ће бити трајно избрисан</translation>
 <translation id="890616557918890486">Промени извор</translation>
 <translation id="8909138438987180327">Батерија је на <ph name="PERCENTAGE" />%.</translation>

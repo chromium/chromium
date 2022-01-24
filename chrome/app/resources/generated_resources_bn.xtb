@@ -1034,6 +1034,7 @@
 <translation id="2022395138980869975">সাইড সার্চ টগল করুন</translation>
 <translation id="2023167225947895179">পিন অনুমান করা সহজ হতে পারে</translation>
 <translation id="202352106777823113">ডাউনলোডটি অনেক সময় নিয়েছে এবং নেটওয়ার্ক দিয়ে বন্ধ হয়েছে৷</translation>
+<translation id="2024195579772565064">সার্চ ইঞ্জিন মুছে ফেলুন</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ক্র্যাশ করেছে৷ এক্সটেনশন রিলোড করতে এই বেলুনটি ক্লিক করুন৷</translation>
 <translation id="2028449514182362831">যেসব ফিচার ব্যবহার করতে মোশন সেন্সর দরকার সেগুলি কাজ করবে না</translation>
 <translation id="202918510990975568">নিরাপত্তা ও সাইন-ইন কনফিগার করতে, আপনার পাসওয়ার্ড লিখুন</translation>
@@ -1175,6 +1176,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-fi জুড়ুন ...</translation>
 <translation id="2162155940152307086">আপনি সিঙ্ক সেটিংস পৃষ্ঠাটি ছেড়ে গেলে সিঙ্ক করা শুরু হবে</translation>
+<translation id="2162926944953615670">কোনও ই-সিম (eSIM) প্রোফাইল উপলভ্য নেই</translation>
 <translation id="2163470535490402084">আপনার <ph name="DEVICE_TYPE" />এ সাইন-ইন করতে ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="2163937499206714165">'ডার্ক মোড' চালু করুন</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> এবং আরও একটি সুইচ</translation>
@@ -1869,6 +1871,7 @@
 <translation id="2828650939514476812">ওয়াই-ফাই নেটওয়ার্কের সাথে সংযোগ করুন</translation>
 <translation id="2831430281393059038">ডিভাইস কাজ করে</translation>
 <translation id="2832124733806557606">ডিভাইস আনলক করতে বা সাইন-ইন করতে আপনার সন্তান পিন ব্যবহার করতে পারবে।</translation>
+<translation id="2835177225987815960">যেকোনও অ্যাসাইন করা পরিবর্তন এবং অটো-স্ক্যান স্পিড পছন্দ সহ আপনার বর্তমান স্ক্যান সেট-আপ আবার সেট করা হবে।</translation>
 <translation id="2835547721736623118">স্পিচ শনাক্তকরণ পরিষেবা</translation>
 <translation id="2836269494620652131">ক্র্যাশ</translation>
 <translation id="2836635946302913370">আপনার অ্যাডমিনিস্ট্রেটর এই ইউজারনেম দিয়ে সাইন-ইন করা বন্ধ করেছে৷</translation>
@@ -3514,6 +3517,7 @@
 <translation id="4547659257713117923">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="4547672827276975204">অটোমেটিক সেট হবে</translation>
 <translation id="4549791035683739768">আপনার 'নিরাপত্তা কী'-তে কোনও ফিঙ্গারপ্রিন্ট সেভ করা নেই</translation>
+<translation id="4550926046134589611">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" /> এখনও খুলবে।</translation>
 <translation id="4551763574344810652">আগের অবস্থায় ফিরে যেতে <ph name="MODIFIER_KEY_DESCRIPTION" /> টিপুন</translation>
 <translation id="4553526521109675518">ডিভাইসের ভাষা পরিবর্তন করতে, আপনাকে Chromebook রিস্টার্ট করতে হবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> ব্যবহার করে সার্চ করতে ছবির উপরে টেনে আনুন</translation>
@@ -3802,6 +3806,7 @@
 <translation id="48704129375571883">অতিরিক্ত বৈশিষ্ট্যগুলি যোগ করুন</translation>
 <translation id="4870758487381879312">কনফিগারেশনের তথ্য পেতে অ্যাডমিনের দেওয়া পাসওয়ার্ড লিখুন</translation>
 <translation id="4870903493621965035">কোনো ডিভাইস যুক্ত করা নেই</translation>
+<translation id="4870995365819149457">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> এবং অন্য ১টি অ্যাপে এখনও খুলবে।</translation>
 <translation id="4871308555310586478">Chrome ওয়েব স্টোর থেকে নয়।</translation>
 <translation id="4871322859485617074">পিনে ভুল অক্ষর আছে</translation>
 <translation id="4871370605780490696">বুকমার্ক যোগ করুন</translation>
@@ -4838,6 +4843,7 @@
 <translation id="5969728632630673489">কীবোর্ড শর্ককার্টের বিজ্ঞপ্তি বাতিল করা হয়েছে</translation>
 <translation id="5971037678316050792">ব্লুটুথ অ্যাডাপ্টারের স্থিতি ও যুক্ত করা নিয়ন্ত্রণ করে</translation>
 <translation id="597235323114979258">প্রিন্ট করার জন্য আরও ডিভাইস দেখুন</translation>
+<translation id="5972543790327947908">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> বা <ph name="APP_NAME_3" />-এ এখনও খুলবে।</translation>
 <translation id="5972666587303800813">নো-অপারেশন পরিষেবা</translation>
 <translation id="5972708806901999743">শীর্ষে যান</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> শুরু করুন</translation>
@@ -5209,6 +5215,7 @@
 <translation id="6355789186038748882">পরীক্ষামূলক (আলফা-কোয়ালিটি) ব্রাউজার! কয়েকটি ফিচার নেই অথবা অসম্পূর্ণ। অভিযোগ জানাতে এখানে যান: সহায়তা &gt; "কোনও সমস্যার ব্যাপারে অভিযোগ জানান..."।</translation>
 <translation id="635609604405270300">ডিভাইসটি চালু রাখুন</translation>
 <translation id="63566973648609420">শুধুমাত্র আপনার পাসফ্রেজসহ কোনো ব্যক্তি আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন৷ পাসফ্রেজটি Google-এ পাঠানো হয় না বা এর দ্বারা সংরক্ষণ করা হয় না৷ যদি আপনি আপনার পাসফ্রেজ ভুলে যান বা এই সেটিং পরিবর্তন করতে চান, তাহলে আপনাকে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট<ph name="END_LINK" /> করতে হবে।</translation>
+<translation id="6357305427698525450">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" /> বা  <ph name="APP_NAME_2" />-এ এখনও খুলবে।</translation>
 <translation id="6358884629796491903">ড্রাগন</translation>
 <translation id="6359706544163531585">হালকা থিম বন্ধ করুন</translation>
 <translation id="6361850914223837199">ত্রুটির বিশদ বিবরণ:</translation>
@@ -5727,6 +5734,7 @@
 <translation id="6900284862687837908">পটভূমিতে কাজ করা অ্যাপ্লিকেশান: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">উন্নত সুরক্ষা</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> আপডেট করতে আবার সাইন-ইন করুন</translation>
+<translation id="6900654715912436255">আপনি কি সত্যিই এই সার্চ ইঞ্জিন মুছে ফেলতে চান?</translation>
 <translation id="6902066522699286937">প্রিভিউ করার জন্য ভয়েস</translation>
 <translation id="6902336033320348843">এই বিভাগ কাজ করে না: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">ডোমেনে ডিভাইস যোগ করুন</translation>
@@ -5997,6 +6005,7 @@
 <translation id="7189234443051076392">আপনার ডিভাইসে পর্যাপ্ত জায়গা আছে কিনা দেখে নিন</translation>
 <translation id="7189451821249468368">এই ডিভাইসটি এনরোল করার জন্য প্রয়োজনীয় আপগ্রেড আপনার কাছে নেই। আরও কেনাকাটা করার জন্য, সেলস টিমের সাথে যোগাযোগ করুন। আপনার যদি মনে হয়, কোনও সমস্যার কারণে আপনি এই মেসেজটি দেখতে পাচ্ছেন, তাহলে সহায়তা টিমের সাথে যোগাযোগ করুন।</translation>
 <translation id="7189965711416741966">আঙ্গুলের ছাপ যোগ করা হয়েছে।</translation>
+<translation id="7191063546666816478">কিছু সহায়তা প্রদান করার লিঙ্ক <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> এবং অন্য <ph name="NUMBER_OF_OTHER_APPS" />টি অ্যাপে এখনও খুলবে।</translation>
 <translation id="7191159667348037">অজানা প্রিন্টার (USB)</translation>
 <translation id="7193051357671784796">আপনার সংস্থা এই অ্যাপ যোগ করেছে। ইনস্টল করা সম্পূর্ণ করতে অ্যাপটি আবার চালু করুন।</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> এর জন্য কোনও পাসওয়ার্ড সেভ করা হয়নি</translation>

@@ -1469,6 +1469,7 @@
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
 <translation id="2658653824183107970">使用舊版 <ph name="CORS" /> 模式，而不使用新版 <ph name="CORS" /></translation>
 <translation id="2660846099862559570">永不使用 Proxy</translation>
+<translation id="2664391398878045611">即使中間版位公告可供存取，新分頁也不會顯示</translation>
 <translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
 <translation id="2672012807430078509">控管是否要為 SMB 掛接功能啟用 NTLM 驗證通訊協定</translation>
@@ -1897,6 +1898,7 @@
 <translation id="3180671894201217988">如果將這項政策設為 Enabled 或不設定，第三方軟體將無法在 <ph name="PRODUCT_NAME" /> 的處理程序中置入可執行的程式碼。
 
       如果將這項政策設為 Disabled，第三方軟體將可在 <ph name="PRODUCT_NAME" /> 的處理程序中置入這類程式碼。</translation>
+<translation id="3182503302060513467">如果有中間版位公告，新分頁就會加以顯示</translation>
 <translation id="3184161739683646075">控管 DNS-over-HTTPS 的模式</translation>
 <translation id="3185009703220253572">自第 <ph name="SINCE_VERSION" /> 版起</translation>
 <translation id="3185895671618336039">設定 <ph name="PRODUCT_NAME" /> 的瀏覽資料生命週期。管理員可以透過這項政策設定瀏覽器刪除資料 (依資料類型) 的時間點。這很適合需要處理敏感客戶資料的客戶。這項政策只有在 <ph name="SYNC_DISABLED_POLICY_NAME" /> 設為 True 時才會生效。
@@ -2384,6 +2386,13 @@
       如果停用這項設定，使用者將無法透過 Smart Lock 登入帳戶。
 
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
+<translation id="3794413118360704299">這項政策可讓管理員針對已安裝的網頁應用程式指定設定。
+
+      這項政策可將網頁應用程式對應至特定的設定。查看 <ph name="WEB_APP_ID_REFERENCE_URL" /> 操作說明，瞭解系統如何決定已安裝網頁應用程式的 ID。
+      你可以利用特殊 ID <ph name="DEFAULT_SCOPE" /> 指定預設設定，所有未透過此政策自訂設定的網頁應用程式一律會套用這項預設設定。
+
+      <ph name="RUN_ON_OS_LOGIN_FIELD" /> 欄位會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為 <ph name="BLOCKED" />，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為 <ph name="RUN_WINDOWED" />，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為 <ph name="ALLOWED" />，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定可指定的值僅限 <ph name="ALLOWED" /> 和 <ph name="BLOCKED" />。
+      </translation>
 <translation id="3796527892245558832">瀏覽器啟動時顯示設定檔選擇畫面</translation>
 <translation id="3798922329287609568">你可以透過這項政策禁止使用雙面列印模式。
 
@@ -2555,6 +2564,7 @@
 
       如果將這項政策設為 False，自動填入功能一律不會建議或填入信用卡資訊，也不會在使用者瀏覽網頁時儲存其提交的其他信用卡資訊。</translation>
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
+<translation id="3994043824457743421">在新分頁顯示中間版位公告</translation>
 <translation id="3997519162482760140">可在 SAML 登入網頁取得錄影裝置存取權的網址</translation>
 <translation id="4004523942550416237">在初始設定期間不顯示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 請注意，這項政策自 M87 版起已遭淘汰，並在 M89 版中移除。請改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 來設定受管理訪客工作階段的隱私權警告訊息。
@@ -5359,6 +5369,12 @@
 <translation id="7434202861148928348">為遠端存取用戶端設定必要的網域名稱</translation>
 <translation id="7443356543619955157">你可以透過這項政策將網路設定強制套用至 <ph name="PRODUCT_OS_NAME" />裝置上的所有使用者。這個網路設定是根據「開放網路設定」格式所定義的 JSON 格式字串。</translation>
 <translation id="7448430478749155471">在登入畫面上啟用隨選朗讀功能</translation>
+<translation id="7456922722153109956">這項政策可控管新分頁上中間版位公告的顯示設定。
+
+      如果將這項政策設為啟用，一旦有中間版位公告時，新分頁就會加以顯示。
+
+      如果將這項政策設為啟用，即使有中間版位公告，新分頁還是不會加以顯示。
+      </translation>
 <translation id="7458437477941640506">如果作業系統版本比目標版本還新，則不復原至目標版本，且一併停用更新。</translation>
 <translation id="7459601923199346224">控管憑證管理的使用者和裝置政策。</translation>
 <translation id="7459633275230216698">允許顯示檔案選取對話方塊</translation>

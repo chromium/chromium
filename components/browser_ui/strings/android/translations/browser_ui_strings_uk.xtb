@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Дозволити файли cookie для конкретного сайту.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="4165986682804962316">Налаштування сайту</translation>
+<translation id="4194328954146351878">Запитувати, перш ніж дозволяти сайтам переглядати й змінювати інформацію на пристроях NFC (рекомендовано)</translation>
 <translation id="4200726100658658164">Відкрити налаштування доступу до моїх геоданих</translation>
 <translation id="4226663524361240545">Коли надходитимуть сповіщення, пристрій може вібрувати</translation>
 <translation id="4259722352634471385">Веб-сторінку <ph name="URL" /> заблоковано</translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Збільшити масштаб</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC вимкнено на цьому пристрої. Увімкніть цю функцію в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Заборонити сайтам переглядати й змінювати інформацію на пристроях NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блокувати файли cookie з конкретного сайту.</translation>
 <translation id="8959122750345127698">Веб-сторінка <ph name="URL" /> недоступна</translation>

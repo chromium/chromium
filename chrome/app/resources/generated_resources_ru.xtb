@@ -1216,6 +1216,9 @@
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
+<translation id="2224173723542116248"><ph name="BEGIN_PARAGRAPH1" />Для удобства пользователей <ph name="DEVICE_OS" /> собирает данные об аппаратном обеспечении устройств и передает эту информацию компании Google, чтобы определять подходящие обновления. Вы также можете разрешить Google использовать эти сведения в других целях, например для улучшения <ph name="DEVICE_OS" /> и предоставления поддержки.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Чтобы посмотреть, какие сведения отправляются в Google для фильтрации обновлений и для каких ещё целей можно передавать нам данные, войдите в аккаунт на этом устройстве и изучите раздел CLOUDREADY_HARDWARE_INFO на странице chrome://system.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Чтобы узнать больше о том, какую информацию <ph name="DEVICE_OS" /> может отправлять в Google и как она будет использоваться, перейдите на страницу g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
 <translation id="222447520299472966">Выберите хотя бы одну художественную галерею.</translation>
 <translation id="2224551243087462610">Изменить имя папки</translation>
@@ -1763,6 +1766,15 @@
 <translation id="2766161002040448006">Отправить запрос родителям</translation>
 <translation id="2767077837043621282">Не удалось обновить Chromebook. Повторите попытку позже.</translation>
 <translation id="2767127727915954024">Сайт <ph name="ORIGIN" /> сможет изменять файл "<ph name="FILENAME" />", пока вы не закроете все вкладки этого сайта.</translation>
+<translation id="2767821224812051905"><ph name="BEGIN_PARAGRAPH1" />Следуйте приведенным ниже инструкциям.
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />Убедитесь, что у устройства исправное внутреннее хранилище, например HDD, SSD или eMMC.
+    <ph name="LIST_ITEM" />Убедитесь, что емкость этого хранилища превышает 16 ГБ.
+    <ph name="LIST_ITEM" />Проверьте подключение к нему, если это физически возможно.
+    <ph name="LIST_ITEM" />Убедитесь, что вы используете сертифицированную модель, и прочитайте примечания к установке.
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Более подробная информация доступна на странице g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">Удалить из списка</translation>
 <translation id="2770690685823456775">Экспортируйте пароли в другую папку.</translation>
 <translation id="2770929488047004208">Разрешение монитора</translation>
@@ -2984,6 +2996,7 @@
 <translation id="4005817994523282006">Способ определения часового пояса</translation>
 <translation id="4007856537951125667">Скрыть ярлыки</translation>
 <translation id="4008291085758151621">В режиме VR сведения о сайте недоступны</translation>
+<translation id="4009955655170295852">Прежде всего обязательно создайте резервную копию данных. При установке <ph name="DEVICE_OS" /> вся информация на жестком диске будет перезаписана. Подробные сведения доступны на странице g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">Чтобы получить доступ к закладкам на мобильном устройстве, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Используете расширения? <ph name="BEGIN_LINK" />Управляйте ими<ph name="END_LINK" /> в специальном разделе.</translation>
@@ -3706,6 +3719,9 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="4819607494758673676">Уведомления Google Ассистента</translation>
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
+<translation id="4820771945393916447"><ph name="BEGIN_PARAGRAPH1" />Перед регистрацией нужно очистить TPM, чтобы операционная система <ph name="DEVICE_OS" /> могла управлять устройством.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Вы также можете полностью отключить TPM на устройстве. В этом случае данные по-прежнему будут программно шифроваться во время хранения, но некоторые функции безопасности, например аппаратные сертификаты, станут недоступны.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Параметры TPM можно изменить в настройках BIOS/UEFI во время перезагрузки системы. Конкретные действия зависят от модели. Перед перезагрузкой изучите документацию <ph name="DEVICE_OS" /> на другом устройстве: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;Сбор данных включен</translation>
 <translation id="4823484602432206655">Просмотр и изменение настроек для пользователей и устройств</translation>
 <translation id="4824037980212326045">Резервное копирование и восстановление Linux</translation>
@@ -5614,6 +5630,7 @@
 <translation id="6834652994408928492">Тёмная тема автоматически включается на закате</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
+<translation id="6839882458129755986">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробные сведения доступны на странице g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
 <translation id="6840155290835956714">Запрашивать разрешение перед отправкой</translation>
 <translation id="6840184929775541289">Не является Центром сертификации</translation>
@@ -5931,6 +5948,7 @@
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7180865173735832675">Настроить</translation>
 <translation id="7182791023900310535">Перенести пароль</translation>
+<translation id="7183193772170782394">Разрешить компании Google использовать данные о вашем оборудовании, чтобы улучшать <ph name="DEVICE_OS" />. Если вы откажетесь, эта информация все равно будет отправляться в Google для определения подходящих обновлений, но она не будет храниться или использоваться в других целях. Подробные сведения доступны на странице g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">Показать боковую панель поиска. Боковая панель поиска не активирована.</translation>
 <translation id="7186088072322679094">Сохранить на Панели инструментов</translation>
 <translation id="7186303001964993981"><ph name="ORIGIN" /> не может открыть эту папку, поскольку она содержит системные файлы.</translation>
@@ -7017,6 +7035,8 @@
 <translation id="8260864402787962391">Мышь</translation>
 <translation id="8261378640211443080"><ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений об этом расширении, то есть оно могло быть установлено без вашего ведома.</translation>
 <translation id="8261506727792406068">Удалить</translation>
+<translation id="8262443362616648274"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">Введите название группы вкладок</translation>
 <translation id="8263744495942430914">Сайт <ph name="FULLSCREEN_ORIGIN" /> скрыл курсор.</translation>
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>
@@ -7492,6 +7512,7 @@
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.}}</translation>
 <translation id="8777259617149177596">Чехол заряжен на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="8777628254805677039">пароль суперпользователя</translation>
+<translation id="8779944680596936487">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
 <translation id="8780123805589053431">Получать описания изображений от Google</translation>
 <translation id="8780443667474968681">Голосовой поиск отключен.</translation>
 <translation id="8781834595282316166">Добавить новую вкладку в группу</translation>

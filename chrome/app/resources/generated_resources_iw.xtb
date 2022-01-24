@@ -1225,6 +1225,9 @@
 <translation id="2220572644011485463">קוד אימות או סיסמה</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">מקור מדיה ללא שם</translation>
+<translation id="2224173723542116248">‏<ph name="BEGIN_PARAGRAPH1" />כדי לספק את החוויה הטובה ביותר, נעשה איסוף נתוני חומרה בנוגע למכשירים על ידי <ph name="DEVICE_OS" /> והם משותפים עם Google כדי לקבוע אילו עדכונים צריך לשלוח. לחלופין, אפשר לתת ל-Google הרשאה להשתמש בנתונים האלה למטרות נוספות כמו תמיכה ושיפורים בחווייה ובשירותים של <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אפשר להתחבר לחשבון במכשיר הזה ולעבור אל הקטע CLOUDREADY_HARDWARE_INFO בכתובת chrome://system כדי לראות את הנתונים שנשלחים אל Google לסינון עדכונים, וגם לכל מופע אחר שבו בחרת לשתף נתונים עם Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />למידע נוסף על הנתונים שעשויים להיות משותפים עם Google על ידי <ph name="DEVICE_OS" /> והאופן שבו נעשה בהם שימוש, יש לעבור לכתובת g.co/CR2/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2224444042887712269">ההגדרה הזו שייכת ל-<ph name="OWNER_EMAIL" />.</translation>
 <translation id="222447520299472966">יש לבחור לפחות אלבום של גלריית אומנות אחד</translation>
 <translation id="2224551243087462610">עריכת שם התיקייה</translation>
@@ -1777,6 +1780,15 @@
 <translation id="2766161002040448006">בקשת רשות מההורים</translation>
 <translation id="2767077837043621282">‏לא ניתן לעדכן את ה-Chromebook. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2767127727915954024">לאתר <ph name="ORIGIN" /> תהיה הרשאה לערוך את <ph name="FILENAME" /> עד שכל הכרטיסיות של האתר הזה ייסגרו</translation>
+<translation id="2767821224812051905">‏<ph name="BEGIN_PARAGRAPH1" />מומלץ לפעול לפי השלבים הבאים לפתרון הבעיה:
+    <ph name="BEGIN_LIST" />
+    <ph name="LIST_ITEM" />מוודאים שבמכשיר יש אחסון פנימי פעיל כמו HDD,‏ SSD או eMMC
+    <ph name="LIST_ITEM" />בודקים שהתקן האחסון הפנימי מכיל יותר מ-16GB
+    <ph name="LIST_ITEM" />בודקים את החיבור לאחסון הפנימי (אם הוא נגיש פיזית)
+    <ph name="LIST_ITEM" />מוודאים שנעשה שימוש בדגם שקיבל אישור, ובודקים את נתוני ההתקנה
+    <ph name="END_LIST" />
+    <ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת g.co/CR2/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2770465223704140727">הסרה מהרשימה</translation>
 <translation id="2770690685823456775">אפשר לייצא את הסיסמאות לתיקייה אחרת</translation>
 <translation id="2770929488047004208">הרזולוציה של הצג</translation>
@@ -2998,6 +3010,7 @@
 <translation id="4005817994523282006">שיטה לזיהוי אזור זמן</translation>
 <translation id="4007856537951125667">הסתרת קיצורי הדרך</translation>
 <translation id="4008291085758151621">‏פרטי האתר אינם זמינים ב-VR</translation>
+<translation id="4009955655170295852">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/CR2/InstallGuide.</translation>
 <translation id="4010917659463429001">כדי לגשת לסימניות שלך בנייד, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">לתקן את '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="4015163439792426608">מותקנים אצלך תוספים? אפשר <ph name="BEGIN_LINK" />לנהל את התוספים<ph name="END_LINK" /> בקלות במקום אחד.</translation>
@@ -3721,6 +3734,9 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{סימנייה אחת נמחקה}two{{COUNT} סימניות נמחקו}many{{COUNT} סימניות נמחקו}other{{COUNT} סימניות נמחקו}}</translation>
 <translation id="4819607494758673676">‏התראות של Google Assistant</translation>
 <translation id="4820236583224459650">הגדרה ככרטיס פעיל</translation>
+<translation id="4820771945393916447">‏<ph name="BEGIN_PARAGRAPH1" />לפני ההרשמה צריך לנקות את מודול הפלטפורמה המהימנה (TPM)‏ כדי שמערכת <ph name="DEVICE_OS" /> תוכל לתבוע בעלות על המכשיר.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />אפשר גם לכבות לגמרי את מכשיר ה-TPM. הנתונים שלך עדיין יישמרו באופן מאובטח באמצעות הצפנת תוכנה, אבל חלק מתכונות האבטחה, כמו אישורים בגיבוי חומרה, יושבתו.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />אפשר לשנות את הגדרות ה-TPM על ידי הפעלה מחדש וכניסה להגדרות ה-BIOS/UEFI של המערכת. השלבים משתנים בהתאם לדגם של המכשיר. למידע נוסף, עליך לפתוח את התיעוד לגבי <ph name="DEVICE_OS" /> במכשיר אחר לפני ההפעלה מחדש: g.co/CR2/TPMHelp.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4821935166599369261">&amp;יצירת פרופילים מופעלת</translation>
 <translation id="4823484602432206655">קריאה ושינוי של הגדרות המשתמש והמכשיר</translation>
 <translation id="4824037980212326045">‏גיבוי ושחזור ב-Linux</translation>
@@ -5629,6 +5645,7 @@
 <translation id="6834652994408928492">מצב כהה יופעל באופן אוטומטי בשעת השקיעה</translation>
 <translation id="6835762382653651563">יש להתחבר לאינטרנט כדי לעדכן את ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="6839225236531462745">שגיאה של מחיקת אישור</translation>
+<translation id="6839882458129755986">‏Google לא אחראית לאובדן נתונים, וייתכן שמערכת <ph name="DEVICE_OS" /> לא תפעל בדגמים שלא אושרו. מידע נוסף זמין בכתובת g.co/CR2/InstallGuide.</translation>
 <translation id="6839916869147598086">תהליך הכניסה השתנה</translation>
 <translation id="6840155290835956714">יש לשאול לפני שליחה</translation>
 <translation id="6840184929775541289">אינו רשות אישורים</translation>
@@ -5946,6 +5963,7 @@
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7180865173735832675">התאמה אישית</translation>
 <translation id="7182791023900310535">העברת הסיסמה שלך</translation>
+<translation id="7183193772170782394">‏מתן הרשאה ל-Google להשתמש בנתוני החומרה כדי לעזור בשיפור של <ph name="DEVICE_OS" />. במקרה של סירוב, הנתונים האלה עדיין יישלחו אל Google כדי לקבוע מועדים נכונים לעדכונים, אבל הם לא נשמרים ולא נעשה בהם שום שימוש אחר. מידע נוסף זמין בכתובת g.co/CR2/HWDataCollection.</translation>
 <translation id="7183420126213758623">לחצן להחלפת מצב החיפוש בצד הדף. החיפוש בצד הדף לא מופעל.</translation>
 <translation id="7186088072322679094">השארה בסרגל הכלים</translation>
 <translation id="7186303001964993981">ל-<ph name="ORIGIN" /> אין הרשאה לפתוח את התיקייה הזו כי היא מכילה קובצי מערכת</translation>
@@ -7034,6 +7052,8 @@
 <translation id="8260864402787962391">עכבר</translation>
 <translation id="8261378640211443080">התוסף הזה לא רשום ב<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8262443362616648274">‏<ph name="BEGIN_PARAGRAPH1" />משהו השתבש ולא ניתן היה להתקין את <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />עזרה נוספת זמינה בכתובת g.co/CR2/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8263336784344783289">כאן נותנים שם לקבוצה</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> השבית את סמן העכבר.</translation>
 <translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
@@ -7508,6 +7528,7 @@
 כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.}}</translation>
 <translation id="8777259617149177596">רמת טעינת הסוללה של הנרתיק %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="8777628254805677039">‏סיסמת root</translation>
+<translation id="8779944680596936487">‏אתרים יכולים להשתמש בקובצי cookie רק כדי לראות את פעילות הגלישה בהם, ולא באתרים אחרים</translation>
 <translation id="8780123805589053431">‏קבלת תיאורי תמונות מ-Google</translation>
 <translation id="8780443667474968681">החיפוש הקולי הושבת.</translation>
 <translation id="8781834595282316166">כרטיסייה חדשה בקבוצה</translation>
