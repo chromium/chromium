@@ -43,6 +43,7 @@ class ExternalLoader;
 namespace crosapi {
 class BrowserManager;
 class CrosapiManager;
+class LacrosAvailabilityPolicyObserver;
 }  // namespace crosapi
 
 namespace crostini {
@@ -198,6 +199,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       lock_screen_apps_state_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<crosapi::BrowserManager> browser_manager_;
+  std::unique_ptr<crosapi::LacrosAvailabilityPolicyObserver>
+      lacros_availability_policy_observer_;
 
   std::unique_ptr<power::SmartChargingManager> smart_charging_manager_;
 
