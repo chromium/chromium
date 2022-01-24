@@ -23,6 +23,7 @@
     autocorrectionOccured,
     blur,
     busyChanged,
+    caretBoundsChanged,
     checkedStateChanged,
     checkedStateDescriptionChanged,
     childrenChanged,
@@ -266,6 +267,28 @@
     mark,
     marquee,
     math,
+    mathMLFraction,
+    mathMLIdentifier,
+    mathMLMath,
+    mathMLMultiscripts,
+    mathMLNoneScript,
+    mathMLNumber,
+    mathMLOperator,
+    mathMLOver,
+    mathMLPrescriptDelimiter,
+    mathMLRoot,
+    mathMLRow,
+    mathMLSquareRoot,
+    mathMLStringLiteral,
+    mathMLSub,
+    mathMLSubSup,
+    mathMLSup,
+    mathMLTable,
+    mathMLTableCell,
+    mathMLTableRow,
+    mathMLText,
+    mathMLUnder,
+    mathMLUnderOver,
     menu,
     menuBar,
     menuItem,
@@ -305,7 +328,9 @@
     staticText,
     status,
     strong,
+    subscript,
     suggestion,
+    superscript,
     svgRoot,
     switch,
     tab,
@@ -455,6 +480,7 @@
     relatedElement,
     rubyAnnotation,
     summary,
+    svgDescElement,
     tableCaption,
     title
   };
@@ -487,6 +513,12 @@
     time
   };
 
+  // Lists the values that `invalidState` can take on.
+  enum InvalidState {
+    false,
+    true
+  };
+
   // Describes possible actions when performing a do default action.
   enum DefaultActionVerb {
     activate,
@@ -506,7 +538,8 @@ enum MarkerType {
   grammar,
   textMatch,
   activeSuggestion,
-  suggestion
+  suggestion,
+  highlight
 };
 
 // The following three enums are associated with an $(ref:automation.AutomationIntent).
@@ -575,7 +608,9 @@ enum IntentInputEventType {
 // A text boundary associated with an $(ref:automation.AutomationIntent).
 enum IntentTextBoundaryType {
   character,
-  format,
+  formatEnd,
+  formatStart,
+  formatStartOrEnd,
   lineEnd,
   lineStart,
   lineStartOrEnd,
@@ -585,6 +620,7 @@ enum IntentTextBoundaryType {
   pageStartOrEnd,
   paragraphEnd,
   paragraphStart,
+  paragraphStartSkippingEmptyParagraphs,
   paragraphStartOrEnd,
   sentenceEnd,
   sentenceStart,
@@ -810,8 +846,10 @@ enum SortDirectionType {
     static void moveToPreviousLineStartPosition();
     static void moveToNextLineEndPosition();
     static void moveToPreviousLineEndPosition();
+    static void moveToNextFormatStartPosition();
     static void moveToPreviousFormatStartPosition();
     static void moveToNextFormatEndPosition();
+    static void moveToPreviousFormatEndPosition();
     static void moveToNextParagraphStartPosition();
     static void moveToPreviousParagraphStartPosition();
     static void moveToNextParagraphEndPosition();
@@ -908,6 +946,9 @@ enum SortDirectionType {
 
     // The level of a heading or tree item.
     long? hierarchicalLevel;
+
+    // The current caret bounds in screen coordinates.
+    Rect? caretBounds;
 
     // The start and end index of each word in an inline text box.
     long[]? wordStarts;
@@ -1201,6 +1242,18 @@ enum SortDirectionType {
     // Miscellaneous attributes.
     //
 
+    // Whether or not this node is a button.
+    boolean isButton;
+
+  // Whether or not this node is a checkbox.
+    boolean isCheckBox;
+
+    // Whether or not this node is a combobox.
+    boolean isComboBox;
+
+    // Whether or not this node is an image.
+    boolean isImage;
+
     // Aria auto complete.
     DOMString? autoComplete;
 
@@ -1295,6 +1348,9 @@ enum SortDirectionType {
 
     // Indicates aria-current state.
     AriaCurrentState? ariaCurrentState;
+
+    // Indicates invalid-state.
+    InvalidState? invalidState;
 
     // The application id for a tree rooted at this node.
     DOMString? appId;

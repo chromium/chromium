@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"

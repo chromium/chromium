@@ -19,7 +19,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
@@ -40,6 +39,9 @@ class MEDIA_EXPORT AudioRendererMixerInput
                           const base::UnguessableToken& owner_token,
                           const std::string& device_id,
                           AudioLatency::LatencyType latency);
+
+  AudioRendererMixerInput(const AudioRendererMixerInput&) = delete;
+  AudioRendererMixerInput& operator=(const AudioRendererMixerInput&) = delete;
 
   // SwitchableAudioRendererSink implementation.
   void Start() override;
@@ -133,8 +135,6 @@ class MEDIA_EXPORT AudioRendererMixerInput
   // the OnDeviceInfoReceived() from the GODIA() call completes.
   std::string pending_device_id_;
   OutputDeviceStatusCB pending_switch_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerInput);
 };
 
 }  // namespace media

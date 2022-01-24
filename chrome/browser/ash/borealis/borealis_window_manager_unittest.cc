@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_window_manager_mock.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
+#include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -41,6 +42,22 @@ TEST_F(BorealisWindowManagerTest, BorealisWindowHasAnId) {
   std::unique_ptr<aura::Window> window =
       MakeWindow("org.chromium.borealis.foobarbaz");
   EXPECT_NE(window_manager.GetShelfAppId(window.get()), "");
+}
+
+TEST_F(BorealisWindowManagerTest, BorealisWindowHasCorrectId) {
+  BorealisWindowManager window_manager(profile());
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.xprop.456789");
+  CreateFakeApp(profile(), "some_app", "borealis/456789");
+  EXPECT_EQ(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
+}
+
+TEST_F(BorealisWindowManagerTest, MismatchedWindowHasDifferentId) {
+  BorealisWindowManager window_manager(profile());
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.xprop.2468");
+  CreateFakeApp(profile(), "some_app", "borealis/456789");
+  EXPECT_NE(window_manager.GetShelfAppId(window.get()), FakeAppId("some_app"));
 }
 
 TEST_F(BorealisWindowManagerTest, IdDetectionDoesNotImplyTracking) {

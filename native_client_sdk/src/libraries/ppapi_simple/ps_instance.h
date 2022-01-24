@@ -2,8 +2,8 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#ifndef PPAPI_SIMPLE_PS_INSTANCE_H_
-#define PPAPI_SIMPLE_PS_INSTANCE_H_
+#ifndef LIBRARIES_PPAPI_SIMPLE_PS_INSTANCE_H_
+#define LIBRARIES_PPAPI_SIMPLE_PS_INSTANCE_H_
 
 #include <stdarg.h>
 
@@ -31,4 +31,4 @@ void PSInstanceError(const char *fmt, ...);
 
 EXTERN_C_END
 
-#endif  /* PPAPI_SIMPLE_PS_INSTANCE_H_ */
+#endif  // LIBRARIES_PPAPI_SIMPLE_PS_INSTANCE_H_

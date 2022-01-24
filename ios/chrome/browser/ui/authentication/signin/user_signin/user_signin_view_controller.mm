@@ -173,8 +173,7 @@ enum AuthenticationButtonType {
   } else {
     // By default display 'Yes I'm in' button.
     [self.primaryActionButton
-        setTitle:l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)
+        setTitle:l10n_util::GetNSString(self.acceptSigninButtonStringId)
         forState:UIControlStateNormal];
     [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
     self.primaryActionButton.tag = AuthenticationButtonTypeConfirmation;
@@ -505,11 +504,9 @@ enum AuthenticationButtonType {
     }
   }
 
-  if (@available(iOS 13.4, *)) {
-    button.pointerInteractionEnabled = YES;
-    button.pointerStyleProvider =
-        CreateOpaqueOrTransparentButtonPointerStyleProvider();
-  }
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider =
+      CreateOpaqueOrTransparentButtonPointerStyleProvider();
 }
 
 // Applies font and inset to |button| according to the current size class.

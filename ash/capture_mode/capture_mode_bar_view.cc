@@ -14,6 +14,7 @@
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -50,8 +51,9 @@ constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 }  // namespace
 
-CaptureModeBarView::CaptureModeBarView()
-    : capture_type_view_(AddChildView(std::make_unique<CaptureModeTypeView>())),
+CaptureModeBarView::CaptureModeBarView(bool projector_mode)
+    : capture_type_view_(
+          AddChildView(std::make_unique<CaptureModeTypeView>(projector_mode))),
       separator_1_(AddChildView(std::make_unique<views::Separator>())),
       capture_source_view_(
           AddChildView(std::make_unique<CaptureModeSourceView>())),
@@ -71,9 +73,8 @@ CaptureModeBarView::CaptureModeBarView()
   SetBackground(views::CreateSolidBackground(background_color));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kBorderRadius);
-  layer()->SetBackgroundBlur(
-      static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault));
-  layer()->SetBackdropFilterQuality(capture_mode::kBlurQuality);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kBarPadding,

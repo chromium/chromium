@@ -27,10 +27,9 @@ try {
       // frame.
       const iframeUrl = new URL(document.URL);
       iframeUrl.searchParams.set('mode', 'activating-from-iframe');
-      const iframe = document.createElement('iframe');
-      iframe.src = iframeUrl;
-      document.body.appendChild(iframe);
-
+      // Wait for the iframe to be loaded. This prevents readyChannel messages
+      // from being sent before the receiver side is ready.
+      await createFrame(iframeUrl);
       startPrerendering(prerenderingUrl.toString());
       break;
     }

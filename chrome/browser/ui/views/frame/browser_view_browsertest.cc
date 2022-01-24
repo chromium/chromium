@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +43,9 @@ class BrowserViewTest : public InProcessBrowserTest {
  public:
   BrowserViewTest() : devtools_(nullptr) {}
 
+  BrowserViewTest(const BrowserViewTest&) = delete;
+  BrowserViewTest& operator=(const BrowserViewTest&) = delete;
+
  protected:
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -74,8 +76,6 @@ class BrowserViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewTest);
 };
 
 namespace {
@@ -88,6 +88,10 @@ class TestWebContentsObserver : public content::WebContentsObserver {
                           content::WebContents* other)
       : content::WebContentsObserver(source),
         other_(other) {}
+
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
   ~TestWebContentsObserver() override {}
 
   void WebContentsDestroyed() override {
@@ -97,18 +101,20 @@ class TestWebContentsObserver : public content::WebContentsObserver {
 
  private:
   content::WebContents* other_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 class TestTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
  public:
   explicit TestTabModalConfirmDialogDelegate(content::WebContents* contents)
       : TabModalConfirmDialogDelegate(contents) {}
+
+  TestTabModalConfirmDialogDelegate(const TestTabModalConfirmDialogDelegate&) =
+      delete;
+  TestTabModalConfirmDialogDelegate& operator=(
+      const TestTabModalConfirmDialogDelegate&) = delete;
+
   std::u16string GetTitle() override { return std::u16string(u"Dialog Title"); }
   std::u16string GetDialogMessage() override { return std::u16string(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TestTabModalConfirmDialogDelegate);
 };
 }  // namespace
 
@@ -209,6 +215,10 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
   BookmarkBarViewObserverImpl() : change_count_(0) {
   }
 
+  BookmarkBarViewObserverImpl(const BookmarkBarViewObserverImpl&) = delete;
+  BookmarkBarViewObserverImpl& operator=(const BookmarkBarViewObserverImpl&) =
+      delete;
+
   int change_count() const { return change_count_; }
   void clear_change_count() { change_count_ = 0; }
 
@@ -217,8 +227,6 @@ class BookmarkBarViewObserverImpl : public BookmarkBarViewObserver {
 
  private:
   int change_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewObserverImpl);
 };
 
 // Verifies we don't unnecessarily change the visibility of the BookmarkBarView.
@@ -229,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AvoidUnnecessaryVisibilityChanges) {
       bookmarks::prefs::kShowBookmarkBar, false);
   GURL new_tab_url(chrome::kChromeUINewTabURL);
   chrome::AddTabAt(browser(), GURL(), -1, true);
-  ui_test_utils::NavigateToURL(browser(), new_tab_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), new_tab_url));
 
   ASSERT_TRUE(browser_view()->bookmark_bar());
   BookmarkBarViewObserverImpl observer;
@@ -304,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TitleAndLoadState) {
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, ShowFaviconInTab) {
   // Opens "chrome://version/" page, which uses default favicon.
   GURL version_url(chrome::kChromeUIVersionURL);
-  ui_test_utils::NavigateToURL(browser(), version_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), version_url));
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* helper = TabUIHelper::FromWebContents(contents);
   ASSERT_TRUE(helper);

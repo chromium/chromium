@@ -24,11 +24,12 @@ import '../os_people_page/lock_screen_password_prompt_dialog.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
-import {Route, RouteObserverBehavior, Router} from '../../router.js';
+import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
 import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from '../os_people_page/lock_state_behavior.m.js';
 import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
 
 import {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 
@@ -117,18 +118,6 @@ Polymer({
     },
 
     /**
-     * True if redesign of account management flows is enabled.
-     * @private
-     */
-    isAccountManagementFlowsV2Enabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isAccountManagementFlowsV2Enabled');
-      },
-      readOnly: true,
-    },
-
-    /**
      * True if Pciguard UI is enabled.
      * @private
      */
@@ -136,6 +125,18 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('pciguardUiEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
+     * True if snooping protection is enabled.
+     * @private
+     */
+    isSnoopingProtectionEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
       },
       readOnly: true,
     },
@@ -181,13 +182,6 @@ Polymer({
     dataAccessShiftTabPressed_: {
       type: Boolean,
       value: false,
-    },
-
-    /** @private */
-    shouldShowSubsections_: {
-      type: Boolean,
-      computed: 'computeShouldShowSubsections_(' +
-          'isAccountManagementFlowsV2Enabled_, isGuestMode_)',
     },
 
     /**
@@ -302,6 +296,11 @@ Polymer({
   /** @private */
   onManageOtherPeople_() {
     Router.getInstance().navigateTo(routes.ACCOUNTS);
+  },
+
+  /** @private */
+  onSmartPrivacy_() {
+    Router.getInstance().navigateTo(routes.SMART_PRIVACY);
   },
 
   /**
@@ -435,21 +434,12 @@ Polymer({
           .then(() => {
             afterNextRender(this, () => {
               this.$$('.peripheral-data-access-protection')
-                  .$$('#control')
+                  .shadowRoot.querySelector('#control')
                   .addEventListener(
                       'keydown', this.onDataAccessToggleKeyPress_.bind(this));
             });
           });
     }
-  },
-
-  /**
-   * @return {boolean} whether 'accounts' and 'lock screen' subsections should
-   * be shown.
-   * @private
-   */
-  computeShouldShowSubsections_() {
-    return this.isAccountManagementFlowsV2Enabled_ && !this.isGuestMode_;
   },
 
   /**

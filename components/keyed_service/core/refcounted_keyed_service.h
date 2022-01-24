@@ -5,10 +5,9 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
 class RefcountedKeyedService;
@@ -37,6 +36,9 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedService
     : public base::RefCountedThreadSafe<RefcountedKeyedService,
                                         impl::RefcountedKeyedServiceTraits> {
  public:
+  RefcountedKeyedService(const RefcountedKeyedService&) = delete;
+  RefcountedKeyedService& operator=(const RefcountedKeyedService&) = delete;
+
   // Unlike KeyedService, ShutdownOnUI is not optional. You must do something
   // to drop references during the first pass Shutdown() because this is the
   // only point where you are guaranteed that something is running on the UI
@@ -68,8 +70,6 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedService
 
   // Do we have to delete this object on a specific sequence?
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefcountedKeyedService);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_

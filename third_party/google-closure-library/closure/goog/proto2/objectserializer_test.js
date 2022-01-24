@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.proto2.ObjectSerializerTest');
 goog.setTestOnly();
@@ -150,11 +142,16 @@ testSuite({
     assertEquals(302, simplified['1001']);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationOfUnknown() {
     const simplified = {1: 101, 2: '102', 1000: 103, 1001: 104};
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -182,6 +179,10 @@ testSuite({
     assertEquals(2, count);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationRepeated() {
     const simplified = {
       31: [101, 102],
@@ -195,6 +196,7 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -242,6 +244,10 @@ testSuite({
     assertEquals(202, message.getRepeatedNestedMessage(1).getB());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserialization() {
     const simplified = {
       1: 101,
@@ -266,6 +272,7 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -330,6 +337,10 @@ testSuite({
     assertEquals(TestAllTypes.NestedEnum.FOO, message.getOptionalNestedEnum());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationByName() {
     const simplified = {
       'optional_int32': 101,
@@ -354,6 +365,7 @@ testSuite({
 
     const serializer = new ObjectSerializer(ObjectSerializer.KeyOption.NAME);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -418,6 +430,10 @@ testSuite({
     assertEquals(TestAllTypes.NestedEnum.FOO, message.getOptionalNestedEnum());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationByCamelCaseName() {
     const simplified = {
       'optionalInt32': 101,
@@ -443,6 +459,7 @@ testSuite({
     const serializer =
         new ObjectSerializer(ObjectSerializer.KeyOption.CAMEL_CASE_NAME);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -507,11 +524,16 @@ testSuite({
     assertEquals(TestAllTypes.NestedEnum.FOO, message.getOptionalNestedEnum());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationUnknownEnumValue() {
     const simplified = {21: 1001};
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -520,6 +542,10 @@ testSuite({
     assertEquals(1001, message.getOptionalNestedEnum());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationSymbolicEnumValue() {
     const simplified = {21: 'BAR'};
 
@@ -527,6 +553,7 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -540,9 +567,17 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
-    assertThrows('Should have an assertion failure in deserialization', () => {
-      serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
-    });
+    assertThrows(
+        'Should have an assertion failure in deserialization', /**
+                                                                  @suppress {checkTypes}
+                                                                  suppression
+                                                                  added to
+                                                                  enable type
+                                                                  checking
+                                                                */
+        () => {
+          serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
+        });
   },
 
   testDeserializationUnknownSymbolicEnumValue() {
@@ -550,16 +585,29 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
-    assertThrows('Should have an assertion failure in deserialization', () => {
-      serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
-    });
+    assertThrows(
+        'Should have an assertion failure in deserialization', /**
+                                                                  @suppress {checkTypes}
+                                                                  suppression
+                                                                  added to
+                                                                  enable type
+                                                                  checking
+                                                                */
+        () => {
+          serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
+        });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationEnumValueAsNumericString() {
     const simplified = {21: '2'};
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -573,11 +621,23 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
-    assertThrows('Should have an assertion failure in deserialization', () => {
-      serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
-    });
+    assertThrows(
+        'Should have an assertion failure in deserialization', /**
+                                                                  @suppress {checkTypes}
+                                                                  suppression
+                                                                  added to
+                                                                  enable type
+                                                                  checking
+                                                                */
+        () => {
+          serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
+        });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationNumbersOrStrings() {
     // 64-bit types may have been serialized as numbers or strings.
     // Deserialization should be able to handle either.
@@ -590,6 +650,7 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     let message = serializer.deserialize(
         TestAllTypes.getDescriptor(), simplifiedWithNumbers);
 
@@ -605,6 +666,7 @@ testSuite({
     assertArrayEquals([5200, 5201], message.repeatedInt64NumberArray());
     assertArrayEquals(['5300', '5301'], message.repeatedInt64StringArray());
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     message = serializer.deserialize(
         TestAllTypes.getDescriptor(), simplifiedWithStrings);
 
@@ -655,16 +717,25 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
     assertNotNull(message);
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const floatArray = message.repeatedFloatArray();
     assertEquals(Infinity, floatArray[0]);
     assertEquals(-Infinity, floatArray[1]);
     assertTrue(isNaN(floatArray[2]));
 
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const doubleArray = message.repeatedDoubleArray();
     assertEquals(Infinity, doubleArray[0]);
     assertEquals(-Infinity, doubleArray[1]);
@@ -681,21 +752,38 @@ testSuite({
     };
     const serializer = new ObjectSerializer();
 
-    assertThrows('Should have an assertion failure in deserialization', () => {
-      serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
-    });
+    assertThrows(
+        'Should have an assertion failure in deserialization', /**
+                                                                  @suppress {checkTypes}
+                                                                  suppression
+                                                                  added to
+                                                                  enable type
+                                                                  checking
+                                                                */
+        () => {
+          serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
+        });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDefaultValueNumbersOrStrings() {
     // 64-bit types may have been serialized as numbers or strings.
     // The default values should have the correct type.
 
     const serializer = new ObjectSerializer();
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message = serializer.deserialize(TestAllTypes.getDescriptor(), {});
 
     assertNotNull(message);
 
     // Default when using Number is a number, and precision is lost.
+    /**
+     * @suppress {strictMissingProperties} suppression added to enable type
+     * checking
+     */
     const value = message.getOptionalInt64NumberOrDefault();
     assertTrue('Expecting a number', typeof value === 'number');
     assertEquals(1000000000000000000, value);
@@ -734,6 +822,10 @@ testSuite({
     assertEquals(1, simplified[13]);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationBooleanAsNumberFalse() {
     // Some libraries, such as GWT, can serialize boolean values as 0/1
 
@@ -741,6 +833,7 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -749,11 +842,16 @@ testSuite({
     assertFalse(message.getOptionalBool());
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationBooleanAsNumberTrue() {
     const simplified = {13: 1};
 
     const serializer = new ObjectSerializer();
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 
@@ -767,11 +865,23 @@ testSuite({
 
     const serializer = new ObjectSerializer();
 
-    assertThrows('Should have an assertion failure in deserialization', () => {
-      serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
-    });
+    assertThrows(
+        'Should have an assertion failure in deserialization', /**
+                                                                  @suppress {checkTypes}
+                                                                  suppression
+                                                                  added to
+                                                                  enable type
+                                                                  checking
+                                                                */
+        () => {
+          serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
+        });
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testDeserializationIgnoreUnknownFieldsTrue() {
     const simplified = {'unknownTag': 0, 13: 1};
 
@@ -780,6 +890,7 @@ testSuite({
         false /* opt_serializeBooleanAsNumber */,
         true /* opt_ignoreUnknownFields */);
 
+    /** @suppress {checkTypes} suppression added to enable type checking */
     const message =
         serializer.deserialize(TestAllTypes.getDescriptor(), simplified);
 

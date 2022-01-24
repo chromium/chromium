@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -155,7 +156,8 @@ public class TabSwitcherActionMenuCoordinator {
                         R.string.menu_new_tab, R.id.new_tab_menu_id, R.drawable.new_tab_icon);
             case MenuItemType.NEW_INCOGNITO_TAB:
                 return buildMenuListItem(R.string.menu_new_incognito_tab,
-                        R.id.new_incognito_tab_menu_id, R.drawable.incognito_simple);
+                        R.id.new_incognito_tab_menu_id, R.drawable.incognito_simple,
+                        IncognitoUtils.isIncognitoModeEnabled());
             case MenuItemType.DIVIDER:
             default:
                 return buildMenuDivider();

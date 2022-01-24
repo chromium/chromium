@@ -25,6 +25,8 @@ class DomDistillerServiceFactory : public BrowserStateKeyedServiceFactory {
   static DomDistillerService* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
+  DomDistillerServiceFactory(const DomDistillerServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<DomDistillerServiceFactory>;
 
@@ -36,8 +38,6 @@ class DomDistillerServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY(DomDistillerServiceFactory);
 };
 
 }  // namespace dom_distiller

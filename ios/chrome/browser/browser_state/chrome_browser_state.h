@@ -44,6 +44,9 @@ enum class ChromeBrowserStateType {
 // This class is a Chrome-specific extension of the BrowserState interface.
 class ChromeBrowserState : public web::BrowserState {
  public:
+  ChromeBrowserState(const ChromeBrowserState&) = delete;
+  ChromeBrowserState& operator=(const ChromeBrowserState&) = delete;
+
   ~ChromeBrowserState() override;
 
   // Returns the ChromeBrowserState corresponding to the given BrowserState.
@@ -128,8 +131,6 @@ class ChromeBrowserState : public web::BrowserState {
 
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserState);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_H_

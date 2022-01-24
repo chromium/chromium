@@ -15,11 +15,6 @@ source_set("sockets_udp") {
     "udp_socket_event_dispatcher.h",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-  ]
-
   deps = [
     "//extensions/browser/api",
     "//extensions/browser/api/socket",

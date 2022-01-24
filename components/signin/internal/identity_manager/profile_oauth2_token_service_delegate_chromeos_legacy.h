@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/account_manager_core/account.h"
@@ -39,6 +39,12 @@ class ProfileOAuth2TokenServiceDelegateChromeOSLegacy
       network::NetworkConnectionTracker* network_connection_tracker,
       account_manager::AccountManager* account_manager,
       bool is_regular_profile);
+
+  ProfileOAuth2TokenServiceDelegateChromeOSLegacy(
+      const ProfileOAuth2TokenServiceDelegateChromeOSLegacy&) = delete;
+  ProfileOAuth2TokenServiceDelegateChromeOSLegacy& operator=(
+      const ProfileOAuth2TokenServiceDelegateChromeOSLegacy&) = delete;
+
   ~ProfileOAuth2TokenServiceDelegateChromeOSLegacy() override;
 
   // ProfileOAuth2TokenServiceDelegate overrides.
@@ -111,8 +117,6 @@ class ProfileOAuth2TokenServiceDelegateChromeOSLegacy
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ProfileOAuth2TokenServiceDelegateChromeOSLegacy>
       weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateChromeOSLegacy);
 };
 
 }  // namespace signin

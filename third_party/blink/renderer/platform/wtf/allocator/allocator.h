@@ -7,11 +7,26 @@
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/buildflags.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !defined(OS_APPLE)
+// FastMalloc() defers to malloc() in this case, and including its header
+// ensures that the compiler knows that malloc() is "special", e.g. that it
+// returns properly-aligned, distinct memory locations.
+#include <malloc.h>
+#elif defined(OS_APPLE)
+// malloc.h doesn't exist on Apple OSes (it's in malloc/malloc.h), but the
+// definitions we want are actually in stdlib.h.
+#include <stdlib.h>
+#endif  // defined(OS_APPLE)
+#else
+#include "base/allocator/partition_allocator/partition_alloc.h"
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace WTF {
 
@@ -53,13 +68,6 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
   void* operator new(size_t) = delete;                    \
   void* operator new(size_t, NotNullTag, void*) = delete; \
   void* operator new(size_t, void*) = delete
-
-#define IS_GARBAGE_COLLECTED_TYPE()         \
- public:                                    \
-  using IsGarbageCollectedTypeMarker = int; \
-                                            \
- private:                                   \
-  friend class ::WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 #if defined(__clang__)
 #define ANNOTATE_STACK_ALLOCATED \

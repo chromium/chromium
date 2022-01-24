@@ -72,6 +72,10 @@ class GCM_EXPORT GCMStore {
   using UpdateCallback = base::OnceCallback<void(bool success)>;
 
   GCMStore();
+
+  GCMStore(const GCMStore&) = delete;
+  GCMStore& operator=(const GCMStore&) = delete;
+
   virtual ~GCMStore();
 
   // Load the data from persistent store and pass the initial state back to
@@ -159,9 +163,6 @@ class GCM_EXPORT GCMStore {
                                  UpdateCallback callback) = 0;
   virtual void RemoveInstanceIDData(const std::string& app_id,
                                     UpdateCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMStore);
 };
 
 }  // namespace gcm

@@ -130,8 +130,7 @@ void GCMRequestTestBase::FastForwardToTriggerNextRetry() {
   int next_retry_delay_ms = kDefaultBackoffPolicy.initial_delay_ms;
   next_retry_delay_ms *=
       pow(kDefaultBackoffPolicy.multiply_factor, retry_count_);
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromMilliseconds(next_retry_delay_ms));
+  task_environment_.FastForwardBy(base::Milliseconds(next_retry_delay_ms));
 }
 
 }  // namespace gcm

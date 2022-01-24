@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -67,6 +66,9 @@ class CONTENT_EXPORT ClearSiteDataHandler {
     std::vector<Message> messages_;
     OutputFormattedMessageFunction output_formatted_message_function_;
   };
+
+  ClearSiteDataHandler(const ClearSiteDataHandler&) = delete;
+  ClearSiteDataHandler& operator=(const ClearSiteDataHandler&) = delete;
 
   // |header_value| is the string value of the 'Clear-Site-Data' header. This
   // method calls ParseHeader() to parse it, and then ExecuteClearingTask() if
@@ -161,8 +163,6 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
   // The delegate that stores and outputs console messages.
   std::unique_ptr<ConsoleMessagesDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClearSiteDataHandler);
 };
 
 }  // namespace content

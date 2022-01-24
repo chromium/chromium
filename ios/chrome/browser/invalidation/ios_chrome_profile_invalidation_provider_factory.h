@@ -29,6 +29,11 @@ class IOSChromeProfileInvalidationProviderFactory
 
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
 
+  IOSChromeProfileInvalidationProviderFactory(
+      const IOSChromeProfileInvalidationProviderFactory&) = delete;
+  IOSChromeProfileInvalidationProviderFactory& operator=(
+      const IOSChromeProfileInvalidationProviderFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>;
 
@@ -40,8 +45,6 @@ class IOSChromeProfileInvalidationProviderFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeProfileInvalidationProviderFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_INVALIDATION_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_

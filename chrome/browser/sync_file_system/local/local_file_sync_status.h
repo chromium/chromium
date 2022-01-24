@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -39,15 +38,20 @@ class LocalFileSyncStatus {
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
     virtual void OnSyncEnabled(const storage::FileSystemURL& url) = 0;
     virtual void OnWriteEnabled(const storage::FileSystemURL& url) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   LocalFileSyncStatus();
+
+  LocalFileSyncStatus(const LocalFileSyncStatus&) = delete;
+  LocalFileSyncStatus& operator=(const LocalFileSyncStatus&) = delete;
+
   ~LocalFileSyncStatus();
 
   // Increment writing counter for |url|.
@@ -97,8 +101,6 @@ class LocalFileSyncStatus {
   URLSet syncing_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncStatus);
 };
 
 }  // namespace sync_file_system

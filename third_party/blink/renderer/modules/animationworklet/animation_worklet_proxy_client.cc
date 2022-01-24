@@ -178,8 +178,7 @@ std::unique_ptr<AnimationWorkletOutput> AnimationWorkletProxyClient::Mutate(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Animation.AnimationWorklet.MutateDuration", timer.Elapsed(),
-      base::TimeDelta::FromMicroseconds(1), base::TimeDelta::FromSeconds(10),
-      50);
+      base::Microseconds(1), base::Seconds(10), 50);
 
   return output;
 }

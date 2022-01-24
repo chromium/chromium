@@ -35,6 +35,12 @@ class TestObserver final : public TetherHostResponseRecorder::Observer {
 }  // namespace
 
 class TetherHostResponseRecorderTest : public testing::Test {
+ public:
+  TetherHostResponseRecorderTest(const TetherHostResponseRecorderTest&) =
+      delete;
+  TetherHostResponseRecorderTest& operator=(
+      const TetherHostResponseRecorderTest&) = delete;
+
  protected:
   TetherHostResponseRecorderTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(10)) {}
@@ -57,9 +63,6 @@ class TetherHostResponseRecorderTest : public testing::Test {
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<TetherHostResponseRecorder> recorder_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherHostResponseRecorderTest);
 };
 
 TEST_F(TetherHostResponseRecorderTest, TestTetherAvailabilityResponses) {

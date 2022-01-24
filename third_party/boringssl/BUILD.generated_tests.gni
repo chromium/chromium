@@ -38,6 +38,7 @@ crypto_test_sources = [
   "src/crypto/cipher_extra/cipher_test.cc",
   "src/crypto/cmac/cmac_test.cc",
   "src/crypto/compiler_test.cc",
+  "src/crypto/conf/conf_test.cc",
   "src/crypto/constant_time_test.cc",
   "src/crypto/cpu-arm-linux_test.cc",
   "src/crypto/crypto_test.cc",

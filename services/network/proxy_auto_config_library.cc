@@ -47,6 +47,9 @@ class MyIpAddressImpl {
  public:
   MyIpAddressImpl() = default;
 
+  MyIpAddressImpl(const MyIpAddressImpl&) = delete;
+  MyIpAddressImpl& operator=(const MyIpAddressImpl&) = delete;
+
   // Used for mocking the socket dependency.
   void SetSocketFactoryForTest(net::ClientSocketFactory* socket_factory) {
     override_socket_factory_ = socket_factory;
@@ -258,8 +261,6 @@ class MyIpAddressImpl {
 
   net::ClientSocketFactory* override_socket_factory_ = nullptr;
   std::unique_ptr<net::AddressList> override_dns_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(MyIpAddressImpl);
 };
 
 }  // namespace

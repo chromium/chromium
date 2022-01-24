@@ -41,10 +41,10 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_shortcut_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -327,18 +327,16 @@ void AppShimManager::OnShimProcessConnected(
   DCHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()));
   switch (bootstrap->GetLaunchType()) {
     case chrome::mojom::AppShimLaunchType::kNormal: {
-      const web_app::AppId app_id = bootstrap->GetAppId();
       const base::FilePath profile_path = bootstrap->GetProfilePath();
-      const std::vector<base::FilePath> launch_files =
-          bootstrap->GetLaunchFiles();
-      const std::vector<GURL> launch_urls = bootstrap->GetLaunchUrls();
-      const chrome::mojom::AppShimLoginItemRestoreState
-          login_item_restore_state = bootstrap->GetLoginItemRestoreState();
+      LoadAndLaunchAppParams params;
+      params.app_id = bootstrap->GetAppId();
+      params.files = bootstrap->GetLaunchFiles();
+      params.urls = bootstrap->GetLaunchUrls();
+      params.login_item_restore_state = bootstrap->GetLoginItemRestoreState();
       LoadAndLaunchAppCallback launch_callback = base::BindOnce(
           &AppShimManager::OnShimProcessConnectedAndAllLaunchesDone,
           weak_factory_.GetWeakPtr(), std::move(bootstrap));
-      LoadAndLaunchApp(app_id, profile_path, launch_files, launch_urls,
-                       login_item_restore_state, std::move(launch_callback));
+      LoadAndLaunchApp(profile_path, params, std::move(launch_callback));
       break;
     }
     case chrome::mojom::AppShimLaunchType::kRegisterOnly:
@@ -387,17 +385,13 @@ void AppShimManager::OnShimProcessConnectedForRegisterOnly(
 }
 
 void AppShimManager::LoadAndLaunchApp(
-    const web_app::AppId& app_id,
     const base::FilePath& profile_path,
-    const std::vector<base::FilePath>& launch_files,
-    const std::vector<GURL>& launch_urls,
-    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+    const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
   // Check to see if the app is already running for a profile compatible with
   // |profile_path|. If so, early-out.
-  if (LoadAndLaunchApp_TryExistingProfileStates(
-          app_id, profile_path, launch_files, launch_urls,
-          login_item_restore_state, &launch_callback)) {
+  if (LoadAndLaunchApp_TryExistingProfileStates(profile_path, params,
+                                                &launch_callback)) {
     // If we used an existing profile, |launch_callback| should have been run.
     DCHECK(!launch_callback);
     return;
@@ -407,10 +401,10 @@ void AppShimManager::LoadAndLaunchApp(
   // profiles (which is rare -- e.g, when the last-active profiles were
   // removed), then use all profiles for which the app is installed.
   std::set<base::FilePath> last_active_profile_paths =
-      AppShimRegistry::Get()->GetLastActiveProfilesForApp(app_id);
+      AppShimRegistry::Get()->GetLastActiveProfilesForApp(params.app_id);
   if (last_active_profile_paths.empty()) {
     last_active_profile_paths =
-        AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id);
+        AppShimRegistry::Get()->GetInstalledProfilesForApp(params.app_id);
   }
 
   // Construct |profile_paths_to_launch| to be the list of all profiles to
@@ -425,9 +419,8 @@ void AppShimManager::LoadAndLaunchApp(
   // OnShimProcessConnectedAndProfilesToLaunchLoaded.
   base::OnceClosure callback =
       base::BindOnce(&AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady,
-                     weak_factory_.GetWeakPtr(), app_id, launch_files,
-                     launch_urls, login_item_restore_state,
-                     profile_paths_to_launch, std::move(launch_callback));
+                     weak_factory_.GetWeakPtr(), profile_paths_to_launch,
+                     params, std::move(launch_callback));
   {
     // This will update |callback| to be a chain of callbacks that load the
     // profiles in |profile_paths_to_load|, one by one, using
@@ -443,20 +436,17 @@ void AppShimManager::LoadAndLaunchApp(
                          std::move(callback));
       callback = base::BindOnce(&AppShimManager::LoadProfileAndApp,
                                 weak_factory_.GetWeakPtr(), profile_path,
-                                app_id, std::move(callback_wrapped));
+                                params.app_id, std::move(callback_wrapped));
     }
   }
   std::move(callback).Run();
 }
 
 bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
-    const web_app::AppId& app_id,
     const base::FilePath& profile_path,
-    const std::vector<base::FilePath>& launch_files,
-    const std::vector<GURL>& launch_urls,
-    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+    const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback* launch_callback) {
-  auto found_app = apps_.find(app_id);
+  auto found_app = apps_.find(params.app_id);
   if (found_app == apps_.end())
     return false;
   AppState* app_state = found_app->second.get();
@@ -487,9 +477,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
   DCHECK(profile);
 
   // Launch the app, if appropriate.
-  LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, app_id,
-                                       launch_files, launch_urls,
-                                       login_item_restore_state);
+  LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, params);
 
   std::move(*launch_callback)
       .Run(profile_state, chrome::mojom::AppShimLaunchResult::kSuccess);
@@ -497,11 +485,8 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 }
 
 void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
-    const web_app::AppId& app_id,
-    const std::vector<base::FilePath>& launch_files,
-    const std::vector<GURL>& launch_urls,
-    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
     const std::vector<base::FilePath>& profile_paths_to_launch,
+    const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
   // Launch all of the profiles in |profile_paths_to_launch|. Record the most
   // profile successfully launched in |launched_profile_state|, and the most
@@ -521,7 +506,7 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
       launch_result = chrome::mojom::AppShimLaunchResult::kProfileNotFound;
       continue;
     }
-    if (!delegate_->AppIsInstalled(profile, app_id)) {
+    if (!delegate_->AppIsInstalled(profile, params.app_id)) {
       launch_result = chrome::mojom::AppShimLaunchResult::kAppNotFound;
       continue;
     }
@@ -529,13 +514,11 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     // Create a ProfileState for this app, if appropriate (e.g, not for
     // open-in-a-tab bookmark apps).
     ProfileState* profile_state = nullptr;
-    if (delegate_->AppCanCreateHost(profile, app_id))
-      profile_state = GetOrCreateProfileState(profile, app_id);
+    if (delegate_->AppCanCreateHost(profile, params.app_id))
+      profile_state = GetOrCreateProfileState(profile, params.app_id);
 
     // Launch the app, if appropriate.
-    LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, app_id,
-                                         launch_files, launch_urls,
-                                         login_item_restore_state);
+    LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, params);
 
     // If we successfully created a profile state, save it for |bootstrap| to
     // connect to once all launches are done.
@@ -544,12 +527,8 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     else
       launch_result = chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect;
 
-    // If files were specified, only open one new window.
-    if (!launch_files.empty())
-      break;
-
-    // If urls were specified, only open one new window.
-    if (!launch_urls.empty())
+    // If files or urls were specified, only open one new window.
+    if (params.HasFilesOrURLs())
       break;
 
     // If this was the first profile in |profile_paths_to_launch|, then this
@@ -620,17 +599,14 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
 void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
     Profile* profile,
     ProfileState* profile_state,
-    const web_app::AppId& app_id,
-    const std::vector<base::FilePath>& launch_files,
-    const std::vector<GURL>& launch_urls,
-    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state) {
-  // If |launch_files| or |launch_urls| is non-empty, then always
-  // do a launch to open the files or URLs.
-  bool do_launch = (!launch_files.empty() || !launch_urls.empty());
+    const LoadAndLaunchAppParams& params) {
+  // If `params.files`, `params.urls` or `params.override_url` is non-empty,
+  // then always do a launch to open the files or URL(s).
+  bool do_launch = params.HasFilesOrURLs();
 
   // Otherwise, only launch if there are no open windows.
   if (!do_launch) {
-    bool had_windows = delegate_->ShowAppWindows(profile, app_id);
+    bool had_windows = delegate_->ShowAppWindows(profile, params.app_id);
     if (profile_state)
       had_windows |= !profile_state->browsers.empty();
 
@@ -639,8 +615,8 @@ void AppShimManager::LoadAndLaunchApp_LaunchIfAppropriate(
   }
 
   if (do_launch) {
-    delegate_->LaunchApp(profile, app_id, launch_files, launch_urls,
-                         login_item_restore_state);
+    delegate_->LaunchApp(profile, params.app_id, params.files, params.urls,
+                         params.override_url, params.login_item_restore_state);
   }
 }
 
@@ -741,7 +717,7 @@ void AppShimManager::LoadProfileAsync(
 void AppShimManager::WaitForAppRegistryReadyAsync(
     Profile* profile,
     base::OnceCallback<void()> callback) {
-  auto* provider = web_app::WebAppProvider::Get(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   if (provider->on_registry_ready().is_signaled())
     std::move(callback).Run();
@@ -769,8 +745,10 @@ void AppShimManager::OpenAppURLInBrowserWindow(
       profile_path.empty() ? nullptr : ProfileForPath(profile_path);
   if (!profile)
     profile = profile_manager_->GetLastUsedProfile();
-  if (!profile)
+  if (!profile || Browser::GetCreationStatusForProfile(profile) !=
+                      Browser::CreationStatus::kOk) {
     return;
+  }
   Browser* browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
   browser->window()->Show();
@@ -846,11 +824,11 @@ void AppShimManager::OnShimReopen(AppShimHost* host) {
   auto found_app = apps_.find(host->GetAppId());
   DCHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
   LoadAndLaunchApp(
-      host->GetAppId(),
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
-      std::vector<base::FilePath>(), std::vector<GURL>(),
-      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
+      params, base::DoNothing());
 }
 
 void AppShimManager::OnShimOpenedFiles(
@@ -859,19 +837,19 @@ void AppShimManager::OnShimOpenedFiles(
   auto found_app = apps_.find(host->GetAppId());
   DCHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
+  params.files = files;
   LoadAndLaunchApp(
-      host->GetAppId(),
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
-      files, std::vector<GURL>(),
-      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
+      params, base::DoNothing());
 }
 
 void AppShimManager::OnShimSelectedProfile(AppShimHost* host,
                                            const base::FilePath& profile_path) {
-  LoadAndLaunchApp(host->GetAppId(), profile_path,
-                   std::vector<base::FilePath>(), std::vector<GURL>(),
-                   chrome::mojom::AppShimLoginItemRestoreState::kNone,
-                   base::DoNothing());
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
+  LoadAndLaunchApp(profile_path, params, base::DoNothing());
 }
 
 void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
@@ -879,11 +857,25 @@ void AppShimManager::OnShimOpenedUrls(AppShimHost* host,
   auto found_app = apps_.find(host->GetAppId());
   DCHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
+  params.urls = urls;
   LoadAndLaunchApp(
-      host->GetAppId(),
       app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
-      std::vector<base::FilePath>(), urls,
-      chrome::mojom::AppShimLoginItemRestoreState::kNone, base::DoNothing());
+      params, base::DoNothing());
+}
+
+void AppShimManager::OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                                  const GURL& override_url) {
+  auto found_app = apps_.find(host->GetAppId());
+  DCHECK(found_app != apps_.end());
+  AppState* app_state = found_app->second.get();
+  LoadAndLaunchAppParams params;
+  params.app_id = host->GetAppId();
+  params.override_url = override_url;
+  LoadAndLaunchApp(
+      app_state->IsMultiProfile() ? base::FilePath() : host->GetProfilePath(),
+      params, base::DoNothing());
 }
 
 void AppShimManager::OnProfileAdded(Profile* profile) {
@@ -998,6 +990,13 @@ void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   if (avatar_menu_)
     avatar_menu_->ActiveBrowserChanged(browser);
   UpdateAllProfileMenus();
+
+  // Update the application dock menu for the current profile.
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
+  if (profile_state)
+    UpdateApplicationDockMenu(browser->profile(), profile_state);
 }
 
 void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
@@ -1078,6 +1077,14 @@ void AppShimManager::UpdateAppProfileMenu(AppState* app_state) {
       std::move(items));
 }
 
+void AppShimManager::UpdateApplicationDockMenu(Profile* profile,
+                                               ProfileState* profile_state) {
+  AppState* app_state = profile_state->app_state;
+  // Send the application dock menu to the app shim process.
+  profile_state->GetHost()->GetAppShim()->UpdateApplicationDockMenu(
+      delegate_->GetAppShortcutsMenuItemInfos(profile, app_state->app_id));
+}
+
 AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
     Profile* profile,
     const web_app::AppId& app_id) {
@@ -1122,6 +1129,21 @@ AppShimManager::ProfileState* AppShimManager::GetOrCreateProfileState(
             .first;
   }
   return found_profile->second.get();
+}
+
+AppShimManager::LoadAndLaunchAppParams::LoadAndLaunchAppParams() = default;
+
+AppShimManager::LoadAndLaunchAppParams::~LoadAndLaunchAppParams() = default;
+
+AppShimManager::LoadAndLaunchAppParams::LoadAndLaunchAppParams(
+    const LoadAndLaunchAppParams&) = default;
+
+AppShimManager::LoadAndLaunchAppParams&
+AppShimManager::LoadAndLaunchAppParams::operator=(
+    const LoadAndLaunchAppParams&) = default;
+
+bool AppShimManager::LoadAndLaunchAppParams::HasFilesOrURLs() const {
+  return !files.empty() || !urls.empty() || !override_url.is_empty();
 }
 
 }  // namespace apps

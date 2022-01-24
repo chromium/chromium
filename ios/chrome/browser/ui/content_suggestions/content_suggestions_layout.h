@@ -15,12 +15,6 @@
 // is pinned to the top of the collection.
 @interface ContentSuggestionsLayout : MDCCollectionViewFlowLayout
 
-// The cached scroll position of the NTP.
-@property(nonatomic, assign) CGFloat offset;
-
-// The total scroll height of the NTP.
-@property(nonatomic, assign) CGFloat ntpHeight;
-
 // The parent collection view that contains the content suggestions collection
 // view.
 @property(nonatomic, weak) UICollectionView* parentCollectionView;
@@ -32,13 +26,8 @@
 // the omnibox to allow it to stick to the top of the NTP.
 @property(nonatomic, assign) BOOL isScrolledIntoFeed;
 
-// Creates layout with |offset| as additional height. Allows the view's height
-// to be increased enough to maintain the scroll position. Only needed if
-// Discover feed is visible.
-// TODO(crbug.com/1200303): Change |refactoredFeedVisible| to only represent
-// feed visibility after launch.
-- (instancetype)initWithOffset:(CGFloat)offset
-         refactoredFeedVisible:(BOOL)visible;
+// Minimum height of the NTP scroll view to allow for scrolling to omnibox.
+- (CGFloat)minimumNTPHeight;
 
 @end
 

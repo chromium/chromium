@@ -206,4 +206,13 @@ Node::InsertionNotificationRequest HTMLButtonElement::InsertedInto(
   return request;
 }
 
+void HTMLButtonElement::DispatchBlurEvent(
+    Element* new_focused_element,
+    mojom::blink::FocusType type,
+    InputDeviceCapabilities* source_capabilities) {
+  SetActive(false);
+  HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
+                                            source_capabilities);
+}
+
 }  // namespace blink

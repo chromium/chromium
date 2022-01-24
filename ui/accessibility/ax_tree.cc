@@ -14,21 +14,22 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/debug/activity_tracker.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree_observer.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 
@@ -108,10 +109,13 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
 }
 
 bool IsCollapsed(const AXNode* node) {
-  return node && node->data().HasState(ax::mojom::State::kCollapsed);
+  return node && node->HasState(ax::mojom::State::kCollapsed);
 }
 
 }  // namespace
+
+// static
+bool AXTree::is_focused_node_always_unignored_ = false;
 
 // This object is used to track structure changes that will occur for a specific
 // AXID. This includes how many times we expect that a node with a specific AXID
@@ -148,7 +152,7 @@ bool IsCollapsed(const AXNode* node) {
 //   a) |node.id| is already in the tree, or
 //   b) the tree is empty, and
 //      |node| is the new root of the tree, and
-//      |node.role| == WebAXRoleRootWebArea.
+//      |node.role| == kRootWebArea.
 // 2. Every child id in |node.child_ids| must either be already a child
 //        of this node, or a new id not previously in the tree. It is not
 //        allowed to "reparent" a child to this node without first removing
@@ -195,7 +199,7 @@ struct PendingStructureChanges {
   // may not be the next action that needs to be performed on the node.
   bool DoesNodeExpectNodeWillBeDestroyed() const { return destroy_node_count; }
 
-  // Returns true if this node needs be created during the update, but this
+  // Returns true if this node needs to be created during the update, but this
   // may not be the next action that needs to be performed on the node.
   bool DoesNodeExpectNodeWillBeCreated() const { return create_node_count; }
 
@@ -479,9 +483,23 @@ struct AXTreeUpdateState {
     }
   }
 
+  // Returns true if this node's updated data in conjunction with the updated
+  // tree data indicate that the node will need to invalidate any of its cached
+  // values, such as the number of its unignored children.
+  bool HasIgnoredChanged(const AXNodeData& new_data) const {
+    DCHECK_EQ(AXTreePendingStructureStatus::kComputing, pending_update_status)
+        << "This method should only be called while computing pending changes, "
+           "before updates are made to the tree.";
+    const AXNodeData& old_data = GetLastKnownPendingNodeData(new_data.id);
+    return AXTree::ComputeNodeIsIgnored(
+               old_tree_data ? &old_tree_data.value() : nullptr, old_data) !=
+           AXTree::ComputeNodeIsIgnored(
+               new_tree_data ? &new_tree_data.value() : nullptr, new_data);
+  }
+
   // Returns whether this update must invalidate the unignored cached
   // values for |node_id|.
-  bool InvalidatesUnignoredCachedValues(AXNodeID node_id) {
+  bool InvalidatesUnignoredCachedValues(AXNodeID node_id) const {
     return base::Contains(invalidate_unignored_cached_values_ids, node_id);
   }
 
@@ -502,8 +520,8 @@ struct AXTreeUpdateState {
   // an update before the update applies changes.
   AXTreePendingStructureStatus pending_update_status;
 
-  // Keeps track of the root node id when calculating what changes will occur
-  // during an update before the update applies changes.
+  // Keeps track of the existing tree's root node id when calculating what
+  // changes will occur during an update before the update applies changes.
   absl::optional<AXNodeID> pending_root_id;
 
   // Keeps track of whether the root node will need to be created as a new node.
@@ -512,17 +530,21 @@ struct AXTreeUpdateState {
   // and will be destroyed before applying AXNodeData updates to the tree.
   bool root_will_be_created;
 
-  // During an update, this keeps track of all nodes that have been
-  // implicitly referenced as part of this update, but haven't been
-  // updated yet. It's an error if there are any pending nodes at the
-  // end of Unserialize.
-  std::set<AXNodeID> pending_nodes;
+  // During an update, this keeps track of all node IDs that have been
+  // implicitly referenced as part of this update, but haven't been updated yet.
+  // It's an error if there are any pending nodes at the end of Unserialize.
+  std::set<AXNodeID> pending_node_ids;
+
+  // before, During and after an update, this keeps track of the nodes' data
+  // that have been provided as part of the update.
+  std::vector<AXNodeData> updated_nodes;
 
   // Keeps track of nodes whose cached unignored child count, or unignored
   // index in parent may have changed, and must be updated.
   std::set<AXNodeID> invalidate_unignored_cached_values_ids;
 
-  // Keeps track of nodes that have changed their node data.
+  // Keeps track of nodes that have changed their node data or their ignored
+  // state.
   std::set<AXNodeID> node_data_changed_ids;
 
   // Keeps track of new nodes created during this update.
@@ -653,6 +675,63 @@ struct AXTree::OrderedSetItemsMap {
   std::map<absl::optional<int32_t>, std::vector<OrderedSetContent>> items_map_;
 };
 
+// static
+void AXTree::SetFocusedNodeShouldNeverBeIgnored() {
+  is_focused_node_always_unignored_ = true;
+}
+
+// static
+bool AXTree::ComputeNodeIsIgnored(const AXTreeData* optional_tree_data,
+                                  const AXNodeData& node_data) {
+  // A node with an ARIA presentational role (role="none") should also be
+  // ignored.
+  bool is_ignored = node_data.HasState(ax::mojom::State::kIgnored) ||
+                    node_data.role == ax::mojom::Role::kNone;
+
+  // Exception: We should never ignore focused nodes otherwise users of
+  // assistive software might be unable to interact with the webpage.
+  //
+  // TODO(nektar): This check is erroneous: It's missing a check of
+  // focused_tree_id. Fix after updating `AXNode::IsFocusedInThisTree`.
+  if (is_focused_node_always_unignored_ && is_ignored && optional_tree_data &&
+      optional_tree_data->focus_id != kInvalidAXNodeID &&
+      node_data.id == optional_tree_data->focus_id) {
+    // If the focus has moved to or away from this node, it can also flip the
+    // ignored state, provided that the node's data has the ignored state in the
+    // first place. In all other cases, focus cannot affect the ignored state.
+    is_ignored = false;
+  }
+
+  return is_ignored;
+}
+
+// static
+bool AXTree::ComputeNodeIsIgnoredChanged(
+    const AXTreeData* optional_old_tree_data,
+    const AXNodeData& old_node_data,
+    const AXTreeData* optional_new_tree_data,
+    const AXNodeData& new_node_data) {
+  // We should not notify observers of an ignored state change if the node was
+  // invisible and continues to be invisible after the update. Also, we should
+  // not notify observers if the node has flipped its invisible state from
+  // invisible to visible or vice versa. This is because when invisibility
+  // changes, the entire subtree is being inserted or removed. For example if
+  // the "hidden" CSS property is deleted from a list item, its ignored state
+  // will change but the change would be due to the list item becoming visible
+  // and thereby adding a whole subtree of nodes, including a list marker and
+  // possibly some static text. This situation arises because hidden nodes are
+  // included in the internal accessibility tree, but they are marked as
+  // ignored.
+  //
+  // TODO(nektar): This should be dealt with by fixing AXEventGenerator or
+  // individual platforms.
+  const bool old_node_is_ignored =
+      ComputeNodeIsIgnored(optional_old_tree_data, old_node_data);
+  const bool new_node_is_ignored =
+      ComputeNodeIsIgnored(optional_new_tree_data, new_node_data);
+  return old_node_is_ignored != new_node_is_ignored;
+}
+
 AXTree::AXTree() {
   AXNodeData root;
   root.id = kInvalidAXNodeID;
@@ -779,10 +858,10 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
 
     int scroll_x = 0;
     int scroll_y = 0;
-    if (container->data().GetIntAttribute(ax::mojom::IntAttribute::kScrollX,
-                                          &scroll_x) &&
-        container->data().GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
-                                          &scroll_y)) {
+    if (container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX,
+                                   &scroll_x) &&
+        container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
+                                   &scroll_y)) {
       bounds.Offset(-scroll_x, -scroll_y);
     }
 
@@ -793,8 +872,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // Calculate the clipped bounds to determine offscreen state.
     gfx::RectF clipped = bounds;
     // If this node has the kClipsChildren attribute set, clip the rect to fit.
-    if (container->data().GetBoolAttribute(
-            ax::mojom::BoolAttribute::kClipsChildren)) {
+    if (container->GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren)) {
       if (!intersection.IsEmpty()) {
         // We can simply clip it to the container.
         clipped = intersection;
@@ -821,8 +899,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     if (clip_bounds)
       bounds = clipped;
 
-    if (container->data().GetBoolAttribute(
-            ax::mojom::BoolAttribute::kClipsChildren) &&
+    if (container->GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren) &&
         intersection.IsEmpty() && !clipped.IsEmpty()) {
       // If it is offscreen with respect to its parent, and the node itself is
       // not empty, label it offscreen.
@@ -858,10 +935,9 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
 
     if (ancestor && allow_recursion) {
       bool ignore_offscreen;
-      bool allow_recursion = false;
       ancestor_bounds = RelativeToTreeBoundsInternal(
           ancestor, gfx::RectF(), &ignore_offscreen, clip_bounds,
-          allow_recursion);
+          /* allow_recursion = */ false);
 
       gfx::RectF original_bounds = original_node->data().relative_bounds.bounds;
       if (original_bounds.x() == 0 && original_bounds.y() == 0) {
@@ -942,10 +1018,13 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-  event_intents_ = update.event_intents;
-  base::ScopedClosureRunner clear_event_intents(base::BindOnce(
-      [](std::vector<AXEventIntent>* event_intents) { event_intents->clear(); },
-      &event_intents_));
+  event_data_ = std::make_unique<AXEvent>();
+  event_data_->event_from = update.event_from;
+  event_data_->event_from_action = update.event_from_action;
+  event_data_->event_intents = update.event_intents;
+  base::ScopedClosureRunner clear_event_data(base::BindOnce(
+      [](std::unique_ptr<AXEvent>* event_data) { event_data->reset(); },
+      &event_data_));
 
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
@@ -974,20 +1053,31 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
   }
 
-  // Notify observers of nodes that are about to change their data.
-  // This must be done before applying any updates to the tree.
-  // This is iterating in reverse order so that we only notify once per node id,
-  // and that we only notify the initial node data against the final node data,
+  // Notify observers of nodes that are about to change their ignored state or
+  // their data. This must be done before applying any updates to the tree. This
+  // is iterating in reverse order so that we only notify once per node id, and
+  // so that we only notify the initial node data against the final node data,
   // unless the node is a new root.
-  std::set<AXNodeID> notified_node_data_will_change;
-  for (size_t i = update.nodes.size(); i-- > 0;) {
-    const AXNodeData& new_data = update.nodes[i];
+  std::set<AXNodeID> notified_node_attributes_will_change;
+  for (auto iter = update_state.updated_nodes.rbegin();
+       iter != update_state.updated_nodes.rend(); ++iter) {
+    const AXNodeData& new_data = *iter;
     const bool is_new_root =
         update_state.root_will_be_created && new_data.id == update.root_id;
-    if (!is_new_root) {
-      AXNode* node = GetFromId(new_data.id);
-      if (node && notified_node_data_will_change.insert(new_data.id).second)
-        NotifyNodeDataWillChange(node->data(), new_data);
+    if (is_new_root)
+      continue;
+
+    AXNode* node = GetFromId(new_data.id);
+    if (node &&
+        notified_node_attributes_will_change.insert(new_data.id).second) {
+      NotifyNodeAttributesWillChange(
+          node,
+          update_state.old_tree_data ? &update_state.old_tree_data.value()
+                                     : nullptr,
+          node->data(),
+          update_state.new_tree_data ? &update_state.new_tree_data.value()
+                                     : nullptr,
+          new_data);
     }
   }
 
@@ -1017,8 +1107,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     // old_root_id, we assume that the update meant to replace the root.
     int node_id_to_clear = update.node_id_to_clear;
     if (!GetFromId(node_id_to_clear) && update.root_id == node_id_to_clear &&
-        update.root_id != old_root_id && root_)
+        update.root_id != old_root_id && root_) {
       node_id_to_clear = old_root_id;
+    }
     if (AXNode* cleared_node = GetFromId(node_id_to_clear)) {
       DCHECK(root_);
       if (cleared_node == root_) {
@@ -1045,7 +1136,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           DestroySubtree(child, &update_state);
         std::vector<AXNode*> children;
         cleared_node->SwapChildren(&children);
-        update_state.pending_nodes.insert(cleared_node->id());
+        update_state.pending_node_ids.insert(cleared_node->id());
       }
     }
   }
@@ -1053,10 +1144,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   DCHECK_EQ(!GetFromId(update.root_id), update_state.root_will_be_created);
 
   // Update all of the nodes in the update.
-  for (size_t i = 0; i < update.nodes.size(); ++i) {
+  for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
     const bool is_new_root = update_state.root_will_be_created &&
-                             update.nodes[i].id == update.root_id;
-    if (!UpdateNode(update.nodes[i], is_new_root, &update_state))
+                             updated_node_data.id == update.root_id;
+    if (!UpdateNode(updated_node_data, is_new_root, &update_state))
       return false;
   }
 
@@ -1071,14 +1162,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     return false;
 
   std::vector<AXTreeObserver::Change> changes;
-  changes.reserve(update.nodes.size());
+  changes.reserve(update_state.updated_nodes.size());
 
   // Look for changes to nodes that are a descendant of a table,
   // and invalidate their table info if so.  We have to walk up the
   // ancestry of every node that was updated potentially, so keep track of
   // ids that were checked to eliminate duplicate work.
   std::set<AXNodeID> table_ids_checked;
-  for (const AXNodeData& node_data : update.nodes) {
+  for (const AXNodeData& node_data : update_state.updated_nodes) {
     AXNode* node = GetFromId(node_data.id);
     while (node) {
       if (table_ids_checked.find(node->id()) != table_ids_checked.end())
@@ -1102,9 +1193,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   node_set_size_pos_in_set_info_map_.clear();
 
   std::set<AXNodeID> visited_observer_changes;
-  for (size_t i = 0; i < update.nodes.size(); ++i) {
-    AXNode* node = GetFromId(update.nodes[i].id);
-    if (!node || !visited_observer_changes.emplace(update.nodes[i].id).second)
+  for (const AXNodeData& updated_node_data : update_state.updated_nodes) {
+    AXNode* node = GetFromId(updated_node_data.id);
+    if (!node || !visited_observer_changes.emplace(updated_node_data.id).second)
       continue;
 
     bool is_new_node = update_state.IsCreatedNode(node);
@@ -1156,11 +1247,12 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // If the node is ignored, we must update from an unignored ancestor.
   std::set<AXNodeID> updated_unignored_cached_values_ids;
   for (AXNodeID node_id : update_state.invalidate_unignored_cached_values_ids) {
-    AXNode* node = GetFromId(node_id);
-    while (node && node->data().IsIgnored())
-      node = node->parent();
-    if (node && updated_unignored_cached_values_ids.insert(node->id()).second)
-      node->UpdateUnignoredCachedValues();
+    AXNode* unignored_ancestor = GetUnignoredAncestorFromId(node_id);
+    if (unignored_ancestor &&
+        updated_unignored_cached_values_ids.insert(unignored_ancestor->id())
+            .second) {
+      unignored_ancestor->UpdateUnignoredCachedValues();
+    }
   }
 
   // Tree is no longer updating.
@@ -1193,19 +1285,25 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   // Now that the unignored cached values are up to date, notify observers of
   // node changes.
-  for (AXNodeID node_data_changed_id : update_state.node_data_changed_ids) {
-    AXNode* node = GetFromId(node_data_changed_id);
+  for (AXNodeID changed_id : update_state.node_data_changed_ids) {
+    AXNode* node = GetFromId(changed_id);
     DCHECK(node);
 
     // If the node exists and is in the old data map, then the node data
     // may have changed unless this is a new root.
-    const bool is_new_root = update_state.root_will_be_created &&
-                             node_data_changed_id == update.root_id;
+    const bool is_new_root =
+        update_state.root_will_be_created && changed_id == update.root_id;
     if (!is_new_root) {
-      auto it = update_state.old_node_id_to_data.find(node_data_changed_id);
+      auto it = update_state.old_node_id_to_data.find(changed_id);
       if (it != update_state.old_node_id_to_data.end()) {
-        const AXNodeData& old_node_data = it->second;
-        NotifyNodeDataHasBeenChanged(node, old_node_data, node->data());
+        NotifyNodeAttributesHaveBeenChanged(
+            node,
+            update_state.old_tree_data ? &update_state.old_tree_data.value()
+                                       : nullptr,
+            it->second,
+            update_state.new_tree_data ? &update_state.new_tree_data.value()
+                                       : nullptr,
+            node->data());
       }
     }
 
@@ -1289,9 +1387,9 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
   update_state->pending_update_status =
       AXTreePendingStructureStatus::kComputing;
 
-  // The ID of the current root  is temporarily stored in `update_state`,
-  // but reset after all pending updates have been computed in order to
-  // avoid stale data hanging around.
+  // The ID of the current root is temporarily stored in `update_state`, but
+  // reset after all pending updates have been computed in order to avoid stale
+  // data hanging around.
   base::AutoReset<absl::optional<AXNodeID>> pending_root_id_resetter(
       &update_state->pending_root_id,
       root_ ? absl::make_optional<AXNodeID>(root_->id()) : absl::nullopt);
@@ -1300,6 +1398,7 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
     update_state->old_tree_data = data_;
     update_state->new_tree_data = update.tree_data;
   }
+  update_state->updated_nodes = update.nodes;
 
   // We distinguish between updating the root, e.g. changing its children or
   // some of its attributes, or replacing the root completely. If the root is
@@ -1330,13 +1429,54 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
     }
   }
 
+  if (is_focused_node_always_unignored_ && update_state->old_tree_data &&
+      update_state->new_tree_data) {
+    // Ensure that if the focused node has changed, any unignored cached values
+    // would be invalidated on both the previous as well as the new focus, in
+    // cases where their ignored state will be affected. This block is necessary
+    // in the rare situation when the focus node has changed but the previous or
+    // new focused nodes are not in the list of updated nodes, because their
+    // data has not been modified.
+
+    // TODO(nektar): This check is erroneous: It's missing a check of
+    // focused_tree_id. Fix after updating `AXNode::IsFocusedInThisTree`.
+
+    if (update_state->old_tree_data->focus_id != kInvalidAXNodeID) {
+      const AXNode* old_focus =
+          GetFromId(update_state->old_tree_data->focus_id);
+      if (old_focus &&
+          update_state->ShouldPendingNodeExistInTree(old_focus->id()) &&
+          std::find_if(update_state->updated_nodes.begin(),
+                       update_state->updated_nodes.end(),
+                       [old_focus](const AXNodeData& data) {
+                         return data.id == old_focus->id();
+                       }) == update_state->updated_nodes.end()) {
+        update_state->updated_nodes.push_back(old_focus->data());
+      }
+    }
+
+    if (update_state->new_tree_data->focus_id != kInvalidAXNodeID) {
+      const AXNode* new_focus =
+          GetFromId(update_state->new_tree_data->focus_id);
+      if (new_focus &&
+          update_state->ShouldPendingNodeExistInTree(new_focus->id()) &&
+          std::find_if(update_state->updated_nodes.begin(),
+                       update_state->updated_nodes.end(),
+                       [new_focus](const AXNodeData& data) {
+                         return data.id == new_focus->id();
+                       }) == update_state->updated_nodes.end()) {
+        update_state->updated_nodes.push_back(new_focus->data());
+      }
+    }
+  }
+
   update_state->root_will_be_created =
       !GetFromId(update.root_id) ||
       !update_state->ShouldPendingNodeExistInTree(update.root_id);
 
   // Populate |update_state| with all of the changes that will be performed
   // on the tree during the update.
-  for (const AXNodeData& new_data : update.nodes) {
+  for (const AXNodeData& new_data : update_state->updated_nodes) {
     bool is_new_root =
         update_state->root_will_be_created && new_data.id == update.root_id;
     if (!ComputePendingChangesToNode(new_data, is_new_root, update_state)) {
@@ -1357,7 +1497,7 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
   // index in parent.  If the order has changed, invalidate the cached
   // unignored index in parent.
   for (size_t j = 0; j < new_data.child_ids.size(); j++) {
-    AXNode* node = GetFromId(new_data.child_ids[j]);
+    const AXNode* node = GetFromId(new_data.child_ids[j]);
     if (node && node->GetIndexInParent() != j)
       update_state->InvalidateParentNodeUnignoredCacheValues(node->id());
   }
@@ -1449,8 +1589,8 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
 
   // If the node has changed ignored state or there are any differences in
   // its children, then its unignored cached values must be invalidated.
-  const bool ignored_changed = old_data.IsIgnored() != new_data.IsIgnored();
-  if (!create_or_destroy_ids.empty() || ignored_changed) {
+  if (!create_or_destroy_ids.empty() ||
+      update_state->HasIgnoredChanged(new_data)) {
     update_state->invalidate_unignored_cached_values_ids.insert(new_data.id);
 
     // If this ignored state had changed also invalidate the parent.
@@ -1508,7 +1648,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
   // and this is a serious error.
   AXNode* node = GetFromId(src.id);
   if (node) {
-    update_state->pending_nodes.erase(node->id());
+    update_state->pending_node_ids.erase(node->id());
     UpdateReverseRelations(node, src);
     if (!update_state->IsCreatedNode(node) ||
         update_state->IsReparentedNode(node)) {
@@ -1636,19 +1776,32 @@ void AXTree::NotifyNodeHasBeenReparentedOrCreated(
   }
 }
 
-void AXTree::NotifyNodeDataWillChange(const AXNodeData& old_data,
-                                      const AXNodeData& new_data) {
+void AXTree::NotifyNodeAttributesWillChange(
+    AXNode* node,
+    const AXTreeData* optional_old_tree_data,
+    const AXNodeData& old_data,
+    const AXTreeData* optional_new_tree_data,
+    const AXNodeData& new_data) {
   DCHECK(!GetTreeUpdateInProgressState());
   if (new_data.id == kInvalidAXNodeID)
     return;
 
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDataWillChange(this, old_data, new_data);
+
+  if (ComputeNodeIsIgnoredChanged(optional_old_tree_data, old_data,
+                                  optional_new_tree_data, new_data)) {
+    for (AXTreeObserver& observer : observers_)
+      observer.OnIgnoredWillChange(this, node, !node->IsIgnored());
+  }
 }
 
-void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
-                                          const AXNodeData& old_data,
-                                          const AXNodeData& new_data) {
+void AXTree::NotifyNodeAttributesHaveBeenChanged(
+    AXNode* node,
+    const AXTreeData* optional_old_tree_data,
+    const AXNodeData& old_data,
+    const AXTreeData* optional_new_tree_data,
+    const AXNodeData& new_data) {
   DCHECK(!GetTreeUpdateInProgressState());
   if (node->id() == kInvalidAXNodeID)
     return;
@@ -1661,10 +1814,20 @@ void AXTree::NotifyNodeDataHasBeenChanged(AXNode* node,
       observer.OnRoleChanged(this, node, old_data.role, new_data.role);
   }
 
+  if (ComputeNodeIsIgnoredChanged(optional_old_tree_data, old_data,
+                                  optional_new_tree_data, new_data)) {
+    for (AXTreeObserver& observer : observers_)
+      observer.OnIgnoredChanged(this, node, node->IsIgnored());
+  }
+
   if (old_data.state != new_data.state) {
     for (int32_t i = static_cast<int32_t>(ax::mojom::State::kNone) + 1;
          i <= static_cast<int32_t>(ax::mojom::State::kMaxValue); ++i) {
       ax::mojom::State state = static_cast<ax::mojom::State>(i);
+      // The ignored state has been already handled via `OnIgnoredChanged`.
+      if (state == ax::mojom::State::kIgnored)
+        continue;
+
       if (old_data.HasState(state) != new_data.HasState(state)) {
         for (AXTreeObserver& observer : observers_)
           observer.OnStateChanged(this, node, state, new_data.HasState(state));
@@ -1816,11 +1979,11 @@ void AXTree::UpdateReverseRelations(AXNode* node, const AXNodeData& new_data) {
 
 bool AXTree::ValidatePendingChangesComplete(
     const AXTreeUpdateState& update_state) {
-  if (!update_state.pending_nodes.empty()) {
+  if (!update_state.pending_node_ids.empty()) {
     ACCESSIBILITY_TREE_UNSERIALIZE_ERROR_HISTOGRAM(
         AXTreeUnserializeError::kPendingNodes);
     std::string error = "Nodes left pending by the update:";
-    for (const AXNodeID pending_id : update_state.pending_nodes)
+    for (const AXNodeID pending_id : update_state.pending_node_ids)
       error += base::StringPrintf(" %d", pending_id);
     RecordError(error);
     return false;
@@ -1911,13 +2074,13 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   for (auto* child : node->children())
     DestroyNodeAndSubtree(child, update_state);
   if (update_state) {
-    update_state->pending_nodes.erase(node->id());
+    update_state->pending_node_ids.erase(node->id());
     update_state->DecrementPendingDestroyNodeCount(node->id());
     update_state->removed_node_ids.insert(node->id());
     update_state->new_node_ids.erase(node->id());
     update_state->node_data_changed_ids.erase(node->id());
     if (update_state->IsReparentedNode(node)) {
-      update_state->old_node_id_to_data.emplace(
+      update_state->old_node_id_to_data.insert(
           std::make_pair(node->id(), node->TakeData()));
     }
   }
@@ -1979,12 +2142,13 @@ bool AXTree::CreateNewChildVector(AXNode* node,
                         : kInvalidAXNodeID)
                 << "\nTree update: "
                 << update_state->pending_tree_update.ToString();
-          // Add the error message to "breadcrumbs" in crash reports:
-          base::debug::ScopedActivity scoped_activity;
-          base::debug::ActivityUserData& user_data =
-              scoped_activity.user_data();
-          user_data.SetString("ax_reparenting_error", error.str());
-          CHECK(false) << error.str();
+
+          // Add a crash key so we can figure out why this is happening.
+          static crash_reporter::CrashKeyString<256> ax_tree_error(
+              "ax_reparenting_error");
+          ax_tree_error.Set(error.str());
+          LOG(ERROR) << error.str();
+          CHECK(false);
           // --- End temporary change ---
         }
         success = false;
@@ -1993,12 +2157,21 @@ bool AXTree::CreateNewChildVector(AXNode* node,
       child->SetIndexInParent(i);
     } else {
       child = CreateNode(node, child_id, i, update_state);
-      update_state->pending_nodes.insert(child->id());
+      update_state->pending_node_ids.insert(child->id());
     }
     new_children->push_back(child);
   }
 
   return success;
+}
+
+AXNode* AXTree::GetUnignoredAncestorFromId(AXNodeID node_id) const {
+  AXNode* node = GetFromId(node_id);
+  // We can't simply call `AXNode::GetUnignoredParent()` because the node's
+  // unignored cached values may be out-of-date.
+  while (node && node->IsIgnored())
+    node = node->parent();
+  return node;
 }
 
 AXNodeID AXTree::GetNextNegativeInternalNodeId() {
@@ -2076,7 +2249,7 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
   // </div>
   // This optimization won't apply, we will end up populating items from all
   // levels.
-  if (ordered_set->data().role == local_parent->data().role &&
+  if (ordered_set->GetRole() == local_parent->GetRole() &&
       ordered_set != local_parent)
     return;
 
@@ -2101,10 +2274,10 @@ void AXTree::RecursivelyPopulateOrderedSetItemsMap(
     // Add child to |items_map_to_be_populated| if role matches with the role of
     // |ordered_set|. If role of node is kRadioButton, don't add items of other
     // roles, even if item role matches the role of |ordered_set|.
-    if (child->data().role == ax::mojom::Role::kComment ||
-        (original_node.data().role == ax::mojom::Role::kRadioButton &&
-         child->data().role == ax::mojom::Role::kRadioButton) ||
-        (original_node.data().role != ax::mojom::Role::kRadioButton &&
+    if (child->GetRole() == ax::mojom::Role::kComment ||
+        (original_node.GetRole() == ax::mojom::Role::kRadioButton &&
+         child->GetRole() == ax::mojom::Role::kRadioButton) ||
+        (original_node.GetRole() != ax::mojom::Role::kRadioButton &&
          child->SetRoleMatchesItemRole(ordered_set))) {
       // According to WAI-ARIA spec, some ordered set items do not support
       // hierarchical level while its ordered set container does. For example,
@@ -2177,9 +2350,9 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
 
   // Set items role::kComment and role::kRadioButton are special cases and do
   // not necessarily need to be contained in an ordered set.
-  if (node.data().role != ax::mojom::Role::kComment &&
-      node.data().role != ax::mojom::Role::kRadioButton &&
-      !node.SetRoleMatchesItemRole(ordered_set) && !IsSetLike(node.data().role))
+  if (node.GetRole() != ax::mojom::Role::kComment &&
+      node.GetRole() != ax::mojom::Role::kRadioButton &&
+      !node.SetRoleMatchesItemRole(ordered_set) && !IsSetLike(node.GetRole()))
     return;
 
   // Find all items within ordered_set and add to |items_map_to_be_populated|.
@@ -2190,7 +2363,7 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
   // would like it to inherit the SetSize from the kMenuListPopUp it wraps. To
   // do this, we treat the kMenuListPopUp as the ordered_set and eventually
   // assign its SetSize value to the kPopUpButton.
-  if (node.data().role == ax::mojom::Role::kPopUpButton &&
+  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
       node.GetUnignoredChildCount() > 0) {
     // kPopUpButtons are only allowed to contain one kMenuListPopUp.
     // The single element is guaranteed to be a kMenuListPopUp because that is
@@ -2200,7 +2373,7 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
         items_map_to_be_populated.GetFirstOrderedSetContent();
     if (set_content && set_content->set_items_.size() == 1) {
       const AXNode* menu_list_popup = set_content->set_items_.front();
-      if (menu_list_popup->data().role == ax::mojom::Role::kMenuListPopup) {
+      if (menu_list_popup->GetRole() == ax::mojom::Role::kMenuListPopup) {
         items_map_to_be_populated.Clear();
         PopulateOrderedSetItemsMap(node, menu_list_popup,
                                    &items_map_to_be_populated);
@@ -2307,7 +2480,7 @@ void AXTree::ComputeSetSizePosInSetAndCacheHelper(
 }
 
 absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
-  if (node.data().role == ax::mojom::Role::kPopUpButton &&
+  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet)) {
     return node.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet);
@@ -2342,7 +2515,7 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
 }
 
 absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
-  if (node.data().role == ax::mojom::Role::kPopUpButton &&
+  if (node.GetRole() == ax::mojom::Role::kPopUpButton &&
       node.GetUnignoredChildCount() == 0 &&
       node.HasIntAttribute(ax::mojom::IntAttribute::kSetSize)) {
     return node.GetIntAttribute(ax::mojom::IntAttribute::kSetSize);
@@ -2368,16 +2541,16 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   // If |node| is item-like, find its outerlying ordered set. Otherwise,
   // |node| is the ordered set.
   const AXNode* ordered_set = &node;
-  if (IsItemLike(node.data().role))
+  if (IsItemLike(node.GetRole()))
     ordered_set = node.GetOrderedSet();
   if (!ordered_set)
     return absl::nullopt;
 
   // For popup buttons that control a single element, inherit the controlled
   // item's SetSize. Skip this block if the popup button controls itself.
-  if (node.data().role == ax::mojom::Role::kPopUpButton) {
-    const auto& controls_ids = node.data().GetIntListAttribute(
-        ax::mojom::IntListAttribute::kControlsIds);
+  if (node.GetRole() == ax::mojom::Role::kPopUpButton) {
+    const auto& controls_ids =
+        node.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
     if (controls_ids.size() == 1 && GetFromId(controls_ids[0]) &&
         controls_ids[0] != node.id()) {
       const AXNode& controlled_item = *GetFromId(controls_ids[0]);
@@ -2400,125 +2573,110 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   return set_size;
 }
 
+namespace {
+
+// Helper for GetUnignoredSelection. Creates a position using |node_id|,
+// |offset| and |affinity|, and if it's ignored, updates these arguments so
+// that they represent a non-null non-ignored position, according to
+// |adjustment_behavior|. Returns true on success, false on failure. Note that
+// if the position is initially null, it's not ignored and it's a success.
+bool ComputeUnignoredSelectionEndpoint(
+    const AXTree& tree,
+    AXPositionAdjustmentBehavior adjustment_behavior,
+    AXNodeID& node_id,
+    int32_t& offset,
+    ax::mojom::TextAffinity& affinity) {
+  AXNode* node = tree.GetFromId(node_id);
+  if (!node) {
+    node_id = kInvalidAXNodeID;
+    offset = -1;
+    affinity = ax::mojom::TextAffinity::kDownstream;
+    return false;
+  }
+
+  AXNodePosition::AXPositionInstance position =
+      AXNodePosition::CreatePosition(*node, offset, affinity);
+
+  // Null positions are never ignored, but must be considered successful, or
+  // these Android tests would fail:
+  // org.chromium.content.browser.accessibility.AssistViewStructureTest#*
+  // The reason is that |position| becomes null because no AXTreeManager is
+  // registered for that |tree|'s AXTreeID.
+  // TODO(accessibility): investigate and fix this if needed.
+  if (!position->IsIgnored())
+    return true;  // We assume that unignored positions are already valid.
+
+  position =
+      position->AsValidPosition()->AsUnignoredPosition(adjustment_behavior);
+
+  // Moving to an unignored position might have placed the position on a leaf
+  // node. Any selection endpoint that is inside a leaf node is expressed as a
+  // text position in AXTreeData. (Note that in this context "leaf node" means
+  // a node with no children or with only ignored children. This does not
+  // refer to a platform leaf.)
+  if (position->IsLeafTreePosition())
+    position = position->AsTextPosition();
+
+  // We do not expect the selection to have an endpoint on an inline text
+  // box as this will create issues with parts of the code that don't use
+  // inline text boxes.
+  if (position->IsTextPosition() &&
+      position->GetRole() == ax::mojom::Role::kInlineTextBox) {
+    position = position->CreateParentPosition();
+  }
+
+  switch (position->kind()) {
+    case AXPositionKind::NULL_POSITION:
+      node_id = kInvalidAXNodeID;
+      offset = -1;
+      affinity = ax::mojom::TextAffinity::kDownstream;
+      return false;
+    case AXPositionKind::TREE_POSITION:
+      node_id = position->anchor_id();
+      offset = position->child_index();
+      affinity = ax::mojom::TextAffinity::kDownstream;
+      return true;
+    case AXPositionKind::TEXT_POSITION:
+      node_id = position->anchor_id();
+      offset = position->text_offset();
+      affinity = position->affinity();
+      return true;
+  }
+}
+
+}  // namespace
+
 AXTree::Selection AXTree::GetUnignoredSelection() const {
   Selection unignored_selection = {
       data().sel_is_backward,     data().sel_anchor_object_id,
       data().sel_anchor_offset,   data().sel_anchor_affinity,
       data().sel_focus_object_id, data().sel_focus_offset,
       data().sel_focus_affinity};
-  AXNode* anchor_node = GetFromId(data().sel_anchor_object_id);
-  AXNode* focus_node = GetFromId(data().sel_focus_object_id);
 
-  AXNodePosition::AXPositionInstance anchor_position =
-      anchor_node ? AXNodePosition::CreatePosition(*anchor_node,
-                                                   data().sel_anchor_offset,
-                                                   data().sel_anchor_affinity)
-                  : AXNodePosition::CreateNullPosition();
-
-  // Null positions are never ignored.
-  if (anchor_position->IsIgnored()) {
-    anchor_position = anchor_position->AsValidPosition()->AsUnignoredPosition(
-        data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
-                               : AXPositionAdjustmentBehavior::kMoveBackward);
-
-    // Moving to an unignored position might have placed the position on a leaf
-    // node. Any selection endpoint that is inside a leaf node is expressed as a
-    // text position in AXTreeData. (Note that in this context "leaf node" means
-    // a node with no children or with only ignored children. This does not
-    // refer to a platform leaf.)
-    if (anchor_position->IsLeafTreePosition())
-      anchor_position = anchor_position->AsTextPosition();
-
-    // We do not expect the selection to have an endpoint on an inline text
-    // box as this will create issues with parts of the code that don't use
-    // inline text boxes.
-    if (anchor_position->IsTextPosition() &&
-        anchor_position->GetAnchor()->data().role ==
-            ax::mojom::Role::kInlineTextBox) {
-      anchor_position = anchor_position->CreateParentPosition();
-    }
-
-    switch (anchor_position->kind()) {
-      case AXPositionKind::NULL_POSITION:
-        // If one of the selection endpoints is invalid, then both endpoints
-        // should be unset.
-        unignored_selection.anchor_object_id = kInvalidAXNodeID;
-        unignored_selection.anchor_offset = -1;
-        unignored_selection.anchor_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        unignored_selection.focus_object_id = kInvalidAXNodeID;
-        unignored_selection.focus_offset = -1;
-        unignored_selection.focus_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        return unignored_selection;
-      case AXPositionKind::TREE_POSITION:
-        unignored_selection.anchor_object_id = anchor_position->anchor_id();
-        unignored_selection.anchor_offset = anchor_position->child_index();
-        unignored_selection.anchor_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        break;
-      case AXPositionKind::TEXT_POSITION:
-        unignored_selection.anchor_object_id = anchor_position->anchor_id();
-        unignored_selection.anchor_offset = anchor_position->text_offset();
-        unignored_selection.anchor_affinity = anchor_position->affinity();
-        break;
-    }
-  }
-
-  AXNodePosition::AXPositionInstance focus_position =
-      focus_node
-          ? AXNodePosition::CreatePosition(*focus_node, data().sel_focus_offset,
-                                           data().sel_focus_affinity)
-          : AXNodePosition::CreateNullPosition();
-
-  // Null positions are never ignored.
-  if (focus_position->IsIgnored()) {
-    focus_position = focus_position->AsValidPosition()->AsUnignoredPosition(
-        !data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
-                                : AXPositionAdjustmentBehavior::kMoveBackward);
-
-    // Moving to an unignored position might have placed the position on a leaf
-    // node. Any selection endpoint that is inside a leaf node is expressed as a
-    // text position in AXTreeData. (Note that in this context "leaf node" means
-    // a node with no children or with only ignored children. This does not
-    // refer to a platform leaf.)
-    if (focus_position->IsLeafTreePosition())
-      focus_position = focus_position->AsTextPosition();
-
-    // We do not expect the selection to have an endpoint on an inline text
-    // box as this will create issues with parts of the code that don't use
-    // inline text boxes.
-    if (focus_position->IsTextPosition() &&
-        focus_position->GetAnchor()->data().role ==
-            ax::mojom::Role::kInlineTextBox) {
-      focus_position = focus_position->CreateParentPosition();
-    }
-
-    switch (focus_position->kind()) {
-      case AXPositionKind::NULL_POSITION:
-        // If one of the selection endpoints is invalid, then both endpoints
-        // should be unset.
-        unignored_selection.anchor_object_id = kInvalidAXNodeID;
-        unignored_selection.anchor_offset = -1;
-        unignored_selection.anchor_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        unignored_selection.focus_object_id = kInvalidAXNodeID;
-        unignored_selection.focus_offset = -1;
-        unignored_selection.focus_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        return unignored_selection;
-      case AXPositionKind::TREE_POSITION:
-        unignored_selection.focus_object_id = focus_position->anchor_id();
-        unignored_selection.focus_offset = focus_position->child_index();
-        unignored_selection.focus_affinity =
-            ax::mojom::TextAffinity::kDownstream;
-        break;
-      case AXPositionKind::TEXT_POSITION:
-        unignored_selection.focus_object_id = focus_position->anchor_id();
-        unignored_selection.focus_offset = focus_position->text_offset();
-        unignored_selection.focus_affinity = focus_position->affinity();
-        break;
-    }
+  // If one of the selection endpoints is invalid, then the other endpoint
+  // should also be unset.
+  if (!ComputeUnignoredSelectionEndpoint(
+          *this,
+          unignored_selection.is_backward
+              ? AXPositionAdjustmentBehavior::kMoveForward
+              : AXPositionAdjustmentBehavior::kMoveBackward,
+          unignored_selection.anchor_object_id,
+          unignored_selection.anchor_offset,
+          unignored_selection.anchor_affinity)) {
+    unignored_selection.focus_object_id = kInvalidAXNodeID;
+    unignored_selection.focus_offset = -1;
+    unignored_selection.focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  } else if (!ComputeUnignoredSelectionEndpoint(
+                 *this,
+                 unignored_selection.is_backward
+                     ? AXPositionAdjustmentBehavior::kMoveBackward
+                     : AXPositionAdjustmentBehavior::kMoveForward,
+                 unignored_selection.focus_object_id,
+                 unignored_selection.focus_offset,
+                 unignored_selection.focus_affinity)) {
+    unignored_selection.anchor_object_id = kInvalidAXNodeID;
+    unignored_selection.anchor_offset = -1;
+    unignored_selection.anchor_affinity = ax::mojom::TextAffinity::kDownstream;
   }
 
   return unignored_selection;
@@ -2548,6 +2706,14 @@ void AXTree::RecordError(std::string new_error) {
   if (!error_.empty())
     error_ = error_ + "\n";  // Add visual separation between errors.
   error_ = error_ + new_error;
+
+  if (!error_.empty()) {
+    // Add a crash key so we can figure out why this is happening.
+    static crash_reporter::CrashKeyString<256> ax_tree_error(
+        "ax_tree_unserialize_error");
+    ax_tree_error.Set(error_);
+    LOG(ERROR) << error_;
+  }
 }
 
 }  // namespace ui

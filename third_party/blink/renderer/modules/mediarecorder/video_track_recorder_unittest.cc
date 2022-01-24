@@ -76,18 +76,18 @@ constexpr media::VideoCodec MediaVideoCodecFromCodecId(
     VideoTrackRecorder::CodecId id) {
   switch (id) {
     case VideoTrackRecorder::CodecId::VP8:
-      return media::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case VideoTrackRecorder::CodecId::VP9:
-      return media::kCodecVP9;
+      return media::VideoCodec::kVP9;
 #if BUILDFLAG(RTC_USE_H264)
     case VideoTrackRecorder::CodecId::H264:
-      return media::kCodecH264;
+      return media::VideoCodec::kH264;
 #endif
     default:
-      return media::kUnknownVideoCodec;
+      return media::VideoCodec::kUnknown;
   }
   NOTREACHED() << "Unsupported video codec";
-  return media::kUnknownVideoCodec;
+  return media::VideoCodec::kUnknown;
 }
 
 }  // namespace
@@ -137,6 +137,9 @@ class VideoTrackRecorderTest
 
     ON_CALL(*platform_, GetGpuFactories()).WillByDefault(Return(nullptr));
   }
+
+  VideoTrackRecorderTest(const VideoTrackRecorderTest&) = delete;
+  VideoTrackRecorderTest& operator=(const VideoTrackRecorderTest&) = delete;
 
   ~VideoTrackRecorderTest() override {
     component_ = nullptr;
@@ -238,9 +241,6 @@ class VideoTrackRecorderTest
       return video_frame;
     return video_frame2;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoTrackRecorderTest);
 };
 
 // Construct and destruct all objects, in particular |video_track_recorder_| and
@@ -524,7 +524,7 @@ TEST_F(VideoTrackRecorderTest, RequiredRefreshRate) {
 
   EXPECT_EQ(video_track_recorder_->GetRequiredMinFramesPerSec(), 1);
 
-  test::RunDelayedTasks(base::TimeDelta::FromSeconds(1));
+  test::RunDelayedTasks(base::Seconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -722,6 +722,10 @@ class CodecEnumeratorTest : public ::testing::Test {
   using CodecId = VideoTrackRecorder::CodecId;
 
   CodecEnumeratorTest() = default;
+
+  CodecEnumeratorTest(const CodecEnumeratorTest&) = delete;
+  CodecEnumeratorTest& operator=(const CodecEnumeratorTest&) = delete;
+
   ~CodecEnumeratorTest() override = default;
 
   media::VideoEncodeAccelerator::SupportedProfiles MakeVp8Profiles() {
@@ -758,9 +762,6 @@ class CodecEnumeratorTest : public ::testing::Test {
                           1);
     return profiles;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodecEnumeratorTest);
 };
 
 TEST_F(CodecEnumeratorTest, GetPreferredCodecIdDefault) {

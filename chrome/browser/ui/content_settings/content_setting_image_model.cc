@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -84,15 +83,22 @@ class ContentSettingBlockedImageModel : public ContentSettingSimpleImageModel {
   ContentSettingBlockedImageModel(ImageType image_type,
                                   ContentSettingsType content_type);
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingBlockedImageModel(const ContentSettingBlockedImageModel&) =
+      delete;
+  ContentSettingBlockedImageModel& operator=(
+      const ContentSettingBlockedImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBlockedImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
  public:
   ContentSettingGeolocationImageModel();
+
+  ContentSettingGeolocationImageModel(
+      const ContentSettingGeolocationImageModel&) = delete;
+  ContentSettingGeolocationImageModel& operator=(
+      const ContentSettingGeolocationImageModel&) = delete;
 
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 
@@ -105,19 +111,17 @@ class ContentSettingGeolocationImageModel : public ContentSettingImageModel {
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingGeolocationImageModel);
 };
 
 class ContentSettingRPHImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingRPHImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingRPHImageModel(const ContentSettingRPHImageModel&) = delete;
+  ContentSettingRPHImageModel& operator=(const ContentSettingRPHImageModel&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingRPHImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingMIDISysExImageModel
@@ -125,10 +129,12 @@ class ContentSettingMIDISysExImageModel
  public:
   ContentSettingMIDISysExImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingMIDISysExImageModel(const ContentSettingMIDISysExImageModel&) =
+      delete;
+  ContentSettingMIDISysExImageModel& operator=(
+      const ContentSettingMIDISysExImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMIDISysExImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingDownloadsImageModel
@@ -136,10 +142,12 @@ class ContentSettingDownloadsImageModel
  public:
   ContentSettingDownloadsImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingDownloadsImageModel(const ContentSettingDownloadsImageModel&) =
+      delete;
+  ContentSettingDownloadsImageModel& operator=(
+      const ContentSettingDownloadsImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingDownloadsImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 class ContentSettingClipboardReadWriteImageModel
@@ -147,16 +155,22 @@ class ContentSettingClipboardReadWriteImageModel
  public:
   ContentSettingClipboardReadWriteImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingClipboardReadWriteImageModel(
+      const ContentSettingClipboardReadWriteImageModel&) = delete;
+  ContentSettingClipboardReadWriteImageModel& operator=(
+      const ContentSettingClipboardReadWriteImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingClipboardReadWriteImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 // Image model for displaying media icons in the location bar.
 class ContentSettingMediaImageModel : public ContentSettingImageModel {
  public:
   ContentSettingMediaImageModel();
+
+  ContentSettingMediaImageModel(const ContentSettingMediaImageModel&) = delete;
+  ContentSettingMediaImageModel& operator=(
+      const ContentSettingMediaImageModel&) = delete;
 
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
   bool IsMicAccessed();
@@ -176,18 +190,18 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
 
  private:
   PageSpecificContentSettings::MicrophoneCameraState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMediaImageModel);
 };
 
 class ContentSettingSensorsImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingSensorsImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingSensorsImageModel(const ContentSettingSensorsImageModel&) =
+      delete;
+  ContentSettingSensorsImageModel& operator=(
+      const ContentSettingSensorsImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSensorsImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 // The image model for an icon that acts as a quiet permission request prompt
@@ -200,25 +214,28 @@ class ContentSettingNotificationsImageModel
  public:
   ContentSettingNotificationsImageModel();
 
+  ContentSettingNotificationsImageModel(
+      const ContentSettingNotificationsImageModel&) = delete;
+  ContentSettingNotificationsImageModel& operator=(
+      const ContentSettingNotificationsImageModel&) = delete;
+
   // ContentSettingSimpleImageModel:
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
   void SetPromoWasShown(content::WebContents* contents) override;
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingNotificationsImageModel);
 };
 
 class ContentSettingPopupImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingPopupImageModel();
 
-  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+  ContentSettingPopupImageModel(const ContentSettingPopupImageModel&) = delete;
+  ContentSettingPopupImageModel& operator=(
+      const ContentSettingPopupImageModel&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingPopupImageModel);
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
 namespace {
@@ -510,59 +527,51 @@ bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     return false;
 
 #if defined(OS_MAC)
-
-  if (base::FeatureList::IsEnabled(
-          ::features::kMacCoreLocationImplementation)) {
-    set_explanatory_string_id(0);
-    if (is_allowed) {
-      if (!IsGeolocationAllowedOnASystemLevel()) {
-        set_icon(vector_icons::kLocationOnIcon,
-                 vector_icons::kBlockedBadgeIcon);
-        base::RecordAction(base::UserMetricsAction(
-            "ContentSettings.Geolocation.BlockedIconShown"));
-        set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
-        if (content_settings->geolocation_was_just_granted_on_site_level())
-          set_should_auto_open_bubble(true);
-        // At this point macOS may not have told us whether location permission
-        // has been allowed or blocked. Wait until the permission state is
-        // determined before displaying this message since it triggers an
-        // animation that cannot be cancelled
-        if (IsGeolocationPermissionDetermined()) {
-          if (base::FeatureList::IsEnabled(
-                  features::kLocationPermissionsExperiment)) {
-            PrefService* prefs = g_browser_process->local_state();
-            int count = prefs->GetInteger(
-                prefs::kMacRestoreLocationPermissionsExperimentCount);
-            if (count <
-                features::GetLocationPermissionsExperimentBubblePromptLimit()) {
-              // Show the bubble when the location is denied.
-              set_should_auto_open_bubble(true);
-              prefs->SetInteger(
-                  prefs::kMacRestoreLocationPermissionsExperimentCount,
-                  ++count);
-              prefs->CommitPendingWrite();
-            } else if (
-                count <
-                (features::GetLocationPermissionsExperimentBubblePromptLimit() +
-                 features::
-                     GetLocationPermissionsExperimentLabelPromptLimit())) {
-              // Show a persistent label without a bubble when the location is
-              // denied.
-              set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-              prefs->SetInteger(
-                  prefs::kMacRestoreLocationPermissionsExperimentCount,
-                  ++count);
-              prefs->CommitPendingWrite();
-            } else {
-              // Return to normal behavior.
-              set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
-            }
+  set_explanatory_string_id(0);
+  if (is_allowed) {
+    if (!IsGeolocationAllowedOnASystemLevel()) {
+      set_icon(vector_icons::kLocationOnIcon, vector_icons::kBlockedBadgeIcon);
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSettings.Geolocation.BlockedIconShown"));
+      set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_GEOLOCATION_MESSAGE));
+      if (content_settings->geolocation_was_just_granted_on_site_level())
+        set_should_auto_open_bubble(true);
+      // At this point macOS may not have told us whether location permission
+      // has been allowed or blocked. Wait until the permission state is
+      // determined before displaying this message since it triggers an
+      // animation that cannot be cancelled
+      if (IsGeolocationPermissionDetermined()) {
+        if (base::FeatureList::IsEnabled(
+                features::kLocationPermissionsExperiment)) {
+          PrefService* prefs = g_browser_process->local_state();
+          int count = prefs->GetInteger(
+              prefs::kMacRestoreLocationPermissionsExperimentCount);
+          if (count <
+              features::GetLocationPermissionsExperimentBubblePromptLimit()) {
+            // Show the bubble when the location is denied.
+            set_should_auto_open_bubble(true);
+            prefs->SetInteger(
+                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
+            prefs->CommitPendingWrite();
+          } else if (
+              count <
+              (features::GetLocationPermissionsExperimentBubblePromptLimit() +
+               features::GetLocationPermissionsExperimentLabelPromptLimit())) {
+            // Show a persistent label without a bubble when the location is
+            // denied.
+            set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
+            prefs->SetInteger(
+                prefs::kMacRestoreLocationPermissionsExperimentCount, ++count);
+            prefs->CommitPendingWrite();
           } else {
+            // Return to normal behavior.
             set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
           }
+        } else {
+          set_explanatory_string_id(IDS_GEOLOCATION_TURNED_OFF);
         }
-        return true;
       }
+      return true;
     }
   }
 #endif  // defined(OS_MAC)
@@ -1026,8 +1035,8 @@ std::unique_ptr<ContentSettingBubbleModel>
 ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     ContentSettingBubbleModel::Delegate* delegate,
     WebContents* web_contents) {
-  return std::make_unique<ContentSettingNotificationsBubbleModel>(delegate,
-                                                                  web_contents);
+  return std::make_unique<ContentSettingQuietRequestBubbleModel>(delegate,
+                                                                 web_contents);
 }
 
 // Base class ------------------------------------------------------------------

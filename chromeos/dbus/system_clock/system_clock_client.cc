@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/system_clock/fake_system_clock_client.h"
 #include "dbus/bus.h"
@@ -56,6 +55,9 @@ class SystemClockClientImpl : public SystemClockClient {
     CHECK(bus);
     InitDBus(bus);
   }
+
+  SystemClockClientImpl(const SystemClockClientImpl&) = delete;
+  SystemClockClientImpl& operator=(const SystemClockClientImpl&) = delete;
 
   ~SystemClockClientImpl() override = default;
 
@@ -187,8 +189,6 @@ class SystemClockClientImpl : public SystemClockClient {
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<SystemClockClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemClockClientImpl);
 };
 
 SystemClockClient::SystemClockClient() {

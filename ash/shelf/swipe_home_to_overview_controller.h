@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -37,6 +36,11 @@ class ASH_EXPORT SwipeHomeToOverviewController {
   // |overview_transition_timer_|.
   SwipeHomeToOverviewController(int64_t display_id,
                                 const base::TickClock* tick_clock);
+
+  SwipeHomeToOverviewController(const SwipeHomeToOverviewController&) = delete;
+  SwipeHomeToOverviewController& operator=(
+      const SwipeHomeToOverviewController&) = delete;
+
   ~SwipeHomeToOverviewController();
 
   // Called during swiping up on the shelf.
@@ -88,8 +92,6 @@ class ASH_EXPORT SwipeHomeToOverviewController {
   // screen. It will be set during home screen drag with a goal of improving
   // overall drag performance.
   absl::optional<base::ScopedClosureRunner> home_screen_blur_disabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SwipeHomeToOverviewController);
 };
 
 }  // namespace ash

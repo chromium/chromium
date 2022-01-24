@@ -21,6 +21,10 @@ namespace storage {
 class MockFileUpdateObserver : public FileUpdateObserver {
  public:
   MockFileUpdateObserver();
+
+  MockFileUpdateObserver(const MockFileUpdateObserver&) = delete;
+  MockFileUpdateObserver& operator=(const MockFileUpdateObserver&) = delete;
+
   ~MockFileUpdateObserver() override;
 
   // Creates a ChangeObserverList which only contains given |observer|.
@@ -43,8 +47,6 @@ class MockFileUpdateObserver : public FileUpdateObserver {
   std::map<FileSystemURL, int, FileSystemURL::Comparator> start_update_count_;
   std::map<FileSystemURL, int, FileSystemURL::Comparator> end_update_count_;
   bool is_ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileUpdateObserver);
 };
 
 }  // namespace storage

@@ -24,11 +24,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
@@ -44,14 +45,14 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
                    const IntSize&,
                    float,
                    float,
-                   const IntPoint&,
+                   const gfx::Vector2d&,
                    FEConvolveMatrix::EdgeModeType,
                    bool,
                    const Vector<float>&);
 
   bool SetDivisor(float);
   bool SetBias(float);
-  bool SetTargetOffset(const IntPoint&);
+  bool SetTargetOffset(const gfx::Vector2d&);
   bool SetEdgeMode(FEConvolveMatrix::EdgeModeType);
   bool SetPreserveAlpha(bool);
 
@@ -68,7 +69,7 @@ class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
   IntSize kernel_size_;
   float divisor_;
   float bias_;
-  IntPoint target_offset_;
+  gfx::Vector2d target_offset_;
   EdgeModeType edge_mode_;
   bool preserve_alpha_;
   Vector<float> kernel_matrix_;

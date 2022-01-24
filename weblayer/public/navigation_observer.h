@@ -123,7 +123,8 @@ class NavigationObserver {
   // |language|.
   // Note: |language| is an ISO 639 language code (two letters, except for
   // Chinese where a localization is necessary).
-  virtual void OnPageLanguageDetermined(Page* page, std::string language) {}
+  virtual void OnPageLanguageDetermined(Page* page,
+                                        const std::string& language) {}
 };
 
 }  // namespace weblayer

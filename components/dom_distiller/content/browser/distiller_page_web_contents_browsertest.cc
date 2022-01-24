@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
 
   // Make sure the test ends when it does not crash.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(2));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
 
   run_loop.Run();
 }

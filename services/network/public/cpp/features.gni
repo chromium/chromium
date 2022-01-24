@@ -8,4 +8,10 @@ declare_args() {
   # Certificate transparency is not supported on iOS.
   # TODO(mmenke): It's actually not supported on Android, either.
   is_ct_supported = !is_ios
+
+  # Controls whether P2P is exposed by the network service.
+  # Optional to reduce avoid having Chrome on iOS depends on
+  # WebRTC and related third-party libraries (libvpx, libaom,
+  # ...).
+  is_p2p_enabled = true
 }

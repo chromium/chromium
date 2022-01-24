@@ -5,10 +5,11 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_SERVICE_GRPC_IMPL_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_SERVICE_GRPC_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chromecast/cast_core/grpc_method.h"
+#include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/completion_queue.h"
 #include "third_party/grpc/src/include/grpcpp/server_context.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/runtime_service.grpc.pb.h"
 
 namespace chromecast {
 
@@ -53,8 +54,9 @@ class HeartbeatMethod final : public GrpcMethod {
   };
 
   HeartbeatMethod(cast::runtime::RuntimeService::AsyncService* service,
-                  RuntimeServiceDelegate* delegate,
-                  grpc::ServerCompletionQueue* cq);
+                  base::WeakPtr<RuntimeServiceDelegate> delegate,
+                  grpc::ServerCompletionQueue* cq,
+                  bool* is_shutdown);
   ~HeartbeatMethod() override;
 
   void Tick();
@@ -66,16 +68,18 @@ class HeartbeatMethod final : public GrpcMethod {
 
  private:
   State state_{kStart};
+  bool* is_shutdown_;
   cast::runtime::RuntimeService::AsyncService* service_;
-  RuntimeServiceDelegate* delegate_;
+  base::WeakPtr<RuntimeServiceDelegate> delegate_;
   cast::runtime::HeartbeatRequest request_;
   grpc::ServerAsyncWriter<cast::runtime::HeartbeatResponse> responder_;
 };
 
 void StartRuntimeServiceMethods(
     cast::runtime::RuntimeService::AsyncService* service,
-    RuntimeServiceDelegate* delegate,
-    ::grpc::ServerCompletionQueue* cq);
+    base::WeakPtr<RuntimeServiceDelegate> delegate,
+    ::grpc::ServerCompletionQueue* cq,
+    bool* is_shutdown);
 
 }  // namespace chromecast
 

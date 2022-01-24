@@ -51,7 +51,6 @@ source_set("coordinator") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -78,7 +77,6 @@ source_set("eg2_tests") {
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -111,13 +109,18 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
 
-  sources = [ "qr_scanner_app_interface.h" ]
-  deps = [ "//ios/chrome/browser/ui/scanner:camera_state" ]
+  sources = [
+    "qr_scanner_app_interface.h",
+    "qr_scanner_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/scanner:camera_state",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
 }

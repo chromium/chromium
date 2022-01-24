@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job.h"
 #include "printing/print_settings.h"

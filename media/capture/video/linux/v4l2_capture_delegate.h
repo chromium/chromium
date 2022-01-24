@@ -14,7 +14,6 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
@@ -53,6 +52,10 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
       const scoped_refptr<base::SingleThreadTaskRunner>& v4l2_task_runner,
       int power_line_frequency,
       int rotation);
+
+  V4L2CaptureDelegate(const V4L2CaptureDelegate&) = delete;
+  V4L2CaptureDelegate& operator=(const V4L2CaptureDelegate&) = delete;
+
   ~V4L2CaptureDelegate();
 
   // Forward-to versions of VideoCaptureDevice virtual methods.
@@ -133,8 +136,6 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
   int rotation_;
 
   base::WeakPtrFactory<V4L2CaptureDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2CaptureDelegate);
 };
 
 }  // namespace media

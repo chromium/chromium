@@ -29,6 +29,10 @@ namespace remoting {
 class SecurityKeyIpcClient : public IPC::Listener {
  public:
   SecurityKeyIpcClient();
+
+  SecurityKeyIpcClient(const SecurityKeyIpcClient&) = delete;
+  SecurityKeyIpcClient& operator=(const SecurityKeyIpcClient&) = delete;
+
   ~SecurityKeyIpcClient() override;
 
   // Used to send security key extension messages to the client.
@@ -111,8 +115,6 @@ class SecurityKeyIpcClient : public IPC::Listener {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SecurityKeyIpcClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyIpcClient);
 };
 
 }  // namespace remoting

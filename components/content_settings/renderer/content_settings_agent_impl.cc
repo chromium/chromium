@@ -5,7 +5,6 @@
 #include "components/content_settings/renderer/content_settings_agent_impl.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -16,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "content/public/child/child_thread.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/document_state.h"
@@ -49,7 +49,7 @@ namespace {
 
 GURL GetOriginOrURL(const WebFrame* frame) {
   url::Origin top_origin = url::Origin(frame->Top()->GetSecurityOrigin());
-  // The |top_origin| is unique ("null") e.g., for file:// URLs. Use the
+  // The `top_origin` is unique ("null") e.g., for file:// URLs. Use the
   // document URL as the primary URL in those cases.
   // TODO(alexmos): This is broken for --site-per-process, since top() can be a
   // WebRemoteFrame which does not have a document(), and the WebRemoteFrame's
@@ -202,15 +202,19 @@ void ContentSettingsAgentImpl::DidCommitProvisionalLoad(
     return;  // Not a top-level navigation.
 
   // Clear "block" flags for the new page. This needs to happen before any of
-  // |allowScript()|, |allowScriptFromSource()|, |allowImage()|, or
-  // |allowPlugins()| is called for the new page so that these functions can
+  // `allowScript()`, `allowScriptFromSource()`, `allowImage()`, or
+  // `allowPlugins()` is called for the new page so that these functions can
   // correctly detect that a piece of content flipped from "not blocked" to
   // "blocked".
   ClearBlockedContentSettings();
 
-  // The BrowserInterfaceBroker is reset on navigation, so we will need to
-  // re-acquire the ContentSettingsManager.
-  content_settings_manager_.reset();
+  if (!base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    // TODO(crbug.com/1187753): Remove this once it's verified it isn't needed.
+    // ContentSettingsManager was moved to be per-process in
+    // http://crrev.com/c/1949036, so should be safe to remove.
+    content_settings_manager_.reset();
+  }
 
 #if DCHECK_IS_ON()
   GURL url = frame->GetDocument().Url();
@@ -280,9 +284,9 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
     return;
   }
 
-  // Passing the |cache_storage_permissions_| ref to the callback is safe here
-  // as the mojo::Remote is owned by |this| and won't invoke the callback if
-  // |this| (and in turn |cache_storage_permissions_|) is destroyed.
+  // Passing the `cache_storage_permissions_` ref to the callback is safe here
+  // as the mojo::Remote is owned by `this` and won't invoke the callback if
+  // `this` (and in turn `cache_storage_permissions_`) is destroyed.
   base::OnceCallback<void(bool)> new_cb = base::BindOnce(
       [](base::OnceCallback<void(bool)> original_cb, StoragePermissionsKey key,
          base::flat_map<StoragePermissionsKey, bool>& cache_map, bool result) {
@@ -293,8 +297,7 @@ void ContentSettingsAgentImpl::AllowStorageAccess(
 
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
-      frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
+      frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), std::move(new_cb));
 }
 
@@ -314,8 +317,7 @@ bool ContentSettingsAgentImpl::AllowStorageAccessSync(
   bool result = false;
   GetContentSettingsManager().AllowStorageAccess(
       routing_id(), ConvertToMojoStorageType(storage_type),
-      frame->GetSecurityOrigin(),
-      frame->GetDocument().SiteForCookies().RepresentativeUrl(),
+      frame->GetSecurityOrigin(), frame->GetDocument().SiteForCookies(),
       frame->GetDocument().TopFrameOrigin(), &result);
   cached_storage_permissions_[key] = result;
   return result;
@@ -378,6 +380,22 @@ bool ContentSettingsAgentImpl::AllowScriptFromSource(
     allow = setting != CONTENT_SETTING_BLOCK;
   }
   return allow || IsAllowlistedForContentSettings();
+}
+
+bool ContentSettingsAgentImpl::AllowAutoDarkWebContent(
+    bool enabled_per_settings) {
+  if (!enabled_per_settings)
+    return false;
+
+  bool allow = true;
+  if (content_setting_rules_) {
+    ContentSetting setting = GetContentSettingFromRules(
+        content_setting_rules_->auto_dark_content_rules,
+        render_frame()->GetWebFrame(), GURL());
+    allow = setting != CONTENT_SETTING_BLOCK;
+  }
+  allow = allow || IsAllowlistedForContentSettings();
+  return allow;
 }
 
 bool ContentSettingsAgentImpl::AllowReadFromClipboard(bool default_value) {
@@ -449,11 +467,6 @@ void ContentSettingsAgentImpl::ClearBlockedContentSettings() {
 
 bool ContentSettingsAgentImpl::IsAllowlistedForContentSettings() const {
   if (should_allowlist_)
-    return true;
-
-  // Allowlist ftp directory listings, as they require JavaScript to function
-  // properly.
-  if (render_frame()->IsFTPDirectoryListing())
     return true;
 
   const WebDocument& document = render_frame()->GetWebFrame()->GetDocument();

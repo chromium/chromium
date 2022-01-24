@@ -41,13 +41,10 @@ group("deps") {
     }
   }
   if (is_asan) {
-    # ASAN is supported on iOS but the runtime library depends on the compiler
-    # used (Chromium version of clang versus Xcode version of clang). Only copy
-    # the ASAN runtime on iOS if building with Chromium clang.
-    if (is_win || is_mac || (is_ios && !use_xcode_clang)) {
+    if (is_win || is_apple) {
       data_deps = [ ":copy_asan_runtime" ]
     }
-    if (is_mac || (is_ios && !use_xcode_clang)) {
+    if (is_apple) {
       public_deps = [ ":asan_runtime_bundle_data" ]
     }
   }
@@ -56,7 +53,7 @@ group("deps") {
 assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
-if ((is_mac || is_win || (is_ios && !use_xcode_clang)) && is_asan) {
+if ((is_apple || is_win) && is_asan) {
   if (is_mac) {
     _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
   } else if (is_ios) {

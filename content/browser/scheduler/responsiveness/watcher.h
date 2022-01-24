@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "content/browser/scheduler/responsiveness/metric_source.h"
 

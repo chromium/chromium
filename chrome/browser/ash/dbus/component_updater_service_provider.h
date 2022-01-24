@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
@@ -53,6 +52,10 @@ class ComponentUpdaterServiceProvider
     using LoadCallback = base::OnceCallback<void(const base::FilePath&)>;
 
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
     virtual void LoadComponent(const std::string& name,
@@ -60,13 +63,16 @@ class ComponentUpdaterServiceProvider
                                LoadCallback load_callback) = 0;
 
     virtual bool UnloadComponent(const std::string& name) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   explicit ComponentUpdaterServiceProvider(
       component_updater::CrOSComponentManager* cros_component_manager);
+
+  ComponentUpdaterServiceProvider(const ComponentUpdaterServiceProvider&) =
+      delete;
+  ComponentUpdaterServiceProvider& operator=(
+      const ComponentUpdaterServiceProvider&) = delete;
+
   ~ComponentUpdaterServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -108,8 +114,6 @@ class ComponentUpdaterServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<ComponentUpdaterServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterServiceProvider);
 };
 
 }  // namespace ash

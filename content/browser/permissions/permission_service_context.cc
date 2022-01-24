@@ -19,6 +19,25 @@
 
 namespace content {
 
+// A holder owning document-associated PermissionServiceContext. The holder is
+// used as PermissionServiceContext itself can't inherit from
+// DocumentUserData, as PermissionServiceContext (unlike
+// DocumentUserData) can be created when RenderFrameHost doesn't exist
+// (e.g. for service workers).
+struct PermissionServiceContext::DocumentPermissionServiceContextHolder
+    : public DocumentUserData<DocumentPermissionServiceContextHolder> {
+  explicit DocumentPermissionServiceContextHolder(RenderFrameHost* rfh)
+      : DocumentUserData<DocumentPermissionServiceContextHolder>(rfh),
+        permission_service_context(rfh) {}
+
+  PermissionServiceContext permission_service_context;
+
+  DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+DOCUMENT_USER_DATA_KEY_IMPL(
+    PermissionServiceContext::DocumentPermissionServiceContextHolder);
+
 class PermissionServiceContext::PermissionSubscription {
  public:
   PermissionSubscription(
@@ -58,7 +77,13 @@ class PermissionServiceContext::PermissionSubscription {
   PermissionController::SubscriptionId id_;
 };
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PermissionServiceContext)
+// static
+PermissionServiceContext* PermissionServiceContext::GetForCurrentDocument(
+    RenderFrameHost* render_frame_host) {
+  return &DocumentPermissionServiceContextHolder::GetOrCreateForCurrentDocument(
+              render_frame_host)
+              ->permission_service_context;
+}
 
 PermissionServiceContext::PermissionServiceContext(
     RenderFrameHost* render_frame_host)

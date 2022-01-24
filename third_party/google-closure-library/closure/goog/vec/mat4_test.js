@@ -1,5 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-// Use of this source code is governed by the Apache License, Version 2.0.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.vec.Mat4Test');
 goog.setTestOnly();
@@ -8,6 +11,7 @@ const Mat4 = goog.require('goog.vec.Mat4');
 const Vec3 = goog.require('goog.vec.Vec3');
 const Vec4 = goog.require('goog.vec.Vec4');
 const testSuite = goog.require('goog.testing.testSuite');
+const vec = goog.require('goog.vec');
 
 const randomMat4 = Mat4.createFloat32FromValues(
     0.8025078773498535, 0.7559120655059814, 0.15274643898010254,
@@ -368,7 +372,7 @@ testSuite({
           -0.225, 0.025, 0.025, 0.275, 0.025, 0.025, 0.275, -0.225, 0.025,
           0.275, -0.225, 0.025, 0.275, -0.225, 0.025, 0.025
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
 
     Mat4.makeScale(m0, .01, .01, .01);
     assertTrue(Mat4.invert(m0, m0));
@@ -489,8 +493,7 @@ testSuite({
     const m0 = Mat4.createFloat32();
     Mat4.makeRotate(m0, Math.PI / 2, 0, 0, 1);
     assertElementsRoughlyEqual(
-        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0,
-        goog.vec.EPSILON);
+        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0, vec.EPSILON);
 
     const m1 = Mat4.createFloat32();
     Mat4.makeRotate(m1, -Math.PI / 4, 0, 0, 1);
@@ -500,7 +503,7 @@ testSuite({
           0.7071068, 0.7071068, 0, 0, -0.7071068, 0.7071068, 0, 0, 0, 0, 1, 0,
           0, 0, 0, 1
         ],
-        m1, goog.vec.EPSILON);
+        m1, vec.EPSILON);
   },
 
   testMakeRotateX() {
@@ -509,7 +512,7 @@ testSuite({
 
     Mat4.makeRotateX(m0, Math.PI / 7);
     Mat4.makeRotate(m1, Math.PI / 7, 1, 0, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateY() {
@@ -518,7 +521,7 @@ testSuite({
 
     Mat4.makeRotateY(m0, Math.PI / 7);
     Mat4.makeRotate(m1, Math.PI / 7, 0, 1, 0);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testMakeRotateZ() {
@@ -527,7 +530,7 @@ testSuite({
 
     Mat4.makeRotateZ(m0, Math.PI / 7);
     Mat4.makeRotate(m1, Math.PI / 7, 0, 0, 1);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testTranslate() {
@@ -555,8 +558,7 @@ testSuite({
     const m0 = Mat4.createIdentity();
     Mat4.rotate(m0, Math.PI / 2, 0, 0, 1);
     assertElementsRoughlyEqual(
-        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0,
-        goog.vec.EPSILON);
+        [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], m0, vec.EPSILON);
 
     Mat4.rotate(m0, -Math.PI / 4, 0, 0, 1);
     assertElementsRoughlyEqual(
@@ -564,7 +566,7 @@ testSuite({
           0.7071068, 0.7071068, 0, 0, -0.7071068, 0.7071068, 0, 0, 0, 0, 1, 0,
           0, 0, 0, 1
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
   testRotateX() {
@@ -574,7 +576,7 @@ testSuite({
     Mat4.makeRotateX(m0, Math.PI / 7);
     Mat4.multMat(m1, m0, m0);
     Mat4.rotateX(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateY() {
@@ -584,7 +586,7 @@ testSuite({
     Mat4.makeRotateY(m0, Math.PI / 7);
     Mat4.multMat(m1, m0, m0);
     Mat4.rotateY(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testRotateZ() {
@@ -594,7 +596,7 @@ testSuite({
     Mat4.makeRotateZ(m0, Math.PI / 7);
     Mat4.multMat(m1, m0, m0);
     Mat4.rotateZ(m1, Math.PI / 7);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testGetTranslation() {
@@ -603,7 +605,7 @@ testSuite({
     Mat4.getTranslation(mat, translation);
     assertElementsRoughlyEqual(
         [0.59465038776, 0.413479506969, 0.0663217827677], translation,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testMakeFrustum() {
@@ -614,7 +616,7 @@ testSuite({
           0.06666666, 0, 0, 0, 0, 0.06666666, 0, 0, 0.33333333, -0.33333333,
           -1.2, -1, 0, 0, -0.22, 0
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
   testMakePerspective() {
@@ -622,7 +624,7 @@ testSuite({
     Mat4.makePerspective(m0, 90 * Math.PI / 180, 2, 0.1, 1.1);
     assertElementsRoughlyEqual(
         [0.5, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1.2, -1, 0, 0, -0.22, 0], m0,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testMakeOrtho() {
@@ -633,7 +635,7 @@ testSuite({
           0.6666666, 0, 0, 0, 0, 0.6666666, 0, 0, 0, 0, -2, 0, -0.333333,
           0.3333333, -1.2, 1
         ],
-        m0, goog.vec.EPSILON);
+        m0, vec.EPSILON);
   },
 
   testMakeEulerZXZ() {
@@ -648,14 +650,14 @@ testSuite({
 
     const m1 = Mat4.createFloat32();
     Mat4.makeEulerZXZ(m1, roll, tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     let euler = [0, 0, 0];
     Mat4.toEulerZXZ(m0, euler);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
 
     // Test negative tilt now.
     Mat4.makeRotate(m0, roll, 0, 0, 1);
@@ -663,14 +665,14 @@ testSuite({
     Mat4.rotate(m0, yaw, 0, 0, 1);
 
     Mat4.makeEulerZXZ(m1, roll, -tilt, yaw);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
 
     euler = [0, 0, 0];
     Mat4.toEulerZXZ(m0, euler, true);
 
-    assertRoughlyEquals(roll, euler[0], goog.vec.EPSILON);
-    assertRoughlyEquals(-tilt, euler[1], goog.vec.EPSILON);
-    assertRoughlyEquals(yaw, euler[2], goog.vec.EPSILON);
+    assertRoughlyEquals(roll, euler[0], vec.EPSILON);
+    assertRoughlyEquals(-tilt, euler[1], vec.EPSILON);
+    assertRoughlyEquals(yaw, euler[2], vec.EPSILON);
   },
 
   testEulerZXZExtrema() {
@@ -682,9 +684,9 @@ testSuite({
     const euler = [0, 0, 0];
     Mat4.toEulerZXZ(m0, euler);
     assertElementsRoughlyEqual(
-        [Math.PI, Math.PI / 2, Math.PI], euler, goog.vec.EPSILON);
+        [Math.PI, Math.PI / 2, Math.PI], euler, vec.EPSILON);
     Mat4.makeEulerZXZ(m1, euler[0], euler[1], euler[2]);
-    assertElementsRoughlyEqual(m0, m1, goog.vec.EPSILON);
+    assertElementsRoughlyEqual(m0, m1, vec.EPSILON);
   },
 
   testLookAt() {
@@ -692,7 +694,7 @@ testSuite({
     Mat4.makeLookAt(viewMatrix, [0, 0, 0], [1, 0, 0], [0, 1, 0]);
     assertElementsRoughlyEqual(
         [0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1], viewMatrix,
-        goog.vec.EPSILON);
+        vec.EPSILON);
   },
 
   testToLookAt() {

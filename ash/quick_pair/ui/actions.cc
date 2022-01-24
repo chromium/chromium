@@ -28,6 +28,9 @@ std::ostream& operator<<(std::ostream& stream, AssociateAccountAction action) {
     case AssociateAccountAction::kAssoicateAccount:
       stream << "[Associate account]";
       break;
+    case AssociateAccountAction::kLearnMore:
+      stream << "[Learn more]";
+      break;
     case AssociateAccountAction::kDismissedByUser:
       stream << "[Dismissed by user]";
       break;

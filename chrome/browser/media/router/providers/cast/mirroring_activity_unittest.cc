@@ -172,9 +172,10 @@ TEST_F(MirroringActivityTest, MirrorTab) {
 
 TEST_F(MirroringActivityTest, CreateMojoBindingsForTabWithCastAppUrl) {
   base::HistogramTester uma_recorder;
-  GURL url(kMirroringAppUri);
   EXPECT_CALL(media_router_, GetMirroringServiceHostForTab(kTabId, _));
-  MediaSource source = MediaSource::ForPresentationUrl(url);
+  auto site_initiated_mirroring_source =
+      CastMediaSource::ForSiteInitiatedMirroring();
+  MediaSource source(site_initiated_mirroring_source->source_id());
   ASSERT_TRUE(source.IsCastPresentationUrl());
   MakeActivity(source, kTabId);
 

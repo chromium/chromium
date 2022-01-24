@@ -44,6 +44,10 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
                      int pending_renderer_id,
                      int pending_browser_id,
                      PP_FileSystemType type);
+
+  FileSystemResource(const FileSystemResource&) = delete;
+  FileSystemResource& operator=(const FileSystemResource&) = delete;
+
   ~FileSystemResource() override;
 
   // Resource overrides.
@@ -100,8 +104,6 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
   base::queue<QuotaRequest> pending_quota_requests_;
   int64_t reserved_quota_;
   bool reserving_quota_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemResource);
 };
 
 }  // namespace proxy

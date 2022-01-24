@@ -7,25 +7,26 @@ package org.chromium.chrome.browser.download.home.filter;
 import android.content.Context;
 import android.os.Handler;
 
-import org.chromium.base.ObserverList;
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
-import org.chromium.components.browser_ui.widget.chips.Chip;
-import org.chromium.components.browser_ui.widget.chips.ChipsProvider;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
+import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link ChipsProvider} implementation that wraps a subset of {@link Filters} to be used as a
- * chip selector for filtering downloads.
+ * A class that provides a subset of {@link Filters} to be used as a chip selector for filtering
+ * downloads.
  */
-public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObserver {
+public class FilterChipsProvider implements OfflineItemFilterObserver {
     private static final int INVALID_INDEX = -1;
 
     /** A delegate responsible for handling UI actions like selecting filters. */
@@ -39,8 +40,8 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
     private final OfflineItemFilterSource mSource;
 
     private final Handler mHandler = new Handler();
-    private final ObserverList<Observer> mObservers = new ObserverList<ChipsProvider.Observer>();
-    private final List<Chip> mSortedChips = new ArrayList<>();
+    private final ModelList mSortedChips = new ModelList();
+    private final ModelList mVisibleChips = new ModelList();
 
     /** Builds a new FilterChipsBackend. */
     public FilterChipsProvider(Context context, Delegate delegate, OfflineItemFilterSource source) {
@@ -48,22 +49,35 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
         mDelegate = delegate;
         mSource = source;
 
-        Chip noneChip = new Chip(Filters.FilterType.NONE,
-                R.string.download_manager_ui_all_downloads, R.drawable.settings_all_sites,
-                () -> onChipSelected(Filters.FilterType.NONE));
-        Chip videosChip = new Chip(Filters.FilterType.VIDEOS, R.string.download_manager_ui_video,
-                R.drawable.ic_videocam_24dp, () -> onChipSelected(Filters.FilterType.VIDEOS));
-        Chip musicChip = new Chip(Filters.FilterType.MUSIC, R.string.download_manager_ui_audio,
-                R.drawable.ic_music_note_24dp, () -> onChipSelected(Filters.FilterType.MUSIC));
-        Chip imagesChip = new Chip(Filters.FilterType.IMAGES, R.string.download_manager_ui_images,
-                R.drawable.ic_drive_image_24dp, () -> onChipSelected(Filters.FilterType.IMAGES));
-        Chip sitesChip = new Chip(Filters.FilterType.SITES, R.string.download_manager_ui_pages,
-                R.drawable.ic_globe_24dp, () -> onChipSelected(Filters.FilterType.SITES));
-        Chip otherChip = new Chip(Filters.FilterType.OTHER, R.string.download_manager_ui_other,
-                R.drawable.ic_drive_file_24dp, () -> onChipSelected(Filters.FilterType.OTHER));
+        Callback<PropertyModel> chipSelectedCallback =
+                (model) -> onChipSelected(model.get(ChipProperties.ID));
+
+        ListItem noneChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.NONE,
+                context.getString(R.string.download_manager_ui_all_downloads), chipSelectedCallback,
+                R.drawable.settings_all_sites);
+
+        ListItem videosChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.VIDEOS,
+                context.getString(R.string.download_manager_ui_video), chipSelectedCallback,
+                R.drawable.ic_videocam_24dp);
+
+        ListItem musicChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.MUSIC,
+                context.getString(R.string.download_manager_ui_audio), chipSelectedCallback,
+                R.drawable.ic_music_note_24dp);
+
+        ListItem imagesChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.IMAGES,
+                context.getString(R.string.download_manager_ui_images), chipSelectedCallback,
+                R.drawable.ic_drive_image_24dp);
+
+        ListItem sitesChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.SITES,
+                context.getString(R.string.download_manager_ui_pages), chipSelectedCallback,
+                R.drawable.ic_globe_24dp);
+
+        ListItem otherChip = ChipsCoordinator.buildChipListItem(Filters.FilterType.OTHER,
+                context.getString(R.string.download_manager_ui_other), chipSelectedCallback,
+                R.drawable.ic_drive_file_24dp);
 
         // By default select the none chip.
-        noneChip.selected = true;
+        noneChip.model.set(ChipProperties.SELECTED, true);
 
         mSortedChips.add(noneChip);
         mSortedChips.add(videosChip);
@@ -82,16 +96,14 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
      */
     public void setFilterSelected(@FilterType int type) {
         for (int i = 0; i < mSortedChips.size(); i++) {
-            Chip chip = mSortedChips.get(i);
-            boolean willSelect = chip.id == type;
+            PropertyModel chip = mSortedChips.get(i).model;
+            boolean willSelect = chip.get(ChipProperties.ID) == type;
 
             // Early out if we're already selecting the appropriate Chip type.
-            if (chip.selected && willSelect) return;
-            if (chip.selected == willSelect) continue;
-            chip.selected = willSelect;
+            if (chip.get(ChipProperties.SELECTED) && willSelect) return;
+            if (chip.get(ChipProperties.SELECTED) == willSelect) continue;
+            chip.set(ChipProperties.SELECTED, willSelect);
         }
-
-        for (Observer observer : mObservers) observer.onChipsChanged();
     }
 
     /**
@@ -99,48 +111,28 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
      * is selected.
      */
     public @FilterType int getSelectedFilter() {
-        for (Chip chip : mSortedChips) {
-            if (chip.selected) return chip.id;
+        for (ListItem chip : mSortedChips) {
+            if (chip.model.get(ChipProperties.SELECTED)) return chip.model.get(ChipProperties.ID);
         }
 
         return Filters.FilterType.NONE;
     }
 
-    // ChipsProvider implementation.
-    @Override
-    public void addObserver(Observer observer) {
-        mObservers.addObserver(observer);
+    public ModelList getChips() {
+        return mVisibleChips;
     }
 
-    @Override
-    public void removeObserver(Observer observer) {
-        mObservers.removeObserver(observer);
-    }
-
-    @Override
-    public List<Chip> getChips() {
-        List<Chip> visibleChips = new ArrayList<>();
-        for (Chip chip : mSortedChips) {
-            if (chip.enabled) visibleChips.add(chip);
+    private void updateVisibleChips() {
+        mVisibleChips.clear();
+        for (ListItem chip : mSortedChips) {
+            if (chip.model.get(ChipProperties.ENABLED)) mVisibleChips.add(chip);
         }
 
         // If there is only one chip type or only NONE chips, remove the entire row of chips.
-        if (visibleChips.size() <= 2) {
-            assert visibleChips.get(0).id == FilterType.NONE;
-            visibleChips.clear();
+        if (mVisibleChips.size() <= 2) {
+            assert mVisibleChips.get(0).model.get(ChipProperties.ID) == FilterType.NONE;
+            mVisibleChips.clear();
         }
-
-        return visibleChips;
-    }
-
-    @Override
-    public int getChipSpacingPx() {
-        return mContext.getResources().getDimensionPixelSize(R.dimen.chip_list_chip_spacing);
-    }
-
-    @Override
-    public int getSidePaddingPx() {
-        return mContext.getResources().getDimensionPixelSize(R.dimen.chip_list_side_padding);
     }
 
     // OfflineItemFilterObserver implementation.
@@ -178,24 +170,22 @@ public class FilterChipsProvider implements ChipsProvider, OfflineItemFilterObse
         filters.put(Filters.FilterType.NONE, noneChipItemCount);
 
         // Set the enabled states correctly for all chips.
-        boolean chipsHaveChanged = false;
-        for (Chip chip : mSortedChips) {
-            boolean shouldEnable = filters.containsKey(chip.id);
-            chipsHaveChanged |= (shouldEnable != chip.enabled);
-            chip.enabled = shouldEnable;
-            if (chip.enabled) {
-                chip.contentDescription = UiUtils.getChipContentDescription(
-                        mContext.getResources(), chip.id, filters.get(chip.id));
+        for (ListItem chip : mSortedChips) {
+            int chipId = chip.model.get(ChipProperties.ID);
+            boolean shouldEnable = filters.containsKey(chipId);
+            chip.model.set(ChipProperties.ENABLED, shouldEnable);
+            if (chip.model.get(ChipProperties.ENABLED)) {
+                chip.model.set(ChipProperties.CONTENT_DESCRIPTION,
+                        UiUtils.getChipContentDescription(
+                                mContext.getResources(), chipId, filters.get(chipId)));
             }
         }
-
-        if (chipsHaveChanged) {
-            for (Observer observer : mObservers) observer.onChipsChanged();
-        }
+        updateVisibleChips();
 
         // Validate that selection is on a valid type.
-        for (Chip chip : mSortedChips) {
-            if (chip.selected && !chip.enabled) {
+        for (ListItem chip : mSortedChips) {
+            if (chip.model.get(ChipProperties.SELECTED)
+                    && !chip.model.get(ChipProperties.ENABLED)) {
                 onChipSelected(Filters.FilterType.NONE);
                 break;
             }

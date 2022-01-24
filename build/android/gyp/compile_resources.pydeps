@@ -2,6 +2,7 @@
 #   build/print_python_deps.py --root build/android/gyp --output build/android/gyp/compile_resources.pydeps build/android/gyp/compile_resources.py
 ../../../third_party/jinja2/__init__.py
 ../../../third_party/jinja2/_compat.py
+../../../third_party/jinja2/_identifier.py
 ../../../third_party/jinja2/asyncfilters.py
 ../../../third_party/jinja2/asyncsupport.py
 ../../../third_party/jinja2/bccache.py
@@ -23,29 +24,6 @@
 ../../../third_party/markupsafe/__init__.py
 ../../../third_party/markupsafe/_compat.py
 ../../../third_party/markupsafe/_native.py
-../../../third_party/protobuf/python/google/__init__.py
-../../../third_party/protobuf/python/google/protobuf/__init__.py
-../../../third_party/protobuf/python/google/protobuf/descriptor.py
-../../../third_party/protobuf/python/google/protobuf/descriptor_database.py
-../../../third_party/protobuf/python/google/protobuf/descriptor_pool.py
-../../../third_party/protobuf/python/google/protobuf/internal/__init__.py
-../../../third_party/protobuf/python/google/protobuf/internal/api_implementation.py
-../../../third_party/protobuf/python/google/protobuf/internal/containers.py
-../../../third_party/protobuf/python/google/protobuf/internal/decoder.py
-../../../third_party/protobuf/python/google/protobuf/internal/encoder.py
-../../../third_party/protobuf/python/google/protobuf/internal/enum_type_wrapper.py
-../../../third_party/protobuf/python/google/protobuf/internal/extension_dict.py
-../../../third_party/protobuf/python/google/protobuf/internal/message_listener.py
-../../../third_party/protobuf/python/google/protobuf/internal/python_message.py
-../../../third_party/protobuf/python/google/protobuf/internal/type_checkers.py
-../../../third_party/protobuf/python/google/protobuf/internal/well_known_types.py
-../../../third_party/protobuf/python/google/protobuf/internal/wire_format.py
-../../../third_party/protobuf/python/google/protobuf/message.py
-../../../third_party/protobuf/python/google/protobuf/message_factory.py
-../../../third_party/protobuf/python/google/protobuf/reflection.py
-../../../third_party/protobuf/python/google/protobuf/symbol_database.py
-../../../third_party/protobuf/python/google/protobuf/text_encoding.py
-../../../third_party/protobuf/python/google/protobuf/text_format.py
 ../../../third_party/six/src/six.py
 ../../gn_helpers.py
 compile_resources.py

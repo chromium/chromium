@@ -18,6 +18,10 @@ namespace views {
 class CheckboxTest : public ViewsTestBase {
  public:
   CheckboxTest() = default;
+
+  CheckboxTest(const CheckboxTest&) = delete;
+  CheckboxTest& operator=(const CheckboxTest&) = delete;
+
   ~CheckboxTest() override = default;
 
   void SetUp() override {
@@ -46,8 +50,6 @@ class CheckboxTest : public ViewsTestBase {
  private:
   std::unique_ptr<Widget> widget_;
   Checkbox* checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckboxTest);
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {

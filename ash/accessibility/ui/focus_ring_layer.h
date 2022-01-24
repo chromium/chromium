@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_UI_FOCUS_RING_LAYER_H_
 
 #include "ash/accessibility/ui/accessibility_layer.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -19,10 +18,13 @@ namespace ash {
 class FocusRingLayer : public AccessibilityLayer {
  public:
   explicit FocusRingLayer(AccessibilityLayerDelegate* delegate);
+
+  FocusRingLayer(const FocusRingLayer&) = delete;
+  FocusRingLayer& operator=(const FocusRingLayer&) = delete;
+
   ~FocusRingLayer() override;
 
   // AccessibilityLayer overrides:
-  bool NeedToAnimate() const override;
   int GetInset() const override;
 
   // Set a custom color, or reset to the default.
@@ -38,8 +40,6 @@ class FocusRingLayer : public AccessibilityLayer {
   void OnPaintLayer(const ui::PaintContext& context) override;
 
   absl::optional<SkColor> custom_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusRingLayer);
 };
 
 }  // namespace ash

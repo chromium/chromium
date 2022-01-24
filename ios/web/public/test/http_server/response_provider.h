@@ -75,10 +75,11 @@ class ResponseProvider {
       const net::HttpStatusCode& http_status);
 
   ResponseProvider();
-  virtual ~ResponseProvider() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResponseProvider);
+  ResponseProvider(const ResponseProvider&) = delete;
+  ResponseProvider& operator=(const ResponseProvider&) = delete;
+
+  virtual ~ResponseProvider() {}
 };
 
 }  // namspace web

@@ -64,6 +64,11 @@ class ArcAccessibilityHelperBridge
 
   ArcAccessibilityHelperBridge(content::BrowserContext* browser_context,
                                ArcBridgeService* arc_bridge_service);
+
+  ArcAccessibilityHelperBridge(const ArcAccessibilityHelperBridge&) = delete;
+  ArcAccessibilityHelperBridge& operator=(const ArcAccessibilityHelperBridge&) =
+      delete;
+
   ~ArcAccessibilityHelperBridge() override;
 
   // Sets ChromeVox or TalkBack active for the current task.
@@ -150,8 +155,6 @@ class ArcAccessibilityHelperBridge
   base::ScopedObservation<extensions::AutomationEventRouter,
                           extensions::AutomationEventRouterObserver>
       automation_event_router_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAccessibilityHelperBridge);
 };
 
 }  // namespace arc

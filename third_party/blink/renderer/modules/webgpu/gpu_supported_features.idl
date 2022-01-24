@@ -7,6 +7,8 @@
 enum GPUFeatureName {
     "pipeline-statistics-query",
     "texture-compression-bc",
+    "texture-compression-etc2",
+    "texture-compression-astc",
     "timestamp-query",
     "shader-float16",
     "depth-clamping"

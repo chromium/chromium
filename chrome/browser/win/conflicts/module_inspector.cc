@@ -10,8 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
@@ -23,7 +23,7 @@ namespace {
 
 // The maximum amount of time a stale entry is kept in the cache before it is
 // deleted.
-constexpr base::TimeDelta kMaxEntryAge = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMaxEntryAge = base::Days(30);
 
 constexpr int kConnectionErrorRetryCount = 10;
 
@@ -151,7 +151,7 @@ void ModuleInspector::EnsureUtilWinServiceBound() {
     return;
 
   remote_util_win_ = util_win_factory_callback_.Run();
-  remote_util_win_.reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+  remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   remote_util_win_.set_disconnect_handler(
       base::BindOnce(&ModuleInspector::OnUtilWinServiceConnectionError,
                      base::Unretained(this)));

@@ -22,6 +22,10 @@ class MediaRouterStructTraitsTest
  public:
   MediaRouterStructTraitsTest() {}
 
+  MediaRouterStructTraitsTest(const MediaRouterStructTraitsTest&) = delete;
+  MediaRouterStructTraitsTest& operator=(const MediaRouterStructTraitsTest&) =
+      delete;
+
  protected:
   mojo::Remote<mojom::MediaRouterTraitsTestService> GetTraitsTestRemote() {
     mojo::Remote<mojom::MediaRouterTraitsTestService> remote;
@@ -38,8 +42,6 @@ class MediaRouterStructTraitsTest
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<MediaRouterTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterStructTraitsTest);
 };
 
 TEST_F(MediaRouterStructTraitsTest, DialMediaSink) {

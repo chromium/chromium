@@ -42,12 +42,14 @@ namespace {
 class StringWrapper {
  public:
   explicit StringWrapper(const std::u16string& string) : string_(string) {}
+
+  StringWrapper(const StringWrapper&) = delete;
+  StringWrapper& operator=(const StringWrapper&) = delete;
+
   const std::u16string& string() const { return string_; }
 
  private:
   std::u16string string_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringWrapper);
 };
 
 }  // namespace
@@ -582,7 +584,7 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
 
   // Verify that base::TimeDurationFormat() works for all available locales:
   // http://crbug.com/707515
-  base::TimeDelta kDelta = base::TimeDelta::FromMinutes(15 * 60 + 42);
+  base::TimeDelta kDelta = base::Minutes(15 * 60 + 42);
   for (const std::string& locale : l10n_util::GetAvailableICULocales()) {
     base::i18n::SetICUDefaultLocale(locale);
     std::u16string str;
@@ -594,16 +596,18 @@ TEST_F(L10nUtilTest, TimeDurationFormatAllLocales) {
   }
 }
 
-TEST_F(L10nUtilTest, GetLocalesWithStrings) {
+TEST_F(L10nUtilTest, GetUserFacingUILocaleList) {
   // Convert the vector to a set for easy lookup.
   const base::flat_set<std::string> locales =
-      l10n_util::GetLocalesWithStrings();
+      l10n_util::GetUserFacingUILocaleList();
 
   // Common locales which should be available on all platforms.
   EXPECT_TRUE(locales.contains("en") || locales.contains("en-US"));
   EXPECT_TRUE(locales.contains("en-GB"));
   EXPECT_TRUE(locales.contains("es") || locales.contains("es-ES"));
   EXPECT_TRUE(locales.contains("fr") || locales.contains("fr-FR"));
+  EXPECT_TRUE(locales.contains("zh-CN"));
+  EXPECT_TRUE(locales.contains("zh-TW"));
 
   // Locales that we should have valid fallbacks for.
   EXPECT_TRUE(locales.contains("en-CA"));
@@ -611,6 +615,14 @@ TEST_F(L10nUtilTest, GetLocalesWithStrings) {
   EXPECT_TRUE(locales.contains("fr-CA"));
 
   // Locales that should not be included:
+  // Chinese and Chinese (Hong Kong), as we do not have specific strings for
+  // them (except on Android).
+  EXPECT_FALSE(locales.contains("zh"));
+#if !defined(OS_ANDROID)
+  EXPECT_FALSE(locales.contains("zh-HK"));
+#endif
+  // Norwegian (no), as it does not specify a written form.
+  EXPECT_FALSE(locales.contains("no"));
   // English (Germany). A valid locale and in ICU's list of locales, but not in
   // our list of Accept-Language locales.
   EXPECT_FALSE(locales.contains("en-DE"));

@@ -2,8 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/devtools.gni")
 import("//third_party/fuchsia-sdk/sdk/build/component.gni")
 import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+
+# Lists of transitively included directories which should be stripped
+# from released packages for size reasons.
+# For use with the |excluded_dirs| variable of fuchsia_package().
+FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS = [
+  # These are mistakenly being shipped in both PAK form and runtime data deps.
+  # TODO(crbug.com/1265660): Remove when DevTools stops leaking its source list.
+  devtools_root_location,
+]
 
 # DEPRECATED: Use the Fuchsia SDK's fuchsia_component() and fuchsia_package()
 # templates directly, in new code.
@@ -11,7 +21,7 @@ import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 # Creates a Fuchsia .far package file containing a Fuchsia component.
 #
 # Parameters are:
-# package_name_override: Specifies the name of the package to generate,
+# package_name: Specifies the name of the package to generate,
 #     if different than |target_name|.
 # binary: The executable target which should be launched.
 # manifest: A path to the manifest that will be used.
@@ -31,7 +41,9 @@ import("//third_party/fuchsia-sdk/sdk/build/package.gni")
 template("cr_fuchsia_package") {
   assert(defined(invoker.binary))
 
-  if (defined(invoker.package_name_override)) {
+  if (defined(invoker.package_name)) {
+    _package_name = invoker.package_name
+  } else if (defined(invoker.package_name_override)) {
     _package_name = invoker.package_name_override
   } else {
     _package_name = invoker.target_name
@@ -104,11 +116,12 @@ template("cr_fuchsia_package") {
   }
 
   fuchsia_package(target_name) {
-    forward_variables_from(invoker, [ "testonly" ])
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "excluded_files",
+                                 "excluded_dirs",
+                               ])
     package_name = _package_name
-    if (defined(invoker.excluded_files)) {
-      excluded_files = invoker.excluded_files
-    }
     deps = _package_components
   }
 }

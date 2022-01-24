@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,8 +17,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -60,7 +59,11 @@ class TestLocalCardMigrationBubbleControllerImpl
 class LocalCardMigrationBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
-  LocalCardMigrationBubbleControllerImplTest() {}
+  LocalCardMigrationBubbleControllerImplTest() = default;
+  LocalCardMigrationBubbleControllerImplTest(
+      const LocalCardMigrationBubbleControllerImplTest&) = delete;
+  LocalCardMigrationBubbleControllerImplTest& operator=(
+      const LocalCardMigrationBubbleControllerImplTest&) = delete;
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -95,8 +98,6 @@ class LocalCardMigrationBubbleControllerImplTest
 
  private:
   static void LocalCardMigrationCallback() {}
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationBubbleControllerImplTest);
 };
 
 TEST_F(LocalCardMigrationBubbleControllerImplTest,
@@ -146,7 +147,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTest,
        StickyBubble_ShouldNotDismissUponNavigation) {
   ShowBubble();
   base::HistogramTester histogram_tester;
-  test_clock_.Advance(base::TimeDelta::FromSeconds(10));
+  test_clock_.Advance(base::Seconds(10));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(

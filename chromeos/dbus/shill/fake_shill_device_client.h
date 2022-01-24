@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -26,6 +25,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
       public ShillDeviceClient::TestInterface {
  public:
   FakeShillDeviceClient();
+
+  FakeShillDeviceClient(const FakeShillDeviceClient&) = delete;
+  FakeShillDeviceClient& operator=(const FakeShillDeviceClient&) = delete;
+
   ~FakeShillDeviceClient() override;
 
   // ShillDeviceClient overrides
@@ -166,8 +169,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeShillDeviceClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeShillDeviceClient);
 };
 
 }  // namespace chromeos

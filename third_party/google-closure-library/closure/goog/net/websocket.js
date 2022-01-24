@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Definition of the WebSocket class.  A WebSocket provides a
@@ -21,9 +13,9 @@
  *
  * Typical usage will look like this:
  *
- *  var ws = new goog.net.WebSocket();
+ *  const ws = new goog.net.WebSocket();
  *
- *  var handler = new goog.events.EventHandler();
+ *  const handler = new goog.events.EventHandler();
  *  handler.listen(ws, goog.net.WebSocket.EventType.OPENED, onOpen);
  *  handler.listen(ws, goog.net.WebSocket.EventType.MESSAGE, onMessage);
  *
@@ -46,27 +38,22 @@ goog.require('goog.events');
 goog.require('goog.events.Event');
 goog.require('goog.events.EventTarget');
 goog.require('goog.log');
+goog.requireType('goog.debug.ErrorHandler');
 
 
 /**
  * Class encapsulating the logic for using a WebSocket.
  *
- * @param {boolean|!goog.net.WebSocket.Options=} opt_params
- *     Parameters describing behavior of the WebSocket. The boolean 'true' is
- *     equivalent to setting Options.autoReconnect to be true.
- * @param {function(number): number=} opt_getNextReconnect
- *     @see goog.net.WebSocket.Options.getNextReconnect. This parameter is
- *     ignored if Options is passed for the first argument.
+ * @param {!goog.net.WebSocket.Options=} opt_params Parameters describing
+ *     behavior of the WebSocket.
  * @constructor
  * @extends {goog.events.EventTarget}
  */
-goog.net.WebSocket = function(opt_params, opt_getNextReconnect) {
+goog.net.WebSocket = function(opt_params) {
+  'use strict';
   goog.net.WebSocket.base(this, 'constructor');
-  if (typeof opt_params != 'object') {
-    opt_params = /**@type {!goog.net.WebSocket.Options} */ ({
-      autoReconnect: opt_params,
-      getNextReconnect: opt_getNextReconnect,
-    });
+  if (!opt_params) {
+    opt_params = /** @type {!goog.net.WebSocket.Options} */ ({});
   }
   /** @private {boolean} @see goog.net.WebSocket.Options.autoReconnect */
   this.autoReconnect_ = opt_params.autoReconnect != false;
@@ -103,7 +90,7 @@ goog.net.WebSocket.BinaryType = {
 
 /** @record */
 goog.net.WebSocket.Options = function() {
-
+  'use strict';
   /**
    * True if the web socket should automatically reconnect or not.  This is
    * true by default.
@@ -249,7 +236,8 @@ goog.net.WebSocket.EXPONENTIAL_BACKOFF_CEILING_ = 60 * 1000;
  * @private
  */
 goog.net.WebSocket.EXPONENTIAL_BACKOFF_ = function(attempt) {
-  var time = Math.pow(2, attempt) * 1000;
+  'use strict';
+  const time = Math.pow(2, attempt) * 1000;
   return Math.min(time, goog.net.WebSocket.EXPONENTIAL_BACKOFF_CEILING_);
 };
 
@@ -265,6 +253,7 @@ goog.net.WebSocket.EXPONENTIAL_BACKOFF_ = function(attempt) {
  *     protect the entry points.
  */
 goog.net.WebSocket.protectEntryPoints = function(errorHandler) {
+  'use strict';
   goog.net.WebSocket.prototype.onOpen_ =
       errorHandler.protectEntryPoint(goog.net.WebSocket.prototype.onOpen_);
   goog.net.WebSocket.prototype.onClose_ =
@@ -289,6 +278,7 @@ goog.net.WebSocket.protectEntryPoints = function(errorHandler) {
  *     in the range U+0021 to U+007E).
  */
 goog.net.WebSocket.prototype.open = function(url, opt_protocol) {
+  'use strict';
   // Sanity check.  This works only in modern browsers.
   goog.asserts.assert(
       goog.global['WebSocket'], 'This browser does not support WebSocket');
@@ -331,7 +321,7 @@ goog.net.WebSocket.prototype.open = function(url, opt_protocol) {
  * Closes the web socket connection.
  */
 goog.net.WebSocket.prototype.close = function() {
-
+  'use strict';
   // Clear any pending attempts to reconnect.
   this.clearReconnectTimer_();
 
@@ -355,6 +345,7 @@ goog.net.WebSocket.prototype.close = function() {
  * @param {string|!ArrayBuffer|!ArrayBufferView} message The message to send.
  */
 goog.net.WebSocket.prototype.send = function(message) {
+  'use strict';
   // Make sure the socket is ready to go before sending a message.
   goog.asserts.assert(this.isOpen(), 'Cannot send without an open socket');
 
@@ -369,6 +360,7 @@ goog.net.WebSocket.prototype.send = function(message) {
  * @return {boolean} True if the web socket is open, false otherwise.
  */
 goog.net.WebSocket.prototype.isOpen = function() {
+  'use strict';
   return !!this.webSocket_ &&
       this.webSocket_.readyState == goog.net.WebSocket.ReadyState_.OPEN;
 };
@@ -381,6 +373,7 @@ goog.net.WebSocket.prototype.isOpen = function() {
  * @return {number} Number of bytes of data that have been queued.
  */
 goog.net.WebSocket.prototype.getBufferedAmount = function() {
+  'use strict';
   return this.webSocket_.bufferedAmount;
 };
 
@@ -391,6 +384,7 @@ goog.net.WebSocket.prototype.getBufferedAmount = function() {
  * @private
  */
 goog.net.WebSocket.prototype.onOpen_ = function() {
+  'use strict';
   goog.log.info(this.logger_, 'WebSocket opened on ' + this.url_);
   this.dispatchEvent(goog.net.WebSocket.EventType.OPENED);
 
@@ -407,10 +401,12 @@ goog.net.WebSocket.prototype.onOpen_ = function() {
  * @private
  */
 goog.net.WebSocket.prototype.onClose_ = function(event) {
+  'use strict';
   goog.log.info(this.logger_, 'The WebSocket on ' + this.url_ + ' closed.');
 
   // Firing this event allows handlers to query the URL.
-  this.dispatchEvent(goog.net.WebSocket.EventType.CLOSED);
+  this.dispatchEvent(new goog.net.WebSocket.ClosedEvent(
+      event.code, event.reason, event.wasClean));
 
   // Always clear out the web socket on a close event.
   this.webSocket_ = null;
@@ -429,7 +425,7 @@ goog.net.WebSocket.prototype.onClose_ = function(event) {
     // Only try to reconnect if it is enabled.
     if (this.autoReconnect_) {
       // Log the reconnect attempt.
-      var seconds = Math.floor(this.nextReconnect_ / 1000);
+      const seconds = Math.floor(this.nextReconnect_ / 1000);
       goog.log.info(
           this.logger_, 'Seconds until next reconnect attempt: ' + seconds);
 
@@ -456,6 +452,7 @@ goog.net.WebSocket.prototype.onClose_ = function(event) {
  * @private
  */
 goog.net.WebSocket.prototype.onMessage_ = function(event) {
+  'use strict';
   this.dispatchEvent(new goog.net.WebSocket.MessageEvent(event.data));
 };
 
@@ -467,7 +464,8 @@ goog.net.WebSocket.prototype.onMessage_ = function(event) {
  * @private
  */
 goog.net.WebSocket.prototype.onError_ = function(event) {
-  var data = /** @type {string} */ (event.data);
+  'use strict';
+  const data = /** @type {string} */ (event.data);
   goog.log.error(this.logger_, 'An error occurred: ' + data);
   this.dispatchEvent(new goog.net.WebSocket.ErrorEvent(data));
 };
@@ -479,6 +477,7 @@ goog.net.WebSocket.prototype.onError_ = function(event) {
  * @private
  */
 goog.net.WebSocket.prototype.clearReconnectTimer_ = function() {
+  'use strict';
   if (this.reconnectTimer_ != null) {
     goog.Timer.clear(this.reconnectTimer_);
   }
@@ -488,9 +487,42 @@ goog.net.WebSocket.prototype.clearReconnectTimer_ = function() {
 
 /** @override */
 goog.net.WebSocket.prototype.disposeInternal = function() {
+  'use strict';
   goog.net.WebSocket.base(this, 'disposeInternal');
   this.close();
 };
+
+
+/**
+ * Object representing a closed event.
+ *
+ * @param {number} code
+ * @param {string} reason
+ * @param {boolean} wasClean
+ * @extends {goog.events.Event}
+ * @constructor
+ * @final
+ */
+goog.net.WebSocket.ClosedEvent = function(code, reason, wasClean) {
+  goog.net.WebSocket.ClosedEvent.base(
+      this, 'constructor', goog.net.WebSocket.EventType.CLOSED);
+
+  /**
+   * @type {number}
+   */
+  this.code = code;
+
+  /**
+   * @type {string}
+   */
+  this.reason = reason;
+
+  /**
+   * @type {boolean}
+   */
+  this.wasClean = wasClean;
+};
+goog.inherits(goog.net.WebSocket.ClosedEvent, goog.events.Event);
 
 
 /**
@@ -503,6 +535,7 @@ goog.net.WebSocket.prototype.disposeInternal = function() {
  * @final
  */
 goog.net.WebSocket.MessageEvent = function(message) {
+  'use strict';
   goog.net.WebSocket.MessageEvent.base(
       this, 'constructor', goog.net.WebSocket.EventType.MESSAGE);
 
@@ -527,6 +560,7 @@ goog.inherits(goog.net.WebSocket.MessageEvent, goog.events.Event);
  * @final
  */
 goog.net.WebSocket.ErrorEvent = function(data) {
+  'use strict';
   goog.net.WebSocket.ErrorEvent.base(
       this, 'constructor', goog.net.WebSocket.EventType.ERROR);
 
@@ -547,6 +581,7 @@ goog.debug.entryPointRegistry.register(
      *     function.
      */
     function(transformer) {
+      'use strict';
       goog.net.WebSocket.prototype.onOpen_ =
           transformer(goog.net.WebSocket.prototype.onOpen_);
       goog.net.WebSocket.prototype.onClose_ =

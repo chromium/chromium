@@ -95,10 +95,8 @@ BrowserUIThreadScheduler::~BrowserUIThreadScheduler() = default;
 // static
 std::unique_ptr<BrowserUIThreadScheduler>
 BrowserUIThreadScheduler::CreateForTesting(
-    base::sequence_manager::SequenceManager* sequence_manager,
-    base::sequence_manager::TimeDomain* time_domain) {
-  return base::WrapUnique(
-      new BrowserUIThreadScheduler(sequence_manager, time_domain));
+    base::sequence_manager::SequenceManager* sequence_manager) {
+  return base::WrapUnique(new BrowserUIThreadScheduler(sequence_manager));
 }
 
 BrowserUIThreadScheduler::BrowserUIThreadScheduler()
@@ -107,9 +105,7 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
               base::sequence_manager::SequenceManager::Settings::Builder()
                   .SetMessagePumpType(base::MessagePumpType::UI)
                   .Build())),
-      task_queues_(BrowserThread::UI,
-                   owned_sequence_manager_.get(),
-                   owned_sequence_manager_->GetRealTimeDomain()),
+      task_queues_(BrowserThread::UI, owned_sequence_manager_.get()),
       handle_(task_queues_.GetHandle()) {
   CommonSequenceManagerSetup(owned_sequence_manager_.get());
   owned_sequence_manager_->SetDefaultTaskRunner(
@@ -120,9 +116,8 @@ BrowserUIThreadScheduler::BrowserUIThreadScheduler()
 }
 
 BrowserUIThreadScheduler::BrowserUIThreadScheduler(
-    base::sequence_manager::SequenceManager* sequence_manager,
-    base::sequence_manager::TimeDomain* time_domain)
-    : task_queues_(BrowserThread::UI, sequence_manager, time_domain),
+    base::sequence_manager::SequenceManager* sequence_manager)
+    : task_queues_(BrowserThread::UI, sequence_manager),
       handle_(task_queues_.GetHandle()) {
   CommonSequenceManagerSetup(sequence_manager);
 }

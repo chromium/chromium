@@ -12,6 +12,7 @@ android_library("public_java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent.java",

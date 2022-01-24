@@ -53,12 +53,10 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);
   ::wm::ConvertRectFromScreen(container, &bounds);
+  for (gfx::Rect& rect : rects_)
+    ::wm::ConvertRectFromScreen(container, &rect);
   CreateOrUpdateLayer(container, "AccessibilityHighlight", bounds,
                       /*stack_at_top=*/false);
-}
-
-bool AccessibilityHighlightLayer::NeedToAnimate() const {
-  return false;
 }
 
 int AccessibilityHighlightLayer::GetInset() const {

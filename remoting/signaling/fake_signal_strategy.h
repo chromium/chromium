@@ -34,6 +34,10 @@ class FakeSignalStrategy : public SignalStrategy {
   static void Connect(FakeSignalStrategy* peer1, FakeSignalStrategy* peer2);
 
   FakeSignalStrategy(const SignalingAddress& address);
+
+  FakeSignalStrategy(const FakeSignalStrategy&) = delete;
+  FakeSignalStrategy& operator=(const FakeSignalStrategy&) = delete;
+
   ~FakeSignalStrategy() override;
 
   const std::vector<std::unique_ptr<jingle_xmpp::XmlElement>>& received_messages() {
@@ -115,8 +119,6 @@ class FakeSignalStrategy : public SignalStrategy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FakeSignalStrategy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSignalStrategy);
 };
 
 }  // namespace remoting

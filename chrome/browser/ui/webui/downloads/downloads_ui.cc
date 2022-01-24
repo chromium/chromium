@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_dom_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -118,7 +119,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
       {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"undo", IDS_DOWNLOAD_UNDO},
-  };
+      {"downloadAnyway", IDS_DOWNLOAD_ANYWAY}};
   source->AddLocalizedStrings(kStrings);
 
   source->AddLocalizedString("dangerDownloadDesc",
@@ -132,6 +133,8 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
   source->AddLocalizedString("mixedContentDownloadDesc",
                              IDS_BLOCK_REASON_MIXED_CONTENT);
+  source->AddLocalizedString("incognitoDownloadsWarningDesc",
+                             IDS_INCOGNITO_DOWNLOAD_WARNING);
   source->AddLocalizedString("asyncScanningDownloadDesc",
                              IDS_BLOCK_REASON_DEEP_SCANNING);
   source->AddLocalizedString("accountCompromiseDownloadDesc",
@@ -161,6 +164,11 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
            profile)
            ->DelayUntilVerdict(
                enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED));
+
+  source->AddString("enableBrandingUpdateAttribute",
+                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+                        ? "enable-branding-update"
+                        : "");
 
   return source;
 }

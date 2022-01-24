@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"

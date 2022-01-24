@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_infobar_delegate_android.h"
 #include "components/infobars/android/infobar_android.h"
 
@@ -17,6 +16,11 @@ class GeneratedPasswordSavedInfoBar : public infobars::InfoBarAndroid {
  public:
   explicit GeneratedPasswordSavedInfoBar(
       std::unique_ptr<GeneratedPasswordSavedInfoBarDelegateAndroid> delegate);
+
+  GeneratedPasswordSavedInfoBar(const GeneratedPasswordSavedInfoBar&) = delete;
+  GeneratedPasswordSavedInfoBar& operator=(
+      const GeneratedPasswordSavedInfoBar&) = delete;
+
   ~GeneratedPasswordSavedInfoBar() override;
 
  private:
@@ -27,8 +31,6 @@ class GeneratedPasswordSavedInfoBar : public infobars::InfoBarAndroid {
   void OnLinkClicked(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj) override;
   void ProcessButton(int action) override;
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedPasswordSavedInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_GENERATED_PASSWORD_SAVED_INFOBAR_H_

@@ -15,7 +15,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_onc_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
@@ -36,8 +36,8 @@ namespace {
 const char kDeviceUserHash[] = "";
 
 bool IsOwnershipTaken() {
-  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
+  return DeviceSettingsService::Get()->GetOwnershipStatus() ==
+         DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
 }
 
 bool IsDeviceEnterpriseEnrolled() {
@@ -92,8 +92,8 @@ void ManagedOncConfigureActivePartAsDeviceWide(
   if (!network_state || !network_state->IsInProfile()) {
     managed_network_configuration_handler()->CreateConfiguration(
         kDeviceUserHash, base::Value::AsDictionaryValue(network),
-        base::DoNothing::Once<const std::string&, const std::string&>().Then(
-            std::move(success_callback)),
+        base::BindOnce([](const std::string&, const std::string&) {
+        }).Then(std::move(success_callback)),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   } else if (network_state) {
     managed_network_configuration_handler()->SetProperties(
@@ -314,9 +314,8 @@ std::string RollbackNetworkConfig::Exporter::SerializeNetworkConfigs() const {
   return serialized_config;
 }
 
-class RollbackNetworkConfig::Importer
-    : public ash::DeviceSettingsService::Observer,
-      public NetworkPolicyObserver {
+class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
+                                        public NetworkPolicyObserver {
  public:
   Importer();
   Importer(const Importer&) = delete;
@@ -351,15 +350,15 @@ class RollbackNetworkConfig::Importer
 };
 
 RollbackNetworkConfig::Importer::Importer() {
-  ash::DeviceSettingsService::Get()->AddObserver(this);
+  DeviceSettingsService::Get()->AddObserver(this);
   chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->AddObserver(this);
 }
 
 RollbackNetworkConfig::Importer::~Importer() {
-  if (ash::DeviceSettingsService::Get()) {
-    ash::DeviceSettingsService::Get()->RemoveObserver(this);
+  if (DeviceSettingsService::Get()) {
+    DeviceSettingsService::Get()->RemoveObserver(this);
   }
   if (chromeos::NetworkHandler::Get()) {
     chromeos::NetworkHandler::Get()

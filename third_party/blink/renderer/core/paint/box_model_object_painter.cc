@@ -62,7 +62,7 @@ void BoxModelObjectPainter::PaintTextClipMask(
     const IntRect& mask_rect,
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
-  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+  PaintInfo mask_paint_info(paint_info.context, CullRect(ToGfxRect(mask_rect)),
                             PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {
@@ -96,7 +96,8 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
     return rect;
 
   const auto& this_box = To<LayoutBox>(box_model_);
-  if (BoxDecorationData::IsPaintingScrollingBackground(paint_info, this_box))
+  if (BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                             this_box))
     return rect;
 
   GraphicsContext& context = paint_info.context;
@@ -129,7 +130,7 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
     const Color& color,
     const FillLayer& bg_layer,
     BackgroundBleedAvoidance bleed_avoidance,
-    bool is_painting_scrolling_background) const {
+    bool is_painting_background_in_contents_space) const {
   PhysicalBoxSides sides_to_include;
   if (flow_box_)
     sides_to_include = flow_box_->SidesToInclude();
@@ -143,16 +144,17 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
       box_model_.GetDocument(), box_model_.StyleRef(),
       box_model_.IsScrollContainer(), color, bg_layer, bleed_avoidance,
       respect_orientation, sides_to_include, box_model_.IsLayoutInline(),
-      is_painting_scrolling_background);
+      is_painting_background_in_contents_space);
 }
 
-bool BoxModelObjectPainter::IsPaintingScrollingBackground(
+bool BoxModelObjectPainter::IsPaintingBackgroundInContentsSpace(
     const PaintInfo& paint_info) const {
   if (!box_model_.IsBox())
     return false;
 
   const auto& this_box = To<LayoutBox>(box_model_);
-  return BoxDecorationData::IsPaintingScrollingBackground(paint_info, this_box);
+  return BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                                this_box);
 }
 
 }  // namespace blink

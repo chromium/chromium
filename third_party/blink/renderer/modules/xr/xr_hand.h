@@ -35,12 +35,15 @@ class XRHand : public ScriptWrappable,
       const device::mojom::blink::XRHandTrackingData* state,
       XRInputSource* input_source);
 
+  bool hasMissingPoses() const { return has_missing_poses_; }
+
   void Trace(Visitor*) const override;
 
  private:
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
 
   HeapVector<Member<XRJointSpace>> joints_;
+  bool has_missing_poses_ = true;
 };
 
 }  // namespace blink

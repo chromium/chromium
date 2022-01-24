@@ -28,6 +28,10 @@ class RunLoop;
 class BASE_EXPORT MessagePumpForUI : public MessagePump {
  public:
   MessagePumpForUI();
+
+  MessagePumpForUI(const MessagePumpForUI&) = delete;
+  MessagePumpForUI& operator=(const MessagePumpForUI&) = delete;
+
   ~MessagePumpForUI() override;
 
   void Run(Delegate* delegate) override;
@@ -102,8 +106,6 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
 
   // The JNIEnv* for this thread, used to check for pending exceptions.
   JNIEnv* env_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpForUI);
 };
 
 }  // namespace base

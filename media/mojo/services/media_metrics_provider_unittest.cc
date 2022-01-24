@@ -29,6 +29,9 @@ class MediaMetricsProviderTest : public testing::Test {
  public:
   MediaMetricsProviderTest() { ResetMetricRecorders(); }
 
+  MediaMetricsProviderTest(const MediaMetricsProviderTest&) = delete;
+  MediaMetricsProviderTest& operator=(const MediaMetricsProviderTest&) = delete;
+
   ~MediaMetricsProviderTest() override { base::RunLoop().RunUntilIdle(); }
 
   void Initialize(bool is_mse,
@@ -74,8 +77,6 @@ class MediaMetricsProviderTest : public testing::Test {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_recorder_;
   ukm::SourceId source_id_;
   mojo::Remote<mojom::MediaMetricsProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaMetricsProviderTest);
 };
 
 #define EXPECT_UKM(name, value) \
@@ -119,9 +120,9 @@ TEST_F(MediaMetricsProviderTest, TestUkm) {
   // Now try one with different values and optional parameters set.
   const std::string kTestOrigin2 = "https://test2.google.com/";
   const std::string kClearKeyKeySystem = "org.w3.clearkey";
-  const base::TimeDelta kMetadataTime = base::TimeDelta::FromSeconds(1);
-  const base::TimeDelta kFirstFrameTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kPlayReadyTime = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kMetadataTime = base::Seconds(1);
+  const base::TimeDelta kFirstFrameTime = base::Seconds(2);
+  const base::TimeDelta kPlayReadyTime = base::Seconds(3);
 
   ResetMetricRecorders();
   Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kHttps);
@@ -183,9 +184,9 @@ TEST_F(MediaMetricsProviderTest, TestUkmMediaStream) {
 
   // Now try one with different values and optional parameters set.
   const std::string kTestOrigin2 = "https://test2.google.com/";
-  const base::TimeDelta kMetadataTime = base::TimeDelta::FromSeconds(1);
-  const base::TimeDelta kFirstFrameTime = base::TimeDelta::FromSeconds(2);
-  const base::TimeDelta kPlayReadyTime = base::TimeDelta::FromSeconds(3);
+  const base::TimeDelta kMetadataTime = base::Seconds(1);
+  const base::TimeDelta kFirstFrameTime = base::Seconds(2);
+  const base::TimeDelta kPlayReadyTime = base::Seconds(3);
 
   ResetMetricRecorders();
   Initialize(false, false, false, kTestOrigin2, mojom::MediaURLScheme::kMissing,
@@ -213,8 +214,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMA) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -233,8 +234,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMAMediaStream) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {false, false, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -251,7 +252,7 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMANoAudioWithEme) {
   provider_->SetIsEME();
   provider_->SetVideoPipelineInfo(
       {true, true, VideoDecoderType::kMojo, EncryptionType::kEncrypted});
-  provider_->SetHasVideo(VideoCodec::kCodecAV1);
+  provider_->SetHasVideo(VideoCodec::kAV1);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_.reset();
@@ -271,8 +272,8 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
       {false, false, AudioDecoderType::kMojo, EncryptionType::kClear});
   provider_->SetVideoPipelineInfo(
       {true, false, VideoDecoderType::kD3D11, EncryptionType::kEncrypted});
-  provider_->SetHasVideo(VideoCodec::kCodecVP9);
-  provider_->SetHasAudio(AudioCodec::kCodecVorbis);
+  provider_->SetHasVideo(VideoCodec::kVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
   provider_->SetHasPlayed();
   provider_->SetHaveEnough();
   provider_->SetVideoPipelineInfo({true, false, VideoDecoderType::kFFmpeg});
@@ -282,6 +283,22 @@ TEST_F(MediaMetricsProviderTest, TestPipelineUMADecoderFallback) {
                                      PIPELINE_OK, 1);
   histogram_tester.ExpectBucketCount("Media.VideoDecoderFallback", true, 1);
   histogram_tester.ExpectBucketCount("Media.HasEverPlayed", true, 1);
+}
+
+TEST_F(MediaMetricsProviderTest, TestPipelineUMARendererType) {
+  base::HistogramTester histogram_tester;
+  Initialize(false, false, false, kTestOrigin, mojom::MediaURLScheme::kHttps);
+  provider_->SetIsEME();
+  provider_->SetRendererType(RendererType::kMediaFoundation);
+  provider_->SetHasVideo(VideoCodec::kVP9);
+  provider_->SetHasAudio(AudioCodec::kVorbis);
+  provider_->SetHasPlayed();
+  provider_->SetHaveEnough();
+  provider_.reset();
+  base::RunLoop().RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Media.PipelineStatus.AudioVideo.VP9.MediaFoundationRenderer",
+      PIPELINE_OK, 1);
 }
 
 // Note: Tests for various Acquire* methods are contained with the unittests for

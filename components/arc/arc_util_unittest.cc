@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
@@ -50,11 +49,14 @@ class ScopedArcFeature {
       feature_list.InitFromCommandLine(std::string(), kArcFeatureName);
     }
   }
+
+  ScopedArcFeature(const ScopedArcFeature&) = delete;
+  ScopedArcFeature& operator=(const ScopedArcFeature&) = delete;
+
   ~ScopedArcFeature() = default;
 
  private:
   base::test::ScopedFeatureList feature_list;
-  DISALLOW_COPY_AND_ASSIGN(ScopedArcFeature);
 };
 
 class ScopedRtVcpuFeature {
@@ -89,6 +91,10 @@ class FakeUser : public user_manager::User {
   explicit FakeUser(user_manager::UserType user_type)
       : User(AccountId::FromUserEmailGaiaId("user@test.com", "1234567890")),
         user_type_(user_type) {}
+
+  FakeUser(const FakeUser&) = delete;
+  FakeUser& operator=(const FakeUser&) = delete;
+
   ~FakeUser() override = default;
 
   // user_manager::User:
@@ -96,8 +102,6 @@ class FakeUser : public user_manager::User {
 
  private:
   const user_manager::UserType user_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUser);
 };
 
 class ArcUtilTest : public testing::Test {
@@ -327,9 +331,15 @@ TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   auto callback_readahead = base::BindRepeating(&GetSystemMemoryInfoForTesting,
                                                 kArcMemProfile8GbName);
   auto* command_line = base::CommandLine::ForCurrentProcess();
+
   command_line->InitFromArgv({""});
   EXPECT_EQ(ArcVmUreadaheadMode::READAHEAD,
             GetArcVmUreadaheadMode(callback_readahead));
+
+  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
+  EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
+            GetArcVmUreadaheadMode(callback_readahead));
+
   EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
             GetArcVmUreadaheadMode(callback_disabled));
 
@@ -340,6 +350,16 @@ TEST_F(ArcUtilTest, GetArcVmUreadaheadMode) {
   command_line->InitFromArgv({"", "--arcvm-ureadahead-mode=disabled"});
   EXPECT_EQ(ArcVmUreadaheadMode::DISABLED,
             GetArcVmUreadaheadMode(callback_readahead));
+}
+
+TEST_F(ArcUtilTest, UreadaheadDefault) {
+  EXPECT_FALSE(IsUreadaheadDisabled());
+}
+
+TEST_F(ArcUtilTest, UreadaheadDisabled) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--arc-disable-ureadahead"});
+  EXPECT_TRUE(IsUreadaheadDisabled());
 }
 
 // TODO(hidehiko): Add test for IsArcKioskMode().

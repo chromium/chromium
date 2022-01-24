@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 
 class Browser;
@@ -32,6 +31,10 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   enum class DesignVersion { kMonotone, kColored };
 
   explicit SyncConfirmationUI(content::WebUI* web_ui);
+
+  SyncConfirmationUI(const SyncConfirmationUI&) = delete;
+  SyncConfirmationUI& operator=(const SyncConfirmationUI&) = delete;
+
   ~SyncConfirmationUI() override;
 
   // SigninWebDialogUI:
@@ -66,8 +69,6 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   std::unordered_map<std::string, int> js_localized_string_to_ids_map_;
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConfirmationUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_UI_H_

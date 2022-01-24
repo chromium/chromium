@@ -11,6 +11,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/widget_test.h"
 
@@ -27,8 +28,6 @@ class FeaturePromoBubbleViewInteractiveTest : public InProcessBrowserTest {
                              ->toolbar()
                              ->app_menu_button();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
-    params.timeout_default = absl::nullopt;
-    params.timeout_short = absl::nullopt;
     return params;
   }
 };

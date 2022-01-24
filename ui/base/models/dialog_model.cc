@@ -28,8 +28,8 @@ DialogModel::Builder& DialogModel::Builder::AddOkButton(
     base::OnceClosure callback,
     std::u16string label,
     const DialogModelButton::Params& params) {
-  DCHECK(!model_->accept_callback_);
-  model_->accept_callback_ = std::move(callback);
+  DCHECK(!model_->accept_action_callback_);
+  model_->accept_action_callback_ = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogAccepted() instead.
   model_->ok_button_.emplace(
@@ -44,8 +44,8 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
     base::OnceClosure callback,
     std::u16string label,
     const DialogModelButton::Params& params) {
-  DCHECK(!model_->cancel_callback_);
-  model_->cancel_callback_ = std::move(callback);
+  DCHECK(!model_->cancel_action_callback_);
+  model_->cancel_action_callback_ = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
   // DialogModelHost should be using OnDialogCanceled() instead.
   model_->cancel_button_.emplace(
@@ -109,6 +109,13 @@ void DialogModel::AddTextfield(std::u16string label,
       GetPassKey(), this, std::move(label), std::move(text), params));
 }
 
+void DialogModel::AddCustomField(
+    std::unique_ptr<DialogModelCustomField::Factory> factory,
+    int unique_id) {
+  AddField(std::make_unique<DialogModelCustomField>(
+      GetPassKey(), this, unique_id, std::move(factory)));
+}
+
 bool DialogModel::HasField(int unique_id) const {
   return base::ranges::any_of(fields_, [unique_id](auto& field) {
     return field->unique_id_ == unique_id;
@@ -136,24 +143,24 @@ DialogModelTextfield* DialogModel::GetTextfieldByUniqueId(int unique_id) {
   return GetFieldByUniqueId(unique_id)->AsTextfield();
 }
 
-void DialogModel::OnDialogAccepted(base::PassKey<DialogModelHost>) {
-  if (accept_callback_)
-    std::move(accept_callback_).Run();
+void DialogModel::OnDialogAcceptAction(base::PassKey<DialogModelHost>) {
+  if (accept_action_callback_)
+    std::move(accept_action_callback_).Run();
 }
 
-void DialogModel::OnDialogCancelled(base::PassKey<DialogModelHost>) {
-  if (cancel_callback_)
-    std::move(cancel_callback_).Run();
+void DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
+  if (cancel_action_callback_)
+    std::move(cancel_action_callback_).Run();
 }
 
-void DialogModel::OnDialogClosed(base::PassKey<DialogModelHost>) {
-  if (close_callback_)
-    std::move(close_callback_).Run();
+void DialogModel::OnDialogCloseAction(base::PassKey<DialogModelHost>) {
+  if (close_action_callback_)
+    std::move(close_action_callback_).Run();
 }
 
-void DialogModel::OnWindowClosing(base::PassKey<DialogModelHost>) {
-  if (window_closing_callback_)
-    std::move(window_closing_callback_).Run();
+void DialogModel::OnDialogDestroying(base::PassKey<DialogModelHost>) {
+  if (dialog_destroying_callback_)
+    std::move(dialog_destroying_callback_).Run();
 }
 
 void DialogModel::AddField(std::unique_ptr<DialogModelField> field) {

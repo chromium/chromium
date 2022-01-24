@@ -10,11 +10,9 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
@@ -29,6 +27,9 @@ namespace safe_browsing {
 
 class PingManager {
  public:
+  PingManager(const PingManager&) = delete;
+  PingManager& operator=(const PingManager&) = delete;
+
   virtual ~PingManager();
 
   // Create an instance of the safe browsing ping manager.
@@ -76,8 +77,6 @@ class PingManager {
   // Track outstanding SafeBrowsing report fetchers for clean up.
   // We add both "hit" and "detail" fetchers in this set.
   Reports safebrowsing_reports_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingManager);
 };
 
 }  // namespace safe_browsing

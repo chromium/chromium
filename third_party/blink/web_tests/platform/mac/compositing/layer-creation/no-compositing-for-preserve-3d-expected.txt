@@ -4,51 +4,59 @@ This layer should be composited.
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 611],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV class='preserve3d'",
-      "position": [18, 390],
       "bounds": [342, 180],
-      "transform": 1
+      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 3
+      "transform": 4
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
     {
       "id": 1,
-      "renderingContext": 1
-    },
-    {
-      "id": 2,
-      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [49, 439, 0, 1]
-      ],
-      "flattenInheritedTransform": false,
+        [18, 390, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
       "renderingContext": 1
     },
     {
       "id": 3,
       "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [31, 49, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 3,
       "transform": [
         [0.984807753012208, 0, -0.17364817766693, 0],
         [0, 1, 0, 0],

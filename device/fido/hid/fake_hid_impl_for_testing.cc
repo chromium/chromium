@@ -207,6 +207,7 @@ void FakeFidoHidManager::Connect(
     mojo::PendingRemote<mojom::HidConnectionClient> connection_client,
     mojo::PendingRemote<mojom::HidConnectionWatcher> watcher,
     bool allow_protected_reports,
+    bool allow_fido_reports,
     ConnectCallback callback) {
   auto device_it = devices_.find(device_guid);
   auto connection_it = connections_.find(device_guid);

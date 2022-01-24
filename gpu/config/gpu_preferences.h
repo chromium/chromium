@@ -165,10 +165,6 @@ struct GPU_EXPORT GpuPreferences {
   // compilation info logs.
   bool gl_shader_interm_output = false;
 
-  // Emulate ESSL lowp and mediump float precisions by mutating the shaders to
-  // round intermediate values in ANGLE.
-  bool emulate_shader_precision = false;
-
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 

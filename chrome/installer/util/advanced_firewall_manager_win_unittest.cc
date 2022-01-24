@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process_info.h"
 #include "base/win/scoped_bstr.h"
@@ -18,6 +17,10 @@ namespace installer {
 class AdvancedFirewallManagerTest : public ::testing::Test {
  public:
   AdvancedFirewallManagerTest() : skip_test_(true) {}
+
+  AdvancedFirewallManagerTest(const AdvancedFirewallManagerTest&) = delete;
+  AdvancedFirewallManagerTest& operator=(const AdvancedFirewallManagerTest&) =
+      delete;
 
  protected:
   // Sets up the test fixture.
@@ -54,9 +57,6 @@ class AdvancedFirewallManagerTest : public ::testing::Test {
 
   bool skip_test_;
   AdvancedFirewallManager manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AdvancedFirewallManagerTest);
 };
 
 TEST_F(AdvancedFirewallManagerTest, NoRule) {

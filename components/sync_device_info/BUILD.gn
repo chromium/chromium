@@ -62,6 +62,10 @@ static_library("sync_device_info") {
     sources += [ "local_device_info_util_linux.cc" ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "local_device_info_util_fuchsia.cc" ]
+  }
+
   if (is_mac) {
     sources += [ "local_device_info_util_mac.mm" ]
     frameworks = [

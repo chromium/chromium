@@ -1,3 +1,1 @@
-monorail: {
-  component: "UI>Browser>Mobile"
-}
+mixins: "//chrome/android/COMMON_METADATA"

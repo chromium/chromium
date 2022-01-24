@@ -41,23 +41,23 @@
             on-change="onPermissionSelectionChange_"
             disabled$="[[!isPermissionUserControlled_(site.source, category,
                                                       site.setting)]]">
-          <option id="default" value$="[[ContentSetting.DEFAULT]]">
+          <option id="default" value$="[[contentSettingEnum_.DEFAULT]]">
             [[defaultSettingString_(
                 defaultSetting_,
                 category,
                 useAutomaticLabel)]]
           </option>
-          <option id="allow" value$="[[ContentSetting.ALLOW]]"
+          <option id="allow" value$="[[contentSettingEnum_.ALLOW]]"
               hidden$="[[!showAllowedSetting_(category)]]">
             $i18n{siteSettingsActionAllow}
           </option>
-          <option id="block" value$="[[ContentSetting.BLOCK]]">
+          <option id="block" value$="[[contentSettingEnum_.BLOCK]]">
             [[blockSettingString_(
                 category,
                 '$i18n{siteSettingsActionBlock}',
                 '$i18n{siteSettingsActionMute}')]]
           </option>
-          <option id="ask" value$="[[ContentSetting.ASK]]"
+          <option id="ask" value$="[[contentSettingEnum_.ASK]]"
               hidden$="[[!showAskSetting_(category, site.setting,
                                           site.source)]]">
             $i18n{siteSettingsActionAsk}

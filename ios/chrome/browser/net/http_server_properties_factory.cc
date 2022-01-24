@@ -23,6 +23,9 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
       : pref_store_(std::move(pref_store)),
         path_(prefs::kHttpServerProperties) {}
 
+  PrefServiceAdapter(const PrefServiceAdapter&) = delete;
+  PrefServiceAdapter& operator=(const PrefServiceAdapter&) = delete;
+
   ~PrefServiceAdapter() override {
     if (on_pref_load_callback_)
       pref_store_->RemoveObserver(this);
@@ -73,8 +76,6 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   // Only non-null while waiting for initial pref load. |this| is observes the
   // |pref_store_| exactly when non-null.
   base::OnceClosure on_pref_load_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceAdapter);
 };
 
 }  // namespace

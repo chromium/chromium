@@ -9,6 +9,10 @@
 
 class ChromeAppListItem;
 
+namespace ash {
+enum class AppListSortOrder;
+}
+
 // An observer interface for AppListModelUpdater to perform additional work on
 // ChromeAppListItem changes.
 class AppListModelUpdaterObserver : public base::CheckedObserver {
@@ -21,6 +25,9 @@ class AppListModelUpdaterObserver : public base::CheckedObserver {
 
   // Triggered after an item has moved, changed folders, or changed properties.
   virtual void OnAppListItemUpdated(ChromeAppListItem* item) {}
+
+  // Triggered when setting app list sort order.
+  virtual void OnAppListPreferredOrderChanged(ash::AppListSortOrder order) {}
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_MODEL_UPDATER_OBSERVER_H_

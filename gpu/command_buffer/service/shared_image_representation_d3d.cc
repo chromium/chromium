@@ -118,22 +118,32 @@ void SharedImageRepresentationDawnD3D::EndAccess() {
 SharedImageRepresentationOverlayD3D::SharedImageRepresentationOverlayD3D(
     SharedImageManager* manager,
     SharedImageBacking* backing,
-    MemoryTypeTracker* tracker)
-    : SharedImageRepresentationOverlay(manager, backing, tracker) {}
+    MemoryTypeTracker* tracker,
+    scoped_refptr<gl::GLImage> gl_image)
+    : SharedImageRepresentationOverlay(manager, backing, tracker),
+      gl_image_(std::move(gl_image)) {}
+
+SharedImageRepresentationOverlayD3D::~SharedImageRepresentationOverlayD3D() =
+    default;
 
 bool SharedImageRepresentationOverlayD3D::BeginReadAccess(
     std::vector<gfx::GpuFence>* acquire_fences) {
-  return static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
+  // Only D3D images need keyed mutex synchronization.
+  if (gl_image_->GetType() == gl::GLImage::Type::D3D)
+    return static_cast<SharedImageBackingD3D*>(backing())->BeginAccessD3D11();
+  return true;
 }
 
 void SharedImageRepresentationOverlayD3D::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
-  static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();
+  // Only D3D images need keyed mutex synchronization.
+  if (gl_image_->GetType() == gl::GLImage::Type::D3D)
+    static_cast<SharedImageBackingD3D*>(backing())->EndAccessD3D11();
 }
 
 gl::GLImage* SharedImageRepresentationOverlayD3D::GetGLImage() {
-  return static_cast<SharedImageBackingD3D*>(backing())->GetGLImage();
+  return gl_image_.get();
 }
 
 }  // namespace gpu

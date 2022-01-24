@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -49,7 +48,8 @@ class TestDurablePermissionContext : public DurableStoragePermissionContext {
   ContentSetting GetContentSettingFromMap(const GURL& url_a,
                                           const GURL& url_b) {
     return HostContentSettingsMapFactory::GetForProfile(browser_context())
-        ->GetContentSetting(url_a.GetOrigin(), url_b.GetOrigin(),
+        ->GetContentSetting(url_a.DeprecatedGetOriginAsURL(),
+                            url_b.DeprecatedGetOriginAsURL(),
                             ContentSettingsType::DURABLE_STORAGE);
   }
 

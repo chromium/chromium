@@ -36,7 +36,7 @@ NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() {}
 NearbyInternalsLogsHandler::~NearbyInternalsLogsHandler() = default;
 
 void NearbyInternalsLogsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLogMessages",
       base::BindRepeating(&NearbyInternalsLogsHandler::HandleGetLogMessages,
                           base::Unretained(this)));

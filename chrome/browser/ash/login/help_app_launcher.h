@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // Provides help content during OOBE / login.
 // Based on connectivity state (offline/online) shows help topic dialog
@@ -50,6 +49,9 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
   // display.
   explicit HelpAppLauncher(gfx::NativeWindow parent_window);
 
+  HelpAppLauncher(const HelpAppLauncher&) = delete;
+  HelpAppLauncher& operator=(const HelpAppLauncher&) = delete;
+
   // Shows specified help topic.
   void ShowHelpTopic(HelpTopic help_topic_id);
 
@@ -67,16 +69,14 @@ class HelpAppLauncher : public base::RefCountedThreadSafe<HelpAppLauncher> {
 
   // Parent window which is passed to help dialog.
   gfx::NativeWindow parent_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(HelpAppLauncher);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //ch/br/ash/login is moved to
-// ash
-namespace ash {
-using ::chromeos::HelpAppLauncher;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::HelpAppLauncher;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HELP_APP_LAUNCHER_H_

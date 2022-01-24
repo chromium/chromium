@@ -6,20 +6,20 @@
 #define CHROME_BROWSER_ASH_ARC_SESSION_ARC_APP_ID_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/arc_app_id_provider.h"
-#include "base/macros.h"
 
 namespace arc {
 
 class ArcAppIdProviderImpl : public ash::ArcAppIdProvider {
  public:
   ArcAppIdProviderImpl();
+
+  ArcAppIdProviderImpl(const ArcAppIdProviderImpl&) = delete;
+  ArcAppIdProviderImpl& operator=(const ArcAppIdProviderImpl&) = delete;
+
   ~ArcAppIdProviderImpl() override;
 
   // ash::ArcAppIdProvider:
   std::string GetAppIdByPackageName(const std::string& package_name) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcAppIdProviderImpl);
 };
 
 }  // namespace arc

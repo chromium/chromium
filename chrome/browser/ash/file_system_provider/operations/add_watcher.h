@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -37,6 +36,10 @@ class AddWatcher : public Operation {
              const base::FilePath& entry_path,
              bool recursive,
              storage::AsyncFileUtil::StatusCallback callback);
+
+  AddWatcher(const AddWatcher&) = delete;
+  AddWatcher& operator=(const AddWatcher&) = delete;
+
   ~AddWatcher() override;
 
   // Operation overrides.
@@ -52,8 +55,6 @@ class AddWatcher : public Operation {
   const base::FilePath entry_path_;
   const bool recursive_;
   storage::AsyncFileUtil::StatusCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddWatcher);
 };
 
 }  // namespace operations

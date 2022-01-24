@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "gin/gin_export.h"
+#include "gin/v8_platform_page_allocator.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {
@@ -24,9 +25,15 @@ class GIN_EXPORT V8Platform : public v8::Platform {
 // v8::Platform implementation.
 // Some configurations do not use page_allocator.
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-  v8::PageAllocator* GetPageAllocator() override;
+  // GetPageAllocator returns gin::PageAllocator instead of v8::PageAllocator,
+  // so we can be sure that the allocator used employs security features such as
+  // enabling Arm's Branch Target Instructions for executable pages. This is
+  // verified in the tests for gin::PageAllocator.
+  PageAllocator* GetPageAllocator() override;
   void OnCriticalMemoryPressure() override;
+  v8::ZoneBackingAllocator* GetZoneBackingAllocator() override;
 #endif
+
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner(
       v8::Isolate*) override;
   int NumberOfWorkerThreads() override;

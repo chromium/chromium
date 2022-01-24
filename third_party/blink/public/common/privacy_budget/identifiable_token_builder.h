@@ -85,7 +85,9 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   // when |token| is computed in parallel in order to preserve the ordering of
   // values that were seen in a concurrent sequence that cannot be
   // deterministically interleaved into the primary stream.
-  IdentifiableTokenBuilder& AddToken(IdentifiableToken token);
+  IdentifiableTokenBuilder& AddToken(IdentifiableToken token) {
+    return AddValue(token.value_);
+  }
 
   // Helper for feeding primitive types by value efficiently. Anything more
   // complicated than that should be passed in as a base::span<const uint8_t>.

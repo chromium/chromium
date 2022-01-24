@@ -108,6 +108,9 @@ class ServiceManager : public Service {
   ServiceManager(const std::vector<Manifest>& manifests,
                  ServiceExecutablePolicy service_executable_policy);
 
+  ServiceManager(const ServiceManager&) = delete;
+  ServiceManager& operator=(const ServiceManager&) = delete;
+
   ~ServiceManager() override;
 
   // Directly requests that the Service Manager start a new instance for
@@ -204,8 +207,6 @@ class ServiceManager : public Service {
   ServiceInstance* service_manager_instance_;
 
   mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManager);
 };
 
 }  // namespace service_manager

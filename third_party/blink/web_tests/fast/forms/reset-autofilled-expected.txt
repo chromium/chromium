@@ -6,4 +6,6 @@ PASS successfullyParsed is true
 TEST COMPLETE
 
 PASS countAutofilledElements() is 3
+PASS document.querySelectorAll(':autofill').length is 3
 PASS countAutofilledElements() is 0
+PASS document.querySelectorAll(':autofill').length is 0

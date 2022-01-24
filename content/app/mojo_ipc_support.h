@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 
@@ -27,6 +26,10 @@ struct StartupDataImpl;
 class CONTENT_EXPORT MojoIpcSupport {
  public:
   explicit MojoIpcSupport(std::unique_ptr<BrowserProcessIOThread> io_thread);
+
+  MojoIpcSupport(const MojoIpcSupport&) = delete;
+  MojoIpcSupport& operator=(const MojoIpcSupport&) = delete;
+
   ~MojoIpcSupport();
 
   BrowserProcessIOThread* io_thread() { return io_thread_.get(); }
@@ -43,8 +46,6 @@ class CONTENT_EXPORT MojoIpcSupport {
   std::unique_ptr<BrowserProcessIOThread> io_thread_;
   base::Thread mojo_ipc_thread_{"Mojo IPC"};
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoIpcSupport);
 };
 
 }  // namespace content

@@ -17,6 +17,7 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/x/selection_utils.h"
+#include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -39,11 +40,13 @@ const char kNetscapeURL[] = "_NETSCAPE_URL";
 
 XOSExchangeDataProvider::XOSExchangeDataProvider(
     x11::Window x_window,
+    x11::Window source_window,
     const SelectionFormatMap& selection)
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       own_window_(false),
       x_window_(x_window),
+      source_window_(source_window),
       format_map_(selection),
       selection_owner_(connection_, x_window_, x11::GetAtom(kDndSelection)) {}
 
@@ -52,6 +55,7 @@ XOSExchangeDataProvider::XOSExchangeDataProvider()
       x_root_window_(ui::GetX11RootWindow()),
       own_window_(true),
       x_window_(x11::CreateDummyWindow("Chromium Drag & Drop Window")),
+      source_window_(x_window_),
       selection_owner_(connection_, x_window_, x11::GetAtom(kDndSelection)) {}
 
 XOSExchangeDataProvider::~XOSExchangeDataProvider() {
@@ -391,11 +395,11 @@ void XOSExchangeDataProvider::SetFileContents(
   //   things simpler for Chrome, we always 'fail' and let the destination do
   //   the work.
   std::string failure("F");
-  InsertData(x11::GetAtom("XdndDirectSave0"),
+  InsertData(x11::GetAtom(kXdndDirectSave0),
              scoped_refptr<base::RefCountedMemory>(
                  base::RefCountedString::TakeString(&failure)));
   std::string file_contents_copy = file_contents;
-  InsertData(x11::GetAtom("application/octet-stream"),
+  InsertData(x11::GetAtom(kMimeTypeOctetStream),
              scoped_refptr<base::RefCountedMemory>(
                  base::RefCountedString::TakeString(&file_contents_copy)));
 }
@@ -403,7 +407,23 @@ void XOSExchangeDataProvider::SetFileContents(
 bool XOSExchangeDataProvider::GetFileContents(
     base::FilePath* filename,
     std::string* file_contents) const {
-  NOTIMPLEMENTED();
+  std::vector<char> str;
+  if (!GetArrayProperty(source_window_, x11::GetAtom(kXdndDirectSave0), &str))
+    return false;
+
+  *filename =
+      base::FilePath(base::FilePath::StringPieceType(str.data(), str.size()));
+
+  std::vector<x11::Atom> file_contents_atoms;
+  file_contents_atoms.push_back(x11::GetAtom(kMimeTypeOctetStream));
+  std::vector<x11::Atom> requested_types;
+  GetAtomIntersection(file_contents_atoms, GetTargets(), &requested_types);
+
+  ui::SelectionData data(format_map_.GetFirstOf(requested_types));
+  if (data.IsValid()) {
+    data.AssignTo(file_contents);
+    return true;
+  }
   return false;
 }
 

@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -20,6 +19,10 @@ class BitReader;
 class MEDIA_EXPORT Vp9BoolDecoder {
  public:
   Vp9BoolDecoder();
+
+  Vp9BoolDecoder(const Vp9BoolDecoder&) = delete;
+  Vp9BoolDecoder& operator=(const Vp9BoolDecoder&) = delete;
+
   ~Vp9BoolDecoder();
 
   // |data| is the input buffer with |size| bytes.
@@ -64,8 +67,6 @@ class MEDIA_EXPORT Vp9BoolDecoder {
   // bits pre-filled.
   int count_to_fill_ = 0;
   unsigned int bool_range_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9BoolDecoder);
 };
 
 }  // namespace media

@@ -12,13 +12,14 @@
 namespace autofill {
 
 // Subclass of InternalAuthenticator meant for testing purposes.
-class TestInternalAuthenticator : public InternalAuthenticator {
+class TestInternalAuthenticator : public webauthn::InternalAuthenticator {
  public:
   TestInternalAuthenticator() = default;
   ~TestInternalAuthenticator() override = default;
 
   // InternalAuthenticator:
   void SetEffectiveOrigin(const url::Origin& origin) override {}
+  void SetPaymentOptions(blink::mojom::PaymentOptionsPtr payment) override {}
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       blink::mojom::Authenticator::MakeCredentialCallback callback) override {}

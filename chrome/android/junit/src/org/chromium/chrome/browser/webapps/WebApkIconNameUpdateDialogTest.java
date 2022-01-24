@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -53,6 +56,7 @@ public class WebApkIconNameUpdateDialogTest {
             dialogParams.shortNameBefore = "";
             dialogParams.shortNameAfter = "";
             dialogParams.nameChanged = false;
+            dialogParams.expectNameHiddenAnyway = false;
             dialogParams.nameBefore = "";
             dialogParams.nameAfter = "";
             return dialogParams;
@@ -67,6 +71,7 @@ public class WebApkIconNameUpdateDialogTest {
         public String shortNameBefore;
         public String shortNameAfter;
         public boolean nameChanged;
+        public boolean expectNameHiddenAnyway;
         public String nameBefore;
         public String nameAfter;
     }
@@ -143,13 +148,18 @@ public class WebApkIconNameUpdateDialogTest {
         int callCount = mOnActionCallback.getCallCount();
 
         WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
+        // Applying a theme overlay because the context is used to show the dialog, which needs some
+        // color attributes to inflate the views.
+        Context context = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
 
-        dialog.show(mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
+        dialog.show(context, mDialogManager, /* packageName= */ "", dialogParams.iconChanged,
                 dialogParams.shortNameChanged, dialogParams.nameChanged,
                 dialogParams.shortNameBefore, dialogParams.shortNameAfter, dialogParams.nameBefore,
                 dialogParams.nameAfter, dialogParams.bitmapBefore, dialogParams.bitmapAfter, false,
                 false, this::onUpdateDialogResult);
 
+        // Verify the short name labels visibility status.
         Assert.assertEquals(dialogParams.shortNameChanged || dialogParams.expectShortNameShownAnyway
                         ? dialogParams.shortNameBefore
                         : null,
@@ -158,10 +168,18 @@ public class WebApkIconNameUpdateDialogTest {
                         ? dialogParams.shortNameAfter
                         : null,
                 getUpdateDialogAppNameLabel(R.id.short_app_name_new));
-        Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameBefore : null,
+
+        // Verify the app name label visibility status.
+        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+                        ? dialogParams.nameBefore
+                        : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_old));
-        Assert.assertEquals(dialogParams.nameChanged ? dialogParams.nameAfter : null,
+        Assert.assertEquals(dialogParams.nameChanged && !dialogParams.expectNameHiddenAnyway
+                        ? dialogParams.nameAfter
+                        : null,
                 getUpdateDialogAppNameLabel(R.id.app_name_new));
+
+        // Verify the icons visibility status.
         Assert.assertEquals(dialogParams.iconChanged || dialogParams.expectIconShownAnyway
                         ? dialogParams.bitmapBefore
                         : null,
@@ -185,8 +203,12 @@ public class WebApkIconNameUpdateDialogTest {
             boolean clickAccept, String shortAppName, String expectedTitle) throws Exception {
         int callCount = mOnActionCallback.getCallCount();
 
+        // Applying a theme overlay because the context is used to show the dialog, which needs some
+        // color attributes to inflate the views.
+        Context context = new ContextThemeWrapper(
+                ApplicationProvider.getApplicationContext(), R.style.ColorOverlay_ChromiumAndroid);
         WebApkUpdateReportAbuseDialog dialog =
-                new WebApkUpdateReportAbuseDialog(mDialogManager, /* packageName= */ "",
+                new WebApkUpdateReportAbuseDialog(context, mDialogManager, /* packageName= */ "",
                         shortAppName, /* showAbuseCheckbox= */ true, this::onAbuseDialogResult);
         dialog.show();
 
@@ -279,6 +301,20 @@ public class WebApkIconNameUpdateDialogTest {
         dialogParams.nameBefore = "name1";
         dialogParams.nameAfter = "name2";
         verifyValues(/* clickAccept= */ false, dialogParams);
+
+        // Don't show duplicate name labels (identical change in both name and short name).
+        dialogParams = DialogParams.createDefault();
+        dialogParams.iconChanged = true;
+        dialogParams.bitmapBefore = blue;
+        dialogParams.bitmapAfter = red;
+        dialogParams.shortNameChanged = true;
+        dialogParams.shortNameBefore = "before";
+        dialogParams.shortNameAfter = "after";
+        dialogParams.nameChanged = true;
+        dialogParams.nameBefore = "before";
+        dialogParams.nameAfter = "after";
+        dialogParams.expectNameHiddenAnyway = true;
+        verifyValues(/* clickAccept= */ true, dialogParams);
     }
 
     @Test

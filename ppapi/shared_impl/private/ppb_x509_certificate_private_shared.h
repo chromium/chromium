@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_SHARED_IMPL_PRIVATE_PPB_X509_CERTIFICATE_PRIVATE_IMPL_H_
-#define PPAPI_SHARED_IMPL_PRIVATE_PPB_X509_CERTIFICATE_PRIVATE_IMPL_H_
+#ifndef PPAPI_SHARED_IMPL_PRIVATE_PPB_X509_CERTIFICATE_PRIVATE_SHARED_H_
+#define PPAPI_SHARED_IMPL_PRIVATE_PPB_X509_CERTIFICATE_PRIVATE_SHARED_H_
 
 #include <stdint.h>
 
@@ -53,6 +53,12 @@ class PPAPI_SHARED_EXPORT PPB_X509Certificate_Private_Shared
   PPB_X509Certificate_Private_Shared(ResourceObjectType type,
                                      PP_Instance instance,
                                      const PPB_X509Certificate_Fields& fields);
+
+  PPB_X509Certificate_Private_Shared(
+      const PPB_X509Certificate_Private_Shared&) = delete;
+  PPB_X509Certificate_Private_Shared& operator=(
+      const PPB_X509Certificate_Private_Shared&) = delete;
+
   ~PPB_X509Certificate_Private_Shared() override;
 
   // Resource overrides.
@@ -68,10 +74,8 @@ class PPAPI_SHARED_EXPORT PPB_X509Certificate_Private_Shared
 
  private:
   std::unique_ptr<PPB_X509Certificate_Fields> fields_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_X509Certificate_Private_Shared);
 };
 
 }  // namespace ppapi
 
-#endif  // PPAPI_SHARED_IMPL_PRIVATE_X509_CERTIFICATE_PRIVATE_IMPL_H_
+#endif  // PPAPI_SHARED_IMPL_PRIVATE_PPB_X509_CERTIFICATE_PRIVATE_SHARED_H_

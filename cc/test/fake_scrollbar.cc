@@ -5,7 +5,7 @@
 #include "cc/test/fake_scrollbar.h"
 
 #include "cc/paint/paint_flags.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 

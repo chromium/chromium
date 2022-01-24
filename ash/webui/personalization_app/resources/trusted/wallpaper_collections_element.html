@@ -1,0 +1,8 @@
+<style include="trusted-style"></style>
+<template is="dom-if" if="[[hasError_]]">
+  <wallpaper-error></wallpaper-error>
+</template>
+<iframe id="collections-iframe" frameBorder="0" hidden$="[[hasError_]]"
+    src="chrome-untrusted://personalization/untrusted/collections.html"
+    role="main" aria-label$="[[i18n('wallpaperCollections')]]">
+</iframe>

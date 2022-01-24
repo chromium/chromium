@@ -12,8 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/pepper/pepper_video_encoder_host.h"
 #include "content/renderer/render_thread_impl.h"
@@ -315,8 +315,7 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
     if (frame.force_keyframe)
       flags = VPX_EFLAG_FORCE_KF;
 
-    const base::TimeDelta frame_duration =
-        base::TimeDelta::FromSecondsD(1.0 / framerate_);
+    const base::TimeDelta frame_duration = base::Seconds(1.0 / framerate_);
     if (vpx_codec_encode(&encoder_, &vpx_image, 0,
                          frame_duration.InMicroseconds(), flags,
                          VPX_DL_REALTIME) != VPX_CODEC_OK) {

@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DOCUMENT_MARKER_PAINTER_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -34,14 +35,17 @@ class DocumentMarkerPainter {
                                             const PhysicalOffset& box_origin,
                                             const StyleableMarker& marker,
                                             const ComputedStyle& style,
+                                            const Document& document,
                                             const FloatRect& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
-  static void PaintDocumentMarker(const PaintInfo& paint_info,
-                                  const PhysicalOffset& box_origin,
-                                  const ComputedStyle& style,
-                                  DocumentMarker::MarkerType marker_type,
-                                  const PhysicalRect& local_rect);
+  static void PaintDocumentMarker(
+      const PaintInfo& paint_info,
+      const PhysicalOffset& box_origin,
+      const ComputedStyle& style,
+      DocumentMarker::MarkerType marker_type,
+      const PhysicalRect& local_rect,
+      absl::optional<Color> custom_marker_color = absl::nullopt);
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,
                                                   const ComputedStyle& style,

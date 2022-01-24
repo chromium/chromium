@@ -99,8 +99,8 @@ void ShapeResultBloberizer::CommitText() {
   DVLOG(4) << "   CommitText cluster starts: "
            << base::make_span(current_character_indexes_);
 
-  size_t pending_utf8_original_size = pending_utf8_.size();
-  size_t pending_utf8_character_indexes_original_size =
+  wtf_size_t pending_utf8_original_size = pending_utf8_.size();
+  wtf_size_t pending_utf8_character_indexes_original_size =
       pending_utf8_character_indexes_.size();
 
   // Do the UTF-8 conversion here.
@@ -114,7 +114,7 @@ void ShapeResultBloberizer::CommitText() {
   if (current_text_.Is8Bit()) {
     const LChar* latin1 = current_text_.Characters8();
     wtf_size_t utf8_size = pending_utf8_.size();
-    for (size_t i = from; i < to;) {
+    for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       LChar cp = latin1[i++];
@@ -124,7 +124,7 @@ void ShapeResultBloberizer::CommitText() {
   } else {
     const UChar* utf16 = current_text_.Characters16();
     wtf_size_t utf8_size = pending_utf8_.size();
-    for (size_t i = from; i < to;) {
+    for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
 
       UChar32 cp;
@@ -251,11 +251,11 @@ inline void ShapeResultBloberizer::AddEmphasisMark(
 
   if (!is_vertical) {
     Add(emphasis_data.glyph, emphasis_font_data,
-        CanvasRotationInVertical::kRegular, mid_glyph_offset - glyph_center.X(),
+        CanvasRotationInVertical::kRegular, mid_glyph_offset - glyph_center.x(),
         0);
   } else {
     Add(emphasis_data.glyph, emphasis_font_data, emphasis_data.canvas_rotation,
-        FloatPoint(-glyph_center.X(), mid_glyph_offset - glyph_center.Y()), 0);
+        FloatPoint(-glyph_center.x(), mid_glyph_offset - glyph_center.y()), 0);
   }
 }
 
@@ -305,10 +305,10 @@ class GlyphCallbackContext {
     const SimpleFontData* font_data) {
   ShapeResultBloberizer* bloberizer =
       static_cast<ShapeResultBloberizer*>(context);
-  DCHECK(!glyph_offset.Height());
+  DCHECK(!glyph_offset.height());
   DCHECK(is_horizontal);
   bloberizer->Add(glyph, font_data, canvas_rotation,
-                  advance + glyph_offset.Width(), character_index);
+                  advance + glyph_offset.width(), character_index);
 }
 
 float ShapeResultBloberizer::FillGlyphsForResult(const ShapeResult* result,
@@ -545,7 +545,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphs::FillTextEmphasisGlyphs(
                             device_scale_factor,
                             Type::kNormal) {
   FloatPoint glyph_center =
-      emphasis.font_data->BoundsForGlyph(emphasis.glyph).Center();
+      emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
 
   float advance = 0;
   auto results = result_buffer.results_;
@@ -590,7 +590,7 @@ ShapeResultBloberizer::FillTextEmphasisGlyphsNG::FillTextEmphasisGlyphsNG(
                             device_scale_factor,
                             Type::kNormal) {
   FloatPoint glyph_center =
-      emphasis.font_data->BoundsForGlyph(emphasis.glyph).Center();
+      emphasis.font_data->BoundsForGlyph(emphasis.glyph).CenterPoint();
   ClusterCallbackContext context = {this, text, emphasis, glyph_center};
   float initial_advance = 0;
   unsigned index_offset = 0;

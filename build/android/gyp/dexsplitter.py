@@ -81,7 +81,7 @@ def main(args):
   options = _ParseOptions(args)
 
   input_paths = [options.input_dex_zip]
-  for feature_jars in options.features.itervalues():
+  for feature_jars in options.features.values():
     for feature_jar in feature_jars:
       input_paths.append(feature_jar)
 

@@ -36,16 +36,16 @@ MediaRouterInternalsWebUIMessageHandler::
     ~MediaRouterInternalsWebUIMessageHandler() = default;
 
 void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getState", base::BindRepeating(
                       &MediaRouterInternalsWebUIMessageHandler::HandleGetState,
                       base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getProviderState",
       base::BindRepeating(
           &MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLogs", base::BindRepeating(
                      &MediaRouterInternalsWebUIMessageHandler::HandleGetLogs,
                      base::Unretained(this)));

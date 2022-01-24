@@ -9,10 +9,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/base/string_resources.h"
@@ -28,7 +28,7 @@ namespace {
 
 // Interval between permission checks, used to update the UI when the user
 // grants permission.
-constexpr base::TimeDelta kPollingInterval = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kPollingInterval = base::Seconds(1);
 
 // The steps of the wizard.
 enum class WizardPage {

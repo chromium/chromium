@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,6 +18,10 @@ namespace multidevice_setup {
 class FakeAuthTokenValidator : public AuthTokenValidator {
  public:
   FakeAuthTokenValidator();
+
+  FakeAuthTokenValidator(const FakeAuthTokenValidator&) = delete;
+  FakeAuthTokenValidator& operator=(const FakeAuthTokenValidator&) = delete;
+
   ~FakeAuthTokenValidator() override;
 
   // AuthTokenValidator:
@@ -30,8 +33,6 @@ class FakeAuthTokenValidator : public AuthTokenValidator {
 
  private:
   absl::optional<std::string> expected_auth_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthTokenValidator);
 };
 
 }  // namespace multidevice_setup

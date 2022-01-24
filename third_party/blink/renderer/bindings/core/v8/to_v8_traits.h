@@ -1019,39 +1019,6 @@ struct ToV8Traits<
   }
 };
 
-// IDLUnionINT
-template <typename T>
-struct ToV8Traits<IDLUnionINT<T>> {
-  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
-  ToV8(ScriptState* script_state, const T& value) {
-    return bindings::ToV8HelperUnion(script_state, value);
-  }
-};
-
-// IDLUnionNotINT
-template <typename T>
-struct ToV8Traits<IDLUnionNotINT<T>> {
-  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
-  ToV8(ScriptState* script_state, const T& value) {
-    return bindings::ToV8HelperUnion(script_state, value);
-  }
-};
-
-// Nullable IDLUnionINT must not be used.
-template <typename T>
-struct ToV8Traits<IDLNullable<IDLUnionINT<T>>>;
-
-// Nullable IDLUnionNotINT
-template <typename T>
-struct ToV8Traits<IDLNullable<IDLUnionNotINT<T>>> {
-  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
-  ToV8(ScriptState* script_state, const T& value) {
-    if (value.IsNull())
-      return v8::Null(script_state->GetIsolate());
-    return ToV8Traits<IDLUnionNotINT<T>>::ToV8(script_state, value);
-  }
-};
-
 // Optional
 template <typename T>
 struct ToV8Traits<IDLOptional<T>> {

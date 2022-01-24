@@ -226,9 +226,8 @@ void SensorProxyImpl::UpdatePollingStatus() {
   if (ShouldProcessReadings()) {
     // TODO(crbug/721297) : We need to find out an algorithm for resulting
     // polling frequency.
-    polling_timer_.StartRepeating(
-        base::TimeDelta::FromSecondsD(1 / active_frequencies_.back()),
-        FROM_HERE);
+    polling_timer_.StartRepeating(base::Seconds(1 / active_frequencies_.back()),
+                                  FROM_HERE);
   } else {
     polling_timer_.Stop();
   }

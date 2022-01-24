@@ -33,6 +33,7 @@ mojom("media_router") {
     ":logger",
     ":media_controller",
     ":media_route_provider_id",
+    ":route_request_result_code",
     "//components/mirroring/mojom:host",
     "//media/mojo/mojom:remoting",
     "//mojo/public/mojom/base",
@@ -102,4 +103,10 @@ mojom("media_router_test_interfaces") {
   public_deps = [ ":media_router" ]
 
   disable_variants = true
+}
+
+mojom("route_request_result_code") {
+  sources = [ "route_request_result_code.mojom" ]
+
+  webui_module_path = "/"
 }

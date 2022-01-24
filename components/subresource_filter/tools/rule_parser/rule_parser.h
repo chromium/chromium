@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 
@@ -61,6 +60,10 @@ class RuleParser {
   };
 
   RuleParser();
+
+  RuleParser(const RuleParser&) = delete;
+  RuleParser& operator=(const RuleParser&) = delete;
+
   ~RuleParser();
 
   // Returns a human-readable detailed explanation of a parsing error.
@@ -117,8 +120,6 @@ class RuleParser {
   RuleType rule_type_;
   UrlRule url_rule_;
   CssRule css_rule_;
-
-  DISALLOW_COPY_AND_ASSIGN(RuleParser);
 };
 
 // Pretty-prints the parsing |error| to |out|, e.g. like this:

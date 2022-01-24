@@ -8,6 +8,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -36,7 +37,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
     private static final boolean USE_PROVIDER_ICON_DEFAULT_VALUE = true;
 
     @VisibleForTesting
-    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_24dp;
+    static final @DrawableRes int PROVIDER_ICON_RESOURCE = R.drawable.ic_logo_googleg_20dp;
 
     private long mNativeSearchResultExtractorProducer;
     private @State int mState;
@@ -83,30 +84,24 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
      * @param url The URL of SRP data was fetched for.
      * @param query The query associated with the SRP.
      * @param resultCategory The type of results: news, organic, etc.
-     * @param groupLabel One entry per group (g) naming the type of results.
-     * @param isAdGroup One entry per group (g) specifying the size of the group.
+     * @param groupType One entry per group (g) specifying the type of results.
      * @param groupSize One entry per group (g) specifying the number (n_g) of titles and urls in
      *     the respective group.
      * @param titles One title per item ordered by group. There will be (sum n_g forall g) entries.
      * @param urls One URL per item ordered by group. There will be (sum n_g forall g) entries.
      */
     @CalledByNative
-    void onResultsAvailable(GURL url, String query, int resultCategory, String[] groupLabel,
-            boolean[] isAdGroup, int[] groupSize, String[] titles, GURL[] urls) {
+    void onResultsAvailable(GURL url, String query, int resultCategory, int[] groupType,
+            int[] groupSize, String[] titles, GURL[] urls) {
         final int oldState = mState;
         mState = State.READY;
         if (oldState == State.CANCELLED) return;
 
+        TraceEvent.begin("SearchResultExtractorProducer#onResultsAvailable");
         int groupOffset = 0;
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
-        for (int i = 0; i < groupLabel.length; i++) {
-            if (isAdGroup[i]) {
-                // Account for the resulting group offset to ensure proper indexing.
-                groupOffset += groupSize[i];
-                continue;
-            }
-
+        for (int i = 0; i < groupType.length; i++) {
             List<PageItem> results = new ArrayList<PageItem>();
             Set<GURL> groupUrls = new HashSet<>();
             for (int j = 0; j < groupSize[i]; j++) {
@@ -118,11 +113,12 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             }
 
             groupOffset += groupSize[i];
-            groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
+            groups.add(new PageGroup(/*label=*/"", false, results));
         }
 
         if (urlCount < mMinimumUrlCount) {
             mListener.onError(SearchResultExtractorClientStatus.NOT_ENOUGH_RESULTS);
+            TraceEvent.end("SearchResultExtractorProducer#onResultsAvailable");
             return;
         }
 
@@ -134,6 +130,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         ContinuousNavigationMetadata metadata =
                 new ContinuousNavigationMetadata(url, query, provider, groups);
         mListener.onResult(metadata);
+        TraceEvent.end("SearchResultExtractorProducer#onResultsAvailable");
     }
 
     @Override
@@ -157,9 +154,11 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             return;
         }
 
+        TraceEvent.begin("SearchResultExtractorProducer#fetchResults");
         mState = State.CAPTURING;
         SearchResultExtractorProducerJni.get().fetchResults(
                 mNativeSearchResultExtractorProducer, mTab.getWebContents(), query);
+        TraceEvent.end("SearchResultExtractorProducer#fetchResults");
     }
 
     @Override

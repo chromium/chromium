@@ -34,12 +34,12 @@
         await init(canvas, reinitTextureColor);
       });
 
-      const context = canvas.getContext('gpupresent');
+      const context = canvas.getContext('webgpu');
       if (!context)
         return;
 
       const swapChainFormat = 'bgra8unorm';
-      const swapChain = context.configureSwapChain({
+      context.configure({
         device,
         format: swapChainFormat,
         usage: GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT
@@ -86,12 +86,12 @@
 
       function drawFrame() {
         const commandEncoder = device.createCommandEncoder();
-        const texture = swapChain ? swapChain.getCurrentTexture() : null;
+        const texture = context ? context.getCurrentTexture() : null;
         const textureView = texture ? texture.createView() : null;
 
         const renderPassDescriptor = {
           colorAttachments: [{
-            attachment: textureView,
+            view: textureView,
             loadValue: { r: color[0], g: color[1], b: color[2], a: 1.0 },
             storeOp: 'store'
           }],

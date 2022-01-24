@@ -12,6 +12,8 @@
 
 namespace content {
 
+extern const char CONTENT_EXPORT kWebContentsCaptureScheme[];
+
 struct CONTENT_EXPORT WebContentsMediaCaptureId {
  public:
   WebContentsMediaCaptureId() = default;

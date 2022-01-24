@@ -9,16 +9,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -277,16 +277,17 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
     // approaches peak. If that is the case we should track a
     // |peak_since_last_sequence_update_| on the the memory changes. Then only
     // update the sequences with a new one is added, or the peak is requested.
-    for (auto& sequence : sequence_trackers_) {
-      if (current_memory_ > sequence.second.total_memory_) {
-        sequence.second.total_memory_ = current_memory_;
+    for (auto& seq : sequence_trackers_) {
+      if (current_memory_ > seq.second.total_memory_) {
+        seq.second.total_memory_ = current_memory_;
         for (auto& sequence : sequence_trackers_) {
           TRACE_EVENT_ASYNC_STEP_INTO1("gpu", "PeakMemoryTracking",
                                        sequence.first, "Peak", "peak",
                                        current_memory_);
         }
-        for (auto& source : current_memory_per_source_) {
-          sequence.second.peak_memory_per_source_[source.first] = source.second;
+        for (auto& memory_per_source : current_memory_per_source_) {
+          seq.second.peak_memory_per_source_[memory_per_source.first] =
+              memory_per_source.second;
         }
       }
     }
@@ -645,11 +646,9 @@ void GpuChannelManager::ScheduleWakeUpGpu() {
   TRACE_EVENT2("gpu", "GpuChannelManager::ScheduleWakeUp", "idle_time",
                (now - last_gpu_access_time_).InMilliseconds(),
                "keep_awake_time", (now - begin_wake_up_time_).InMilliseconds());
-  if (now - last_gpu_access_time_ <
-      base::TimeDelta::FromMilliseconds(kMaxGpuIdleTimeMs))
+  if (now - last_gpu_access_time_ < base::Milliseconds(kMaxGpuIdleTimeMs))
     return;
-  if (now - begin_wake_up_time_ >
-      base::TimeDelta::FromMilliseconds(kMaxKeepAliveTimeMs))
+  if (now - begin_wake_up_time_ > base::Milliseconds(kMaxKeepAliveTimeMs))
     return;
 
   DoWakeUpGpu();
@@ -658,7 +657,7 @@ void GpuChannelManager::ScheduleWakeUpGpu() {
       FROM_HERE,
       base::BindOnce(&GpuChannelManager::ScheduleWakeUpGpu,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kMaxGpuIdleTimeMs));
+      base::Milliseconds(kMaxGpuIdleTimeMs));
 }
 
 void GpuChannelManager::DoWakeUpGpu() {
@@ -800,11 +799,13 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     // Disable robust resource initialization for raster decoder and compositor.
     // TODO(crbug.com/1192632): disable robust_resource_initialization for
     // SwANGLE.
+    // TODO(crbug.com/1116174): Currently disabling robust initialization is
+    // breaking some tests with OOP canvas. Once that's fixed remove check for
+    // kCanvasOopRasterization feature.
     if (gl::GLSurfaceEGL::GetDisplayType() != gl::ANGLE_SWIFTSHADER &&
-        features::IsUsingSkiaRenderer()) {
-      // Not disable robust resource initialization for now, because the ANGLE has
-      // an issue for mixing using context with different settings.
-      // attribs.robust_resource_initialization = false;
+        features::IsUsingSkiaRenderer() &&
+        !base::FeatureList::IsEnabled(features::kCanvasOopRasterization)) {
+      attribs.robust_resource_initialization = false;
     }
 
     attribs.can_skip_validation = !enable_angle_validation;
@@ -866,41 +867,20 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   // Log crash reports when GL errors are generated.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
       enable_angle_validation && feature_info->feature_flags().khr_debug) {
-    static int remaining_gl_error_reports =
-#if defined(OS_ANDROID)
-        // Don't generate crash reports on Android due to errors generated
-        // during video decode.
-        0;
-#else
-        // Limit the total number of gl error crash reports to 1 per GPU
-        // process.
-        1;
-#endif
+    // Limit the total number of gl error crash reports to 1 per GPU
+    // process.
+    static int remaining_gl_error_reports = 1;
     gles2::InitializeGLDebugLogging(false, CrashReportOnGLErrorDebugCallback,
                                     &remaining_gl_error_reports);
   }
 
-  // OOP-R needs GrContext for raster tiles.
-  bool need_gr_context =
-      gpu_feature_info_.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
-
-  // SkiaRenderer needs GrContext to composite output surface.
-  need_gr_context |= features::IsUsingSkiaRenderer();
-
-  // GpuMemoryAblationExperiment needs a context to use Skia for Gpu
-  // allocations.
-  need_gr_context |= GpuMemoryAblationExperiment::ExperimentSupported();
-
-  if (need_gr_context) {
-    if (!shared_context_state->InitializeGrContext(
-            gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
-            &activity_flags_, watchdog_)) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize"
-                    "GrContext for SharedContextState";
-      *result = ContextResult::kFatalFailure;
-      return nullptr;
-    }
+  if (!shared_context_state->InitializeGrContext(
+          gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
+          &activity_flags_, watchdog_)) {
+    LOG(ERROR) << "ContextResult::kFatalFailure: Failed to Initialize"
+                  "GrContext for SharedContextState";
+    *result = ContextResult::kFatalFailure;
+    return nullptr;
   }
   shared_context_state_ = std::move(shared_context_state);
 
@@ -934,8 +914,8 @@ void GpuChannelManager::OnContextLost(bool synthetic_loss) {
   }
 
   context_lost_time_ = lost_time;
-
-  if (synthetic_loss)
+  bool is_gl = gpu_preferences_.gr_context_type == GrContextType::kGL;
+  if (synthetic_loss && is_gl)
     return;
 
   // Lose all other contexts.

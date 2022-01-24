@@ -117,11 +117,11 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
         [policyDict objectForKey:kDownloadPreferenceKey]);
     _defaultUpdatePolicy = updater::TranslateUpdatePolicyValue(
         updater::ReadPolicyInteger(policyDict[kUpdateDefaultKey]));
-    _updatesSuppressed.start_hour =
+    _updatesSuppressed.start_hour_ =
         updater::ReadPolicyInteger(policyDict[kUpdatesSuppressedStartHourKey]);
-    _updatesSuppressed.start_minute = updater::ReadPolicyInteger(
+    _updatesSuppressed.start_minute_ = updater::ReadPolicyInteger(
         policyDict[kUpdatesSuppressedStartMinuteKey]);
-    _updatesSuppressed.duration_minute = updater::ReadPolicyInteger(
+    _updatesSuppressed.duration_minute_ = updater::ReadPolicyInteger(
         policyDict[kUpdatesSuppressedDurationMinuteKey]);
   }
   return self;

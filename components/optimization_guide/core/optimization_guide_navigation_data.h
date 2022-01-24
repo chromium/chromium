@@ -17,12 +17,14 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/gurl.h"
 
 // A representation of optimization guide information related to a navigation.
 // Metrics will be recorded upon this object's destruction.
 class OptimizationGuideNavigationData {
  public:
-  explicit OptimizationGuideNavigationData(int64_t navigation_id);
+  OptimizationGuideNavigationData(int64_t navigation_id,
+                                  base::TimeTicks navigation_start);
   ~OptimizationGuideNavigationData();
 
   OptimizationGuideNavigationData(
@@ -34,9 +36,19 @@ class OptimizationGuideNavigationData {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // The navigation ID of the navigation handle that this data is associated
-  // with.
+  // The navigation ID of the navigation handle that this data is
+  // associated with.
   int64_t navigation_id() const { return navigation_id_; }
+
+  // The time of navigation start.
+  base::TimeTicks navigation_start() const { return navigation_start_; }
+
+  // The navigation URL of the navigation handle that this data is
+  // associated with.
+  GURL navigation_url() const { return navigation_url_; }
+  void set_navigation_url(const GURL& navigation_url) {
+    navigation_url_ = navigation_url;
+  }
 
   // The optimization types that were registered at the start of the navigation.
   base::flat_set<optimization_guide::proto::OptimizationType>
@@ -95,6 +107,13 @@ class OptimizationGuideNavigationData {
   // The navigation ID of the navigation handle that this data is associated
   // with.
   const int64_t navigation_id_;
+
+  // The time of navigation start.
+  const base::TimeTicks navigation_start_;
+
+  // The navigation URL of the navigation handle this data is associated with.
+  // Updated on navigation start and navigation redirects.
+  GURL navigation_url_;
 
   // The optimization types that were registered at the start of the navigation.
   base::flat_set<optimization_guide::proto::OptimizationType>

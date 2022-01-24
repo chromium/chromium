@@ -157,6 +157,9 @@ class KerberosAddAccountRunner {
     AddAccount();
   }
 
+  KerberosAddAccountRunner(const KerberosAddAccountRunner&) = delete;
+  KerberosAddAccountRunner& operator=(const KerberosAddAccountRunner&) = delete;
+
  private:
   // Adds the |normalized_principal_| account to the Kerberos daemon.
   void AddAccount() {
@@ -283,7 +286,6 @@ class KerberosAddAccountRunner {
   bool is_new_account_ = false;
 
   base::WeakPtrFactory<KerberosAddAccountRunner> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(KerberosAddAccountRunner);
 };
 
 KerberosCredentialsManager::Observer::Observer() = default;
@@ -645,27 +647,6 @@ void KerberosCredentialsManager::OnValidateConfig(
     const kerberos::ValidateConfigResponse& response) {
   LogError("ValidateConfig", response.error());
   std::move(callback).Run(std::move(response));
-}
-
-void KerberosCredentialsManager::AcquireKerberosTgt(std::string principal_name,
-                                                    const std::string& password,
-                                                    ResultCallback callback) {
-  if (!NormalizePrincipalOrPostCallback(&principal_name, &callback))
-    return;
-
-  kerberos::AcquireKerberosTgtRequest request;
-  request.set_principal_name(principal_name);
-  KerberosClient::Get()->AcquireKerberosTgt(
-      request, data_pipe_utils::GetDataReadPipe(password).get(),
-      base::BindOnce(&KerberosCredentialsManager::OnAcquireKerberosTgt,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void KerberosCredentialsManager::OnAcquireKerberosTgt(
-    ResultCallback callback,
-    const kerberos::AcquireKerberosTgtResponse& response) {
-  LogError("AcquireKerberosTgt", response.error());
-  std::move(callback).Run(response.error());
 }
 
 void KerberosCredentialsManager::GetKerberosFiles() {

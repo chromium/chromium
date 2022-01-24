@@ -4,10 +4,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -21,6 +21,7 @@
 #include "url/gurl.h"
 
 using testing::HasSubstr;
+using testing::NiceMock;
 
 namespace media_router {
 
@@ -38,7 +39,7 @@ class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
   ~TestDeviceDescriptionFetcher() override = default;
 
   void Start() override {
-    fetcher_ = std::make_unique<TestDialURLFetcher>(
+    fetcher_ = std::make_unique<NiceMock<TestDialURLFetcher>>(
         base::BindOnce(&DeviceDescriptionFetcher::ProcessResponse,
                        base::Unretained(this)),
         base::BindOnce(&DeviceDescriptionFetcher::ReportError,
@@ -54,6 +55,9 @@ class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
 class DeviceDescriptionFetcherTest : public testing::Test {
  public:
   DeviceDescriptionFetcherTest() : url_("http://127.0.0.1/description.xml") {}
+  DeviceDescriptionFetcherTest(DeviceDescriptionFetcherTest&) = delete;
+  DeviceDescriptionFetcherTest& operator=(DeviceDescriptionFetcherTest&) =
+      delete;
 
   void StartRequest() {
     description_fetcher_ = std::make_unique<TestDeviceDescriptionFetcher>(
@@ -75,9 +79,6 @@ class DeviceDescriptionFetcherTest : public testing::Test {
   const GURL url_;
   network::TestURLLoaderFactory loader_factory_;
   std::unique_ptr<TestDeviceDescriptionFetcher> description_fetcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceDescriptionFetcherTest);
 };
 
 TEST_F(DeviceDescriptionFetcherTest, FetchSuccessful) {

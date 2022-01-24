@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
       embedded_test_server()->GetURL("www.b.com", "/simple.html");
   content::TestNavigationObserver incognito_observer(
       incognito_browser->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::NavigateToURL(incognito_browser, b_com);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, b_com));
   EXPECT_TRUE(incognito_observer.last_navigation_succeeded());
 
   // Check history in regular mode is not modified by incognito navigation.
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(HistoryApiTest, Incognito) {
   // Perform navigation in regular mode.
   content::TestNavigationObserver regular_observer(
       browser()->tab_strip_model()->GetActiveWebContents());
-  ui_test_utils::NavigateToURL(browser(), b_com);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_com));
   EXPECT_TRUE(regular_observer.last_navigation_succeeded());
 
   // Check history in regular mode is modified by navigation.

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test that focusing steps do not run when dialog is disconnected</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<input>
+<script>
+test(() => {
+  const outerInput = document.querySelector("input");
+  outerInput.focus();
+  assert_equals(document.activeElement, outerInput,
+    "Focus should be on element we just focused");
+
+  const dialog = document.createElement("dialog");
+  assert_false(dialog.open, "Dialog should initially be closed");
+
+  const innerInput = document.createElement("input");
+  innerInput.autofocus = true;
+  dialog.append(innerInput);
+
+  dialog.show();
+
+  assert_equals(document.activeElement, outerInput, "Focusing steps should not run");
+
+  // Clean up
+  dialog.close();
+}, "dialog.show(): focusing steps should not run on disconnected <dialog>");
+
+test(() => {
+  assert_throws_dom("InvalidStateError", () => {
+    document.createElement("dialog").showModal();
+  }, "dialog.showModal() should throw on disconnected <dialog>");
+});
+</script>
+</body>
+</html>

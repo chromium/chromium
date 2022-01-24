@@ -39,6 +39,10 @@ class TabHoverCardController : public views::ViewObserver,
   // Returns whether the hover card preview images feature is enabled.
   static bool AreHoverCardImagesEnabled();
 
+  // Returns whether hover card animations should be shown on the current
+  // device.
+  static bool UseAnimations();
+
   bool IsHoverCardVisible() const;
   bool IsHoverCardShowingForTab(Tab* tab) const;
   void UpdateHoverCard(Tab* tab,
@@ -60,8 +64,6 @@ class TabHoverCardController : public views::ViewObserver,
     kWaitingWithPlaceholder,
     kWaitingWithoutPlaceholder
   };
-
-  static bool UseAnimations();
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;

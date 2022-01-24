@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +29,12 @@ class ShelfApplicationMenuModelTestAPI {
   // Creates a test api to access the internals of the |menu|.
   explicit ShelfApplicationMenuModelTestAPI(ShelfApplicationMenuModel* menu)
       : menu_(menu) {}
+
+  ShelfApplicationMenuModelTestAPI(const ShelfApplicationMenuModelTestAPI&) =
+      delete;
+  ShelfApplicationMenuModelTestAPI& operator=(
+      const ShelfApplicationMenuModelTestAPI&) = delete;
+
   ~ShelfApplicationMenuModelTestAPI() = default;
 
   // Give public access to this metrics recording functions.
@@ -41,8 +46,6 @@ class ShelfApplicationMenuModelTestAPI {
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
   ShelfApplicationMenuModel* menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModelTestAPI);
 };
 
 // Verifies the menu contents given an empty item list.

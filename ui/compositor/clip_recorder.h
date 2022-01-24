@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_CLIP_RECORDER_H_
 #define UI_COMPOSITOR_CLIP_RECORDER_H_
 
-#include "base/macros.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -25,6 +24,10 @@ class PaintContext;
 class COMPOSITOR_EXPORT ClipRecorder {
  public:
   explicit ClipRecorder(const PaintContext& context);
+
+  ClipRecorder(const ClipRecorder&) = delete;
+  ClipRecorder& operator=(const ClipRecorder&) = delete;
+
   ~ClipRecorder();
 
   void ClipRect(const gfx::Rect& clip_rect);
@@ -34,8 +37,6 @@ class COMPOSITOR_EXPORT ClipRecorder {
  private:
   const PaintContext& context_;
   int num_closers_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipRecorder);
 };
 
 }  // namespace ui

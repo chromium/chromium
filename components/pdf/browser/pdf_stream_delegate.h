@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 #define COMPONENTS_PDF_BROWSER_PDF_STREAM_DELEGATE_H_
 
+#include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -20,14 +23,35 @@ namespace pdf {
 class PdfStreamDelegate {
  public:
   struct StreamInfo {
+    StreamInfo();
+    StreamInfo(const StreamInfo&);
+    StreamInfo(StreamInfo&&);
+    StreamInfo& operator=(const StreamInfo&);
+    StreamInfo& operator=(StreamInfo&&);
+    ~StreamInfo();
+
     GURL stream_url;
     GURL original_url;
+
+    // Script to be injected into the internal plugin frame. This should point
+    // at an immutable string with static storage duration.
+    const std::string* injected_script = nullptr;
+
+    SkColor background_color = SK_ColorTRANSPARENT;
+    bool full_frame = false;
+    bool allow_javascript = false;
   };
 
   PdfStreamDelegate();
   PdfStreamDelegate(const PdfStreamDelegate&) = delete;
   PdfStreamDelegate& operator=(const PdfStreamDelegate&) = delete;
   virtual ~PdfStreamDelegate();
+
+  // Maps the incoming stream URL to the original URL. This method should
+  // associate a `StreamInfo` with the given `WebContents`, for later retrieval
+  // by `GetStreamInfo()`.
+  virtual absl::optional<GURL> MapToOriginalUrl(content::WebContents* contents,
+                                                const GURL& stream_url);
 
   // Gets the stream information associated with the given `WebContents`.
   // Returns null if there is no associated stream.

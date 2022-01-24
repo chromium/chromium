@@ -29,6 +29,10 @@ class ShutdownClientApp : public Service,
         base::BindRepeating(&ShutdownClientApp::Create,
                             base::Unretained(this)));
   }
+
+  ShutdownClientApp(const ShutdownClientApp&) = delete;
+  ShutdownClientApp& operator=(const ShutdownClientApp&) = delete;
+
   ~ShutdownClientApp() override = default;
 
  private:
@@ -64,8 +68,6 @@ class ShutdownClientApp : public Service,
   ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::ShutdownTestClientController> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownClientApp);
 };
 
 }  // namespace service_manager

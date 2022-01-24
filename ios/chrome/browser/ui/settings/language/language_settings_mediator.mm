@@ -44,8 +44,8 @@
   // Pref observer to track changes to language::prefs::kAcceptLanguages.
   std::unique_ptr<PrefObserverBridge> _acceptLanguagesPrefObserverBridge;
 
-  // Pref observer to track changes to language::prefs::kFluentLanguages.
-  std::unique_ptr<PrefObserverBridge> _fluentLanguagesPrefObserverBridge;
+  // Pref observer to track changes to prefs::kBlockedLanguages.
+  std::unique_ptr<PrefObserverBridge> _blockedLanguagesPrefObserverBridge;
 
   // Translate wrapper for the PrefService.
   std::unique_ptr<translate::TranslatePrefs> _translatePrefs;
@@ -76,10 +76,10 @@
         std::make_unique<PrefObserverBridge>(self);
     _acceptLanguagesPrefObserverBridge->ObserveChangesForPreference(
         language::prefs::kAcceptLanguages, _prefChangeRegistrar.get());
-    _fluentLanguagesPrefObserverBridge =
+    _blockedLanguagesPrefObserverBridge =
         std::make_unique<PrefObserverBridge>(self);
-    _fluentLanguagesPrefObserverBridge->ObserveChangesForPreference(
-        language::prefs::kFluentLanguages, _prefChangeRegistrar.get());
+    _blockedLanguagesPrefObserverBridge->ObserveChangesForPreference(
+        translate::prefs::kBlockedLanguages, _prefChangeRegistrar.get());
 
     _translatePrefs = ChromeIOSTranslateClient::CreateTranslatePrefs(
         browserState->GetPrefs());
@@ -96,11 +96,11 @@
 
 // Called when the value of translate::prefs::kOfferTranslateEnabled,
 // language::prefs::kAcceptLanguages or
-// language::prefs::kFluentLanguages change.
+// translate::prefs::kBlockedLanguages change.
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   DCHECK(preferenceName == translate::prefs::kOfferTranslateEnabled ||
          preferenceName == language::prefs::kAcceptLanguages ||
-         preferenceName == language::prefs::kFluentLanguages);
+         preferenceName == translate::prefs::kBlockedLanguages);
 
   // Inform the consumer.
   if (preferenceName == translate::prefs::kOfferTranslateEnabled) {
@@ -216,7 +216,7 @@
 - (void)stopObservingModel {
   _offerTranslatePrefObserverBridge.reset();
   _acceptLanguagesPrefObserverBridge.reset();
-  _fluentLanguagesPrefObserverBridge.reset();
+  _blockedLanguagesPrefObserverBridge.reset();
   _prefChangeRegistrar.reset();
   _translatePrefs.reset();
 }

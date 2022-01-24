@@ -102,7 +102,7 @@ class CORE_EXPORT NGInlineItemSegments {
                                       unsigned segment_index);
 
   // Compute an internal items-to-segments index for faster access.
-  void ComputeItemIndex(const Vector<NGInlineItem>& items);
+  void ComputeItemIndex(const HeapVector<NGInlineItem>& items);
 
   // Iterates |RunSegmenterRange| for the given offsets.
   class Iterator {

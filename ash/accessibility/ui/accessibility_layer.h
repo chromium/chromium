@@ -7,11 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -20,7 +16,6 @@ class Window;
 }
 
 namespace ui {
-class Compositor;
 class Layer;
 }  // namespace ui
 
@@ -32,20 +27,19 @@ class AccessibilityLayerDelegate {
  public:
   virtual void OnDeviceScaleFactorChanged() = 0;
 
-  // Called by a layer during animation observation on its compositor. Returns
-  // true when animation has finished.
-  virtual bool OnAnimationStep(base::TimeTicks timestamp) = 0;
-
  protected:
   virtual ~AccessibilityLayerDelegate() {}
 };
 
 // AccessibilityLayer manages a global always-on-top layer used to
 // highlight or annotate UI elements for accessibility.
-class AccessibilityLayer : public ui::LayerDelegate,
-                           public ui::CompositorAnimationObserver {
+class AccessibilityLayer : public ui::LayerDelegate {
  public:
   explicit AccessibilityLayer(AccessibilityLayerDelegate* delegate);
+
+  AccessibilityLayer(const AccessibilityLayer&) = delete;
+  AccessibilityLayer& operator=(const AccessibilityLayer&) = delete;
+
   ~AccessibilityLayer() override;
 
   // Move the accessibility layer to the given bounds in the coordinates of
@@ -59,13 +53,6 @@ class AccessibilityLayer : public ui::LayerDelegate,
 
   // Set the layer's offset from parent layer.
   void SetSubpixelPositionOffset(const gfx::Vector2dF& offset);
-
-  // Returns true if this layer is in a composited window with an
-  // animation observer.
-  bool CanAnimate() const;
-
-  // Returns true if a layer needs to animate.
-  virtual bool NeedToAnimate() const = 0;
 
   // Gets the inset for this layer in DIPs. This is used to increase
   // the bounding box to provide space for any margins or padding.
@@ -98,27 +85,8 @@ class AccessibilityLayer : public ui::LayerDelegate,
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
 
-  // CompositorAnimationObserver overrides:
-  void OnAnimationStep(base::TimeTicks timestamp) override;
-  void OnCompositingShuttingDown(ui::Compositor* compositor) override;
-
-  // Reset internal observation and state.
-  void Reset();
-
   // The object that owns this layer.
   AccessibilityLayerDelegate* delegate_;
-
-  base::ScopedObservation<ui::Compositor,
-                          ui::CompositorAnimationObserver,
-                          &ui::Compositor::AddAnimationObserver,
-                          &ui::Compositor::RemoveAnimationObserver>
-      animation_observation_{this};
-
-  bool got_first_animation_step_ = false;
-
-  base::WeakPtrFactory<AccessibilityLayer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
 };
 
 }  // namespace ash

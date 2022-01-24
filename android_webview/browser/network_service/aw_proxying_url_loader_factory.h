@@ -71,6 +71,10 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
       bool intercept_only,
       absl::optional<SecurityOptions> security_options);
 
+  AwProxyingURLLoaderFactory(const AwProxyingURLLoaderFactory&) = delete;
+  AwProxyingURLLoaderFactory& operator=(const AwProxyingURLLoaderFactory&) =
+      delete;
+
   ~AwProxyingURLLoaderFactory() override;
 
   // static
@@ -109,8 +113,6 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   absl::optional<SecurityOptions> security_options_;
 
   base::WeakPtrFactory<AwProxyingURLLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwProxyingURLLoaderFactory);
 };
 
 }  // namespace android_webview

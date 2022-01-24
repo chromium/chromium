@@ -50,4 +50,9 @@ bool HTMLMediaElementControlsList::ShouldHideRemotePlayback() const {
   return contains(kNoRemotePlayback);
 }
 
+bool HTMLMediaElementControlsList::CanShowAllControls() const {
+  return ShouldHideDownload() || ShouldHideFullscreen() ||
+         ShouldHidePlaybackRate() || ShouldHideRemotePlayback();
+}
+
 }  // namespace blink

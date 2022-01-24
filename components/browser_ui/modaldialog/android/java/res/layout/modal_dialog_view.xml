@@ -10,7 +10,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:maxWidthLandscape="@dimen/abc_dialog_min_width_major"
-    app:maxWidthPortrait="@dimen/abc_dialog_min_width_minor" >
+    app:maxWidthPortrait="@dimen/abc_dialog_min_width_minor"
+    app:maxHeight="@dimen/modal_dialog_max_height" >
 
     <include layout="@layout/modal_dialog_title"
         android:id="@+id/title_container" />

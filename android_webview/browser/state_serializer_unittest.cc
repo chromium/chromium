@@ -68,6 +68,11 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
     content::SetBrowserClientForTesting(&browser_client_);
   }
 
+  AndroidWebViewStateSerializerTest(const AndroidWebViewStateSerializerTest&) =
+      delete;
+  AndroidWebViewStateSerializerTest& operator=(
+      const AndroidWebViewStateSerializerTest&) = delete;
+
   ~AndroidWebViewStateSerializerTest() override {
     content::SetBrowserClientForTesting(nullptr);
     content::SetContentClient(nullptr);
@@ -76,8 +81,6 @@ class AndroidWebViewStateSerializerTest : public testing::Test {
  private:
   content::ContentClient content_client_;
   content::ContentBrowserClient browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidWebViewStateSerializerTest);
 };
 
 }  // namespace
@@ -243,9 +246,9 @@ TEST_F(AndroidWebViewStateSerializerTest,
   EXPECT_EQ(base_url_for_data_url, copy->GetBaseURLForDataURL());
   EXPECT_FALSE(copy->GetDataURLAsString());
   EXPECT_EQ(is_overriding_user_agent, copy->GetIsOverridingUserAgent());
-  EXPECT_EQ(base::Time::FromDeltaSinceWindowsEpoch(
-                base::TimeDelta::FromMicroseconds(timestamp)),
-            copy->GetTimestamp());
+  EXPECT_EQ(
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp)),
+      copy->GetTimestamp());
   EXPECT_EQ(http_status_code, copy->GetHttpStatusCode());
 }
 

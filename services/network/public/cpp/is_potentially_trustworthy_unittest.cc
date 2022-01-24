@@ -78,11 +78,15 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
   } kTestCases[] = {
       {"*.foo.com", "http://bar.foo.com", true},
       {"*.foo.*.bar.com", "http://a.foo.b.bar.com:8000", true},
+      // Wildcards can match multiple components.
+      {"*.foo.com", "http://a.b.c.foo.com", true},
+      {"a.*.foo.com", "http://a.b.c.foo.com", true},
       // For parsing/canonicalization simplicity, wildcard patterns can be
       // hostnames only, not full origins.
       {"http://*.foo.com", "http://bar.foo.com", false},
       {"*://foo.com", "http://foo.com", false},
       // Wildcards must be beyond eTLD+1.
+      {"foo.*", "http://foo.com", false},
       {"*.co.uk", "http://foo.co.uk", false},
       {"*.co.uk", "http://co.uk", false},
       {"*.baz", "http://foo.baz", false},
@@ -103,14 +107,41 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       // With Hostname pattern, all schemes are allowed.
       {"*.foo.com", "ws://bar.foo.com", true},
       {"*.foo.com", "blob:http://bar.foo.com/guid-goes-here", true},
-      // Hostname pattern works on IP addresses, but wildcards must be beyond
-      // eTLD+1.
+      // Adjacent wildcards are not allowed.
+      {"**.foo.com", "http://bar.foo.com", false},
+      {"bar.**.foo.com", "http://bar.baz.foo.com", false},
+      // Hostname pattern works on IP addresses, but wildcards must be before
+      // the last two components.
       {"*.20.30.40", "http://10.20.30.40", true},
       {"*.30.40", "http://10.20.30.40", true},
       {"*.40", "http://10.20.30.40", false},
+      {"10.*.30.40", "http://10.20.30.40", true},
+      {"*.*.30.40", "http://10.20.30.40", true},
+      {"10.20.*.40", "http://10.20.30.40", false},
+      {"10.20.30.*", "http://10.20.30.40", false},
+      // Adjacent wildcards are not allowed.
+      {"**.40", "http://10.20.30.40", false},
+      {"10.**.40", "http://10.20.30.40", false},
+      // Extra components in IPv4 patterns shouldn't match anything, but also
+      // shouldn't crash. URLs with 5+ numeric components aren't considered
+      // valid, so can't have URLs that actually match the patterns in these
+      // test cases.
+      {"*.2.3.4.5", "http://2.3.4.5", false},
+      {"*.1.2.3.4.5", "http://2.3.4.5", false},
+      // *'s don't work as part of a component in IPv4 addresses - they must be
+      // an entire component.
+      {"10*.20.30.40", "http://10.20.30.40", false},
+      {"*10.20.30.40", "http://10.20.30.40", false},
+      {"*0.20.30.40", "http://10.20.30.40", false},
+      {"0*.20.30.40", "http://10.20.30.40", false},
+      {"*.20*.30.40", "http://10.20.30.40", false},
+      {"10.20*.30.40", "http://10.20.30.40", false},
+      {"10.20.30.40", "http://10.20.30.40", false},
   };
 
   for (const auto& test : kTestCases) {
+    SCOPED_TRACE(test.pattern);
+
     base::test::ScopedCommandLine scoped_command_line;
     base::CommandLine* command_line =
         scoped_command_line.GetProcessCommandLine();

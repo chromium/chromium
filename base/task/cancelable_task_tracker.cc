@@ -14,9 +14,9 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
-#include "base/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -48,11 +48,10 @@ void UmaRecordTaskDuration(bool same_sequence,
                            bool background,
                            bool canceled,
                            TimeDelta duration) {
-#define DECLARE_HISTOGRAM(suffix)                                     \
-  Histogram::FactoryTimeGet(                                          \
-      "Scheduler.CancelableTaskTracker.TaskDuration2_" suffix,        \
-      TimeDelta::FromMilliseconds(1), TimeDelta::FromSeconds(10), 50, \
-      Histogram::kUmaTargetedHistogramFlag)
+#define DECLARE_HISTOGRAM(suffix)                              \
+  Histogram::FactoryTimeGet(                                   \
+      "Scheduler.CancelableTaskTracker.TaskDuration2_" suffix, \
+      Milliseconds(1), Seconds(10), 50, Histogram::kUmaTargetedHistogramFlag)
 
   static HistogramBase* histograms[] = {
       DECLARE_HISTOGRAM("LiveForegroundOffSequence"),

@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -83,6 +82,10 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
         auth_callback_(auth_callback) {
   }
 
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
+
  private:
   std::unique_ptr<net::ServerSocket> CreateForHttpServer() override {
     std::unique_ptr<net::UnixDomainServerSocket> socket(
@@ -116,8 +119,6 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
   std::string socket_name_;
   int last_tethering_socket_;
   net::UnixDomainServerSocket::AuthCallback auth_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 
 }  // namespace

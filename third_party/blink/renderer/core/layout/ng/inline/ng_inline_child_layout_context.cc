@@ -15,7 +15,7 @@ struct SameSizeAsNGInlineChildLayoutContext {
   absl::optional<NGInlineLayoutStateStack> box_states_;
   void* pointers[2];
   unsigned number;
-  Vector<scoped_refptr<const NGBlockBreakToken>> propagated_float_break_tokens_;
+  HeapVector<Member<const NGBlockBreakToken>> propagated_float_break_tokens_;
 };
 
 static_assert(
@@ -27,11 +27,13 @@ static_assert(
 }  // namespace
 
 NGInlineChildLayoutContext::NGInlineChildLayoutContext() = default;
-NGInlineChildLayoutContext::~NGInlineChildLayoutContext() = default;
+NGInlineChildLayoutContext::~NGInlineChildLayoutContext() {
+  propagated_float_break_tokens_.clear();
+}
 
 NGInlineLayoutStateStack*
 NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
-    const Vector<NGInlineItem>& items,
+    const HeapVector<NGInlineItem>& items,
     unsigned item_index) {
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
     return &*box_states_;
@@ -43,7 +45,7 @@ void NGInlineChildLayoutContext::ClearPropagatedBreakTokens() {
 }
 
 void NGInlineChildLayoutContext::PropagateBreakToken(
-    scoped_refptr<const NGBlockBreakToken> token) {
+    const NGBlockBreakToken* token) {
   propagated_float_break_tokens_.push_back(token);
 }
 

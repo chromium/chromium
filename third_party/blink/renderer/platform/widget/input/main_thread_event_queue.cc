@@ -19,8 +19,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kMaxRafDelay =
-    base::TimeDelta::FromMilliseconds(5 * 1000);
+constexpr base::TimeDelta kMaxRafDelay = base::Milliseconds(5 * 1000);
 
 class QueuedClosure : public MainThreadEventQueueTask {
  public:
@@ -43,8 +42,7 @@ class QueuedClosure : public MainThreadEventQueueTask {
 
 // Time interval at which touchmove events during scroll will be skipped
 // during rAF signal.
-constexpr base::TimeDelta kAsyncTouchMoveInterval =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kAsyncTouchMoveInterval = base::Milliseconds(200);
 
 }  // namespace
 

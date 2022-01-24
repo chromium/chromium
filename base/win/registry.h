@@ -38,6 +38,10 @@ class BASE_EXPORT RegKey {
   RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
   RegKey(RegKey&& other) noexcept;
   RegKey& operator=(RegKey&& other);
+
+  RegKey(const RegKey&) = delete;
+  RegKey& operator=(const RegKey&) = delete;
+
   ~RegKey();
 
   LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
@@ -148,8 +152,6 @@ class BASE_EXPORT RegKey {
   HKEY key_ = nullptr;  // The registry key being iterated.
   REGSAM wow64access_ = 0;
   std::unique_ptr<Watcher> key_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegKey);
 };
 
 // Iterates the entries found in a particular folder on the registry.
@@ -166,6 +168,9 @@ class BASE_EXPORT RegistryValueIterator {
   RegistryValueIterator(HKEY root_key,
                         const wchar_t* folder_key,
                         REGSAM wow64access);
+
+  RegistryValueIterator(const RegistryValueIterator&) = delete;
+  RegistryValueIterator& operator=(const RegistryValueIterator&) = delete;
 
   ~RegistryValueIterator();
 
@@ -202,8 +207,6 @@ class BASE_EXPORT RegistryValueIterator {
   std::vector<wchar_t> value_;
   DWORD value_size_;
   DWORD type_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryValueIterator);
 };
 
 class BASE_EXPORT RegistryKeyIterator {
@@ -219,6 +222,9 @@ class BASE_EXPORT RegistryKeyIterator {
   RegistryKeyIterator(HKEY root_key,
                       const wchar_t* folder_key,
                       REGSAM wow64access);
+
+  RegistryKeyIterator(const RegistryKeyIterator&) = delete;
+  RegistryKeyIterator& operator=(const RegistryKeyIterator&) = delete;
 
   ~RegistryKeyIterator();
 
@@ -247,8 +253,6 @@ class BASE_EXPORT RegistryKeyIterator {
   int index_;
 
   wchar_t name_[MAX_PATH];
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryKeyIterator);
 };
 
 }  // namespace win

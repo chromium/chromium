@@ -6,11 +6,21 @@ config("neon_2_sse_include") {
   include_dirs = [ "src" ]
 }
 
+# Keep as a public config since TFLite's BUILD references it directly.
+config("neon_2_sse_flags") {
+  if (target_cpu == "x64") {
+    cflags = [ "-Wno-deprecated-declarations" ]
+  }
+}
+
 source_set("neon_2_sse") {
   public = [ "src/NEON_2_SSE.h" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  public_configs = [ ":neon_2_sse_include" ]
+  public_configs = [
+    ":neon_2_sse_include",
+    ":neon_2_sse_flags",
+  ]
 }

@@ -49,6 +49,8 @@ def submit(path, config):
         return commands.run_command_output(command)
 
     # Known bad codes:
+    # 1 - Xcode 12 altool does not always exit with distinct error codes, so
+    #     this is general failure.
     # 13 - A server with the specified hostname could not be found.
     # 176 - Unable to find requested file(s): metadata.xml (1057)
     # 236 - Exception occurred when creating MZContentProviderUpload for
@@ -56,7 +58,7 @@ def submit(path, config):
     # 240 - SIGSEGV in the Java Runtime Environment
     # 250 - Unable to process upload done request at this time due to a general
     #       error (1018)
-    output = _notary_service_retry(submit_comand, (13, 176, 236, 240, 250),
+    output = _notary_service_retry(submit_comand, (1, 13, 176, 236, 240, 250),
                                    'submission')
 
     try:
@@ -123,6 +125,11 @@ def wait_for_results(uuids, config):
                 # problems will eventually fall through to the "no results"
                 # timeout.
                 if e.returncode == 13:
+                    logger.warning(e.output)
+                    continue
+                # And other times the command exits with code 1 and no further
+                # output.
+                if e.returncode == 1:
                     logger.warning(e.output)
                     continue
                 raise e

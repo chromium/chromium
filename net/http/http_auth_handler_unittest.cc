@@ -36,15 +36,15 @@ TEST(HttpAuthHandlerTest, NetLog) {
       TestCompletionCallback test_callback;
       HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
       HttpAuthHandlerMock mock_handler;
-      RecordingBoundTestNetLog test_net_log;
+      RecordingNetLogObserver net_log_observer;
 
       // set_connection_based(true) indicates that the HandleAnotherChallenge()
       // call after GenerateAuthToken() is expected and does not result in
       // AUTHORIZATION_RESULT_REJECT.
       mock_handler.set_connection_based(true);
-      mock_handler.InitFromChallenge(&tokenizer, target, SSLInfo(),
-                                     NetworkIsolationKey(), origin,
-                                     test_net_log.bound());
+      mock_handler.InitFromChallenge(
+          &tokenizer, target, SSLInfo(), NetworkIsolationKey(), origin,
+          NetLogWithSource::Make(NetLogSourceType::NONE));
       mock_handler.SetGenerateExpectation(async, OK);
       mock_handler.GenerateAuthToken(&credentials, &request,
                                      test_callback.callback(), &auth_token);
@@ -53,7 +53,7 @@ TEST(HttpAuthHandlerTest, NetLog) {
 
       mock_handler.HandleAnotherChallenge(&tokenizer);
 
-      auto entries = test_net_log.GetEntries();
+      auto entries = net_log_observer.GetEntries();
 
       ASSERT_EQ(5u, entries.size());
       EXPECT_TRUE(LogContainsBeginEvent(entries, 0,

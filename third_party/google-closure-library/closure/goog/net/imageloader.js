@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Image loader utility class.  Useful when an application needs
@@ -19,7 +11,7 @@
 
 goog.provide('goog.net.ImageLoader');
 
-goog.require('goog.array');
+goog.require('goog.dispose');
 goog.require('goog.dom');
 goog.require('goog.dom.TagName');
 goog.require('goog.events.EventHandler');
@@ -28,6 +20,7 @@ goog.require('goog.events.EventType');
 goog.require('goog.net.EventType');
 goog.require('goog.object');
 goog.require('goog.userAgent');
+goog.requireType('goog.events.Event');
 
 
 
@@ -40,7 +33,7 @@ goog.require('goog.userAgent');
  * To use this class, run:
  *
  * <pre>
- *   var imageLoader = new goog.net.ImageLoader();
+ *   const imageLoader = new goog.net.ImageLoader();
  *   goog.events.listen(imageLoader, goog.net.EventType.COMPLETE,
  *       function(e) { ... });
  *   imageLoader.addImage("image_id", "http://path/to/image.gif");
@@ -60,6 +53,7 @@ goog.require('goog.userAgent');
  * @final
  */
 goog.net.ImageLoader = function(opt_parent) {
+  'use strict';
   goog.events.EventTarget.call(this);
 
   /**
@@ -97,6 +91,14 @@ goog.net.ImageLoader = function(opt_parent) {
    * @private
    */
   this.parent_ = opt_parent;
+
+  /**
+   * Tracks completion state for the active batch of images being loaded to
+   * ensure only a single COMPLETE is dispatched per batch of in-flight images.
+   * @type {boolean}
+   * @private
+   */
+  this.completionFired_ = false;
 };
 goog.inherits(goog.net.ImageLoader, goog.events.EventTarget);
 
@@ -167,8 +169,10 @@ goog.net.ImageLoader.IMAGE_LOAD_EVENTS_ = [
  */
 goog.net.ImageLoader.prototype.addImage = function(
     id, image, opt_corsRequestType) {
-  var src = (typeof image === 'string') ? image : image.src;
+  'use strict';
+  const src = (typeof image === 'string') ? image : image.src;
   if (src) {
+    this.completionFired_ = false;
     // For now, we just store the source URL for the image.
     this.imageIdToRequestMap_[id] = {
       src: src,
@@ -181,26 +185,20 @@ goog.net.ImageLoader.prototype.addImage = function(
 
 /**
  * Removes the image associated with the given ID string from the image loader.
- * If the image was previously loading, removes any listeners for its events
- * and dispatches a COMPLETE event if all remaining images have now completed.
+ * If the image was previously loading, removes any listeners for its events.
  * @param {string} id The ID of the image to remove.
  */
 goog.net.ImageLoader.prototype.removeImage = function(id) {
+  'use strict';
   delete this.imageIdToRequestMap_[id];
 
-  var image = this.imageIdToImageMap_[id];
+  const image = this.imageIdToImageMap_[id];
   if (image) {
     delete this.imageIdToImageMap_[id];
 
     // Stop listening for events on the image.
     this.handler_.unlisten(
         image, goog.net.ImageLoader.IMAGE_LOAD_EVENTS_, this.onNetworkEvent_);
-
-    // If this was the last image, raise a COMPLETE event.
-    if (goog.object.isEmpty(this.imageIdToImageMap_) &&
-        goog.object.isEmpty(this.imageIdToRequestMap_)) {
-      this.dispatchEvent(goog.net.EventType.COMPLETE);
-    }
   }
 };
 
@@ -211,12 +209,14 @@ goog.net.ImageLoader.prototype.removeImage = function(id) {
  * images have finished loading.
  */
 goog.net.ImageLoader.prototype.start = function() {
+  'use strict';
   // Iterate over the keys, rather than the full object, to essentially clone
   // the initial queued images in case any event handlers decide to add more
   // images before this loop has finished executing.
-  var imageIdToRequestMap = this.imageIdToRequestMap_;
-  goog.array.forEach(goog.object.getKeys(imageIdToRequestMap), function(id) {
-    var imageRequest = imageIdToRequestMap[id];
+  const imageIdToRequestMap = this.imageIdToRequestMap_;
+  goog.object.getKeys(imageIdToRequestMap).forEach(function(id) {
+    'use strict';
+    const imageRequest = imageIdToRequestMap[id];
     if (imageRequest) {
       delete imageIdToRequestMap[id];
       this.loadImage_(imageRequest, id);
@@ -233,6 +233,7 @@ goog.net.ImageLoader.prototype.start = function() {
  * @private
  */
 goog.net.ImageLoader.prototype.loadImage_ = function(imageRequest, id) {
+  'use strict';
   if (this.isDisposed()) {
     // When loading an image in IE7 (and maybe IE8), the error handler
     // may fire before we yield JS control. If the error handler
@@ -241,9 +242,9 @@ goog.net.ImageLoader.prototype.loadImage_ = function(imageRequest, id) {
   }
 
   /** @type {!HTMLImageElement} */
-  var image;
+  let image;
   if (this.parent_) {
-    var dom = goog.dom.getDomHelper(this.parent_);
+    const dom = goog.dom.getDomHelper(this.parent_);
     image = dom.createDom(goog.dom.TagName.IMG);
   } else {
     image = new Image();
@@ -269,7 +270,8 @@ goog.net.ImageLoader.prototype.loadImage_ = function(imageRequest, id) {
  * @suppress {strictMissingProperties} Part of the go/strict_warnings_migration
  */
 goog.net.ImageLoader.prototype.onNetworkEvent_ = function(evt) {
-  var image = /** @type {Element} */ (evt.currentTarget);
+  'use strict';
+  const image = /** @type {Element} */ (evt.currentTarget);
 
   if (!image) {
     return;
@@ -314,6 +316,8 @@ goog.net.ImageLoader.prototype.onNetworkEvent_ = function(evt) {
     }
   }
 
+  this.removeImage(image.id);
+
   // Redispatch the event on behalf of the image. Note that the external
   // listener may dispose this instance.
   this.dispatchEvent({type: evt.type, target: image});
@@ -323,12 +327,26 @@ goog.net.ImageLoader.prototype.onNetworkEvent_ = function(evt) {
     return;
   }
 
-  this.removeImage(image.id);
+  this.maybeFireCompletionEvent_();
 };
 
+/**
+ * If there are no more images pending, raise a COMPLETE event.
+ * @private
+ */
+goog.net.ImageLoader.prototype.maybeFireCompletionEvent_ = function() {
+  'use strict';
+  if (goog.object.isEmpty(this.imageIdToImageMap_) &&
+      goog.object.isEmpty(this.imageIdToRequestMap_) &&
+      !this.completionFired_) {
+    this.completionFired_ = true;
+    this.dispatchEvent(goog.net.EventType.COMPLETE);
+  }
+};
 
 /** @override */
 goog.net.ImageLoader.prototype.disposeInternal = function() {
+  'use strict';
   delete this.imageIdToRequestMap_;
   delete this.imageIdToImageMap_;
   goog.dispose(this.handler_);

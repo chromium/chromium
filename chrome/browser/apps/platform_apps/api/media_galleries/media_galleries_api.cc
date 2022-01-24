@@ -397,7 +397,7 @@ ExtensionFunction::ResponseAction
 MediaGalleriesGetMediaFileSystemsFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::GET_MEDIA_FILE_SYSTEMS);
   std::unique_ptr<GetMediaFileSystems::Params> params(
-      GetMediaFileSystems::Params::Create(*args_));
+      GetMediaFileSystems::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   MediaGalleries::GetMediaFileSystemsInteractivity interactive =
       MediaGalleries::GET_MEDIA_FILE_SYSTEMS_INTERACTIVITY_NO;
@@ -624,14 +624,15 @@ MediaGalleriesGetMetadataFunction::~MediaGalleriesGetMetadataFunction() {}
 
 ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::GET_METADATA);
-  std::string blob_uuid;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &blob_uuid));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& blob_uuid = args()[0].GetString();
 
-  const base::Value* options_value = NULL;
-  if (!args_->Get(1, &options_value))
+  if (args().size() < 2)
     return RespondNow(Error("options parameter not specified."));
+
   std::unique_ptr<MediaGalleries::MediaMetadataOptions> options =
-      MediaGalleries::MediaMetadataOptions::FromValue(*options_value);
+      MediaGalleries::MediaMetadataOptions::FromValue(args()[1]);
   if (!options)
     return RespondNow(Error("Invalid value for options parameter."));
 
@@ -760,7 +761,7 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   base::ListValue* attached_images_list = NULL;
   result_dictionary->GetList(kAttachedImagesBlobInfoKey, &attached_images_list);
   DCHECK(attached_images_list);
-  DCHECK_LT(attached_images_list->GetSize(), attached_images->size());
+  DCHECK_LT(attached_images_list->GetList().size(), attached_images->size());
 
   metadata::AttachedImage* current_image =
       &(*attached_images)[blob_uuids->size()];
@@ -816,7 +817,7 @@ ExtensionFunction::ResponseAction MediaGalleriesAddGalleryWatchFunction::Run() {
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
   std::unique_ptr<AddGalleryWatch::Params> params(
-      AddGalleryWatch::Params::Create(*args_));
+      AddGalleryWatch::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   MediaGalleriesPreferences* preferences =
@@ -889,7 +890,7 @@ MediaGalleriesRemoveGalleryWatchFunction::Run() {
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
   std::unique_ptr<RemoveGalleryWatch::Params> params(
-      RemoveGalleryWatch::Params::Create(*args_));
+      RemoveGalleryWatch::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   MediaGalleriesPreferences* preferences =

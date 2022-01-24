@@ -180,7 +180,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     dict.SetBoolKey(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
         network->path(), base::Value::AsDictionaryValue(dict),
-        base::DoNothing::Once(),
+        base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -310,14 +310,14 @@ void NetworkMetadataStore::UpdateExternalModifications(
 void NetworkMetadataStore::OnConfigurationModified(
     const std::string& service_path,
     const std::string& guid,
-    base::DictionaryValue* set_properties) {
+    const base::Value* set_properties) {
   if (!set_properties) {
     return;
   }
 
   SetPref(guid, kIsFromSync, base::Value(false));
 
-  if (set_properties->HasKey(shill::kProxyConfigProperty)) {
+  if (set_properties->FindKey(shill::kProxyConfigProperty)) {
     UpdateExternalModifications(guid, shill::kProxyConfigProperty);
   }
   if (set_properties->FindPath(
@@ -326,7 +326,7 @@ void NetworkMetadataStore::OnConfigurationModified(
     UpdateExternalModifications(guid, shill::kNameServersProperty);
   }
 
-  if (set_properties->HasKey(shill::kPassphraseProperty)) {
+  if (set_properties->FindKey(shill::kPassphraseProperty)) {
     // Only clear last connected if the passphrase changes.  Other settings
     // (autoconnect, dns, etc.) won't affect the ability to connect to a
     // network.
@@ -356,7 +356,7 @@ void NetworkMetadataStore::RemoveNetworkFromPref(
 
   const base::DictionaryValue* dict =
       pref_service->GetDictionary(kNetworkMetadataPref);
-  if (!dict || !dict->HasKey(network_guid)) {
+  if (!dict || !dict->FindKey(network_guid)) {
     return;
   }
 
@@ -382,7 +382,7 @@ base::TimeDelta NetworkMetadataStore::GetLastConnectedTimestamp(
     return base::TimeDelta();
   }
 
-  return base::TimeDelta::FromMillisecondsD(timestamp->GetDouble());
+  return base::Milliseconds(timestamp->GetDouble());
 }
 
 void NetworkMetadataStore::SetLastConnectedTimestamp(

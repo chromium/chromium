@@ -25,7 +25,7 @@ enum class SystemAppType {
   // This App is only enabled on non-official builds. You can find a brief SWA
   // platform introduction (Google internal) at: http://go/system-web-apps.
   //
-  // Source: //chromeos/components/sample_system_web_app_ui/
+  // Source: //ash/webui/sample_system_web_app_ui/
   // Contact: dominicshulz@google.com, ortuno@chromium.org
   SAMPLE = 3,
 
@@ -59,7 +59,7 @@ enum class SystemAppType {
   // development. Prefer to file bugs to the internal Demo Mode component:
   // b/components/812312
   //
-  // Source: //chromeos/components/demo_mode_app_ui/
+  // Source: //ash/webui/demo_mode_app_ui/
   // Contact: jacksontadie@google.com, drcrash@chromium.org
   DEMO_MODE = 18,
 
@@ -69,6 +69,37 @@ enum class SystemAppType {
   // Source: //ash/webui/os_feedback_ui
   // contact: cros-telemetry@google.com
   OS_FEEDBACK = 19,
+
+  // Projector (go/projector-player-dd) aims to make it simple for teachers and
+  // students to record and share instructional videos on a Chromebook. This app
+  // enables teachers to create a library of custom-tailored instructional
+  // content that students can search and view at home.
+  //
+  // Source: //ash/webui/projector_app/
+  // Contact: cros-projector@google.com
+  // Buganizer component: b/components/1080013
+  // This app is only included in Chrome-branded builds. Non-official builds
+  // will have a mock page.
+  PROJECTOR = 20,
+
+  // OsUrlHandler is called by Lacros to show Ash internal chrome:// pages as
+  // applications to the user. Note that these pages are accessible to the user
+  // as os://<page> through search.
+  // contact: skuhne@google.com
+  OS_URL_HANDLER = 21,
+
+  // FIRMWARE UPDATE App is SWA that lets users update all their peripheral
+  // firmwares in one place.
+  // You can find information about this SWA at: http://go/fwupd-app.
+  // Source: //ash/webui/firmware_update/
+  // Contact: cros-peripherals@google.com
+  FIRMWARE_UPDATE = 22,
+
+  // OsFlags is called by Lacros to show the chrome://flags page as
+  // applications to the user. Note that this page is accessible to the user
+  // as os://flags through search.
+  // contact: skuhne@google.com
+  OS_FLAGS = 23,
 
   // When adding a new System App, remember to:
   //
@@ -102,7 +133,10 @@ enum class SystemAppType {
   //    incognito or guest sessions).
   //
   // 6. Update kMaxValue.
-  kMaxValue = OS_FEEDBACK
+  //
+  // 7. Have one of System Web App Platform owners review the CL.
+  //    See: //ash/webui/system_apps/PLATFORM_OWNERS
+  kMaxValue = OS_FLAGS,
 };
 
 }  // namespace web_app

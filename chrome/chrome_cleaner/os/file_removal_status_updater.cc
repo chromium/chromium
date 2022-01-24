@@ -43,7 +43,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_UNSPECIFIED] = {
         {REMOVAL_STATUS_UNSPECIFIED, kOkToOverride},
         {REMOVAL_STATUS_MATCHED_ONLY, kOkToOverride},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kOkToOverride},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kOkToOverride},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -56,7 +56,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_MATCHED_ONLY] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kOkToOverride},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kOkToOverride},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kOkToOverride},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -66,10 +66,10 @@ GetRemovalStatusOverridePermissionMap() {
         {REMOVAL_STATUS_ERROR_IN_ARCHIVER, kOkToOverride},
     };
 
-    (*overriding_decisions)[REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL] = {
+    (*overriding_decisions)[REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kOkToOverride},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kOkToOverride},
         {REMOVAL_STATUS_REMOVED, kNotAllowed},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kNotAllowed},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kNotAllowed},
@@ -82,7 +82,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_REMOVED] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -95,7 +95,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_FAILED_TO_REMOVE] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -108,7 +108,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kSkip},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kSkip},
@@ -121,7 +121,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_FAILED_TO_SCHEDULE_FOR_REMOVAL] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -134,7 +134,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_NOT_FOUND] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -147,7 +147,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL_FALLBACK] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},
@@ -160,7 +160,7 @@ GetRemovalStatusOverridePermissionMap() {
     (*overriding_decisions)[REMOVAL_STATUS_ERROR_IN_ARCHIVER] = {
         {REMOVAL_STATUS_UNSPECIFIED, kNotAllowed},
         {REMOVAL_STATUS_MATCHED_ONLY, kNotAllowed},
-        {REMOVAL_STATUS_BLACKLISTED_FOR_REMOVAL, kNotAllowed},
+        {REMOVAL_STATUS_BLOCKLISTED_FOR_REMOVAL, kNotAllowed},
         {REMOVAL_STATUS_REMOVED, kOkToOverride},
         {REMOVAL_STATUS_FAILED_TO_REMOVE, kOkToOverride},
         {REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL, kOkToOverride},

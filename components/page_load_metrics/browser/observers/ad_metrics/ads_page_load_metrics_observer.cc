@@ -28,6 +28,7 @@
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -155,8 +156,11 @@ AdsPageLoadMetricsObserver::CreateIfNeeded(
     content::WebContents* web_contents,
     heavy_ad_intervention::HeavyAdService* heavy_ad_service,
     const ApplicationLocaleGetter& application_locale_getter) {
+  // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
+  // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
+  // this should use the associated page rather than the primary page.
   if (!base::FeatureList::IsEnabled(subresource_filter::kAdTagging) ||
-      !subresource_filter::ContentSubresourceFilterThrottleManager::
+      !subresource_filter::ContentSubresourceFilterWebContentsHelper::
           FromWebContents(web_contents))
     return nullptr;
   return std::make_unique<AdsPageLoadMetricsObserver>(
@@ -453,7 +457,7 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // If the AdsPageLoadMetricsObserver is created, this does not return nullptr.
   auto* throttle_manager =
       subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(navigation_handle->GetWebContents());
+          FromNavigationHandle(*navigation_handle);
   DCHECK(throttle_manager);
 
   const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
@@ -624,9 +628,12 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
   const int kMaxMobileAdDensityByHeight = 30;
   if (page_ad_density_tracker_.MaxPageAdDensityByHeight() >
       kMaxMobileAdDensityByHeight) {
+    // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
+    // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
+    // this should use the associated page rather than the primary page.
     auto* throttle_manager =
-        subresource_filter::ContentSubresourceFilterThrottleManager::
-            FromWebContents(GetDelegate().GetWebContents());
+        subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+            GetDelegate().GetWebContents()->GetPrimaryPage());
     // AdsPageLoadMetricsObserver is not created unless there is a
     // throttle manager.
     DCHECK(throttle_manager);
@@ -642,7 +649,7 @@ void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
 #endif
 }
 
-void AdsPageLoadMetricsObserver::OnFrameDeleted(int frame_tree_node_id) {
+void AdsPageLoadMetricsObserver::OnSubFrameDeleted(int frame_tree_node_id) {
   const auto& id_and_data = ad_frames_data_.find(frame_tree_node_id);
   if (id_and_data == ad_frames_data_.end())
     return;
@@ -1156,9 +1163,12 @@ void AdsPageLoadMetricsObserver::MaybeTriggerStrictHeavyAdIntervention() {
       blocklist::BlocklistReason::kUserOptedOutOfHost)
     return;
 
+  // TODO(bokan): ContentSubresourceFilterThrottleManager is now associated
+  // with a FrameTree. When AdsPageLoadMetricsObserver becomes aware of MPArch
+  // this should use the associated page rather than the primary page.
   auto* throttle_manager =
-      subresource_filter::ContentSubresourceFilterThrottleManager::
-          FromWebContents(GetDelegate().GetWebContents());
+      subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+          GetDelegate().GetWebContents()->GetPrimaryPage());
   // AdsPageLoadMetricsObserver is not created unless there is a
   // throttle manager.
   DCHECK(throttle_manager);
@@ -1246,13 +1256,21 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // error page. Reports will be added to ReportingObserver queues
   // synchronously when the IPC message is handled, which guarantees they will
   // be available in the the unload handler.
-  const char kReportId[] = "HeavyAdIntervention";
   std::string report_message =
       GetHeavyAdReportMessage(*frame_data, action == HeavyAdAction::kUnload);
-  for (content::RenderFrameHost* reporting_frame :
-       render_frame_host->GetFramesInSubtree()) {
-    reporting_frame->SendInterventionReport(kReportId, report_message);
-  }
+  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
+      [](const std::string& report_message, const content::Page* page,
+         content::RenderFrameHost* frame) {
+        // If `frame`'s page doesn't match the one we are associated with (for
+        // fenced frames or portals) skip the subtree.
+        if (page != &frame->GetPage())
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        const char kReportId[] = "HeavyAdIntervention";
+        if (frame->IsRenderFrameLive())
+          frame->SendInterventionReport(kReportId, report_message);
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      },
+      report_message, &render_frame_host->GetPage()));
 
   // Report intervention to the blocklist.
   if (auto* blocklist = GetHeavyAdBlocklist()) {

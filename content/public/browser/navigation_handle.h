@@ -96,14 +96,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // page, so consider whether you want to call IsInPrimaryMainFrame() instead.
   // See the documentation below for details. The return value remains constant
   // over the navigation lifetime.
-  virtual bool IsInMainFrame() = 0;
+  virtual bool IsInMainFrame() const = 0;
 
   // Whether the navigation is taking place in the main frame of the primary
   // frame tree. With MPArch (crbug.com/1164280), a WebContents may have
   // additional frame trees for prerendering pages in addition to the primary
   // frame tree (holding the page currently shown to the user). The return
   // value remains constant over the navigation lifetime.
-  virtual bool IsInPrimaryMainFrame() = 0;
+  virtual bool IsInPrimaryMainFrame() const = 0;
 
   // Prerender2:
   // Whether the navigation is taking place in the main frame of the
@@ -125,13 +125,13 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   //  * <a> link click
   //  * changing window.location.href
   //  * redirect via the <meta http-equiv="refresh"> tag
-  //  * using window.history.pushState
+  //  * using window.history.pushState() or window.history.replaceState()
+  //  * using window.history.forward() or window.history.back()
   //
   // This method returns false for browser-initiated navigations, including:
   //  * any navigation initiated from the omnibox
   //  * navigations via suggestions in browser UI
   //  * navigations via browser UI: Ctrl-R, refresh/forward/back/home buttons
-  //  * using window.history.forward() or window.history.back()
   //  * any other "explicit" URL navigations, e.g. bookmarks
   virtual bool IsRendererInitiated() = 0;
 
@@ -147,8 +147,13 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns the FrameTreeNode ID for the frame in which the navigation is
   // performed. This ID is browser-global and uniquely identifies a frame that
-  // hosts content. The identifier is fixed at the creation of the frame and
-  // stays constant for the lifetime of the frame.
+  // hosts content. The return value remains constant over the navigation
+  // lifetime.
+  //
+  // However, because of prerender activations, the RenderFrameHost that this
+  // navigation is committed into may later transfer to another FrameTreeNode.
+  // See documentation for RenderFrameHost::GetFrameTreeNodeId() for more
+  // details.
   virtual int GetFrameTreeNodeId() = 0;
 
   // Returns the RenderFrameHost for the parent frame, or nullptr if this
@@ -223,6 +228,10 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Whether the navigation is restoring a page from back-forward cache.
   virtual bool IsServedFromBackForwardCache() = 0;
+
+  // Whether this navigation is activating an existing page (e.g. served from
+  // the BackForwardCache or Prerender).
+  virtual bool IsPageActivation() const = 0;
 
   // Navigation control flow --------------------------------------------------
 
@@ -415,6 +424,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
+  // NOTE: If this is a history navigation, the initiator origin will be the
+  // origin that initiated the *original* navigation, not the history
+  // navigation. This means that if there was no initiator origin for the
+  // original navigation, but the history navigation was initiated by
+  // javascript, the initiator origin will be null even though
+  // IsRendererInitiated() returns true.
   virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
   // Retrieves any DNS aliases for the requested URL. The alias chain order
@@ -474,13 +489,24 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation or an error page.
   virtual bool IsWaitingToCommit() = 0;
 
-  // Returns true when at least one preload Link header was received via an
-  // Early Hints response during this navigation. True only for a main frame
-  // navigation.
-  virtual bool WasEarlyHintsPreloadLinkHeaderReceived() = 0;
+  // Returns true when at least one preload or preconnect Link header was
+  // received via an Early Hints response during this navigation. True only for
+  // a main frame navigation.
+  virtual bool WasResourceHintsReceived() = 0;
+
+  // Whether this navigation is for PDF content in a PDF-specific renderer.
+  virtual bool IsPdf() = 0;
 
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
+
+  // Sets an overall request timeout for this navigation, which will cause the
+  // navigation to fail if it expires before the navigation commits. This is
+  // separate from any //net level timeouts. This can only be set at the
+  // NavigationThrottle::WillRedirectRequest() stage of the navigation. Returns
+  // `true` if the timeout is being started for the first time. Repeated calls
+  // will be ignored (they won't reset the timeout) and will return `false`.
+  virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
 
   // Testing methods ----------------------------------------------------------
   //
@@ -498,6 +524,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // Returns whether this navigation is currently deferred.
   virtual bool IsDeferredForTesting() = 0;
+  virtual bool IsCommitDeferringConditionDeferredForTesting() = 0;
 };
 
 }  // namespace content

@@ -70,6 +70,9 @@ class CastMetricsHelper {
 
   static CastMetricsHelper* GetInstance();
 
+  CastMetricsHelper(const CastMetricsHelper&) = delete;
+  CastMetricsHelper& operator=(const CastMetricsHelper&) = delete;
+
   // This records the startup time of an app load (note: another app
   // may be running and still collecting metrics).
   virtual void DidStartLoad(const std::string& app_id);
@@ -186,8 +189,6 @@ class CastMetricsHelper {
 
   // Default RecordAction callback when metrics_sink_ is not set.
   RecordActionCallback record_action_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMetricsHelper);
 };
 
 }  // namespace metrics

@@ -50,6 +50,11 @@ class BluetoothGattCharacteristicClientImpl
  public:
   BluetoothGattCharacteristicClientImpl() : object_manager_(nullptr) {}
 
+  BluetoothGattCharacteristicClientImpl(
+      const BluetoothGattCharacteristicClientImpl&) = delete;
+  BluetoothGattCharacteristicClientImpl& operator=(
+      const BluetoothGattCharacteristicClientImpl&) = delete;
+
   ~BluetoothGattCharacteristicClientImpl() override {
     object_manager_->UnregisterInterface(
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface);
@@ -343,8 +348,6 @@ class BluetoothGattCharacteristicClientImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattCharacteristicClientImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristicClientImpl);
 };
 
 BluetoothGattCharacteristicClient::BluetoothGattCharacteristicClient() =

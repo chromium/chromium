@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/kill.h"
 
 class PrefRegistrySimple;
@@ -38,11 +37,15 @@ enum class StabilityEventType {
 
 class SystemProfileProto;
 
-// StabilityMetricsHelper is a class that providers functionality common to
-// different embedders' stability metrics providers.
+// Responsible for providing functionality common to different embedders'
+// stability metrics providers.
 class StabilityMetricsHelper {
  public:
   explicit StabilityMetricsHelper(PrefService* local_state);
+
+  StabilityMetricsHelper(const StabilityMetricsHelper&) = delete;
+  StabilityMetricsHelper& operator=(const StabilityMetricsHelper&) = delete;
+
   ~StabilityMetricsHelper();
 
   // Provides stability metrics.
@@ -98,8 +101,6 @@ class StabilityMetricsHelper {
   void LogRendererLaunchFailed(bool was_extension_process);
 
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StabilityMetricsHelper);
 };
 
 }  // namespace metrics

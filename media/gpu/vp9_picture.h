@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/codec_picture.h"
 #include "media/video/video_encode_accelerator.h"
@@ -21,6 +20,9 @@ class VaapiVP9Picture;
 class VP9Picture : public CodecPicture {
  public:
   VP9Picture();
+
+  VP9Picture(const VP9Picture&) = delete;
+  VP9Picture& operator=(const VP9Picture&) = delete;
 
   // TODO(tmathmeyer) remove these and just use static casts everywhere.
   virtual V4L2VP9Picture* AsV4L2VP9Picture();
@@ -41,8 +43,6 @@ class VP9Picture : public CodecPicture {
  private:
   // Create a duplicate instance.
   virtual scoped_refptr<VP9Picture> CreateDuplicate();
-
-  DISALLOW_COPY_AND_ASSIGN(VP9Picture);
 };
 
 }  // namespace media

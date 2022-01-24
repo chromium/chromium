@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A menu item class that supports checkbox semantics.
@@ -20,6 +12,8 @@ goog.provide('goog.ui.CheckBoxMenuItem');
 
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.registry');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.ui.ControlContent');
 
 
 
@@ -37,6 +31,7 @@ goog.require('goog.ui.registry');
  * @extends {goog.ui.MenuItem}
  */
 goog.ui.CheckBoxMenuItem = function(content, opt_model, opt_domHelper) {
+  'use strict';
   goog.ui.MenuItem.call(this, content, opt_model, opt_domHelper);
   this.setCheckable(true);
 };
@@ -46,6 +41,7 @@ goog.inherits(goog.ui.CheckBoxMenuItem, goog.ui.MenuItem);
 // Register a decorator factory function for goog.ui.CheckBoxMenuItems.
 goog.ui.registry.setDecoratorByClassName(
     goog.getCssName('goog-checkbox-menuitem'), function() {
+      'use strict';
       // CheckBoxMenuItem defaults to using MenuItemRenderer.
       return new goog.ui.CheckBoxMenuItem(null);
     });

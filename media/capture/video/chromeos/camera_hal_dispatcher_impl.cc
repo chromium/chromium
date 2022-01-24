@@ -21,9 +21,9 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/components/sensors/sensor_util.h"
@@ -49,6 +49,10 @@ const base::FilePath::CharType kForceEnableAePath[] =
     "/run/camera/force_enable_face_ae";
 const base::FilePath::CharType kForceDisableAePath[] =
     "/run/camera/force_disable_face_ae";
+const base::FilePath::CharType kForceEnableHdrNetPath[] =
+    "/run/camera/force_enable_hdrnet";
+const base::FilePath::CharType kForceDisableHdrNetPath[] =
+    "/run/camera/force_disable_hdrnet";
 
 std::string GenerateRandomToken() {
   char random_bytes[16];
@@ -90,12 +94,17 @@ bool HasCrosCameraTest() {
 
 class MojoCameraClientObserver : public CameraClientObserver {
  public:
+  MojoCameraClientObserver() = delete;
+
   explicit MojoCameraClientObserver(
       mojo::PendingRemote<cros::mojom::CameraHalClient> client,
       cros::mojom::CameraClientType type,
       base::UnguessableToken auth_token)
       : CameraClientObserver(type, std::move(auth_token)),
         client_(std::move(client)) {}
+
+  MojoCameraClientObserver(const MojoCameraClientObserver&) = delete;
+  MojoCameraClientObserver& operator=(const MojoCameraClientObserver&) = delete;
 
   void OnChannelCreated(
       mojo::PendingRemote<cros::mojom::CameraModule> camera_module) override {
@@ -106,7 +115,6 @@ class MojoCameraClientObserver : public CameraClientObserver {
 
  private:
   mojo::Remote<cros::mojom::CameraHalClient> client_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(MojoCameraClientObserver);
 };
 
 }  // namespace
@@ -174,24 +182,50 @@ bool CameraHalDispatcherImpl::Start(
   TRACE_EVENT0("camera", "CameraHalDispatcherImpl");
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
 
-  base::FilePath enable_file_path(kForceEnableAePath);
-  base::FilePath disable_file_path(kForceDisableAePath);
-  if (!base::DeleteFile(enable_file_path)) {
-    LOG(WARNING) << "Could not delete " << kForceEnableAePath;
+  {
+    base::FilePath enable_file_path(kForceEnableAePath);
+    base::FilePath disable_file_path(kForceDisableAePath);
+    if (!base::DeleteFile(enable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceEnableAePath;
+    }
+    if (!base::DeleteFile(disable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceDisableAePath;
+    }
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(media::switches::kForceControlFaceAe)) {
+      if (command_line->GetSwitchValueASCII(
+              media::switches::kForceControlFaceAe) == "enable") {
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        file.Close();
+      } else {
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        file.Close();
+      }
+    }
   }
-  if (!base::DeleteFile(disable_file_path)) {
-    LOG(WARNING) << "Could not delete " << kForceDisableAePath;
-  }
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(media::switches::kForceControlFaceAe)) {
-    if (command_line->GetSwitchValueASCII(
-            media::switches::kForceControlFaceAe) == "enable") {
-      base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
-      file.Close();
-    } else {
-      base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
-      file.Close();
+
+  {
+    base::FilePath enable_file_path(kForceEnableHdrNetPath);
+    base::FilePath disable_file_path(kForceDisableHdrNetPath);
+    if (!base::DeleteFile(enable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceEnableHdrNetPath;
+    }
+    if (!base::DeleteFile(disable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceDisableHdrNetPath;
+    }
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(media::switches::kHdrNetOverride)) {
+      std::string value =
+          command_line->GetSwitchValueASCII(switches::kHdrNetOverride);
+      if (value == switches::kHdrNetForceEnabled) {
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        file.Close();
+      } else if (value == switches::kHdrNetForceDisabled) {
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS);
+        file.Close();
+      }
     }
   }
 

@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"

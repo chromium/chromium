@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "media/base/data_source.h"
@@ -127,7 +128,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
             int size,
             uint8_t* data,
             media::DataSource::ReadCB read_cb) override;
-  bool GetSize(int64_t* size_out) override;
+  bool GetSize(int64_t* size_out) override WARN_UNUSED_RESULT;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
   void SetIsClientAudioElement(bool is_client_audio_element) {

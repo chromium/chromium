@@ -20,6 +20,10 @@ namespace sandbox {
 class RegistryDispatcher : public Dispatcher {
  public:
   explicit RegistryDispatcher(PolicyBase* policy_base);
+
+  RegistryDispatcher(const RegistryDispatcher&) = delete;
+  RegistryDispatcher& operator=(const RegistryDispatcher&) = delete;
+
   ~RegistryDispatcher() override {}
 
   // Dispatcher interface.
@@ -43,7 +47,6 @@ class RegistryDispatcher : public Dispatcher {
                  uint32_t desired_access);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(RegistryDispatcher);
 };
 
 }  // namespace sandbox

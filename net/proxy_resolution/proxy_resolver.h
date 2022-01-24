@@ -34,6 +34,9 @@ class NET_EXPORT_PRIVATE ProxyResolver {
 
   ProxyResolver() {}
 
+  ProxyResolver(const ProxyResolver&) = delete;
+  ProxyResolver& operator=(const ProxyResolver&) = delete;
+
   virtual ~ProxyResolver() {}
 
   // Gets a list of proxy servers to use for |url|. If the request will
@@ -52,9 +55,6 @@ class NET_EXPORT_PRIVATE ProxyResolver {
                              CompletionOnceCallback callback,
                              std::unique_ptr<Request>* request,
                              const NetLogWithSource& net_log) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolver);
 };
 
 }  // namespace net

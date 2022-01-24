@@ -8,7 +8,7 @@
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/calendar/calendar_api_url_generator.h"
 #include "google_apis/common/api_error_codes.h"
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/base_requests.h"
 
 namespace google_apis {
 

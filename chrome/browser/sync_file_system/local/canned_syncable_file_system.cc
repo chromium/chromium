@@ -14,12 +14,11 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -40,6 +39,7 @@
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using base::File;
@@ -174,6 +174,9 @@ class WriteHelper {
                                       base::GenerateGUID(),
                                       blob_data)) {}
 
+  WriteHelper(const WriteHelper&) = delete;
+  WriteHelper& operator=(const WriteHelper&) = delete;
+
   ~WriteHelper() = default;
 
   ScopedTextBlob* scoped_text_blob() const { return blob_data_.get(); }
@@ -196,8 +199,6 @@ class WriteHelper {
   int64_t bytes_written_;
   std::unique_ptr<storage::BlobStorageContext> blob_storage_context_;
   std::unique_ptr<ScopedTextBlob> blob_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteHelper);
 };
 
 void DidGetUsageAndQuota(storage::StatusCallback callback,
@@ -288,7 +289,7 @@ FileSystemURL CannedSyncableFileSystem::URL(const std::string& path) const {
   EXPECT_FALSE(root_url_.is_empty());
 
   GURL url(root_url_.spec() + path);
-  return file_system_context_->CrackURL(url);
+  return file_system_context_->CrackURLInFirstPartyContext(url);
 }
 
 File::Error CannedSyncableFileSystem::OpenFileSystem() {
@@ -464,7 +465,7 @@ File::Error CannedSyncableFileSystem::DeleteFileSystem() {
   return RunOnThread<File::Error>(
       io_task_runner_.get(), FROM_HERE,
       base::BindOnce(&FileSystemContext::DeleteFileSystem, file_system_context_,
-                     url::Origin::Create(origin_), type_));
+                     blink::StorageKey(url::Origin::Create(origin_)), type_));
 }
 
 blink::mojom::QuotaStatusCode CannedSyncableFileSystem::GetUsageAndQuota(
@@ -524,7 +525,7 @@ void CannedSyncableFileSystem::DoOpenFileSystem(
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_FALSE(is_filesystem_opened_);
   file_system_context_->OpenFileSystem(
-      url::Origin::Create(origin_), type_,
+      blink::StorageKey(url::Origin::Create(origin_)), type_,
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT, std::move(callback));
 }
 
@@ -550,7 +551,7 @@ void CannedSyncableFileSystem::DoCopy(const FileSystemURL& src_url,
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_TRUE(is_filesystem_opened_);
   operation_runner()->Copy(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       std::move(callback));
@@ -562,7 +563,7 @@ void CannedSyncableFileSystem::DoMove(const FileSystemURL& src_url,
   EXPECT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
   EXPECT_TRUE(is_filesystem_opened_);
   operation_runner()->Move(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       std::move(callback));

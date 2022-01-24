@@ -12,15 +12,15 @@ void RecordRTCVideoDecoderFallbackReason(
     media::VideoCodec codec,
     RTCVideoDecoderFallbackReason fallback_reason) {
   switch (codec) {
-    case media::VideoCodec::kCodecH264:
+    case media::VideoCodec::kH264:
       base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.H264",
                                     fallback_reason);
       break;
-    case media::VideoCodec::kCodecVP8:
+    case media::VideoCodec::kVP8:
       base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.Vp8",
                                     fallback_reason);
       break;
-    case media::VideoCodec::kCodecVP9:
+    case media::VideoCodec::kVP9:
       base::UmaHistogramEnumeration("Media.RTCVideoDecoderFallbackReason.Vp9",
                                     fallback_reason);
       break;

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that setting selector text can be undone.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -23,8 +23,8 @@
     await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     section.startEditingSelector();
-    section._selectorElement.textContent = '#inspected, #other';
-    section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+    section.selectorElement.textContent = '#inspected, #other';
+    section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     ElementsTestRunner.selectNodeAndWaitForStyles('other', step2);
   }
 

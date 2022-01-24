@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.PerformanceTimerTest');
 goog.setTestOnly();
@@ -30,6 +22,9 @@ let timer;
  * @param {boolean} useSetUp
  * @param {boolean} useTearDown
  * @param {boolean} runAsync
+ * @return {!Deferred|undefined} A deferred if any of the test functions was
+ *     asynchronous, otherwise, undefined.
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function runAndAssert(useSetUp, useTearDown, runAsync) {
   const fakeExecutionTime = [100, 95, 98, 104, 130, 101, 96, 98, 90, 103];
@@ -37,9 +32,7 @@ function runAndAssert(useSetUp, useTearDown, runAsync) {
   const testFunction = () => {
     mockClock.tick(fakeExecutionTime[count++]);
     if (runAsync) {
-      const deferred = new Deferred();
-      deferred.callback();
-      return deferred;
+      return Deferred.succeed();
     }
   };
 
@@ -49,9 +42,7 @@ function runAndAssert(useSetUp, useTearDown, runAsync) {
     mockClock.tick(7);
     setUpCount++;
     if (runAsync) {
-      const deferred = new Deferred();
-      deferred.callback();
-      return deferred;
+      return Deferred.succeed();
     }
   };
 
@@ -61,9 +52,7 @@ function runAndAssert(useSetUp, useTearDown, runAsync) {
     mockClock.tick(11);
     tearDownCount++;
     if (runAsync) {
-      const deferred = new Deferred();
-      deferred.callback();
-      return deferred;
+      return Deferred.succeed();
     }
   };
 
@@ -77,13 +66,16 @@ function runAndAssert(useSetUp, useTearDown, runAsync) {
   }
   if (runAsync) {
     let assertsRan = false;
-    const deferred = timer.runAsyncTask(task);
-    deferred.addCallback((results) => {
-      assertsRan = assertResults(
-          results, useSetUp, useTearDown, setUpCount, tearDownCount,
-          fakeExecutionTime);
-    });
-    assertTrue(assertsRan);
+    return timer.runAsyncTask(task)
+        .then((results) => {
+          /**
+           * @suppress {checkTypes} suppression added to enable type checking
+           */
+          assertsRan = assertResults(
+              results, useSetUp, useTearDown, setUpCount, tearDownCount,
+              fakeExecutionTime);
+        })
+        .then(() => assertTrue(assertsRan));
   } else {
     const results = timer.runTask(task);
     assertResults(
@@ -100,6 +92,7 @@ function runAndAssert(useSetUp, useTearDown, runAsync) {
  * @param {boolean} tearDownCount
  * @param {boolean} fakeExecutionTime
  * @return {boolean} true
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertResults(
     results, useSetUp, useTearDown, setUpCount, tearDownCount,
@@ -175,19 +168,19 @@ testSuite({
   },
 
   testRunAsync_noSetUpOrTearDown() {
-    runAndAssert(false, false, true);
+    return runAndAssert(false, false, true);
   },
 
   testRunAsync_withSetup() {
-    runAndAssert(true, false, true);
+    return runAndAssert(true, false, true);
   },
 
   testRunAsync_withTearDown() {
-    runAndAssert(false, true, true);
+    return runAndAssert(false, true, true);
   },
 
   testRunAsync_withSetUpAndTearDown() {
-    runAndAssert(true, true, true);
+    return runAndAssert(true, true, true);
   },
 
   testTimeout() {

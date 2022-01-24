@@ -6,11 +6,13 @@ module sharing.mojom;
 
 import "chromeos/services/nearby/public/mojom/nearby_connections.mojom";
 import "chromeos/services/nearby/public/mojom/nearby_decoder.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/mdns_responder.mojom";
 import "services/network/public/mojom/p2p.mojom";
 
 // Interface for sharing related services. Lives in a sandboxed utility process
 // and is used by the browser process to offload unsafe protocol parsing.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface Sharing {
   // Connects to Nearby functionality: Nearby Connections and the Nearby Share
   // decoder. All dependencies should be provided via the |dependencies| struct.

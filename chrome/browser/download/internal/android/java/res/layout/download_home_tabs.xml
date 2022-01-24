@@ -4,7 +4,9 @@
      found in the LICENSE file.
 -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -13,6 +15,8 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:tabPaddingStart="5dp"
+        app:tabPaddingEnd="5dp"
         style="@style/TabLayoutStyle" >
 
         <com.google.android.material.tabs.TabItem

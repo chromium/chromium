@@ -40,7 +40,7 @@ enum class FormType {
 
 // Document properties, including those specified in the document information
 // dictionary (see section 14.3.3 "Document Information Dictionary" of the ISO
-// 32000-1 standard).
+// 32000-1:2008 spec).
 struct DocumentMetadata {
   DocumentMetadata();
   DocumentMetadata(const DocumentMetadata&) = delete;
@@ -57,15 +57,15 @@ struct DocumentMetadata {
   size_t page_count = 0;
 
   // Whether the document is optimized by linearization (see annex F "Linearized
-  // PDF" of the ISO 32000-1 standard).
+  // PDF" of the ISO 32000-1:2008 spec).
   bool linearized = false;
 
   // Whether the document contains file attachments (see section 12.5.6.15 "File
-  // Attachment Annotations" of the ISO 32000-1 standard).
+  // Attachment Annotations" of the ISO 32000-1:2008 spec).
   bool has_attachments = false;
 
   // Whether the document is tagged (see section 14.8 "Tagged PDF" of the ISO
-  // 32000-1 standard).
+  // 32000-1:2008 spec).
   bool tagged = false;
 
   // The type of form contained in the document.

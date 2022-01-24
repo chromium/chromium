@@ -16,8 +16,8 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -33,8 +33,7 @@ constexpr const int kBorderForFocusRingDp = 3;
 
 // How long does a single step of the loading animation take - i.e., the time it
 // takes for the arc to grow from a point to a full circle.
-constexpr base::TimeDelta kLoadingAnimationStepDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kLoadingAnimationStepDuration = base::Seconds(2);
 
 void PaintLoadingArc(gfx::Canvas* canvas,
                      const gfx::Rect& bounds,
@@ -97,8 +96,16 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 
 void ArrowButtonView::OnThemeChanged() {
   LoginButton::OnThemeChanged();
-  AshColorProvider::Get()->DecorateIconButton(
-      this, kLockScreenArrowIcon, /*toggled_=*/false, kArrowIconSizeDp);
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                                 icon_color));
+  SetImage(
+      views::Button::STATE_DISABLED,
+      gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
+                            AshColorProvider::GetDisabledColor(icon_color)));
 }
 
 void ArrowButtonView::EnableLoadingAnimation(bool enabled) {

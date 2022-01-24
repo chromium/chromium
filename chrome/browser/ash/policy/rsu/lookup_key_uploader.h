@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -37,6 +36,9 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
       DeviceCloudPolicyStoreAsh* policy_store,
       PrefService* pref_service,
       ash::attestation::EnrollmentCertificateUploader* certificate_uploader);
+
+  LookupKeyUploader(const LookupKeyUploader&) = delete;
+  LookupKeyUploader& operator=(const LookupKeyUploader&) = delete;
 
   ~LookupKeyUploader() override;
 
@@ -79,8 +81,6 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
   base::WeakPtrFactory<LookupKeyUploader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LookupKeyUploader);
 };
 
 }  // namespace policy

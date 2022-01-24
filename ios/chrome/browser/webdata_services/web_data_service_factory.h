@@ -58,6 +58,9 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static WebDataServiceFactory* GetInstance();
 
+  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
+  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;
 
@@ -70,8 +73,6 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceFactory);
 };
 
 }  // namespace ios

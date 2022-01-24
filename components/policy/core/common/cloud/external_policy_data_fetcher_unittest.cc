@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "net/base/net_errors.h"

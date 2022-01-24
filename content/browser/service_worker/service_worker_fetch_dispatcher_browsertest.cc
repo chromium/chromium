@@ -65,6 +65,10 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
     scoped_context_observation_.Observe(context);
   }
 
+  WorkerRunningStatusObserver(const WorkerRunningStatusObserver&) = delete;
+  WorkerRunningStatusObserver& operator=(const WorkerRunningStatusObserver&) =
+      delete;
+
   ~WorkerRunningStatusObserver() override = default;
 
   int64_t version_id() { return version_id_; }
@@ -79,8 +83,6 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
   base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
       scoped_context_observation_{this};
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerRunningStatusObserver);
 };
 
 // An observer that waits until all inflight events complete.
@@ -196,8 +198,8 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
     // idle state on the renderer and it has no work on the browser. The default
     // delay to become an idle is 30 seconds
     // (kServiceWorkerDefaultIdleDelayInSeconds).
-    base::test::ScopedRunLoopTimeout specific_timeout(
-        FROM_HERE, base::TimeDelta::FromSeconds(35));
+    base::test::ScopedRunLoopTimeout specific_timeout(FROM_HERE,
+                                                      base::Seconds(35));
     base::RunLoop run_loop;
     NoWorkObserver observer(run_loop.QuitClosure());
     version->AddObserver(&observer);

@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_SessionLengthLimit) {
   // occurred yet.
   g_browser_process->local_state()->SetInt64(
       prefs::kSessionStartTime,
-      (base::Time::Now() - base::TimeDelta::FromHours(2)).ToInternalValue());
+      (base::Time::Now() - base::Hours(2)).ToInternalValue());
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, SessionLengthLimit) {

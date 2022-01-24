@@ -17,8 +17,7 @@ bool ShouldDisplayBatteryTime(const base::TimeDelta& time) {
   // that should be displayed in the UI. If the current is close to zero,
   // battery time estimates can get very large; avoid displaying these large
   // numbers.
-  return time >= base::TimeDelta::FromMinutes(1) &&
-         time <= base::TimeDelta::FromDays(1);
+  return time >= base::Minutes(1) && time <= base::Days(1);
 }
 
 int GetRoundedBatteryPercent(double battery_percent) {
@@ -32,7 +31,7 @@ void SplitTimeIntoHoursAndMinutes(const base::TimeDelta& time,
                                   int* minutes) {
   DCHECK(hours);
   DCHECK(minutes);
-  *minutes = base::ClampRound(time / base::TimeDelta::FromMinutes(1));
+  *minutes = base::ClampRound(time / base::Minutes(1));
   *hours = *minutes / 60;
   *minutes %= 60;
 }

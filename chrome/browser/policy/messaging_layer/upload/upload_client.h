@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 
@@ -30,7 +30,7 @@ class UploadClient {
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
   // to the response.
   using EncryptionKeyAttachedCallback =
-      base::RepeatingCallback<void(SignedEncryptionInfo)>;
+      DmServerUploadService::EncryptionKeyAttachedCallback;
 
   // CreatedCallback gets a result of Upload client creation (unique pointer or
   // error status).
@@ -38,8 +38,6 @@ class UploadClient {
       base::OnceCallback<void(StatusOr<std::unique_ptr<UploadClient>>)>;
 
   static void Create(policy::CloudPolicyClient* cloud_policy_client,
-                     ReportSuccessfulUploadCallback report_upload_success_cb,
-                     EncryptionKeyAttachedCallback encryption_key_attached_cb,
                      CreatedCallback created_cb);
 
   virtual ~UploadClient();
@@ -47,8 +45,10 @@ class UploadClient {
   UploadClient& operator=(const UploadClient& other) = delete;
 
   virtual Status EnqueueUpload(
-      bool need_encryption_keys,
-      std::unique_ptr<std::vector<EncryptedRecord>> record);
+      bool need_encryption_key,
+      std::unique_ptr<std::vector<EncryptedRecord>> record,
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb);
 
  protected:
   UploadClient();

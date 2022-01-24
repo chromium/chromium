@@ -12,13 +12,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_prefs.h"
@@ -35,6 +34,10 @@ class ChromeAppSorting : public AppSorting,
                          public web_app::AppRegistrarObserver {
  public:
   explicit ChromeAppSorting(content::BrowserContext* browser_context);
+
+  ChromeAppSorting(const ChromeAppSorting&) = delete;
+  ChromeAppSorting& operator=(const ChromeAppSorting&) = delete;
+
   ~ChromeAppSorting() override;
 
   // AppSorting implementation:
@@ -96,7 +99,6 @@ class ChromeAppSorting : public AppSorting,
   friend class ChromeAppSortingInitializeWithNoApps;
   friend class ChromeAppSortingPageOrdinalMapping;
   friend class ChromeAppSortingSetExtensionVisible;
-  friend class ChromeAppSortingMigratedBookmarkApp;
 
   // An enum used by GetMinOrMaxAppLaunchOrdinalsOnPage to specify which
   // value should be returned.
@@ -166,13 +168,6 @@ class ChromeAppSorting : public AppSorting,
   // Returns the number of items in |m| visible on the new tab page.
   size_t CountItemsVisibleOnNtp(const AppLaunchOrdinalMap& m) const;
 
-  // Sets |web_app_registrar_|. Only for use by tests.
-  void SetWebAppRegistrarForTesting(
-      const web_app::WebAppRegistrar* web_app_registrar);
-
-  // Sets |web_app_sync_bridge_|. Only for use by tests.
-  void SetWebAppSyncBridgeForTesting(web_app::WebAppSyncBridge* sync_bridge);
-
   content::BrowserContext* const browser_context_ = nullptr;
   const web_app::WebAppRegistrar* web_app_registrar_ = nullptr;
   web_app::WebAppSyncBridge* web_app_sync_bridge_ = nullptr;
@@ -200,8 +195,6 @@ class ChromeAppSorting : public AppSorting,
   std::set<std::string> ntp_hidden_extensions_;
 
   base::WeakPtrFactory<ChromeAppSorting> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppSorting);
 };
 
 }  // namespace extensions

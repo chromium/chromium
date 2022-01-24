@@ -129,6 +129,12 @@ void ExpectFailedGetCatalogResult(
 class ExploreSitesGetCatalogTaskTest : public TaskTestBase {
  public:
   ExploreSitesGetCatalogTaskTest() = default;
+
+  ExploreSitesGetCatalogTaskTest(const ExploreSitesGetCatalogTaskTest&) =
+      delete;
+  ExploreSitesGetCatalogTaskTest& operator=(
+      const ExploreSitesGetCatalogTaskTest&) = delete;
+
   ~ExploreSitesGetCatalogTaskTest() override = default;
 
   void SetUp() override {
@@ -155,8 +161,6 @@ class ExploreSitesGetCatalogTaskTest : public TaskTestBase {
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesGetCatalogTaskTest);
 };
 
 void ExploreSitesGetCatalogTaskTest::PopulateTestingCatalog() {

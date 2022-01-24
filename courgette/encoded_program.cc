@@ -137,6 +137,9 @@ class InstructionStoreReceptor : public InstructionReceptor {
     CHECK(encoded_);
   }
 
+  InstructionStoreReceptor(const InstructionStoreReceptor&) = delete;
+  InstructionStoreReceptor& operator=(const InstructionStoreReceptor&) = delete;
+
   CheckBool EmitPeRelocs() override {
     return encoded_->AddPeMakeRelocs(exe_type_);
   }
@@ -163,8 +166,6 @@ class InstructionStoreReceptor : public InstructionReceptor {
  private:
   ExecutableType exe_type_;
   EncodedProgram* encoded_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstructionStoreReceptor);
 };
 
 }  // namespace

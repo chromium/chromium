@@ -4,14 +4,13 @@
 
 #include "chrome/updater/external_constants.h"
 
-#include <memory>
-#include <utility>
+#include "base/memory/scoped_refptr.h"
 
 namespace updater {
 
 ExternalConstants::ExternalConstants(
-    std::unique_ptr<ExternalConstants> next_provider)
-    : next_provider_(std::move(next_provider)) {}
+    scoped_refptr<ExternalConstants> next_provider)
+    : next_provider_(next_provider) {}
 
 ExternalConstants::~ExternalConstants() = default;
 

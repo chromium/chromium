@@ -16,6 +16,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/live_caption/caption_bubble_context.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -394,7 +395,7 @@ CaptionBubble::CaptionBubble(base::OnceClosure destroyed_callback,
     return;
 
   inactivity_timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, base::TimeDelta::FromSeconds(kNoActivityIntervalSeconds),
+      FROM_HERE, base::Seconds(kNoActivityIntervalSeconds),
       base::BindRepeating(&CaptionBubble::OnInactivityTimeout,
                           base::Unretained(this)),
       tick_clock_);
@@ -583,7 +584,8 @@ std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
 
 void CaptionBubble::BackToTabButtonPressed() {
   DCHECK(model_);
-  model_->ActivateContext();
+  DCHECK(model_->GetContext()->IsActivatable());
+  model_->GetContext()->Activate();
 }
 
 void CaptionBubble::CloseButtonPressed() {
@@ -615,7 +617,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   model_ = model;
   if (model_) {
     model_->SetObserver(this);
-    back_to_tab_button_->SetVisible(model_->IsContextActivatable());
+    back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
   } else {
     UpdateBubbleVisibility();
   }
@@ -842,9 +844,9 @@ void CaptionBubble::ShowInactive() {
   // up in the bottom center of the second window, which is where the user is
   // already looking. It also ensures that the caption bubble will appear in the
   // right workspace if a user has Chrome windows open on multiple workspaces.
-  if (!model_->GetContextBoundsInScreen().has_value())
+  if (!model_->GetContext()->GetBounds().has_value())
     return;
-  gfx::Rect context_rect = model_->GetContextBoundsInScreen().value();
+  gfx::Rect context_rect = model_->GetContext()->GetBounds().value();
 
   context_rect.Inset(gfx::Insets(kMinAnchorMarginDip));
   gfx::Rect bubble_bounds = GetBubbleBounds();

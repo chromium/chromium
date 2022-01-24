@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -53,6 +52,12 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
         is_provisional_(is_provisional),
         is_parent_ad_subframe_(is_parent_ad_subframe),
         is_subframe_created_by_ad_script_(is_subframe_created_by_ad_script) {}
+
+  SubresourceFilterAgentUnderTest(const SubresourceFilterAgentUnderTest&) =
+      delete;
+  SubresourceFilterAgentUnderTest& operator=(
+      const SubresourceFilterAgentUnderTest&) = delete;
+
   ~SubresourceFilterAgentUnderTest() override = default;
 
   MOCK_METHOD0(GetDocumentURL, GURL());
@@ -119,8 +124,6 @@ class SubresourceFilterAgentUnderTest : public SubresourceFilterAgent {
   absl::optional<blink::FrameAdEvidence> ad_evidence_;
   std::unique_ptr<blink::WebDocumentSubresourceFilter> last_injected_filter_;
   mojom::ActivationState inherited_activation_state_for_new_document_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgentUnderTest);
 };
 
 constexpr const char kTestFirstURL[] = "http://example.com/alpha";
@@ -142,6 +145,10 @@ constexpr const char kMainFrameLoadRulesetIsAvailableAnyActivationLevel[] =
 class SubresourceFilterAgentTest : public ::testing::Test {
  public:
   SubresourceFilterAgentTest() {}
+
+  SubresourceFilterAgentTest(const SubresourceFilterAgentTest&) = delete;
+  SubresourceFilterAgentTest& operator=(const SubresourceFilterAgentTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -303,8 +310,6 @@ class SubresourceFilterAgentTest : public ::testing::Test {
   UnverifiedRulesetDealer ruleset_dealer_;
 
   std::unique_ptr<SubresourceFilterAgentUnderTest> agent_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterAgentTest);
 };
 
 TEST_F(SubresourceFilterAgentTest, RulesetUnset_RulesetNotAvailable) {

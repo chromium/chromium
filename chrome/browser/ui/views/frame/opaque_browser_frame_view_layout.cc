@@ -389,8 +389,11 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
     }
   }
 
-  if (should_show_icon)
-    window_icon_->SetBoundsRect(window_icon_bounds_);
+  if (window_icon_) {
+    SetViewVisibility(window_icon_, should_show_icon);
+    if (should_show_icon)
+      window_icon_->SetBoundsRect(window_icon_bounds_);
+  }
 
   if (window_title_) {
     SetViewVisibility(window_title_, should_show_title);

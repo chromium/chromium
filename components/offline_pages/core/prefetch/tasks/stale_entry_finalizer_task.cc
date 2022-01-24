@@ -28,11 +28,11 @@ namespace {
 
 // Maximum amount of time into the future an item can has its freshness time set
 // to after which it will be finalized (or deleted if in the zombie state).
-constexpr base::TimeDelta kFutureItemTimeLimit = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kFutureItemTimeLimit = base::Days(1);
 
 // Expiration time delay for items entering the zombie state, after which they
 // are permanently deleted.
-constexpr base::TimeDelta kZombieItemLifetime = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kZombieItemLifetime = base::Days(7);
 
 // If this time changes, we need to update the desciption in histograms.xml
 // for OfflinePages.Prefetching.StuckItemState.
@@ -42,12 +42,12 @@ const base::TimeDelta FreshnessPeriodForState(PrefetchItemState state) {
   switch (state) {
     // Bucket 1.
     case PrefetchItemState::NEW_REQUEST:
-      return base::TimeDelta::FromDays(1);
+      return base::Days(1);
     // Bucket 2.
     case PrefetchItemState::AWAITING_GCM:
     case PrefetchItemState::RECEIVED_GCM:
     case PrefetchItemState::RECEIVED_BUNDLE:
-      return base::TimeDelta::FromDays(1);
+      return base::Days(1);
     // Bucket 3.
     case PrefetchItemState::DOWNLOADING:
     case PrefetchItemState::IMPORTING:
@@ -61,7 +61,7 @@ const base::TimeDelta FreshnessPeriodForState(PrefetchItemState state) {
     case PrefetchItemState::ZOMBIE:
       NOTREACHED();
   }
-  return base::TimeDelta::FromDays(1);
+  return base::Days(1);
 }
 
 PrefetchItemErrorCode ErrorCodeForState(PrefetchItemState state) {
@@ -164,8 +164,8 @@ bool DeleteExpiredAndFutureZombies(base::Time now, sql::Database* db) {
 // If there is a bug in our code, an item might be stuck in the queue waiting
 // on an event that didn't happen.  If so, finalize that item and report it.
 void ReportAndFinalizeStuckItems(base::Time now, sql::Database* db) {
-  const int64_t earliest_valid_creation_time = store_utils::ToDatabaseTime(
-      now - base::TimeDelta::FromDays(kStuckTimeLimitInDays));
+  const int64_t earliest_valid_creation_time =
+      store_utils::ToDatabaseTime(now - base::Days(kStuckTimeLimitInDays));
   // Report.
   {
     static constexpr char kSql[] =

@@ -113,6 +113,12 @@ RenderWidgetHostImpl* RenderWidgetHostDelegate::GetKeyboardLockWidget() {
   return nullptr;
 }
 
+bool RenderWidgetHostDelegate::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
+}
+
 TextInputManager* RenderWidgetHostDelegate::GetTextInputManager() {
   return nullptr;
 }
@@ -121,16 +127,18 @@ RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
   return nullptr;
 }
 
-bool RenderWidgetHostDelegate::IsWidgetForMainFrame(RenderWidgetHostImpl*) {
+bool RenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
+    RenderWidgetHostImpl*) {
   return false;
+}
+
+VisibleTimeRequestTrigger*
+RenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
+  return nullptr;
 }
 
 ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {
   return ukm::kInvalidSourceId;
-}
-
-WebContents* RenderWidgetHostDelegate::GetAsWebContents() {
-  return nullptr;
 }
 
 bool RenderWidgetHostDelegate::IsShowingContextMenuOnPage() const {

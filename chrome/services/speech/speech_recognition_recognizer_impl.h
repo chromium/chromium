@@ -40,6 +40,12 @@ class SpeechRecognitionRecognizerImpl
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
+
+  SpeechRecognitionRecognizerImpl(const SpeechRecognitionRecognizerImpl&) =
+      delete;
+  SpeechRecognitionRecognizerImpl& operator=(
+      const SpeechRecognitionRecognizerImpl&) = delete;
+
   ~SpeechRecognitionRecognizerImpl() override;
 
   static const char kCaptionBubbleVisibleHistogramName[];
@@ -131,8 +137,6 @@ class SpeechRecognitionRecognizerImpl
   bool is_client_requesting_speech_recognition_ = true;
 
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionRecognizerImpl);
 };
 
 }  // namespace speech

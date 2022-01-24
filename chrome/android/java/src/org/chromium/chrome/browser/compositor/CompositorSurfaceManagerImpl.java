@@ -195,6 +195,9 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // when it is safe to do that.
         disownClientSurface(mOwnedByClient, false);
 
+        // `disownClientSurface` may recursively shutdown.
+        if (mRequestedByClient == null) return;
+
         // The client now owns |mRequestedByClient|.  Notify it that it's ready.
         mOwnedByClient = mRequestedByClient;
         mClient.surfaceCreated(mOwnedByClient.surfaceHolder().getSurface());
@@ -301,6 +304,11 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         // client doesn't own either surface.
         assert mOwnedByClient != state;
         disownClientSurface(mOwnedByClient, false);
+
+        // TODO(crbug.com/1242632): `disownClientSurface` may recursively shutdown which sets
+        // `mRequestedByClient` to null. However testing shows throwing an NPE in this case
+        // is caught by SurfaceView implementation and does not crash, and throwing actually
+        // avoids an ANR due to some unexplained reason.
 
         // The client now owns this surface, so notify it.
         mOwnedByClient = mRequestedByClient;

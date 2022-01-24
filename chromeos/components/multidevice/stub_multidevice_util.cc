@@ -59,6 +59,8 @@ RemoteDevice CreateStubHostPhone() {
         SoftwareFeatureState::kEnabled;
     software_features[SoftwareFeature::kEcheHost] =
         SoftwareFeatureState::kEnabled;
+    software_features[SoftwareFeature::kPhoneHubCameraRollHost] =
+        SoftwareFeatureState::kEnabled;
 
     std::vector<BeaconSeed> beacon_seeds = {multidevice::BeaconSeed(
         kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
@@ -102,6 +104,11 @@ RemoteDevice CreateStubClientComputer() {
 
     software_features[SoftwareFeature::kEcheClient] =
         chromeos::features::IsEcheSWAEnabled()
+            ? SoftwareFeatureState::kSupported
+            : SoftwareFeatureState::kNotSupported;
+
+    software_features[SoftwareFeature::kPhoneHubCameraRollClient] =
+        chromeos::features::IsPhoneHubCameraRollEnabled()
             ? SoftwareFeatureState::kSupported
             : SoftwareFeatureState::kNotSupported;
 

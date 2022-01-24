@@ -16,6 +16,11 @@ class ShellExtensionWebContentsObserver
     : public ExtensionWebContentsObserver,
       public content::WebContentsUserData<ShellExtensionWebContentsObserver> {
  public:
+  ShellExtensionWebContentsObserver(const ShellExtensionWebContentsObserver&) =
+      delete;
+  ShellExtensionWebContentsObserver& operator=(
+      const ShellExtensionWebContentsObserver&) = delete;
+
   ~ShellExtensionWebContentsObserver() override;
 
   // Creates and initializes an instance of this class for the given
@@ -29,8 +34,6 @@ class ShellExtensionWebContentsObserver
       content::WebContents* web_contents);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ShellExtensionWebContentsObserver);
 };
 
 }  // namespace extensions

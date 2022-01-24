@@ -264,8 +264,5 @@ TEST_F(MainThreadMetricsHelperTest, GetFrameStatusTest) {
   }
 }
 
-// TODO(crbug.com/754656): Add tests for
-// RendererScheduler.TasksWithSafepoints histograms.
-
 }  // namespace scheduler
 }  // namespace blink

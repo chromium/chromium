@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 // #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
 
@@ -56,3 +56,14 @@ const OobeI18nBehaviorImpl = {
 OobeI18nBehaviorImpl.Proto;
 /** @polymerBehavior */
 /* #export */ const OobeI18nBehavior = [I18nBehavior, OobeI18nBehaviorImpl];
+
+/** @interface */
+/* #export */ class OobeI18nBehaviorInterface extends I18nBehaviorInterface {
+  /**
+   * @param {string} id The ID of the string to translate.
+   * @param {...string|number} var_args
+   * @return {string}
+   */
+  i18n(id, var_args) {}
+  i18nUpdateLocale() {}
+}

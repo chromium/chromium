@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PAUSABLE_SCRIPT_EXECUTOR_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -17,7 +19,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class ScriptSourceCode;
 class ScriptState;
 class WebScriptExecutionCallback;
 
@@ -46,7 +47,7 @@ class CORE_EXPORT PausableScriptExecutor final
 
   PausableScriptExecutor(LocalDOMWindow*,
                          scoped_refptr<DOMWrapperWorld>,
-                         const HeapVector<ScriptSourceCode>&,
+                         Vector<WebScriptSource>,
                          bool,
                          WebScriptExecutionCallback*);
   PausableScriptExecutor(LocalDOMWindow*,
@@ -61,10 +62,16 @@ class CORE_EXPORT PausableScriptExecutor final
 
   void Trace(Visitor*) const override;
 
+  void set_wait_for_promise(bool wait_for_promise) {
+    wait_for_promise_ = wait_for_promise;
+  }
+
  private:
   void PostExecuteAndDestroySelf(ExecutionContext* context);
   void ExecuteAndDestroySelf();
   void Dispose();
+
+  void HandleResults(const Vector<v8::Local<v8::Value>>& results);
 
   Member<ScriptState> script_state_;
   WebScriptExecutionCallback* callback_;
@@ -72,6 +79,13 @@ class CORE_EXPORT PausableScriptExecutor final
   TaskHandle task_handle_;
 
   Member<Executor> executor_;
+
+  // Whether to wait for a promise to resolve, if the executed script evaluates
+  // to a promise.
+  bool wait_for_promise_ = false;
+
+  // A keepalive used when waiting on promises to settle.
+  SelfKeepAlive<PausableScriptExecutor> keep_alive_;
 };
 
 }  // namespace blink

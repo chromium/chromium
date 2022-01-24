@@ -7,9 +7,12 @@
 
 /*
  * Styles for goog.ui.ComboBox and its derivatives.
- *
- * @provide {goog.css.combobox}
  */
+
+
+@require './menu';
+@require './menuitem';
+@require './menuseparator';
 
 .goog-combobox {
   background: #ddd url(//ssl.gstatic.com/closure/button-bg.gif) repeat-x scroll left top;

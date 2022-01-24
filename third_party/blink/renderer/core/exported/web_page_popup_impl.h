@@ -206,6 +206,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void CheckScreenPointInOwnerWindowAndCount(const gfx::PointF& point_in_screen,
                                              WebFeature feature) const;
   IntRect OwnerWindowRectInScreen() const;
+  // Returns anchor rect in screen coordinates for this popup.
+  IntRect GetAnchorRectInScreen() const;
 
   // PagePopup function
   AXObject* RootAXObject() override;

@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
 #include "ipc/ipc_sync_channel.h"
@@ -48,6 +47,10 @@ class ServiceRuntime {
                  PP_Instance pp_instance,
                  bool main_service_runtime,
                  bool uses_nonsfi_mode);
+
+  ServiceRuntime(const ServiceRuntime&) = delete;
+  ServiceRuntime& operator=(const ServiceRuntime&) = delete;
+
   // The destructor terminates the sel_ldr process.
   ~ServiceRuntime();
 
@@ -71,8 +74,6 @@ class ServiceRuntime {
   bool uses_nonsfi_mode_;
 
   std::unique_ptr<IPC::SyncChannel> translator_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceRuntime);
 };
 
 }  // namespace plugin

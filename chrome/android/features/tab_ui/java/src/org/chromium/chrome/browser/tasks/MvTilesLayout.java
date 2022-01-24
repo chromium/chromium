@@ -88,6 +88,15 @@ public class MvTilesLayout extends LinearLayout {
         return null;
     }
 
+    public void destroy() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View tileView = getChildAt(i);
+            tileView.setOnClickListener(null);
+            tileView.setOnCreateContextMenuListener(null);
+        }
+        removeAllViews();
+    }
+
     private void updateSingleTileViewLayout(
             TileView tileView, int newMargin, boolean isSetStartMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) tileView.getLayoutParams();

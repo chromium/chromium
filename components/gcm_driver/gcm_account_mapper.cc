@@ -347,8 +347,7 @@ void GCMAccountMapper::OnRegisterFinished(const std::string& registration_id,
 bool GCMAccountMapper::CanTriggerUpdate(
     const base::Time& last_update_time) const {
   return last_update_time +
-             base::TimeDelta::FromHours(kGCMUpdateIntervalHours -
-                                        kGCMUpdateEarlyStartHours) <
+             base::Hours(kGCMUpdateIntervalHours - kGCMUpdateEarlyStartHours) <
          clock_->Now();
 }
 
@@ -356,8 +355,8 @@ bool GCMAccountMapper::IsLastStatusChangeOlderThanTTL(
     const AccountMapping& account_mapping) const {
   int ttl_seconds = account_mapping.status == AccountMapping::REMOVING ?
       kGCMRemoveMappingMessageTTL : kGCMAddMappingMessageTTL;
-  return account_mapping.status_change_timestamp +
-      base::TimeDelta::FromSeconds(ttl_seconds) < clock_->Now();
+  return account_mapping.status_change_timestamp + base::Seconds(ttl_seconds) <
+         clock_->Now();
 }
 
 AccountMapping* GCMAccountMapper::FindMappingByAccountId(

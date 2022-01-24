@@ -56,6 +56,10 @@ class PepperAudioEncoderHost::AudioEncoderImpl {
   using BitstreamBufferReadyCB = base::OnceCallback<void(int32_t size)>;
 
   AudioEncoderImpl();
+
+  AudioEncoderImpl(const AudioEncoderImpl&) = delete;
+  AudioEncoderImpl& operator=(const AudioEncoderImpl&) = delete;
+
   ~AudioEncoderImpl();
 
   // Used on the renderer thread.
@@ -78,8 +82,6 @@ class PepperAudioEncoderHost::AudioEncoderImpl {
   // Initialization parameters, only valid if |encoder_memory_| is not
   // nullptr.
   ppapi::proxy::PPB_AudioEncodeParameters parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoderImpl);
 };
 
 PepperAudioEncoderHost::AudioEncoderImpl::AudioEncoderImpl()

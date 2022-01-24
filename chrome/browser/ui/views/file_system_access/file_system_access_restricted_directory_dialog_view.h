@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_RESTRICTED_DIRECTORY_DIALOG_VIEW_H_
 
-#include "base/macros.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"

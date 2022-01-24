@@ -312,6 +312,20 @@ inline bool operator==(const ContentData& a, const ContentData& b) {
   return !ptr_a && !ptr_b;
 }
 
+// In order for an image to be rendered from the content property on an actual
+// element, there can be at most one piece of image content data, followed by
+// some optional alternative text.
+inline bool ShouldUseContentDataForElement(const ContentData* content_data) {
+  if (!content_data)
+    return false;
+  if (!content_data->IsImage())
+    return false;
+  if (content_data->Next() && !content_data->Next()->IsAltText())
+    return false;
+
+  return true;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CONTENT_DATA_H_

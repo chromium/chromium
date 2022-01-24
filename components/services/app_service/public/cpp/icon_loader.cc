@@ -18,17 +18,17 @@ IconLoader::Releaser::~Releaser() {
   std::move(closure_).Run();
 }
 
-IconLoader::Key::Key(apps::mojom::AppType app_type,
+IconLoader::Key::Key(AppType app_type,
                      const std::string& app_id,
-                     const apps::mojom::IconKeyPtr& icon_key,
-                     apps::mojom::IconType icon_type,
+                     const IconKey& icon_key,
+                     IconType icon_type,
                      int32_t size_hint_in_dip,
                      bool allow_placeholder_icon)
     : app_type_(app_type),
       app_id_(app_id),
-      timeline_(icon_key ? icon_key->timeline : 0),
-      resource_id_(icon_key ? icon_key->resource_id : 0),
-      icon_effects_(icon_key ? icon_key->icon_effects : 0),
+      timeline_(icon_key.timeline),
+      resource_id_(icon_key.resource_id),
+      icon_effects_(icon_key.icon_effects),
       icon_type_(icon_type),
       size_hint_in_dip_(size_hint_in_dip),
       allow_placeholder_icon_(allow_placeholder_icon) {}

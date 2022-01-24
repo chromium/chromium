@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -80,6 +79,9 @@ class VIEWS_EXPORT Label : public View,
 
   // Construct a Label with the given |font| description.
   Label(const std::u16string& text, const CustomFont& font);
+
+  Label(const Label&) = delete;
+  Label& operator=(const Label&) = delete;
 
   ~Label() override;
 
@@ -485,8 +487,6 @@ class VIEWS_EXPORT Label : public View,
   // Context menu related members.
   ui::SimpleMenuModel context_menu_contents_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Label);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
@@ -516,6 +516,7 @@ VIEW_BUILDER_PROPERTY(bool, HandlesTooltips)
 VIEW_BUILDER_PROPERTY(int, MaximumWidth)
 VIEW_BUILDER_PROPERTY(bool, CollapseWhenHidden)
 VIEW_BUILDER_PROPERTY(bool, Selectable)
+VIEW_BUILDER_METHOD(SizeToFit, int)
 END_VIEW_BUILDER
 
 }  // namespace views

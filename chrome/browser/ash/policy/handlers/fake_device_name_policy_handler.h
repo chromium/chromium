@@ -12,7 +12,11 @@ namespace policy {
 // Fake DeviceNamePolicyHandler implementation
 class FakeDeviceNamePolicyHandler : public DeviceNamePolicyHandler {
  public:
-  FakeDeviceNamePolicyHandler();
+  // If the device is managed, the initial device name policy should be
+  // kPolicyHostnameNotConfigurable instead of the default kNoPolicy that is set
+  // for unmanaged devices.
+  explicit FakeDeviceNamePolicyHandler(
+      DeviceNamePolicy initial_policy = DeviceNamePolicy::kNoPolicy);
   ~FakeDeviceNamePolicyHandler() override;
 
   // DeviceNamePolicyHandler:
@@ -27,7 +31,7 @@ class FakeDeviceNamePolicyHandler : public DeviceNamePolicyHandler {
 
  private:
   absl::optional<std::string> hostname_ = absl::nullopt;
-  DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
+  DeviceNamePolicy device_name_policy_;
 };
 
 }  // namespace policy

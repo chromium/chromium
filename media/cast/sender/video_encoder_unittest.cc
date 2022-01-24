@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,6 +36,10 @@ namespace cast {
 
 class VideoEncoderTest
     : public ::testing::TestWithParam<std::pair<Codec, bool>> {
+ public:
+  VideoEncoderTest(const VideoEncoderTest&) = delete;
+  VideoEncoderTest& operator=(const VideoEncoderTest&) = delete;
+
  protected:
   VideoEncoderTest()
       : task_runner_(new FakeSingleThreadTaskRunner(&testing_clock_)),
@@ -122,8 +125,8 @@ class VideoEncoderTest
 
   void RunTasksAndAdvanceClock() {
     DCHECK_GT(video_config_.max_frame_rate, 0);
-    const base::TimeDelta frame_duration = base::TimeDelta::FromMicroseconds(
-        1000000.0 / video_config_.max_frame_rate);
+    const base::TimeDelta frame_duration =
+        base::Microseconds(1000000.0 / video_config_.max_frame_rate);
 #if defined(OS_MAC)
     if (is_testing_video_toolbox_encoder()) {
       // The H264VideoToolboxEncoder (on MAC_OSX and IOS) is not a faked
@@ -197,8 +200,6 @@ class VideoEncoderTest
   OperationalStatus operational_status_;
   std::unique_ptr<VideoEncoder> video_encoder_;
   std::unique_ptr<VideoFrameFactory> video_frame_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoEncoderTest);
 };
 
 // Tests that the encoder outputs encoded frames, and also responds to frame

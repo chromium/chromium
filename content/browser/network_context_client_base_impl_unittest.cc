@@ -27,9 +27,9 @@ struct UploadResponse {
       : callback(base::BindOnce(&UploadResponse::OnComplete,
                                 base::Unretained(this))) {}
 
-  void OnComplete(int error_code, std::vector<base::File> opened_files) {
-    this->error_code = error_code;
-    this->opened_files = std::move(opened_files);
+  void OnComplete(int error, std::vector<base::File> opened) {
+    error_code = error;
+    opened_files = std::move(opened);
   }
 
   network::mojom::NetworkContextClient::OnFileUploadRequestedCallback callback;

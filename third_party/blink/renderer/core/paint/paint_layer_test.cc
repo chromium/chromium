@@ -212,7 +212,7 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      IntPoint(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_FALSE(content_layer->SelfNeedsRepaint());
   EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
@@ -249,7 +249,7 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      IntPoint(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
@@ -440,9 +440,9 @@ TEST_P(PaintLayerTest, HasSelfPaintingParentNotSelfPainting) {
   EXPECT_FALSE(child->HasSelfPaintingLayerDescendant());
 }
 
-static const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
-    const PaintLayer* layer) {
-  return PaintLayerPaintOrderIterator(*layer->AncestorStackingContext(),
+static const HeapVector<Member<PaintLayer>>*
+LayersPaintingOverlayOverflowControlsAfter(const PaintLayer* layer) {
+  return PaintLayerPaintOrderIterator(layer->AncestorStackingContext(),
                                       kPositiveZOrderChildren)
       .LayersPaintingOverlayOverflowControlsAfter(layer);
 }
@@ -454,20 +454,17 @@ static const Vector<PaintLayer*>* LayersPaintingOverlayOverflowControlsAfter(
 enum OverlayType { kOverlayResizer, kOverlayScrollbars };
 
 class ReorderOverlayOverflowControlsTest
-    : public testing::WithParamInterface<std::tuple<unsigned, OverlayType>>,
-      private ScopedCompositeAfterPaintForTest,
+    : public testing::WithParamInterface<OverlayType>,
       public RenderingTest {
  public:
   ReorderOverlayOverflowControlsTest()
-      : ScopedCompositeAfterPaintForTest(std::get<0>(GetParam()) &
-                                         kCompositeAfterPaint),
-        RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
-  ~ReorderOverlayOverflowControlsTest() {
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+  ~ReorderOverlayOverflowControlsTest() override {
     // Must destruct all objects before toggling back feature flags.
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  OverlayType GetOverlayType() const { return std::get<1>(GetParam()); }
+  OverlayType GetOverlayType() const { return GetParam(); }
 
   void InitOverflowStyle(const char* id) {
     GetDocument().getElementById(id)->setAttribute(
@@ -489,11 +486,10 @@ class ReorderOverlayOverflowControlsTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReorderOverlayOverflowControlsTest,
-    ::testing::Combine(::testing::Values(0, kCompositeAfterPaint),
-                       ::testing::Values(kOverlayScrollbars, kOverlayResizer)));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReorderOverlayOverflowControlsTest,
+                         ::testing::Values(kOverlayScrollbars,
+                                           kOverlayResizer));
 
 TEST_P(ReorderOverlayOverflowControlsTest, StackedWithInFlowDescendant) {
   SetBodyInnerHTML(R"HTML(
@@ -1097,7 +1093,7 @@ TEST_P(PaintLayerTest, SubsequenceCachingSVG) {
 TEST_P(PaintLayerTest, SubsequenceCachingMuticol) {
   SetBodyInnerHTML(R"HTML(
     <div style='columns: 2'>
-      <div id='target' style='position: relative'></div>
+      <div id='target' style='position: relative; height: 20px;'></div>
     </div>
   )HTML");
 
@@ -1118,18 +1114,18 @@ TEST_P(PaintLayerTest, NegativeZIndexChangeToPositive) {
   PaintLayer* target = GetPaintLayerByElementId("target");
 
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 
   GetDocument().getElementById("child")->setAttribute(html_names::kStyleAttr,
                                                       "z-index: 1");
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_FALSE(
-      PaintLayerPaintOrderIterator(*target, kNegativeZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kNegativeZOrderChildren).Next());
   EXPECT_TRUE(
-      PaintLayerPaintOrderIterator(*target, kPositiveZOrderChildren).Next());
+      PaintLayerPaintOrderIterator(target, kPositiveZOrderChildren).Next());
 }
 
 TEST_P(PaintLayerTest, HasVisibleDescendant) {
@@ -1296,16 +1292,19 @@ TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
 TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
     <div>
-      <div id='compositedContainer' style='columns: 1'>
-        <div id='columnSpan' style='-webkit-column-span: all; overflow: hidden'>
+      <div id='multicol' style='columns: 1; position: relative'>
+        <div id='paintContainer' style='position: relative'>
+          <div id='columnSpan' style='column-span: all; overflow: hidden'></div>
         </div>
       </div>
     </div>
   )HTML");
 
-  PaintLayer* target = GetPaintLayerByElementId("columnSpan");
-  EXPECT_EQ(target->Parent(), target->CompositingContainer());
-  EXPECT_EQ(target->Parent()->Parent(), target->ContainingLayer());
+  PaintLayer* columnSpan = GetPaintLayerByElementId("columnSpan");
+  EXPECT_EQ(GetPaintLayerByElementId("paintContainer"),
+            columnSpan->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("multicol"),
+            columnSpan->ContainingLayer());
 }
 
 TEST_P(PaintLayerTest,
@@ -1626,7 +1625,7 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(0, 0),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(150, 150),
               floating->LocationWithoutPositionOffset());
@@ -1640,12 +1639,12 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(100, 100),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(0, 0), floating->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(50, 50),
               floating->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               floating->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(-50, -50),
               floating->VisualOffsetFromAncestor(span));
@@ -1902,6 +1901,11 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
 }
 
 TEST_P(PaintLayerTest, CompositingContainerSelfPaintingNonStackedFloat) {
+  // Self-painting non-stacked layers don't exist in
+  // LayoutNGBlockFragmentation.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='position: relative'>
       <span id='span' style='opacity: 0.9'>
@@ -1954,7 +1958,7 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   EXPECT_EQ(PhysicalOffset(50, 50),
             spanner->GetLayoutObject().OffsetForInFlowPosition());
 
-  EXPECT_EQ(IntPoint(200, 0),
+  EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), extra_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(PhysicalOffset(100, 100),
@@ -1988,7 +1992,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   SetBodyInnerHTML(R"HTML(
     <span id='span' style='opacity: 0.1'>
       <div id='target' style='overflow: hidden; float: left;
-          column-width: 10px'>
+          position: relative;'>
       </div>
     </span>
   )HTML");
@@ -1998,24 +2002,19 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
-  // Target layer is self painting because it is a multicol container.
+  // Target layer is self painting because it is relatively positioned.
   EXPECT_TRUE(target_layer->IsSelfPaintingLayer());
   EXPECT_EQ(span_layer, target_layer->CompositingContainer());
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
 
-  // Removing column-width: 10px makes target layer no longer self-painting,
+  // Removing position:relative makes target layer no longer self-painting,
   // and change its compositing container. The original compositing container
   // span_layer should be marked SelfNeedsRepaint.
   target_element->setAttribute(html_names::kStyleAttr,
                                "overflow: hidden; float: left");
 
   UpdateAllLifecyclePhasesExceptPaint();
-  // TODO(yosin): Once multicol in LayoutNG, we should remove following
-  // assignments. This is because the layout tree maybe reattached. In LayoutNG
-  // phase 1, layout tree is reattached because multicol forces legacy layout.
-  target_object = target_element->GetLayoutObject();
-  target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(span_layer, target_layer->CompositingContainer());
@@ -2161,7 +2160,7 @@ TEST_P(PaintLayerTest, HitTestWithIgnoreClipping) {
 
   HitTestRequest request(HitTestRequest::kIgnoreClipping);
   // (10, 900) is outside the viewport clip of 800x600.
-  HitTestLocation location((IntPoint(10, 900)));
+  HitTestLocation location((gfx::Point(10, 900)));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
   EXPECT_EQ(GetDocument().getElementById("hit"), result.InnerNode());
@@ -2288,19 +2287,31 @@ TEST_P(PaintLayerTest, SetNeedsRepaintSelfPaintingUnderNonSelfPainting) {
   auto* span_layer = GetPaintLayerByElementId("span");
   auto* floating_layer = GetPaintLayerByElementId("floating");
   auto* multicol_layer = GetPaintLayerByElementId("multicol");
+
+  // Multicol doesn't trigger creation of a (non-self-painting) PaintLayer when
+  // LayoutNGBlockFragmentation is enabled.
+  if (!multicol_layer)
+    ASSERT_TRUE(RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
+
   EXPECT_FALSE(html_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
   EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
-
-  multicol_layer->SetNeedsRepaint();
+  if (multicol_layer) {
+    EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
+    multicol_layer->SetNeedsRepaint();
+  } else {
+    EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
+    floating_layer->SetNeedsRepaint();
+  }
   EXPECT_TRUE(html_layer->DescendantNeedsRepaint());
   if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_TRUE(span_layer->DescendantNeedsRepaint());
   else
     EXPECT_TRUE(span_layer->SelfNeedsRepaint());
-  EXPECT_TRUE(floating_layer->DescendantNeedsRepaint());
-  EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  if (multicol_layer)
+    EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(floating_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
@@ -2496,7 +2507,7 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
     UpdateAllLifecyclePhasesForTest();
 
     HitTestRequest request(HitTestRequest::kIgnoreClipping);
-    HitTestLocation location((IntPoint(198, 198)));
+    HitTestLocation location((gfx::Point(198, 198)));
     HitTestResult result(request, location);
     GetDocument().GetLayoutView()->HitTest(location, result);
     if (i == 0)
@@ -2740,14 +2751,14 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   UpdateAllLifecyclePhasesForTest();
 
   const HitTestRequest hit_request(HitTestRequest::kActive);
-  const HitTestLocation location(IntPoint(400, 300));
+  const HitTestLocation location(gfx::Point(400, 300));
   HitTestResult result;
   GetLayoutView().HitTestNoLifecycleUpdate(location, result);
   EXPECT_EQ(result.InnerNode(), GetDocument().documentElement());
   EXPECT_EQ(result.GetScrollbar(), nullptr);
 
   if (GetDocument().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
-    const HitTestLocation location_scrollbar(IntPoint(790, 300));
+    const HitTestLocation location_scrollbar(gfx::Point(790, 300));
     HitTestResult result_scrollbar;
     EXPECT_EQ(result_scrollbar.InnerNode(), &GetDocument());
     EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);

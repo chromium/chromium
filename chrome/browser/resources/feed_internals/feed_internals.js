@@ -31,19 +31,22 @@ function updatePageWithProperties() {
     $('enable-webfeed-follow-intro-debug').disabled = false;
     $('use-feed-query-requests-for-web-feeds').checked =
         properties.useFeedQueryRequestsForWebFeeds;
-  });
-}
 
-/**
- * Get and display user classifier properties.
- */
-function updatePageWithUserClass() {
-  pageHandler.getUserClassifierProperties().then(response => {
-    /** @type {!feedInternals.mojom.UserClassifier} */
-    const properties = response.properties;
-    $('user-class-description').textContent = properties.userClassDescription;
-    $('avg-hours-between-views').textContent = properties.avgHoursBetweenViews;
-    $('avg-hours-between-uses').textContent = properties.avgHoursBetweenUses;
+    switch (properties.followingFeedOrder) {
+      case feedInternals.mojom.FeedOrder.kUnspecified:
+        $('following-feed-order-unset').checked = true;
+        break;
+      case feedInternals.mojom.FeedOrder.kGrouped:
+        $('following-feed-order-grouped').checked = true;
+        break;
+      case feedInternals.mojom.FeedOrder.kReverseChron:
+        $('following-feed-order-reverse-chron').checked = true;
+        break;
+    }
+    $('following-feed-order-grouped').disabled = false;
+    $('following-feed-order-reverse-chron').disabled = false;
+    $('following-feed-order-unset').disabled = false;
+
   });
 }
 
@@ -64,37 +67,6 @@ function updatePageWithLastFetchProperties() {
         properties.lastActionUploadStatus;
     $('last-action-upload-time').textContent =
         toDateString(properties.lastActionUploadTime);
-  });
-}
-
-/**
- * Get and display last known content.
- */
-function updatePageWithCurrentContent() {
-  pageHandler.getCurrentContent().then(response => {
-    const before = $('current-content');
-    const after = before.cloneNode(false);
-
-    /** @type {!Array<feedInternals.mojom.Suggestion>} */
-    const suggestions = response.suggestions;
-
-    for (const suggestion of suggestions) {
-      // Create new content item from template.
-      const item = document.importNode($('suggestion-template').content, true);
-
-      // Populate template with text metadata.
-      item.querySelector('.title').textContent = suggestion.title;
-      item.querySelector('.publisher').textContent = suggestion.publisherName;
-
-      // Populate template with link metadata.
-      setLinkNode(item.querySelector('a.url'), suggestion.url.url);
-      setLinkNode(item.querySelector('a.image'), suggestion.imageUrl.url);
-      setLinkNode(item.querySelector('a.favicon'), suggestion.faviconUrl.url);
-
-      after.appendChild(item);
-    }
-
-    before.replaceWith(after);
   });
 }
 
@@ -125,17 +97,16 @@ function toDateString(timeSinceEpoch) {
  * Hook up buttons to event listeners.
  */
 function setupEventListeners() {
-  $('clear-user-classification').addEventListener('click', function() {
-    pageHandler.clearUserClassifierProperties();
-    updatePageWithUserClass();
+  $('refresh-for-you').addEventListener('click', function() {
+    pageHandler.refreshForYouFeed();
   });
 
-  $('clear-cached-data').addEventListener('click', function() {
-    pageHandler.clearCachedDataAndRefreshFeed();
+  $('refresh-following').addEventListener('click', function() {
+    pageHandler.refreshFollowingFeed();
   });
 
-  $('refresh-feed').addEventListener('click', function() {
-    pageHandler.refreshFeed();
+  $('refresh-webfeed-suggestions').addEventListener('click', () => {
+    pageHandler.refreshWebFeedSuggestions();
   });
 
   $('dump-feed-process-scope').addEventListener('click', function() {
@@ -183,13 +154,33 @@ function setupEventListeners() {
         pageHandler.setUseFeedQueryRequestsForWebFeeds(
             $('use-feed-query-requests-for-web-feeds').checked);
       });
+
+  const orderRadioClickListener = function(order) {
+    $('following-feed-order-grouped').disabled = true;
+    $('following-feed-order-reverse-chron').disabled = true;
+    $('following-feed-order-unset').disabled = true;
+    pageHandler.setFollowingFeedOrder(order);
+  };
+  $('following-feed-order-unset')
+      .addEventListener(
+          'click',
+          () => orderRadioClickListener(
+              feedInternals.mojom.FeedOrder.kUnspecified));
+  $('following-feed-order-grouped')
+      .addEventListener(
+          'click',
+          () =>
+              orderRadioClickListener(feedInternals.mojom.FeedOrder.kGrouped));
+  $('following-feed-order-reverse-chron')
+      .addEventListener(
+          'click',
+          () => orderRadioClickListener(
+              feedInternals.mojom.FeedOrder.kReverseChron));
 }
 
 function updatePage() {
   updatePageWithProperties();
-  updatePageWithUserClass();
   updatePageWithLastFetchProperties();
-  updatePageWithCurrentContent();
 }
 
 document.addEventListener('DOMContentLoaded', function() {

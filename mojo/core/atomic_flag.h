@@ -33,6 +33,10 @@ namespace core {
 class AtomicFlag {
  public:
   AtomicFlag() : flag_(0) {}
+
+  AtomicFlag(const AtomicFlag&) = delete;
+  AtomicFlag& operator=(const AtomicFlag&) = delete;
+
   ~AtomicFlag() = default;
 
   void Set(bool value) { base::subtle::Release_Store(&flag_, value ? 1 : 0); }
@@ -43,8 +47,6 @@ class AtomicFlag {
 
  private:
   base::subtle::Atomic32 flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicFlag);
 };
 
 }  // namespace core

@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
@@ -73,8 +74,8 @@ public class SearchGeolocationDisclosureInfoBarTest {
 
         // Infobar should appear when doing the first search.
         InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
-        InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(listener);
+        InfoBarTestAnimationListener listener1 = new InfoBarTestAnimationListener();
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener1));
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
         // Note: the number of infobars is checked immediately after the URL is loaded, unlike in
         // other infobar tests where it is checked after animations have completed. This is because
@@ -84,7 +85,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
         // infobars haven't being shown are invalid.
         Assert.assertEquals(
                 "Wrong infobar count after search", 1, mActivityTestRule.getInfoBars().size());
-        listener.addInfoBarAnimationFinished("InfoBar not added.");
+        listener1.addInfoBarAnimationFinished("InfoBar not added.");
 
         // Infobar should not appear again on the same day.
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
@@ -96,12 +97,12 @@ public class SearchGeolocationDisclosureInfoBarTest {
 
         // Infobar should appear again the next day.
         SearchGeolocationDisclosureTabHelper.setDayOffsetForTesting(1);
-        listener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(listener);
+        InfoBarTestAnimationListener listener2 = new InfoBarTestAnimationListener();
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener2));
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
         Assert.assertEquals(
                 "Wrong infobar count after search", 1, mActivityTestRule.getInfoBars().size());
-        listener.addInfoBarAnimationFinished("InfoBar not added.");
+        listener2.addInfoBarAnimationFinished("InfoBar not added.");
 
         // Infobar should not appear again on the same day.
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
@@ -111,12 +112,12 @@ public class SearchGeolocationDisclosureInfoBarTest {
 
         // Infobar should appear again the next day.
         SearchGeolocationDisclosureTabHelper.setDayOffsetForTesting(2);
-        listener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(listener);
+        InfoBarTestAnimationListener listener3 = new InfoBarTestAnimationListener();
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener3));
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
         Assert.assertEquals(
                 "Wrong infobar count after search", 1, mActivityTestRule.getInfoBars().size());
-        listener.addInfoBarAnimationFinished("InfoBar not added.");
+        listener3.addInfoBarAnimationFinished("InfoBar not added.");
 
         // Infobar should not appear again on the same day.
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
@@ -150,7 +151,7 @@ public class SearchGeolocationDisclosureInfoBarTest {
         // Infobar should appear when doing the first search.
         InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
         InfoBarTestAnimationListener listener = new InfoBarTestAnimationListener();
-        container.addAnimationListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(listener));
         mActivityTestRule.loadUrl(mTestServer.getURL(SEARCH_PAGE));
         Assert.assertEquals(
                 "Wrong infobar count after search", 1, mActivityTestRule.getInfoBars().size());

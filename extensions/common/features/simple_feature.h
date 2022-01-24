@@ -38,15 +38,23 @@ class SimpleFeature : public Feature {
   class ScopedThreadUnsafeAllowlistForTest {
    public:
     explicit ScopedThreadUnsafeAllowlistForTest(const std::string& id);
+
+    ScopedThreadUnsafeAllowlistForTest(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+    ScopedThreadUnsafeAllowlistForTest& operator=(
+        const ScopedThreadUnsafeAllowlistForTest&) = delete;
+
     ~ScopedThreadUnsafeAllowlistForTest();
 
    private:
     std::string previous_id_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedThreadUnsafeAllowlistForTest);
   };
 
   SimpleFeature();
+
+  SimpleFeature(const SimpleFeature&) = delete;
+  SimpleFeature& operator=(const SimpleFeature&) = delete;
+
   ~SimpleFeature() override;
 
   Availability IsAvailableToContext(const Extension* extension,
@@ -252,8 +260,6 @@ class SimpleFeature : public Feature {
   bool component_extensions_auto_granted_;
   bool is_internal_;
   bool disallow_for_service_workers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleFeature);
 };
 
 }  // namespace extensions

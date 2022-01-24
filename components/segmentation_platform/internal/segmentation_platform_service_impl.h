@@ -5,14 +5,18 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_PLATFORM_SERVICE_IMPL_H_
 
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
-
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/platform_options.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -50,6 +54,7 @@ class SegmentSelectorImpl;
 class SignalDatabaseImpl;
 class SignalFilterProcessor;
 class SignalStorageConfig;
+class SegmentScoreProvider;
 class UserActionSignalHandler;
 
 // The internal implementation of the SegmentationPlatformService.
@@ -62,7 +67,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
-      std::unique_ptr<Config> config);
+      std::vector<std::unique_ptr<Config>> configs);
 
   // For testing only.
   SegmentationPlatformServiceImpl(
@@ -76,7 +81,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
-      std::unique_ptr<Config> config);
+      std::vector<std::unique_ptr<Config>> configs);
 
   ~SegmentationPlatformServiceImpl() override;
 
@@ -110,9 +115,12 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   optimization_guide::OptimizationGuideModelProvider* model_provider_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::Clock* clock_;
+  const PlatformOptions platform_options_;
 
   // Config.
-  std::unique_ptr<Config> config_;
+  std::vector<std::unique_ptr<Config>> configs_;
+  base::flat_set<optimization_guide::proto::OptimizationTarget>
+      all_segment_ids_;
 
   // Databases.
   std::unique_ptr<SegmentInfoDatabase> segment_info_database_;
@@ -128,7 +136,11 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // Segment selection.
   // TODO(shaktisahu): Determine safe destruction ordering between
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
-  std::unique_ptr<SegmentSelectorImpl> segment_selector_;
+  base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
+      segment_selectors_;
+
+  // Segment results.
+  std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionSchedulerImpl> model_execution_scheduler_;

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proper messages with broken Unicode.\n`);
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -59,7 +59,7 @@
   function countTextNodes(textContent) {
     ConsoleTestRunner.disableConsoleViewport();
     var count = 0;
-    var viewMessages = Console.ConsoleView.instance()._visibleViewMessages;
+    var viewMessages = Console.ConsoleView.instance().visibleViewMessages;
 
     for (var i = 0; i < viewMessages.length; ++i) {
       var node = viewMessages[i].contentElement();

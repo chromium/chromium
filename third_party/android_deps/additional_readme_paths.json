@@ -137,7 +137,7 @@
     "libs/org_ccil_cowan_tagsoup_tagsoup",
     "libs/org_checkerframework_checker_compat_qual",
     "libs/org_checkerframework_checker_qual",
-    "libs/org_checkerframework_dataflow_shaded",
+    "libs/org_checkerframework_dataflow_errorprone",
     "libs/org_codehaus_mojo_animal_sniffer_annotations",
     "libs/org_codehaus_plexus_plexus_container_default",
     "libs/org_codehaus_plexus_plexus_interpolation",

@@ -16,8 +16,8 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/util/version_loader.h"
@@ -67,6 +67,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
  public:
   UpdateEngineClientImpl() : update_engine_proxy_(nullptr), last_status_() {}
 
+  UpdateEngineClientImpl(const UpdateEngineClientImpl&) = delete;
+  UpdateEngineClientImpl& operator=(const UpdateEngineClientImpl&) = delete;
+
   ~UpdateEngineClientImpl() override = default;
 
   // UpdateEngineClient implementation:
@@ -83,30 +86,25 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   void RequestUpdateCheck(UpdateCheckCallback callback) override {
-    if (!service_available_) {
-      // TODO(alemate): we probably need to remember callbacks only.
-      // When service becomes available, we can do a single request,
-      // and trigger all callbacks with the same return value.
-      pending_tasks_.push_back(
-          base::BindOnce(&UpdateEngineClientImpl::RequestUpdateCheck,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-      return;
-    }
-    // TODO(crbug.com/982438): Use newer version of kAttemptUpdate instead once
-    // it was enhanced with protobuf arguments.
-    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
-                                 update_engine::kAttemptUpdateWithFlags);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString("");  // app_version
-    writer.AppendString("");  // omaha_url
-    writer.AppendInt32(0);    // flags, default is 0 (interactive). See
-                              // org.chromium.UpdateEngineInterface.dbus-xml.
+    update_engine::UpdateParams update_params;
+    update_params.set_app_version("");
+    update_params.set_omaha_url("");
+    // Default is interactive as |true|, but explicitly set here.
+    update_params.mutable_update_flags()->set_non_interactive(false);
 
-    VLOG(1) << "Requesting an update check";
-    update_engine_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UpdateEngineClientImpl::OnRequestUpdateCheck,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    RequestUpdateCheckInternal(std::move(callback), std::move(update_params));
+  }
+
+  void RequestUpdateCheckWithoutApplying(
+      UpdateCheckCallback callback) override {
+    update_engine::UpdateParams update_params;
+    update_params.set_app_version("");
+    update_params.set_omaha_url("");
+    // Default is interactive as |true|, but explicitly set here.
+    update_params.mutable_update_flags()->set_non_interactive(false);
+    update_params.set_skip_applying(true);
+
+    RequestUpdateCheckInternal(std::move(callback), std::move(update_params));
   }
 
   void RebootAfterUpdate() override {
@@ -301,11 +299,39 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
+  void RequestUpdateCheckInternal(UpdateCheckCallback callback,
+                                  update_engine::UpdateParams update_params) {
+    if (!service_available_) {
+      pending_tasks_.push_back(
+          base::BindOnce(&UpdateEngineClientImpl::RequestUpdateCheckInternal,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(update_params)));
+      return;
+    }
+    dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
+                                 update_engine::kUpdate);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(update_params)) {
+      LOG(ERROR) << "Failed to encode UpdateParams protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), UPDATE_RESULT_FAILED));
+      return;
+    }
+
+    VLOG(1) << "Requesting an update";
+    // Bind the same callback method for reuse.
+    update_engine_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&UpdateEngineClientImpl::OnRequestUpdateCheck,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   // Called when a response for RequestUpdateCheck() is received.
   void OnRequestUpdateCheck(UpdateCheckCallback callback,
                             dbus::Response* response) {
     if (!response) {
-      LOG(ERROR) << "Failed to request update check";
+      LOG(ERROR) << "Failed to request update";
       std::move(callback).Run(UPDATE_RESULT_FAILED);
       return;
     }
@@ -420,8 +446,8 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
     EolInfo eol_info;
     if (status.eol_date() > 0) {
-      eol_info.eol_date = base::Time::UnixEpoch() +
-                          base::TimeDelta::FromDays(status.eol_date());
+      eol_info.eol_date =
+          base::Time::UnixEpoch() + base::Days(status.eol_date());
     }
     std::move(callback).Run(eol_info);
   }
@@ -505,8 +531,6 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<UpdateEngineClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClientImpl);
 };
 
 // The UpdateEngineClient implementation used on Linux desktop,
@@ -516,6 +540,10 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
   UpdateEngineClientStubImpl()
       : current_channel_(kReleaseChannelBeta),
         target_channel_(kReleaseChannelBeta) {}
+
+  UpdateEngineClientStubImpl(const UpdateEngineClientStubImpl&) = delete;
+  UpdateEngineClientStubImpl& operator=(const UpdateEngineClientStubImpl&) =
+      delete;
 
   // UpdateEngineClient implementation:
   void Init(dbus::Bus* bus) override {}
@@ -532,7 +560,8 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
     return observers_.HasObserver(observer);
   }
 
-  void RequestUpdateCheck(UpdateCheckCallback callback) override {
+  void RequestUpdateCheckInternal(UpdateCheckCallback callback,
+                                  bool apply_update) {
     if (last_status_.current_operation() != update_engine::Operation::IDLE) {
       std::move(callback).Run(UPDATE_RESULT_FAILED);
       return;
@@ -548,8 +577,17 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
-                       weak_factory_.GetWeakPtr()),
-        base::TimeDelta::FromMilliseconds(kStateTransitionDefaultDelayMs));
+                       weak_factory_.GetWeakPtr(), apply_update),
+        base::Milliseconds(kStateTransitionDefaultDelayMs));
+  }
+
+  void RequestUpdateCheck(UpdateCheckCallback callback) override {
+    RequestUpdateCheckInternal(std::move(callback), true);
+  }
+
+  void RequestUpdateCheckWithoutApplying(
+      UpdateCheckCallback callback) override {
+    RequestUpdateCheckInternal(std::move(callback), false);
   }
 
   void RebootAfterUpdate() override {}
@@ -599,7 +637,7 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
   }
 
  private:
-  void StateTransition() {
+  void StateTransition(bool apply_update) {
     update_engine::Operation next_operation = update_engine::Operation::ERROR;
     int delay_ms = kStateTransitionDefaultDelayMs;
     switch (last_status_.current_operation()) {
@@ -615,7 +653,8 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
         next_operation = update_engine::Operation::UPDATE_AVAILABLE;
         break;
       case update_engine::Operation::UPDATE_AVAILABLE:
-        next_operation = update_engine::Operation::DOWNLOADING;
+        next_operation = apply_update ? update_engine::Operation::DOWNLOADING
+                                      : update_engine::Operation::IDLE;
         break;
       case update_engine::Operation::DOWNLOADING:
         if (last_status_.progress() >= 1.0) {
@@ -644,8 +683,8 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&UpdateEngineClientStubImpl::StateTransition,
-                         weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(delay_ms));
+                         weak_factory_.GetWeakPtr(), apply_update),
+          base::Milliseconds(delay_ms));
     }
   }
 
@@ -657,8 +696,6 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
   update_engine::StatusResult last_status_;
 
   base::WeakPtrFactory<UpdateEngineClientStubImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClientStubImpl);
 };
 
 UpdateEngineClient::UpdateEngineClient() = default;

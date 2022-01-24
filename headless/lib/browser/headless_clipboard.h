@@ -21,6 +21,8 @@ namespace headless {
 class HeadlessClipboard : public ui::Clipboard {
  public:
   HeadlessClipboard();
+  HeadlessClipboard(const HeadlessClipboard&) = delete;
+  HeadlessClipboard& operator=(const HeadlessClipboard&) = delete;
   ~HeadlessClipboard() override;
 
  private:
@@ -30,6 +32,9 @@ class HeadlessClipboard : public ui::Clipboard {
       ui::ClipboardBuffer buffer) const override;
   const ui::ClipboardSequenceNumberToken& GetSequenceNumber(
       ui::ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ui::ClipboardBuffer buffer,
+      const ui::DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(
       const ui::ClipboardFormatType& format,
       ui::ClipboardBuffer buffer,
@@ -38,9 +43,6 @@ class HeadlessClipboard : public ui::Clipboard {
   void ReadAvailableTypes(ui::ClipboardBuffer buffer,
                           const ui::DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ui::ClipboardBuffer buffer,
-      const ui::DataTransferEndpoint* data_dst) const override;
   void ReadText(ui::ClipboardBuffer buffer,
                 const ui::DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -62,9 +64,6 @@ class HeadlessClipboard : public ui::Clipboard {
   void ReadPng(ui::ClipboardBuffer buffer,
                const ui::DataTransferEndpoint* data_dst,
                ReadPngCallback callback) const override;
-  void ReadImage(ui::ClipboardBuffer buffer,
-                 const ui::DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const std::u16string& type,
                       const ui::DataTransferEndpoint* data_dst,
@@ -125,8 +124,6 @@ class HeadlessClipboard : public ui::Clipboard {
 
   ui::ClipboardBuffer default_store_buffer_;
   mutable std::map<ui::ClipboardBuffer, DataStore> stores_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessClipboard);
 };
 
 }  // namespace headless

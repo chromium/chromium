@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 class GoogleServiceAuthError;
@@ -30,9 +28,6 @@ namespace ash {
 // that are not longer needed.
 class EnterpriseEnrollmentHelper {
  public:
-  using EnrollmentCallback =
-      policy::DeviceCloudPolicyInitializer::EnrollmentCallback;
-
   // Enumeration of the possible errors that can occur during enrollment which
   // are not covered by GoogleServiceAuthError or EnrollmentStatus.
   enum OtherError {
@@ -79,6 +74,10 @@ class EnterpriseEnrollmentHelper {
   static void SetEnrollmentHelperMock(
       std::unique_ptr<EnterpriseEnrollmentHelper> mock);
 
+  EnterpriseEnrollmentHelper(const EnterpriseEnrollmentHelper&) = delete;
+  EnterpriseEnrollmentHelper& operator=(const EnterpriseEnrollmentHelper&) =
+      delete;
+
   virtual ~EnterpriseEnrollmentHelper();
 
   // Starts enterprise enrollment using `auth_code`. First tries to exchange the
@@ -93,12 +92,6 @@ class EnterpriseEnrollmentHelper {
   // EnrollUsingToken can be called only once during this object's lifetime, and
   // only if none of the EnrollUsing* was called before.
   virtual void EnrollUsingToken(const std::string& token) = 0;
-
-  // Starts enterprise enrollment using enrollment `token` for authentication.
-  // This flow is used in OOBE configuration flow.
-  // EnrollUsingWorkflowToken can be called only once during this object's
-  // lifetime, and only if none of the EnrollUsing* was called before.
-  virtual void EnrollUsingEnrollmentToken(const std::string& token) = 0;
 
   // Starts enterprise enrollment using PCA attestation.
   // EnrollUsingAttestation can be called only once during the object's
@@ -150,8 +143,6 @@ class EnterpriseEnrollmentHelper {
 
   // If this is not nullptr, then it will be used to as next enrollment helper.
   static EnterpriseEnrollmentHelper* mock_enrollment_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentHelper);
 };
 
 }  // namespace ash

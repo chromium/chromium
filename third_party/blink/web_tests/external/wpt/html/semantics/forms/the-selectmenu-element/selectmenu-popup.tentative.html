@@ -15,19 +15,27 @@
 </selectmenu>
 
 <selectmenu id="selectMenu1">
-  <div slot="button" part="button" id="selectMenu1-button">
+  <div slot="button" behavior="button" id="selectMenu1-button">
     Custom button
   </div>
-  <popup slot="listbox" part="listbox">
+  <popup slot="listbox" behavior="listbox">
     <option>one</option>
     <option id="selectMenu1-child2">two</option>
-    <div part="option" id="selectMenu1-child3">three</div>
+    <option id="selectMenu1-child3">three</option>
   </popup>
 </selectmenu>
 
 <selectmenu id="selectMenu2">
   <!-- Swap out the listbox part without providing a replacement -->
   <div slot="listbox"></div>
+</selectmenu>
+
+<selectmenu id="selectMenu3">
+  <div slot="listbox">
+    <popup behavior="listbox" id="selectMenu3-listbox">
+      <option>one</option>
+    </popup>
+  </div>
 </selectmenu>
 <script>
 
@@ -75,7 +83,7 @@
     assert_equals(selectMenu1.open, true);
     await clickOn(selectMenu1Child3);
     assert_equals(selectMenu1.value, "three", "Clicking a <div part='option'> should change the value");
-      assert_equals(selectMenu1.open, false);
+    assert_equals(selectMenu1.open, false);
   }, "With custom button and popup: opening the popup and clicking an option should change the selectmenu's value");
 
   promise_test(async () => {
@@ -83,6 +91,15 @@
     await clickOn(selectMenu2);
     assert_equals(selectMenu2.value, "");
     assert_equals(selectMenu2.open, false);
-
   }, "Clicking a popup with no listbox part does nothing");
+
+  promise_test(async () => {
+    const selectMenu3 = document.getElementById("selectMenu3");
+    const selectMenu3Listbox = document.getElementById("selectMenu3-listbox");
+    selectMenu3Listbox.remove();
+
+    await clickOn(selectMenu3);
+    assert_equals(selectMenu3.value, "");
+    assert_equals(selectMenu3.open, false);
+  }, "Clicking a popup with a listbox that was removed does nothing");
 </script>

@@ -11,17 +11,15 @@ import("//ios/build/config.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//tools/grit/repack.gni")
 
+assert(ios_deployment_target == "13.0",
+       "content_widget_extension must target iOS 13.0")
+
 assert(
     ios_enable_content_widget_extension,
     "ios_enable_content_widget_extension must be true to depend on //ios/chrome/content_widget_extension")
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
-
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args = [ "--lock-to-version=$ios_lock_to_version" ]
-  }
 }
 
 compile_entitlements("entitlements") {
@@ -40,14 +38,13 @@ ios_appex_bundle("content_widget_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
   ]
 
   assert_no_deps = ios_extension_assert_no_deps
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.ContentTodayExtension"
+  bundle_identifier = "$chromium_bundle_id.ContentTodayExtension"
 }
 
 source_set("content_widget") {
@@ -79,16 +76,6 @@ source_set("content_widget") {
 
   assert_no_deps = [ "//ios/chrome/browser" ]
 
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "content_widget_view_controller_unittest.mm" ]
-  deps = [
-    ":content_widget",
-    "//testing/gtest",
-  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
@@ -18,14 +19,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_icon_manager.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/webapk.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
@@ -58,8 +59,7 @@ const char kMinimumIconSize = 64;
 const uint64_t kMurmur2HashSeed = 0;
 
 // Time to wait for a response from the Web APK minter.
-constexpr base::TimeDelta kMinterResponseTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kMinterResponseTimeout = base::Seconds(60);
 
 constexpr char kWebApkServerUrl[] =
     "https://webapk.googleapis.com/v1/webApks?key=";
@@ -86,7 +86,11 @@ constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
           cookies_allowed: NO
           cookies_store: "N/A"
           setting: "No setting apart from disabling ARC"
-          policy_exception_justification = "Not implemented"
+          chrome_policy: {
+            ArcAppToWebAppSharingEnabled: {
+              ArcAppToWebAppSharingEnabled: true
+            }
+          }
         }
       )");
 
@@ -235,7 +239,7 @@ namespace apps {
 WebApkInstallTask::WebApkInstallTask(Profile* profile,
                                      const std::string& app_id)
     : profile_(profile),
-      web_app_provider_(web_app::WebAppProvider::Get(profile_)),
+      web_app_provider_(web_app::WebAppProvider::GetDeprecated(profile_)),
       app_id_(app_id),
       package_name_to_update_(
           webapk_prefs::GetWebApkPackageName(profile_, app_id_)),
@@ -251,10 +255,13 @@ void WebApkInstallTask::Start(ResultCallback callback) {
 
   auto& registrar = web_app_provider_->registrar();
 
-  // This is already checked in WebApkManager, check again in case anything
-  // changed while the install request was queued.
+  // Installation & share target are already checked in WebApkManager, check
+  // again in case anything changed while the install request was queued.
+  // Manifest URL is always set for apps installed or updated in recent
+  // versions, but might be missing for older apps.
   if (!registrar.IsInstalled(app_id_) ||
-      !registrar.GetAppShareTarget(app_id_)) {
+      !registrar.GetAppShareTarget(app_id_) ||
+      registrar.GetAppManifestUrl(app_id_).is_empty()) {
     DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
   }
@@ -326,7 +333,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   webapk->set_android_abi(GetArcAbi(arc_features.value()));
 
   auto& icon_manager = web_app_provider_->icon_manager();
-  absl::optional<web_app::AppIconManager::IconSizeAndPurpose>
+  absl::optional<web_app::WebAppIconManager::IconSizeAndPurpose>
       icon_size_and_purpose = icon_manager.FindIconMatchBigger(
           app_id_, {IconPurpose::MASKABLE, IconPurpose::ANY}, kMinimumIconSize);
 
@@ -341,14 +348,15 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   // the manifest. Since we can't be perfect, it's okay to be roughly correct
   // and just send any URL of the correct purpose.
   auto& registrar = web_app_provider_->registrar();
-  const auto& icon_infos = registrar.GetAppIconInfos(app_id_);
+  const auto& manifest_icons = registrar.GetAppIconInfos(app_id_);
   auto it = std::find_if(
-      icon_infos.begin(), icon_infos.end(),
-      [&icon_size_and_purpose](const WebApplicationIconInfo& info) {
-        return info.purpose == icon_size_and_purpose->purpose;
+      manifest_icons.begin(), manifest_icons.end(),
+      [&icon_size_and_purpose](const apps::IconInfo& info) {
+        return info.purpose ==
+               ManifestPurposeToIconInfoPurpose(icon_size_and_purpose->purpose);
       });
 
-  if (it == icon_infos.end()) {
+  if (it == manifest_icons.end()) {
     LOG(ERROR) << "Could not find URL for icon";
     DeliverResult(WebApkInstallStatus::kAppInvalid);
     return;
@@ -453,12 +461,19 @@ void WebApkInstallTask::OnUrlLoaderComplete(
     std::unique_ptr<std::string> response_body) {
   timer_.Stop();
 
-  int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
+  int response_or_error_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
+    response_or_error_code =
+        url_loader_->ResponseInfo()->headers->response_code();
+  } else {
+    response_or_error_code = url_loader_->NetError();
+  }
+  base::UmaHistogramSparse(kWebApkMinterErrorCodeHistogram,
+                           response_or_error_code);
 
-  if (!response_body || response_code != net::HTTP_OK) {
-    LOG(WARNING) << "WebAPK server returned response code " << response_code;
+  if (!response_body || response_or_error_code != net::HTTP_OK) {
+    LOG(WARNING) << "WebAPK server request returned error "
+                 << response_or_error_code;
     DeliverResult(WebApkInstallStatus::kNetworkError);
     return;
   }

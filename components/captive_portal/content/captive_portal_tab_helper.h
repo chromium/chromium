@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,6 +55,9 @@ class CaptivePortalTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<CaptivePortalTabHelper> {
  public:
+  CaptivePortalTabHelper(const CaptivePortalTabHelper&) = delete;
+  CaptivePortalTabHelper& operator=(const CaptivePortalTabHelper&) = delete;
+
   ~CaptivePortalTabHelper() override;
 
   // content::WebContentsObserver:
@@ -117,8 +119,6 @@ class CaptivePortalTabHelper
   base::CallbackListSubscription subscription_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabHelper);
 };
 
 }  // namespace captive_portal

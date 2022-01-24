@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/invalidation/public/invalidation.h"
@@ -47,7 +46,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
     RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
     ~RestoredLocalTransportData();
 
-    std::string keystore_encryption_bootstrap_token;
     std::map<ModelType, int64_t> invalidation_versions;
 
     // Initial authoritative values (usually read from prefs).
@@ -62,6 +60,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,
                     const base::WeakPtr<SyncEngineImpl>& host);
+
+  SyncEngineBackend(const SyncEngineBackend&) = delete;
+  SyncEngineBackend& operator=(const SyncEngineBackend&) = delete;
 
   // SyncManager::Observer implementation.  The Backend just acts like an air
   // traffic controller here, forwarding incoming messages to appropriate
@@ -144,8 +145,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   void DisableProtocolEventForwarding();
 
   // Notify the syncer that the cookie jar has changed.
-  void DoOnCookieJarChanged(bool account_mismatch,
-                            base::OnceClosure callback);
+  void DoOnCookieJarChanged(bool account_mismatch, base::OnceClosure callback);
 
   // Notify about change in client id.
   void DoOnInvalidatorClientIdChange(const std::string& client_id);
@@ -218,8 +218,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncEngineBackend> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineBackend);
 };
 
 }  // namespace syncer

@@ -24,21 +24,24 @@ using ::testing::UnorderedElementsAre;
 TEST(StringsExtractTest, AsciiExtract) {
   constexpr char blob[] = "\x80\x00\xABTestAsciiString\x99\xAA";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestAsciiString"));
 }
 
 TEST(StringsExtractTest, AsciiExtractEnd) {
   constexpr char blob[] = "\x80\x00\xABTestAsciiString";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestAsciiString"));
 }
 
 TEST(StringsExtractTest, AsciiExtractBegin) {
   constexpr char blob[] = "TestAsciiString\x99\xAA\x80\x00\xAB";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestAsciiString"));
 }
 
@@ -46,7 +49,8 @@ TEST(StringsExtractTest, UnicodeExtract) {
   constexpr char blob[] =
       "\x80\x00\xABT\0e\0s\0t\0U\0n\0i\0c\0o\0d\0e\0S\0t\0r\0i\0n\0g\0\x99\xAA";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestUnicodeString"));
 }
 
@@ -54,7 +58,8 @@ TEST(StringsExtractTest, UnicodeExtractEnd) {
   constexpr char blob[] =
       "\x80\x00\xABT\0e\0s\0t\0U\0n\0i\0c\0o\0d\0e\0S\0t\0r\0i\0n\0g\0";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestUnicodeString"));
 }
 
@@ -62,7 +67,8 @@ TEST(StringsExtractTest, UnicodeExtractBegin) {
   constexpr char blob[] =
       "T\0e\0s\0t\0U\0n\0i\0c\0o\0d\0e\0S\0t\0r\0i\0n\0g\0\x99\xAA\x80\x00\xAB";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings, UnorderedElementsAre("TestUnicodeString"));
 }
 
@@ -71,7 +77,8 @@ TEST(StringsExtractTest, MixedExtract) {
       "\x80\x00\xABTestAsciiString\x99\xAAT\0e\0s\0t\0U\0n\0i\0c\0o\0d\0e\0S\0t"
       "\0r\0i\0n\0g\0\x99\xAA\x80\x00\xAB";
   std::set<std::string> strings;
-  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4, &strings);
+  maldoca::GetStrings(absl::string_view(blob, sizeof(blob) - 1), 4,
+                                &strings);
   EXPECT_THAT(strings,
               UnorderedElementsAre("TestAsciiString", "TestUnicodeString"));
 }

@@ -24,6 +24,10 @@ class GenericLogisticRegressionInference;
 // Predictor class for models that output a binary decision.
 class BinaryClassifierPredictor : public BasePredictor {
  public:
+  BinaryClassifierPredictor(const BinaryClassifierPredictor&) = delete;
+  BinaryClassifierPredictor& operator=(const BinaryClassifierPredictor&) =
+      delete;
+
   ~BinaryClassifierPredictor() override;
 
   // Returns an new predictor instance with the given |config| and initialize
@@ -59,8 +63,6 @@ class BinaryClassifierPredictor : public BasePredictor {
   // TODO(hamelphi): Use an abstract BinaryClassifierInferenceModule in order to
   // generalize to other models.
   std::unique_ptr<GenericLogisticRegressionInference> inference_module_;
-
-  DISALLOW_COPY_AND_ASSIGN(BinaryClassifierPredictor);
 };
 
 }  // namespace assist_ranker

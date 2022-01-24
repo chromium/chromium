@@ -29,8 +29,7 @@ public abstract class BasicNativePage implements NativePage {
 
     protected BasicNativePage(NativePageHost host) {
         mHost = host;
-        mBackgroundColor =
-                ChromeColors.getPrimaryBackgroundColor(host.getContext().getResources(), false);
+        mBackgroundColor = ChromeColors.getPrimaryBackgroundColor(host.getContext(), false);
     }
 
     /**

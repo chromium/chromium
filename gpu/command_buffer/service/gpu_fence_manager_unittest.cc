@@ -24,9 +24,10 @@
 #include <unistd.h>
 #endif
 
+using ::testing::_;
+using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
-using ::testing::_;
 
 namespace gpu {
 namespace gles2 {
@@ -106,6 +107,9 @@ TEST_F(GpuFenceManagerTest, Basic) {
       .Times(1)
       .WillOnce(Return(kDummySync))
       .RetiresOnSaturation();
+  EXPECT_CALL(*egl_, GetSyncAttribKHR(_, kDummySync, EGL_SYNC_STATUS_KHR, _))
+      .WillRepeatedly(
+          DoAll(SetArgPointee<3>(EGL_UNSIGNALED_KHR), Return(EGL_TRUE)));
   EXPECT_CALL(*gl_, Flush()).Times(1).RetiresOnSaturation();
   EXPECT_TRUE(manager_->CreateGpuFence(kClient1Id));
   EXPECT_TRUE(manager_->IsValidGpuFence(kClient1Id));
@@ -202,6 +206,9 @@ TEST_F(GpuFenceManagerTest, Duplication) {
       .Times(1)
       .WillOnce(Return(kDummySync))
       .RetiresOnSaturation();
+  EXPECT_CALL(*egl_, GetSyncAttribKHR(_, kDummySync, EGL_SYNC_STATUS_KHR, _))
+      .WillRepeatedly(
+          DoAll(SetArgPointee<3>(EGL_UNSIGNALED_KHR), Return(EGL_TRUE)));
   EXPECT_CALL(*gl_, Flush()).Times(1).RetiresOnSaturation();
   EXPECT_TRUE(
       manager_->CreateGpuFenceFromHandle(kClient1Id, std::move(handle)));

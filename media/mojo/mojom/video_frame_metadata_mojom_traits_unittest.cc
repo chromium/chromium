@@ -5,7 +5,6 @@
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -24,6 +23,11 @@ class VideoFrameMetadataStructTraitsTest
       public mojom::VideoFrameMetadataTraitsTestService {
  public:
   VideoFrameMetadataStructTraitsTest() = default;
+
+  VideoFrameMetadataStructTraitsTest(
+      const VideoFrameMetadataStructTraitsTest&) = delete;
+  VideoFrameMetadataStructTraitsTest& operator=(
+      const VideoFrameMetadataStructTraitsTest&) = delete;
 
  protected:
   mojo::Remote<mojom::VideoFrameMetadataTraitsTestService>
@@ -48,8 +52,6 @@ class VideoFrameMetadataStructTraitsTest
 
   base::test::TaskEnvironment task_environment_;
   mojo::ReceiverSet<VideoFrameMetadataTraitsTestService> traits_test_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameMetadataStructTraitsTest);
 };
 
 }  // namespace
@@ -70,7 +72,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
-  EXPECT_FALSE(metadata_out.hw_protected_validation_id);
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
@@ -100,7 +101,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // ints
   metadata_in.capture_counter = 123;
-  metadata_in.hw_protected_validation_id = 456;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
@@ -136,17 +136,17 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // base::TimeTicks
   base::TimeTicks now = base::TimeTicks::Now();
-  metadata_in.receive_time = now + base::TimeDelta::FromMilliseconds(10);
-  metadata_in.capture_begin_time = now + base::TimeDelta::FromMilliseconds(20);
-  metadata_in.capture_end_time = now + base::TimeDelta::FromMilliseconds(30);
-  metadata_in.decode_begin_time = now + base::TimeDelta::FromMilliseconds(40);
-  metadata_in.decode_end_time = now + base::TimeDelta::FromMilliseconds(50);
-  metadata_in.reference_time = now + base::TimeDelta::FromMilliseconds(60);
+  metadata_in.receive_time = now + base::Milliseconds(10);
+  metadata_in.capture_begin_time = now + base::Milliseconds(20);
+  metadata_in.capture_end_time = now + base::Milliseconds(30);
+  metadata_in.decode_begin_time = now + base::Milliseconds(40);
+  metadata_in.decode_end_time = now + base::Milliseconds(50);
+  metadata_in.reference_time = now + base::Milliseconds(60);
 
   // base::TimeDeltas
-  metadata_in.processing_time = base::TimeDelta::FromMilliseconds(500);
-  metadata_in.frame_duration = base::TimeDelta::FromMilliseconds(16);
-  metadata_in.wallclock_frame_duration = base::TimeDelta::FromMilliseconds(17);
+  metadata_in.processing_time = base::Milliseconds(500);
+  metadata_in.frame_duration = base::Milliseconds(16);
+  metadata_in.wallclock_frame_duration = base::Milliseconds(17);
 
   VideoFrameMetadata metadata_out;
 
@@ -163,8 +163,6 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
   EXPECT_EQ(metadata_in.hw_protected, metadata_out.hw_protected);
-  EXPECT_EQ(metadata_in.hw_protected_validation_id,
-            metadata_out.hw_protected_validation_id);
   EXPECT_EQ(metadata_in.power_efficient, metadata_out.power_efficient);
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);

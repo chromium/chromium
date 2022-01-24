@@ -16,7 +16,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/message_center/test_notifier_settings_controller.h"
-#include "base/macros.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -26,12 +25,6 @@ class PrefService;
 namespace aura {
 class Window;
 }
-
-namespace chromeos {
-namespace input_method {
-class MockInputMethodManager;
-}  // namespace input_method
-}  // namespace chromeos
 
 namespace display {
 class Display;
@@ -51,6 +44,11 @@ class AppListTestHelper;
 class AmbientAshTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegateProvider;
+class TestWallpaperControllerClient;
+
+namespace input_method {
+class MockInputMethodManager;
+}
 
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
@@ -73,6 +71,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   // single-threaded phase without a backing task environment or ViewsDelegate,
   // and must not create those lest the caller wish to do so.
   explicit AshTestHelper(ui::ContextFactory* context_factory = nullptr);
+
+  AshTestHelper(const AshTestHelper&) = delete;
+  AshTestHelper& operator=(const AshTestHelper&) = delete;
+
   ~AshTestHelper() override;
 
   // Calls through to SetUp() below, see comments there.
@@ -157,13 +159,11 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<TestKeyboardControllerObserver>
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
+  std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
 
   // InputMethodManager is not owned by this class. It is stored in a
   // global that is registered via InputMethodManager::Initialize().
-  chromeos::input_method::MockInputMethodManager* input_method_manager_ =
-      nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestHelper);
+  input_method::MockInputMethodManager* input_method_manager_ = nullptr;
 };
 
 }  // namespace ash

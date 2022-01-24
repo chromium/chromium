@@ -37,6 +37,9 @@ extern const char kAutomaticSettingsResetLearnMoreURL[];
 // "Learn more" URL for Advanced Protection download warnings.
 extern const char kAdvancedProtectionDownloadLearnMoreURL[];
 
+// "Chrome Settings" URL for website notifications linked out from OSSettings.
+extern const char kAppNotificationsBrowserSettingsURL[];
+
 // The URL for providing help when the Bluetooth adapter is off.
 extern const char kBluetoothAdapterOffHelpURL[];
 
@@ -163,6 +166,9 @@ extern const char kGoogleAccountURL[];
 // URL of the Google Account chooser.
 extern const char kGoogleAccountChooserURL[];
 
+// URL of the Google Account page showing the known user devices.
+extern const char kGoogleAccountDeviceActivityURL[];
+
 // URL of the Google Password Manager.
 extern const char kGooglePasswordManagerURL[];
 
@@ -287,6 +293,9 @@ extern const char kArcPrivacyPolicyPathFormat[];
 // Relative to |kChromeOSAssetPath|.
 extern const char kArcTermsPathFormat[];
 
+// The URL for the "Learn more" link during Bluetooth pairing.
+extern const char kBluetoothPairingLearnMoreUrl[];
+
 // Accessibility help link for Chrome.
 extern const char kChromeAccessibilityHelpURL[];
 
@@ -300,8 +309,6 @@ extern const char kChromeOSGestureEducationHelpURL[];
 
 // Palette help link for Chrome.
 extern const char kChromePaletteHelpURL[];
-
-extern const char kCrosScheme[];
 
 extern const char kCupsPrintLearnMoreURL[];
 
@@ -340,6 +347,10 @@ extern const char kAndroidMessagesLearnMoreURL[];
 // The URL for the "Learn more" link in the language settings.
 extern const char kLanguageSettingsLearnMoreUrl[];
 
+// The URL for the "Learn more" link in language settings regarding language
+// packs.
+extern const char kLanguagePacksLearnMoreURL[];
+
 // The URL for the Learn More page about enterprise enrolled devices.
 extern const char kLearnMoreEnterpriseURL[];
 
@@ -368,9 +379,11 @@ extern const char kArcTermsURLPath[];
 // The URL path to offline ARC++ Privacy Policy.
 extern const char kArcPrivacyPolicyURLPath[];
 
-extern const char kOnlineEulaURLPath[];
+// The URL path to Online Google EULA.
+extern const char kGoogleEulaOnlineURLPath[];
 
-extern const char kAdditionalToSOnlineURLPath[];
+// The URL path to Online Chrome and Chrome OS terms of service.
+extern const char kCrosEulaOnlineURLPath[];
 
 // The URL for the "learn more" link for TPM firmware update.
 extern const char kTPMFirmwareUpdateLearnMoreURL[];
@@ -430,6 +443,9 @@ extern const char kChromeSyncLearnMoreURL[];
 // The URL for the "Learn more" page for the outdated plugin infobar.
 extern const char kOutdatedPluginLearnMoreURL[];
 #endif
+
+// "Learn more" URL for the phone hub notifications and apps access setup.
+extern const char kPhoneHubPermissionLearnMoreURL[];
 
 // Please do not append entries here. See the comments at the top of the file.
 

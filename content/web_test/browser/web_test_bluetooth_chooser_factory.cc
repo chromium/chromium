@@ -4,7 +4,6 @@
 
 #include "content/web_test/browser/web_test_bluetooth_chooser_factory.h"
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/origin.h"
@@ -23,6 +22,9 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
     DCHECK(factory);
     factory->choosers_.insert(this);
   }
+
+  Chooser(const Chooser&) = delete;
+  Chooser& operator=(const Chooser&) = delete;
 
   ~Chooser() override {
     CheckFactory();
@@ -87,8 +89,6 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
   }
 
   base::WeakPtr<WebTestBluetoothChooserFactory> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Chooser);
 };
 
 WebTestBluetoothChooserFactory::WebTestBluetoothChooserFactory() {}

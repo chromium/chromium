@@ -23,6 +23,9 @@ class ScopedSelectObject {
     DCHECK(oldobj_ != NULL && oldobj_ != HGDI_ERROR);
   }
 
+  ScopedSelectObject(const ScopedSelectObject&) = delete;
+  ScopedSelectObject& operator=(const ScopedSelectObject&) = delete;
+
   ~ScopedSelectObject() {
     HGDIOBJ object = SelectObject(hdc_, oldobj_);
     DCHECK((GetObjectType(oldobj_) != OBJ_REGION && object != NULL) ||
@@ -32,8 +35,6 @@ class ScopedSelectObject {
  private:
   HDC hdc_;
   HGDIOBJ oldobj_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSelectObject);
 };
 
 }  // namespace win

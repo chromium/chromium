@@ -12,17 +12,14 @@
 #include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/account_manager_facade_factory.h"
 #include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
@@ -32,6 +29,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -264,16 +262,16 @@ void InlineLoginHandlerChromeOS::RegisterProfilePrefs(
 void InlineLoginHandlerChromeOS::RegisterMessages() {
   InlineLoginHandler::RegisterMessages();
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showIncognito",
       base::BindRepeating(
           &InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getAccounts",
       base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "skipWelcomePage",
       base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
                           base::Unretained(this)));
@@ -341,30 +339,11 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   // Child user added a secondary account.
   if (profile->IsChild() &&
       !gaia::AreEmailsSame(primary_account_email, email)) {
-    if (!base::FeatureList::IsEnabled(
-            supervised_users::kEduCoexistenceFlowV2)) {
-      const std::string* rapt =
-          edu_login_params.FindStringKey("reAuthProofToken");
-      CHECK(rapt);
-      const std::string* parentId =
-          edu_login_params.FindStringKey("parentObfuscatedGaiaId");
-      CHECK(parentId);
-
-      // ChildSigninHelper deletes itself after its work is done.
-      new ChildSigninHelper(
-          account_manager, account_manager_mojo_service, close_dialog_closure_,
-          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                             gaia_id),
-          identity_manager, profile->GetPrefs(), *parentId, *rapt);
-    } else {
-      new EduCoexistenceChildSigninHelper(
-          account_manager, account_manager_mojo_service,
-          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                             gaia_id),
-          profile->GetPrefs(), web_ui());
-    }
+    new EduCoexistenceChildSigninHelper(
+        account_manager, account_manager_mojo_service,
+        profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
+        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id),
+        profile->GetPrefs(), web_ui());
 
     return;
   }
@@ -401,7 +380,7 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
     const std::vector<::account_manager::Account>& accounts) {
   base::ListValue account_emails;
   for (const auto& account : accounts) {
-    if (account.key.account_type ==
+    if (account.key.account_type() ==
         ::account_manager::AccountType::kActiveDirectory) {
       // Don't send Active Directory account email to Gaia.
       account_emails.Append(AnonymizeAccountEmail(account.raw_email));
@@ -416,8 +395,9 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
 
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
     const base::ListValue* args) {
-  bool skip;
-  CHECK(args->GetBoolean(0, &skip));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool skip = list[0].GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
       chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
 }

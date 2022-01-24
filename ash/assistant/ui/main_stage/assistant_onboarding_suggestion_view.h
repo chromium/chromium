@@ -47,6 +47,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   void ChildPreferredSizeChanged(views::View* child) override;
   void AddLayerBeneathView(ui::Layer* layer) override;
   void RemoveLayerBeneathView(ui::Layer* layer) override;
+  void OnThemeChanged() override;
 
   // Returns the icon for the suggestion.
   gfx::ImageSkia GetIcon() const;
@@ -63,6 +64,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   AssistantViewDelegate* const delegate_;  // Owned by AssistantController.
   const base::UnguessableToken suggestion_id_;
   const int index_;
+  GURL url_;
 
   // Owned by view hierarchy.
   views::ImageView* icon_ = nullptr;

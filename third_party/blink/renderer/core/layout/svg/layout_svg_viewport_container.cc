@@ -44,11 +44,11 @@ void LayoutSVGViewportContainer::UpdateLayout() {
 
   if (SelfNeedsLayout()) {
     SVGLengthContext length_context(svg);
-    FloatRect old_viewport = viewport_;
-    viewport_ = FloatRect(svg->x()->CurrentValue()->Value(length_context),
-                          svg->y()->CurrentValue()->Value(length_context),
-                          svg->width()->CurrentValue()->Value(length_context),
-                          svg->height()->CurrentValue()->Value(length_context));
+    gfx::RectF old_viewport = viewport_;
+    viewport_.SetRect(svg->x()->CurrentValue()->Value(length_context),
+                      svg->y()->CurrentValue()->Value(length_context),
+                      svg->width()->CurrentValue()->Value(length_context),
+                      svg->height()->CurrentValue()->Value(length_context));
     if (old_viewport != viewport_) {
       SetNeedsBoundariesUpdate();
       // The transform depends on viewport values.
@@ -76,8 +76,8 @@ SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform(
   const auto* svg = To<SVGSVGElement>(GetElement());
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
   local_to_parent_transform_ =
-      AffineTransform::Translation(viewport_.X(), viewport_.Y()) *
-      svg->ViewBoxToViewTransform(viewport_.Size());
+      AffineTransform::Translation(viewport_.x(), viewport_.y()) *
+      svg->ViewBoxToViewTransform(viewport_.size());
   needs_transform_update_ = false;
   return change_detector.ComputeChange(local_to_parent_transform_);
 }

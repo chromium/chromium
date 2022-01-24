@@ -285,7 +285,7 @@ bool WasAbortedInForeground(
     return true;
 
   const base::TimeDelta time_to_first_background =
-      delegate.GetFirstBackgroundTime().value();
+      delegate.GetTimeToFirstBackground().value();
   DCHECK_GT(abort_info.time_to_abort, time_to_first_background);
   base::TimeDelta background_abort_delta =
       abort_info.time_to_abort - time_to_first_background;
@@ -319,8 +319,7 @@ bool WasAbortedBeforeInteraction(
   // revealed by the interaction.
   if (abort_info.reason == PageAbortReason::ABORT_RELOAD ||
       abort_info.reason == PageAbortReason::ABORT_FORWARD_BACK) {
-    return time_to_interaction.value() +
-               base::TimeDelta::FromMilliseconds(1000) >
+    return time_to_interaction.value() + base::Milliseconds(1000) >
            abort_info.time_to_abort;
   } else {
     return time_to_interaction > abort_info.time_to_abort;
@@ -338,8 +337,11 @@ FromGWSPageLoadMetricsLogger::FromGWSPageLoadMetricsLogger() = default;
 FromGWSPageLoadMetricsLogger::~FromGWSPageLoadMetricsLogger() = default;
 
 void FromGWSPageLoadMetricsLogger::SetPreviouslyCommittedUrl(const GURL& url) {
-  previously_committed_url_is_search_results_ =
-      page_load_metrics::IsGoogleSearchResultUrl(url);
+  if (page_load_metrics::IsGoogleSearchResultUrl(url)) {
+    previously_committed_url_is_search_results_ = true;
+    previously_committed_url_search_mode_ =
+        google_util::GoogleSearchModeFromUrl(url);
+  }
   previously_committed_url_is_search_redirector_ =
       page_load_metrics::IsGoogleSearchRedirectorUrl(url);
 }
@@ -450,8 +452,10 @@ void FromGWSPageLoadMetricsLogger::OnCommit(
     ukm::SourceId source_id) {
   if (!ShouldLogPostCommitMetrics(navigation_handle->GetURL()))
     return;
-  ukm::builders::PageLoad_FromGoogleSearch(source_id).Record(
-      ukm::UkmRecorder::Get());
+  ukm::builders::PageLoad_FromGoogleSearch(source_id)
+      .SetGoogleSearchMode(
+          static_cast<int64_t>(previously_committed_url_search_mode_))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void FromGWSPageLoadMetricsLogger::OnComplete(
@@ -623,8 +627,7 @@ void FromGWSPageLoadMetricsLogger::OnFirstInputInPage(
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramFromGWSFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
 }
 

@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "google_apis/google_api_keys.h"
@@ -30,6 +29,10 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const std::string& api_key = google_apis::GetAPIKey());
+
+  SafeSearchURLCheckerClient(const SafeSearchURLCheckerClient&) = delete;
+  SafeSearchURLCheckerClient& operator=(const SafeSearchURLCheckerClient&) =
+      delete;
 
   ~SafeSearchURLCheckerClient() override;
 
@@ -52,8 +55,6 @@ class SafeSearchURLCheckerClient : public URLCheckerClient {
   const std::string api_key_;
 
   CheckList checks_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeSearchURLCheckerClient);
 };
 
 }  // namespace safe_search_api

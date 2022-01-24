@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
@@ -21,6 +20,11 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
   PasswordGenerationPopupViewViews(
       PasswordGenerationPopupController* controller,
       views::Widget* parent_widget);
+
+  PasswordGenerationPopupViewViews(const PasswordGenerationPopupViewViews&) =
+      delete;
+  PasswordGenerationPopupViewViews& operator=(
+      const PasswordGenerationPopupViewViews&) = delete;
 
   // PasswordGenerationPopupView implementation
   bool Show() override WARN_UNUSED_RESULT;
@@ -51,8 +55,6 @@ class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
 
   // Controller for this view. Weak reference.
   PasswordGenerationPopupController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationPopupViewViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_VIEWS_H_

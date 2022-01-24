@@ -31,9 +31,9 @@ base::TimeDelta GetTokenInvalidationInterval() {
   if (!override_value.empty()) {
     int override_value_days;
     if (base::StringToInt(override_value, &override_value_days))
-      return base::TimeDelta::FromDays(override_value_days);
+      return base::Days(override_value_days);
   }
-  return base::TimeDelta::FromDays(kDefaultTokenInvalidationPeriod);
+  return base::Days(kDefaultTokenInvalidationPeriod);
 }
 
 }  // namespace features

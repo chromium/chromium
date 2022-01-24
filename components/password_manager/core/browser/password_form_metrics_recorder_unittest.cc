@@ -65,9 +65,9 @@ void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,
     if (expected_count) {
       test_ukm_recorder->ExpectEntryMetric(entry, metric_name, value);
     } else {
-      const int64_t* value =
+      const int64_t* count =
           test_ukm_recorder->GetEntryMetric(entry, metric_name);
-      EXPECT_TRUE(value == nullptr || *value != expected_count);
+      EXPECT_TRUE(count == nullptr || *count != expected_count);
     }
   }
 }
@@ -1416,7 +1416,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
         PasswordFormMetricsRecorder::FillingSource::kFilledFromProfileStore, 1);
   }
 
-  clock.Advance(base::TimeDelta::FromDays(2));
+  clock.Advance(base::Days(2));
 
   // Day 2: A credential from the account store is filled.
   {
@@ -1451,7 +1451,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
         PasswordFormMetricsRecorder::FillingSource::kFilledFromBothStores, 1);
   }
 
-  clock.Advance(base::TimeDelta::FromDays(6));
+  clock.Advance(base::Days(6));
 
   // Day 8: A credential from the account store is filled (again).
   {
@@ -1486,7 +1486,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
         PasswordFormMetricsRecorder::FillingSource::kFilledFromBothStores, 1);
   }
 
-  clock.Advance(base::TimeDelta::FromDays(27));
+  clock.Advance(base::Days(27));
 
   // Day 35: The user manually enters a credential that's not stored.
   {
@@ -1520,7 +1520,7 @@ TEST(PasswordFormMetricsRecorder, StoresUsedForFillingInLast7And28DaysExpiry) {
         PasswordFormMetricsRecorder::FillingSource::kFilledFromAccountStore, 1);
   }
 
-  clock.Advance(base::TimeDelta::FromDays(2));
+  clock.Advance(base::Days(2));
 
   // Day 37: The user again manually enters a credential that's not stored.
   {

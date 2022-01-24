@@ -17,6 +17,10 @@ namespace metrics {
 class UkmRecorderInterface : public ukm::mojom::UkmRecorderInterface {
  public:
   UkmRecorderInterface(ukm::UkmRecorder* ukm_recorder);
+
+  UkmRecorderInterface(const UkmRecorderInterface&) = delete;
+  UkmRecorderInterface& operator=(const UkmRecorderInterface&) = delete;
+
   ~UkmRecorderInterface() override;
 
   static void Create(
@@ -29,8 +33,6 @@ class UkmRecorderInterface : public ukm::mojom::UkmRecorderInterface {
   void UpdateSourceURL(int64_t source_id, const std::string& url) override;
 
   ukm::UkmRecorder* ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmRecorderInterface);
 };
 
 }  // namespace metrics

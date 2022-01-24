@@ -20,6 +20,9 @@ class CleanupTask : public background_fetch::DatabaseTask {
  public:
   explicit CleanupTask(DatabaseTaskHost* host);
 
+  CleanupTask(const CleanupTask&) = delete;
+  CleanupTask& operator=(const CleanupTask&) = delete;
+
   ~CleanupTask() override;
 
   void Start() override;
@@ -39,8 +42,6 @@ class CleanupTask : public background_fetch::DatabaseTask {
   std::string HistogramName() const override;
 
   base::WeakPtrFactory<CleanupTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(CleanupTask);
 };
 
 }  // namespace background_fetch

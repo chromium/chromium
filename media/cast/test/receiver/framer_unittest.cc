@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtp/mock_rtp_payload_feedback.h"
@@ -15,6 +14,10 @@ namespace media {
 namespace cast {
 
 class FramerTest : public ::testing::Test {
+ public:
+  FramerTest(const FramerTest&) = delete;
+  FramerTest& operator=(const FramerTest&) = delete;
+
  protected:
   FramerTest()
       : mock_rtp_payload_feedback_(),
@@ -32,8 +35,6 @@ class FramerTest : public ::testing::Test {
   MockRtpPayloadFeedback mock_rtp_payload_feedback_;
   Framer framer_;
   base::SimpleTestTickClock testing_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FramerTest);
 };
 
 TEST_F(FramerTest, EmptyState) {

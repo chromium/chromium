@@ -173,12 +173,8 @@ void RenderMessageFilter::OnMediaLogRecords(
 }
 
 void RenderMessageFilter::HasGpuProcess(HasGpuProcessCallback callback) {
-  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(GetHasGpuProcess, std::move(callback)));
-    return;
-  }
-  GpuProcessHost::GetHasGpuProcess(std::move(callback));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(GetHasGpuProcess, std::move(callback)));
 }
 
 }  // namespace content

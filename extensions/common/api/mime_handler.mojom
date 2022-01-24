@@ -29,10 +29,30 @@ struct StreamInfo {
   bool embedded;
 };
 
+// Attributes to be used for generating a response synthesized to load the
+// actual PDF plugin.
+struct PdfPluginAttributes {
+  // The background color in ARGB format for painting. Use type "double" here to
+  // sync with its type in `mimeHandlerPrivate` API.
+  double background_color;
+
+  // Indicates whether the plugin should allow running JavaScript. Loading XFA
+  // for PDF forms will automatically be disabled if this flag is false.
+  bool allow_javascript;
+};
+
+// Provides a mime handler guest methods to get and modify the stream associated
+// with this service. An instance of this interface is passed from the
+// embedding renderer to the browser when creating the mime handler guest.
 interface MimeHandlerService {
   // Returns information about the stream associated with this service instance.
   // If the stream has been aborted, |stream_info| will be null.
   GetStreamInfo() => (StreamInfo? stream_info);
+
+  // Sets the attributes specified by the PDF extension UI into the stream
+  // associated with this service instance. This allows the attributes to be
+  // used for creating the PDF plugin inside the browser process.
+  SetPdfPluginAttributes(PdfPluginAttributes pdf_plugin_attributes);
 };
 
 // Provides a mime handler guest with control over beforeunload event handling

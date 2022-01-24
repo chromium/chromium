@@ -21,6 +21,10 @@ void UpdateSearchEnginesIfNeeded(PrefService* preferences,
 // by image.
 bool SupportsSearchByImage(TemplateURLService* service);
 
+// Checks whether the default url of the given template url supports searching
+// an image with Google Lens.
+bool SupportsSearchImageWithLens(TemplateURLService* service);
+
 }  // namespace search_engines
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_SEARCH_ENGINES_UTIL_H_

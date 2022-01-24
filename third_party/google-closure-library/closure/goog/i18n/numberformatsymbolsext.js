@@ -1,28 +1,19 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /**
  * @fileoverview Number formatting symbols.
  *
- * File generated from CLDR ver. 36
+ * File generated from CLDR ver. 39
  *
  * This file covers those locales that are not covered in
  * "numberformatsymbols.js".
  *
- * @suppress {const,missingRequire} Suppress "missing require" warnings for
- *     names like goog.i18n.NumberFormatSymbols_af. They are included
- *     by requiring goog.i18n.NumberFormatSymbols.
+ * @suppress {const,missingRequire,useOfGoogProvide} Suppress "missing require"
+ *     warnings for names like goog.i18n.NumberFormatSymbols_af.
+ *     They are included by requiring goog.i18n.NumberFormatSymbols.
  */
 
 // clang-format off
@@ -137,6 +128,12 @@ goog.provide('goog.i18n.NumberFormatSymbols_cgg');
 goog.provide('goog.i18n.NumberFormatSymbols_cgg_UG');
 goog.provide('goog.i18n.NumberFormatSymbols_chr_US');
 goog.provide('goog.i18n.NumberFormatSymbols_ckb');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab_IQ');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab_IQ_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab_IR');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab_IR_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_ckb_Arab_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ckb_IQ');
 goog.provide('goog.i18n.NumberFormatSymbols_ckb_IQ_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ckb_IR');
@@ -155,6 +152,8 @@ goog.provide('goog.i18n.NumberFormatSymbols_de_LI');
 goog.provide('goog.i18n.NumberFormatSymbols_de_LU');
 goog.provide('goog.i18n.NumberFormatSymbols_dje');
 goog.provide('goog.i18n.NumberFormatSymbols_dje_NE');
+goog.provide('goog.i18n.NumberFormatSymbols_doi');
+goog.provide('goog.i18n.NumberFormatSymbols_doi_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_dsb');
 goog.provide('goog.i18n.NumberFormatSymbols_dsb_DE');
 goog.provide('goog.i18n.NumberFormatSymbols_dua');
@@ -306,6 +305,19 @@ goog.provide('goog.i18n.NumberFormatSymbols_fa_AF_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_fa_IR');
 goog.provide('goog.i18n.NumberFormatSymbols_fa_IR_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ff');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_BF');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_CM');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_GH');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_GM');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_GN');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_GW');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_LR');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_MR');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_NE');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_NG');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_SL');
+goog.provide('goog.i18n.NumberFormatSymbols_ff_Adlm_SN');
 goog.provide('goog.i18n.NumberFormatSymbols_ff_Latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ff_Latn_BF');
 goog.provide('goog.i18n.NumberFormatSymbols_ff_Latn_CM');
@@ -445,8 +457,10 @@ goog.provide('goog.i18n.NumberFormatSymbols_ko_KR');
 goog.provide('goog.i18n.NumberFormatSymbols_kok');
 goog.provide('goog.i18n.NumberFormatSymbols_kok_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_ks');
-goog.provide('goog.i18n.NumberFormatSymbols_ks_IN');
-goog.provide('goog.i18n.NumberFormatSymbols_ks_IN_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_ks_Arab');
+goog.provide('goog.i18n.NumberFormatSymbols_ks_Arab_IN');
+goog.provide('goog.i18n.NumberFormatSymbols_ks_Arab_IN_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_ks_Arab_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ks_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ksb');
 goog.provide('goog.i18n.NumberFormatSymbols_ksb_TZ');
@@ -486,6 +500,8 @@ goog.provide('goog.i18n.NumberFormatSymbols_luo_KE');
 goog.provide('goog.i18n.NumberFormatSymbols_luy');
 goog.provide('goog.i18n.NumberFormatSymbols_luy_KE');
 goog.provide('goog.i18n.NumberFormatSymbols_lv_LV');
+goog.provide('goog.i18n.NumberFormatSymbols_mai');
+goog.provide('goog.i18n.NumberFormatSymbols_mai_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_mas');
 goog.provide('goog.i18n.NumberFormatSymbols_mas_KE');
 goog.provide('goog.i18n.NumberFormatSymbols_mas_TZ');
@@ -504,9 +520,16 @@ goog.provide('goog.i18n.NumberFormatSymbols_mi_NZ');
 goog.provide('goog.i18n.NumberFormatSymbols_mk_MK');
 goog.provide('goog.i18n.NumberFormatSymbols_ml_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_mn_MN');
+goog.provide('goog.i18n.NumberFormatSymbols_mni');
+goog.provide('goog.i18n.NumberFormatSymbols_mni_Beng');
+goog.provide('goog.i18n.NumberFormatSymbols_mni_Beng_IN');
+goog.provide('goog.i18n.NumberFormatSymbols_mni_Beng_IN_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_mni_Beng_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_mni_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_mr_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_mr_IN_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ms_BN');
+goog.provide('goog.i18n.NumberFormatSymbols_ms_ID');
 goog.provide('goog.i18n.NumberFormatSymbols_ms_MY');
 goog.provide('goog.i18n.NumberFormatSymbols_ms_SG');
 goog.provide('goog.i18n.NumberFormatSymbols_mt_MT');
@@ -524,9 +547,6 @@ goog.provide('goog.i18n.NumberFormatSymbols_nb_NO');
 goog.provide('goog.i18n.NumberFormatSymbols_nb_SJ');
 goog.provide('goog.i18n.NumberFormatSymbols_nd');
 goog.provide('goog.i18n.NumberFormatSymbols_nd_ZW');
-goog.provide('goog.i18n.NumberFormatSymbols_nds');
-goog.provide('goog.i18n.NumberFormatSymbols_nds_DE');
-goog.provide('goog.i18n.NumberFormatSymbols_nds_NL');
 goog.provide('goog.i18n.NumberFormatSymbols_ne_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_ne_IN_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_ne_NP');
@@ -561,6 +581,8 @@ goog.provide('goog.i18n.NumberFormatSymbols_pa_Arab_PK_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_pa_Arab_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_pa_Guru');
 goog.provide('goog.i18n.NumberFormatSymbols_pa_Guru_IN');
+goog.provide('goog.i18n.NumberFormatSymbols_pcm');
+goog.provide('goog.i18n.NumberFormatSymbols_pcm_NG');
 goog.provide('goog.i18n.NumberFormatSymbols_pl_PL');
 goog.provide('goog.i18n.NumberFormatSymbols_ps');
 goog.provide('goog.i18n.NumberFormatSymbols_ps_AF');
@@ -600,15 +622,29 @@ goog.provide('goog.i18n.NumberFormatSymbols_rw');
 goog.provide('goog.i18n.NumberFormatSymbols_rw_RW');
 goog.provide('goog.i18n.NumberFormatSymbols_rwk');
 goog.provide('goog.i18n.NumberFormatSymbols_rwk_TZ');
+goog.provide('goog.i18n.NumberFormatSymbols_sa');
+goog.provide('goog.i18n.NumberFormatSymbols_sa_IN');
+goog.provide('goog.i18n.NumberFormatSymbols_sa_IN_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sa_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_sah');
 goog.provide('goog.i18n.NumberFormatSymbols_sah_RU');
 goog.provide('goog.i18n.NumberFormatSymbols_saq');
 goog.provide('goog.i18n.NumberFormatSymbols_saq_KE');
+goog.provide('goog.i18n.NumberFormatSymbols_sat');
+goog.provide('goog.i18n.NumberFormatSymbols_sat_Olck');
+goog.provide('goog.i18n.NumberFormatSymbols_sat_Olck_IN');
+goog.provide('goog.i18n.NumberFormatSymbols_sat_Olck_IN_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sat_Olck_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sat_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_sbp');
 goog.provide('goog.i18n.NumberFormatSymbols_sbp_TZ');
 goog.provide('goog.i18n.NumberFormatSymbols_sd');
-goog.provide('goog.i18n.NumberFormatSymbols_sd_PK');
-goog.provide('goog.i18n.NumberFormatSymbols_sd_PK_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Arab');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Arab_PK');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Arab_PK_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Arab_u_nu_latn');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Deva');
+goog.provide('goog.i18n.NumberFormatSymbols_sd_Deva_IN');
 goog.provide('goog.i18n.NumberFormatSymbols_sd_u_nu_latn');
 goog.provide('goog.i18n.NumberFormatSymbols_se');
 goog.provide('goog.i18n.NumberFormatSymbols_se_FI');
@@ -649,6 +685,9 @@ goog.provide('goog.i18n.NumberFormatSymbols_sr_Latn_BA');
 goog.provide('goog.i18n.NumberFormatSymbols_sr_Latn_ME');
 goog.provide('goog.i18n.NumberFormatSymbols_sr_Latn_RS');
 goog.provide('goog.i18n.NumberFormatSymbols_sr_Latn_XK');
+goog.provide('goog.i18n.NumberFormatSymbols_su');
+goog.provide('goog.i18n.NumberFormatSymbols_su_Latn');
+goog.provide('goog.i18n.NumberFormatSymbols_su_Latn_ID');
 goog.provide('goog.i18n.NumberFormatSymbols_sv_AX');
 goog.provide('goog.i18n.NumberFormatSymbols_sv_FI');
 goog.provide('goog.i18n.NumberFormatSymbols_sv_SE');
@@ -739,10 +778,12 @@ goog.provide('goog.i18n.NumberFormatSymbols_zu_ZA');
 goog.require('goog.i18n.NumberFormatSymbols');
 goog.require('goog.i18n.NumberFormatSymbols_u_nu_latn');
 
+goog.requireType('goog.i18n.NumberFormatSymbolsType');
+
 
 /**
  * Number formatting symbols for locale af_NA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_af_NA = {
   DECIMAL_SEP: ',',
@@ -765,14 +806,14 @@ goog.i18n.NumberFormatSymbols_af_NA = {
 
 /**
  * Number formatting symbols for locale af_ZA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_af_ZA = goog.i18n.NumberFormatSymbols_af;
 
 
 /**
  * Number formatting symbols for locale agq.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_agq = {
   DECIMAL_SEP: ',',
@@ -795,7 +836,7 @@ goog.i18n.NumberFormatSymbols_agq = {
 
 /**
  * Number formatting symbols for locale agq_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_agq_CM = {
   DECIMAL_SEP: ',',
@@ -818,7 +859,7 @@ goog.i18n.NumberFormatSymbols_agq_CM = {
 
 /**
  * Number formatting symbols for locale ak.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ak = {
   DECIMAL_SEP: '.',
@@ -841,28 +882,28 @@ goog.i18n.NumberFormatSymbols_ak = {
 
 /**
  * Number formatting symbols for locale ak_GH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ak_GH = goog.i18n.NumberFormatSymbols_ak;
 
 
 /**
  * Number formatting symbols for locale am_ET.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_am_ET = goog.i18n.NumberFormatSymbols_am;
 
 
 /**
  * Number formatting symbols for locale ar_001.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_001 = goog.i18n.NumberFormatSymbols_ar;
 
 
 /**
  * Number formatting symbols for locale ar_AE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_AE = {
   DECIMAL_SEP: '٫',
@@ -885,7 +926,7 @@ goog.i18n.NumberFormatSymbols_ar_AE = {
 
 /**
  * Number formatting symbols for locale ar_AE_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_AE_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -908,7 +949,7 @@ goog.i18n.NumberFormatSymbols_ar_AE_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_BH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_BH = {
   DECIMAL_SEP: '٫',
@@ -931,7 +972,7 @@ goog.i18n.NumberFormatSymbols_ar_BH = {
 
 /**
  * Number formatting symbols for locale ar_BH_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_BH_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -954,7 +995,7 @@ goog.i18n.NumberFormatSymbols_ar_BH_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_DJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_DJ = {
   DECIMAL_SEP: '٫',
@@ -977,7 +1018,7 @@ goog.i18n.NumberFormatSymbols_ar_DJ = {
 
 /**
  * Number formatting symbols for locale ar_DJ_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_DJ_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1000,7 +1041,7 @@ goog.i18n.NumberFormatSymbols_ar_DJ_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_EH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_EH = {
   DECIMAL_SEP: '.',
@@ -1023,7 +1064,7 @@ goog.i18n.NumberFormatSymbols_ar_EH = {
 
 /**
  * Number formatting symbols for locale ar_ER.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_ER = {
   DECIMAL_SEP: '٫',
@@ -1046,7 +1087,7 @@ goog.i18n.NumberFormatSymbols_ar_ER = {
 
 /**
  * Number formatting symbols for locale ar_ER_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_ER_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1069,7 +1110,7 @@ goog.i18n.NumberFormatSymbols_ar_ER_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_IL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_IL = {
   DECIMAL_SEP: '٫',
@@ -1092,7 +1133,7 @@ goog.i18n.NumberFormatSymbols_ar_IL = {
 
 /**
  * Number formatting symbols for locale ar_IL_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_IL_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1115,7 +1156,7 @@ goog.i18n.NumberFormatSymbols_ar_IL_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_IQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_IQ = {
   DECIMAL_SEP: '٫',
@@ -1138,7 +1179,7 @@ goog.i18n.NumberFormatSymbols_ar_IQ = {
 
 /**
  * Number formatting symbols for locale ar_IQ_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_IQ_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1161,7 +1202,7 @@ goog.i18n.NumberFormatSymbols_ar_IQ_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_JO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_JO = {
   DECIMAL_SEP: '٫',
@@ -1184,7 +1225,7 @@ goog.i18n.NumberFormatSymbols_ar_JO = {
 
 /**
  * Number formatting symbols for locale ar_JO_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_JO_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1207,7 +1248,7 @@ goog.i18n.NumberFormatSymbols_ar_JO_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_KM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_KM = {
   DECIMAL_SEP: '٫',
@@ -1230,7 +1271,7 @@ goog.i18n.NumberFormatSymbols_ar_KM = {
 
 /**
  * Number formatting symbols for locale ar_KM_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_KM_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1253,7 +1294,7 @@ goog.i18n.NumberFormatSymbols_ar_KM_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_KW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_KW = {
   DECIMAL_SEP: '٫',
@@ -1276,7 +1317,7 @@ goog.i18n.NumberFormatSymbols_ar_KW = {
 
 /**
  * Number formatting symbols for locale ar_KW_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_KW_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1299,7 +1340,7 @@ goog.i18n.NumberFormatSymbols_ar_KW_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_LB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_LB = {
   DECIMAL_SEP: '٫',
@@ -1322,7 +1363,7 @@ goog.i18n.NumberFormatSymbols_ar_LB = {
 
 /**
  * Number formatting symbols for locale ar_LB_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_LB_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -1345,7 +1386,7 @@ goog.i18n.NumberFormatSymbols_ar_LB_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_LY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_LY = {
   DECIMAL_SEP: ',',
@@ -1368,7 +1409,7 @@ goog.i18n.NumberFormatSymbols_ar_LY = {
 
 /**
  * Number formatting symbols for locale ar_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_MA = {
   DECIMAL_SEP: ',',
@@ -1391,7 +1432,7 @@ goog.i18n.NumberFormatSymbols_ar_MA = {
 
 /**
  * Number formatting symbols for locale ar_MR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_MR = {
   DECIMAL_SEP: '٫',
@@ -1414,7 +1455,7 @@ goog.i18n.NumberFormatSymbols_ar_MR = {
 
 /**
  * Number formatting symbols for locale ar_MR_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_MR_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -1437,7 +1478,7 @@ goog.i18n.NumberFormatSymbols_ar_MR_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_OM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_OM = {
   DECIMAL_SEP: '٫',
@@ -1460,7 +1501,7 @@ goog.i18n.NumberFormatSymbols_ar_OM = {
 
 /**
  * Number formatting symbols for locale ar_OM_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_OM_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1483,7 +1524,7 @@ goog.i18n.NumberFormatSymbols_ar_OM_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_PS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_PS = {
   DECIMAL_SEP: '٫',
@@ -1506,7 +1547,7 @@ goog.i18n.NumberFormatSymbols_ar_PS = {
 
 /**
  * Number formatting symbols for locale ar_PS_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_PS_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1529,7 +1570,7 @@ goog.i18n.NumberFormatSymbols_ar_PS_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_QA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_QA = {
   DECIMAL_SEP: '٫',
@@ -1552,7 +1593,7 @@ goog.i18n.NumberFormatSymbols_ar_QA = {
 
 /**
  * Number formatting symbols for locale ar_QA_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_QA_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1575,7 +1616,7 @@ goog.i18n.NumberFormatSymbols_ar_QA_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_SA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SA = {
   DECIMAL_SEP: '٫',
@@ -1598,7 +1639,7 @@ goog.i18n.NumberFormatSymbols_ar_SA = {
 
 /**
  * Number formatting symbols for locale ar_SA_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SA_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1621,7 +1662,7 @@ goog.i18n.NumberFormatSymbols_ar_SA_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_SD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SD = {
   DECIMAL_SEP: '٫',
@@ -1644,7 +1685,7 @@ goog.i18n.NumberFormatSymbols_ar_SD = {
 
 /**
  * Number formatting symbols for locale ar_SD_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SD_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1667,7 +1708,7 @@ goog.i18n.NumberFormatSymbols_ar_SD_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_SO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SO = {
   DECIMAL_SEP: '٫',
@@ -1690,7 +1731,7 @@ goog.i18n.NumberFormatSymbols_ar_SO = {
 
 /**
  * Number formatting symbols for locale ar_SO_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SO_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1713,7 +1754,7 @@ goog.i18n.NumberFormatSymbols_ar_SO_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_SS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SS = {
   DECIMAL_SEP: '٫',
@@ -1736,7 +1777,7 @@ goog.i18n.NumberFormatSymbols_ar_SS = {
 
 /**
  * Number formatting symbols for locale ar_SS_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SS_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1759,7 +1800,7 @@ goog.i18n.NumberFormatSymbols_ar_SS_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_SY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SY = {
   DECIMAL_SEP: '٫',
@@ -1782,7 +1823,7 @@ goog.i18n.NumberFormatSymbols_ar_SY = {
 
 /**
  * Number formatting symbols for locale ar_SY_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_SY_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1805,7 +1846,7 @@ goog.i18n.NumberFormatSymbols_ar_SY_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_TD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_TD = {
   DECIMAL_SEP: '٫',
@@ -1828,7 +1869,7 @@ goog.i18n.NumberFormatSymbols_ar_TD = {
 
 /**
  * Number formatting symbols for locale ar_TD_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_TD_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1851,7 +1892,7 @@ goog.i18n.NumberFormatSymbols_ar_TD_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ar_TN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_TN = {
   DECIMAL_SEP: ',',
@@ -1874,14 +1915,14 @@ goog.i18n.NumberFormatSymbols_ar_TN = {
 
 /**
  * Number formatting symbols for locale ar_XB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_XB = goog.i18n.NumberFormatSymbols_ar;
 
 
 /**
  * Number formatting symbols for locale ar_YE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_YE = {
   DECIMAL_SEP: '٫',
@@ -1904,7 +1945,7 @@ goog.i18n.NumberFormatSymbols_ar_YE = {
 
 /**
  * Number formatting symbols for locale ar_YE_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ar_YE_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1927,7 +1968,7 @@ goog.i18n.NumberFormatSymbols_ar_YE_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale as.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_as = {
   DECIMAL_SEP: '.',
@@ -1950,7 +1991,7 @@ goog.i18n.NumberFormatSymbols_as = {
 
 /**
  * Number formatting symbols for locale as_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_as_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -1973,21 +2014,21 @@ goog.i18n.NumberFormatSymbols_as_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale as_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_as_IN = goog.i18n.NumberFormatSymbols_as;
 
 
 /**
  * Number formatting symbols for locale as_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_as_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_as_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale asa.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_asa = {
   DECIMAL_SEP: '.',
@@ -2010,14 +2051,14 @@ goog.i18n.NumberFormatSymbols_asa = {
 
 /**
  * Number formatting symbols for locale asa_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_asa_TZ = goog.i18n.NumberFormatSymbols_asa;
 
 
 /**
  * Number formatting symbols for locale ast.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ast = {
   DECIMAL_SEP: ',',
@@ -2040,42 +2081,42 @@ goog.i18n.NumberFormatSymbols_ast = {
 
 /**
  * Number formatting symbols for locale ast_ES.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ast_ES = goog.i18n.NumberFormatSymbols_ast;
 
 
 /**
  * Number formatting symbols for locale az_Cyrl.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_az_Cyrl = goog.i18n.NumberFormatSymbols_az;
 
 
 /**
  * Number formatting symbols for locale az_Cyrl_AZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_az_Cyrl_AZ = goog.i18n.NumberFormatSymbols_az;
 
 
 /**
  * Number formatting symbols for locale az_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_az_Latn = goog.i18n.NumberFormatSymbols_az;
 
 
 /**
  * Number formatting symbols for locale az_Latn_AZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_az_Latn_AZ = goog.i18n.NumberFormatSymbols_az;
 
 
 /**
  * Number formatting symbols for locale bas.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bas = {
   DECIMAL_SEP: ',',
@@ -2098,7 +2139,7 @@ goog.i18n.NumberFormatSymbols_bas = {
 
 /**
  * Number formatting symbols for locale bas_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bas_CM = {
   DECIMAL_SEP: ',',
@@ -2121,14 +2162,14 @@ goog.i18n.NumberFormatSymbols_bas_CM = {
 
 /**
  * Number formatting symbols for locale be_BY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_be_BY = goog.i18n.NumberFormatSymbols_be;
 
 
 /**
  * Number formatting symbols for locale bem.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bem = {
   DECIMAL_SEP: '.',
@@ -2151,14 +2192,14 @@ goog.i18n.NumberFormatSymbols_bem = {
 
 /**
  * Number formatting symbols for locale bem_ZM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bem_ZM = goog.i18n.NumberFormatSymbols_bem;
 
 
 /**
  * Number formatting symbols for locale bez.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bez = {
   DECIMAL_SEP: '.',
@@ -2181,21 +2222,21 @@ goog.i18n.NumberFormatSymbols_bez = {
 
 /**
  * Number formatting symbols for locale bez_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bez_TZ = goog.i18n.NumberFormatSymbols_bez;
 
 
 /**
  * Number formatting symbols for locale bg_BG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bg_BG = goog.i18n.NumberFormatSymbols_bg;
 
 
 /**
  * Number formatting symbols for locale bm.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bm = {
   DECIMAL_SEP: '.',
@@ -2218,7 +2259,7 @@ goog.i18n.NumberFormatSymbols_bm = {
 
 /**
  * Number formatting symbols for locale bm_ML.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bm_ML = {
   DECIMAL_SEP: '.',
@@ -2241,21 +2282,21 @@ goog.i18n.NumberFormatSymbols_bm_ML = {
 
 /**
  * Number formatting symbols for locale bn_BD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bn_BD = goog.i18n.NumberFormatSymbols_bn;
 
 
 /**
  * Number formatting symbols for locale bn_BD_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bn_BD_u_nu_latn = goog.i18n.NumberFormatSymbols_bn_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale bn_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bn_IN = {
   DECIMAL_SEP: '.',
@@ -2278,7 +2319,7 @@ goog.i18n.NumberFormatSymbols_bn_IN = {
 
 /**
  * Number formatting symbols for locale bn_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bn_IN_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2301,7 +2342,7 @@ goog.i18n.NumberFormatSymbols_bn_IN_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale bo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bo = {
   DECIMAL_SEP: '.',
@@ -2324,14 +2365,14 @@ goog.i18n.NumberFormatSymbols_bo = {
 
 /**
  * Number formatting symbols for locale bo_CN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bo_CN = goog.i18n.NumberFormatSymbols_bo;
 
 
 /**
  * Number formatting symbols for locale bo_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bo_IN = {
   DECIMAL_SEP: '.',
@@ -2354,14 +2395,14 @@ goog.i18n.NumberFormatSymbols_bo_IN = {
 
 /**
  * Number formatting symbols for locale br_FR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_br_FR = goog.i18n.NumberFormatSymbols_br;
 
 
 /**
  * Number formatting symbols for locale brx.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_brx = {
   DECIMAL_SEP: '.',
@@ -2384,14 +2425,14 @@ goog.i18n.NumberFormatSymbols_brx = {
 
 /**
  * Number formatting symbols for locale brx_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_brx_IN = goog.i18n.NumberFormatSymbols_brx;
 
 
 /**
  * Number formatting symbols for locale bs_Cyrl.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bs_Cyrl = {
   DECIMAL_SEP: ',',
@@ -2414,7 +2455,7 @@ goog.i18n.NumberFormatSymbols_bs_Cyrl = {
 
 /**
  * Number formatting symbols for locale bs_Cyrl_BA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bs_Cyrl_BA = {
   DECIMAL_SEP: ',',
@@ -2437,49 +2478,49 @@ goog.i18n.NumberFormatSymbols_bs_Cyrl_BA = {
 
 /**
  * Number formatting symbols for locale bs_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bs_Latn = goog.i18n.NumberFormatSymbols_bs;
 
 
 /**
  * Number formatting symbols for locale bs_Latn_BA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_bs_Latn_BA = goog.i18n.NumberFormatSymbols_bs;
 
 
 /**
  * Number formatting symbols for locale ca_AD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ca_AD = goog.i18n.NumberFormatSymbols_ca;
 
 
 /**
  * Number formatting symbols for locale ca_ES.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ca_ES = goog.i18n.NumberFormatSymbols_ca;
 
 
 /**
  * Number formatting symbols for locale ca_FR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ca_FR = goog.i18n.NumberFormatSymbols_ca;
 
 
 /**
  * Number formatting symbols for locale ca_IT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ca_IT = goog.i18n.NumberFormatSymbols_ca;
 
 
 /**
  * Number formatting symbols for locale ccp.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp = {
   DECIMAL_SEP: '.',
@@ -2502,7 +2543,7 @@ goog.i18n.NumberFormatSymbols_ccp = {
 
 /**
  * Number formatting symbols for locale ccp_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2525,21 +2566,21 @@ goog.i18n.NumberFormatSymbols_ccp_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ccp_BD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp_BD = goog.i18n.NumberFormatSymbols_ccp;
 
 
 /**
  * Number formatting symbols for locale ccp_BD_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp_BD_u_nu_latn = goog.i18n.NumberFormatSymbols_ccp_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale ccp_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp_IN = {
   DECIMAL_SEP: '.',
@@ -2562,7 +2603,7 @@ goog.i18n.NumberFormatSymbols_ccp_IN = {
 
 /**
  * Number formatting symbols for locale ccp_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ccp_IN_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2585,7 +2626,7 @@ goog.i18n.NumberFormatSymbols_ccp_IN_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ce.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ce = {
   DECIMAL_SEP: '.',
@@ -2608,14 +2649,14 @@ goog.i18n.NumberFormatSymbols_ce = {
 
 /**
  * Number formatting symbols for locale ce_RU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ce_RU = goog.i18n.NumberFormatSymbols_ce;
 
 
 /**
  * Number formatting symbols for locale ceb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ceb = {
   DECIMAL_SEP: '.',
@@ -2630,7 +2671,7 @@ goog.i18n.NumberFormatSymbols_ceb = {
   NAN: 'NaN',
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,#0%',
+  PERCENT_PATTERN: '#,##0%',
   CURRENCY_PATTERN: '¤#,##0.00',
   DEF_CURRENCY_CODE: 'PHP'
 };
@@ -2638,14 +2679,14 @@ goog.i18n.NumberFormatSymbols_ceb = {
 
 /**
  * Number formatting symbols for locale ceb_PH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ceb_PH = goog.i18n.NumberFormatSymbols_ceb;
 
 
 /**
  * Number formatting symbols for locale cgg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_cgg = {
   DECIMAL_SEP: '.',
@@ -2668,7 +2709,7 @@ goog.i18n.NumberFormatSymbols_cgg = {
 
 /**
  * Number formatting symbols for locale cgg_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_cgg_UG = {
   DECIMAL_SEP: '.',
@@ -2691,14 +2732,14 @@ goog.i18n.NumberFormatSymbols_cgg_UG = {
 
 /**
  * Number formatting symbols for locale chr_US.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_chr_US = goog.i18n.NumberFormatSymbols_chr;
 
 
 /**
  * Number formatting symbols for locale ckb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb = {
   DECIMAL_SEP: '٫',
@@ -2721,7 +2762,7 @@ goog.i18n.NumberFormatSymbols_ckb = {
 
 /**
  * Number formatting symbols for locale ckb_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2743,8 +2784,114 @@ goog.i18n.NumberFormatSymbols_ckb_u_nu_latn = {
 
 
 /**
+ * Number formatting symbols for locale ckb_Arab.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab = goog.i18n.NumberFormatSymbols_ckb;
+
+
+/**
+ * Number formatting symbols for locale ckb_Arab_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab_u_nu_latn = goog.i18n.NumberFormatSymbols_ckb_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale ckb_Arab_IQ.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab_IQ = {
+  DECIMAL_SEP: '٫',
+  GROUP_SEP: '٬',
+  PERCENT: '٪',
+  ZERO_DIGIT: '٠',
+  PLUS_SIGN: '‏+',
+  MINUS_SIGN: '‏-',
+  EXP_SYMBOL: 'اس',
+  PERMILL: '؉',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0 %',
+  CURRENCY_PATTERN: '#,##0 ¤',
+  DEF_CURRENCY_CODE: 'IQD'
+};
+
+
+/**
+ * Number formatting symbols for locale ckb_Arab_IQ_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab_IQ_u_nu_latn = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '‎+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'IQD'
+};
+
+
+/**
+ * Number formatting symbols for locale ckb_Arab_IR.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab_IR = {
+  DECIMAL_SEP: '٫',
+  GROUP_SEP: '٬',
+  PERCENT: '٪',
+  ZERO_DIGIT: '٠',
+  PLUS_SIGN: '‏+',
+  MINUS_SIGN: '‏-',
+  EXP_SYMBOL: 'اس',
+  PERMILL: '؉',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0 %',
+  CURRENCY_PATTERN: '#,##0 ¤',
+  DEF_CURRENCY_CODE: 'IRR'
+};
+
+
+/**
+ * Number formatting symbols for locale ckb_Arab_IR_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ckb_Arab_IR_u_nu_latn = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '‎+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'IRR'
+};
+
+
+/**
  * Number formatting symbols for locale ckb_IQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb_IQ = {
   DECIMAL_SEP: '٫',
@@ -2767,7 +2914,7 @@ goog.i18n.NumberFormatSymbols_ckb_IQ = {
 
 /**
  * Number formatting symbols for locale ckb_IQ_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb_IQ_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2790,7 +2937,7 @@ goog.i18n.NumberFormatSymbols_ckb_IQ_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ckb_IR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb_IR = {
   DECIMAL_SEP: '٫',
@@ -2813,7 +2960,7 @@ goog.i18n.NumberFormatSymbols_ckb_IR = {
 
 /**
  * Number formatting symbols for locale ckb_IR_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ckb_IR_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -2836,35 +2983,35 @@ goog.i18n.NumberFormatSymbols_ckb_IR_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale cs_CZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_cs_CZ = goog.i18n.NumberFormatSymbols_cs;
 
 
 /**
  * Number formatting symbols for locale cy_GB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_cy_GB = goog.i18n.NumberFormatSymbols_cy;
 
 
 /**
  * Number formatting symbols for locale da_DK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_da_DK = goog.i18n.NumberFormatSymbols_da;
 
 
 /**
  * Number formatting symbols for locale da_GL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_da_GL = goog.i18n.NumberFormatSymbols_da;
 
 
 /**
  * Number formatting symbols for locale dav.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dav = {
   DECIMAL_SEP: '.',
@@ -2887,35 +3034,35 @@ goog.i18n.NumberFormatSymbols_dav = {
 
 /**
  * Number formatting symbols for locale dav_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dav_KE = goog.i18n.NumberFormatSymbols_dav;
 
 
 /**
  * Number formatting symbols for locale de_BE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_de_BE = goog.i18n.NumberFormatSymbols_de;
 
 
 /**
  * Number formatting symbols for locale de_DE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_de_DE = goog.i18n.NumberFormatSymbols_de;
 
 
 /**
  * Number formatting symbols for locale de_IT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_de_IT = goog.i18n.NumberFormatSymbols_de;
 
 
 /**
  * Number formatting symbols for locale de_LI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_de_LI = {
   DECIMAL_SEP: '.',
@@ -2938,14 +3085,14 @@ goog.i18n.NumberFormatSymbols_de_LI = {
 
 /**
  * Number formatting symbols for locale de_LU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_de_LU = goog.i18n.NumberFormatSymbols_de;
 
 
 /**
  * Number formatting symbols for locale dje.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dje = {
   DECIMAL_SEP: '.',
@@ -2968,7 +3115,7 @@ goog.i18n.NumberFormatSymbols_dje = {
 
 /**
  * Number formatting symbols for locale dje_NE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dje_NE = {
   DECIMAL_SEP: '.',
@@ -2990,8 +3137,38 @@ goog.i18n.NumberFormatSymbols_dje_NE = {
 
 
 /**
+ * Number formatting symbols for locale doi.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_doi = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤#,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale doi_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_doi_IN = goog.i18n.NumberFormatSymbols_doi;
+
+
+/**
  * Number formatting symbols for locale dsb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dsb = {
   DECIMAL_SEP: ',',
@@ -3014,14 +3191,14 @@ goog.i18n.NumberFormatSymbols_dsb = {
 
 /**
  * Number formatting symbols for locale dsb_DE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dsb_DE = goog.i18n.NumberFormatSymbols_dsb;
 
 
 /**
  * Number formatting symbols for locale dua.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dua = {
   DECIMAL_SEP: ',',
@@ -3044,7 +3221,7 @@ goog.i18n.NumberFormatSymbols_dua = {
 
 /**
  * Number formatting symbols for locale dua_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dua_CM = {
   DECIMAL_SEP: ',',
@@ -3067,7 +3244,7 @@ goog.i18n.NumberFormatSymbols_dua_CM = {
 
 /**
  * Number formatting symbols for locale dyo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dyo = {
   DECIMAL_SEP: ',',
@@ -3090,7 +3267,7 @@ goog.i18n.NumberFormatSymbols_dyo = {
 
 /**
  * Number formatting symbols for locale dyo_SN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dyo_SN = {
   DECIMAL_SEP: ',',
@@ -3113,7 +3290,7 @@ goog.i18n.NumberFormatSymbols_dyo_SN = {
 
 /**
  * Number formatting symbols for locale dz.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dz = {
   DECIMAL_SEP: '.',
@@ -3136,7 +3313,7 @@ goog.i18n.NumberFormatSymbols_dz = {
 
 /**
  * Number formatting symbols for locale dz_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dz_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -3159,21 +3336,21 @@ goog.i18n.NumberFormatSymbols_dz_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale dz_BT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dz_BT = goog.i18n.NumberFormatSymbols_dz;
 
 
 /**
  * Number formatting symbols for locale dz_BT_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_dz_BT_u_nu_latn = goog.i18n.NumberFormatSymbols_dz_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale ebu.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ebu = {
   DECIMAL_SEP: '.',
@@ -3196,14 +3373,14 @@ goog.i18n.NumberFormatSymbols_ebu = {
 
 /**
  * Number formatting symbols for locale ebu_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ebu_KE = goog.i18n.NumberFormatSymbols_ebu;
 
 
 /**
  * Number formatting symbols for locale ee.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ee = {
   DECIMAL_SEP: '.',
@@ -3226,14 +3403,14 @@ goog.i18n.NumberFormatSymbols_ee = {
 
 /**
  * Number formatting symbols for locale ee_GH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ee_GH = goog.i18n.NumberFormatSymbols_ee;
 
 
 /**
  * Number formatting symbols for locale ee_TG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ee_TG = {
   DECIMAL_SEP: '.',
@@ -3256,28 +3433,28 @@ goog.i18n.NumberFormatSymbols_ee_TG = {
 
 /**
  * Number formatting symbols for locale el_CY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_el_CY = goog.i18n.NumberFormatSymbols_el;
 
 
 /**
  * Number formatting symbols for locale el_GR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_el_GR = goog.i18n.NumberFormatSymbols_el;
 
 
 /**
  * Number formatting symbols for locale en_001.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_001 = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_150.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_150 = {
   DECIMAL_SEP: '.',
@@ -3300,7 +3477,7 @@ goog.i18n.NumberFormatSymbols_en_150 = {
 
 /**
  * Number formatting symbols for locale en_AE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_AE = {
   DECIMAL_SEP: '.',
@@ -3323,7 +3500,7 @@ goog.i18n.NumberFormatSymbols_en_AE = {
 
 /**
  * Number formatting symbols for locale en_AG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_AG = {
   DECIMAL_SEP: '.',
@@ -3346,7 +3523,7 @@ goog.i18n.NumberFormatSymbols_en_AG = {
 
 /**
  * Number formatting symbols for locale en_AI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_AI = {
   DECIMAL_SEP: '.',
@@ -3369,14 +3546,14 @@ goog.i18n.NumberFormatSymbols_en_AI = {
 
 /**
  * Number formatting symbols for locale en_AS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_AS = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_AT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_AT = {
   DECIMAL_SEP: ',',
@@ -3399,7 +3576,7 @@ goog.i18n.NumberFormatSymbols_en_AT = {
 
 /**
  * Number formatting symbols for locale en_BB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BB = {
   DECIMAL_SEP: '.',
@@ -3422,7 +3599,7 @@ goog.i18n.NumberFormatSymbols_en_BB = {
 
 /**
  * Number formatting symbols for locale en_BE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BE = {
   DECIMAL_SEP: ',',
@@ -3445,7 +3622,7 @@ goog.i18n.NumberFormatSymbols_en_BE = {
 
 /**
  * Number formatting symbols for locale en_BI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BI = {
   DECIMAL_SEP: '.',
@@ -3468,7 +3645,7 @@ goog.i18n.NumberFormatSymbols_en_BI = {
 
 /**
  * Number formatting symbols for locale en_BM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BM = {
   DECIMAL_SEP: '.',
@@ -3491,7 +3668,7 @@ goog.i18n.NumberFormatSymbols_en_BM = {
 
 /**
  * Number formatting symbols for locale en_BS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BS = {
   DECIMAL_SEP: '.',
@@ -3514,7 +3691,7 @@ goog.i18n.NumberFormatSymbols_en_BS = {
 
 /**
  * Number formatting symbols for locale en_BW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BW = {
   DECIMAL_SEP: '.',
@@ -3537,7 +3714,7 @@ goog.i18n.NumberFormatSymbols_en_BW = {
 
 /**
  * Number formatting symbols for locale en_BZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_BZ = {
   DECIMAL_SEP: '.',
@@ -3560,7 +3737,7 @@ goog.i18n.NumberFormatSymbols_en_BZ = {
 
 /**
  * Number formatting symbols for locale en_CC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CC = {
   DECIMAL_SEP: '.',
@@ -3583,7 +3760,7 @@ goog.i18n.NumberFormatSymbols_en_CC = {
 
 /**
  * Number formatting symbols for locale en_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CH = {
   DECIMAL_SEP: '.',
@@ -3606,7 +3783,7 @@ goog.i18n.NumberFormatSymbols_en_CH = {
 
 /**
  * Number formatting symbols for locale en_CK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CK = {
   DECIMAL_SEP: '.',
@@ -3629,7 +3806,7 @@ goog.i18n.NumberFormatSymbols_en_CK = {
 
 /**
  * Number formatting symbols for locale en_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CM = {
   DECIMAL_SEP: '.',
@@ -3652,7 +3829,7 @@ goog.i18n.NumberFormatSymbols_en_CM = {
 
 /**
  * Number formatting symbols for locale en_CX.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CX = {
   DECIMAL_SEP: '.',
@@ -3675,7 +3852,7 @@ goog.i18n.NumberFormatSymbols_en_CX = {
 
 /**
  * Number formatting symbols for locale en_CY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_CY = {
   DECIMAL_SEP: '.',
@@ -3698,7 +3875,7 @@ goog.i18n.NumberFormatSymbols_en_CY = {
 
 /**
  * Number formatting symbols for locale en_DE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_DE = {
   DECIMAL_SEP: ',',
@@ -3721,14 +3898,14 @@ goog.i18n.NumberFormatSymbols_en_DE = {
 
 /**
  * Number formatting symbols for locale en_DG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_DG = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_DK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_DK = {
   DECIMAL_SEP: ',',
@@ -3751,7 +3928,7 @@ goog.i18n.NumberFormatSymbols_en_DK = {
 
 /**
  * Number formatting symbols for locale en_DM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_DM = {
   DECIMAL_SEP: '.',
@@ -3774,7 +3951,7 @@ goog.i18n.NumberFormatSymbols_en_DM = {
 
 /**
  * Number formatting symbols for locale en_ER.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_ER = {
   DECIMAL_SEP: '.',
@@ -3797,7 +3974,7 @@ goog.i18n.NumberFormatSymbols_en_ER = {
 
 /**
  * Number formatting symbols for locale en_FI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_FI = {
   DECIMAL_SEP: ',',
@@ -3820,7 +3997,7 @@ goog.i18n.NumberFormatSymbols_en_FI = {
 
 /**
  * Number formatting symbols for locale en_FJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_FJ = {
   DECIMAL_SEP: '.',
@@ -3843,7 +4020,7 @@ goog.i18n.NumberFormatSymbols_en_FJ = {
 
 /**
  * Number formatting symbols for locale en_FK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_FK = {
   DECIMAL_SEP: '.',
@@ -3866,14 +4043,14 @@ goog.i18n.NumberFormatSymbols_en_FK = {
 
 /**
  * Number formatting symbols for locale en_FM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_FM = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_GD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GD = {
   DECIMAL_SEP: '.',
@@ -3896,7 +4073,7 @@ goog.i18n.NumberFormatSymbols_en_GD = {
 
 /**
  * Number formatting symbols for locale en_GG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GG = {
   DECIMAL_SEP: '.',
@@ -3919,7 +4096,7 @@ goog.i18n.NumberFormatSymbols_en_GG = {
 
 /**
  * Number formatting symbols for locale en_GH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GH = {
   DECIMAL_SEP: '.',
@@ -3942,7 +4119,7 @@ goog.i18n.NumberFormatSymbols_en_GH = {
 
 /**
  * Number formatting symbols for locale en_GI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GI = {
   DECIMAL_SEP: '.',
@@ -3965,7 +4142,7 @@ goog.i18n.NumberFormatSymbols_en_GI = {
 
 /**
  * Number formatting symbols for locale en_GM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GM = {
   DECIMAL_SEP: '.',
@@ -3988,14 +4165,14 @@ goog.i18n.NumberFormatSymbols_en_GM = {
 
 /**
  * Number formatting symbols for locale en_GU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GU = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_GY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_GY = {
   DECIMAL_SEP: '.',
@@ -4018,7 +4195,7 @@ goog.i18n.NumberFormatSymbols_en_GY = {
 
 /**
  * Number formatting symbols for locale en_HK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_HK = {
   DECIMAL_SEP: '.',
@@ -4041,7 +4218,7 @@ goog.i18n.NumberFormatSymbols_en_HK = {
 
 /**
  * Number formatting symbols for locale en_IL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_IL = {
   DECIMAL_SEP: '.',
@@ -4064,7 +4241,7 @@ goog.i18n.NumberFormatSymbols_en_IL = {
 
 /**
  * Number formatting symbols for locale en_IM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_IM = {
   DECIMAL_SEP: '.',
@@ -4087,14 +4264,14 @@ goog.i18n.NumberFormatSymbols_en_IM = {
 
 /**
  * Number formatting symbols for locale en_IO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_IO = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_JE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_JE = {
   DECIMAL_SEP: '.',
@@ -4117,7 +4294,7 @@ goog.i18n.NumberFormatSymbols_en_JE = {
 
 /**
  * Number formatting symbols for locale en_JM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_JM = {
   DECIMAL_SEP: '.',
@@ -4140,7 +4317,7 @@ goog.i18n.NumberFormatSymbols_en_JM = {
 
 /**
  * Number formatting symbols for locale en_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_KE = {
   DECIMAL_SEP: '.',
@@ -4163,7 +4340,7 @@ goog.i18n.NumberFormatSymbols_en_KE = {
 
 /**
  * Number formatting symbols for locale en_KI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_KI = {
   DECIMAL_SEP: '.',
@@ -4186,7 +4363,7 @@ goog.i18n.NumberFormatSymbols_en_KI = {
 
 /**
  * Number formatting symbols for locale en_KN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_KN = {
   DECIMAL_SEP: '.',
@@ -4209,7 +4386,7 @@ goog.i18n.NumberFormatSymbols_en_KN = {
 
 /**
  * Number formatting symbols for locale en_KY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_KY = {
   DECIMAL_SEP: '.',
@@ -4232,7 +4409,7 @@ goog.i18n.NumberFormatSymbols_en_KY = {
 
 /**
  * Number formatting symbols for locale en_LC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_LC = {
   DECIMAL_SEP: '.',
@@ -4255,7 +4432,7 @@ goog.i18n.NumberFormatSymbols_en_LC = {
 
 /**
  * Number formatting symbols for locale en_LR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_LR = {
   DECIMAL_SEP: '.',
@@ -4278,7 +4455,7 @@ goog.i18n.NumberFormatSymbols_en_LR = {
 
 /**
  * Number formatting symbols for locale en_LS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_LS = {
   DECIMAL_SEP: '.',
@@ -4301,7 +4478,7 @@ goog.i18n.NumberFormatSymbols_en_LS = {
 
 /**
  * Number formatting symbols for locale en_MG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MG = {
   DECIMAL_SEP: '.',
@@ -4324,14 +4501,14 @@ goog.i18n.NumberFormatSymbols_en_MG = {
 
 /**
  * Number formatting symbols for locale en_MH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MH = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_MO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MO = {
   DECIMAL_SEP: '.',
@@ -4354,14 +4531,14 @@ goog.i18n.NumberFormatSymbols_en_MO = {
 
 /**
  * Number formatting symbols for locale en_MP.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MP = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_MS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MS = {
   DECIMAL_SEP: '.',
@@ -4384,7 +4561,7 @@ goog.i18n.NumberFormatSymbols_en_MS = {
 
 /**
  * Number formatting symbols for locale en_MT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MT = {
   DECIMAL_SEP: '.',
@@ -4407,7 +4584,7 @@ goog.i18n.NumberFormatSymbols_en_MT = {
 
 /**
  * Number formatting symbols for locale en_MU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MU = {
   DECIMAL_SEP: '.',
@@ -4430,7 +4607,7 @@ goog.i18n.NumberFormatSymbols_en_MU = {
 
 /**
  * Number formatting symbols for locale en_MW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MW = {
   DECIMAL_SEP: '.',
@@ -4453,7 +4630,7 @@ goog.i18n.NumberFormatSymbols_en_MW = {
 
 /**
  * Number formatting symbols for locale en_MY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_MY = {
   DECIMAL_SEP: '.',
@@ -4476,7 +4653,7 @@ goog.i18n.NumberFormatSymbols_en_MY = {
 
 /**
  * Number formatting symbols for locale en_NA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NA = {
   DECIMAL_SEP: '.',
@@ -4499,7 +4676,7 @@ goog.i18n.NumberFormatSymbols_en_NA = {
 
 /**
  * Number formatting symbols for locale en_NF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NF = {
   DECIMAL_SEP: '.',
@@ -4522,7 +4699,7 @@ goog.i18n.NumberFormatSymbols_en_NF = {
 
 /**
  * Number formatting symbols for locale en_NG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NG = {
   DECIMAL_SEP: '.',
@@ -4545,7 +4722,7 @@ goog.i18n.NumberFormatSymbols_en_NG = {
 
 /**
  * Number formatting symbols for locale en_NL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NL = {
   DECIMAL_SEP: ',',
@@ -4568,7 +4745,7 @@ goog.i18n.NumberFormatSymbols_en_NL = {
 
 /**
  * Number formatting symbols for locale en_NR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NR = {
   DECIMAL_SEP: '.',
@@ -4591,7 +4768,7 @@ goog.i18n.NumberFormatSymbols_en_NR = {
 
 /**
  * Number formatting symbols for locale en_NU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NU = {
   DECIMAL_SEP: '.',
@@ -4614,7 +4791,7 @@ goog.i18n.NumberFormatSymbols_en_NU = {
 
 /**
  * Number formatting symbols for locale en_NZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_NZ = {
   DECIMAL_SEP: '.',
@@ -4637,7 +4814,7 @@ goog.i18n.NumberFormatSymbols_en_NZ = {
 
 /**
  * Number formatting symbols for locale en_PG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PG = {
   DECIMAL_SEP: '.',
@@ -4660,7 +4837,7 @@ goog.i18n.NumberFormatSymbols_en_PG = {
 
 /**
  * Number formatting symbols for locale en_PH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PH = {
   DECIMAL_SEP: '.',
@@ -4683,7 +4860,7 @@ goog.i18n.NumberFormatSymbols_en_PH = {
 
 /**
  * Number formatting symbols for locale en_PK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PK = {
   DECIMAL_SEP: '.',
@@ -4706,7 +4883,7 @@ goog.i18n.NumberFormatSymbols_en_PK = {
 
 /**
  * Number formatting symbols for locale en_PN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PN = {
   DECIMAL_SEP: '.',
@@ -4729,21 +4906,21 @@ goog.i18n.NumberFormatSymbols_en_PN = {
 
 /**
  * Number formatting symbols for locale en_PR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PR = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_PW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_PW = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_RW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_RW = {
   DECIMAL_SEP: '.',
@@ -4766,7 +4943,7 @@ goog.i18n.NumberFormatSymbols_en_RW = {
 
 /**
  * Number formatting symbols for locale en_SB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SB = {
   DECIMAL_SEP: '.',
@@ -4789,7 +4966,7 @@ goog.i18n.NumberFormatSymbols_en_SB = {
 
 /**
  * Number formatting symbols for locale en_SC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SC = {
   DECIMAL_SEP: '.',
@@ -4812,7 +4989,7 @@ goog.i18n.NumberFormatSymbols_en_SC = {
 
 /**
  * Number formatting symbols for locale en_SD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SD = {
   DECIMAL_SEP: '.',
@@ -4835,7 +5012,7 @@ goog.i18n.NumberFormatSymbols_en_SD = {
 
 /**
  * Number formatting symbols for locale en_SE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SE = {
   DECIMAL_SEP: ',',
@@ -4858,7 +5035,7 @@ goog.i18n.NumberFormatSymbols_en_SE = {
 
 /**
  * Number formatting symbols for locale en_SH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SH = {
   DECIMAL_SEP: '.',
@@ -4881,7 +5058,7 @@ goog.i18n.NumberFormatSymbols_en_SH = {
 
 /**
  * Number formatting symbols for locale en_SI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SI = {
   DECIMAL_SEP: ',',
@@ -4904,7 +5081,7 @@ goog.i18n.NumberFormatSymbols_en_SI = {
 
 /**
  * Number formatting symbols for locale en_SL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SL = {
   DECIMAL_SEP: '.',
@@ -4927,7 +5104,7 @@ goog.i18n.NumberFormatSymbols_en_SL = {
 
 /**
  * Number formatting symbols for locale en_SS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SS = {
   DECIMAL_SEP: '.',
@@ -4950,7 +5127,7 @@ goog.i18n.NumberFormatSymbols_en_SS = {
 
 /**
  * Number formatting symbols for locale en_SX.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SX = {
   DECIMAL_SEP: '.',
@@ -4973,7 +5150,7 @@ goog.i18n.NumberFormatSymbols_en_SX = {
 
 /**
  * Number formatting symbols for locale en_SZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_SZ = {
   DECIMAL_SEP: '.',
@@ -4996,14 +5173,14 @@ goog.i18n.NumberFormatSymbols_en_SZ = {
 
 /**
  * Number formatting symbols for locale en_TC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TC = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_TK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TK = {
   DECIMAL_SEP: '.',
@@ -5026,7 +5203,7 @@ goog.i18n.NumberFormatSymbols_en_TK = {
 
 /**
  * Number formatting symbols for locale en_TO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TO = {
   DECIMAL_SEP: '.',
@@ -5049,7 +5226,7 @@ goog.i18n.NumberFormatSymbols_en_TO = {
 
 /**
  * Number formatting symbols for locale en_TT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TT = {
   DECIMAL_SEP: '.',
@@ -5072,7 +5249,7 @@ goog.i18n.NumberFormatSymbols_en_TT = {
 
 /**
  * Number formatting symbols for locale en_TV.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TV = {
   DECIMAL_SEP: '.',
@@ -5095,7 +5272,7 @@ goog.i18n.NumberFormatSymbols_en_TV = {
 
 /**
  * Number formatting symbols for locale en_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_TZ = {
   DECIMAL_SEP: '.',
@@ -5118,7 +5295,7 @@ goog.i18n.NumberFormatSymbols_en_TZ = {
 
 /**
  * Number formatting symbols for locale en_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_UG = {
   DECIMAL_SEP: '.',
@@ -5141,14 +5318,14 @@ goog.i18n.NumberFormatSymbols_en_UG = {
 
 /**
  * Number formatting symbols for locale en_UM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_UM = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_US_POSIX.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_US_POSIX = {
   DECIMAL_SEP: '.',
@@ -5171,7 +5348,7 @@ goog.i18n.NumberFormatSymbols_en_US_POSIX = {
 
 /**
  * Number formatting symbols for locale en_VC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_VC = {
   DECIMAL_SEP: '.',
@@ -5194,21 +5371,21 @@ goog.i18n.NumberFormatSymbols_en_VC = {
 
 /**
  * Number formatting symbols for locale en_VG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_VG = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_VI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_VI = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_VU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_VU = {
   DECIMAL_SEP: '.',
@@ -5231,7 +5408,7 @@ goog.i18n.NumberFormatSymbols_en_VU = {
 
 /**
  * Number formatting symbols for locale en_WS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_WS = {
   DECIMAL_SEP: '.',
@@ -5254,14 +5431,14 @@ goog.i18n.NumberFormatSymbols_en_WS = {
 
 /**
  * Number formatting symbols for locale en_XA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_XA = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale en_ZM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_ZM = {
   DECIMAL_SEP: '.',
@@ -5284,14 +5461,14 @@ goog.i18n.NumberFormatSymbols_en_ZM = {
 
 /**
  * Number formatting symbols for locale en_ZW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_en_ZW = goog.i18n.NumberFormatSymbols_en;
 
 
 /**
  * Number formatting symbols for locale eo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_eo = {
   DECIMAL_SEP: ',',
@@ -5314,14 +5491,14 @@ goog.i18n.NumberFormatSymbols_eo = {
 
 /**
  * Number formatting symbols for locale eo_001.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_eo_001 = goog.i18n.NumberFormatSymbols_eo;
 
 
 /**
  * Number formatting symbols for locale es_AR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_AR = {
   DECIMAL_SEP: ',',
@@ -5344,7 +5521,7 @@ goog.i18n.NumberFormatSymbols_es_AR = {
 
 /**
  * Number formatting symbols for locale es_BO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_BO = {
   DECIMAL_SEP: ',',
@@ -5367,7 +5544,7 @@ goog.i18n.NumberFormatSymbols_es_BO = {
 
 /**
  * Number formatting symbols for locale es_BR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_BR = {
   DECIMAL_SEP: '.',
@@ -5390,7 +5567,7 @@ goog.i18n.NumberFormatSymbols_es_BR = {
 
 /**
  * Number formatting symbols for locale es_BZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_BZ = {
   DECIMAL_SEP: '.',
@@ -5413,7 +5590,7 @@ goog.i18n.NumberFormatSymbols_es_BZ = {
 
 /**
  * Number formatting symbols for locale es_CL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_CL = {
   DECIMAL_SEP: ',',
@@ -5436,7 +5613,7 @@ goog.i18n.NumberFormatSymbols_es_CL = {
 
 /**
  * Number formatting symbols for locale es_CO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_CO = {
   DECIMAL_SEP: ',',
@@ -5459,7 +5636,7 @@ goog.i18n.NumberFormatSymbols_es_CO = {
 
 /**
  * Number formatting symbols for locale es_CR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_CR = {
   DECIMAL_SEP: ',',
@@ -5482,7 +5659,7 @@ goog.i18n.NumberFormatSymbols_es_CR = {
 
 /**
  * Number formatting symbols for locale es_CU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_CU = {
   DECIMAL_SEP: '.',
@@ -5505,7 +5682,7 @@ goog.i18n.NumberFormatSymbols_es_CU = {
 
 /**
  * Number formatting symbols for locale es_DO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_DO = {
   DECIMAL_SEP: '.',
@@ -5528,14 +5705,14 @@ goog.i18n.NumberFormatSymbols_es_DO = {
 
 /**
  * Number formatting symbols for locale es_EA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_EA = goog.i18n.NumberFormatSymbols_es;
 
 
 /**
  * Number formatting symbols for locale es_EC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_EC = {
   DECIMAL_SEP: ',',
@@ -5558,7 +5735,7 @@ goog.i18n.NumberFormatSymbols_es_EC = {
 
 /**
  * Number formatting symbols for locale es_GQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_GQ = {
   DECIMAL_SEP: ',',
@@ -5581,7 +5758,7 @@ goog.i18n.NumberFormatSymbols_es_GQ = {
 
 /**
  * Number formatting symbols for locale es_GT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_GT = {
   DECIMAL_SEP: '.',
@@ -5604,7 +5781,7 @@ goog.i18n.NumberFormatSymbols_es_GT = {
 
 /**
  * Number formatting symbols for locale es_HN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_HN = {
   DECIMAL_SEP: '.',
@@ -5627,14 +5804,14 @@ goog.i18n.NumberFormatSymbols_es_HN = {
 
 /**
  * Number formatting symbols for locale es_IC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_IC = goog.i18n.NumberFormatSymbols_es;
 
 
 /**
  * Number formatting symbols for locale es_NI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_NI = {
   DECIMAL_SEP: '.',
@@ -5657,7 +5834,7 @@ goog.i18n.NumberFormatSymbols_es_NI = {
 
 /**
  * Number formatting symbols for locale es_PA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_PA = {
   DECIMAL_SEP: '.',
@@ -5680,7 +5857,7 @@ goog.i18n.NumberFormatSymbols_es_PA = {
 
 /**
  * Number formatting symbols for locale es_PE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_PE = {
   DECIMAL_SEP: '.',
@@ -5703,7 +5880,7 @@ goog.i18n.NumberFormatSymbols_es_PE = {
 
 /**
  * Number formatting symbols for locale es_PH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_PH = {
   DECIMAL_SEP: ',',
@@ -5726,7 +5903,7 @@ goog.i18n.NumberFormatSymbols_es_PH = {
 
 /**
  * Number formatting symbols for locale es_PR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_PR = {
   DECIMAL_SEP: '.',
@@ -5749,7 +5926,7 @@ goog.i18n.NumberFormatSymbols_es_PR = {
 
 /**
  * Number formatting symbols for locale es_PY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_PY = {
   DECIMAL_SEP: ',',
@@ -5772,7 +5949,7 @@ goog.i18n.NumberFormatSymbols_es_PY = {
 
 /**
  * Number formatting symbols for locale es_SV.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_SV = {
   DECIMAL_SEP: '.',
@@ -5795,7 +5972,7 @@ goog.i18n.NumberFormatSymbols_es_SV = {
 
 /**
  * Number formatting symbols for locale es_UY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_UY = {
   DECIMAL_SEP: ',',
@@ -5818,7 +5995,7 @@ goog.i18n.NumberFormatSymbols_es_UY = {
 
 /**
  * Number formatting symbols for locale es_VE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_es_VE = {
   DECIMAL_SEP: ',',
@@ -5841,21 +6018,21 @@ goog.i18n.NumberFormatSymbols_es_VE = {
 
 /**
  * Number formatting symbols for locale et_EE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_et_EE = goog.i18n.NumberFormatSymbols_et;
 
 
 /**
  * Number formatting symbols for locale eu_ES.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_eu_ES = goog.i18n.NumberFormatSymbols_eu;
 
 
 /**
  * Number formatting symbols for locale ewo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ewo = {
   DECIMAL_SEP: ',',
@@ -5878,7 +6055,7 @@ goog.i18n.NumberFormatSymbols_ewo = {
 
 /**
  * Number formatting symbols for locale ewo_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ewo_CM = {
   DECIMAL_SEP: ',',
@@ -5901,7 +6078,7 @@ goog.i18n.NumberFormatSymbols_ewo_CM = {
 
 /**
  * Number formatting symbols for locale fa_AF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fa_AF = {
   DECIMAL_SEP: '٫',
@@ -5924,7 +6101,7 @@ goog.i18n.NumberFormatSymbols_fa_AF = {
 
 /**
  * Number formatting symbols for locale fa_AF_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fa_AF_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -5947,7 +6124,7 @@ goog.i18n.NumberFormatSymbols_fa_AF_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale fa_IR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fa_IR = {
   DECIMAL_SEP: '٫',
@@ -5970,7 +6147,7 @@ goog.i18n.NumberFormatSymbols_fa_IR = {
 
 /**
  * Number formatting symbols for locale fa_IR_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fa_IR_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -5993,7 +6170,7 @@ goog.i18n.NumberFormatSymbols_fa_IR_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ff.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff = {
   DECIMAL_SEP: ',',
@@ -6015,15 +6192,314 @@ goog.i18n.NumberFormatSymbols_ff = {
 
 
 /**
+ * Number formatting symbols for locale ff_Adlm.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'GNF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_BF.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_BF = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'XOF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_CM.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_CM = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'XAF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_GH.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_GH = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'GHS'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_GM.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_GM = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'GMD'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_GN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_GN = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'GNF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_GW.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_GW = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'XOF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_LR.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_LR = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'LRD'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_MR.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_MR = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'MRU'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_NE.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_NE = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'XOF'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_NG.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_NG = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'NGN'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_SL.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_SL = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'SLL'
+};
+
+
+/**
+ * Number formatting symbols for locale ff_Adlm_SN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ff_Adlm_SN = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: '⹁',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: '𞤏𞤮𞤈',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0',
+  DEF_CURRENCY_CODE: 'XOF'
+};
+
+
+/**
  * Number formatting symbols for locale ff_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn = goog.i18n.NumberFormatSymbols_ff;
 
 
 /**
  * Number formatting symbols for locale ff_Latn_BF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_BF = {
   DECIMAL_SEP: ',',
@@ -6046,7 +6522,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_BF = {
 
 /**
  * Number formatting symbols for locale ff_Latn_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_CM = {
   DECIMAL_SEP: ',',
@@ -6069,7 +6545,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_CM = {
 
 /**
  * Number formatting symbols for locale ff_Latn_GH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_GH = {
   DECIMAL_SEP: ',',
@@ -6092,7 +6568,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_GH = {
 
 /**
  * Number formatting symbols for locale ff_Latn_GM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_GM = {
   DECIMAL_SEP: ',',
@@ -6115,7 +6591,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_GM = {
 
 /**
  * Number formatting symbols for locale ff_Latn_GN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_GN = {
   DECIMAL_SEP: ',',
@@ -6138,7 +6614,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_GN = {
 
 /**
  * Number formatting symbols for locale ff_Latn_GW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_GW = {
   DECIMAL_SEP: ',',
@@ -6161,7 +6637,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_GW = {
 
 /**
  * Number formatting symbols for locale ff_Latn_LR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_LR = {
   DECIMAL_SEP: ',',
@@ -6184,7 +6660,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_LR = {
 
 /**
  * Number formatting symbols for locale ff_Latn_MR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_MR = {
   DECIMAL_SEP: ',',
@@ -6207,7 +6683,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_MR = {
 
 /**
  * Number formatting symbols for locale ff_Latn_NE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_NE = {
   DECIMAL_SEP: ',',
@@ -6230,7 +6706,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_NE = {
 
 /**
  * Number formatting symbols for locale ff_Latn_NG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_NG = {
   DECIMAL_SEP: ',',
@@ -6253,7 +6729,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_NG = {
 
 /**
  * Number formatting symbols for locale ff_Latn_SL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_SL = {
   DECIMAL_SEP: ',',
@@ -6276,7 +6752,7 @@ goog.i18n.NumberFormatSymbols_ff_Latn_SL = {
 
 /**
  * Number formatting symbols for locale ff_Latn_SN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ff_Latn_SN = {
   DECIMAL_SEP: ',',
@@ -6299,21 +6775,21 @@ goog.i18n.NumberFormatSymbols_ff_Latn_SN = {
 
 /**
  * Number formatting symbols for locale fi_FI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fi_FI = goog.i18n.NumberFormatSymbols_fi;
 
 
 /**
  * Number formatting symbols for locale fil_PH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fil_PH = goog.i18n.NumberFormatSymbols_fil;
 
 
 /**
  * Number formatting symbols for locale fo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fo = {
   DECIMAL_SEP: ',',
@@ -6336,28 +6812,28 @@ goog.i18n.NumberFormatSymbols_fo = {
 
 /**
  * Number formatting symbols for locale fo_DK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fo_DK = goog.i18n.NumberFormatSymbols_fo;
 
 
 /**
  * Number formatting symbols for locale fo_FO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fo_FO = goog.i18n.NumberFormatSymbols_fo;
 
 
 /**
  * Number formatting symbols for locale fr_BE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_BE = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_BF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_BF = {
   DECIMAL_SEP: ',',
@@ -6380,7 +6856,7 @@ goog.i18n.NumberFormatSymbols_fr_BF = {
 
 /**
  * Number formatting symbols for locale fr_BI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_BI = {
   DECIMAL_SEP: ',',
@@ -6403,7 +6879,7 @@ goog.i18n.NumberFormatSymbols_fr_BI = {
 
 /**
  * Number formatting symbols for locale fr_BJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_BJ = {
   DECIMAL_SEP: ',',
@@ -6426,14 +6902,14 @@ goog.i18n.NumberFormatSymbols_fr_BJ = {
 
 /**
  * Number formatting symbols for locale fr_BL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_BL = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_CD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CD = {
   DECIMAL_SEP: ',',
@@ -6456,7 +6932,7 @@ goog.i18n.NumberFormatSymbols_fr_CD = {
 
 /**
  * Number formatting symbols for locale fr_CF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CF = {
   DECIMAL_SEP: ',',
@@ -6479,7 +6955,7 @@ goog.i18n.NumberFormatSymbols_fr_CF = {
 
 /**
  * Number formatting symbols for locale fr_CG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CG = {
   DECIMAL_SEP: ',',
@@ -6502,7 +6978,7 @@ goog.i18n.NumberFormatSymbols_fr_CG = {
 
 /**
  * Number formatting symbols for locale fr_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CH = {
   DECIMAL_SEP: ',',
@@ -6525,7 +7001,7 @@ goog.i18n.NumberFormatSymbols_fr_CH = {
 
 /**
  * Number formatting symbols for locale fr_CI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CI = {
   DECIMAL_SEP: ',',
@@ -6548,7 +7024,7 @@ goog.i18n.NumberFormatSymbols_fr_CI = {
 
 /**
  * Number formatting symbols for locale fr_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_CM = {
   DECIMAL_SEP: ',',
@@ -6571,7 +7047,7 @@ goog.i18n.NumberFormatSymbols_fr_CM = {
 
 /**
  * Number formatting symbols for locale fr_DJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_DJ = {
   DECIMAL_SEP: ',',
@@ -6594,7 +7070,7 @@ goog.i18n.NumberFormatSymbols_fr_DJ = {
 
 /**
  * Number formatting symbols for locale fr_DZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_DZ = {
   DECIMAL_SEP: ',',
@@ -6617,14 +7093,14 @@ goog.i18n.NumberFormatSymbols_fr_DZ = {
 
 /**
  * Number formatting symbols for locale fr_FR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_FR = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_GA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_GA = {
   DECIMAL_SEP: ',',
@@ -6647,14 +7123,14 @@ goog.i18n.NumberFormatSymbols_fr_GA = {
 
 /**
  * Number formatting symbols for locale fr_GF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_GF = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_GN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_GN = {
   DECIMAL_SEP: ',',
@@ -6677,14 +7153,14 @@ goog.i18n.NumberFormatSymbols_fr_GN = {
 
 /**
  * Number formatting symbols for locale fr_GP.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_GP = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_GQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_GQ = {
   DECIMAL_SEP: ',',
@@ -6707,7 +7183,7 @@ goog.i18n.NumberFormatSymbols_fr_GQ = {
 
 /**
  * Number formatting symbols for locale fr_HT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_HT = {
   DECIMAL_SEP: ',',
@@ -6730,7 +7206,7 @@ goog.i18n.NumberFormatSymbols_fr_HT = {
 
 /**
  * Number formatting symbols for locale fr_KM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_KM = {
   DECIMAL_SEP: ',',
@@ -6753,7 +7229,7 @@ goog.i18n.NumberFormatSymbols_fr_KM = {
 
 /**
  * Number formatting symbols for locale fr_LU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_LU = {
   DECIMAL_SEP: ',',
@@ -6776,7 +7252,7 @@ goog.i18n.NumberFormatSymbols_fr_LU = {
 
 /**
  * Number formatting symbols for locale fr_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MA = {
   DECIMAL_SEP: ',',
@@ -6799,21 +7275,21 @@ goog.i18n.NumberFormatSymbols_fr_MA = {
 
 /**
  * Number formatting symbols for locale fr_MC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MC = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_MF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MF = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_MG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MG = {
   DECIMAL_SEP: ',',
@@ -6836,7 +7312,7 @@ goog.i18n.NumberFormatSymbols_fr_MG = {
 
 /**
  * Number formatting symbols for locale fr_ML.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_ML = {
   DECIMAL_SEP: ',',
@@ -6859,14 +7335,14 @@ goog.i18n.NumberFormatSymbols_fr_ML = {
 
 /**
  * Number formatting symbols for locale fr_MQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MQ = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_MR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MR = {
   DECIMAL_SEP: ',',
@@ -6889,7 +7365,7 @@ goog.i18n.NumberFormatSymbols_fr_MR = {
 
 /**
  * Number formatting symbols for locale fr_MU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_MU = {
   DECIMAL_SEP: ',',
@@ -6912,7 +7388,7 @@ goog.i18n.NumberFormatSymbols_fr_MU = {
 
 /**
  * Number formatting symbols for locale fr_NC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_NC = {
   DECIMAL_SEP: ',',
@@ -6935,7 +7411,7 @@ goog.i18n.NumberFormatSymbols_fr_NC = {
 
 /**
  * Number formatting symbols for locale fr_NE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_NE = {
   DECIMAL_SEP: ',',
@@ -6958,7 +7434,7 @@ goog.i18n.NumberFormatSymbols_fr_NE = {
 
 /**
  * Number formatting symbols for locale fr_PF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_PF = {
   DECIMAL_SEP: ',',
@@ -6981,21 +7457,21 @@ goog.i18n.NumberFormatSymbols_fr_PF = {
 
 /**
  * Number formatting symbols for locale fr_PM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_PM = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_RE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_RE = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fr_RW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_RW = {
   DECIMAL_SEP: ',',
@@ -7018,7 +7494,7 @@ goog.i18n.NumberFormatSymbols_fr_RW = {
 
 /**
  * Number formatting symbols for locale fr_SC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_SC = {
   DECIMAL_SEP: ',',
@@ -7041,7 +7517,7 @@ goog.i18n.NumberFormatSymbols_fr_SC = {
 
 /**
  * Number formatting symbols for locale fr_SN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_SN = {
   DECIMAL_SEP: ',',
@@ -7064,7 +7540,7 @@ goog.i18n.NumberFormatSymbols_fr_SN = {
 
 /**
  * Number formatting symbols for locale fr_SY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_SY = {
   DECIMAL_SEP: ',',
@@ -7087,7 +7563,7 @@ goog.i18n.NumberFormatSymbols_fr_SY = {
 
 /**
  * Number formatting symbols for locale fr_TD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_TD = {
   DECIMAL_SEP: ',',
@@ -7110,7 +7586,7 @@ goog.i18n.NumberFormatSymbols_fr_TD = {
 
 /**
  * Number formatting symbols for locale fr_TG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_TG = {
   DECIMAL_SEP: ',',
@@ -7133,7 +7609,7 @@ goog.i18n.NumberFormatSymbols_fr_TG = {
 
 /**
  * Number formatting symbols for locale fr_TN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_TN = {
   DECIMAL_SEP: ',',
@@ -7156,7 +7632,7 @@ goog.i18n.NumberFormatSymbols_fr_TN = {
 
 /**
  * Number formatting symbols for locale fr_VU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_VU = {
   DECIMAL_SEP: ',',
@@ -7179,7 +7655,7 @@ goog.i18n.NumberFormatSymbols_fr_VU = {
 
 /**
  * Number formatting symbols for locale fr_WF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_WF = {
   DECIMAL_SEP: ',',
@@ -7202,14 +7678,14 @@ goog.i18n.NumberFormatSymbols_fr_WF = {
 
 /**
  * Number formatting symbols for locale fr_YT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fr_YT = goog.i18n.NumberFormatSymbols_fr;
 
 
 /**
  * Number formatting symbols for locale fur.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fur = {
   DECIMAL_SEP: ',',
@@ -7232,14 +7708,14 @@ goog.i18n.NumberFormatSymbols_fur = {
 
 /**
  * Number formatting symbols for locale fur_IT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fur_IT = goog.i18n.NumberFormatSymbols_fur;
 
 
 /**
  * Number formatting symbols for locale fy.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fy = {
   DECIMAL_SEP: ',',
@@ -7262,14 +7738,14 @@ goog.i18n.NumberFormatSymbols_fy = {
 
 /**
  * Number formatting symbols for locale fy_NL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_fy_NL = goog.i18n.NumberFormatSymbols_fy;
 
 
 /**
  * Number formatting symbols for locale ga_GB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ga_GB = {
   DECIMAL_SEP: '.',
@@ -7281,7 +7757,7 @@ goog.i18n.NumberFormatSymbols_ga_GB = {
   EXP_SYMBOL: 'E',
   PERMILL: '‰',
   INFINITY: '∞',
-  NAN: 'NaN',
+  NAN: 'Nuimh',
   DECIMAL_PATTERN: '#,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
   PERCENT_PATTERN: '#,##0%',
@@ -7292,14 +7768,14 @@ goog.i18n.NumberFormatSymbols_ga_GB = {
 
 /**
  * Number formatting symbols for locale ga_IE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ga_IE = goog.i18n.NumberFormatSymbols_ga;
 
 
 /**
  * Number formatting symbols for locale gd.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gd = {
   DECIMAL_SEP: '.',
@@ -7322,28 +7798,28 @@ goog.i18n.NumberFormatSymbols_gd = {
 
 /**
  * Number formatting symbols for locale gd_GB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gd_GB = goog.i18n.NumberFormatSymbols_gd;
 
 
 /**
  * Number formatting symbols for locale gl_ES.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gl_ES = goog.i18n.NumberFormatSymbols_gl;
 
 
 /**
  * Number formatting symbols for locale gsw_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gsw_CH = goog.i18n.NumberFormatSymbols_gsw;
 
 
 /**
  * Number formatting symbols for locale gsw_FR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gsw_FR = {
   DECIMAL_SEP: '.',
@@ -7366,21 +7842,21 @@ goog.i18n.NumberFormatSymbols_gsw_FR = {
 
 /**
  * Number formatting symbols for locale gsw_LI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gsw_LI = goog.i18n.NumberFormatSymbols_gsw;
 
 
 /**
  * Number formatting symbols for locale gu_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gu_IN = goog.i18n.NumberFormatSymbols_gu;
 
 
 /**
  * Number formatting symbols for locale guz.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_guz = {
   DECIMAL_SEP: '.',
@@ -7403,14 +7879,14 @@ goog.i18n.NumberFormatSymbols_guz = {
 
 /**
  * Number formatting symbols for locale guz_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_guz_KE = goog.i18n.NumberFormatSymbols_guz;
 
 
 /**
  * Number formatting symbols for locale gv.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gv = {
   DECIMAL_SEP: '.',
@@ -7433,14 +7909,14 @@ goog.i18n.NumberFormatSymbols_gv = {
 
 /**
  * Number formatting symbols for locale gv_IM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_gv_IM = goog.i18n.NumberFormatSymbols_gv;
 
 
 /**
  * Number formatting symbols for locale ha.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ha = {
   DECIMAL_SEP: '.',
@@ -7463,7 +7939,7 @@ goog.i18n.NumberFormatSymbols_ha = {
 
 /**
  * Number formatting symbols for locale ha_GH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ha_GH = {
   DECIMAL_SEP: '.',
@@ -7486,7 +7962,7 @@ goog.i18n.NumberFormatSymbols_ha_GH = {
 
 /**
  * Number formatting symbols for locale ha_NE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ha_NE = {
   DECIMAL_SEP: '.',
@@ -7509,35 +7985,35 @@ goog.i18n.NumberFormatSymbols_ha_NE = {
 
 /**
  * Number formatting symbols for locale ha_NG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ha_NG = goog.i18n.NumberFormatSymbols_ha;
 
 
 /**
  * Number formatting symbols for locale haw_US.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_haw_US = goog.i18n.NumberFormatSymbols_haw;
 
 
 /**
  * Number formatting symbols for locale he_IL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_he_IL = goog.i18n.NumberFormatSymbols_he;
 
 
 /**
  * Number formatting symbols for locale hi_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hi_IN = goog.i18n.NumberFormatSymbols_hi;
 
 
 /**
  * Number formatting symbols for locale hr_BA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hr_BA = {
   DECIMAL_SEP: ',',
@@ -7545,7 +8021,7 @@ goog.i18n.NumberFormatSymbols_hr_BA = {
   PERCENT: '%',
   ZERO_DIGIT: '0',
   PLUS_SIGN: '+',
-  MINUS_SIGN: '-',
+  MINUS_SIGN: '−',
   EXP_SYMBOL: 'E',
   PERMILL: '‰',
   INFINITY: '∞',
@@ -7560,14 +8036,14 @@ goog.i18n.NumberFormatSymbols_hr_BA = {
 
 /**
  * Number formatting symbols for locale hr_HR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hr_HR = goog.i18n.NumberFormatSymbols_hr;
 
 
 /**
  * Number formatting symbols for locale hsb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hsb = {
   DECIMAL_SEP: ',',
@@ -7590,28 +8066,28 @@ goog.i18n.NumberFormatSymbols_hsb = {
 
 /**
  * Number formatting symbols for locale hsb_DE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hsb_DE = goog.i18n.NumberFormatSymbols_hsb;
 
 
 /**
  * Number formatting symbols for locale hu_HU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hu_HU = goog.i18n.NumberFormatSymbols_hu;
 
 
 /**
  * Number formatting symbols for locale hy_AM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_hy_AM = goog.i18n.NumberFormatSymbols_hy;
 
 
 /**
  * Number formatting symbols for locale ia.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ia = {
   DECIMAL_SEP: ',',
@@ -7634,21 +8110,21 @@ goog.i18n.NumberFormatSymbols_ia = {
 
 /**
  * Number formatting symbols for locale ia_001.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ia_001 = goog.i18n.NumberFormatSymbols_ia;
 
 
 /**
  * Number formatting symbols for locale id_ID.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_id_ID = goog.i18n.NumberFormatSymbols_id;
 
 
 /**
  * Number formatting symbols for locale ig.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ig = {
   DECIMAL_SEP: '.',
@@ -7671,14 +8147,14 @@ goog.i18n.NumberFormatSymbols_ig = {
 
 /**
  * Number formatting symbols for locale ig_NG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ig_NG = goog.i18n.NumberFormatSymbols_ig;
 
 
 /**
  * Number formatting symbols for locale ii.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ii = {
   DECIMAL_SEP: '.',
@@ -7701,14 +8177,14 @@ goog.i18n.NumberFormatSymbols_ii = {
 
 /**
  * Number formatting symbols for locale ii_CN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ii_CN = goog.i18n.NumberFormatSymbols_ii;
 
 
 /**
  * Number formatting symbols for locale is_IS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_is_IS = {
   DECIMAL_SEP: ',',
@@ -7731,7 +8207,7 @@ goog.i18n.NumberFormatSymbols_is_IS = {
 
 /**
  * Number formatting symbols for locale it_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_it_CH = {
   DECIMAL_SEP: '.',
@@ -7754,28 +8230,28 @@ goog.i18n.NumberFormatSymbols_it_CH = {
 
 /**
  * Number formatting symbols for locale it_IT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_it_IT = goog.i18n.NumberFormatSymbols_it;
 
 
 /**
  * Number formatting symbols for locale it_SM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_it_SM = goog.i18n.NumberFormatSymbols_it;
 
 
 /**
  * Number formatting symbols for locale it_VA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_it_VA = goog.i18n.NumberFormatSymbols_it;
 
 
 /**
  * Number formatting symbols for locale ja_JP.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ja_JP = {
   DECIMAL_SEP: '.',
@@ -7798,7 +8274,7 @@ goog.i18n.NumberFormatSymbols_ja_JP = {
 
 /**
  * Number formatting symbols for locale jgo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jgo = {
   DECIMAL_SEP: ',',
@@ -7821,7 +8297,7 @@ goog.i18n.NumberFormatSymbols_jgo = {
 
 /**
  * Number formatting symbols for locale jgo_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jgo_CM = {
   DECIMAL_SEP: ',',
@@ -7844,7 +8320,7 @@ goog.i18n.NumberFormatSymbols_jgo_CM = {
 
 /**
  * Number formatting symbols for locale jmc.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jmc = {
   DECIMAL_SEP: '.',
@@ -7867,14 +8343,14 @@ goog.i18n.NumberFormatSymbols_jmc = {
 
 /**
  * Number formatting symbols for locale jmc_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jmc_TZ = goog.i18n.NumberFormatSymbols_jmc;
 
 
 /**
  * Number formatting symbols for locale jv.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jv = {
   DECIMAL_SEP: ',',
@@ -7897,21 +8373,21 @@ goog.i18n.NumberFormatSymbols_jv = {
 
 /**
  * Number formatting symbols for locale jv_ID.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_jv_ID = goog.i18n.NumberFormatSymbols_jv;
 
 
 /**
  * Number formatting symbols for locale ka_GE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ka_GE = goog.i18n.NumberFormatSymbols_ka;
 
 
 /**
  * Number formatting symbols for locale kab.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kab = {
   DECIMAL_SEP: ',',
@@ -7934,14 +8410,14 @@ goog.i18n.NumberFormatSymbols_kab = {
 
 /**
  * Number formatting symbols for locale kab_DZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kab_DZ = goog.i18n.NumberFormatSymbols_kab;
 
 
 /**
  * Number formatting symbols for locale kam.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kam = {
   DECIMAL_SEP: '.',
@@ -7964,14 +8440,14 @@ goog.i18n.NumberFormatSymbols_kam = {
 
 /**
  * Number formatting symbols for locale kam_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kam_KE = goog.i18n.NumberFormatSymbols_kam;
 
 
 /**
  * Number formatting symbols for locale kde.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kde = {
   DECIMAL_SEP: '.',
@@ -7994,14 +8470,14 @@ goog.i18n.NumberFormatSymbols_kde = {
 
 /**
  * Number formatting symbols for locale kde_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kde_TZ = goog.i18n.NumberFormatSymbols_kde;
 
 
 /**
  * Number formatting symbols for locale kea.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kea = {
   DECIMAL_SEP: ',',
@@ -8024,14 +8500,14 @@ goog.i18n.NumberFormatSymbols_kea = {
 
 /**
  * Number formatting symbols for locale kea_CV.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kea_CV = goog.i18n.NumberFormatSymbols_kea;
 
 
 /**
  * Number formatting symbols for locale khq.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_khq = {
   DECIMAL_SEP: '.',
@@ -8054,7 +8530,7 @@ goog.i18n.NumberFormatSymbols_khq = {
 
 /**
  * Number formatting symbols for locale khq_ML.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_khq_ML = {
   DECIMAL_SEP: '.',
@@ -8077,7 +8553,7 @@ goog.i18n.NumberFormatSymbols_khq_ML = {
 
 /**
  * Number formatting symbols for locale ki.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ki = {
   DECIMAL_SEP: '.',
@@ -8100,21 +8576,21 @@ goog.i18n.NumberFormatSymbols_ki = {
 
 /**
  * Number formatting symbols for locale ki_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ki_KE = goog.i18n.NumberFormatSymbols_ki;
 
 
 /**
  * Number formatting symbols for locale kk_KZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kk_KZ = goog.i18n.NumberFormatSymbols_kk;
 
 
 /**
  * Number formatting symbols for locale kkj.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kkj = {
   DECIMAL_SEP: ',',
@@ -8137,7 +8613,7 @@ goog.i18n.NumberFormatSymbols_kkj = {
 
 /**
  * Number formatting symbols for locale kkj_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kkj_CM = {
   DECIMAL_SEP: ',',
@@ -8160,7 +8636,7 @@ goog.i18n.NumberFormatSymbols_kkj_CM = {
 
 /**
  * Number formatting symbols for locale kl.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kl = {
   DECIMAL_SEP: ',',
@@ -8183,14 +8659,14 @@ goog.i18n.NumberFormatSymbols_kl = {
 
 /**
  * Number formatting symbols for locale kl_GL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kl_GL = goog.i18n.NumberFormatSymbols_kl;
 
 
 /**
  * Number formatting symbols for locale kln.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kln = {
   DECIMAL_SEP: '.',
@@ -8213,28 +8689,28 @@ goog.i18n.NumberFormatSymbols_kln = {
 
 /**
  * Number formatting symbols for locale kln_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kln_KE = goog.i18n.NumberFormatSymbols_kln;
 
 
 /**
  * Number formatting symbols for locale km_KH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_km_KH = goog.i18n.NumberFormatSymbols_km;
 
 
 /**
  * Number formatting symbols for locale kn_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kn_IN = goog.i18n.NumberFormatSymbols_kn;
 
 
 /**
  * Number formatting symbols for locale ko_KP.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ko_KP = {
   DECIMAL_SEP: '.',
@@ -8257,7 +8733,7 @@ goog.i18n.NumberFormatSymbols_ko_KP = {
 
 /**
  * Number formatting symbols for locale ko_KR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ko_KR = {
   DECIMAL_SEP: '.',
@@ -8280,7 +8756,7 @@ goog.i18n.NumberFormatSymbols_ko_KR = {
 
 /**
  * Number formatting symbols for locale kok.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kok = {
   DECIMAL_SEP: '.',
@@ -8303,14 +8779,14 @@ goog.i18n.NumberFormatSymbols_kok = {
 
 /**
  * Number formatting symbols for locale kok_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kok_IN = goog.i18n.NumberFormatSymbols_kok;
 
 
 /**
  * Number formatting symbols for locale ks.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ks = {
   DECIMAL_SEP: '٫',
@@ -8333,7 +8809,7 @@ goog.i18n.NumberFormatSymbols_ks = {
 
 /**
  * Number formatting symbols for locale ks_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ks_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -8355,22 +8831,36 @@ goog.i18n.NumberFormatSymbols_ks_u_nu_latn = {
 
 
 /**
- * Number formatting symbols for locale ks_IN.
- * @enum {string}
+ * Number formatting symbols for locale ks_Arab.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
-goog.i18n.NumberFormatSymbols_ks_IN = goog.i18n.NumberFormatSymbols_ks;
+goog.i18n.NumberFormatSymbols_ks_Arab = goog.i18n.NumberFormatSymbols_ks;
 
 
 /**
- * Number formatting symbols for locale ks_IN_u_nu_latn.
- * @enum {string}
+ * Number formatting symbols for locale ks_Arab_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
-goog.i18n.NumberFormatSymbols_ks_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_u_nu_latn;
+goog.i18n.NumberFormatSymbols_ks_Arab_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale ks_Arab_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ks_Arab_IN = goog.i18n.NumberFormatSymbols_ks;
+
+
+/**
+ * Number formatting symbols for locale ks_Arab_IN_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ks_Arab_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale ksb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksb = {
   DECIMAL_SEP: '.',
@@ -8393,14 +8883,14 @@ goog.i18n.NumberFormatSymbols_ksb = {
 
 /**
  * Number formatting symbols for locale ksb_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksb_TZ = goog.i18n.NumberFormatSymbols_ksb;
 
 
 /**
  * Number formatting symbols for locale ksf.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksf = {
   DECIMAL_SEP: ',',
@@ -8423,7 +8913,7 @@ goog.i18n.NumberFormatSymbols_ksf = {
 
 /**
  * Number formatting symbols for locale ksf_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksf_CM = {
   DECIMAL_SEP: ',',
@@ -8446,7 +8936,7 @@ goog.i18n.NumberFormatSymbols_ksf_CM = {
 
 /**
  * Number formatting symbols for locale ksh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksh = {
   DECIMAL_SEP: ',',
@@ -8469,14 +8959,14 @@ goog.i18n.NumberFormatSymbols_ksh = {
 
 /**
  * Number formatting symbols for locale ksh_DE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ksh_DE = goog.i18n.NumberFormatSymbols_ksh;
 
 
 /**
  * Number formatting symbols for locale ku.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ku = {
   DECIMAL_SEP: ',',
@@ -8499,14 +8989,14 @@ goog.i18n.NumberFormatSymbols_ku = {
 
 /**
  * Number formatting symbols for locale ku_TR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ku_TR = goog.i18n.NumberFormatSymbols_ku;
 
 
 /**
  * Number formatting symbols for locale kw.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kw = {
   DECIMAL_SEP: '.',
@@ -8529,21 +9019,21 @@ goog.i18n.NumberFormatSymbols_kw = {
 
 /**
  * Number formatting symbols for locale kw_GB.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_kw_GB = goog.i18n.NumberFormatSymbols_kw;
 
 
 /**
  * Number formatting symbols for locale ky_KG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ky_KG = goog.i18n.NumberFormatSymbols_ky;
 
 
 /**
  * Number formatting symbols for locale lag.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lag = {
   DECIMAL_SEP: '.',
@@ -8566,14 +9056,14 @@ goog.i18n.NumberFormatSymbols_lag = {
 
 /**
  * Number formatting symbols for locale lag_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lag_TZ = goog.i18n.NumberFormatSymbols_lag;
 
 
 /**
  * Number formatting symbols for locale lb.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lb = {
   DECIMAL_SEP: ',',
@@ -8596,14 +9086,14 @@ goog.i18n.NumberFormatSymbols_lb = {
 
 /**
  * Number formatting symbols for locale lb_LU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lb_LU = goog.i18n.NumberFormatSymbols_lb;
 
 
 /**
  * Number formatting symbols for locale lg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lg = {
   DECIMAL_SEP: '.',
@@ -8626,7 +9116,7 @@ goog.i18n.NumberFormatSymbols_lg = {
 
 /**
  * Number formatting symbols for locale lg_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lg_UG = {
   DECIMAL_SEP: '.',
@@ -8649,7 +9139,7 @@ goog.i18n.NumberFormatSymbols_lg_UG = {
 
 /**
  * Number formatting symbols for locale lkt.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lkt = {
   DECIMAL_SEP: '.',
@@ -8672,14 +9162,14 @@ goog.i18n.NumberFormatSymbols_lkt = {
 
 /**
  * Number formatting symbols for locale lkt_US.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lkt_US = goog.i18n.NumberFormatSymbols_lkt;
 
 
 /**
  * Number formatting symbols for locale ln_AO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ln_AO = {
   DECIMAL_SEP: ',',
@@ -8702,14 +9192,14 @@ goog.i18n.NumberFormatSymbols_ln_AO = {
 
 /**
  * Number formatting symbols for locale ln_CD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ln_CD = goog.i18n.NumberFormatSymbols_ln;
 
 
 /**
  * Number formatting symbols for locale ln_CF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ln_CF = {
   DECIMAL_SEP: ',',
@@ -8732,7 +9222,7 @@ goog.i18n.NumberFormatSymbols_ln_CF = {
 
 /**
  * Number formatting symbols for locale ln_CG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ln_CG = {
   DECIMAL_SEP: ',',
@@ -8755,7 +9245,7 @@ goog.i18n.NumberFormatSymbols_ln_CG = {
 
 /**
  * Number formatting symbols for locale lo_LA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lo_LA = {
   DECIMAL_SEP: ',',
@@ -8778,7 +9268,7 @@ goog.i18n.NumberFormatSymbols_lo_LA = {
 
 /**
  * Number formatting symbols for locale lrc.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc = {
   DECIMAL_SEP: '٫',
@@ -8801,7 +9291,7 @@ goog.i18n.NumberFormatSymbols_lrc = {
 
 /**
  * Number formatting symbols for locale lrc_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -8824,7 +9314,7 @@ goog.i18n.NumberFormatSymbols_lrc_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale lrc_IQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc_IQ = {
   DECIMAL_SEP: '٫',
@@ -8847,7 +9337,7 @@ goog.i18n.NumberFormatSymbols_lrc_IQ = {
 
 /**
  * Number formatting symbols for locale lrc_IQ_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc_IQ_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -8870,7 +9360,7 @@ goog.i18n.NumberFormatSymbols_lrc_IQ_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale lrc_IR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc_IR = {
   DECIMAL_SEP: '٫',
@@ -8893,7 +9383,7 @@ goog.i18n.NumberFormatSymbols_lrc_IR = {
 
 /**
  * Number formatting symbols for locale lrc_IR_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lrc_IR_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -8916,14 +9406,14 @@ goog.i18n.NumberFormatSymbols_lrc_IR_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale lt_LT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lt_LT = goog.i18n.NumberFormatSymbols_lt;
 
 
 /**
  * Number formatting symbols for locale lu.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lu = {
   DECIMAL_SEP: ',',
@@ -8946,14 +9436,14 @@ goog.i18n.NumberFormatSymbols_lu = {
 
 /**
  * Number formatting symbols for locale lu_CD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lu_CD = goog.i18n.NumberFormatSymbols_lu;
 
 
 /**
  * Number formatting symbols for locale luo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_luo = {
   DECIMAL_SEP: '.',
@@ -8976,14 +9466,14 @@ goog.i18n.NumberFormatSymbols_luo = {
 
 /**
  * Number formatting symbols for locale luo_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_luo_KE = goog.i18n.NumberFormatSymbols_luo;
 
 
 /**
  * Number formatting symbols for locale luy.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_luy = {
   DECIMAL_SEP: '.',
@@ -9006,21 +9496,51 @@ goog.i18n.NumberFormatSymbols_luy = {
 
 /**
  * Number formatting symbols for locale luy_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_luy_KE = goog.i18n.NumberFormatSymbols_luy;
 
 
 /**
  * Number formatting symbols for locale lv_LV.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_lv_LV = goog.i18n.NumberFormatSymbols_lv;
 
 
 /**
+ * Number formatting symbols for locale mai.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mai = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '[#E0]',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale mai_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mai_IN = goog.i18n.NumberFormatSymbols_mai;
+
+
+/**
  * Number formatting symbols for locale mas.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mas = {
   DECIMAL_SEP: '.',
@@ -9043,14 +9563,14 @@ goog.i18n.NumberFormatSymbols_mas = {
 
 /**
  * Number formatting symbols for locale mas_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mas_KE = goog.i18n.NumberFormatSymbols_mas;
 
 
 /**
  * Number formatting symbols for locale mas_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mas_TZ = {
   DECIMAL_SEP: '.',
@@ -9073,7 +9593,7 @@ goog.i18n.NumberFormatSymbols_mas_TZ = {
 
 /**
  * Number formatting symbols for locale mer.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mer = {
   DECIMAL_SEP: '.',
@@ -9096,14 +9616,14 @@ goog.i18n.NumberFormatSymbols_mer = {
 
 /**
  * Number formatting symbols for locale mer_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mer_KE = goog.i18n.NumberFormatSymbols_mer;
 
 
 /**
  * Number formatting symbols for locale mfe.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mfe = {
   DECIMAL_SEP: '.',
@@ -9126,14 +9646,14 @@ goog.i18n.NumberFormatSymbols_mfe = {
 
 /**
  * Number formatting symbols for locale mfe_MU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mfe_MU = goog.i18n.NumberFormatSymbols_mfe;
 
 
 /**
  * Number formatting symbols for locale mg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mg = {
   DECIMAL_SEP: '.',
@@ -9156,7 +9676,7 @@ goog.i18n.NumberFormatSymbols_mg = {
 
 /**
  * Number formatting symbols for locale mg_MG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mg_MG = {
   DECIMAL_SEP: '.',
@@ -9179,7 +9699,7 @@ goog.i18n.NumberFormatSymbols_mg_MG = {
 
 /**
  * Number formatting symbols for locale mgh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mgh = {
   DECIMAL_SEP: ',',
@@ -9202,14 +9722,14 @@ goog.i18n.NumberFormatSymbols_mgh = {
 
 /**
  * Number formatting symbols for locale mgh_MZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mgh_MZ = goog.i18n.NumberFormatSymbols_mgh;
 
 
 /**
  * Number formatting symbols for locale mgo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mgo = {
   DECIMAL_SEP: '.',
@@ -9232,7 +9752,7 @@ goog.i18n.NumberFormatSymbols_mgo = {
 
 /**
  * Number formatting symbols for locale mgo_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mgo_CM = {
   DECIMAL_SEP: '.',
@@ -9255,7 +9775,7 @@ goog.i18n.NumberFormatSymbols_mgo_CM = {
 
 /**
  * Number formatting symbols for locale mi.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mi = {
   DECIMAL_SEP: '.',
@@ -9278,49 +9798,123 @@ goog.i18n.NumberFormatSymbols_mi = {
 
 /**
  * Number formatting symbols for locale mi_NZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mi_NZ = goog.i18n.NumberFormatSymbols_mi;
 
 
 /**
  * Number formatting symbols for locale mk_MK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mk_MK = goog.i18n.NumberFormatSymbols_mk;
 
 
 /**
  * Number formatting symbols for locale ml_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ml_IN = goog.i18n.NumberFormatSymbols_ml;
 
 
 /**
  * Number formatting symbols for locale mn_MN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mn_MN = goog.i18n.NumberFormatSymbols_mn;
 
 
 /**
+ * Number formatting symbols for locale mni.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '০',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale mni_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni_u_nu_latn = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale mni_Beng.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni_Beng = goog.i18n.NumberFormatSymbols_mni;
+
+
+/**
+ * Number formatting symbols for locale mni_Beng_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni_Beng_u_nu_latn = goog.i18n.NumberFormatSymbols_mni_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale mni_Beng_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni_Beng_IN = goog.i18n.NumberFormatSymbols_mni;
+
+
+/**
+ * Number formatting symbols for locale mni_Beng_IN_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_mni_Beng_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_mni_u_nu_latn;
+
+
+/**
  * Number formatting symbols for locale mr_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mr_IN = goog.i18n.NumberFormatSymbols_mr;
 
 
 /**
  * Number formatting symbols for locale mr_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mr_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_mr_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale ms_BN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ms_BN = {
   DECIMAL_SEP: ',',
@@ -9342,15 +9936,38 @@ goog.i18n.NumberFormatSymbols_ms_BN = {
 
 
 /**
+ * Number formatting symbols for locale ms_ID.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_ms_ID = {
+  DECIMAL_SEP: ',',
+  GROUP_SEP: '.',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤#,##0.00',
+  DEF_CURRENCY_CODE: 'IDR'
+};
+
+
+/**
  * Number formatting symbols for locale ms_MY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ms_MY = goog.i18n.NumberFormatSymbols_ms;
 
 
 /**
  * Number formatting symbols for locale ms_SG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ms_SG = {
   DECIMAL_SEP: '.',
@@ -9373,14 +9990,14 @@ goog.i18n.NumberFormatSymbols_ms_SG = {
 
 /**
  * Number formatting symbols for locale mt_MT.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mt_MT = goog.i18n.NumberFormatSymbols_mt;
 
 
 /**
  * Number formatting symbols for locale mua.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mua = {
   DECIMAL_SEP: ',',
@@ -9403,7 +10020,7 @@ goog.i18n.NumberFormatSymbols_mua = {
 
 /**
  * Number formatting symbols for locale mua_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mua_CM = {
   DECIMAL_SEP: ',',
@@ -9426,7 +10043,7 @@ goog.i18n.NumberFormatSymbols_mua_CM = {
 
 /**
  * Number formatting symbols for locale my_MM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_my_MM = {
   DECIMAL_SEP: '.',
@@ -9449,7 +10066,7 @@ goog.i18n.NumberFormatSymbols_my_MM = {
 
 /**
  * Number formatting symbols for locale my_MM_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_my_MM_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -9472,7 +10089,7 @@ goog.i18n.NumberFormatSymbols_my_MM_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale mzn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mzn = {
   DECIMAL_SEP: '٫',
@@ -9495,7 +10112,7 @@ goog.i18n.NumberFormatSymbols_mzn = {
 
 /**
  * Number formatting symbols for locale mzn_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mzn_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -9518,7 +10135,7 @@ goog.i18n.NumberFormatSymbols_mzn_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale mzn_IR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mzn_IR = {
   DECIMAL_SEP: '٫',
@@ -9541,7 +10158,7 @@ goog.i18n.NumberFormatSymbols_mzn_IR = {
 
 /**
  * Number formatting symbols for locale mzn_IR_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_mzn_IR_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -9564,7 +10181,7 @@ goog.i18n.NumberFormatSymbols_mzn_IR_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale naq.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_naq = {
   DECIMAL_SEP: '.',
@@ -9587,28 +10204,28 @@ goog.i18n.NumberFormatSymbols_naq = {
 
 /**
  * Number formatting symbols for locale naq_NA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_naq_NA = goog.i18n.NumberFormatSymbols_naq;
 
 
 /**
  * Number formatting symbols for locale nb_NO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nb_NO = goog.i18n.NumberFormatSymbols_nb;
 
 
 /**
  * Number formatting symbols for locale nb_SJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nb_SJ = goog.i18n.NumberFormatSymbols_nb;
 
 
 /**
  * Number formatting symbols for locale nd.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nd = {
   DECIMAL_SEP: '.',
@@ -9631,51 +10248,14 @@ goog.i18n.NumberFormatSymbols_nd = {
 
 /**
  * Number formatting symbols for locale nd_ZW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nd_ZW = goog.i18n.NumberFormatSymbols_nd;
 
 
 /**
- * Number formatting symbols for locale nds.
- * @enum {string}
- */
-goog.i18n.NumberFormatSymbols_nds = {
-  DECIMAL_SEP: '.',
-  GROUP_SEP: ',',
-  PERCENT: '%',
-  ZERO_DIGIT: '0',
-  PLUS_SIGN: '+',
-  MINUS_SIGN: '-',
-  EXP_SYMBOL: 'E',
-  PERMILL: '‰',
-  INFINITY: '∞',
-  NAN: 'NaN',
-  DECIMAL_PATTERN: '#,##0.###',
-  SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
-  DEF_CURRENCY_CODE: 'EUR'
-};
-
-
-/**
- * Number formatting symbols for locale nds_DE.
- * @enum {string}
- */
-goog.i18n.NumberFormatSymbols_nds_DE = goog.i18n.NumberFormatSymbols_nds;
-
-
-/**
- * Number formatting symbols for locale nds_NL.
- * @enum {string}
- */
-goog.i18n.NumberFormatSymbols_nds_NL = goog.i18n.NumberFormatSymbols_nds;
-
-
-/**
  * Number formatting symbols for locale ne_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ne_IN = {
   DECIMAL_SEP: '.',
@@ -9688,17 +10268,17 @@ goog.i18n.NumberFormatSymbols_ne_IN = {
   PERMILL: '‰',
   INFINITY: '∞',
   NAN: 'NaN',
-  DECIMAL_PATTERN: '#,##0.###',
+  DECIMAL_PATTERN: '#,##,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  PERCENT_PATTERN: '#,##,##0%',
+  CURRENCY_PATTERN: '¤ #,##,##0.00',
   DEF_CURRENCY_CODE: 'INR'
 };
 
 
 /**
  * Number formatting symbols for locale ne_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ne_IN_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -9711,31 +10291,31 @@ goog.i18n.NumberFormatSymbols_ne_IN_u_nu_latn = {
   PERMILL: '‰',
   INFINITY: '∞',
   NAN: 'NaN',
-  DECIMAL_PATTERN: '#,##0.###',
+  DECIMAL_PATTERN: '#,##,##0.###',
   SCIENTIFIC_PATTERN: '#E0',
-  PERCENT_PATTERN: '#,##0%',
-  CURRENCY_PATTERN: '¤ #,##0.00',
+  PERCENT_PATTERN: '#,##,##0%',
+  CURRENCY_PATTERN: '¤ #,##,##0.00',
   DEF_CURRENCY_CODE: 'INR'
 };
 
 
 /**
  * Number formatting symbols for locale ne_NP.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ne_NP = goog.i18n.NumberFormatSymbols_ne;
 
 
 /**
  * Number formatting symbols for locale ne_NP_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ne_NP_u_nu_latn = goog.i18n.NumberFormatSymbols_ne_u_nu_latn;
 
 
 /**
  * Number formatting symbols for locale nl_AW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_AW = {
   DECIMAL_SEP: ',',
@@ -9758,14 +10338,14 @@ goog.i18n.NumberFormatSymbols_nl_AW = {
 
 /**
  * Number formatting symbols for locale nl_BE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_BE = goog.i18n.NumberFormatSymbols_nl;
 
 
 /**
  * Number formatting symbols for locale nl_BQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_BQ = {
   DECIMAL_SEP: ',',
@@ -9788,7 +10368,7 @@ goog.i18n.NumberFormatSymbols_nl_BQ = {
 
 /**
  * Number formatting symbols for locale nl_CW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_CW = {
   DECIMAL_SEP: ',',
@@ -9811,14 +10391,14 @@ goog.i18n.NumberFormatSymbols_nl_CW = {
 
 /**
  * Number formatting symbols for locale nl_NL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_NL = goog.i18n.NumberFormatSymbols_nl;
 
 
 /**
  * Number formatting symbols for locale nl_SR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_SR = {
   DECIMAL_SEP: ',',
@@ -9841,7 +10421,7 @@ goog.i18n.NumberFormatSymbols_nl_SR = {
 
 /**
  * Number formatting symbols for locale nl_SX.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nl_SX = {
   DECIMAL_SEP: ',',
@@ -9864,7 +10444,7 @@ goog.i18n.NumberFormatSymbols_nl_SX = {
 
 /**
  * Number formatting symbols for locale nmg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nmg = {
   DECIMAL_SEP: ',',
@@ -9887,7 +10467,7 @@ goog.i18n.NumberFormatSymbols_nmg = {
 
 /**
  * Number formatting symbols for locale nmg_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nmg_CM = {
   DECIMAL_SEP: ',',
@@ -9910,7 +10490,7 @@ goog.i18n.NumberFormatSymbols_nmg_CM = {
 
 /**
  * Number formatting symbols for locale nn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nn = {
   DECIMAL_SEP: ',',
@@ -9933,14 +10513,14 @@ goog.i18n.NumberFormatSymbols_nn = {
 
 /**
  * Number formatting symbols for locale nn_NO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nn_NO = goog.i18n.NumberFormatSymbols_nn;
 
 
 /**
  * Number formatting symbols for locale nnh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nnh = {
   DECIMAL_SEP: ',',
@@ -9963,7 +10543,7 @@ goog.i18n.NumberFormatSymbols_nnh = {
 
 /**
  * Number formatting symbols for locale nnh_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nnh_CM = {
   DECIMAL_SEP: ',',
@@ -9986,7 +10566,7 @@ goog.i18n.NumberFormatSymbols_nnh_CM = {
 
 /**
  * Number formatting symbols for locale nus.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nus = {
   DECIMAL_SEP: '.',
@@ -10009,14 +10589,14 @@ goog.i18n.NumberFormatSymbols_nus = {
 
 /**
  * Number formatting symbols for locale nus_SS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nus_SS = goog.i18n.NumberFormatSymbols_nus;
 
 
 /**
  * Number formatting symbols for locale nyn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nyn = {
   DECIMAL_SEP: '.',
@@ -10039,7 +10619,7 @@ goog.i18n.NumberFormatSymbols_nyn = {
 
 /**
  * Number formatting symbols for locale nyn_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_nyn_UG = {
   DECIMAL_SEP: '.',
@@ -10062,7 +10642,7 @@ goog.i18n.NumberFormatSymbols_nyn_UG = {
 
 /**
  * Number formatting symbols for locale om.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_om = {
   DECIMAL_SEP: '.',
@@ -10085,14 +10665,14 @@ goog.i18n.NumberFormatSymbols_om = {
 
 /**
  * Number formatting symbols for locale om_ET.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_om_ET = goog.i18n.NumberFormatSymbols_om;
 
 
 /**
  * Number formatting symbols for locale om_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_om_KE = {
   DECIMAL_SEP: '.',
@@ -10115,14 +10695,14 @@ goog.i18n.NumberFormatSymbols_om_KE = {
 
 /**
  * Number formatting symbols for locale or_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_or_IN = goog.i18n.NumberFormatSymbols_or;
 
 
 /**
  * Number formatting symbols for locale os.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_os = {
   DECIMAL_SEP: ',',
@@ -10145,14 +10725,14 @@ goog.i18n.NumberFormatSymbols_os = {
 
 /**
  * Number formatting symbols for locale os_GE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_os_GE = goog.i18n.NumberFormatSymbols_os;
 
 
 /**
  * Number formatting symbols for locale os_RU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_os_RU = {
   DECIMAL_SEP: ',',
@@ -10175,7 +10755,7 @@ goog.i18n.NumberFormatSymbols_os_RU = {
 
 /**
  * Number formatting symbols for locale pa_Arab.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Arab = {
   DECIMAL_SEP: '٫',
@@ -10198,7 +10778,7 @@ goog.i18n.NumberFormatSymbols_pa_Arab = {
 
 /**
  * Number formatting symbols for locale pa_Arab_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Arab_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -10221,7 +10801,7 @@ goog.i18n.NumberFormatSymbols_pa_Arab_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale pa_Arab_PK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Arab_PK = {
   DECIMAL_SEP: '٫',
@@ -10244,7 +10824,7 @@ goog.i18n.NumberFormatSymbols_pa_Arab_PK = {
 
 /**
  * Number formatting symbols for locale pa_Arab_PK_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Arab_PK_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -10267,28 +10847,58 @@ goog.i18n.NumberFormatSymbols_pa_Arab_PK_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale pa_Guru.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Guru = goog.i18n.NumberFormatSymbols_pa;
 
 
 /**
  * Number formatting symbols for locale pa_Guru_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pa_Guru_IN = goog.i18n.NumberFormatSymbols_pa;
 
 
 /**
+ * Number formatting symbols for locale pcm.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_pcm = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤#,##0.00',
+  DEF_CURRENCY_CODE: 'NGN'
+};
+
+
+/**
+ * Number formatting symbols for locale pcm_NG.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_pcm_NG = goog.i18n.NumberFormatSymbols_pcm;
+
+
+/**
  * Number formatting symbols for locale pl_PL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pl_PL = goog.i18n.NumberFormatSymbols_pl;
 
 
 /**
  * Number formatting symbols for locale ps.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps = {
   DECIMAL_SEP: '٫',
@@ -10311,7 +10921,7 @@ goog.i18n.NumberFormatSymbols_ps = {
 
 /**
  * Number formatting symbols for locale ps_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -10334,7 +10944,7 @@ goog.i18n.NumberFormatSymbols_ps_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ps_AF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps_AF = {
   DECIMAL_SEP: '٫',
@@ -10357,7 +10967,7 @@ goog.i18n.NumberFormatSymbols_ps_AF = {
 
 /**
  * Number formatting symbols for locale ps_AF_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps_AF_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -10380,7 +10990,7 @@ goog.i18n.NumberFormatSymbols_ps_AF_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ps_PK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps_PK = {
   DECIMAL_SEP: '٫',
@@ -10403,7 +11013,7 @@ goog.i18n.NumberFormatSymbols_ps_PK = {
 
 /**
  * Number formatting symbols for locale ps_PK_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ps_PK_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -10426,7 +11036,7 @@ goog.i18n.NumberFormatSymbols_ps_PK_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale pt_AO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_AO = {
   DECIMAL_SEP: ',',
@@ -10449,7 +11059,7 @@ goog.i18n.NumberFormatSymbols_pt_AO = {
 
 /**
  * Number formatting symbols for locale pt_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_CH = {
   DECIMAL_SEP: ',',
@@ -10472,7 +11082,7 @@ goog.i18n.NumberFormatSymbols_pt_CH = {
 
 /**
  * Number formatting symbols for locale pt_CV.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_CV = {
   DECIMAL_SEP: ',',
@@ -10495,7 +11105,7 @@ goog.i18n.NumberFormatSymbols_pt_CV = {
 
 /**
  * Number formatting symbols for locale pt_GQ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_GQ = {
   DECIMAL_SEP: ',',
@@ -10518,7 +11128,7 @@ goog.i18n.NumberFormatSymbols_pt_GQ = {
 
 /**
  * Number formatting symbols for locale pt_GW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_GW = {
   DECIMAL_SEP: ',',
@@ -10541,7 +11151,7 @@ goog.i18n.NumberFormatSymbols_pt_GW = {
 
 /**
  * Number formatting symbols for locale pt_LU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_LU = {
   DECIMAL_SEP: ',',
@@ -10564,7 +11174,7 @@ goog.i18n.NumberFormatSymbols_pt_LU = {
 
 /**
  * Number formatting symbols for locale pt_MO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_MO = {
   DECIMAL_SEP: ',',
@@ -10587,7 +11197,7 @@ goog.i18n.NumberFormatSymbols_pt_MO = {
 
 /**
  * Number formatting symbols for locale pt_MZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_MZ = {
   DECIMAL_SEP: ',',
@@ -10610,7 +11220,7 @@ goog.i18n.NumberFormatSymbols_pt_MZ = {
 
 /**
  * Number formatting symbols for locale pt_ST.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_ST = {
   DECIMAL_SEP: ',',
@@ -10633,7 +11243,7 @@ goog.i18n.NumberFormatSymbols_pt_ST = {
 
 /**
  * Number formatting symbols for locale pt_TL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_pt_TL = {
   DECIMAL_SEP: ',',
@@ -10656,7 +11266,7 @@ goog.i18n.NumberFormatSymbols_pt_TL = {
 
 /**
  * Number formatting symbols for locale qu.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_qu = {
   DECIMAL_SEP: '.',
@@ -10679,7 +11289,7 @@ goog.i18n.NumberFormatSymbols_qu = {
 
 /**
  * Number formatting symbols for locale qu_BO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_qu_BO = {
   DECIMAL_SEP: ',',
@@ -10702,7 +11312,7 @@ goog.i18n.NumberFormatSymbols_qu_BO = {
 
 /**
  * Number formatting symbols for locale qu_EC.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_qu_EC = {
   DECIMAL_SEP: '.',
@@ -10725,14 +11335,14 @@ goog.i18n.NumberFormatSymbols_qu_EC = {
 
 /**
  * Number formatting symbols for locale qu_PE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_qu_PE = goog.i18n.NumberFormatSymbols_qu;
 
 
 /**
  * Number formatting symbols for locale rm.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rm = {
   DECIMAL_SEP: '.',
@@ -10755,14 +11365,14 @@ goog.i18n.NumberFormatSymbols_rm = {
 
 /**
  * Number formatting symbols for locale rm_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rm_CH = goog.i18n.NumberFormatSymbols_rm;
 
 
 /**
  * Number formatting symbols for locale rn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rn = {
   DECIMAL_SEP: ',',
@@ -10785,7 +11395,7 @@ goog.i18n.NumberFormatSymbols_rn = {
 
 /**
  * Number formatting symbols for locale rn_BI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rn_BI = {
   DECIMAL_SEP: ',',
@@ -10808,7 +11418,7 @@ goog.i18n.NumberFormatSymbols_rn_BI = {
 
 /**
  * Number formatting symbols for locale ro_MD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ro_MD = {
   DECIMAL_SEP: ',',
@@ -10831,14 +11441,14 @@ goog.i18n.NumberFormatSymbols_ro_MD = {
 
 /**
  * Number formatting symbols for locale ro_RO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ro_RO = goog.i18n.NumberFormatSymbols_ro;
 
 
 /**
  * Number formatting symbols for locale rof.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rof = {
   DECIMAL_SEP: '.',
@@ -10861,14 +11471,14 @@ goog.i18n.NumberFormatSymbols_rof = {
 
 /**
  * Number formatting symbols for locale rof_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rof_TZ = goog.i18n.NumberFormatSymbols_rof;
 
 
 /**
  * Number formatting symbols for locale ru_BY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_BY = {
   DECIMAL_SEP: ',',
@@ -10891,7 +11501,7 @@ goog.i18n.NumberFormatSymbols_ru_BY = {
 
 /**
  * Number formatting symbols for locale ru_KG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_KG = {
   DECIMAL_SEP: ',',
@@ -10914,7 +11524,7 @@ goog.i18n.NumberFormatSymbols_ru_KG = {
 
 /**
  * Number formatting symbols for locale ru_KZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_KZ = {
   DECIMAL_SEP: ',',
@@ -10937,7 +11547,7 @@ goog.i18n.NumberFormatSymbols_ru_KZ = {
 
 /**
  * Number formatting symbols for locale ru_MD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_MD = {
   DECIMAL_SEP: ',',
@@ -10960,14 +11570,14 @@ goog.i18n.NumberFormatSymbols_ru_MD = {
 
 /**
  * Number formatting symbols for locale ru_RU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_RU = goog.i18n.NumberFormatSymbols_ru;
 
 
 /**
  * Number formatting symbols for locale ru_UA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ru_UA = {
   DECIMAL_SEP: ',',
@@ -10990,7 +11600,7 @@ goog.i18n.NumberFormatSymbols_ru_UA = {
 
 /**
  * Number formatting symbols for locale rw.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rw = {
   DECIMAL_SEP: ',',
@@ -11013,7 +11623,7 @@ goog.i18n.NumberFormatSymbols_rw = {
 
 /**
  * Number formatting symbols for locale rw_RW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rw_RW = {
   DECIMAL_SEP: ',',
@@ -11036,7 +11646,7 @@ goog.i18n.NumberFormatSymbols_rw_RW = {
 
 /**
  * Number formatting symbols for locale rwk.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rwk = {
   DECIMAL_SEP: '.',
@@ -11059,14 +11669,74 @@ goog.i18n.NumberFormatSymbols_rwk = {
 
 /**
  * Number formatting symbols for locale rwk_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_rwk_TZ = goog.i18n.NumberFormatSymbols_rwk;
 
 
 /**
+ * Number formatting symbols for locale sa.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sa = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '०',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##,##0.###',
+  SCIENTIFIC_PATTERN: '[#E0]',
+  PERCENT_PATTERN: '#,##,##0%',
+  CURRENCY_PATTERN: '¤#,##,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale sa_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sa_u_nu_latn = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##,##0.###',
+  SCIENTIFIC_PATTERN: '[#E0]',
+  PERCENT_PATTERN: '#,##,##0%',
+  CURRENCY_PATTERN: '¤#,##,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale sa_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sa_IN = goog.i18n.NumberFormatSymbols_sa;
+
+
+/**
+ * Number formatting symbols for locale sa_IN_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sa_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_sa_u_nu_latn;
+
+
+/**
  * Number formatting symbols for locale sah.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sah = {
   DECIMAL_SEP: ',',
@@ -11089,14 +11759,14 @@ goog.i18n.NumberFormatSymbols_sah = {
 
 /**
  * Number formatting symbols for locale sah_RU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sah_RU = goog.i18n.NumberFormatSymbols_sah;
 
 
 /**
  * Number formatting symbols for locale saq.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_saq = {
   DECIMAL_SEP: '.',
@@ -11119,14 +11789,88 @@ goog.i18n.NumberFormatSymbols_saq = {
 
 /**
  * Number formatting symbols for locale saq_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_saq_KE = goog.i18n.NumberFormatSymbols_saq;
 
 
 /**
+ * Number formatting symbols for locale sat.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '᱐',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale sat_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat_u_nu_latn = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale sat_Olck.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat_Olck = goog.i18n.NumberFormatSymbols_sat;
+
+
+/**
+ * Number formatting symbols for locale sat_Olck_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat_Olck_u_nu_latn = goog.i18n.NumberFormatSymbols_sat_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale sat_Olck_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat_Olck_IN = goog.i18n.NumberFormatSymbols_sat;
+
+
+/**
+ * Number formatting symbols for locale sat_Olck_IN_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sat_Olck_IN_u_nu_latn = goog.i18n.NumberFormatSymbols_sat_u_nu_latn;
+
+
+/**
  * Number formatting symbols for locale sbp.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sbp = {
   DECIMAL_SEP: '.',
@@ -11149,14 +11893,14 @@ goog.i18n.NumberFormatSymbols_sbp = {
 
 /**
  * Number formatting symbols for locale sbp_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sbp_TZ = goog.i18n.NumberFormatSymbols_sbp;
 
 
 /**
  * Number formatting symbols for locale sd.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sd = {
   DECIMAL_SEP: '٫',
@@ -11179,7 +11923,7 @@ goog.i18n.NumberFormatSymbols_sd = {
 
 /**
  * Number formatting symbols for locale sd_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sd_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -11201,22 +11945,82 @@ goog.i18n.NumberFormatSymbols_sd_u_nu_latn = {
 
 
 /**
- * Number formatting symbols for locale sd_PK.
- * @enum {string}
+ * Number formatting symbols for locale sd_Arab.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
-goog.i18n.NumberFormatSymbols_sd_PK = goog.i18n.NumberFormatSymbols_sd;
+goog.i18n.NumberFormatSymbols_sd_Arab = goog.i18n.NumberFormatSymbols_sd;
 
 
 /**
- * Number formatting symbols for locale sd_PK_u_nu_latn.
- * @enum {string}
+ * Number formatting symbols for locale sd_Arab_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
-goog.i18n.NumberFormatSymbols_sd_PK_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_u_nu_latn;
+goog.i18n.NumberFormatSymbols_sd_Arab_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale sd_Arab_PK.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sd_Arab_PK = goog.i18n.NumberFormatSymbols_sd;
+
+
+/**
+ * Number formatting symbols for locale sd_Arab_PK_u_nu_latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sd_Arab_PK_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_u_nu_latn;
+
+
+/**
+ * Number formatting symbols for locale sd_Deva.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sd_Deva = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
+
+
+/**
+ * Number formatting symbols for locale sd_Deva_IN.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_sd_Deva_IN = {
+  DECIMAL_SEP: '.',
+  GROUP_SEP: ',',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤ #,##0.00',
+  DEF_CURRENCY_CODE: 'INR'
+};
 
 
 /**
  * Number formatting symbols for locale se.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_se = {
   DECIMAL_SEP: ',',
@@ -11239,7 +12043,7 @@ goog.i18n.NumberFormatSymbols_se = {
 
 /**
  * Number formatting symbols for locale se_FI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_se_FI = {
   DECIMAL_SEP: ',',
@@ -11262,14 +12066,14 @@ goog.i18n.NumberFormatSymbols_se_FI = {
 
 /**
  * Number formatting symbols for locale se_NO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_se_NO = goog.i18n.NumberFormatSymbols_se;
 
 
 /**
  * Number formatting symbols for locale se_SE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_se_SE = {
   DECIMAL_SEP: ',',
@@ -11292,7 +12096,7 @@ goog.i18n.NumberFormatSymbols_se_SE = {
 
 /**
  * Number formatting symbols for locale seh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_seh = {
   DECIMAL_SEP: ',',
@@ -11315,14 +12119,14 @@ goog.i18n.NumberFormatSymbols_seh = {
 
 /**
  * Number formatting symbols for locale seh_MZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_seh_MZ = goog.i18n.NumberFormatSymbols_seh;
 
 
 /**
  * Number formatting symbols for locale ses.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ses = {
   DECIMAL_SEP: '.',
@@ -11345,7 +12149,7 @@ goog.i18n.NumberFormatSymbols_ses = {
 
 /**
  * Number formatting symbols for locale ses_ML.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ses_ML = {
   DECIMAL_SEP: '.',
@@ -11368,7 +12172,7 @@ goog.i18n.NumberFormatSymbols_ses_ML = {
 
 /**
  * Number formatting symbols for locale sg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sg = {
   DECIMAL_SEP: ',',
@@ -11391,7 +12195,7 @@ goog.i18n.NumberFormatSymbols_sg = {
 
 /**
  * Number formatting symbols for locale sg_CF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sg_CF = {
   DECIMAL_SEP: ',',
@@ -11414,7 +12218,7 @@ goog.i18n.NumberFormatSymbols_sg_CF = {
 
 /**
  * Number formatting symbols for locale shi.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_shi = {
   DECIMAL_SEP: ',',
@@ -11437,56 +12241,56 @@ goog.i18n.NumberFormatSymbols_shi = {
 
 /**
  * Number formatting symbols for locale shi_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_shi_Latn = goog.i18n.NumberFormatSymbols_shi;
 
 
 /**
  * Number formatting symbols for locale shi_Latn_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_shi_Latn_MA = goog.i18n.NumberFormatSymbols_shi;
 
 
 /**
  * Number formatting symbols for locale shi_Tfng.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_shi_Tfng = goog.i18n.NumberFormatSymbols_shi;
 
 
 /**
  * Number formatting symbols for locale shi_Tfng_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_shi_Tfng_MA = goog.i18n.NumberFormatSymbols_shi;
 
 
 /**
  * Number formatting symbols for locale si_LK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_si_LK = goog.i18n.NumberFormatSymbols_si;
 
 
 /**
  * Number formatting symbols for locale sk_SK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sk_SK = goog.i18n.NumberFormatSymbols_sk;
 
 
 /**
  * Number formatting symbols for locale sl_SI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sl_SI = goog.i18n.NumberFormatSymbols_sl;
 
 
 /**
  * Number formatting symbols for locale smn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_smn = {
   DECIMAL_SEP: ',',
@@ -11509,14 +12313,14 @@ goog.i18n.NumberFormatSymbols_smn = {
 
 /**
  * Number formatting symbols for locale smn_FI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_smn_FI = goog.i18n.NumberFormatSymbols_smn;
 
 
 /**
  * Number formatting symbols for locale sn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sn = {
   DECIMAL_SEP: '.',
@@ -11539,14 +12343,14 @@ goog.i18n.NumberFormatSymbols_sn = {
 
 /**
  * Number formatting symbols for locale sn_ZW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sn_ZW = goog.i18n.NumberFormatSymbols_sn;
 
 
 /**
  * Number formatting symbols for locale so.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_so = {
   DECIMAL_SEP: '.',
@@ -11569,7 +12373,7 @@ goog.i18n.NumberFormatSymbols_so = {
 
 /**
  * Number formatting symbols for locale so_DJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_so_DJ = {
   DECIMAL_SEP: '.',
@@ -11592,7 +12396,7 @@ goog.i18n.NumberFormatSymbols_so_DJ = {
 
 /**
  * Number formatting symbols for locale so_ET.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_so_ET = {
   DECIMAL_SEP: '.',
@@ -11615,7 +12419,7 @@ goog.i18n.NumberFormatSymbols_so_ET = {
 
 /**
  * Number formatting symbols for locale so_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_so_KE = {
   DECIMAL_SEP: '.',
@@ -11638,7 +12442,7 @@ goog.i18n.NumberFormatSymbols_so_KE = {
 
 /**
  * Number formatting symbols for locale so_SO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_so_SO = {
   DECIMAL_SEP: '.',
@@ -11661,7 +12465,7 @@ goog.i18n.NumberFormatSymbols_so_SO = {
 
 /**
  * Number formatting symbols for locale sq_AL.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sq_AL = {
   DECIMAL_SEP: ',',
@@ -11684,7 +12488,7 @@ goog.i18n.NumberFormatSymbols_sq_AL = {
 
 /**
  * Number formatting symbols for locale sq_MK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sq_MK = {
   DECIMAL_SEP: ',',
@@ -11707,7 +12511,7 @@ goog.i18n.NumberFormatSymbols_sq_MK = {
 
 /**
  * Number formatting symbols for locale sq_XK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sq_XK = {
   DECIMAL_SEP: ',',
@@ -11730,14 +12534,14 @@ goog.i18n.NumberFormatSymbols_sq_XK = {
 
 /**
  * Number formatting symbols for locale sr_Cyrl.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Cyrl = goog.i18n.NumberFormatSymbols_sr;
 
 
 /**
  * Number formatting symbols for locale sr_Cyrl_BA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Cyrl_BA = {
   DECIMAL_SEP: ',',
@@ -11760,7 +12564,7 @@ goog.i18n.NumberFormatSymbols_sr_Cyrl_BA = {
 
 /**
  * Number formatting symbols for locale sr_Cyrl_ME.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Cyrl_ME = {
   DECIMAL_SEP: ',',
@@ -11783,7 +12587,7 @@ goog.i18n.NumberFormatSymbols_sr_Cyrl_ME = {
 
 /**
  * Number formatting symbols for locale sr_Cyrl_RS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Cyrl_RS = {
   DECIMAL_SEP: ',',
@@ -11806,7 +12610,7 @@ goog.i18n.NumberFormatSymbols_sr_Cyrl_RS = {
 
 /**
  * Number formatting symbols for locale sr_Cyrl_XK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Cyrl_XK = {
   DECIMAL_SEP: ',',
@@ -11829,7 +12633,7 @@ goog.i18n.NumberFormatSymbols_sr_Cyrl_XK = {
 
 /**
  * Number formatting symbols for locale sr_Latn_BA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Latn_BA = {
   DECIMAL_SEP: ',',
@@ -11852,7 +12656,7 @@ goog.i18n.NumberFormatSymbols_sr_Latn_BA = {
 
 /**
  * Number formatting symbols for locale sr_Latn_ME.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Latn_ME = {
   DECIMAL_SEP: ',',
@@ -11875,7 +12679,7 @@ goog.i18n.NumberFormatSymbols_sr_Latn_ME = {
 
 /**
  * Number formatting symbols for locale sr_Latn_RS.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Latn_RS = {
   DECIMAL_SEP: ',',
@@ -11898,7 +12702,7 @@ goog.i18n.NumberFormatSymbols_sr_Latn_RS = {
 
 /**
  * Number formatting symbols for locale sr_Latn_XK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sr_Latn_XK = {
   DECIMAL_SEP: ',',
@@ -11920,8 +12724,45 @@ goog.i18n.NumberFormatSymbols_sr_Latn_XK = {
 
 
 /**
+ * Number formatting symbols for locale su.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_su = {
+  DECIMAL_SEP: ',',
+  GROUP_SEP: '.',
+  PERCENT: '%',
+  ZERO_DIGIT: '0',
+  PLUS_SIGN: '+',
+  MINUS_SIGN: '-',
+  EXP_SYMBOL: 'E',
+  PERMILL: '‰',
+  INFINITY: '∞',
+  NAN: 'NaN',
+  DECIMAL_PATTERN: '#,##0.###',
+  SCIENTIFIC_PATTERN: '#E0',
+  PERCENT_PATTERN: '#,##0%',
+  CURRENCY_PATTERN: '¤#,##0.00',
+  DEF_CURRENCY_CODE: 'IDR'
+};
+
+
+/**
+ * Number formatting symbols for locale su_Latn.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_su_Latn = goog.i18n.NumberFormatSymbols_su;
+
+
+/**
+ * Number formatting symbols for locale su_Latn_ID.
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
+ */
+goog.i18n.NumberFormatSymbols_su_Latn_ID = goog.i18n.NumberFormatSymbols_su;
+
+
+/**
  * Number formatting symbols for locale sv_AX.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sv_AX = {
   DECIMAL_SEP: ',',
@@ -11944,7 +12785,7 @@ goog.i18n.NumberFormatSymbols_sv_AX = {
 
 /**
  * Number formatting symbols for locale sv_FI.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sv_FI = {
   DECIMAL_SEP: ',',
@@ -11967,14 +12808,14 @@ goog.i18n.NumberFormatSymbols_sv_FI = {
 
 /**
  * Number formatting symbols for locale sv_SE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sv_SE = goog.i18n.NumberFormatSymbols_sv;
 
 
 /**
  * Number formatting symbols for locale sw_CD.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sw_CD = {
   DECIMAL_SEP: ',',
@@ -11997,7 +12838,7 @@ goog.i18n.NumberFormatSymbols_sw_CD = {
 
 /**
  * Number formatting symbols for locale sw_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sw_KE = {
   DECIMAL_SEP: '.',
@@ -12020,14 +12861,14 @@ goog.i18n.NumberFormatSymbols_sw_KE = {
 
 /**
  * Number formatting symbols for locale sw_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sw_TZ = goog.i18n.NumberFormatSymbols_sw;
 
 
 /**
  * Number formatting symbols for locale sw_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_sw_UG = {
   DECIMAL_SEP: '.',
@@ -12050,14 +12891,14 @@ goog.i18n.NumberFormatSymbols_sw_UG = {
 
 /**
  * Number formatting symbols for locale ta_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ta_IN = goog.i18n.NumberFormatSymbols_ta;
 
 
 /**
  * Number formatting symbols for locale ta_LK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ta_LK = {
   DECIMAL_SEP: '.',
@@ -12080,7 +12921,7 @@ goog.i18n.NumberFormatSymbols_ta_LK = {
 
 /**
  * Number formatting symbols for locale ta_MY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ta_MY = {
   DECIMAL_SEP: '.',
@@ -12103,7 +12944,7 @@ goog.i18n.NumberFormatSymbols_ta_MY = {
 
 /**
  * Number formatting symbols for locale ta_SG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ta_SG = {
   DECIMAL_SEP: '.',
@@ -12126,14 +12967,14 @@ goog.i18n.NumberFormatSymbols_ta_SG = {
 
 /**
  * Number formatting symbols for locale te_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_te_IN = goog.i18n.NumberFormatSymbols_te;
 
 
 /**
  * Number formatting symbols for locale teo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_teo = {
   DECIMAL_SEP: '.',
@@ -12156,7 +12997,7 @@ goog.i18n.NumberFormatSymbols_teo = {
 
 /**
  * Number formatting symbols for locale teo_KE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_teo_KE = {
   DECIMAL_SEP: '.',
@@ -12179,7 +13020,7 @@ goog.i18n.NumberFormatSymbols_teo_KE = {
 
 /**
  * Number formatting symbols for locale teo_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_teo_UG = {
   DECIMAL_SEP: '.',
@@ -12202,7 +13043,7 @@ goog.i18n.NumberFormatSymbols_teo_UG = {
 
 /**
  * Number formatting symbols for locale tg.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tg = {
   DECIMAL_SEP: ',',
@@ -12225,21 +13066,21 @@ goog.i18n.NumberFormatSymbols_tg = {
 
 /**
  * Number formatting symbols for locale tg_TJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tg_TJ = goog.i18n.NumberFormatSymbols_tg;
 
 
 /**
  * Number formatting symbols for locale th_TH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_th_TH = goog.i18n.NumberFormatSymbols_th;
 
 
 /**
  * Number formatting symbols for locale ti.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ti = {
   DECIMAL_SEP: '.',
@@ -12262,7 +13103,7 @@ goog.i18n.NumberFormatSymbols_ti = {
 
 /**
  * Number formatting symbols for locale ti_ER.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ti_ER = {
   DECIMAL_SEP: '.',
@@ -12285,14 +13126,14 @@ goog.i18n.NumberFormatSymbols_ti_ER = {
 
 /**
  * Number formatting symbols for locale ti_ET.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ti_ET = goog.i18n.NumberFormatSymbols_ti;
 
 
 /**
  * Number formatting symbols for locale tk.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tk = {
   DECIMAL_SEP: ',',
@@ -12315,14 +13156,14 @@ goog.i18n.NumberFormatSymbols_tk = {
 
 /**
  * Number formatting symbols for locale tk_TM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tk_TM = goog.i18n.NumberFormatSymbols_tk;
 
 
 /**
  * Number formatting symbols for locale to.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_to = {
   DECIMAL_SEP: '.',
@@ -12345,14 +13186,14 @@ goog.i18n.NumberFormatSymbols_to = {
 
 /**
  * Number formatting symbols for locale to_TO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_to_TO = goog.i18n.NumberFormatSymbols_to;
 
 
 /**
  * Number formatting symbols for locale tr_CY.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tr_CY = {
   DECIMAL_SEP: ',',
@@ -12375,14 +13216,14 @@ goog.i18n.NumberFormatSymbols_tr_CY = {
 
 /**
  * Number formatting symbols for locale tr_TR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tr_TR = goog.i18n.NumberFormatSymbols_tr;
 
 
 /**
  * Number formatting symbols for locale tt.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tt = {
   DECIMAL_SEP: ',',
@@ -12405,14 +13246,14 @@ goog.i18n.NumberFormatSymbols_tt = {
 
 /**
  * Number formatting symbols for locale tt_RU.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tt_RU = goog.i18n.NumberFormatSymbols_tt;
 
 
 /**
  * Number formatting symbols for locale twq.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_twq = {
   DECIMAL_SEP: '.',
@@ -12435,7 +13276,7 @@ goog.i18n.NumberFormatSymbols_twq = {
 
 /**
  * Number formatting symbols for locale twq_NE.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_twq_NE = {
   DECIMAL_SEP: '.',
@@ -12458,7 +13299,7 @@ goog.i18n.NumberFormatSymbols_twq_NE = {
 
 /**
  * Number formatting symbols for locale tzm.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tzm = {
   DECIMAL_SEP: ',',
@@ -12481,14 +13322,14 @@ goog.i18n.NumberFormatSymbols_tzm = {
 
 /**
  * Number formatting symbols for locale tzm_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_tzm_MA = goog.i18n.NumberFormatSymbols_tzm;
 
 
 /**
  * Number formatting symbols for locale ug.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ug = {
   DECIMAL_SEP: '.',
@@ -12511,21 +13352,21 @@ goog.i18n.NumberFormatSymbols_ug = {
 
 /**
  * Number formatting symbols for locale ug_CN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ug_CN = goog.i18n.NumberFormatSymbols_ug;
 
 
 /**
  * Number formatting symbols for locale uk_UA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uk_UA = goog.i18n.NumberFormatSymbols_uk;
 
 
 /**
  * Number formatting symbols for locale ur_IN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ur_IN = {
   DECIMAL_SEP: '٫',
@@ -12548,7 +13389,7 @@ goog.i18n.NumberFormatSymbols_ur_IN = {
 
 /**
  * Number formatting symbols for locale ur_IN_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ur_IN_u_nu_latn = {
   DECIMAL_SEP: '.',
@@ -12571,14 +13412,14 @@ goog.i18n.NumberFormatSymbols_ur_IN_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale ur_PK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_ur_PK = goog.i18n.NumberFormatSymbols_ur;
 
 
 /**
  * Number formatting symbols for locale uz_Arab.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Arab = {
   DECIMAL_SEP: '٫',
@@ -12601,7 +13442,7 @@ goog.i18n.NumberFormatSymbols_uz_Arab = {
 
 /**
  * Number formatting symbols for locale uz_Arab_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Arab_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -12624,7 +13465,7 @@ goog.i18n.NumberFormatSymbols_uz_Arab_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale uz_Arab_AF.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Arab_AF = {
   DECIMAL_SEP: '٫',
@@ -12647,7 +13488,7 @@ goog.i18n.NumberFormatSymbols_uz_Arab_AF = {
 
 /**
  * Number formatting symbols for locale uz_Arab_AF_u_nu_latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Arab_AF_u_nu_latn = {
   DECIMAL_SEP: ',',
@@ -12670,7 +13511,7 @@ goog.i18n.NumberFormatSymbols_uz_Arab_AF_u_nu_latn = {
 
 /**
  * Number formatting symbols for locale uz_Cyrl.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Cyrl = {
   DECIMAL_SEP: ',',
@@ -12693,7 +13534,7 @@ goog.i18n.NumberFormatSymbols_uz_Cyrl = {
 
 /**
  * Number formatting symbols for locale uz_Cyrl_UZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Cyrl_UZ = {
   DECIMAL_SEP: ',',
@@ -12716,21 +13557,21 @@ goog.i18n.NumberFormatSymbols_uz_Cyrl_UZ = {
 
 /**
  * Number formatting symbols for locale uz_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Latn = goog.i18n.NumberFormatSymbols_uz;
 
 
 /**
  * Number formatting symbols for locale uz_Latn_UZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_uz_Latn_UZ = goog.i18n.NumberFormatSymbols_uz;
 
 
 /**
  * Number formatting symbols for locale vai.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vai = {
   DECIMAL_SEP: '.',
@@ -12753,35 +13594,35 @@ goog.i18n.NumberFormatSymbols_vai = {
 
 /**
  * Number formatting symbols for locale vai_Latn.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vai_Latn = goog.i18n.NumberFormatSymbols_vai;
 
 
 /**
  * Number formatting symbols for locale vai_Latn_LR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vai_Latn_LR = goog.i18n.NumberFormatSymbols_vai;
 
 
 /**
  * Number formatting symbols for locale vai_Vaii.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vai_Vaii = goog.i18n.NumberFormatSymbols_vai;
 
 
 /**
  * Number formatting symbols for locale vai_Vaii_LR.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vai_Vaii_LR = goog.i18n.NumberFormatSymbols_vai;
 
 
 /**
  * Number formatting symbols for locale vi_VN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vi_VN = {
   DECIMAL_SEP: ',',
@@ -12804,7 +13645,7 @@ goog.i18n.NumberFormatSymbols_vi_VN = {
 
 /**
  * Number formatting symbols for locale vun.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vun = {
   DECIMAL_SEP: '.',
@@ -12827,14 +13668,14 @@ goog.i18n.NumberFormatSymbols_vun = {
 
 /**
  * Number formatting symbols for locale vun_TZ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_vun_TZ = goog.i18n.NumberFormatSymbols_vun;
 
 
 /**
  * Number formatting symbols for locale wae.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_wae = {
   DECIMAL_SEP: ',',
@@ -12857,14 +13698,14 @@ goog.i18n.NumberFormatSymbols_wae = {
 
 /**
  * Number formatting symbols for locale wae_CH.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_wae_CH = goog.i18n.NumberFormatSymbols_wae;
 
 
 /**
  * Number formatting symbols for locale wo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_wo = {
   DECIMAL_SEP: ',',
@@ -12887,7 +13728,7 @@ goog.i18n.NumberFormatSymbols_wo = {
 
 /**
  * Number formatting symbols for locale wo_SN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_wo_SN = {
   DECIMAL_SEP: ',',
@@ -12910,7 +13751,7 @@ goog.i18n.NumberFormatSymbols_wo_SN = {
 
 /**
  * Number formatting symbols for locale xh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_xh = {
   DECIMAL_SEP: '.',
@@ -12933,14 +13774,14 @@ goog.i18n.NumberFormatSymbols_xh = {
 
 /**
  * Number formatting symbols for locale xh_ZA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_xh_ZA = goog.i18n.NumberFormatSymbols_xh;
 
 
 /**
  * Number formatting symbols for locale xog.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_xog = {
   DECIMAL_SEP: '.',
@@ -12963,7 +13804,7 @@ goog.i18n.NumberFormatSymbols_xog = {
 
 /**
  * Number formatting symbols for locale xog_UG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_xog_UG = {
   DECIMAL_SEP: '.',
@@ -12986,7 +13827,7 @@ goog.i18n.NumberFormatSymbols_xog_UG = {
 
 /**
  * Number formatting symbols for locale yav.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yav = {
   DECIMAL_SEP: ',',
@@ -13009,7 +13850,7 @@ goog.i18n.NumberFormatSymbols_yav = {
 
 /**
  * Number formatting symbols for locale yav_CM.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yav_CM = {
   DECIMAL_SEP: ',',
@@ -13032,7 +13873,7 @@ goog.i18n.NumberFormatSymbols_yav_CM = {
 
 /**
  * Number formatting symbols for locale yi.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yi = {
   DECIMAL_SEP: '.',
@@ -13055,14 +13896,14 @@ goog.i18n.NumberFormatSymbols_yi = {
 
 /**
  * Number formatting symbols for locale yi_001.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yi_001 = goog.i18n.NumberFormatSymbols_yi;
 
 
 /**
  * Number formatting symbols for locale yo.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yo = {
   DECIMAL_SEP: '.',
@@ -13085,7 +13926,7 @@ goog.i18n.NumberFormatSymbols_yo = {
 
 /**
  * Number formatting symbols for locale yo_BJ.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yo_BJ = {
   DECIMAL_SEP: '.',
@@ -13108,14 +13949,14 @@ goog.i18n.NumberFormatSymbols_yo_BJ = {
 
 /**
  * Number formatting symbols for locale yo_NG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yo_NG = goog.i18n.NumberFormatSymbols_yo;
 
 
 /**
  * Number formatting symbols for locale yue.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yue = {
   DECIMAL_SEP: '.',
@@ -13138,7 +13979,7 @@ goog.i18n.NumberFormatSymbols_yue = {
 
 /**
  * Number formatting symbols for locale yue_Hans.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yue_Hans = {
   DECIMAL_SEP: '.',
@@ -13161,7 +14002,7 @@ goog.i18n.NumberFormatSymbols_yue_Hans = {
 
 /**
  * Number formatting symbols for locale yue_Hans_CN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yue_Hans_CN = {
   DECIMAL_SEP: '.',
@@ -13184,21 +14025,21 @@ goog.i18n.NumberFormatSymbols_yue_Hans_CN = {
 
 /**
  * Number formatting symbols for locale yue_Hant.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yue_Hant = goog.i18n.NumberFormatSymbols_yue;
 
 
 /**
  * Number formatting symbols for locale yue_Hant_HK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_yue_Hant_HK = goog.i18n.NumberFormatSymbols_yue;
 
 
 /**
  * Number formatting symbols for locale zgh.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zgh = {
   DECIMAL_SEP: ',',
@@ -13221,28 +14062,28 @@ goog.i18n.NumberFormatSymbols_zgh = {
 
 /**
  * Number formatting symbols for locale zgh_MA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zgh_MA = goog.i18n.NumberFormatSymbols_zgh;
 
 
 /**
  * Number formatting symbols for locale zh_Hans.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hans = goog.i18n.NumberFormatSymbols_zh;
 
 
 /**
  * Number formatting symbols for locale zh_Hans_CN.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hans_CN = goog.i18n.NumberFormatSymbols_zh;
 
 
 /**
  * Number formatting symbols for locale zh_Hans_HK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hans_HK = {
   DECIMAL_SEP: '.',
@@ -13265,7 +14106,7 @@ goog.i18n.NumberFormatSymbols_zh_Hans_HK = {
 
 /**
  * Number formatting symbols for locale zh_Hans_MO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hans_MO = {
   DECIMAL_SEP: '.',
@@ -13288,7 +14129,7 @@ goog.i18n.NumberFormatSymbols_zh_Hans_MO = {
 
 /**
  * Number formatting symbols for locale zh_Hans_SG.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hans_SG = {
   DECIMAL_SEP: '.',
@@ -13311,7 +14152,7 @@ goog.i18n.NumberFormatSymbols_zh_Hans_SG = {
 
 /**
  * Number formatting symbols for locale zh_Hant.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hant = {
   DECIMAL_SEP: '.',
@@ -13334,7 +14175,7 @@ goog.i18n.NumberFormatSymbols_zh_Hant = {
 
 /**
  * Number formatting symbols for locale zh_Hant_HK.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hant_HK = {
   DECIMAL_SEP: '.',
@@ -13357,7 +14198,7 @@ goog.i18n.NumberFormatSymbols_zh_Hant_HK = {
 
 /**
  * Number formatting symbols for locale zh_Hant_MO.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hant_MO = {
   DECIMAL_SEP: '.',
@@ -13380,7 +14221,7 @@ goog.i18n.NumberFormatSymbols_zh_Hant_MO = {
 
 /**
  * Number formatting symbols for locale zh_Hant_TW.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zh_Hant_TW = {
   DECIMAL_SEP: '.',
@@ -13403,7 +14244,7 @@ goog.i18n.NumberFormatSymbols_zh_Hant_TW = {
 
 /**
  * Number formatting symbols for locale zu_ZA.
- * @enum {string}
+ * @const {!goog.i18n.NumberFormatSymbolsType.Type}
  */
 goog.i18n.NumberFormatSymbols_zu_ZA = goog.i18n.NumberFormatSymbols_zu;
 
@@ -13801,6 +14642,21 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ckb;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ckb_u_nu_latn;
     break;
+  case 'ckb_Arab':
+  case 'ckb-Arab':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ckb_Arab;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ckb_Arab_u_nu_latn;
+    break;
+  case 'ckb_Arab_IQ':
+  case 'ckb-Arab-IQ':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ckb_Arab_IQ;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ckb_Arab_IQ_u_nu_latn;
+    break;
+  case 'ckb_Arab_IR':
+  case 'ckb-Arab-IR':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ckb_Arab_IR;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ckb_Arab_IR_u_nu_latn;
+    break;
   case 'ckb_IQ':
   case 'ckb-IQ':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ckb_IQ;
@@ -13873,6 +14729,15 @@ switch (goog.LOCALE) {
   case 'dje-NE':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_dje_NE;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_dje_NE;
+    break;
+  case 'doi':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_doi;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_doi;
+    break;
+  case 'doi_IN':
+  case 'doi-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_doi_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_doi_IN;
     break;
   case 'dsb':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_dsb;
@@ -14600,6 +15465,71 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff;
     break;
+  case 'ff_Adlm':
+  case 'ff-Adlm':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm;
+    break;
+  case 'ff_Adlm_BF':
+  case 'ff-Adlm-BF':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_BF;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_BF;
+    break;
+  case 'ff_Adlm_CM':
+  case 'ff-Adlm-CM':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_CM;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_CM;
+    break;
+  case 'ff_Adlm_GH':
+  case 'ff-Adlm-GH':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_GH;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_GH;
+    break;
+  case 'ff_Adlm_GM':
+  case 'ff-Adlm-GM':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_GM;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_GM;
+    break;
+  case 'ff_Adlm_GN':
+  case 'ff-Adlm-GN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_GN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_GN;
+    break;
+  case 'ff_Adlm_GW':
+  case 'ff-Adlm-GW':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_GW;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_GW;
+    break;
+  case 'ff_Adlm_LR':
+  case 'ff-Adlm-LR':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_LR;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_LR;
+    break;
+  case 'ff_Adlm_MR':
+  case 'ff-Adlm-MR':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_MR;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_MR;
+    break;
+  case 'ff_Adlm_NE':
+  case 'ff-Adlm-NE':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_NE;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_NE;
+    break;
+  case 'ff_Adlm_NG':
+  case 'ff-Adlm-NG':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_NG;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_NG;
+    break;
+  case 'ff_Adlm_SL':
+  case 'ff-Adlm-SL':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_SL;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_SL;
+    break;
+  case 'ff_Adlm_SN':
+  case 'ff-Adlm-SN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Adlm_SN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ff_Adlm_SN;
+    break;
   case 'ff_Latn':
   case 'ff-Latn':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ff_Latn;
@@ -15270,10 +16200,15 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ks;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_u_nu_latn;
     break;
-  case 'ks_IN':
-  case 'ks-IN':
-    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ks_IN;
-    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_IN_u_nu_latn;
+  case 'ks_Arab':
+  case 'ks-Arab':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ks_Arab;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_Arab_u_nu_latn;
+    break;
+  case 'ks_Arab_IN':
+  case 'ks-Arab-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ks_Arab_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ks_Arab_IN_u_nu_latn;
     break;
   case 'ksb':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ksb;
@@ -15437,6 +16372,15 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_lv_LV;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_lv_LV;
     break;
+  case 'mai':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mai;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mai;
+    break;
+  case 'mai_IN':
+  case 'mai-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mai_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mai_IN;
+    break;
   case 'mas':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mas;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mas;
@@ -15520,6 +16464,20 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mn_MN;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mn_MN;
     break;
+  case 'mni':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mni;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mni_u_nu_latn;
+    break;
+  case 'mni_Beng':
+  case 'mni-Beng':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mni_Beng;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mni_Beng_u_nu_latn;
+    break;
+  case 'mni_Beng_IN':
+  case 'mni-Beng-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mni_Beng_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_mni_Beng_IN_u_nu_latn;
+    break;
   case 'mr_IN':
   case 'mr-IN':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_mr_IN;
@@ -15529,6 +16487,11 @@ switch (goog.LOCALE) {
   case 'ms-BN':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ms_BN;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ms_BN;
+    break;
+  case 'ms_ID':
+  case 'ms-ID':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_ms_ID;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_ms_ID;
     break;
   case 'ms_MY':
   case 'ms-MY':
@@ -15595,20 +16558,6 @@ switch (goog.LOCALE) {
   case 'nd-ZW':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_nd_ZW;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_nd_ZW;
-    break;
-  case 'nds':
-    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_nds;
-    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_nds;
-    break;
-  case 'nds_DE':
-  case 'nds-DE':
-    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_nds_DE;
-    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_nds_DE;
-    break;
-  case 'nds_NL':
-  case 'nds-NL':
-    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_nds_NL;
-    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_nds_NL;
     break;
   case 'ne_IN':
   case 'ne-IN':
@@ -15752,6 +16701,15 @@ switch (goog.LOCALE) {
   case 'pa-Guru-IN':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_pa_Guru_IN;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_pa_Guru_IN;
+    break;
+  case 'pcm':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_pcm;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_pcm;
+    break;
+  case 'pcm_NG':
+  case 'pcm-NG':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_pcm_NG;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_pcm_NG;
     break;
   case 'pl_PL':
   case 'pl-PL':
@@ -15926,6 +16884,15 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_rwk_TZ;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_rwk_TZ;
     break;
+  case 'sa':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sa;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sa_u_nu_latn;
+    break;
+  case 'sa_IN':
+  case 'sa-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sa_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sa_IN_u_nu_latn;
+    break;
   case 'sah':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sah;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sah;
@@ -15944,6 +16911,20 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_saq_KE;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_saq_KE;
     break;
+  case 'sat':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sat;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sat_u_nu_latn;
+    break;
+  case 'sat_Olck':
+  case 'sat-Olck':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sat_Olck;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sat_Olck_u_nu_latn;
+    break;
+  case 'sat_Olck_IN':
+  case 'sat-Olck-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sat_Olck_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sat_Olck_IN_u_nu_latn;
+    break;
   case 'sbp':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sbp;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sbp;
@@ -15957,10 +16938,25 @@ switch (goog.LOCALE) {
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_u_nu_latn;
     break;
-  case 'sd_PK':
-  case 'sd-PK':
-    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd_PK;
-    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_PK_u_nu_latn;
+  case 'sd_Arab':
+  case 'sd-Arab':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd_Arab;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_Arab_u_nu_latn;
+    break;
+  case 'sd_Arab_PK':
+  case 'sd-Arab-PK':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd_Arab_PK;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_Arab_PK_u_nu_latn;
+    break;
+  case 'sd_Deva':
+  case 'sd-Deva':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd_Deva;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_Deva;
+    break;
+  case 'sd_Deva_IN':
+  case 'sd-Deva-IN':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sd_Deva_IN;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sd_Deva_IN;
     break;
   case 'se':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_se;
@@ -16148,6 +17144,20 @@ switch (goog.LOCALE) {
   case 'sr-Latn-XK':
     goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_sr_Latn_XK;
     goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_sr_Latn_XK;
+    break;
+  case 'su':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_su;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_su;
+    break;
+  case 'su_Latn':
+  case 'su-Latn':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_su_Latn;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_su_Latn;
+    break;
+  case 'su_Latn_ID':
+  case 'su-Latn-ID':
+    goog.i18n.NumberFormatSymbols = goog.i18n.NumberFormatSymbols_su_Latn_ID;
+    goog.i18n.NumberFormatSymbols_u_nu_latn = goog.i18n.NumberFormatSymbols_su_Latn_ID;
     break;
   case 'sv_AX':
   case 'sv-AX':

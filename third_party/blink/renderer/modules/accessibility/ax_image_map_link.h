@@ -41,6 +41,10 @@ class AXObjectCacheImpl;
 class AXImageMapLink final : public AXNodeObject {
  public:
   explicit AXImageMapLink(HTMLAreaElement*, AXObjectCacheImpl&);
+
+  AXImageMapLink(const AXImageMapLink&) = delete;
+  AXImageMapLink& operator=(const AXImageMapLink&) = delete;
+
   ~AXImageMapLink() override;
   void Trace(Visitor*) const override;
 
@@ -72,8 +76,6 @@ class AXImageMapLink final : public AXNodeObject {
 
  private:
   bool IsImageMapLink() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AXImageMapLink);
 };
 
 template <>

@@ -4,7 +4,7 @@
 
 import {LocalImages} from 'chrome://personalization/trusted/local_images_element.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
+import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -19,6 +19,22 @@ export function LocalImagesTest() {
   /** @type {?TestPersonalizationStore} */
   let personalizationStore = null;
 
+  /**
+   * Get all currently visible photo loading placeholders.
+   * @return  {!Array<HTMLElement>}
+   */
+  function getLoadingPlaceholders() {
+    if (!localImagesElement) {
+      return [];
+    }
+    const selectors = [
+      '.photo-container:not([hidden])',
+      '.photo-inner-container.placeholder:not([style*="display: none"])',
+    ];
+    return Array.from(
+        localImagesElement.shadowRoot.querySelectorAll(selectors.join(' ')));
+  }
+
   setup(() => {
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
@@ -31,24 +47,45 @@ export function LocalImagesTest() {
     await flushTasks();
   });
 
-  test(
-      'displays loading spinner while local image list is loading',
-      async () => {
-        personalizationStore.data.loading.local = {images: true, data: {}};
+  test('displays a loading placeholder for unloaded local images', async () => {
+    personalizationStore.data.local = {
+      images: wallpaperProvider.localImages,
+      data: wallpaperProvider.localImageData,
+    };
+    personalizationStore.data.loading.local = {images: false, data: {}};
 
-        localImagesElement = initElement(LocalImages.is, {hidden: false});
+    localImagesElement = initElement(LocalImages.is, {hidden: false});
+    await waitAfterNextRender(localImagesElement);
 
-        const spinner =
-            localImagesElement.shadowRoot.querySelector('paper-spinner-lite');
-        assertTrue(spinner.active);
+    // Iron-list creates some extra dom elements as a scroll buffer and
+    // hides them.  Only select visible elements here to get the real ones.
+    let loadingPlaceholders = getLoadingPlaceholders();
+    // Counts as loading if store.loading.local.data does not contain an
+    // entry for the image. Therefore should be 2 loading tiles.
+    assertEquals(2, loadingPlaceholders.length);
 
-        personalizationStore.data.loading.local = {images: false, data: {}};
-        personalizationStore.notifyObservers();
+    personalizationStore.data.loading.local = {
+      images: false,
+      data: {'LocalImage0.png': true, 'LocalImage1.png': true},
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(localImagesElement);
 
-        await waitAfterNextRender(localImagesElement);
 
-        assertFalse(spinner.active);
-      });
+    loadingPlaceholders = getLoadingPlaceholders();
+    // Still 2 loading tiles.
+    assertEquals(2, loadingPlaceholders.length);
+
+    personalizationStore.data.loading.local = {
+      images: false,
+      data: {'LocalImage0.png': false, 'LocalImage1.png': true},
+    };
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(localImagesElement);
+
+    loadingPlaceholders = getLoadingPlaceholders();
+    assertEquals(1, loadingPlaceholders.length);
+  });
 
   test(
       'displays images for current local images that have successfully loaded',
@@ -71,7 +108,9 @@ export function LocalImagesTest() {
         assertEquals(0, ironList.shadowRoot.querySelectorAll('img').length);
 
         // Set loading finished for first thumbnail.
-        personalizationStore.data.loading.local.data = {'100,10': false};
+        personalizationStore.data.loading.local.data = {
+          'LocalImage0.png': false
+        };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
         assertEquals(2, ironList.items.length);
@@ -81,12 +120,12 @@ export function LocalImagesTest() {
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.loading.local.data = {
-          '100,10': false,
-          '200,20': false
+          'LocalImage0.png': false,
+          'LocalImage1.png': false
         };
         personalizationStore.data.local.data = {
-          '100,10': 'data://localimage0data',
-          '200,20': null
+          'LocalImage0.png': 'data://localimage0data',
+          'LocalImage1.png': null
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
@@ -95,26 +134,6 @@ export function LocalImagesTest() {
         assertEquals(1, imgTags.length);
         assertEquals('data://localimage0data', imgTags[0].src);
       });
-
-  test('displays error on loading failure', async () => {
-    personalizationStore.data.local = {images: null, data: {}};
-    personalizationStore.data.loading.local = {images: false, data: {}};
-
-    localImagesElement = initElement(LocalImages.is, {hidden: false});
-
-    // Spinner is not active because loading is finished.
-    const spinner =
-        localImagesElement.shadowRoot.querySelector('paper-spinner-lite');
-    assertFalse(spinner.active);
-
-    // Error should be visible.
-    const error = localImagesElement.shadowRoot.querySelector('#error');
-    assertFalse(error.hidden);
-
-    // No iron-list displayed.
-    const ironList = localImagesElement.shadowRoot.querySelector('iron-list');
-    assertFalse(!!ironList);
-  });
 
   test(
       'sets aria-selected attribute if image name matches currently selected',
@@ -126,7 +145,7 @@ export function LocalImagesTest() {
         // Done loading.
         personalizationStore.data.loading.local = {
           images: false,
-          data: {'100,10': false, '200,20': false},
+          data: {'LocalImage0.png': false, 'LocalImage1.png': false},
         };
 
         localImagesElement = initElement(LocalImages.is, {hidden: false});
@@ -135,18 +154,50 @@ export function LocalImagesTest() {
         // iron-list pre-creates some extra DOM elements but marks them as
         // hidden. Ignore them here to only get visible images.
         const images = localImagesElement.shadowRoot.querySelectorAll(
-            '.photo-container:not([hidden])');
+            '.photo-container:not([hidden]) .photo-inner-container');
 
         assertEquals(2, images.length);
         // Every image is aria-selected false.
         assertTrue(Array.from(images).every(
             image => image.getAttribute('aria-selected') === 'false'));
 
-        personalizationStore.data.selected = {key: 'LocalImage1'};
+        personalizationStore.data.currentSelected = {key: 'LocalImage1.png'};
         personalizationStore.notifyObservers();
 
         assertEquals(2, images.length);
         assertEquals(images[0].getAttribute('aria-selected'), 'false');
         assertEquals(images[1].getAttribute('aria-selected'), 'true');
       });
+
+  test('images have proper aria label when loaded', async () => {
+    personalizationStore.data.local = {
+      images: wallpaperProvider.localImages,
+      data: wallpaperProvider.localImageData,
+    };
+    // Done loading.
+    personalizationStore.data.loading.local = {
+      images: false,
+      data: {'LocalImage0.png': false, 'LocalImage1.png': false},
+    };
+
+    localImagesElement = initElement(LocalImages.is, {hidden: false});
+    await waitAfterNextRender(localImagesElement);
+
+    // iron-list pre-creates some extra DOM elements but marks them as
+    // hidden. Ignore them here to only get visible images.
+    const images = localImagesElement.shadowRoot.querySelectorAll(
+        '.photo-container:not([hidden]) .photo-inner-container');
+
+    assertEquals(2, images.length);
+    // Every image is aria-selected false.
+    assertTrue(Array.from(images).every(
+        image => image.getAttribute('aria-selected') === 'false'));
+    // Every image has aria-label set.
+    assertEquals(
+        images[0].getAttribute('aria-label'),
+        wallpaperProvider.localImages[0].path);
+    assertEquals(
+        images[1].getAttribute('aria-label'),
+        wallpaperProvider.localImages[1].path);
+  });
 }

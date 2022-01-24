@@ -23,6 +23,10 @@ class ProcessMetricsDecorator
       public GraphRegisteredImpl<ProcessMetricsDecorator> {
  public:
   ProcessMetricsDecorator();
+
+  ProcessMetricsDecorator(const ProcessMetricsDecorator&) = delete;
+  ProcessMetricsDecorator& operator=(const ProcessMetricsDecorator&) = delete;
+
   ~ProcessMetricsDecorator() override;
 
   // A token used to express an interest for process metrics. Process metrics
@@ -103,7 +107,6 @@ class ProcessMetricsDecorator
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ProcessMetricsDecorator> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ProcessMetricsDecorator);
 };
 
 }  // namespace performance_manager

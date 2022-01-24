@@ -8,15 +8,15 @@
 #include <utility>
 #include <vector>
 
-#include "cc/test/geometry_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {
@@ -140,9 +140,10 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId{1u},
-               output_rect.size(), has_transparent_background,
-               cache_render_pass, has_damage_from_contributing_content,
-               generate_mipmap, has_per_quad_damage);
+               output_rect.size(), SharedElementResourceId(),
+               has_transparent_background, cache_render_pass,
+               has_damage_from_contributing_content, generate_mipmap,
+               has_per_quad_damage);
 
   // Two quads using one shared state.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();
@@ -199,7 +200,8 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
                   contrib_transform_to_root, contrib_filters,
                   contrib_backdrop_filters, contrib_backdrop_filter_bounds,
                   SubtreeCaptureId{2u}, contrib_output_rect.size(),
-                  contrib_has_transparent_background, contrib_cache_render_pass,
+                  SharedElementResourceId(), contrib_has_transparent_background,
+                  contrib_cache_render_pass,
                   contrib_has_damage_from_contributing_content,
                   contrib_generate_mipmap, contrib_has_per_quad_damage);
 
@@ -253,9 +255,10 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   auto pass = CompositorRenderPass::Create();
   pass->SetAll(id, output_rect, damage_rect, transform_to_root, filters,
                backdrop_filters, backdrop_filter_bounds, SubtreeCaptureId(),
-               output_rect.size(), has_transparent_background,
-               cache_render_pass, has_damage_from_contributing_content,
-               generate_mipmap, has_per_quad_damage);
+               output_rect.size(), SharedElementResourceId(),
+               has_transparent_background, cache_render_pass,
+               has_damage_from_contributing_content, generate_mipmap,
+               has_per_quad_damage);
 
   // A shared state with a quad.
   SharedQuadState* shared_state1 = pass->CreateAndAppendSharedQuadState();

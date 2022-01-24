@@ -4,7 +4,7 @@
 
 // clang-format off
 import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
-import {TestResetBrowserProxy} from 'chrome://test/settings/test_reset_browser_proxy.js';
+import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
 
 // clang-format on
 
@@ -14,7 +14,7 @@ suite('BannerTests', function() {
 
   setup(function() {
     browserProxy = new TestResetBrowserProxy();
-    ResetBrowserProxyImpl.instance_ = browserProxy;
+    ResetBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     resetBanner = document.createElement('settings-reset-profile-banner');
     document.body.appendChild(resetBanner);

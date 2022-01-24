@@ -17,7 +17,6 @@
 <translation id="1516966594427080024">เปิดหน้าต่างใหม่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="ESC" /></translation>
-<translation id="1633761758045565086">ย้ายโฟกัสไปยังกล่องโต้ตอบความช่วยเหลือ</translation>
 <translation id="1652741121070700329">ย้ายไปยังจุดเริ่มต้นของคำก่อนหน้า</translation>
 <translation id="1679841710523778799">เพิ่มความสว่าง</translation>
 <translation id="168356808214100546">กด <ph name="ALT" /> ค้างไว้แล้วแตะ <ph name="TAB" /> จนกว่าคุณจะไปถึงหน้าต่างที่ต้องการเปิดแล้วจึงปล่อย</translation>
@@ -53,7 +52,6 @@
 <translation id="2530339807289914946">เลื่อนหน้าเว็บลง</translation>
 <translation id="2530896289327917474">เปิดหรือปิดการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="2574014812750545982">รีเซ็ตระดับการซูมในหน้าเว็บ</translation>
-<translation id="2596078834055697711">ถ่ายภาพหน้าจอของหน้าต่าง</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> แล้วกด <ph name="TAB" /> หรือ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">โหลดหน้าเว็บปัจจุบันซ้ำ</translation>
 <translation id="2764005613199379871">วางโฟกัสบนแถบที่อยู่การค้นหา</translation>
@@ -68,11 +66,11 @@
 <translation id="3020183492814296499">ทางลัด</translation>
 <translation id="3084301071537457911">ไฮไลต์รายการถัดไปบนชั้นวาง</translation>
 <translation id="309173601632226815">ไฮไลต์ปุ่ม Launcher บนชั้นวาง</translation>
-<translation id="3105917916468784889">จับภาพหน้าจอ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">โฟกัสแถบที่อยู่</translation>
 <translation id="3256109297135787951">นำไฮไลต์ออกจากรายการบนชั้นวาง</translation>
 <translation id="3288816184963444640">ปิดหน้าต่างปัจจุบัน</translation>
+<translation id="3350805006883559974">ทำให้หน้าต่างที่ใช้งานลอยอยู่ด้านบน</translation>
 <translation id="3407560819924487926">เรียกใช้ตัวจัดการงาน</translation>
 <translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3422679037938588196">ไปยังรายการก่อนหน้าที่ตรงกับการค้นหา</translation>
@@ -110,7 +108,6 @@
 <translation id="4556221320735744018">ดูตัวช่วยเหลือสำหรับแป้นพิมพ์ลัด</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> หรือ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">เปิดพื้นที่แสดงสถานะ (ตรงตำแหน่งที่รูปสำหรับบัญชีของคุณปรากฏ)</translation>
-<translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4698850295812410683">แสดงเครื่องมือสไตลัส</translation>
 <translation id="4801989101741319327">ย้ายไปท้ายคำถัดไป</translation>
 <translation id="4866066940972151697">เปิดใช้งานพื้นที่ทำงานด้านขวา</translation>
@@ -211,6 +208,7 @@
 <translation id="8881584919399569791">ย้ายหน้าต่างที่เปิดใช้งานอยู่ไปยังพื้นที่ทำงานทางด้านซ้าย</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
 <translation id="8924883688469390268">เปลี่ยนเป็นผู้ใช้ก่อนหน้า</translation>
+<translation id="8941626538514548667">โฟกัสเนื้อหาเว็บในเบราว์เซอร์</translation>
 <translation id="8977648847395357314">เลือกเนื้อหาในแถบที่อยู่</translation>
 <translation id="8982190978301344584">แสดงเมนูที่แสดงรายการ IME ที่ใช้ได้</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 จนถึง 8</translation>

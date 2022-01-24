@@ -2,32 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {unguessableTokenToString} from 'chrome://personalization/common/utils.js';
+import {OnlineImageType, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+
 import {assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 /**
- * @implements {chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ * @implements {WallpaperProviderInterface}
  * @extends {TestBrowserProxy}
  */
 export class TestWallpaperProvider extends TestBrowserProxy {
   constructor() {
     super([
+      'makeTransparent',
       'fetchCollections',
       'fetchImagesForCollection',
       'getLocalImages',
       'getLocalImageThumbnail',
-      'getCurrentWallpaper',
+      'setWallpaperObserver',
       'selectWallpaper',
+      'selectLocalImage',
+      'setCustomWallpaperLayout',
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
       'updateDailyRefreshWallpaper',
+      'isInTabletMode',
+      'confirmPreviewWallpaper',
+      'cancelPreviewWallpaper',
     ]);
 
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
-     * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+     * @type {?Array<!WallpaperCollection>}
      */
     this.collections_ = [
       {
@@ -45,71 +52,92 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
-     * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+     * @type {?Array<!WallpaperImage>}
      */
     this.images_ = [
       {
         assetId: BigInt(0),
         attribution: ['Image 0'],
         url: {url: 'https://images.googleusercontent.com/0'},
+        unitId: BigInt(1),
+        type: OnlineImageType.kDark,
+      },
+      {
+        assetId: BigInt(2),
+        attribution: ['Image 2'],
+        url: {url: 'https://images.googleusercontent.com/2'},
+        unitId: BigInt(2),
+        type: OnlineImageType.kDark,
       },
       {
         assetId: BigInt(1),
         attribution: ['Image 1'],
         url: {url: 'https://images.googleusercontent.com/1'},
+        unitId: BigInt(1),
+        type: OnlineImageType.kLight,
       },
     ];
 
-    /** @type {?Array<!chromeos.personalizationApp.mojom.LocalImage>} */
-    this.localImages = [
-      {
-        id: {high: BigInt(100), low: BigInt(10)},
-        name: 'LocalImage0',
-      },
-      {
-        id: {high: BigInt(200), low: BigInt(20)},
-        name: 'LocalImage1',
-      }
-    ];
+    /** @type {?Array<!mojoBase.mojom.FilePath>} */
+    this.localImages = [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}];
 
     /** @type {!Object<string, string>} */
     this.localImageData = {
-      '100,10': 'data://localimage0data',
-      '200,20': 'data://localimage1data',
+      'LocalImage0.png': 'data://localimage0data',
+      'LocalImage1.png': 'data://localimage1data',
     };
 
     /**
      * @public
-     * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+     * @type {?CurrentWallpaper}
      */
     this.currentWallpaper = {
       attribution: ['Image 0'],
-      layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
+      layout: WallpaperLayout.kCenter,
       key: '1',
-      type: chromeos.personalizationApp.mojom.WallpaperType.kOnline,
+      type: WallpaperType.kOnline,
       url: {url: 'https://images.googleusercontent.com/0'},
     };
 
     /** @public */
     this.selectWallpaperResponse = true;
 
+    /** @public */
     this.selectLocalImageResponse = true;
 
+    /** @public */
     this.updateDailyRefreshWallpaperResponse = true;
+
+    /** @public */
+    this.isInTabletModeResponse = true;
+
+    /** @public */
+    this.wallpaperObserverUpdateTimeout = 0;
+
+    /**
+     * @public
+     * @type {?WallpaperObserverInterface}
+     */
+    this.wallpaperObserverRemote = null;
   }
 
   /**
-   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @return {?Array<!WallpaperCollection>}
    */
   get collections() {
     return this.collections_;
   }
 
   /**
-   * @return {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
+   * @return {?Array<!WallpaperImage>}
    */
   get images() {
     return this.images_;
+  }
+
+  /** @override */
+  makeTransparent() {
+    this.methodCalled('makeTransparent');
   }
 
   /** @override */
@@ -135,33 +163,35 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /** @override */
-  getLocalImageThumbnail(id) {
-    this.methodCalled('getLocalImageThumbnail', id);
-    return Promise.resolve(
-        {data: this.localImageData[unguessableTokenToString(id)]});
+  getLocalImageThumbnail(filePath) {
+    this.methodCalled('getLocalImageThumbnail', filePath);
+    return Promise.resolve({data: this.localImageData[filePath.path]});
   }
 
   /** @override */
-  getCurrentWallpaper() {
-    this.methodCalled('getCurrentWallpaper');
-    return Promise.resolve({image: this.currentWallpaper});
+  setWallpaperObserver(remote) {
+    this.methodCalled('setWallpaperObserver');
+    this.wallpaperObserverRemote = remote;
+    window.setTimeout(() => {
+      this.wallpaperObserverRemote.onWallpaperChanged(this.currentWallpaper);
+    }, this.wallpaperObserverUpdateTimeout);
   }
 
   /** @override */
-  selectWallpaper(assetId) {
-    this.methodCalled('selectWallpaper', assetId);
+  selectWallpaper(assetId, previewMode) {
+    this.methodCalled('selectWallpaper', assetId, previewMode);
     return Promise.resolve({success: this.selectWallpaperResponse});
   }
 
   /** @override */
-  selectLocalImage(id) {
-    this.methodCalled('selectLocalImage', id);
+  selectLocalImage(id, layout, previewMode) {
+    this.methodCalled('selectLocalImage', id, layout, previewMode);
     return Promise.resolve({success: this.selectLocalImageResponse});
   }
 
   /** @override */
   setCustomWallpaperLayout(layout) {
-    this.methodCalled('selectCustomWallpaperLayout', layout);
+    this.methodCalled('setCustomWallpaperLayout', layout);
   }
 
   /** @override */
@@ -181,8 +211,23 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     return Promise.resolve({success: this.updateDailyRefreshWallpaperResponse});
   }
 
+  isInTabletMode() {
+    this.methodCalled('isInTabletMode');
+    return Promise.resolve({tabletMode: this.isInTabletModeResponse});
+  }
+
+  /** @override */
+  confirmPreviewWallpaper() {
+    this.methodCalled('confirmPreviewWallpaper');
+  }
+
+  /** @override */
+  cancelPreviewWallpaper() {
+    this.methodCalled('cancelPreviewWallpaper');
+  }
+
   /**
-   * @param {!Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
+   * @param {!Array<!WallpaperCollection>}
    *     collections
    */
   setCollections(collections) {
@@ -194,7 +239,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /**
-   * @param {Array<!chromeos.personalizationApp.mojom.WallpaperImage>} images
+   * @param {Array<!WallpaperImage>} images
    */
   setImages(images) {
     this.images_ = images;

@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
+#include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -283,54 +284,15 @@ void StreamReleaserCallback::OnComplete(
   SetResult(result);
 }
 
-MockECSignatureCreator::MockECSignatureCreator(crypto::ECPrivateKey* key)
-    : key_(key) {
-}
-
-bool MockECSignatureCreator::Sign(base::span<const uint8_t> data,
-                                  std::vector<uint8_t>* signature) {
-  std::vector<uint8_t> private_key;
-  if (!key_->ExportPrivateKey(&private_key))
-    return false;
-  std::string head = "fakesignature";
-  std::string tail = "/fakesignature";
-
-  signature->clear();
-  signature->insert(signature->end(), head.begin(), head.end());
-  signature->insert(signature->end(), private_key.begin(), private_key.end());
-  signature->insert(signature->end(), '-');
-  signature->insert(signature->end(), data.begin(), data.end());
-  signature->insert(signature->end(), tail.begin(), tail.end());
-  return true;
-}
-
-bool MockECSignatureCreator::DecodeSignature(
-    const std::vector<uint8_t>& signature,
-    std::vector<uint8_t>* out_raw_sig) {
-  *out_raw_sig = signature;
-  return true;
-}
-
-MockECSignatureCreatorFactory::MockECSignatureCreatorFactory() {
-  crypto::ECSignatureCreator::SetFactoryForTesting(this);
-}
-
-MockECSignatureCreatorFactory::~MockECSignatureCreatorFactory() {
-  crypto::ECSignatureCreator::SetFactoryForTesting(nullptr);
-}
-
-std::unique_ptr<crypto::ECSignatureCreator>
-MockECSignatureCreatorFactory::Create(crypto::ECPrivateKey* key) {
-  return std::make_unique<MockECSignatureCreator>(key);
-}
-
 SpdySessionDependencies::SpdySessionDependencies()
     : SpdySessionDependencies(
           ConfiguredProxyResolutionService::CreateDirect()) {}
 
 SpdySessionDependencies::SpdySessionDependencies(
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service)
-    : host_resolver(std::make_unique<MockCachingHostResolver>()),
+    : host_resolver(std::make_unique<MockCachingHostResolver>(
+          /*cache_invalidation_num=*/0,
+          MockHostResolverBase::RuleResolver::GetLocalhostResult())),
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
       ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>()),
@@ -350,12 +312,18 @@ SpdySessionDependencies::SpdySessionDependencies(
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
       enable_websocket_over_http2(false),
+      enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       net_log(nullptr),
       disable_idle_sockets_close_on_memory_pressure(false),
       enable_early_data(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
-      enable_priority_update(false) {
+      enable_priority_update(false),
+#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+      go_away_on_ip_change(true) {
+#else
+      go_away_on_ip_change(false) {
+#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }
@@ -405,6 +373,8 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
       session_deps->enable_http2_alternative_service;
   params.enable_websocket_over_http2 =
       session_deps->enable_websocket_over_http2;
+  params.enable_http2_settings_grease =
+      session_deps->enable_http2_settings_grease;
   params.greased_http2_frame = session_deps->greased_http2_frame;
   params.http2_end_stream_with_data_frame =
       session_deps->http2_end_stream_with_data_frame;
@@ -414,6 +384,7 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
   params.key_auth_cache_server_entries_by_network_isolation_key =
       session_deps->key_auth_cache_server_entries_by_network_isolation_key;
   params.enable_priority_update = session_deps->enable_priority_update;
+  params.spdy_go_away_on_ip_change = session_deps->go_away_on_ip_change;
   return params;
 }
 
@@ -445,7 +416,9 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
 }
 
 SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
-  storage_.set_host_resolver(std::make_unique<MockHostResolver>());
+  storage_.set_host_resolver(std::make_unique<MockHostResolver>(
+      /*default_result=*/MockHostResolverBase::RuleResolver::
+          GetLocalhostResult()));
   storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
   storage_.set_transport_security_state(
       std::make_unique<TransportSecurityState>());

@@ -17,7 +17,7 @@ import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
-
+import org.chromium.url.GURL;
 /**
  * JNI call glue for AutofillExternalDelagate C++ and Java objects.
  * This provides an alternative UI for Autofill suggestions, and replaces AutofillPopupBridge when
@@ -153,15 +153,27 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param isDeletable Whether the item can be deleted by the user.
      * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
      *         suggestion.
+     * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
+     *         suggestion chip.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
             String label, String sublabel, String itemTag, int iconId, int suggestionId,
-            boolean isDeletable, String featureForIPH) {
+            boolean isDeletable, String featureForIPH, GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
-                false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
-                false /* isBoldLabel */, featureForIPH);
+        array[index] = new AutofillSuggestion.Builder()
+                               .setLabel(label)
+                               .setSubLabel(sublabel)
+                               .setItemTag(itemTag)
+                               .setIconId(drawableId)
+                               .setIsIconAtStart(false)
+                               .setSuggestionId(suggestionId)
+                               .setIsDeletable(isDeletable)
+                               .setIsMultiLineLabel(false)
+                               .setIsBoldLabel(false)
+                               .setFeatureForIPH(featureForIPH)
+                               .setCustomIconUrl(customIconUrl)
+                               .build();
     }
 
     /**

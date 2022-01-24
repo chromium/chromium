@@ -154,6 +154,16 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
     exception_state.ClearException();
     return nullptr;
   }
+  // Edge case: The template element treatment also applies to the newly created
+  // element in .sanitizeFor.
+  if (IsA<HTMLTemplateElement>(element)) {
+    DoSanitizing(To<HTMLTemplateElement>(element)->content(), window,
+                 exception_state);
+    if (exception_state.HadException()) {
+      exception_state.ClearException();
+      return nullptr;
+    }
+  }
   return element;
 }
 
@@ -320,6 +330,16 @@ Node* Sanitizer::BlockElement(Node* node,
   return node;
 }
 
+// Helper to check whether a given attribute match list matches an attribute /
+// element name pair. This observes wildcard ("*") as element name.
+bool Sanitizer::AttrListMatches(const HashMap<String, Vector<String>>& map,
+                                const String& attr,
+                                const String& element) {
+  const auto node_iter = map.find(attr);
+  return (node_iter != map.end()) && (node_iter->value == kVectorStar ||
+                                      node_iter->value.Contains(element));
+}
+
 // Remove any attributes to be dropped from the current element, and proceed to
 // the next node (preorder, depth-first traversal).
 Node* Sanitizer::KeepElement(Node* node,
@@ -327,8 +347,8 @@ Node* Sanitizer::KeepElement(Node* node,
                              String& node_name,
                              LocalDOMWindow* window) {
   Element* element = To<Element>(node);
-  if (config_.allow_attributes_.at("*").Contains(node_name)) {
-  } else if (config_.drop_attributes_.at("*").Contains(node_name)) {
+  if (AttrListMatches(config_.allow_attributes_, "*", node_name)) {
+  } else if (AttrListMatches(config_.drop_attributes_, "*", node_name)) {
     for (const auto& name : element->getAttributeNames()) {
       element->removeAttribute(name);
       UseCounter::Count(window->GetExecutionContext(),
@@ -338,15 +358,9 @@ Node* Sanitizer::KeepElement(Node* node,
     for (const auto& name : element->getAttributeNames()) {
       // Attributes in drop list or not in allow list while allow list
       // exists will be dropped.
-      bool drop = (baseline_drop_attributes_.Contains(name) &&
-                   (baseline_drop_attributes_.at(name) == kVectorStar ||
-                    baseline_drop_attributes_.at(name).Contains(node_name))) ||
-                  (config_.drop_attributes_.Contains(name) &&
-                   (config_.drop_attributes_.at(name) == kVectorStar ||
-                    config_.drop_attributes_.at(name).Contains(node_name))) ||
-                  !(config_.allow_attributes_.Contains(name) &&
-                    (config_.allow_attributes_.at(name) == kVectorStar ||
-                     config_.allow_attributes_.at(name).Contains(node_name)));
+      bool drop = AttrListMatches(baseline_drop_attributes_, name, node_name) ||
+                  AttrListMatches(config_.drop_attributes_, name, node_name) ||
+                  !AttrListMatches(config_.allow_attributes_, name, node_name);
       // 9. If |element|'s [=element interface=] is {{HTMLAnchorElement}} or
       // {{HTMLAreaElement}} and |element|'s `protocol` property is
       // "javascript:", then remove the `href` attribute from |element|.
@@ -392,6 +406,13 @@ SanitizerConfig* Sanitizer::getConfiguration() const {
 
 SanitizerConfig* Sanitizer::getDefaultConfiguration() {
   return SanitizerConfigCopy(SanitizerConfigImpl::DefaultConfig());
+}
+
+Sanitizer* Sanitizer::getDefaultInstance() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<Sanitizer>, default_sanitizer_,
+      (Sanitizer::Create(nullptr, nullptr, ASSERT_NO_EXCEPTION)));
+  return default_sanitizer_;
 }
 
 void Sanitizer::Trace(Visitor* visitor) const {

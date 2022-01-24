@@ -11,6 +11,7 @@
 #include "components/permissions/features.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/gurl.h"
 
 using content::PermissionType;
@@ -117,7 +118,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::BACKGROUND_SYNC:
       *out = PermissionType::BACKGROUND_SYNC;
       break;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OW_WIN)
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
       break;
@@ -192,7 +193,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::MEDIASTREAM_MIC:
     case ContentSettingsType::BACKGROUND_SYNC:
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OW_WIN)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
     case ContentSettingsType::SENSORS:
@@ -246,7 +247,6 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
 // Returns the last committed URL for `web_contents`. If the frame's URL is
 // about:blank, returns GetLastCommittedOrigin.
 // Due to dependency issues, this method is duplicated in
-// content/shell/browser/shell_permission_manager.cc and
 // content/browser/permissions/permission_util.cc.
 // TODO(crbug.com/698985): Resolve GetLastCommitted[URL|Origin]() usage.
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
@@ -258,13 +258,28 @@ GURL PermissionUtil::GetLastCommittedOriginAsURL(
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(render_frame_host);
+
   if (base::FeatureList::IsEnabled(features::kRevisedOriginHandling)) {
-    if (render_frame_host->GetLastCommittedURL().IsAboutBlank()) {
-      return render_frame_host->GetLastCommittedOrigin().GetURL();
+    content::WebContents* web_contents =
+        content::WebContents::FromRenderFrameHost(render_frame_host);
+    // If `allow_universal_access_from_file_urls` flag is enabled, a file can
+    // introduce discrepancy between GetLastCommittedURL and
+    // GetLastCommittedOrigin. In that case GetLastCommittedURL should be used
+    // for requesting and verifying permissions.
+    // Disabling `kRevisedOriginHandling` feature introduces no side effects,
+    // because in both cases we rely on
+    // GetLastCommittedURL().DeprecatedGetOriginAsURL().
+    if (web_contents->GetOrCreateWebPreferences()
+            .allow_universal_access_from_file_urls &&
+        render_frame_host->GetLastCommittedOrigin().GetURL().SchemeIsFile()) {
+      return render_frame_host->GetLastCommittedURL()
+          .DeprecatedGetOriginAsURL();
     }
+
+    return render_frame_host->GetLastCommittedOrigin().GetURL();
   }
 
-  return render_frame_host->GetLastCommittedURL().GetOrigin();
+  return render_frame_host->GetLastCommittedURL().DeprecatedGetOriginAsURL();
 }
 
 }  // namespace permissions

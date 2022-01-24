@@ -3,10 +3,16 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # Native Client supports both Newlib and Glibc C libraries where Newlib
-  # is assumed to be the default one; use this to determine whether Glibc
-  # is being used instead.
+  # Native Client supports multiple toolchains:
+  #   - nacl_glibc, based on gcc and glibc.
+  #   - pnacl_newlib, based on llvm 3.7 and newlib (default).
+  #   - saigo_newlib, based on llvm 12+ and newlib.
+
+  # True if nacl_glibc is used.
   is_nacl_glibc = false
+
+  # True if saigo_newlib is used.
+  is_nacl_saigo = false
 }
 
 is_nacl_irt = false

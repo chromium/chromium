@@ -44,6 +44,10 @@ struct TestData : public base::SupportsUserData::Data {
 class TestExtendedInfoHandler : public ExtendedInfoHandler {
  public:
   explicit TestExtendedInfoHandler(const char* key) : key_(key) {}
+
+  TestExtendedInfoHandler(const TestExtendedInfoHandler&) = delete;
+  TestExtendedInfoHandler& operator=(const TestExtendedInfoHandler&) = delete;
+
   ~TestExtendedInfoHandler() override {}
 
   // ExtendedInfoHandler:
@@ -59,8 +63,6 @@ class TestExtendedInfoHandler : public ExtendedInfoHandler {
 
  private:
   const char* key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtendedInfoHandler);
 };
 
 std::unique_ptr<content::NavigationEntry> MakeNavigationEntryForTest() {
@@ -110,6 +112,12 @@ void SetExtendedInfoForTest(content::NavigationEntry* entry) {
 class ContentSerializedNavigationBuilderTest : public testing::Test {
  public:
   ContentSerializedNavigationBuilderTest() {}
+
+  ContentSerializedNavigationBuilderTest(
+      const ContentSerializedNavigationBuilderTest&) = delete;
+  ContentSerializedNavigationBuilderTest& operator=(
+      const ContentSerializedNavigationBuilderTest&) = delete;
+
   ~ContentSerializedNavigationBuilderTest() override {}
 
   void SetUp() override {
@@ -128,9 +136,6 @@ class ContentSerializedNavigationBuilderTest : public testing::Test {
         ContentSerializedNavigationDriver::GetInstance();
     driver->extended_info_handler_map_.clear();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentSerializedNavigationBuilderTest);
 };
 
 // Create a SerializedNavigationEntry from a NavigationEntry.  All its fields

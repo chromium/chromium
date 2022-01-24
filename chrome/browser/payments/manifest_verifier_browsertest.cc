@@ -32,6 +32,11 @@ namespace {
 class ManifestVerifierBrowserTest : public InProcessBrowserTest {
  public:
   ManifestVerifierBrowserTest() {}
+
+  ManifestVerifierBrowserTest(const ManifestVerifierBrowserTest&) = delete;
+  ManifestVerifierBrowserTest& operator=(const ManifestVerifierBrowserTest&) =
+      delete;
+
   ~ManifestVerifierBrowserTest() override {}
 
   // Starts the HTTPS test server on localhost.
@@ -116,8 +121,6 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
   content::InstalledPaymentAppsFinder::PaymentApps verified_apps_;
 
   std::string error_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestVerifierBrowserTest);
 };
 
 // Absence of payment handlers should result in absence of verified payment

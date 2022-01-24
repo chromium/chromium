@@ -42,7 +42,7 @@ CanonicalizeTrustTokenClientDataForRedemption(
   base::TimeDelta redemption_timestamp_minus_unix_epoch =
       redemption_timestamp - base::Time::UnixEpoch();
 
-  if (redemption_timestamp_minus_unix_epoch < base::TimeDelta())
+  if (redemption_timestamp_minus_unix_epoch.is_negative())
     return absl::nullopt;
 
   map[cbor::Value(kRedemptionTimestampKey, cbor::Value::Type::STRING)] =

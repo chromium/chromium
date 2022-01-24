@@ -1,191 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="5" by="lint 4.1.0" client="cli" variant="all" version="4.1.0">
+<issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.1.0">
 
     <issue
         id="WrongConstant"
-        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
-        errorLine1="        if (mDrawerLayout.isDrawerOpen(Gravity.START)) {"
-        errorLine2="                                       ~~~~~~~~~~~~~">
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="204"
-            column="40"/>
+            line="204"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
-        errorLine1="            mDrawerLayout.closeDrawer(Gravity.START);"
-        errorLine2="                                      ~~~~~~~~~~~~~">
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="205"
-            column="39"/>
+            line="205"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
-        errorLine1="                        if (mDrawerLayout.isDrawerOpen(Gravity.START)) {"
-        errorLine2="                                                       ~~~~~~~~~~~~~">
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="292"
-            column="56"/>
+            line="292"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
-        errorLine1="                            mDrawerLayout.closeDrawer(Gravity.START);"
-        errorLine2="                                                      ~~~~~~~~~~~~~">
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="293"
-            column="55"/>
+            line="293"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
-        errorLine1="                            mDrawerLayout.openDrawer(Gravity.START);"
-        errorLine2="                                                     ~~~~~~~~~~~~~">
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END, Gravity.NO_GRAVITY">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="295"
-            column="54"/>
+            line="295"/>
     </issue>
 
     <issue
         id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
-        errorLine1="        android:drawableStart=&quot;@drawable/ic_host_online&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
         <location
             file="../../remoting/android/java/res/layout/host_online.xml"
-            line="28"
-            column="9"/>
+            line="28"/>
     </issue>
 
     <issue
         id="SetJavaScriptEnabled"
-        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
-        errorLine1="        mWebView.getSettings().setJavaScriptEnabled(true);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/help/HelpActivity.java"
-            line="91"
-            column="9"/>
+            line="91"/>
     </issue>
 
     <issue
         id="SetJavaScriptEnabled"
-        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
-        errorLine1="        webView.getSettings().setJavaScriptEnabled(true);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/WebViewActivity.java"
-            line="46"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="Recycle"
-        message="This `MotionEvent` should be recycled after use with `#recycle()`"
-        errorLine1="        event = MotionEvent.obtain(event);"
-        errorLine2="                            ~~~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/TouchInputStrategy.java"
-            line="207"
-            column="29"/>
+            line="46"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/accountswitcher/AccountManagerCompat.java"
+            line="25"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
-            line="628"
-            column="13"/>
+            line="628"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="183"
-            column="13"/>
+            line="183"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="221"
-            column="20"/>
+            line="221"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="280"
-            column="13"/>
+            line="280"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="512"
-            column="13"/>
+            line="512"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="521"
-            column="13"/>
+            line="521"/>
     </issue>
 
     <issue
         id="ObsoleteSdkInt"
-        message="Unnecessary; SDK_INT is always >= 21"
-        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="Unnecessary; SDK_INT is always >= 23">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/Desktop.java"
-            line="605"
-            column="13"/>
+            line="605"/>
     </issue>
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view `DesktopView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public final boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                         ~~~~~~~~~~~~">
+        message="Custom view `DesktopView` overrides `onTouchEvent` but not `performClick`">
         <location
             file="../../remoting/android/java/src/org/chromium/chromoting/DesktopView.java"
-            line="85"
-            column="26"/>
+            line="85"/>
     </issue>
 
     <issue

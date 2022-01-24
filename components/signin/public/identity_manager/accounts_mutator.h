@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
@@ -26,6 +25,10 @@ enum class Tribool;
 class AccountsMutator {
  public:
   AccountsMutator() = default;
+
+  AccountsMutator(const AccountsMutator&) = delete;
+  AccountsMutator& operator=(const AccountsMutator&) = delete;
+
   virtual ~AccountsMutator() = default;
 
   // Updates the information of the account associated with |gaia_id|, first
@@ -78,9 +81,6 @@ class AccountsMutator {
   virtual CoreAccountId SeedAccountInfo(const std::string& gaia,
                                         const std::string& email) = 0;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AccountsMutator);
 };
 
 }  // namespace signin

@@ -11,7 +11,7 @@
 
 namespace media {
 
-constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kSecond = base::Seconds(1);
 
 class PlaybackEventsRecorderTest : public testing::Test {
  public:

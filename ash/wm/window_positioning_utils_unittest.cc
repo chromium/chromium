@@ -16,10 +16,10 @@ TEST_F(WindowPositioningUtilsTest, SnapBoundsWithOddNumberedScreenWidth) {
   UpdateDisplay("999x700");
 
   auto window = CreateToplevelTestWindow();
-  gfx::Rect left_bounds =
-      GetDefaultLeftSnappedWindowBoundsInParent(window.get());
-  gfx::Rect right_bounds =
-      GetDefaultRightSnappedWindowBoundsInParent(window.get());
+  gfx::Rect left_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kPrimary);
+  gfx::Rect right_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kSecondary);
   EXPECT_EQ(left_bounds.x(), 0);
   EXPECT_EQ(left_bounds.y(), 0);
   EXPECT_EQ(right_bounds.right(), 999);
@@ -36,25 +36,29 @@ TEST_F(WindowPositioningUtilsTest, SnapBoundsWithMinimumSize) {
   auto* test_delegate =
       static_cast<aura::test::TestWindowDelegate*>(window->delegate());
   test_delegate->set_minimum_size(gfx::Size(300, 200));
-  gfx::Rect left_bounds =
-      GetDefaultLeftSnappedWindowBoundsInParent(window.get());
+  gfx::Rect left_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kPrimary);
   EXPECT_EQ(left_bounds.width(), 400);
-  gfx::Rect right_bounds =
-      GetDefaultRightSnappedWindowBoundsInParent(window.get());
+  gfx::Rect right_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kSecondary);
   EXPECT_EQ(right_bounds.width(), 400);
   EXPECT_EQ(right_bounds.right(), 800);
 
   test_delegate->set_minimum_size(gfx::Size(600, 200));
-  left_bounds = GetDefaultLeftSnappedWindowBoundsInParent(window.get());
+  left_bounds = GetDefaultSnappedWindowBoundsInParent(window.get(),
+                                                      SnapViewType::kPrimary);
   EXPECT_EQ(left_bounds.width(), 600);
-  right_bounds = GetDefaultRightSnappedWindowBoundsInParent(window.get());
+  right_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kSecondary);
   EXPECT_EQ(right_bounds.width(), 600);
   EXPECT_EQ(right_bounds.right(), 800);
 
   test_delegate->set_minimum_size(gfx::Size(1200, 200));
-  left_bounds = GetDefaultLeftSnappedWindowBoundsInParent(window.get());
+  left_bounds = GetDefaultSnappedWindowBoundsInParent(window.get(),
+                                                      SnapViewType::kPrimary);
   EXPECT_EQ(left_bounds.width(), 800);
-  right_bounds = GetDefaultRightSnappedWindowBoundsInParent(window.get());
+  right_bounds = GetDefaultSnappedWindowBoundsInParent(
+      window.get(), SnapViewType::kSecondary);
   EXPECT_EQ(right_bounds.width(), 800);
   EXPECT_EQ(right_bounds.right(), 800);
 }

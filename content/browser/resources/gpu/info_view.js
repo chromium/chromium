@@ -277,6 +277,9 @@ export function makeInfoView(browserBridge) {
         'vpx_decode': 'VPx Video Decode',
         'webgl2': 'WebGL2',
         'skia_renderer': 'Skia Renderer',
+        'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
+        'raw_draw': 'Raw Draw',
+        'video_encode': 'Video Encode',
       };
 
       const statusMap = {
@@ -578,7 +581,7 @@ export function makeInfoView(browserBridge) {
           infoEl.classList.add('feature-green');
           infoEl.textContent = infoString;
 
-          if (infoString == '[Supported Extensions]') {
+          if (infoString == '[Supported Features]') {
             inProcessingToggles = false;
           } else {
             inProcessingToggles = true;

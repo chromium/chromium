@@ -199,6 +199,9 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   absl::optional<ScopedAppGLStateRestore> state_restore;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
+    if (state_restore->skip_draw()) {
+      return;
+    }
   }
 
   if (!hardware_renderer_ && !IsInsideHardwareRelease() &&

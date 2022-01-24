@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 
@@ -82,7 +82,25 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   ret = CVDisplayLinkCreateWithCGDisplay(display_id,
                                          display_link.InitializeInto());
   if (ret != kCVReturnSuccess) {
-    LOG(ERROR) << "CVDisplayLinkCreateWithActiveCGDisplays failed: " << ret;
+    LOG(ERROR) << "CVDisplayLinkCreateWithCGDisplay failed: " << ret;
+    return nullptr;
+  }
+
+  // Workaround for bug https://crbug.com/1218720. According to
+  // https://hg.mozilla.org/releases/mozilla-esr68/rev/db0628eadb86,
+  // CVDisplayLinkCreateWithCGDisplays()
+  // (called by CVDisplayLinkCreateWithCGDisplay()) sometimes
+  // creates a CVDisplayLinkRef with an uninitialized (nulled) internal
+  // pointer. If we continue to use this CVDisplayLinkRef, we will
+  // eventually crash in CVCGDisplayLink::getDisplayTimes(), where the
+  // internal pointer is dereferenced. Fortunately, when this happens
+  // another internal variable is also left uninitialized (zeroed),
+  // which is accessible via CVDisplayLinkGetCurrentCGDisplay(). In
+  // normal conditions the current display is never zero.
+  if ((ret == kCVReturnSuccess) &&
+      (CVDisplayLinkGetCurrentCGDisplay(display_link) == 0)) {
+    LOG(ERROR)
+        << "CVDisplayLinkCreateWithCGDisplay failed (no current display)";
     return nullptr;
   }
 
@@ -203,11 +221,11 @@ void DisplayLinkMac::UpdateVSyncParameters(const CVTimeStamp& cv_time) {
   }
 
   timebase_ = base::TimeTicks::FromMachAbsoluteTime(cv_time.hostTime);
-  interval_ = base::TimeDelta::FromMicroseconds(interval_us.ValueOrDie());
+  interval_ = base::Microseconds(int64_t{interval_us.ValueOrDie()});
   timebase_and_interval_valid_ = true;
 
   // Don't restart the display link for 10 seconds.
-  recalculate_time_ = base::TimeTicks::Now() + base::TimeDelta::FromSeconds(10);
+  recalculate_time_ = base::TimeTicks::Now() + base::Seconds(10);
   StopDisplayLink();
 }
 

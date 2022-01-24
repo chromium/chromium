@@ -25,10 +25,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -60,6 +57,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
+
 namespace {
 
 enum class BrowserType { Default, Incognito };
@@ -78,22 +80,20 @@ class ChromeBrowsingDataLifetimeManagerTest
 
   void SetUpOnMainThread() override {
     BrowsingDataRemoverBrowserTestBase::SetUpOnMainThread();
-    GetBrowser()->profile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
-                                             base::Value(true));
+    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+                                  base::Value(true));
   }
   void ApplyBrowsingDataLifetimeDeletion(base::StringPiece pref) {
     auto* browsing_data_lifetime_manager =
-        ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(
-            GetBrowser()->profile());
+        ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(GetProfile());
     browsing_data_lifetime_manager->SetEndTimeForTesting(base::Time::Max());
     content::BrowsingDataRemover* remover =
-        GetBrowser()->profile()->GetBrowsingDataRemover();
+        GetProfile()->GetBrowsingDataRemover();
     content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
     browsing_data_lifetime_manager->SetBrowsingDataRemoverObserverForTesting(
         &completion_observer);
-    GetBrowser()->profile()->GetPrefs()->Set(
-        browsing_data::prefs::kBrowsingDataLifetime,
-        *base::JSONReader::Read(pref));
+    GetProfile()->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
+                                  *base::JSONReader::Read(pref));
 
     completion_observer.BlockUntilCompletion();
   }
@@ -108,10 +108,12 @@ class ChromeBrowsingDataLifetimeManagerScheduledRemovalTest
 
   void SetUpOnMainThread() override {
     ChromeBrowsingDataLifetimeManagerTest::SetUpOnMainThread();
+#if !defined(OS_ANDROID)
     if (GetParam() == BrowserType::Incognito)
       UseIncognitoBrowser();
-    GetBrowser()->profile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
-                                             base::Value(true));
+#endif
+    GetProfile()->GetPrefs()->Set(syncer::prefs::kSyncManaged,
+                                  base::Value(true));
   }
 };
 
@@ -120,11 +122,12 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   static constexpr char kCookiesPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":
       ["cookies_and_other_site_data"]}])";
-  static constexpr char kDownloadHistoryPref[] =
-      R"([{"time_to_live_in_hours": 1, "data_types":["download_history"]}])";
+  static constexpr char kCachePref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":
+      ["cached_images_and_files"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   // Add cookie.
   SetDataForType("Cookie");
@@ -134,15 +137,23 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   ApplyBrowsingDataLifetimeDeletion(kCookiesPref);
   EXPECT_FALSE(HasDataForType("Cookie"));
 
-  // Download an item.
-  DownloadAnItem();
-  VerifyDownloadCount(1u);
+  url = embedded_test_server()->GetURL("/cachetime");
 
-  // Change the pref and verify that download history is deleted.
-  ApplyBrowsingDataLifetimeDeletion(kDownloadHistoryPref);
-  VerifyDownloadCount(0u);
+  EXPECT_EQ(net::OK, content::LoadBasicRequest(network_context(), url));
+
+  // Check that the cache has been populated by revisiting these pages with the
+  // server stopped.
+  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  EXPECT_EQ(net::OK, content::LoadBasicRequest(network_context(), url));
+
+  ApplyBrowsingDataLifetimeDeletion(kCachePref);
+  EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
+#if !defined(OS_ANDROID)
+// TODO(crbug/1179729): Enable this test for android once we figure out if it
+// is possible to delete download history on Android while the browser is
+// running.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        Download) {
   static constexpr char kPref[] =
@@ -152,6 +163,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   ApplyBrowsingDataLifetimeDeletion(kPref);
   VerifyDownloadCount(0u);
 }
+#endif
 
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        History) {
@@ -162,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       R"([{"time_to_live_in_hours": 1, "data_types":["browsing_history"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   SetDataForType("History");
   EXPECT_TRUE(HasDataForType("History"));
@@ -176,8 +188,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":["site_settings"]}])";
 
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile());
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(GURL("http://host1.com:1"), GURL(),
                                      ContentSettingsType::COOKIES,
                                      CONTENT_SETTING_BLOCK);
@@ -201,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
       ["cookies_and_other_site_data"]}])";
 
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
-  ui_test_utils::NavigateToURL(GetBrowser(), url);
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
 
   const std::vector<std::string> kTypes{
       "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
@@ -238,6 +249,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
+#if !defined(OS_ANDROID)
 // Disabled because "autofill::AddTestProfile" times out when sync is disabled.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
                        DISABLED_Autofill) {
@@ -252,10 +264,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   autofill::test::SetProfileInfo(
       &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");
-  autofill::AddTestProfile(GetBrowser()->profile(), profile);
+  autofill::AddTestProfile(GetProfile(), profile);
   auto* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          GetBrowser()->profile());
+      autofill::PersonalDataManagerFactory::GetForProfile(GetProfile());
   EXPECT_EQ(
       profile.Compare(*personal_data_manager->GetProfileByGUID(profile.guid())),
       0);
@@ -264,6 +275,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 
   EXPECT_EQ(nullptr, personal_data_manager->GetProfileByGUID(profile.guid()));
 }
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
@@ -278,7 +290,7 @@ class ChromeBrowsingDataLifetimeManagerShutdownTest
 
   history::HistoryService* history_service() {
     return HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
+        GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
   }
 
   void VerifyHistorySize(size_t expected_size) {
@@ -310,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowsingDataLifetimeManagerShutdownTest,
   VerifyDownloadCount(1u);
 
   // site_settings
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile());
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(GURL("http://host1.com:1"), GURL(),
                                      ContentSettingsType::COOKIES,
                                      CONTENT_SETTING_BLOCK);
@@ -333,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowsingDataLifetimeManagerShutdownTest,
 
   // Ensure nothing gets deleted when the browser closes.
   static constexpr char kPref[] = R"([])";
-  GetBrowser()->profile()->GetPrefs()->Set(
+  GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
       *base::JSONReader::Read(kPref));
   base::RunLoop().RunUntilIdle();
@@ -348,8 +359,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowsingDataLifetimeManagerShutdownTest,
   VerifyDownloadCount(1u);
 
   // site_settings
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile());
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   ContentSettingsForOneType host_settings;
   bool has_pref_setting = false;
   map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
@@ -370,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowsingDataLifetimeManagerShutdownTest,
       R"(["browsing_history", "download_history", "cookies_and_other_site_data",
       "cached_images_and_files", "password_signin", "autofill", "site_settings",
       "hosted_app_data"])";
-  GetBrowser()->profile()->GetPrefs()->Set(
+  GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
       *base::JSONReader::Read(kPref));
   base::RunLoop().RunUntilIdle();
@@ -385,8 +395,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBrowsingDataLifetimeManagerShutdownTest,
   VerifyDownloadCount(0u);
 
   // site_settings
-  auto* map =
-      HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile());
+  auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
   ContentSettingsForOneType host_settings;
   map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);

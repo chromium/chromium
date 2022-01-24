@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 #define COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/arc/session/connection_holder.h"
 
@@ -59,6 +58,8 @@ class InputMethodManagerHost;
 class InputMethodManagerInstance;
 class IntentHelperHost;
 class IntentHelperInstance;
+class KeyboardShortcutHost;
+class KeyboardShortcutInstance;
 class KeymasterHost;
 class KeymasterInstance;
 class KioskHost;
@@ -135,6 +136,10 @@ class ArcBridgeService {
   };
 
   ArcBridgeService();
+
+  ArcBridgeService(const ArcBridgeService&) = delete;
+  ArcBridgeService& operator=(const ArcBridgeService&) = delete;
+
   ~ArcBridgeService();
 
   // Adds or removes observers.
@@ -232,6 +237,11 @@ class ArcBridgeService {
   ConnectionHolder<mojom::IntentHelperInstance, mojom::IntentHelperHost>*
   intent_helper() {
     return &intent_helper_;
+  }
+  ConnectionHolder<mojom::KeyboardShortcutInstance,
+                   mojom::KeyboardShortcutHost>*
+  keyboard_shortcut() {
+    return &keyboard_shortcut_;
   }
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost>*
   keymaster() {
@@ -368,6 +378,8 @@ class ArcBridgeService {
       input_method_manager_;
   ConnectionHolder<mojom::IntentHelperInstance, mojom::IntentHelperHost>
       intent_helper_;
+  ConnectionHolder<mojom::KeyboardShortcutInstance, mojom::KeyboardShortcutHost>
+      keyboard_shortcut_;
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost> keymaster_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
   ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
@@ -408,7 +420,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::WakeLockInstance, mojom::WakeLockHost> wake_lock_;
   ConnectionHolder<mojom::WallpaperInstance, mojom::WallpaperHost> wallpaper_;
   ConnectionHolder<mojom::WebApkInstance> webapk_;
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeService);
 };
 
 }  // namespace arc

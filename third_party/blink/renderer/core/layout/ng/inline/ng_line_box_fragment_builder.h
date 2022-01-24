@@ -59,6 +59,18 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   // Mark this line box is an "empty" line box. See NGLineBoxType.
   void SetIsEmptyLineBox();
 
+  absl::optional<LayoutUnit> LineBoxBfcBlockOffset() const {
+    return line_box_bfc_block_offset_;
+  }
+  void SetLineBoxBfcBlockOffset(LayoutUnit offset) {
+    DCHECK(bfc_block_offset_);
+    line_box_bfc_block_offset_ = offset;
+  }
+
+  void SetAnnotationBlockOffsetAdjustment(LayoutUnit adjustment) {
+    annotation_block_offset_adjustment_ = adjustment;
+  }
+
   const FontHeight& Metrics() const { return metrics_; }
   void SetMetrics(const FontHeight& metrics) { metrics_ = metrics; }
 
@@ -68,8 +80,8 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
 
   // Set the break token for the fragment to build.
   // Is nullptr if we didn't break.
-  void SetBreakToken(scoped_refptr<NGInlineBreakToken> break_token) {
-    break_token_ = std::move(break_token);
+  void SetBreakToken(const NGInlineBreakToken* break_token) {
+    break_token_ = break_token;
   }
 
   // Propagate data in |ChildList| without adding them to this builder. When
@@ -77,12 +89,19 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   // are some data that should be propagated through line box fragments.
   void PropagateChildrenData(NGLogicalLineItems&);
 
+  void SetClearanceAfterLine(LayoutUnit clearance) {
+    clearance_after_line_ = clearance;
+  }
+
   // Creates the fragment. Can only be called once.
   scoped_refptr<const NGLayoutResult> ToLineBoxFragment();
 
  private:
+  absl::optional<LayoutUnit> line_box_bfc_block_offset_;
+  LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
+  LayoutUnit clearance_after_line_;
   NGPhysicalLineBoxFragment::NGLineBoxType line_box_type_;
   TextDirection base_direction_;
 

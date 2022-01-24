@@ -173,20 +173,30 @@ void NetworkStateHandler::InitShillPropertyHandler() {
   shill_property_handler_->Init();
 }
 
+void NetworkStateHandler::UpdateBlockedCellularNetworks(bool only_managed) {
+  if (allow_only_policy_cellular_networks_to_connect_ == only_managed) {
+    return;
+  }
+  allow_only_policy_cellular_networks_to_connect_ = only_managed;
+
+  UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
+}
+
 void NetworkStateHandler::UpdateBlockedWifiNetworks(
     bool only_managed,
     bool available_only,
     const std::vector<std::string>& blocked_hex_ssids) {
-  if (allow_only_policy_networks_to_connect_ == only_managed &&
-      allow_only_policy_networks_to_connect_if_available_ == available_only &&
+  if (allow_only_policy_wifi_networks_to_connect_ == only_managed &&
+      allow_only_policy_wifi_networks_to_connect_if_available_ ==
+          available_only &&
       blocked_hex_ssids_ == blocked_hex_ssids) {
     return;
   }
-  allow_only_policy_networks_to_connect_ = only_managed;
-  allow_only_policy_networks_to_connect_if_available_ = available_only;
+  allow_only_policy_wifi_networks_to_connect_ = only_managed;
+  allow_only_policy_wifi_networks_to_connect_if_available_ = available_only;
   blocked_hex_ssids_ = blocked_hex_ssids;
 
-  UpdateBlockedWifiNetworksInternal();
+  UpdateBlockedNetworksInternal(NetworkTypePattern::WiFi());
 }
 
 const NetworkState* NetworkStateHandler::GetAvailableManagedWifiNetwork()
@@ -205,8 +215,8 @@ bool NetworkStateHandler::IsProfileNetworksLoaded() {
 }
 
 bool NetworkStateHandler::OnlyManagedWifiNetworksAllowed() const {
-  return allow_only_policy_networks_to_connect_ ||
-         (allow_only_policy_networks_to_connect_if_available_ &&
+  return allow_only_policy_wifi_networks_to_connect_ ||
+         (allow_only_policy_wifi_networks_to_connect_if_available_ &&
           GetAvailableManagedWifiNetwork());
 }
 
@@ -220,7 +230,7 @@ void NetworkStateHandler::SyncStubCellularNetworks() {
 
 void NetworkStateHandler::RequestTrafficCounters(
     const std::string& service_path,
-    ShillServiceClient::ListValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   shill_property_handler_->RequestTrafficCounters(service_path,
                                                   std::move(callback));
 }
@@ -782,6 +792,8 @@ bool NetworkStateHandler::UpdateTetherNetworkProperties(
   network_list_sorted_ = false;
 
   NotifyNetworkPropertiesUpdated(tether_network_state);
+  if (tether_network_state->IsConnectingOrConnected())
+    NotifyIfActiveNetworksChanged();
   return true;
 }
 
@@ -1019,14 +1031,22 @@ void NetworkStateHandler::EnsureTetherDeviceState() {
 }
 
 bool NetworkStateHandler::UpdateBlockedByPolicy(NetworkState* network) const {
-  if (!TypeMatches(network, NetworkTypePattern::WiFi()))
+  bool is_wifi_type = TypeMatches(network, NetworkTypePattern::WiFi());
+  bool is_cellular_type = TypeMatches(network, NetworkTypePattern::Cellular());
+  if (!is_wifi_type && !is_cellular_type)
     return false;
 
   bool prev_blocked_by_policy = network->blocked_by_policy();
-  bool blocked_by_policy =
-      !network->IsManagedByPolicy() &&
-      (OnlyManagedWifiNetworksAllowed() ||
-       base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+  bool blocked_by_policy = false;
+  if (is_wifi_type) {
+    blocked_by_policy =
+        !network->IsManagedByPolicy() &&
+        (OnlyManagedWifiNetworksAllowed() ||
+         base::Contains(blocked_hex_ssids_, network->GetHexSsid()));
+  } else {
+    blocked_by_policy = !network->IsManagedByPolicy() &&
+                        allow_only_policy_cellular_networks_to_connect_;
+  }
   network->set_blocked_by_policy(blocked_by_policy);
   return prev_blocked_by_policy != blocked_by_policy;
 }
@@ -1052,15 +1072,16 @@ void NetworkStateHandler::UpdateManagedWifiNetworkAvailable() {
 
   if (prev_available_managed_network_path != available_managed_network_path) {
     device->set_available_managed_network_path(available_managed_network_path);
-    UpdateBlockedWifiNetworksInternal();
+    UpdateBlockedNetworksInternal(NetworkTypePattern::WiFi());
     NotifyDevicePropertiesUpdated(device);
   }
 }
 
-void NetworkStateHandler::UpdateBlockedWifiNetworksInternal() {
+void NetworkStateHandler::UpdateBlockedNetworksInternal(
+    const NetworkTypePattern& network_type) {
   for (auto iter = network_list_.begin(); iter != network_list_.end(); ++iter) {
     NetworkState* network = (*iter)->AsNetworkState();
-    if (!network->Matches(NetworkTypePattern::WiFi()))
+    if (!network->Matches(network_type))
       continue;
     if (UpdateBlockedByPolicy(network))
       NotifyNetworkPropertiesUpdated(network);
@@ -1151,7 +1172,7 @@ void NetworkStateHandler::SetWakeOnLanEnabled(bool enabled) {
 }
 
 void NetworkStateHandler::SetHostname(const std::string& hostname) {
-  NET_LOG(EVENT) << "SetHostname: " << hostname;
+  NET_LOG(EVENT) << "SetHostname";
   shill_property_handler_->SetHostname(hostname);
 }
 
@@ -1251,7 +1272,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   CHECK(!notifying_network_observers_);
   ManagedStateList* managed_list = GetManagedList(type);
   NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetSize();
+                 << ": " << entries.GetList().size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;
@@ -1394,7 +1415,8 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   if (network->path() == default_network_path_)
     default_network_is_metered_ = metered && network->IsConnectedState();
 
-  if (network->Matches(NetworkTypePattern::WiFi()))
+  if (network->Matches(NetworkTypePattern::WiFi() |
+                       NetworkTypePattern::Cellular()))
     network_property_updated |= UpdateBlockedByPolicy(network);
   network_property_updated |= network->InitialPropertiesReceived(properties);
 
@@ -1612,7 +1634,7 @@ void NetworkStateHandler::CheckPortalListChanged(
 }
 
 void NetworkStateHandler::HostnameChanged(const std::string& hostname) {
-  NET_LOG(EVENT) << "HostnameChanged: " << hostname;
+  NET_LOG(EVENT) << "HostnameChanged";
   hostname_ = hostname;
   for (auto& observer : observers_)
     observer.HostnameChanged(hostname);

@@ -160,24 +160,11 @@ void FirstMeaningfulPaintDetector::RegisterNotifyPresentationTime(
 
 void FirstMeaningfulPaintDetector::ReportPresentationTime(
     PaintEvent event,
-    WebSwapResult result,
     base::TimeTicks timestamp) {
   DCHECK(event == PaintEvent::kProvisionalFirstMeaningfulPaint);
   DCHECK_GT(outstanding_presentation_promise_count_, 0U);
   --outstanding_presentation_promise_count_;
 
-  // If the presentation fails for any reason, we use the timestamp when the
-  // presentation promise was broken. |result| ==
-  // WebSwapResult::kDidNotSwapSwapFails usually means the compositor decided
-  // not swap because there was no actual damage, which can happen when what's
-  // being painted isn't visible. In this case, the timestamp will be consistent
-  // with the case where the presentation succeeds, as they both capture the
-  // time up to presentation. In other failure cases (aborts during commit),
-  // this timestamp is an improvement over the blink paint time, but does not
-  // capture some time we're interested in, e.g.  image decoding.
-  //
-  // TODO(crbug.com/738235): Consider not reporting any timestamp when failing
-  // for reasons other than kDidNotSwapSwapFails.
   provisional_first_meaningful_paint_presentation_ = timestamp;
 
   probe::PaintTiming(GetDocument(), "firstMeaningfulPaintCandidate",

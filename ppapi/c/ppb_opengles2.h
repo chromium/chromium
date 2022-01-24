@@ -1191,5 +1191,5 @@ struct PPB_OpenGLES2VertexArrayObject {
  * @}
  */
 
-#endif  /* PPAPI_C_PPB_OPENGLES2_H_ */
+#endif  // PPAPI_C_PPB_OPENGLES2_H_
 

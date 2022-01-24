@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace chromeos {
@@ -26,6 +25,12 @@ class GmsCoreNotificationsStateTracker {
   };
 
   GmsCoreNotificationsStateTracker();
+
+  GmsCoreNotificationsStateTracker(const GmsCoreNotificationsStateTracker&) =
+      delete;
+  GmsCoreNotificationsStateTracker& operator=(
+      const GmsCoreNotificationsStateTracker&) = delete;
+
   virtual ~GmsCoreNotificationsStateTracker();
 
   // Returns a list of names of all potential Tether hosts which replied that
@@ -42,8 +47,6 @@ class GmsCoreNotificationsStateTracker {
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(GmsCoreNotificationsStateTracker);
 };
 
 }  // namespace tether

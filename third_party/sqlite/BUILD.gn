@@ -122,12 +122,16 @@ config("dev_sqlite3_compile_options") {
 config("sqlite_warnings") {
   cflags = []
   if (is_clang) {
-    # sqlite contains a few functions that are unused, at least on
-    # Windows with Chrome's sqlite patches applied
-    # (interiorCursorEOF fts3EvalDeferredPhrase
-    # fts3EvalSelectDeferred sqlite3Fts3InitHashTable
-    # sqlite3Fts3InitTok).
-    cflags += [ "-Wno-unused-function" ]
+    cflags += [
+      "-Wno-shadow",
+
+      # sqlite contains a few functions that are unused, at least on
+      # Windows with Chrome's sqlite patches applied
+      # (interiorCursorEOF fts3EvalDeferredPhrase
+      # fts3EvalSelectDeferred sqlite3Fts3InitHashTable
+      # sqlite3Fts3InitTok).
+      "-Wno-unused-function",
+    ]
 
     if (is_debug || dcheck_always_on) {
       cflags += [

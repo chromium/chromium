@@ -20,6 +20,9 @@ enum Pages {
   LOAD_SIGNIN = 3,
   LOAD_FORCE_SIGNIN = 4,
   PROFILE_SWITCH = 5,
+  // <if expr="lacros">
+  ACCOUNT_SELECTION_LACROS = 6,
+  // </if>
 }
 
 /**
@@ -29,6 +32,9 @@ export enum Routes {
   MAIN = 'main-view',
   NEW_PROFILE = 'new-profile',
   PROFILE_SWITCH = 'profile-switch',
+  // <if expr="lacros">
+  ACCOUNT_SELECTION_LACROS = 'account-selection-lacros',
+  // </if>
 }
 
 /**
@@ -56,6 +62,10 @@ function computeStep(route: Routes): string {
       return ProfileCreationSteps.PROFILE_TYPE_CHOICE;
     case Routes.PROFILE_SWITCH:
       return 'profileSwitch';
+    // <if expr="lacros">
+    case Routes.ACCOUNT_SELECTION_LACROS:
+      return 'accountSelectionLacros';
+    // </if>
     default:
       assertNotReached();
       return '';
@@ -84,6 +94,17 @@ if (!history.state || !history.state.route || !history.state.step) {
           },
           '', path);
       break;
+    // <if expr="lacros">
+    case `/${Routes.ACCOUNT_SELECTION_LACROS}`:
+      history.replaceState(
+          {
+            route: Routes.ACCOUNT_SELECTION_LACROS,
+            step: computeStep(Routes.ACCOUNT_SELECTION_LACROS),
+            isFirst: true
+          },
+          '', path);
+      break;
+    // </if>
     default:
       history.replaceState(
           {route: Routes.MAIN, step: computeStep(Routes.MAIN), isFirst: true},
@@ -113,6 +134,11 @@ export function recordPageVisited(step: string) {
     case 'profileSwitch':
       page = Pages.PROFILE_SWITCH;
       break;
+    // <if expr="lacros">
+    case 'accountSelectionLacros':
+      page = Pages.ACCOUNT_SELECTION_LACROS;
+      break;
+    // </if>
     default:
       assertNotReached();
   }
@@ -134,8 +160,12 @@ function notifyObservers() {
 window.addEventListener('popstate', notifyObservers);
 
 export function navigateTo(route: Routes) {
-  assert(
-      [Routes.MAIN, Routes.NEW_PROFILE, Routes.PROFILE_SWITCH].includes(route));
+  assert([
+    // <if expr="lacros">
+    Routes.ACCOUNT_SELECTION_LACROS,
+    // </if>
+    Routes.MAIN, Routes.NEW_PROFILE, Routes.PROFILE_SWITCH
+  ].includes(route));
   navigateToStep(route, computeStep(route));
 }
 

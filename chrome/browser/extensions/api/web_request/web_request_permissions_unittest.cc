@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/common/extensions/extension_test_util.h"

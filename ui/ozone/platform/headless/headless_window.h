@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 #define UI_OZONE_PLATFORM_HEADLESS_HEADLESS_WINDOW_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -20,13 +19,15 @@ class HeadlessWindow : public StubWindow {
   HeadlessWindow(PlatformWindowDelegate* delegate,
                  HeadlessWindowManager* manager,
                  const gfx::Rect& bounds);
+
+  HeadlessWindow(const HeadlessWindow&) = delete;
+  HeadlessWindow& operator=(const HeadlessWindow&) = delete;
+
   ~HeadlessWindow() override;
 
  private:
   HeadlessWindowManager* manager_;
   gfx::AcceleratedWidget widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessWindow);
 };
 
 }  // namespace ui

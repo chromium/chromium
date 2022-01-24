@@ -56,9 +56,10 @@ interface JpegEncodeAccelerator {
   // amount of plane information |input_planes| and |output_planes| should be
   // same as the number of planes. |exif_handle| is the shared memory buffer,
   // with |exif_buffer_size| as size, containing Exif data which will be put
-  // onto APP1 segment in the output JPEG image. When the task ends, it returns
-  // |status| as the status code and |encoded_buffer_size| is the actual size of
-  // the encoded JPEG.
+  // onto APP1 segment in the output JPEG image. |quality| is the quality of
+  // JPEG image. The range is from 1~100. High value means high quality. When
+  // the task ends, it returns |status| as the status code and
+  // |encoded_buffer_size| is the actual size of the encoded JPEG.
   EncodeWithDmaBuf(
       int32 task_id,
       uint32 input_format,
@@ -67,6 +68,7 @@ interface JpegEncodeAccelerator {
       handle exif_handle,
       uint32 exif_buffer_size,
       int32 coded_size_width,
-      int32 coded_size_height)
+      int32 coded_size_height,
+      int32 quality)
       => (uint32 encoded_buffer_size, EncodeStatus status);
 };

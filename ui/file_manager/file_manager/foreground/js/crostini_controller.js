@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf} from '../../common/js/util.js';
+import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FilesMessage} from '../elements/files_message.js';
@@ -46,8 +46,12 @@ export class CrostiniController {
     /** @private */
     this.entrySharedWithPluginVm_ = false;
 
-    directoryModel.addEventListener(
-        'directory-changed', () => this.maybeShowSharedMessage());
+    // TODO(crbug.com/1228128): Remove this once migrated to the new banner
+    // framework.
+    if (!util.isBannerFrameworkEnabled()) {
+      directoryModel.addEventListener(
+          'directory-changed', () => this.maybeShowSharedMessage());
+    }
   }
 
   /**
@@ -127,6 +131,8 @@ export class CrostiniController {
             .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
   }
 
+  // TODO(crbug.com/1228128): Remove this once migrated to the new banner
+  // framework.
   maybeShowSharedMessage() {
     const entry =
         /** @type {Entry} */ (this.directoryModel_.getCurrentDirEntry());

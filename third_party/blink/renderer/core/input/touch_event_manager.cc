@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -171,7 +172,6 @@ Touch* TouchEventManager::CreateDomTouch(
     const TouchEventManager::TouchPointAttributes* point_attr,
     bool* known_target) {
   Node* touch_node = point_attr->target_;
-  String region_id = point_attr->region_;
   *known_target = false;
 
   LocalFrame* target_frame = nullptr;
@@ -220,7 +220,7 @@ Touch* TouchEventManager::CreateDomTouch(
       target_frame, touch_node, point_attr->event_.id,
       FloatPoint(transformed_event.PositionInScreen()), document_point,
       adjusted_radius, transformed_event.rotation_angle,
-      transformed_event.force, region_id);
+      transformed_event.force);
 }
 
 WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
@@ -238,8 +238,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   WebInputEvent::Type touch_event_type = WebInputEvent::Type::kTouchMove;
   Vector<WebPointerEvent> all_coalesced_events;
   Vector<int> available_ids;
-  for (const auto& id : touch_attribute_map_.Keys())
-    available_ids.push_back(id);
+  WTF::CopyKeysToVector(touch_attribute_map_, available_ids);
   std::sort(available_ids.begin(), available_ids.end());
   for (const int& touch_point_id : available_ids) {
     auto* const touch_point_attribute = touch_attribute_map_.at(touch_point_id);
@@ -520,7 +519,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
                            MakeGarbageCollected<TouchPointAttributes>(event));
 
   Node* touch_node = pointer_event_target.target_element;
-  String region = pointer_event_target.region;
 
   HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kTouchEvent |
                                                 HitTestRequest::kReadOnly |
@@ -544,14 +542,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
       Node* node = result.InnerNode();
       if (!node)
         return;
-      if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
-        HitTestCanvasResult* hit_test_canvas_result =
-            canvas->GetControlAndIdIfHitRegionExists(
-                result.PointInInnerNodeFrame());
-        if (hit_test_canvas_result->GetControl())
-          node = hit_test_canvas_result->GetControl();
-        region = hit_test_canvas_result->GetId();
-      }
       // Touch events should not go to text nodes.
       if (node->IsTextNode())
         node = FlatTreeTraversal::Parent(*node);
@@ -572,7 +562,6 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
 
   TouchPointAttributes* attributes = touch_attribute_map_.at(event.id);
   attributes->target_ = touch_node;
-  attributes->region_ = region;
 
   TouchAction effective_touch_action =
       touch_action_util::ComputeEffectiveTouchAction(*touch_node);

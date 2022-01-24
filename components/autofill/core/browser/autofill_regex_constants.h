@@ -77,6 +77,9 @@ extern const char16_t kSocialSecurityRe[];
 extern const char16_t kOneTimePwdRe[];
 extern const char16_t kHiddenValueRe[];
 extern const char16_t kMerchantPromoCodeRe[];
+extern const char16_t kEmailValueRe[];
+extern const char16_t kPhoneValueRe[];
+extern const char16_t kUsernameLikeValueRe[];
 
 // Used to match field data that might be a UPI Virtual Payment Address.
 // See:

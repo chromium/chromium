@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 

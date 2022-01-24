@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<title>Test navigating an ancestor frame from within a fenced frame</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+
+<body>
+<script>
+// This function is called by `window.opener`, which is a same-origin window.
+window.runTest = function(test_type, ancestor_type) {
+  // Messages by this key are sent from `navigate-ancestor-destination.html` to
+  // let us know if the "_parent" navigations performed inside fenced frames
+  // landed on the right page. If somehow *this document* gets navigated
+  // unexpectedly, the test will fail given `beforeunloadPromise` below.
+  const navigate_ancestor_key = KEYS["navigate_ancestor"];
+  // For "nested" tests, this document hosts a top-level fenced frame navigated
+  // to `navigate-ancestor-from-nested-{fenced-frame,iframe}.html`, which itself
+  // hosts a nested fenced frame or iframe. The top-level fenced frame will wait
+  // for the right confirmation that the nested document has operated correctly,
+  // and report back to *us* that everything is OK via this key below.
+  const navigate_ancestor_from_nested_key = KEYS["navigate_ancestor_from_nested"];
+
+  const beforeunloadPromise = new Promise((resolve, reject) => {
+    window.onbeforeunload = e => {
+      reject(`The top-level test runner document does not navigate when a ` +
+             `${test_type} navigates ${ancestor_type}`);
+    }
+  });
+
+  let test_promise = null;
+  switch (test_type) {
+    case 'top-level fenced frame':
+      // This fenced frame will attempt to navigate its parent to
+      // `navigate-ancestor-destination.html`. It should end up navigating
+      // *itself* since it is a top-level browsing context. Just in case it
+      // accidentally navigates *this* frame, we have an `onbeforeunload`
+      // handler that will automatically fail the test before.
+      attachFencedFrame(`navigate-ancestor-helper.html?ancestor_type=${ancestor_type}`);
+      test_promise = nextValueFromServer(navigate_ancestor_key);
+      break;
+    case 'nested fenced frame':
+      attachFencedFrame(
+        `navigate-ancestor-from-nested-fenced-frame.html?ancestor_type=${ancestor_type}`);
+      test_promise = nextValueFromServer(navigate_ancestor_from_nested_key)
+        .then(message => {
+          if (message != "PASS") {
+            throw message;
+          }
+        });
+      break;
+    case 'nested iframe':
+      attachFencedFrame(
+        `navigate-ancestor-from-nested-iframe.html?ancestor_type=${ancestor_type}`);
+      test_promise = nextValueFromServer(navigate_ancestor_from_nested_key)
+        .then(message => {
+          if (message != `PASS nested iframe ${ancestor_type}`) {
+            throw message;
+          }
+
+          // Since the nested fenced frame navigated to this page, we should
+          // clean up the lingering message that the destination page posted to
+          // the server.
+          return nextValueFromServer(navigate_ancestor_key);
+        });
+
+      break;
+  }
+
+  return Promise.race([test_promise, beforeunloadPromise]);
+}
+</script>
+
+</body>

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL NOT invoking media load or resource selection when removing the src attribute assert_unreached: Reached unreachable code
-Harness: the test ran to completion.
-

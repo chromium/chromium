@@ -50,12 +50,15 @@ std::string GetCAPIProviderName(HCRYPTPROV provider) {
 class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
  public:
   // Takes ownership of |provider|.
-  SSLPlatformKeyCAPI(HCRYPTPROV provider, DWORD key_spec)
-      : provider_name_(GetCAPIProviderName(provider)),
-        provider_(provider),
+  SSLPlatformKeyCAPI(crypto::ScopedHCRYPTPROV provider, DWORD key_spec)
+      : provider_name_(GetCAPIProviderName(provider.get())),
+        provider_(std::move(provider)),
         key_spec_(key_spec) {}
 
-  ~SSLPlatformKeyCAPI() override {}
+  SSLPlatformKeyCAPI(const SSLPlatformKeyCAPI&) = delete;
+  SSLPlatformKeyCAPI& operator=(const SSLPlatformKeyCAPI&) = delete;
+
+  ~SSLPlatformKeyCAPI() override = default;
 
   std::string GetProviderName() override { return "CAPI: " + provider_name_; }
 
@@ -106,7 +109,9 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
     }
 
     crypto::ScopedHCRYPTHASH hash_handle;
-    if (!CryptCreateHash(provider_, hash_alg, 0, 0, hash_handle.receive())) {
+    if (!CryptCreateHash(
+            provider_.get(), hash_alg, 0, 0,
+            crypto::ScopedHCRYPTHASH::Receiver(hash_handle).get())) {
       PLOG(ERROR) << "CreateCreateHash failed";
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
@@ -147,8 +152,6 @@ class SSLPlatformKeyCAPI : public ThreadedSSLPrivateKey::Delegate {
   std::string provider_name_;
   crypto::ScopedHCRYPTPROV provider_;
   DWORD key_spec_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyCAPI);
 };
 
 class ScopedNCRYPT_PROV_HANDLE {
@@ -217,6 +220,9 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
         key_(key),
         type_(type),
         max_length_(max_length) {}
+
+  SSLPlatformKeyCNG(const SSLPlatformKeyCNG&) = delete;
+  SSLPlatformKeyCNG& operator=(const SSLPlatformKeyCNG&) = delete;
 
   ~SSLPlatformKeyCNG() override { NCryptFreeObject(key_); }
 
@@ -373,18 +379,16 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
   NCRYPT_KEY_HANDLE key_;
   int type_;
   size_t max_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyCNG);
 };
 
 }  // namespace
 
 scoped_refptr<SSLPrivateKey> WrapCAPIPrivateKey(
     const X509Certificate* certificate,
-    HCRYPTPROV prov,
+    crypto::ScopedHCRYPTPROV prov,
     DWORD key_spec) {
   return base::MakeRefCounted<ThreadedSSLPrivateKey>(
-      std::make_unique<SSLPlatformKeyCAPI>(prov, key_spec),
+      std::make_unique<SSLPlatformKeyCAPI>(std::move(prov), key_spec),
       GetSSLPlatformKeyTaskRunner());
 }
 
@@ -427,7 +431,8 @@ scoped_refptr<SSLPrivateKey> FetchClientCertPrivateKey(
   if (key_spec == CERT_NCRYPT_KEY_SPEC) {
     return WrapCNGPrivateKey(certificate, prov_or_key);
   } else {
-    return WrapCAPIPrivateKey(certificate, prov_or_key, key_spec);
+    return WrapCAPIPrivateKey(certificate,
+                              crypto::ScopedHCRYPTPROV(prov_or_key), key_spec);
   }
 }
 

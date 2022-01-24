@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "url/mojom/url.mojom";
+
+// Contains prerendered page info. Created per prerendered page.
+struct PrerenderedPageInfo {
+  // The URL of the prerendered page.
+  url.mojom.Url url;
+
+  // The URL of the page that started prerendering.
+  url.mojom.Url trigger_page_url;
+
+  // The final status of prerendering.
+  // This is a stringified representation of PrerenderHost::FinalStatus.
+  string final_status;
+};
+
+// Created per WebContents.
+struct PrerenderInfo {
+  array<PrerenderedPageInfo> prerendered_page_infos;
+};
+
+// Interface for retrieving information about prerendering. Lives in the browser
+// process and used to implement an internal page about prerendering.
+interface PrerenderInternalsHandler {
+  // Gets information about prerendered pages per WebContents.
+  GetPrerenderInfo() => (array<PrerenderInfo> infos);
+};

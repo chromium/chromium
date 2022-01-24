@@ -144,7 +144,8 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
 
   bool LocalApprtcInstanceIsUp() {
     // Load the admin page and see if we manage to load it right.
-    ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998"));
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998")));
     content::WebContents* tab_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     std::string javascript =
@@ -234,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
   InfoBarResponder left_infobar_responder(
       infobars::ContentInfoBarManager::FromWebContents(left_tab),
       InfoBarResponder::ACCEPT);
-  ui_test_utils::NavigateToURL(browser(), room_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), room_url));
 
   // Wait for the local video to start playing. This is needed, because opening
   // a new tab too quickly, by sending the current tab to the background, can
@@ -253,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcApprtcBrowserTest, MANUAL_WorksOnApprtc) {
   InfoBarResponder right_infobar_responder(
       infobars::ContentInfoBarManager::FromWebContents(right_tab),
       InfoBarResponder::ACCEPT);
-  ui_test_utils::NavigateToURL(browser(), room_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), room_url));
 
   ASSERT_TRUE(WaitForCallToComeUp(left_tab));
   ASSERT_TRUE(WaitForCallToComeUp(right_tab));

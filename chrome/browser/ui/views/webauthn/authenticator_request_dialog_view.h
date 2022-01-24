@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -80,6 +79,7 @@ class AuthenticatorRequestDialogView
   void OnStepTransition() override;
   void OnSheetModelChanged() override;
 
+  // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:

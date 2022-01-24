@@ -92,7 +92,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   OCMStub([touch force]).andReturn(currentForce);
   [gestureRecognizer touchesMoved:[NSSet setWithObject:touch] withEvent:event];
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(dispatcher);
 
@@ -106,7 +106,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   OCMStub([touch force]).andReturn(currentForce);
   [gestureRecognizer touchesMoved:[NSSet setWithObject:touch] withEvent:event];
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(longPressDelegate);
 
@@ -114,7 +114,7 @@ TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
   // working on unit test (the state is cancelled).
   gestureRecognizer.state = UIGestureRecognizerStateEnded;
 
-  base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(0.05));
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.05));
 
   EXPECT_OCMOCK_VERIFY(longPressDelegate);
 }

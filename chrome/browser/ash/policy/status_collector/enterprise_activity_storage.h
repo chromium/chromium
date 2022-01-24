@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/interval_map.h"
 

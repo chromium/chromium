@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -25,6 +24,9 @@ class AvailabilityModel {
   // load was a success. In the case of a failure, it is invalid to ever call
   // GetAvailability(...).
   using OnInitializedCallback = base::OnceCallback<void(bool success)>;
+
+  AvailabilityModel(const AvailabilityModel&) = delete;
+  AvailabilityModel& operator=(const AvailabilityModel&) = delete;
 
   virtual ~AvailabilityModel() = default;
 
@@ -44,9 +46,6 @@ class AvailabilityModel {
 
  protected:
   AvailabilityModel() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AvailabilityModel);
 };
 
 }  // namespace feature_engagement

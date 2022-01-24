@@ -14,7 +14,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
 
@@ -31,6 +30,9 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
  public:
   MTPDeviceDelegateImplMac(const std::string& device_id,
                            const base::FilePath::StringType& synthetic_path);
+
+  MTPDeviceDelegateImplMac(const MTPDeviceDelegateImplMac&) = delete;
+  MTPDeviceDelegateImplMac& operator=(const MTPDeviceDelegateImplMac&) = delete;
 
   // MTPDeviceAsyncDelegate implementation. These functions are called on the
   // IO thread by the async filesystem file util. They forward to
@@ -189,8 +191,6 @@ class MTPDeviceDelegateImplMac : public MTPDeviceAsyncDelegate {
   ReadDirTransactionList read_dir_transactions_;
 
   base::WeakPtrFactory<MTPDeviceDelegateImplMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplMac);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_MAC_MTP_DEVICE_DELEGATE_IMPL_MAC_H_

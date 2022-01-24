@@ -42,6 +42,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -50,8 +51,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/aura/env.h"
@@ -116,7 +117,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
   std::string login_screen_locale;
-  if (cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,
+  if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
       !login_screen_locales->GetList().empty() &&
       login_screen_locales->GetString(0, &login_screen_locale)) {
@@ -162,9 +163,10 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 
   PrefService* pref_service = g_browser_process->local_state();
   pref_service->SetBoolean(prefs::kWasRestarted, true);
+  KeepAliveRegistry::GetInstance()->SetRestarting();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->set_restart_requested();
+  ash::BootTimesRecorder::Get()->set_restart_requested();
 
   DCHECK(!g_send_stop_request_to_session_manager);
   // Make sure we don't send stop request to the session manager.
@@ -203,9 +205,12 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 
 #if !defined(OS_ANDROID)
 void MarkAsCleanShutdown() {
-  // TODO(beng): Can this use ProfileManager::GetLoadedProfiles() instead?
-  for (auto* browser : *BrowserList::GetInstance())
-    browser->profile()->SetExitType(Profile::EXIT_NORMAL);
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (ExitTypeService* exit_type_service =
+            ExitTypeService::GetInstanceForProfile(browser->profile())) {
+      exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
+    }
+  }
 }
 #endif
 
@@ -259,8 +264,8 @@ void CloseAllBrowsers() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker(
-      "StartedClosingWindows", false);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("StartedClosingWindows",
+                                                     false);
 #endif
   scoped_refptr<BrowserCloseManager> browser_close_manager =
       new BrowserCloseManager;
@@ -271,12 +276,11 @@ void CloseAllBrowsers() {
 void AttemptUserExit() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VLOG(1) << "AttemptUserExit";
-  chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted",
-                                                          false);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("LogoutStarted", false);
 
   PrefService* state = g_browser_process->local_state();
   if (state) {
-    chromeos::BootTimesRecorder::Get()->OnLogoutStarted(state);
+    ash::BootTimesRecorder::Get()->OnLogoutStarted(state);
 
     if (SetLocaleForNextStart(state)) {
       TRACE_EVENT0("shutdown", "CommitPendingWrite");
@@ -316,7 +320,14 @@ void AttemptRelaunch() {
 }
 
 #if !defined(OS_ANDROID)
+namespace {
+
+bool g_relaunch_ignore_unload_handlers_called = false;
+
+}  // namespace
+
 void RelaunchIgnoreUnloadHandlers() {
+  g_relaunch_ignore_unload_handlers_called = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "Chrome relaunch");
@@ -324,6 +335,11 @@ void RelaunchIgnoreUnloadHandlers() {
 #endif
   AttemptRestartInternal(IgnoreUnloadHandlers(true));
 }
+
+bool DidCallRelaunchIgnoreUnloadHandlers() {
+  return g_relaunch_ignore_unload_handlers_called;
+}
+
 #endif
 
 void AttemptExit() {
@@ -405,8 +421,7 @@ void SessionEnding() {
   // the same time or they would interfere with each other.
   absl::optional<ShutdownWatcherHelper> shutdown_watcher;
   absl::optional<base::WatchHangsInScope> watch_hangs_scope;
-  constexpr base::TimeDelta kShutdownHangDelay{
-      base::TimeDelta::FromSeconds(90)};
+  constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(90)};
   if (base::HangWatcher::IsCrashReportingEnabled()) {
     // Use ShutdownWatcherHelper logic to choose delay to get identical
     // behavior.

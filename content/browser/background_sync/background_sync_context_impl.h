@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -42,6 +41,10 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   BackgroundSyncContextImpl();
 
+  BackgroundSyncContextImpl(const BackgroundSyncContextImpl&) = delete;
+  BackgroundSyncContextImpl& operator=(const BackgroundSyncContextImpl&) =
+      delete;
+
   // Called when StoragePartition is being setup.
   void Init(
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
@@ -54,11 +57,13 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
 
   // Creates a OneShotBackgroundSyncServiceImpl that is owned by `this`.
   void CreateOneShotSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::OneShotBackgroundSyncService>
           receiver);
 
   // Creates a PeriodicBackgroundSyncServiceImpl that is owned by `this`.
   void CreatePeriodicSyncService(
+      const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
           receiver);
 
@@ -116,8 +121,6 @@ class CONTENT_EXPORT BackgroundSyncContextImpl
       test_wakeup_delta_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncContextImpl);
 };
 
 }  // namespace content

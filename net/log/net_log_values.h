@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 
@@ -47,6 +48,7 @@ NET_EXPORT base::Value NetLogStringValue(base::StringPiece raw);
 // serializing them.
 //
 // This wrapper encodes |bytes| as a Base64 encoded string.
+NET_EXPORT base::Value NetLogBinaryValue(base::span<const uint8_t> bytes);
 NET_EXPORT base::Value NetLogBinaryValue(const void* bytes, size_t length);
 
 // Creates a base::Value() to represent integers, including 64-bit ones.

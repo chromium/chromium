@@ -11,6 +11,10 @@
 #import "ios/web/web_state/ui/crw_touch_tracking_recognizer.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace web {
 
 enum class NavigationInitiationType;
@@ -18,7 +22,7 @@ enum class WKNavigationState;
 
 }  // namespace web
 
-@class CRWJSInjector;
+@class CRWJSInjectionReceiver;
 @protocol CRWScrollableContent;
 @protocol CRWSwipeRecognizerProvider;
 @class CRWWebViewContentView;
@@ -80,8 +84,8 @@ class WebStateImpl;
 // back-forward list navigations.
 @property(nonatomic) BOOL allowsBackForwardNavigationGestures;
 
-// JavaScript injector.
-@property(nonatomic, strong, readonly) CRWJSInjector* jsInjector;
+@property(strong, nonatomic, readonly)
+    CRWJSInjectionReceiver* jsInjectionReceiver;
 
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
@@ -94,15 +98,6 @@ class WebStateImpl;
 // Returns the latest navigation item created for new navigation, which is
 // stored in navigation context.
 - (web::NavigationItemImpl*)lastPendingItemForNewNavigation;
-
-// Replaces the currently displayed content with |contentView|.  The content
-// view will be dismissed for the next navigation.
-- (void)showTransientContentView:(UIView<CRWScrollableContent>*)contentView;
-
-// Clear the transient content view, if one is shown. This is a delegate
-// method for WebStateImpl::ClearTransientContent(). Callers should use the
-// WebStateImpl API instead of calling this method directly.
-- (void)clearTransientContentView;
 
 // Removes the back WebView. DANGER: this method is exposed for the sole purpose
 // of allowing NavigationManagerImpl to reset the back-forward history. Please
@@ -120,7 +115,6 @@ class WebStateImpl;
 - (BOOL)isViewAlive;
 
 // Returns YES if the current live view is a web view with HTML.
-// TODO(crbug.com/949651): Remove once JSFindInPageManager is removed.
 - (BOOL)contentIsHTML;
 
 // Returns the CRWWebController's view of the current URL. Moreover, this method
@@ -198,6 +192,34 @@ class WebStateImpl;
 // a no-op, and |sessionStateData| will return nil.
 - (BOOL)setSessionStateData:(NSData*)data;
 - (NSData*)sessionStateData;
+
+// Injects the windowID into the main frame of the current webpage.
+// TODO(crbug.com/905939): Remove WindowID.
+- (void)injectWindowID;
+
+#pragma mark Navigation Message Handlers
+
+// Handles a navigation hash change message for the current webpage.
+- (void)handleNavigationHashChange;
+
+// Handles a navigation will change message for the current webpage.
+- (void)handleNavigationWillChangeState;
+
+// Handles a navigation did push state message for the current webpage.
+- (void)handleNavigationDidPushStateMessage:(base::Value*)message;
+
+// Handles a navigation did replace state message for the current webpage.
+- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message;
+
+#pragma mark CRWJSInjectionEvaluator
+
+// Do not use these executeJavaScript functions directly, prefer
+// WebFrame::CallJavaScriptFunction if possible, otherwise use
+// WebState::ExecuteJavaScript and WebState::ExecuteUserJavaScript.
+- (void)executeJavaScript:(NSString*)javascript
+        completionHandler:(void (^)(id result, NSError* error))completion;
+- (void)executeUserJavaScript:(NSString*)javascript
+            completionHandler:(void (^)(id result, NSError* error))completion;
 
 @end
 

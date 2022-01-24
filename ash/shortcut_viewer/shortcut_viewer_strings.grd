@@ -728,8 +728,8 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Description of the command in keyboard shortcut viewer.">
     Previous pane
   </message>
-  <message name="IDS_KSV_DESCRIPTION_FOCUS_HELP_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
-    Move focus to a help dialog
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_WEB_CONTENTS_PANE" desc="Description of the command in keyboard shortcut viewer.">
+    Focus web content in the browser
   </message>
   <message name="IDS_KSV_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Description of the command in keyboard shortcut viewer.">
     Move active window between displays
@@ -812,11 +812,23 @@
   <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Activate the desk on the right
   </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Activate the 1st to 8th desk.
+  </message>
+  <message name="IDS_KSV_SHORTCUT_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    <ph name="shift">$1<ex>Shift</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="search">$3<ex>Search</ex></ph><ph name="separator2">$4<ex>+</ex></ph> 1 through 8
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_TOGGLE_WINDOW_ASSIGNED_TO_ALL_DESKS" desc="Description of the command in keyboard shortcut viewer.">
+    Toggle whether the active window is assigned to all desks
+  </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the left
   </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the right
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_FLOAT" desc="Description of the command in keyboard shortcut viewer.">
+    Float active window on top
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_GOOGLE_ASSISTANT" desc="Description of the command in keyboard shortcut viewer.">
     Open Google Assistant

@@ -161,7 +161,7 @@ void CryptAuthDeviceActivityGetterImpl::OnGetDevicesActivityStatusSuccess(
         std::move(device_activity_status.connectivity_status()),
         base::Time::FromTimeT(
             device_activity_status.last_update_time().seconds()) +
-            base::TimeDelta::FromNanoseconds(
+            base::Nanoseconds(
                 device_activity_status.last_update_time().nanos())));
   }
 

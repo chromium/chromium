@@ -22,23 +22,22 @@
 #include "benchmark/benchmark.h"
 #include "gtest/gtest.h"
 #include "maldoca/base/file.h"
-#include "maldoca/base/get_runfiles_dir.h"
+#include "maldoca/base/testing/test_utils.h"
 #include "maldoca/ole/oss_utils.h"
 
-using maldoca::FAT;
-using maldoca::OLEHeader;
-using maldoca::SectorConstant;
+using ::maldoca::FAT;
+using ::maldoca::OLEHeader;
+using ::maldoca::SectorConstant;
 
 namespace {
-std::string TestFilename(absl::string_view filename) {
-  return maldoca::file::JoinPath(
-      maldoca::GetRunfilesDir(),
-      absl::StrCat("maldoca/ole/testdata/", filename));
+std::string TestFilename(absl::string_view file_name) {
+  return maldoca::testing::OleTestFilename(file_name);
 }
 
 std::string GetTestContent(absl::string_view filename) {
   std::string content;
-  auto status = maldoca::file::GetContents(TestFilename(filename), &content);
+  auto status =
+      maldoca::testing::GetTestContents(TestFilename(filename), &content);
   EXPECT_TRUE(status.ok()) << status;
   return content;
 }
@@ -46,7 +45,7 @@ std::string GetTestContent(absl::string_view filename) {
 class FATTest : public testing::Test {
  protected:
   void SetUp() override {
-    content_ = GetTestContent("vba1.bin");
+    content_ = GetTestContent("vba1_xor_0x42_encoded.bin");
     EXPECT_TRUE(OLEHeader::ParseHeader(content_, &header));
   }
 
@@ -59,7 +58,7 @@ TEST(SectorReaderTest, SectorToArrayOfIndexes) {
   absl::string_view short_sector("\x00\x00\x00\x01\x00\x00\x02", 7);
   std::vector<uint32_t> array1;
   ASSERT_DEATH(FAT::SectorToArrayOfIndexes(short_sector, &array1),
-               "Check failed: sector[.]size[(][)] == 0 [(]3 vs[.] 0[)]");
+               "Check failed: sector\\.size\\(\\) == 0 \\(3 vs\\. 0\\)");
 
   // Two full sector indexes.
   absl::string_view two_sectors("\x01\x00\x00\x00\x02\x00\x00\x00", 8);
@@ -69,7 +68,7 @@ TEST(SectorReaderTest, SectorToArrayOfIndexes) {
   // Can't overwrite the destination array of indexes.
   std::vector<uint32_t> array2 = {1};
   ASSERT_DEATH(FAT::SectorToArrayOfIndexes(two_sectors, &array2),
-               "Check failed: array->size[(][)] == 0 [(]1 vs[.] 0[)]");
+               "Check failed: array->size\\(\\) == 0 \\(1 vs\\. 0\\)");
 
   // Successful read.
   std::vector<uint32_t> array3;
@@ -112,7 +111,7 @@ TEST_F(FATTest, BogusInput) {
   OLEHeader empty_header;
   // Can't read a FAT if you haven't read a header first.
   ASSERT_DEATH(FAT::Read(content_, empty_header, &fat),
-               "Check failed: header[.]IsInitialized[(][)]");
+               "Check failed: header\\.IsInitialized\\(\\)");
   EXPECT_EQ(fat.size(), 0);
 }
 
@@ -120,7 +119,7 @@ TEST_F(FATTest, AlreadyInitialized) {
   std::vector<uint32_t> fat = {1, 2, 3};
   // Can't fill a FAT if it's been already initialized.
   ASSERT_DEATH(FAT::Read(content_, header, &fat),
-               "Check failed: fat->empty[(][)]");
+               "Check failed: fat->empty\\(\\)");
 }
 
 // Test reading a real FAT.
@@ -180,6 +179,9 @@ TEST_F(FATTest, GoodInput) {
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
+  maldoca::InitLogging();
+#if !defined(_WIN32)
   ::benchmark::RunSpecifiedBenchmarks();
+#endif
   return RUN_ALL_TESTS();
 }

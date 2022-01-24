@@ -24,10 +24,13 @@ FrameInfoHelper::FrameInfo& FrameInfoHelper::FrameInfo::operator=(
 
 // Concrete implementation of FrameInfoHelper that renders output buffers and
 // gets the FrameInfo they need.
-class FrameInfoHelperImpl : public FrameInfoHelper {
+class FrameInfoHelperImpl : public FrameInfoHelper,
+                            public gpu::RefCountedLockHelperDrDc {
  public:
   FrameInfoHelperImpl(scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
-                      SharedImageVideoProvider::GetStubCB get_stub_cb) {
+                      SharedImageVideoProvider::GetStubCB get_stub_cb,
+                      scoped_refptr<gpu::RefCountedLock> drdc_lock)
+      : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)) {
     on_gpu_ = base::SequenceBound<OnGpu>(std::move(gpu_task_runner),
                                          std::move(get_stub_cb));
   }
@@ -71,7 +74,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
     void GetFrameInfoImpl(
         std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
         base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
-                                absl::optional<FrameInfo>)> cb) {
+                                absl::optional<FrameInfo>)> cb,
+        std::unique_ptr<base::AutoLockMaybe> scoped_drdc_lock) {
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
@@ -80,8 +84,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
       absl::optional<FrameInfo> info;
 
       if (buffer_renderer->RenderToTextureOwnerFrontBuffer(
-              CodecOutputBufferRenderer::BindingsMode::kDontRestoreIfBound,
-              0)) {
+              CodecOutputBufferRenderer::BindingsMode::kDontBindImage, 0)) {
         gfx::Size coded_size;
         gfx::Rect visible_rect;
         if (texture_owner->GetCodedSizeAndVisibleRect(
@@ -92,14 +95,22 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
           info->ycbcr_info = GetYCbCrInfo(texture_owner.get());
         }
       }
-
+      // Release the lock here since we already got the frame info.
+      scoped_drdc_lock.reset();
       std::move(cb).Run(std::move(buffer_renderer), info);
     }
 
     void GetFrameInfo(
         std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
         base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
-                                absl::optional<FrameInfo>)> cb) {
+                                absl::optional<FrameInfo>)> cb,
+        scoped_refptr<gpu::RefCountedLock> drdc_lock) {
+      // Note that we need to ensure that no other thread renders another buffer
+      // in between while we are getting frame info here. Otherwise we will get
+      // wrong frame info. This is ensured by holding |lock| here until
+      // GetFrameInfoImpl() ends.
+      auto scoped_drdc_lock = std::make_unique<base::AutoLockMaybe>(
+          drdc_lock ? drdc_lock->GetDrDcLockPtr() : nullptr);
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
@@ -107,7 +118,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
 
       auto buffer_available_cb =
           base::BindOnce(&OnGpu::GetFrameInfoImpl, weak_factory_.GetWeakPtr(),
-                         std::move(buffer_renderer), std::move(cb));
+                         std::move(buffer_renderer), std::move(cb),
+                         std::move(scoped_drdc_lock));
       texture_owner->RunWhenBufferIsAvailable(std::move(buffer_available_cb));
     }
 
@@ -171,7 +183,6 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
   void ProcessRequestsQueue() {
     while (!requests_.empty()) {
       auto& request = requests_.front();
-
       if (!request.buffer_renderer) {
         // If we don't have buffer_renderer we can Run callback immediately.
         std::move(request.callback).Run(nullptr, FrameInfo());
@@ -198,7 +209,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
                            weak_factory_.GetWeakPtr()));
 
         on_gpu_.AsyncCall(&OnGpu::GetFrameInfo)
-            .WithArgs(std::move(request.buffer_renderer), std::move(cb));
+            .WithArgs(std::move(request.buffer_renderer), std::move(cb),
+                      GetDrDcLock());
         // We didn't complete this request quite yet, so we can't process queue
         // any further.
         break;
@@ -220,9 +232,10 @@ class FrameInfoHelperImpl : public FrameInfoHelper {
 // static
 std::unique_ptr<FrameInfoHelper> FrameInfoHelper::Create(
     scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
-    SharedImageVideoProvider::GetStubCB get_stub_cb) {
-  return std::make_unique<FrameInfoHelperImpl>(std::move(gpu_task_runner),
-                                               std::move(get_stub_cb));
+    SharedImageVideoProvider::GetStubCB get_stub_cb,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
+  return std::make_unique<FrameInfoHelperImpl>(
+      std::move(gpu_task_runner), std::move(get_stub_cb), std::move(drdc_lock));
 }
 
 }  // namespace media

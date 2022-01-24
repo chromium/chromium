@@ -5,6 +5,7 @@
 #include "components/viz/common/switches.h"
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/constants.h"
@@ -24,14 +25,12 @@ const char kDeadlineToSynchronizeSurfaces[] =
 // Also implies --disable-gpu-vsync (see //ui/gl/gl_switches.h).
 const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 
+// Slows down animations during a DocumentTransition for debugging.
+const char kDocumentTransitionSlowdownFactor[] =
+    "document-transition-slowdown-factor";
+
 // Sets the number of max pending frames in the GL buffer queue to 1.
 const char kDoubleBufferCompositing[] = "double-buffer-compositing";
-
-const char kDraw1Point12Ms[] = "1-pt-12ms";
-const char kDraw2Points6Ms[] = "2-pt-6ms";
-const char kDraw1Point6Ms[] = "1-pt-6ms";
-const char kDraw2Points3Ms[] = "2-pt-3ms";
-const char kDrawPredictedInkPoint[] = "draw-predicted-ink-point";
 
 // Experimental de-jelly support.
 const char kEnableDeJelly[] = "enable-de-jelly";
@@ -93,6 +92,19 @@ absl::optional<uint32_t> GetDeadlineToSynchronizeSurfaces() {
     return absl::nullopt;
   }
   return activation_deadline_in_frames;
+}
+
+int GetDocumentTransitionSlowDownFactor() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kDocumentTransitionSlowdownFactor))
+    return 1;
+
+  auto factor_str =
+      command_line->GetSwitchValueASCII(kDocumentTransitionSlowdownFactor);
+  int factor = 0;
+  LOG_IF(ERROR, !base::StringToInt(factor_str, &factor))
+      << "Error parsing document transition slow down factor " << factor_str;
+  return std::max(1, factor);
 }
 
 }  // namespace switches

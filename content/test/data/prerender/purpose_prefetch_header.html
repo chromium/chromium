@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<body>
+<script src="test_utils.js"></script>
+<script>
+
+async function run(tag) {
+  // Fetch resources during prerendering.
+  const iframe =
+      await create_iframe(`purpose_prefetch_header_iframe.html?${tag}`);
+  await create_img(`missing.jpg?${tag}`);
+  await fetch(`missing.txt?${tag}`);
+
+  // Fetch resources in the iframe during prerendering.
+  await iframe.contentWindow.create_iframe(`../empty.html?${tag}`);
+  await iframe.contentWindow.create_img(`iframe-missing.jpg?${tag}`);
+  await iframe.contentWindow.fetch(`iframe-missing.txt?${tag}`);
+}
+
+async function request(url) {
+  await fetch(url, { mode: 'cors' });
+}
+
+</script>
+</body>

@@ -58,3 +58,15 @@ if (use_aura) {
     "scrollbar_theme_aura.h",
   ]
 }
+
+blink_core_tests_scroll = [
+  "scroll_animator_test.cc",
+  "scroll_test.cc",
+  "scrollable_area_test.cc",
+  "scrollbar_test_suite.h",
+  "scrollbar_theme_overlay_test.cc",
+]
+
+if (is_mac) {
+  blink_core_tests_scroll += [ "scrollbar_theme_mac_test.mm" ]
+}

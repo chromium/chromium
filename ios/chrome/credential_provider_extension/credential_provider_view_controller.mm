@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/crash_report/crash_helper.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
+#import "ios/chrome/credential_provider_extension/ui/consent_legacy_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
@@ -40,8 +42,14 @@
 // List coordinator that shows the list of passwords when started.
 @property(nonatomic, strong) CredentialListCoordinator* listCoordinator;
 
+// Legacy consent coordinator that shows a view requesting device auth in order
+// to enable the extension. Will be used when
+// IsCredentialProviderExtensionPromoEnabled() == NO.
+@property(nonatomic, strong) ConsentLegacyCoordinator* consentLegacyCoordinator;
+
 // Consent coordinator that shows a view requesting device auth in order to
-// enable the extension.
+// enable the extension. Will be used when
+// IsCredentialProviderExtensionPromoEnabled() == YES.
 @property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
 
 // Date kept for ReauthenticationModule.
@@ -66,7 +74,7 @@
 
 + (void)initialize {
   if (self == [CredentialProviderViewController self]) {
-    if (crash_helper::common::CanCrashpadStart()) {
+    if (crash_helper::common::CanUseCrashpad()) {
       crash_helper::common::StartCrashpad();
     }
   }
@@ -134,12 +142,21 @@
   NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
   [user_defaults
       removeObjectForKey:kUserDefaultsCredentialProviderConsentVerified];
-  self.consentCoordinator = [[ConsentCoordinator alloc]
-         initWithBaseViewController:self
-                            context:self.extensionContext
-            reauthenticationHandler:self.reauthenticationHandler
-      isInitialConfigurationRequest:YES];
-  [self.consentCoordinator start];
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    self.consentCoordinator = [[ConsentCoordinator alloc]
+           initWithBaseViewController:self
+                              context:self.extensionContext
+              reauthenticationHandler:self.reauthenticationHandler
+        isInitialConfigurationRequest:YES];
+    [self.consentCoordinator start];
+  } else {
+    self.consentLegacyCoordinator = [[ConsentLegacyCoordinator alloc]
+           initWithBaseViewController:self
+                              context:self.extensionContext
+              reauthenticationHandler:self.reauthenticationHandler
+        isInitialConfigurationRequest:YES];
+    [self.consentLegacyCoordinator start];
+  }
 }
 
 #pragma mark - Properties
@@ -259,7 +276,7 @@
   };
 
   NSString* validationID = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderManagedUserID()];
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserID()];
   if (validationID) {
     [self.accountVerificator
         validateValidationID:validationID
@@ -286,6 +303,14 @@
 // Starts the credential list feature.
 - (void)showCredentialListForServiceIdentifiers:
     (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers {
+  // Views in the password creation flow (FormInputAccessoryView) use
+  // base::i18n::IsRTL(), which checks some values from the command line.
+  // Initialize the command line for the process running this extension here
+  // before that.
+  if (IsPasswordCreationEnabled() &&
+      !base::CommandLine::InitializedForCurrentProcess()) {
+    base::CommandLine::Init(0, nullptr);
+  }
   self.listCoordinator = [[CredentialListCoordinator alloc]
       initWithBaseViewController:self
                  credentialStore:self.credentialStore
@@ -320,14 +345,6 @@
 }
 
 - (void)confirmationAlertPrimaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertLearnMoreAction {
   // No-op.
 }
 

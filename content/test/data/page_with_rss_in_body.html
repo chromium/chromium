@@ -1,0 +1,35 @@
+<html>
+<head>
+  <!--Some non-RSS link tags-->
+  <link />
+  <link type="other" href="other" />
+  <link type="application/rss+xml" />
+  <link type="application/rss+xml" rel="alternate" href="https://badurl:💩/" />
+  <link type="application/rss+xml" href="no-rel.xml" />
+  <link type="application/rss+xml" rel="bad-rel" href="bad-rel.xml" />
+  <link type="application/rss+xml" rel="non-ascii-💩"
+        href="non-ascii-rel.xml" />
+  <link type="application/rss+xml+💩" rel="service.feed"
+        href="non-ascii-type.xml" />
+</head>
+<body>
+  <p>This page has valid rss links in its body.</p>
+  <link type="application/rss+xml" rel="alternate" href="rss-in-body.xml" />
+  <link type="application/RSS+atom" rel="service.feed"
+        href="atom-in-body.xml" />
+  <link type="application/atom+XML" rel="AlTeRnAtE"
+        href="https://some/path-in-body.xml" />
+  <!--Some non-RSS link tags-->
+  <link />
+  <link type="other" href="other-in-body" />
+  <link type="application/rss+xml" />
+  <link type="application/rss+xml" rel="alternate"
+        href="https://badurl:💩/in-body" />
+  <link type="application/rss+xml" href="no-rel-in-body.xml" />
+  <link type="application/rss+xml" rel="bad-rel" href="bad-rel-in-body.xml" />
+  <link type="application/rss+xml" rel="non-ascii-💩"
+        href="non-ascii-rel-in-body.xml" />
+  <link type="application/rss+xml+💩" rel="service.feed"
+        href="non-ascii-type-in-body.xml" />
+</body>
+</html>

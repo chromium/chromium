@@ -67,15 +67,15 @@ KeyboardHandler::KeyboardHandler() = default;
 KeyboardHandler::~KeyboardHandler() = default;
 
 void KeyboardHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeKeyboardSettings",
       base::BindRepeating(&KeyboardHandler::HandleInitialize,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "showKeyboardShortcutViewer",
       base::BindRepeating(&KeyboardHandler::HandleShowKeyboardShortcutViewer,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "initializeKeyboardWatcher",
       base::BindRepeating(&KeyboardHandler::HandleKeyboardChange,
                           base::Unretained(this)));

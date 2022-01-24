@@ -13,10 +13,9 @@ FakeUrlHandlerManager::FakeUrlHandlerManager(Profile* profile)
 
 FakeUrlHandlerManager::~FakeUrlHandlerManager() = default;
 
-void FakeUrlHandlerManager::RegisterUrlHandlers(
-    const AppId& app_id,
-    base::OnceCallback<void(bool success)> callback) {
-  std::move(callback).Run(true);
+void FakeUrlHandlerManager::RegisterUrlHandlers(const AppId& app_id,
+                                                ResultCallback callback) {
+  std::move(callback).Run(Result::kOk);
 }
 
 bool FakeUrlHandlerManager::UnregisterUrlHandlers(const AppId& app_id) {

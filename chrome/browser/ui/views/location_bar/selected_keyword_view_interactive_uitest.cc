@@ -25,10 +25,11 @@ void InputKeys(Browser* browser, const std::vector<ui::KeyboardCode>& keys) {
 class SelectedKeywordViewTest : public extensions::ExtensionBrowserTest {
  public:
   SelectedKeywordViewTest() = default;
-  ~SelectedKeywordViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectedKeywordViewTest);
+  SelectedKeywordViewTest(const SelectedKeywordViewTest&) = delete;
+  SelectedKeywordViewTest& operator=(const SelectedKeywordViewTest&) = delete;
+
+  ~SelectedKeywordViewTest() override = default;
 };
 
 // Tests that an extension's short name is registered as the value of the

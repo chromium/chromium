@@ -8,10 +8,9 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "chrome/service/cloud_print/job_status_updater.h"
@@ -96,6 +95,9 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
                     const GURL& cloud_print_server_url,
                     PrintSystem* print_system,
                     Delegate* delegate);
+
+  PrinterJobHandler(const PrinterJobHandler&) = delete;
+  PrinterJobHandler& operator=(const PrinterJobHandler&) = delete;
 
   bool Initialize();
 
@@ -292,8 +294,6 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   PrinterJobQueueHandler job_queue_handler_;
 
   base::WeakPtrFactory<PrinterJobHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobHandler);
 };
 
 }  // namespace cloud_print

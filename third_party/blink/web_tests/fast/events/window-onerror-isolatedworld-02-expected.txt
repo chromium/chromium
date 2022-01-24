@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 30: Uncaught Error: Error in main world inline script.
-CONSOLE ERROR: line 27: Uncaught Error: Error in main world load handler.
+CONSOLE ERROR: Uncaught Error: Error in main world inline script.
+CONSOLE ERROR: Uncaught Error: Error in main world load handler.
 Test that window.onerror and "error" event listeners from isolated world are invoked for uncaught exceptions in scripts running in isolate worlds as well as for exceptions in the main world.Bug 8519.
 
 isolated world window.onerror: Uncaught Error: Error in isolated world inline script. at window-onerror-isolatedworld-02.html, Line: 41, Column: 13

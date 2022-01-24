@@ -48,15 +48,15 @@ class RemoteClusteringBackendTest : public testing::Test {
     scoped_feature_list_->InitWithFeaturesAndParameters(
         {
             {
-                kMemories,
+                kJourneys,
                 {
-                    {"MemoriesExperimentName", kFakeExperimentName},
+                    {"JourneysExperimentName", kFakeExperimentName},
                 },
             },
             {
                 kRemoteModelForDebugging,
                 {
-                    {"MemoriesRemoteModelEndpoint", kFakeEndpoint},
+                    {"JourneysRemoteModelEndpoint", kFakeEndpoint},
                 },
             },
         },
@@ -96,27 +96,21 @@ class RemoteClusteringBackendTest : public testing::Test {
 TEST_F(RemoteClusteringBackendTest, EndToEnd) {
   remote_clustering_backend_->GetClusters(
       base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
+          [&](std::vector<history::Cluster> clusters) {
             ASSERT_EQ(clusters.size(), 2u);
 
-            ASSERT_EQ(clusters[0].scored_annotated_visits.size(), 2u);
-            EXPECT_EQ(clusters[0]
-                          .scored_annotated_visits[0]
-                          .annotated_visit.url_row.url(),
+            ASSERT_EQ(clusters[0].visits.size(), 2u);
+            EXPECT_EQ(clusters[0].visits[0].annotated_visit.url_row.url(),
                       "https://google.com/");
-            EXPECT_FLOAT_EQ(clusters[0].scored_annotated_visits[0].score, 0.66);
-            EXPECT_EQ(clusters[0]
-                          .scored_annotated_visits[1]
-                          .annotated_visit.url_row.url(),
+            EXPECT_FLOAT_EQ(clusters[0].visits[0].score, 0.66);
+            EXPECT_EQ(clusters[0].visits[1].annotated_visit.url_row.url(),
                       "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[0].scored_annotated_visits[1].score, 0.66);
+            EXPECT_FLOAT_EQ(clusters[0].visits[1].score, 0.66);
 
-            ASSERT_EQ(clusters[1].scored_annotated_visits.size(), 1u);
-            EXPECT_EQ(clusters[1]
-                          .scored_annotated_visits[0]
-                          .annotated_visit.url_row.url(),
+            ASSERT_EQ(clusters[1].visits.size(), 1u);
+            EXPECT_EQ(clusters[1].visits[0].annotated_visit.url_row.url(),
                       "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[1].scored_annotated_visits[0].score, 0.66);
+            EXPECT_FLOAT_EQ(clusters[1].visits[0].score, 0.66);
 
             run_loop_quit_.Run();
           }),
@@ -139,7 +133,7 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
     ASSERT_TRUE(request.ParseFromString(decoded));
 
     EXPECT_EQ(request.experiment_name(), kFakeExperimentName);
-    ASSERT_EQ(request.visits_size(), 2);
+    ASSERT_EQ(request.visits_size(), 4);
 
     auto visit = request.visits().at(0);
     EXPECT_EQ(visit.visit_id(), 1);
@@ -162,6 +156,15 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
     EXPECT_EQ(visit.page_end_reason(), 5);
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
+
+    // Don't verify the visit 3 because it's a synched visit and would be
+    // filtered by `GetAnnotatedVisitsToCluster` in history clusters service in
+    // the real world; it's bypassed by these tests so it's we assert all 3
+    // visits were sent.
+    // TODO(manukh): Once we move the filtering from
+    //  `GetAnnotatedVisitsToCluster` to the backend model, we won't need to do
+    //  this 'trick' and this test will match the real world; i.e. both cases
+    //  will send all 3 visits.
   }
 
   // This block sends a fake proto response back via the URL loader.
@@ -192,11 +195,10 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
 
 TEST_F(RemoteClusteringBackendTest, EmptyVisitsRequest) {
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       std::vector<history::AnnotatedVisit>());
 
   // Verify no request is made.
@@ -209,11 +211,10 @@ TEST_F(RemoteClusteringBackendTest, EmptyVisitsRequest) {
 TEST_F(RemoteClusteringBackendTest, EmptyResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -231,11 +232,10 @@ TEST_F(RemoteClusteringBackendTest, EmptyResponse) {
 TEST_F(RemoteClusteringBackendTest, InvalidJsonResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -253,11 +253,10 @@ TEST_F(RemoteClusteringBackendTest, InvalidJsonResponse) {
 TEST_F(RemoteClusteringBackendTest, EmptyJsonResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -274,12 +273,11 @@ TEST_F(RemoteClusteringBackendTest, EmptyJsonResponse) {
 
 TEST_F(RemoteClusteringBackendTest, TwoSimultaneousRequests) {
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_EQ(clusters.size(), 2u);
-            // Don't quit the run loop. We want to use the second request's
-            // response as the complete-condition for this test.
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+        // Don't quit the run loop. We want to use the second request's
+        // response as the complete-condition for this test.
+      }),
       GetHardcodedTestVisits());
 
   // Verify there's a single request to the endpoint.
@@ -287,11 +285,10 @@ TEST_F(RemoteClusteringBackendTest, TwoSimultaneousRequests) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_EQ(clusters.size(), 2u);
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify there are two requests to the endpoint.

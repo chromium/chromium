@@ -33,6 +33,10 @@ CORE_EXPORT LogicalOffset
 ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
                                const ComputedStyle& child_style);
 
+CORE_EXPORT LogicalOffset
+ComputeRelativeOffsetForOOFInInline(const NGConstraintSpace& space,
+                                    const ComputedStyle& child_style);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_RELATIVE_UTILS_H_

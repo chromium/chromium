@@ -14,6 +14,7 @@
 #import "ios/web/public/test/crw_fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/ui/context_menu_params.h"
+#import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -111,16 +112,16 @@ TEST_F(WebStateDelegateBridgeTest, HandleContextMenu) {
   EXPECT_EQ(nil, [delegate_ contextMenuParams]);
   web::ContextMenuParams context_menu_params;
   context_menu_params.is_main_frame = false;
-  context_menu_params.menu_title = [@"Menu title" copy];
   context_menu_params.link_url = GURL("http://www.url.com");
   context_menu_params.src_url = GURL("http://www.url.com/image.jpeg");
   context_menu_params.referrer_policy = web::ReferrerPolicyOrigin;
   context_menu_params.view = [[UIView alloc] init];
   context_menu_params.location = CGPointMake(5.0, 5.0);
+  context_menu_params.title_attribute = @"Title";
+  context_menu_params.alt_text = @"Alt";
   bridge_->HandleContextMenu(nullptr, context_menu_params);
   web::ContextMenuParams* result_params = [delegate_ contextMenuParams];
   EXPECT_NE(nullptr, result_params);
-  EXPECT_EQ(context_menu_params.menu_title, result_params->menu_title);
   EXPECT_EQ(context_menu_params.is_main_frame, result_params->is_main_frame);
   EXPECT_EQ(context_menu_params.link_url, result_params->link_url);
   EXPECT_EQ(context_menu_params.src_url, result_params->src_url);
@@ -129,6 +130,9 @@ TEST_F(WebStateDelegateBridgeTest, HandleContextMenu) {
   EXPECT_EQ(context_menu_params.view, result_params->view);
   EXPECT_EQ(context_menu_params.location.x, result_params->location.x);
   EXPECT_EQ(context_menu_params.location.y, result_params->location.y);
+  EXPECT_NSEQ(context_menu_params.title_attribute,
+              result_params->title_attribute);
+  EXPECT_NSEQ(context_menu_params.alt_text, result_params->alt_text);
 }
 
 // Tests |ShowRepostFormWarningDialog| forwarding.
@@ -171,51 +175,6 @@ TEST_F(WebStateDelegateBridgeTest, OnAuthRequired) {
                           std::move(callback));
   EXPECT_TRUE([delegate_ authenticationRequested]);
   EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
-}
-
-// Tests |ShouldPreviewLink| forwarding.
-TEST_F(WebStateDelegateBridgeTest, ShouldPreviewLinkWithURL) {
-  GURL link_url("http://link.test/");
-  EXPECT_FALSE(delegate_.webState);
-
-  delegate_.shouldPreviewLinkWithURLReturnValue = YES;
-  EXPECT_TRUE(bridge_->ShouldPreviewLink(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-
-  delegate_.shouldPreviewLinkWithURLReturnValue = NO;
-  EXPECT_FALSE(bridge_->ShouldPreviewLink(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-}
-
-// Tests |GetPreviewingViewController| forwarding.
-TEST_F(WebStateDelegateBridgeTest, GetPreviewingViewController) {
-  GURL link_url("http://link.test/");
-  UIViewController* previewing_view_controller =
-      OCMClassMock([UIViewController class]);
-
-  EXPECT_FALSE(delegate_.webState);
-  delegate_.previewingViewControllerForLinkWithURLReturnValue =
-      previewing_view_controller;
-  EXPECT_EQ(previewing_view_controller,
-            bridge_->GetPreviewingViewController(&fake_web_state_, link_url));
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(link_url, delegate_.linkURL);
-}
-
-// Tests |CommitPreviewingViewController| forwarding.
-TEST_F(WebStateDelegateBridgeTest, CommitPreviewingViewController) {
-  UIViewController* previewing_view_controller =
-      OCMClassMock([UIViewController class]);
-
-  EXPECT_FALSE(delegate_.webState);
-  EXPECT_FALSE(delegate_.previewingViewController);
-  bridge_->CommitPreviewingViewController(&fake_web_state_,
-                                          previewing_view_controller);
-  EXPECT_TRUE(delegate_.commitPreviewingViewControllerRequested);
-  EXPECT_EQ(&fake_web_state_, delegate_.webState);
-  EXPECT_EQ(previewing_view_controller, delegate_.previewingViewController);
 }
 
 }  // namespace web

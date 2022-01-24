@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.labs.dom.PageVisibilityMonitorTest');
 goog.setTestOnly();
@@ -18,6 +10,7 @@ goog.setTestOnly();
 const GoogTestingEvent = goog.require('goog.testing.events.Event');
 const PageVisibilityMonitor = goog.require('goog.labs.dom.PageVisibilityMonitor');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
+const dispose = goog.require('goog.dispose');
 const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
 const recordFunction = goog.require('goog.testing.recordFunction');
@@ -29,7 +22,7 @@ let vh;
 
 testSuite({
   tearDown() {
-    goog.dispose(vh);
+    dispose(vh);
     vh = null;
     stubs.reset();
   },
@@ -38,6 +31,7 @@ testSuite({
     vh = new PageVisibilityMonitor();
   },
 
+  /** @suppress {const} See go/const-js-library-faq */
   testNoVisibilitySupport() {
     stubs.set(
         PageVisibilityMonitor.prototype, 'getBrowserEventType_',
@@ -65,6 +59,9 @@ testSuite({
     events.listen(vh, 'visibilitychange', listener);
 
     const e = new GoogTestingEvent('visibilitychange');
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     e.target = window.document;
     testingEvents.fireBrowserEvent(e);
 
@@ -82,6 +79,9 @@ testSuite({
     events.listen(vh, 'visibilitychange', listener);
 
     const e = new GoogTestingEvent('webkitvisibilitychange');
+    /**
+     * @suppress {constantProperty} suppression added to enable type checking
+     */
     e.target = window.document;
     testingEvents.fireBrowserEvent(e);
 

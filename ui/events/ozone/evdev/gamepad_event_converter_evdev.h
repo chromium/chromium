@@ -11,7 +11,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
@@ -31,6 +30,10 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
                              int id,
                              const EventDeviceInfo& info,
                              DeviceEventDispatcherEvdev* dispatcher);
+
+  GamepadEventConverterEvdev(const GamepadEventConverterEvdev&) = delete;
+  GamepadEventConverterEvdev& operator=(const GamepadEventConverterEvdev&) =
+      delete;
 
   ~GamepadEventConverterEvdev() override;
 
@@ -121,8 +124,6 @@ class COMPONENT_EXPORT(EVDEV) GamepadEventConverterEvdev
   // The effect id is needed to keep track of effects that are uploaded and
   // stored in the gamepad device.
   int effect_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadEventConverterEvdev);
 };
 
 }  // namespace ui

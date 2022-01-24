@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.CookieEditorTest');
 goog.setTestOnly();
@@ -30,10 +22,12 @@ cookies.get = (key) => COOKIE_VALUES[key];
 
 cookies.set = (key, value) => COOKIE_VALUES[key] = value;
 
+/** @suppress {missingReturn} suppression added to enable type checking */
 cookies.remove = (key, value) => {
   delete COOKIE_VALUES[key];
 };
 
+/** @suppress {visibility} suppression added to enable type checking */
 function newCookieEditor(cookieValue = undefined) {
   // Set cookie.
   if (cookieValue) {
@@ -70,6 +64,7 @@ testSuite({
     assertNotNullNorUndefined('missing text area', editor.textAreaElem_);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testEditCookie() {
     // Render editor.
     const editor = newCookieEditor();
@@ -89,6 +84,7 @@ testSuite({
     assertEquals('wrong cookie value', newValue, cookies.get(COOKIE_KEY));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testClearCookie() {
     // Render editor.
     const value = 'I will be cleared';

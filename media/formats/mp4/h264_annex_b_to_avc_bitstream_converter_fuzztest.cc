@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 
 // Entry point for LibFuzzer.

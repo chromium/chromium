@@ -1,0 +1,15 @@
+-X11ScreenOzoneTest.AddMonitorToTheLeft
+-X11ScreenOzoneTest.AddMonitorToTheRight
+-X11ScreenOzoneTest.AddRemoveListDisplays
+-X11ScreenOzoneTest.BoundsChangeSingleMonitor
+-X11ScreenOzoneTest.DeviceScaleFactorChange
+-X11ScreenOzoneTest.GetDisplayForWidgetSingleDisplay
+-X11ScreenOzoneTest.GetDisplayForWidgetTwoDisplays
+-X11ScreenOzoneTest.GetDisplayMatchingBasic
+-X11ScreenOzoneTest.GetDisplayMatchingOverlap
+-X11ScreenOzoneTest.GetDisplayNearestWindow
+-X11ScreenOzoneTest.GetPrimaryDisplay
+-X11ScreenOzoneTest.RemoveMonitorOnLeft
+-X11ScreenOzoneTest.RemoveMonitorOnRight
+-X11ScreenOzoneTest.RotationChange
+-X11ScreenOzoneTest.WorkareaChange

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -101,6 +100,10 @@ class GCMDriverTest : public testing::Test {
   };
 
   GCMDriverTest();
+
+  GCMDriverTest(const GCMDriverTest&) = delete;
+  GCMDriverTest& operator=(const GCMDriverTest&) = delete;
+
   ~GCMDriverTest() override;
 
   // testing::Test:
@@ -182,8 +185,6 @@ class GCMDriverTest : public testing::Test {
   GCMClient::Result unregistration_result_;
   std::string p256dh_;
   std::string auth_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverTest);
 };
 
 GCMDriverTest::GCMDriverTest()
@@ -246,7 +247,7 @@ void GCMDriverTest::CreateDriver() {
   driver_ = std::make_unique<GCMDriverDesktop>(
       std::unique_ptr<GCMClientFactory>(new FakeGCMClientFactory(
           base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner())),
-      chrome_build_info, "user-agent-string", &prefs_, temp_dir_.GetPath(),
+      chrome_build_info, &prefs_, temp_dir_.GetPath(),
       /*remove_account_mappings_with_email_key=*/true, base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
@@ -525,13 +526,14 @@ TEST_F(GCMDriverTest, GCMClientNotReadyBeforeSending) {
 class GCMDriverFunctionalTest : public GCMDriverTest {
  public:
   GCMDriverFunctionalTest();
+
+  GCMDriverFunctionalTest(const GCMDriverFunctionalTest&) = delete;
+  GCMDriverFunctionalTest& operator=(const GCMDriverFunctionalTest&) = delete;
+
   ~GCMDriverFunctionalTest() override;
 
   // GCMDriverTest:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverFunctionalTest);
 };
 
 GCMDriverFunctionalTest::GCMDriverFunctionalTest() {
@@ -882,6 +884,10 @@ TEST_F(GCMDriverFunctionalTest, LastTokenFetchTime) {
 class GCMDriverInstanceIDTest : public GCMDriverTest {
  public:
   GCMDriverInstanceIDTest();
+
+  GCMDriverInstanceIDTest(const GCMDriverInstanceIDTest&) = delete;
+  GCMDriverInstanceIDTest& operator=(const GCMDriverInstanceIDTest&) = delete;
+
   ~GCMDriverInstanceIDTest() override;
 
   void GetReady();
@@ -913,8 +919,6 @@ class GCMDriverInstanceIDTest : public GCMDriverTest {
   std::string extra_data_;
 
   int instance_id_resolved_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverInstanceIDTest);
 };
 
 GCMDriverInstanceIDTest::GCMDriverInstanceIDTest() {

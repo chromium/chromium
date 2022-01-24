@@ -45,17 +45,9 @@ declare_args() {
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
-  # Set true for builds targeting Android appliances.
-  is_android_appliance = false
-
   # Set true if the platform works as a single volume device, mapping all
   # volume streams to a single one.
   is_single_volume = false
-
-  # Set to true to use CastWebContentsFragment instead of CastWebContentsActivity
-  # to run cast receiver app.
-  # TODO(thoren) merge this flag with display_web_contents_in_service
-  enable_cast_fragment = false
 
   if (is_android) {
     # Set to true to get logcat from a remote service
@@ -112,7 +104,7 @@ declare_args() {
   audio_input_sample_rate = 16000
 
   # Whether use unix sockets in Cast input/output stream.
-  use_unix_sockets = is_linux || is_chromeos
+  use_unix_sockets = is_linux || is_chromeos || is_android
 
   # Set to true to enable audio capture service for audio input.
   enable_audio_capture_service = false
@@ -133,8 +125,8 @@ declare_args() {
   # True to link in alternate build targets for the Cast Media Runtime.
   enable_cast_media_runtime = false
 
-  # Indicating whether the device has display, touch screen, etc.
-  device_capabilities = ""
+  # device specific string to append to User string.
+  device_user_agent_suffix = ""
 }
 
 declare_args() {

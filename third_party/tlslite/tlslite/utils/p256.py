@@ -2,6 +2,7 @@
 # See the LICENSE file for legal information regarding use of this file.
 
 import os
+import six
 
 p = (
     115792089210356248762697446949407573530086143415290314195533631308867097853951)
@@ -90,25 +91,27 @@ def _scalarBaseMult(k):
 
 
 def _decodeBigEndian(b):
-    return sum([ord(b[len(b) - i - 1]) << 8 * i for i in range(len(b))])
+    # TODO(davidben): Replace with int.from_bytes when removing Python 2.
+    return sum([six.indexbytes(b, len(b) - i - 1) << 8 * i
+                for i in range(len(b))])
 
 
 def _encodeBigEndian(n):
-    b = []
+    b = bytearray()
     while n != 0:
-        b.append(chr(n & 0xff))
+        b.append(n & 0xff)
         n >>= 8
 
     if len(b) == 0:
         b.append(0)
     b.reverse()
 
-    return "".join(b)
+    return bytes(b)
 
 
 def _zeroPad(b, length):
     if len(b) < length:
-        return ("\x00" * (length - len(b))) + b
+        return (b"\x00" * (length - len(b))) + b
     return b
 
 
@@ -117,12 +120,12 @@ def _encodePoint(point):
     y = point[1]
     if (y * y) % p != (x * x * x - 3 * x + p256B) % p:
         raise "point not on curve"
-    return "\x04" + _zeroPad(_encodeBigEndian(point[0]), 32) + _zeroPad(
+    return b"\x04" + _zeroPad(_encodeBigEndian(point[0]), 32) + _zeroPad(
         _encodeBigEndian(point[1]), 32)
 
 
 def _decodePoint(b):
-    if len(b) != 1 + 32 + 32 or ord(b[0]) != 4:
+    if len(b) != 1 + 32 + 32 or six.indexbytes(b, 0) != 4:
         raise "invalid encoded ec point"
     x = _decodeBigEndian(b[1:33])
     y = _decodeBigEndian(b[33:65])

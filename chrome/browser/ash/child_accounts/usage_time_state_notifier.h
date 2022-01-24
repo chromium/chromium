@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_STATE_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_STATE_NOTIFIER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -43,6 +42,9 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   // initialize the instance in the first time it's called.
   static UsageTimeStateNotifier* GetInstance();
 
+  UsageTimeStateNotifier(const UsageTimeStateNotifier&) = delete;
+  UsageTimeStateNotifier& operator=(const UsageTimeStateNotifier&) = delete;
+
   // Adds and removes observers.
   void AddObserver(UsageTimeStateNotifier::Observer* observer);
   void RemoveObserver(UsageTimeStateNotifier::Observer* observer);
@@ -69,8 +71,6 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   base::ObserverList<Observer> observers_;
 
   UsageTimeState last_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTimeStateNotifier);
 };
 
 }  // namespace ash

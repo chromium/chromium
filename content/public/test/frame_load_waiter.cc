@@ -5,7 +5,7 @@
 #include "content/public/test/frame_load_waiter.h"
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace content {

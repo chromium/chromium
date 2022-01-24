@@ -163,7 +163,8 @@
       "extension_types": ["extension"],
       "platforms": ["chromeos"],
       "allowlist": [
-        "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
+        "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // http://crbug.com/899052
+        "A430CF8BD146137B32764433F69685A53BF11F03"   // http://crbug.com/1256996
       ]
     }
   ],
@@ -191,13 +192,15 @@
   },
   "declarativeNetRequest": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
+  },
+  "declarativeNetRequestWithHostAccess": {
+    "channel": "stable",
+    "extension_types": ["extension"]
   },
   "declarativeNetRequestFeedback": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "feature_flag": "DeclarativeNetRequest"
+    "extension_types": ["extension"]
   },
   "declarativeWebRequest": {
     "channel": "beta",
@@ -442,7 +445,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "mac", "win", "linux"],
+    "platforms": ["chromeos", "mac", "win", "linux", "fuchsia"],
     "allowlist": [
       "0DE0F05680A4A056BCEC864ED8DDA84296F82B40",  // http://crbug.com/434651
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/293683
@@ -471,13 +474,14 @@
       "F2BCE012B9B7E2D57902B5A4F954EB01A7E548FD",  // http://crbug.com/1105137
       "D467F51D3846ED6D137F9FD403AE11CE416CD995",  // http://crbug.com/1105137
       "3823525AD445E0025E449F964C20922996B0F97F",  // http://crbug.com/1105137
-      "827B5D482FADCE120F4694AD0FA0680E3717C6EC"   // http://crbug.com/1105137
+      "827B5D482FADCE120F4694AD0FA0680E3717C6EC",  // http://crbug.com/1105137
+      "A430CF8BD146137B32764433F69685A53BF11F03"   // http://crbug.com/1256996
     ]
   }],
   "networkingPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos", "mac", "win", "linux"],
+    "platforms": ["chromeos", "mac", "win", "linux", "fuchsia"],
     "allowlist": [
       // DO NOT ADD ANY MORE ENTRIES HERE.
       // networkingPrivate is being migrated to networking.onc.
@@ -548,13 +552,15 @@
       "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
     },
     {
-      // https://crbug.com/1194693
       "channel": "stable",
       "component_extensions_auto_granted": false,
       "extension_types": ["login_screen_extension"],
       "location": "policy",
       "platforms": ["chromeos"],
       "allowlist": [
+        // https://crbug.com/1233881
+        "EC3DE21E048B67319893889529354DFBFA96FD23",   // Smart Card Connector
+        // https://crbug.com/1194693
         "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
         "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA"    // Beta CSSI Smart Card Middleware
       ]

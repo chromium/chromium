@@ -13,7 +13,6 @@
 #endif
 
 @implementation ChromeIdentityInteractionManager
-@synthesize delegate = _delegate;
 
 - (void)addAccountWithPresentingViewController:(UIViewController*)viewController
                                     completion:
@@ -28,8 +27,8 @@
   NOTREACHED() << "Subclasses must override this";
 }
 
-- (void)cancelAddAccountWithAnimation:(BOOL)animated
-                           completion:(void (^)(void))completion {
+- (void)cancelAddAccountAnimated:(BOOL)animated
+                      completion:(ProceduralBlock)completion {
   NOTREACHED() << "Subclasses must override this";
 }
 

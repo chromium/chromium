@@ -7,6 +7,14 @@
 
 #import "ios/web/public/web_state_user_data.h"
 
+// Protocol for clients which handle text fragments-related events.
+@protocol TextFragmentsDelegate <NSObject>
+
+// Invoked on user tap. Default behavior is to remove highlights on tap.
+- (void)userTappedTextFragmentInWebState:(web::WebState*)webState;
+
+@end
+
 namespace web {
 
 // Handles highlighting of text fragments on the page and user interactions
@@ -16,6 +24,14 @@ class TextFragmentsManager : public WebStateUserData<TextFragmentsManager> {
   ~TextFragmentsManager() override {}
   TextFragmentsManager(const TextFragmentsManager&) = delete;
   TextFragmentsManager& operator=(const TextFragmentsManager&) = delete;
+
+  // Removes any highlights which are currently being displayed on the page.
+  virtual void RemoveHighlights() = 0;
+
+  // Allows delegate to register themselves as the handler for certain events.
+  // If no delegate is registered, a default behavior will occur for these
+  // events, as described in the protocol documentation above.
+  virtual void RegisterDelegate(id<TextFragmentsDelegate> delegate) = 0;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

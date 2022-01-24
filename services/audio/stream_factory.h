@@ -46,6 +46,10 @@ class OutputStream;
 class StreamFactory final : public media::mojom::AudioStreamFactory {
  public:
   explicit StreamFactory(media::AudioManager* audio_manager);
+
+  StreamFactory(const StreamFactory&) = delete;
+  StreamFactory& operator=(const StreamFactory&) = delete;
+
   ~StreamFactory() final;
 
   void Bind(mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver);
@@ -116,7 +120,6 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   OutputStreamSet output_streams_;
 
   base::WeakPtrFactory<StreamFactory> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StreamFactory);
 };
 
 }  // namespace audio

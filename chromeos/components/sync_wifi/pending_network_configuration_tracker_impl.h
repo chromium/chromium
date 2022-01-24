@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 #define CHROMEOS_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 
-#include "base/macros.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker.h"
 #include "components/prefs/pref_service.h"
 
@@ -22,6 +21,12 @@ class PendingNetworkConfigurationTrackerImpl
     : public PendingNetworkConfigurationTracker {
  public:
   explicit PendingNetworkConfigurationTrackerImpl(PrefService* pref_service);
+
+  PendingNetworkConfigurationTrackerImpl(
+      const PendingNetworkConfigurationTrackerImpl&) = delete;
+  PendingNetworkConfigurationTrackerImpl& operator=(
+      const PendingNetworkConfigurationTrackerImpl&) = delete;
+
   ~PendingNetworkConfigurationTrackerImpl() override;
 
   // Registers preferences used by this class in the provided |registry|.
@@ -44,8 +49,6 @@ class PendingNetworkConfigurationTrackerImpl
  private:
   PrefService* pref_service_;
   base::Value dict_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingNetworkConfigurationTrackerImpl);
 };
 
 }  // namespace sync_wifi

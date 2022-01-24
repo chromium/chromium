@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_canvas.h"
@@ -77,6 +76,9 @@ class TextRunCollection {
     }
   }
 
+  TextRunCollection(const TextRunCollection&) = delete;
+  TextRunCollection& operator=(const TextRunCollection&) = delete;
+
   ~TextRunCollection() {
     if (bidi_)
       ubidi_close(bidi_);
@@ -115,8 +117,6 @@ class TextRunCollection {
   // When the content specifies override_direction (bidi_ is null) then this
   // will contain the single text run for WebKit.
   WebTextRun override_run_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextRunCollection);
 };
 
 bool PPTextRunToWebTextRun(const PP_BrowserFont_Trusted_TextRun& text,

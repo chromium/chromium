@@ -66,9 +66,8 @@ namespace {
 class DetachedClient final : public GarbageCollected<DetachedClient>,
                              public ThreadableLoaderClient {
  public:
-  explicit DetachedClient(ThreadableLoader* loader)
-      : self_keep_alive_(PERSISTENT_FROM_HERE, this), loader_(loader) {}
-  ~DetachedClient() override {}
+  explicit DetachedClient(ThreadableLoader* loader) : loader_(loader) {}
+  ~DetachedClient() override = default;
 
   void DidFinishLoading(uint64_t identifier) override {
     self_keep_alive_.Clear();
@@ -85,7 +84,7 @@ class DetachedClient final : public GarbageCollected<DetachedClient>,
   }
 
  private:
-  SelfKeepAlive<DetachedClient> self_keep_alive_;
+  SelfKeepAlive<DetachedClient> self_keep_alive_{this};
   // Keep it alive.
   const Member<ThreadableLoader> loader_;
 };
@@ -291,17 +290,6 @@ void ThreadableLoader::ResponseReceived(Resource* resource,
 
   checker_.ResponseReceived();
 
-  // Now the following check is not needed as the service worker added their own
-  // checks and today memory cache and preload matching rules are more strict.
-  // TODO(crbug.com/1053866): Remove the check.
-  if (response.WasFetchedViaServiceWorker() &&
-      request_mode_ != network::mojom::RequestMode::kNoCors &&
-      response.GetType() == network::mojom::FetchResponseType::kOpaque) {
-    DispatchDidFail(ResourceError(
-        response.CurrentRequestUrl(),
-        network::CorsErrorStatus(network::mojom::CorsError::kInvalidResponse)));
-    return;
-  }
   client_->DidReceiveResponse(resource->InspectorId(), response);
 }
 

@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/tts_button_state.h"
 
 namespace autofill_assistant {
 
@@ -26,7 +27,10 @@ class AssistantHeaderModel {
   void SetDelegate(const AssistantHeaderDelegate& delegate);
   void SetStatusMessage(const std::string& status_message);
   void SetBubbleMessage(const std::string& bubble_message);
-  void SetProgress(int progress);
+  void SetProfileIconMenuSettingsMessage(
+      const std::string& profile_icon_menu_settings_message);
+  void SetProfileIconMenuSendFeedbackMessage(
+      const std::string& profile_icon_menu_send_feedback_message);
   void SetProgressActiveStep(int active_step);
   void SetProgressVisible(bool visible);
   void SetProgressBarErrorState(bool error);
@@ -35,6 +39,8 @@ class AssistantHeaderModel {
       const base::android::ScopedJavaLocalRef<jobject>& jcontext);
   void SetSpinPoodle(bool enabled);
   void SetChips(const base::android::ScopedJavaLocalRef<jobject>& jchips);
+  void SetTtsButtonVisible(bool visible);
+  void SetTtsButtonState(TtsButtonState state);
   void SetDisableAnimations(bool disable_animations);
 
  private:

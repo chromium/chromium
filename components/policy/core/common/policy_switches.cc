@@ -32,5 +32,7 @@ const char kChromePolicy[] = "policy";
 const char kDisablePolicyKeyVerification[] = "disable-policy-key-verification";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Specifies the base URL to contact the secure connect Api.
+const char kSecureConnectApiUrl[] = "secure-connect-api-url";
 }  // namespace switches
 }  // namespace policy

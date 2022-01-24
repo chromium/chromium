@@ -12,6 +12,17 @@
 
 # Tests that fail in legacy but pass in NG
 
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-grid/grid-items/aspect-ratio-005.html [ Failure ]
+crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash ]
+crbug.com/626703 external/wpt/mediacapture-fromelement/capture.html [ Crash ]
+crbug.com/626703 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add-2.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete-2.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-sizing/dynamic-change-inline-size-002.html [ Failure ]
+
 # accessibility/
 crbug.com/1159730 accessibility/inline-text-box-next-on-line.html [ Failure ]
 crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]
@@ -66,6 +77,7 @@ crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-002.ht
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-005.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/baseline-synthesis-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/dynamic-baseline-change.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/dynamic-baseline-change-nested.html [ Failure ]
 crbug.com/1132627 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-007.xht [ Failure ]
@@ -94,6 +106,17 @@ crbug.com/1069614 external/wpt/css/css-flexbox/overflow-top-left.html [ Failure 
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox-justify-content-vert-006.xhtml [ Failure ]
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-left-002.html [ Failure ]
 crbug.com/1011718 external/wpt/css/css-flexbox/flexbox_justifycontent-right-002.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-001b.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002a.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/flexbox-flex-basis-content-002b.html [ Failure ]
+crbug.com/470421 external/wpt/css/css-flexbox/fixed-table-layout-with-percentage-width-in-flex-item.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-flexbox/dynamic-isize-change-002.html [ Crash ]
+crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
+crbug.com/1255340 external/wpt/css/css-flexbox/percentage-heights-016.html [ Failure ]
+crbug.com/1255340 external/wpt/css/css-flexbox/percentage-heights-017.html [ Failure ]
+crbug.com/1255340 external/wpt/css/css-flexbox/percentage-heights-018.html [ Failure ]
+crbug.com/1246126 external/wpt/css/css-flexbox/flex-minimum-width-flex-items-013.html [ Failure ]
 
 ### external/wpt/css/css-fonts/
 crbug.com/591099 external/wpt/css/css-fonts/font-features-across-space-1.html [ Failure ]
@@ -121,10 +144,12 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-siz
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-035.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-036.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-baseline-004.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-content-alignment-with-abspos-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-1.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-2.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-3.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-item-aspect-ratio-stretch-4.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-inline-baseline.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-003.html [ Failure ]
@@ -146,35 +171,49 @@ crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-asp
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-aspect-ratio-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-dynamic-003.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-repeat-minmax.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-limits-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/aspect-ratio-004.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-auto-margin-and-replaced-item-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-item-inline-contribution-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-item-inline-contribution-003.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-items/grid-size-with-orthogonal-child-dynamic.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-items/percentage-margin-dynamic.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-items/replaced-element-015.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-003.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-item-hit-test.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/flex-sizing-rows-indefinite-height.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/flex-tracks-with-fractional-size.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-content-distribution-must-account-for-track-sizing-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-003.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-dynamic-block-size.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-intrinsic-size-with-orthogonal-items.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-template-flexible-rerun-track-sizing.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-within-flexbox-indefinite.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-with-dynamic-img.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/grid-with-orthogonal-child-within-flexbox.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/parsing/grid-template-columns-computed-nogrid.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/parsing/grid-template-rows-computed-nogrid.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-025.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-sizing/contain-intrinsic-size/contain-intrinsic-size-026.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-001.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-002.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-003.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-004.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-005.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-006.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/grid-auto-repeat-huge-grid-007.html [ Failure ]
 crbug.com/1045599 fast/css-grid-layout/grid-item-spanning-and-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 fast/css-grid-layout/grid-track-sizing-with-orthogonal-flows.html [ Failure ]
 crbug.com/1045599 fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Failure ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-4.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-6.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-item-no-aspect-ratio-stretch-7.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-row-axis-self-baseline-synthesized-004.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-self-baseline-not-applied-if-sizing-cyclic-dependency-003.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-004.html [ Pass ]
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/grid-model/grid-areas-overflowing-grid-container-005.html [ Pass ]
+crbug.com/1045599 fast/css-grid-layout/non-grid-element-repeat-get-set.html [ Failure ]
+crbug.com/1045599 fast/css-grid-layout/non-named-grid-line-get-set.html [ Failure ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-area.js [ Failure ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-direction.js [ Failure ]
 crbug.com/1045599 http/tests/devtools/elements/highlight/highlight-css-grid-huge.js [ Failure ]
@@ -204,8 +243,11 @@ crbug.com/998423 external/wpt/css/css-multicol/with-custom-layout-on-same-elemen
 ### external/wpt/css/css-position/
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-005.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-crash-chrome-006.html [ Crash ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-dynamic-overflow-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-fit-content.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-in-inline-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-in-inline-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-replaced-intrinsic-size.tentative.html [ Failure ]
@@ -242,9 +284,25 @@ crbug.com/1108830 external/wpt/css/css-pseudo/marker-text-transform-uppercase.ht
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-word-break.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-default.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ Failure ]
+crbug.com/1147859 external/wpt/css/css-pseudo/selection-decoration-p3.html [ Failure ]
+crbug.com/1136817 external/wpt/css/css-pseudo/target-text-001.html [ Failure ]
+crbug.com/1136817 external/wpt/css/css-pseudo/target-text-002.html [ Failure ]
+crbug.com/1136817 external/wpt/css/css-pseudo/target-text-004.html [ Pass ]
+crbug.com/1136817 external/wpt/css/css-pseudo/target-text-005.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-002.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-001.html [ Failure ]
+crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-002.html [ Failure ]
+crbug.com/1035708 external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/1035708 external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
+crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-background-painting-order.html [ Failure ]
+crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/selection-originating-decoration-color.html [ Failure ]
 
 ### external/wpt/css/css-ruby/
+crbug.com/591099 external/wpt/css/css-ruby/br-clear-all-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ruby/ruby-line-breaking-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-002.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-ruby/ruby-with-floats-003.html [ Failure ]
 
 ### external/wpt/css/css-shapes/shape-outside/shape-box/
 crbug.com/591099 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-border-radius-003.html [ Failure ]
@@ -270,10 +328,10 @@ crbug.com/591099 external/wpt/css/css-shapes/shape-outside/supported-shapes/poly
 ### external/wpt/css/css-sizing/
 crbug.com/1045668 external/wpt/css/css-sizing/aspect-ratio/abspos-013.html [ Pass ]
 crbug.com/1154572 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-030.html [ Failure ]
-crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Pass ]
-crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Pass ]
+crbug.com/1251788 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Failure ]
+crbug.com/1251788 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-024.html [ Failure ]
-crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-025.html [ Pass ]
+crbug.com/1157740 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-026.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/clone-nowrap-intrinsic-size-bidi.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-004.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-sizing/intrinsic-percent-non-replaced-005.html [ Failure ]
@@ -395,6 +453,7 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-010.html [ Failure ]
 crbug.com/1063319 external/wpt/css/css-ui/text-overflow-028.html [ Failure ]
 crbug.com/1078539 external/wpt/css/css-ui/outline-025.html [ Failure ]
 crbug.com/1078539 external/wpt/css/css-ui/outline-026.html [ Failure ]
+crbug.com/1250194 wpt_internal/css/css-ui/outline-block-in-inline.html [ Failure ]
 
 ### external/wpt/css/css-writing-modes/
 crbug.com/591099 external/wpt/css/css-writing-modes/abs-pos-non-replaced-icb-vlr-003.xht [ Failure ]
@@ -499,6 +558,7 @@ crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vlr-in-htb-001
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vlr-in-htb-004.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-001.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/sizing-orthog-vrl-in-htb-004.xht [ Failure ]
+crbug.com/591099 external/wpt/css/css-writing-modes/text-shadow-orientation-upright-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/two-levels-of-orthogonal-flows-percentage.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/vertical-alignment-003.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/vertical-alignment-009.xht [ Failure ]
@@ -553,6 +613,7 @@ crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ F
 
 ### fast/css/
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
+crbug.com/591099 fast/css/getComputedStyle/getComputedStyle-use-computedFontSize-lineHeight.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]
 
 ### fast/css-intrinsic-dimensions/
@@ -648,17 +709,11 @@ crbug.com/591099 virtual/gpu-rasterization/images/favicon-as-image.html [ Failur
 ### virtual/layout_ng_block_frag/
 virtual/layout_ng_block_frag/* [ Skip ]
 
-### virtual/layout_ng_fragment_traversal/
-virtual/layout_ng_fragment_traversal/* [ Skip ]
+### virtual/layout_ng_flex_frag/
+virtual/layout_ng_flex_frag/* [ Skip ]
 
-### virtual/layout-ng-grid/
-virtual/layout-ng-grid/* [ Skip ]
-
-### virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/
-crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogonal-positioned-grid-descendants-001.html [ Failure ]
-
-### virtual/layout_ng_svg_text/
-virtual/layout_ng_svg_text/* [ Skip ]
+### virtual/layout_ng_grid_frag/
+virtual/layout_ng_grid_frag/* [ Skip ]
 
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
@@ -707,6 +762,8 @@ crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-012.html [ Fail
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-013.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-014.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-027.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-038.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-overflow/webkit-line-clamp-039.html [ Failure ]
 
 # White space, absolute position and paint timing failures from June 5, 2020
 crbug.com/591099 external/wpt/paint-timing/fcp-only/fcp-pseudo-element-visibility.html [ Failure ]
@@ -914,14 +971,13 @@ crbug.com/958381 external/wpt/css/css-pseudo/selection-input-011.html [ Failure 
 crbug.com/958381 external/wpt/css/css-pseudo/selection-textarea-011.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/white-space/tab-bidi-001.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-text/word-break/break-boundary-2-chars-001.html [ Failure ]
-crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.html [ Failure ]
-crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.worker.html [ Failure ]
+crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Failure ]
+crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/border-writing-mode-dynamic-001.html [ Failure ]
 
 ### Should we rebase virtuals too?
 crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Failure ]
 crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video.html [ Failure ]
-crbug.com/958381 virtual/synchronous_html_parser/fast/css/bidi-override-in-anonymous-block.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/textIteratorNilRenderer.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/basic/generic-family-reset.html [ Failure ]
 crbug.com/958381 virtual/text-antialias/international/bidi-layout-across-linebreak.html [ Failure ]
@@ -1093,6 +1149,8 @@ crbug.com/667785 external/wpt/css/css-grid/table-grid-item-005.html [ Failure ]
 
 ### external/wpt/css/css-pseudo/
 crbug.com/591099 external/wpt/css/css-pseudo/active-selection-011.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-pseudo/active-selection-012.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-pseudo/highlight-paired-cascade-004.tentative.html [ Failure ]
 
 ### external/wpt/css/css-writing-modes/
 crbug.com/591099 external/wpt/css/css-writing-modes/table-column-order-002.xht [ Failure ]
@@ -1119,12 +1177,12 @@ crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-fallbacks-in-
 crbug.com/591099 external/wpt/css/css-counter-styles/counter-styles-override-in-shadow-dom.html [ Failure ]
 
 ### wpt_internal/webcodecs/
-crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.any.worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.any.worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.any.worker.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.https.any.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.https.any.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.https.any.worker.html [ Failure ]
 
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
@@ -1163,7 +1221,6 @@ crbug.com/591099 external/wpt/css/css-writing-modes/tooltip-display-vertical-001
 crbug.com/591099 external/wpt/html/editing/dnd/platform/close-drag-005-manual.html [ Failure ]
 crbug.com/591099 fast/canvas-api/canvas-formattedtext.html [ Crash ]
 crbug.com/591099 http/tests/devtools/elements/highlight/highlight-css-flex-item.js [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
 
 # Failures accumulated until 2021-5-11
 crbug.com/591099 compositing/transform-3d-scales-different-x-y.html [ Failure ]
@@ -1194,10 +1251,10 @@ crbug.com/591099 external/wpt/css/css-ui/box-sizing-024.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-ui/box-sizing-025.html [ Failure ]
 crbug.com/591099 external/wpt/css/cssom/idlharness.html [ Failure ]
 crbug.com/591099 external/wpt/scroll-to-text-fragment/iframes.sub.html [ Crash ]
-crbug.com/591099 external/wpt/webcodecs/video-decoder.any.html [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/video-decoder.any.worker.html [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/video-encoder-config.any.html [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/video-encoder-config.any.worker.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/video-decoder.https.any.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/video-decoder.https.any.worker.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/video-encoder-config.https.any.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/video-encoder-config.https.any.worker.html [ Failure ]
 crbug.com/591099 fast/replaced/table-percent-width.html [ Failure ]
 crbug.com/591099 fast/table/background-gradient-border-collapsed.html [ Failure ]
 crbug.com/591099 fast/writing-mode/border-image-vertical-lr.html [ Failure ]
@@ -1222,29 +1279,30 @@ crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/patternfill-repeat.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/media/audio-controls-rendering.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/media/media-document-audio-repaint.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/as-background-image/background-image-preserveaspectRatio-support.html [ Failure ]
-crbug.com/591099 virtual/synchronous_html_parser/svg/transforms/text-with-pattern-inside-transformed-html.xhtml [ Failure ]
-crbug.com/591099 virtual/transform-interop-disabled/paint/invalidation/svg/tspan-pattern-update.html [ Failure ]
-crbug.com/591099 virtual/transform-interop-disabled/transforms/3d/general/perspective-units.html [ Failure ]
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/temporal_svc.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/temporal_svc.any.worker.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.html [ Failure ]
+crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-013.html [ Failure ]
 
 # The no-layout-ng bot compiles without proprietary codecs.
 # Timeout due to https://github.com/web-platform-tests/wpt/issues/29373
-crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.any.html?adts_aac [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.any.html?mp4_aac [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_annexb [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.html?h264_avc [ Failure ]
-crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.any.worker.html?adts_aac [ Failure Timeout ]
-crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.any.worker.html?mp4_aac [ Failure Timeout ]
-crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_annexb [ Failure Timeout ]
-crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.any.worker.html?h264_avc [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/audio-decoder.crossOriginIsolated.https.any.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.html?adts_aac [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.html?mp4_aac [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/video-decoder.crossOriginIsolated.https.any.html [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_annexb [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?h264_avc [ Failure ]
+crbug.com/591099 external/wpt/webcodecs/audio-decoder.crossOriginIsolated.https.any.worker.html [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?mp4_aac [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/video-decoder.crossOriginIsolated.https.any.worker.html [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_annexb [ Failure Timeout ]
+crbug.com/591099 external/wpt/webcodecs/videoDecoder-codec-specific.https.any.worker.html?h264_avc [ Failure Timeout ]
+
+# Flaky only in legacy layout
+crbug.com/1231658 transforms/transformed-caret.html [ Failure Pass ]
 
 crbug.com/591099 fast/forms/time/time-appearance-basic.html [ Failure ]
 crbug.com/591099 virtual/prerender/wpt_internal/prerender/restriction-encrypted-media.https.html [ Failure ]
@@ -1258,3 +1316,93 @@ crbug.com/591099 external/wpt/css/css-lists/list-style-type-decimal-vertical-rl.
 # unblock wpt-importer
 crbug.com/591099 external/wpt/css/css-lists/list-style-image-gradients.html [ Failure ]
 crbug.com/591099 external/wpt/editing/other/insert-text-in-void-element.tentative.html [ Failure ]
+
+# unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-content/attr-case-sensitivity-003.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-027.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-028.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-029.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-030.html [ Failure ]
+crbug.com/591099 http/tests/devtools/webaudio/graphview-test.js [ Failure ]
+crbug.com/591099 virtual/shared_array_buffer_on_desktop/http/tests/devtools/webaudio/graphview-test.js [ Failure ]
+
+#unblock wpt-importer
+crbug.com/591099 external/wpt/css/css-overflow/scrollable-overflow-input-001.html [ Failure ]
+crbug.com/591099 external/wpt/editing/run/delete.html?7001-last [ Failure ]
+crbug.com/591099 external/wpt/mimesniff/media/media-sniff.window.html [ Failure ]
+crbug.com/591099 external/wpt/editing/other/insert-paragraph-in-void-element.tentative.html [ Failure ]
+
+# inline-end overflow
+crbug.com/1245722 overflow/overflow-basic-002.html [ Failure ]
+
+# Backgrounds and border tests fail only with legacy layout.
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-042.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-045.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-046.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-049.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-054.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-057.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-066.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-067.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-069.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-072.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-079.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-084.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-089.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-091.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-099.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-102.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-105.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-108.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-113.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-115.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-123.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-126.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-129.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-132.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-159.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-162.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-165.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-168.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-176.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-178.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-183.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-186.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-189.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-192.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-200.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-202.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-attachment-004.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-attachment-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-position-applies-to-005.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-position-applies-to-006.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/backgrounds/background-root-020.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-left-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-left-color-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-left-width-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-right-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-right-color-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/borders/border-right-width-applies-to-014.xht [ Failure ]
+
+# Failures when enabling CompositeAfter
+crbug.com/591099 fast/block/float/float-change-composited-scrolling.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-aspectparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-transformparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-viewboxparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-viewtargetparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-zoomandpanparams.html [ Failure ]
+
+# Fails with ForceSynchronousHTMLParsing enabled, might be a fluke:
+crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
+
+crbug.com/674631 external/wpt/css/css-color/inline-opacity-float-child.html [ Failure ]
+
+# Off by one errors cause by SwiftShader update
+crbug.com/1266821 compositing/gestures/gesture-tapHighlight-pixel-rotated-div.html [ Failure ]
+crbug.com/1266821 media/video-zoom-controls.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/12-55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/182.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/2-dht.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/23-55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/imagemap-focus-ring-zoom.html [ Failure ]

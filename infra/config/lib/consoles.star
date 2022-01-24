@@ -392,7 +392,7 @@ def list_view(*, name, branch_selector = branches.MAIN, **kwargs):
     )
 
 def _sort_consoles(ctx):
-    milo = ctx.output["luci-milo.cfg"]
+    milo = ctx.output["luci/luci-milo.cfg"]
     consoles = []
     for console in milo.consoles:
         if not console.builders:

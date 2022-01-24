@@ -16,7 +16,6 @@
 #define CRASHPAD_TEST_TEST_PATHS_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace crashpad {
@@ -59,6 +58,10 @@ class TestPaths {
     k32Bit,
 #endif  // OS_WIN && ARCH_CPU_64_BITS
   };
+
+  TestPaths() = delete;
+  TestPaths(const TestPaths&) = delete;
+  TestPaths& operator=(const TestPaths&) = delete;
 
   //! \brief Returns the pathname of the currently-running test executable.
   //!
@@ -140,8 +143,6 @@ class TestPaths {
   //! with Architecture::kDefault.
   static bool Has32BitBuildArtifacts();
 #endif  // OS_WIN && ARCH_CPU_64_BITS
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TestPaths);
 };
 
 }  // namespace test

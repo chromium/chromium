@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +19,10 @@ namespace ui {
 class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
  public:
   TreeNodeModelTest() = default;
+
+  TreeNodeModelTest(const TreeNodeModelTest&) = delete;
+  TreeNodeModelTest& operator=(const TreeNodeModelTest&) = delete;
+
   ~TreeNodeModelTest() override = default;
 
  protected:
@@ -51,8 +54,6 @@ class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
   int added_count_ = 0;
   int removed_count_ = 0;
   int changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeModelTest);
 };
 
 typedef TreeNodeWithValue<int> TestNode;

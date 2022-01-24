@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_BOOKMARKS_BROWSER_SCOPED_GROUP_BOOKMARK_ACTIONS_H_
 #define COMPONENTS_BOOKMARKS_BROWSER_SCOPED_GROUP_BOOKMARK_ACTIONS_H_
 
-#include "base/macros.h"
-
 namespace bookmarks {
 
 class BookmarkModel;
@@ -15,12 +13,15 @@ class BookmarkModel;
 class ScopedGroupBookmarkActions {
  public:
   explicit ScopedGroupBookmarkActions(BookmarkModel* model);
+
+  ScopedGroupBookmarkActions(const ScopedGroupBookmarkActions&) = delete;
+  ScopedGroupBookmarkActions& operator=(const ScopedGroupBookmarkActions&) =
+      delete;
+
   ~ScopedGroupBookmarkActions();
 
  private:
   BookmarkModel* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGroupBookmarkActions);
 };
 
 }  // namespace bookmarks

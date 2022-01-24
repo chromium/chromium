@@ -13,13 +13,17 @@ namespace lacros_url_handling {
 
 bool MaybeInterceptNavigation(const GURL& url) {
   // For now, just intercept the os-settings URL.
-  if (url.GetOrigin() != GURL(chrome::kChromeUIOSSettingsURL).GetOrigin())
+  if (url.DeprecatedGetOriginAsURL() !=
+      GURL(chrome::kChromeUIOSSettingsURL).DeprecatedGetOriginAsURL())
     return false;
 
   // We may expand this in the future to support a dynamic set of URLs provided
   // by Ash via LacrosInitParams. That way we avoid having to synchronize the
   // set of known chrome:// URLs across the two sides.
+  return NavigateInAsh(url);
+}
 
+bool NavigateInAsh(const GURL& url) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::UrlHandler>())
     return false;

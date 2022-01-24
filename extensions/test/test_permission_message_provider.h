@@ -13,6 +13,11 @@ namespace extensions {
 class TestPermissionMessageProvider : public PermissionMessageProvider {
  public:
   TestPermissionMessageProvider();
+
+  TestPermissionMessageProvider(const TestPermissionMessageProvider&) = delete;
+  TestPermissionMessageProvider& operator=(
+      const TestPermissionMessageProvider&) = delete;
+
   ~TestPermissionMessageProvider() override;
 
  private:
@@ -24,8 +29,6 @@ class TestPermissionMessageProvider : public PermissionMessageProvider {
   PermissionIDSet GetAllPermissionIDs(
       const PermissionSet& permissions,
       Manifest::Type extension_type) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPermissionMessageProvider);
 };
 
 }  // namespace extensions

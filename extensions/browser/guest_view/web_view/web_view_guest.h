@@ -40,6 +40,9 @@ class WebViewInternalFindFunction;
 // a particular <webview>.
 class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
  public:
+  WebViewGuest(const WebViewGuest&) = delete;
+  WebViewGuest& operator=(const WebViewGuest&) = delete;
+
   // Clean up state when this GuestView is being destroyed. See
   // GuestViewBase::CleanUp().
   static void CleanUp(content::BrowserContext* browser_context,
@@ -214,7 +217,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const content::NativeWebKeyboardEvent& event) final;
@@ -272,7 +275,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void LoadProgressChanged(double progress) final;
   void DocumentOnLoadCompletedInMainFrame(
       content::RenderFrameHost* render_frame_host) final;
-  void RenderProcessGone(base::TerminationStatus status) final;
+  void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,
                         const std::string& name) final;
@@ -394,8 +397,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
   base::WeakPtrFactory<WebViewGuest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewGuest);
 };
 
 }  // namespace extensions

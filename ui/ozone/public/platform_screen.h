@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
@@ -46,6 +45,10 @@ namespace ui {
 class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
  public:
   PlatformScreen();
+
+  PlatformScreen(const PlatformScreen&) = delete;
+  PlatformScreen& operator=(const PlatformScreen&) = delete;
+
   virtual ~PlatformScreen();
 
   // Provide a |display:;Display| for each physical display available to Chrome.
@@ -115,9 +118,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
  protected:
   void StorePlatformNameIntoListOfValues(std::vector<base::Value>& values,
                                          const std::string& platform_name);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformScreen);
 };
 
 }  // namespace ui

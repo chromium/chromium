@@ -62,7 +62,7 @@ class SVGFEConvolveMatrixElement final
 
  private:
   IntSize MatrixOrder() const;
-  IntPoint TargetPoint() const;
+  gfx::Point TargetPoint() const;
   float ComputeDivisor() const;
 
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;

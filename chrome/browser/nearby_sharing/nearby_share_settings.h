@@ -24,6 +24,10 @@ class PrefService;
 // instance per user profile. This class also helps to keep some of the prefs
 // logic out of |NearbyShareServiceImpl|.
 //
+// This class is also used to expose device properties that affect the settings
+// UI, but cannot be added at load time because they need to be re-computed. See
+// GetIsFastInitiationHardwareSupported() as an example.
+//
 // The mojo interface is intended to be exposed in settings, os_settings, and
 // the nearby WebUI.
 //
@@ -48,6 +52,9 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
 
   // Synchronous getters for C++ clients, mojo setters can be used as is
   bool GetEnabled() const;
+  nearby_share::mojom::FastInitiationNotificationState
+  GetFastInitiationNotificationState() const;
+  void SetIsFastInitiationHardwareSupported(bool is_supported);
   std::string GetDeviceName() const;
   nearby_share::mojom::DataUsage GetDataUsage() const;
   nearby_share::mojom::Visibility GetVisibility() const;
@@ -62,8 +69,17 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
       ::mojo::PendingRemote<nearby_share::mojom::NearbyShareSettingsObserver>
           observer) override;
   void GetEnabled(base::OnceCallback<void(bool)> callback) override;
+  void GetFastInitiationNotificationState(
+      base::OnceCallback<
+          void(nearby_share::mojom::FastInitiationNotificationState)> callback)
+      override;
+  void GetIsFastInitiationHardwareSupported(
+      base::OnceCallback<void(bool)> callback) override;
   void SetEnabled(bool enabled) override;
+  void SetFastInitiationNotificationState(
+      nearby_share::mojom::FastInitiationNotificationState state) override;
   void IsOnboardingComplete(base::OnceCallback<void(bool)> callback) override;
+  void SetIsOnboardingComplete(bool completed) override;
   void GetDeviceName(
       base::OnceCallback<void(const std::string&)> callback) override;
   void ValidateDeviceName(
@@ -95,10 +111,20 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
 
  private:
   void OnEnabledPrefChanged();
+  void OnFastInitiationNotificationStatePrefChanged();
   void OnDataUsagePrefChanged();
   void OnVisibilityPrefChanged();
   void OnAllowedContactsPrefChanged();
+  void OnIsOnboardingCompletePrefChanged();
 
+  // If the Nearby Share parent feature is toggled on then Fast Initiation
+  // notifications should be re-enabled unless the user explicitly disabled the
+  // notification sub-feature.
+  void ProcessFastInitiationNotificationParentPrefChanged(bool enabled);
+
+  // This is false by default and gets updated in NearbySharingServiceImpl when
+  // the bluetooth adapter availablility changes.
+  bool is_fast_initiation_hardware_supported_ = false;
   mojo::RemoteSet<nearby_share::mojom::NearbyShareSettingsObserver>
       observers_set_;
   mojo::ReceiverSet<nearby_share::mojom::NearbyShareSettings> receiver_set_;

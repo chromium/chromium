@@ -4,11 +4,11 @@
 
 import './shimless_rma_shared_css.js';
 import './base_page.js';
-
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -18,7 +18,18 @@ import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js'
  * 'onboarding-choose-destination-page' allows user to select between preparing
  * the device for return to the original owner or refurbishing for a new owner.
  */
-export class OnboardingChooseDestinationPageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingChooseDestinationPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingChooseDestinationPageElement extends
+    OnboardingChooseDestinationPageBase {
   static get is() {
     return 'onboarding-choose-destination-page';
   }
@@ -29,23 +40,17 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
-        type: Object,
-        value: {},
-      },
-
-      /** @private {string} */
+      /** @protected */
       destinationOwner_: {
         type: String,
-        value: "",
+        value: '',
       },
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
   }
 
@@ -55,6 +60,11 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
    */
   onDestinationSelectionChanged_(event) {
     this.destinationOwner_ = event.detail.value;
+    const disabled = !this.destinationOwner_;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: disabled},
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -67,7 +77,7 @@ export class OnboardingChooseDestinationPageElement extends PolymerElement {
       return Promise.reject(new Error('No destination selected'));
     }
   }
-};
+}
 
 customElements.define(
     OnboardingChooseDestinationPageElement.is,

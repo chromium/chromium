@@ -17,15 +17,18 @@
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
+#include "components/sync/protocol/list_passwords_result.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
+#include "components/sync/protocol/password_with_local_data.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/printer_specifics.pb.h"
@@ -37,6 +40,7 @@
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
@@ -65,8 +69,8 @@
 // implements various customizations.
 
 #define VISIT_(Kind, field) \
-  if (proto.has_##field()) \
-    visitor.Visit##Kind(proto, #field, proto.field())
+  if (proto.has_##field())  \
+  visitor.Visit##Kind(proto, #field, proto.field())
 
 // Generic version, calls visitor.Visit(). Handles almost everything except
 // for special cases below.
@@ -84,8 +88,7 @@
 
 // Repeated fields are always present, so there are no 'has_<field>' methods.
 // This macro unconditionally calls visitor.Visit().
-#define VISIT_REP(field) \
-  visitor.Visit(proto, #field, proto.field());
+#define VISIT_REP(field) visitor.Visit(proto, #field, proto.field());
 
 #define VISIT_PROTO_FIELDS(proto) \
   template <class V>              \
@@ -118,12 +121,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AppSpecifics& proto) {
   VISIT(app_launch_ordinal);
   VISIT(page_ordinal);
   VISIT_ENUM(launch_type);
-  VISIT(bookmark_app_url);
-  VISIT(bookmark_app_description);
-  VISIT(bookmark_app_icon_color);
   VISIT_REP(linked_app_icons);
-  VISIT(bookmark_app_scope);
-  VISIT(bookmark_app_theme_color);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ArcPackageSpecifics& proto) {
@@ -262,6 +260,9 @@ VISIT_PROTO_FIELDS(const sync_pb::BookmarkSpecifics& proto) {
   VISIT(icon_url);
   VISIT_REP(meta_info);
   VISIT(full_title);
+  VISIT(parent_guid);
+  VISIT_ENUM(type);
+  VISIT(unique_position);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ChromiumExtensionsActivity& proto) {
@@ -509,7 +510,6 @@ VISIT_PROTO_FIELDS(const sync_pb::ExtensionSpecifics& proto) {
   VISIT(update_url);
   VISIT(enabled);
   VISIT(incognito_enabled);
-  VISIT(name);
   VISIT(remote_install);
   VISIT(all_urls_enabled);
   VISIT(disable_reasons);
@@ -569,6 +569,10 @@ VISIT_PROTO_FIELDS(const sync_pb::InvalidationSpecificFields& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::LinkedAppIconInfo& proto) {
   VISIT(url);
   VISIT(size);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::ListPasswordsResult& proto) {
+  VISIT_REP(password_data);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ManagedUserSettingSpecifics& proto) {
@@ -695,6 +699,11 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {
   VISIT(client_only_encrypted_data);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::PasswordWithLocalData& proto) {
+  VISIT(password_specifics_data);
+  VISIT_BYTES(local_chrome_data);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(scheme);
   VISIT(signon_realm);
@@ -775,6 +784,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ReadingListSpecifics& proto) {
   VISIT_ENUM(status);
   VISIT(first_read_time_us);
   VISIT(update_title_time_us);
+  VISIT(estimated_read_time_seconds);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
@@ -797,6 +807,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {
   VISIT(suggestions_url_post_params);
   VISIT(image_url_post_params);
   VISIT(new_tab_url);
+  VISIT_ENUM(is_active);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
@@ -1215,7 +1226,8 @@ VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::WorkspaceDeskSpecifics& proto) {
   VISIT(uuid);
   VISIT(name);
-  VISIT(created_time_usec);
+  VISIT(created_time_windows_epoch_micros);
+  VISIT(updated_time_windows_epoch_micros);
   VISIT(desk);
 }
 

@@ -52,12 +52,12 @@ schema_sources_ = [
   "sessions.json",
   "settings_private.idl",
   "signed_in_devices.idl",
-  "system_indicator.idl",
   "system_private.json",
   "tab_capture.idl",
   "tab_groups.json",
   "tabs.json",
   "types.json",
+  "web_authentication_proxy.idl",
   "web_navigation.json",
 
   # Despite the name, these APIs do not rely on any WebRTC-specific bits and as
@@ -74,15 +74,21 @@ if (!is_android) {
   schema_sources_ += [ "processes.idl" ]
 }
 
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   schema_sources_ += [
     "enterprise_device_attributes.idl",
     "enterprise_networking_attributes.idl",
     "enterprise_platform_keys.idl",
     "enterprise_platform_keys_internal.idl",
+    "login_state.idl",
     "platform_keys_internal.idl",
     "platform_keys.idl",
+    "quick_unlock_private.idl",
   ]
+
+  if (use_cups) {
+    schema_sources_ += [ "printing.idl" ]
+  }
 }
 
 if (is_chromeos_ash) {
@@ -103,8 +109,7 @@ if (is_chromeos_ash) {
     "login.idl",
     "login_screen_storage.idl",
     "login_screen_ui.idl",
-    "login_state.idl",
-    "quick_unlock_private.idl",
+    "speech_recognition_private.idl",
     "terminal_private.json",
     "users_private.idl",
     "wallpaper.json",
@@ -112,10 +117,7 @@ if (is_chromeos_ash) {
     "wm_desks_private.idl",
   ]
   if (use_cups) {
-    schema_sources_ += [
-      "printing.idl",
-      "printing_metrics.idl",
-    ]
+    schema_sources_ += [ "printing_metrics.idl" ]
   }
 } else if (is_linux || is_chromeos || is_win) {
   schema_sources_ += [ "input_ime.json" ]
@@ -123,6 +125,10 @@ if (is_chromeos_ash) {
 
 if (enable_service_discovery) {
   schema_sources_ += [ "mdns.idl" ]
+}
+
+if (is_linux || is_mac || is_win) {
+  schema_sources_ += [ "system_indicator.idl" ]
 }
 
 uncompiled_sources_ = [

@@ -1,59 +1,66 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
 
-#include <utility>
-
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include "base/check.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
-#include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using device::mojom::BluetoothSystem;
-using device::mojom::BluetoothDeviceInfo;
-
 namespace ash {
+namespace {
+using chromeos::bluetooth_config::GetPairedDeviceName;
+using chromeos::bluetooth_config::mojom::BluetoothModificationState;
+using chromeos::bluetooth_config::mojom::BluetoothSystemPropertiesPtr;
+using chromeos::bluetooth_config::mojom::BluetoothSystemState;
+using chromeos::bluetooth_config::mojom::DeviceConnectionState;
+using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+}  // namespace
 
 BluetoothFeaturePodController::BluetoothFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  Shell::Get()->tray_bluetooth_helper()->AddObserver(this);
+  DCHECK(ash::features::IsBluetoothRevampEnabled());
+  GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config_->ObserveSystemProperties(
+      cros_system_properties_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
-BluetoothFeaturePodController::~BluetoothFeaturePodController() {
-  auto* helper = Shell::Get()->tray_bluetooth_helper();
-  if (helper)
-    helper->RemoveObserver(this);
-}
+BluetoothFeaturePodController::~BluetoothFeaturePodController() = default;
 
 FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
   DCHECK(!button_);
   button_ = new FeaturePodButton(this);
   button_->ShowDetailedViewArrow();
-  UpdateButton();
+  UpdateButtonStateIfExists();
   return button_;
 }
 
 void BluetoothFeaturePodController::OnIconPressed() {
-  bool was_enabled = button_->IsToggled();
-  Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(!was_enabled);
-
-  // If Bluetooth was disabled, show device list as well as enabling Bluetooth.
-  if (!was_enabled)
+  if (!button_->GetEnabled())
+    return;
+  const bool is_toggled = button_->IsToggled();
+  remote_cros_bluetooth_config_->SetBluetoothEnabledState(!is_toggled);
+  if (!is_toggled)
     tray_controller_->ShowBluetoothDetailedView();
 }
 
 void BluetoothFeaturePodController::OnLabelPressed() {
-  Shell::Get()->tray_bluetooth_helper()->SetBluetoothEnabled(true);
+  if (!button_->GetEnabled())
+    return;
+  if (!button_->IsToggled())
+    remote_cros_bluetooth_config_->SetBluetoothEnabledState(true);
   tray_controller_->ShowBluetoothDetailedView();
 }
 
@@ -61,112 +68,147 @@ SystemTrayItemUmaType BluetoothFeaturePodController::GetUmaType() const {
   return SystemTrayItemUmaType::UMA_BLUETOOTH;
 }
 
-void BluetoothFeaturePodController::UpdateButton() {
-  bool is_available =
-      Shell::Get()->tray_bluetooth_helper()->IsBluetoothStateAvailable();
-  button_->SetVisible(is_available);
-  if (!is_available)
-    return;
+BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
+    BluetoothDeviceNameAndBatteryInfo(
+        const std::u16string& device_name,
+        chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr battery_info)
+    : device_name(device_name), battery_info(std::move(battery_info)) {}
 
-  // Bluetooth power setting is always mutable in login screen before any
-  // user logs in. The changes will affect local state preferences.
-  //
-  // Otherwise, the bluetooth setting should be mutable only if:
-  // * the active user is the primary user, and
-  // * the session is not in lock screen
-  // The changes will affect the primary user's preferences.
-  SessionControllerImpl* session_controller =
-      Shell::Get()->session_controller();
-  button_->SetEnabled(!session_controller->IsActiveUserSessionStarted() ||
-                      (session_controller->IsUserPrimary() &&
-                       !session_controller->IsScreenLocked()));
+BluetoothFeaturePodController::BluetoothDeviceNameAndBatteryInfo::
+    ~BluetoothDeviceNameAndBatteryInfo() = default;
 
-  bool is_enabled =
-      Shell::Get()->tray_bluetooth_helper()->GetBluetoothState() ==
-      BluetoothSystem::State::kPoweredOn;
-  button_->SetToggled(is_enabled);
+bool BluetoothFeaturePodController::DoesFirstConnectedDeviceHaveBatteryInfo()
+    const {
+  return first_connected_device_.has_value() &&
+         first_connected_device_.value().battery_info &&
+         first_connected_device_.value().battery_info->default_properties;
+}
 
-  if (!is_enabled) {
-    button_->SetVectorIcon(kUnifiedMenuBluetoothIcon);
-    button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
-    button_->SetSubLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT));
-    SetTooltipState(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP));
-    return;
-  }
+const gfx::VectorIcon& BluetoothFeaturePodController::ComputeButtonIcon()
+    const {
+  if (!button_->IsToggled())
+    return kUnifiedMenuBluetoothDisabledIcon;
 
-  BluetoothDeviceList connected_devices;
-  for (auto& device :
-       Shell::Get()->tray_bluetooth_helper()->GetAvailableBluetoothDevices()) {
-    if (device->connection_state ==
-        BluetoothDeviceInfo::ConnectionState::kConnected) {
-      connected_devices.push_back(device->Clone());
-    }
-  }
+  if (first_connected_device_.has_value())
+    return kUnifiedMenuBluetoothConnectedIcon;
 
-  if (connected_devices.size() > 1) {
-    const size_t device_count = connected_devices.size();
-    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
-    button_->SetLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL));
-    button_->SetSubLabel(base::FormatNumber(device_count));
-    SetTooltipState(l10n_util::GetPluralStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
-        device_count));
-  } else if (connected_devices.size() == 1) {
-    const device::mojom::BluetoothDeviceInfoPtr& device =
-        connected_devices.back();
-    const std::u16string device_name =
-        device::GetBluetoothDeviceNameForDisplay(device);
-    button_->SetVectorIcon(kUnifiedMenuBluetoothConnectedIcon);
-    button_->SetLabel(device_name);
+  return kUnifiedMenuBluetoothIcon;
+}
 
-    if (device->battery_info) {
-      button_->SetSubLabel(l10n_util::GetStringFUTF16(
+std::u16string BluetoothFeaturePodController::ComputeButtonLabel() const {
+  if (button_->IsToggled() && first_connected_device_.has_value() &&
+      connected_device_count_ == 1)
+    return first_connected_device_.value().device_name;
+
+  return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH);
+}
+
+std::u16string BluetoothFeaturePodController::ComputeButtonSubLabel() const {
+  if (!button_->IsToggled())
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_SHORT);
+
+  if (!first_connected_device_.has_value())
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT);
+
+  if (connected_device_count_ == 1) {
+    if (DoesFirstConnectedDeviceHaveBatteryInfo()) {
+      return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_BATTERY_PERCENTAGE_LABEL,
-          base::NumberToString16(device->battery_info->battery_percentage)));
-    } else {
-      button_->SetSubLabel(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL));
+          base::NumberToString16(
+              first_connected_device_.value()
+                  .battery_info->default_properties->battery_percentage));
     }
-    SetTooltipState(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP, device_name));
-  } else {
-    button_->SetVectorIcon(kUnifiedMenuBluetoothIcon);
-    button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
-    button_->SetSubLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_SHORT));
-    SetTooltipState(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP));
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_LABEL);
   }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_LABEL,
+      base::FormatNumber(connected_device_count_));
 }
 
-void BluetoothFeaturePodController::SetTooltipState(
-    const std::u16string& tooltip_state) {
-  if (button_->GetEnabled()) {
+std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
+  if (!first_connected_device_.has_value())
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP);
+
+  if (connected_device_count_ == 1) {
+    if (DoesFirstConnectedDeviceHaveBatteryInfo()) {
+      return l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_WITH_BATTERY_TOOLTIP,
+          first_connected_device_.value().device_name,
+          base::NumberToString16(
+              first_connected_device_.value()
+                  .battery_info->default_properties->battery_percentage));
+    }
+    return l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_DEVICE_CONNECTED_TOOLTIP,
+        first_connected_device_.value().device_name);
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_BLUETOOTH_MULTIPLE_DEVICES_CONNECTED_TOOLTIP,
+      base::FormatNumber(connected_device_count_));
+}
+
+void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
+  // Check |button_| here so that calling functions don't need to.
+  if (!button_)
+    return;
+  if (system_state_ == BluetoothSystemState::kUnavailable) {
+    button_->SetVisible(false);
+    button_->SetEnabled(false);
+    return;
+  }
+
+  button_->SetEnabled(modification_state_ ==
+                      BluetoothModificationState::kCanModifyBluetooth);
+  button_->SetToggled(
+      ::chromeos::bluetooth_config::IsBluetoothEnabledOrEnabling(
+          system_state_));
+  button_->SetVisible(true);
+
+  button_->SetVectorIcon(ComputeButtonIcon());
+  button_->SetLabel(ComputeButtonLabel());
+  button_->SetSubLabel(ComputeButtonSubLabel());
+
+  if (!button_->IsToggled()) {
+    button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP)));
+  } else {
     button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_state));
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, ComputeTooltip()));
     button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, tooltip_state));
-  } else {
-    // Do not show "Toggle" text in tooltip when the button is disabled (e.g.
-    // when the screen is locked or for secondary users).
-    button_->SetIconTooltip(tooltip_state);
-    button_->SetLabelTooltip(tooltip_state);
+        IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, ComputeTooltip()));
   }
 }
 
-void BluetoothFeaturePodController::OnBluetoothSystemStateChanged() {
-  UpdateButton();
-}
+void BluetoothFeaturePodController::OnPropertiesUpdated(
+    BluetoothSystemPropertiesPtr properties) {
+  connected_device_count_ = 0;
+  first_connected_device_.reset();
 
-void BluetoothFeaturePodController::OnBluetoothScanStateChanged() {
-  UpdateButton();
-}
-
-void BluetoothFeaturePodController::OnBluetoothDeviceListChanged() {
-  UpdateButton();
+  // Counts the number of connected devices and caches the name and battery
+  // information of the first connected device found.
+  for (const auto& paired_device : properties->paired_devices) {
+    if (paired_device->device_properties->connection_state !=
+        DeviceConnectionState::kConnected) {
+      continue;
+    }
+    ++connected_device_count_;
+    if (first_connected_device_.has_value())
+      continue;
+    first_connected_device_.emplace(
+        GetPairedDeviceName(paired_device.get()),
+        mojo::Clone(paired_device->device_properties->battery_info));
+  }
+  modification_state_ = properties->modification_state;
+  system_state_ = properties->system_state;
+  UpdateButtonStateIfExists();
 }
 
 }  // namespace ash

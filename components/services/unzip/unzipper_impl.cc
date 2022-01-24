@@ -24,15 +24,16 @@ namespace {
 class DudWriterDelegate : public zip::WriterDelegate {
  public:
   DudWriterDelegate() {}
+
+  DudWriterDelegate(const DudWriterDelegate&) = delete;
+  DudWriterDelegate& operator=(const DudWriterDelegate&) = delete;
+
   ~DudWriterDelegate() override {}
 
   // WriterDelegate methods:
   bool PrepareOutput() override { return false; }
   bool WriteBytes(const char* data, int num_bytes) override { return false; }
   void SetTimeModified(const base::Time& time) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DudWriterDelegate);
 };
 
 std::string PathToMojoString(const base::FilePath& path) {

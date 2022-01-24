@@ -20,14 +20,10 @@
 #include "extensions/renderer/script_injector.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 class RenderFrame;
-}
-
-namespace v8 {
-class Value;
-template <class T> class Local;
 }
 
 namespace extensions {
@@ -63,6 +59,10 @@ class ScriptInjection {
                   std::unique_ptr<const InjectionHost> injection_host,
                   mojom::RunLocation run_location,
                   bool log_activity);
+
+  ScriptInjection(const ScriptInjection&) = delete;
+  ScriptInjection& operator=(const ScriptInjection&) = delete;
+
   ~ScriptInjection();
 
   // Try to inject the script at the |current_location|. This returns
@@ -165,8 +165,6 @@ class ScriptInjection {
   std::unique_ptr<FrameWatcher> frame_watcher_;
 
   base::WeakPtrFactory<ScriptInjection> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptInjection);
 };
 
 }  // namespace extensions

@@ -37,7 +37,7 @@ using TP = ThemeProperties;
 // Maps scale factors (enum values) to file path.
 // A similar typedef in BrowserThemePack is private.
 using TestScaleFactorToFileMap =
-    base::flat_map<ui::ScaleFactor, base::FilePath>;
+    base::flat_map<ui::ResourceScaleFactor, base::FilePath>;
 
 // Maps image ids to maps of scale factors to file paths.
 // A similar typedef in BrowserThemePack is private.
@@ -115,7 +115,7 @@ class BrowserThemePackTest : public ::testing::Test {
 
  private:
   using ScopedSetSupportedScaleFactors =
-      std::unique_ptr<ui::test::ScopedSetSupportedScaleFactors>;
+      std::unique_ptr<ui::test::ScopedSetSupportedResourceScaleFactors>;
 
   // Transformation for link underline colors.
   static SkColor BuildThirdOpacity(SkColor color_link);
@@ -138,11 +138,12 @@ class BrowserThemePackTest : public ::testing::Test {
 BrowserThemePackTest::BrowserThemePackTest()
     : theme_pack_(
           new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION)) {
-  std::vector<ui::ScaleFactor> scale_factors;
-  scale_factors.push_back(ui::SCALE_FACTOR_100P);
-  scale_factors.push_back(ui::SCALE_FACTOR_200P);
+  std::vector<ui::ResourceScaleFactor> scale_factors;
+  scale_factors.push_back(ui::k100Percent);
+  scale_factors.push_back(ui::k200Percent);
   scoped_set_supported_scale_factors_ =
-      std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(scale_factors);
+      std::make_unique<ui::test::ScopedSetSupportedResourceScaleFactors>(
+          scale_factors);
   theme_pack_->InitEmptyPack();
 }
 
@@ -447,7 +448,7 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   int xy = 0;
   SkColor color = rep3.GetBitmap().getColor(xy, xy);
   normal.push_back(std::make_pair(xy, color));
-  for (int xy = 0; xy < 40; ++xy) {
+  for (xy = 0; xy < 40; ++xy) {
     SkColor next_color = rep3.GetBitmap().getColor(xy, xy);
     if (next_color != color) {
       color = next_color;
@@ -464,8 +465,8 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
   // We expect the same colors and at locations scaled by 2
   // since this bitmap was scaled by 2.
   for (size_t i = 0; i < normal.size(); ++i) {
-    int xy = 2 * normal[i].first;
-    SkColor color = normal[i].second;
+    xy = 2 * normal[i].first;
+    color = normal[i].second;
     EXPECT_EQ(color, rep4.GetBitmap().getColor(xy, xy));
   }
 }
@@ -654,10 +655,10 @@ TEST_F(BrowserThemePackTest, CanParsePaths) {
   // By default the scale factor is for 100%.
   EXPECT_TRUE(base::FilePath(FILE_PATH_LITERAL("one")) ==
               out_file_paths[static_cast<BrowserThemePack::PersistentID>(12)]
-                            [ui::SCALE_FACTOR_100P]);
+                            [ui::k100Percent]);
   EXPECT_TRUE(base::FilePath(FILE_PATH_LITERAL("two")) ==
               out_file_paths[static_cast<BrowserThemePack::PersistentID>(5)]
-                            [ui::SCALE_FACTOR_100P]);
+                            [ui::k100Percent]);
 }
 
 TEST_F(BrowserThemePackTest, InvalidPathNames) {
@@ -759,7 +760,8 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxNoValues) {
                               {{kColorToolbar, SK_ColorRED},
                                {kColorOmniboxText, SK_ColorGREEN},
                                {kColorOmniboxBackground, SK_ColorBLUE}}});
-  theme_pack().AddCustomThemeColorMixers(&provider);
+  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorToolbar));
   EXPECT_EQ(SK_ColorGREEN, provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
@@ -776,7 +778,8 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxPartialValues) {
   std::string color_json = R"({ "toolbar": [0, 20, 40],
                                 "omnibox_text": [60, 80, 100] })";
   LoadColorJSON(color_json);
-  theme_pack().AddCustomThemeColorMixers(&provider);
+  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorOmniboxBackground));
@@ -794,7 +797,8 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
                                 "omnibox_text": [60, 80, 100],
                                 "omnibox_background": [120, 140, 160] })";
   LoadColorJSON(color_json);
-  theme_pack().AddCustomThemeColorMixers(&provider);
+  theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
+  provider.GenerateColorMap();
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SkColorSetRGB(120, 140, 160),

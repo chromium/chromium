@@ -26,6 +26,10 @@ typedef PrefMember<bool> BooleanPrefMember;
 class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
  public:
   IOSChromeNetworkDelegate();
+
+  IOSChromeNetworkDelegate(const IOSChromeNetworkDelegate&) = delete;
+  IOSChromeNetworkDelegate& operator=(const IOSChromeNetworkDelegate&) = delete;
+
   ~IOSChromeNetworkDelegate() override;
 
   // If |cookie_settings| is null or not set, all cookies are enabled,
@@ -73,8 +77,6 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
 
   // Weak, owned by our owner.
   BooleanPrefMember* enable_do_not_track_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeNetworkDelegate);
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_IOS_CHROME_NETWORK_DELEGATE_H_

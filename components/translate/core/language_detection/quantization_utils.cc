@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 
 namespace translate {
 
@@ -55,7 +56,7 @@ QuantizationParams GetQuantizationParams(float min_val,
 uint32_t FloatToQuantized(float x, float min_val, float max_val, int num_bits) {
   QuantizationParams params = GetQuantizationParams(min_val, max_val, num_bits);
   const float inv_nudged_scale = 1.0f / params.nudged_scale;
-  float clamped = std::max(std::min(x, params.nudged_max), params.nudged_min);
+  float clamped = base::clamp(x, params.nudged_min, params.nudged_max);
   float clamped_shifted = clamped - params.nudged_min;
   return std::min(
       static_cast<uint32_t>(clamped_shifted * inv_nudged_scale + 0.5f),

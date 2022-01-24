@@ -32,6 +32,9 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
   BlocklistStatesInteractionUnitTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kDisablePolicyViolationExtensionsRemotely);
+    // Set this flag to true so the acknowledged bit is not automatically set
+    // by the extension error controller on the first run.
+    ExtensionPrefs::SetRunAlertsInFirstRunForTest();
   }
 
   void SetUp() override {
@@ -97,6 +100,61 @@ TEST_F(BlocklistStatesInteractionUnitTest,
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 }
 
+// 1. The extension is added to the Safe Browsing blocklist with
+// BLOCKLISTED_MALWARE state.
+// 2. The user has acknowledged the blocklist state.
+// 3. The extension is added to the Omaha attribute blocklist with _malware
+// attribute.
+// 4. The extension is removed from the Safe Browsing blocklist.
+// 5. The extension is removed from the Omaha attribute blocklist.
+TEST_F(BlocklistStatesInteractionUnitTest,
+       SafeBrowsingMalwareAcknowledgedThenOmahaAttributeMalware) {
+  ExtensionStateTester state_tester(profile());
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
+                                            BLOCKLISTED_MALWARE);
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+
+  blocklist_prefs::AddAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs());
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", true);
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
+  // The acknowledged state should not be cleared because the user has already
+  // acknowledged.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+
+  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
+  // kTestExtensionId should be kept in `blocklisted_extensions` because it is
+  // still in the Omaha attribute blocklist.
+  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
+  // The acknowledged state should not be cleared because it is still in the
+  // Omaha attribute blocklist.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+
+  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", false);
+  // kTestExtensionId should be removed from the `blocklisted_extensions` and is
+  // re-enabled.
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
+  // The acknowledged state should be cleared because it is removed from the
+  // blocklist.
+  EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
+}
+
 // 1. The extension is added to the Omaha attribute blocklist with _malware
 // attribute.
 // 2. The extension is added to the Safe Browsing blocklist with
@@ -116,19 +174,8 @@ TEST_F(BlocklistStatesInteractionUnitTest,
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", false);
-  // TODO(crbug.com/1193695): Ideally this extension should still be blocklisted
-  // because the extension is still in the Safe Browsing blocklist.
-  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
-
-  // The extension is added back to the blocklist after the Safe Browsing
-  // blocklist is refreshed.
-  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
-                                            BLOCKLISTED_MALWARE);
-  EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
-
-  // The extension should be kept in the `blocklisted_extensions` even if the
-  // Omaha attribute is still false.
-  SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", false);
+  // This extension is still blocklisted because the extension is still in the
+  // Safe Browsing blocklist.
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
 
   SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId, NOT_BLOCKLISTED);
@@ -155,37 +202,18 @@ TEST_F(BlocklistStatesInteractionUnitTest,
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", true);
   EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
-            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                kTestExtensionId, extension_prefs()));
+            blocklist_prefs::GetExtensionBlocklistState(kTestExtensionId,
+                                                        extension_prefs()));
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
   EXPECT_TRUE(extension_prefs()->HasDisableReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 
   SetOmahaBlocklistStateForExtension(kTestExtensionId, "_malware", false);
-  // TODO(crbug.com/1193695): Ideally this should be set to the original Safe
-  // Browsing greylist state BLOCKLISTED_POTENTIALLY_UNWANTED. However, this is
-  // not possible with the current implementation, because the Omaha blocklist
-  // state (malware) overrides the Safe Browsing blocklist state, and there is
-  // no way to preserve the original Safe Browsing greylist state (potentially
-  // unwanted). This should happen pretty rare - only when the extension is
-  // removed from the Omaha attribute blocklist but stays in the Safe Browsing
-  // greylist. It will be fixed after we decouple Safe Browsing blocklist state
-  // and Omaha attribute blocklist state.
-  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
-            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                kTestExtensionId, extension_prefs()));
-  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
-
-  // The Safe Browsing greylist state should be set correctly after the Safe
-  // Browsing blocklist is refreshed.
-  SetSafeBrowsingBlocklistStateForExtension(kTestExtensionId,
-                                            BLOCKLISTED_POTENTIALLY_UNWANTED);
-  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                kTestExtensionId, extension_prefs()));
-
   // The extension should be kept disabled because it's still in the Safe
   // Browsing greylist.
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+            blocklist_prefs::GetExtensionBlocklistState(kTestExtensionId,
+                                                        extension_prefs()));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 

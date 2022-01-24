@@ -21,7 +21,14 @@ struct NET_EXPORT WebSocketHandshakeResponseInfo {
                                  scoped_refptr<HttpResponseHeaders> headers,
                                  const IPEndPoint& remote_endpoint,
                                  base::Time response_time);
+
+  WebSocketHandshakeResponseInfo(const WebSocketHandshakeResponseInfo&) =
+      delete;
+  WebSocketHandshakeResponseInfo& operator=(
+      const WebSocketHandshakeResponseInfo&) = delete;
+
   ~WebSocketHandshakeResponseInfo();
+
   // The request URL
   GURL url;
   // HTTP response headers
@@ -30,9 +37,6 @@ struct NET_EXPORT WebSocketHandshakeResponseInfo {
   IPEndPoint remote_endpoint;
   // The time that this response arrived
   base::Time response_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeResponseInfo);
 };
 
 }  // namespace net

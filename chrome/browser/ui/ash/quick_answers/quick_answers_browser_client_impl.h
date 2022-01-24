@@ -52,7 +52,7 @@ class QuickAnswersBrowserClientImpl : public ash::QuickAnswersBrowserClient {
   base::Time expiration_time_;
 
   // The buffer time to use the access token.
-  base::TimeDelta token_usage_time_buffer_ = base::TimeDelta::FromMinutes(1);
+  base::TimeDelta token_usage_time_buffer_ = base::Minutes(1);
 
   base::OneShotTimer token_refresh_timer_;
   int token_refresh_error_backoff_factor_ = 1;

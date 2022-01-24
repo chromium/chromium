@@ -27,8 +27,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/simple_feature.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr char kUserEmail[] = "testuser@example.com";
@@ -403,4 +402,4 @@ IN_PROC_BROWSER_TEST_F(ChallengeResponseExtensionLoadObserverTest,
   load_challenge_response_keys_complete.Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -54,6 +53,9 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
       : render_process_id_(render_process_id),
         render_frame_id_(render_frame_id),
         hostname_(hostname) {}
+
+  DnsLookupRequest(const DnsLookupRequest&) = delete;
+  DnsLookupRequest& operator=(const DnsLookupRequest&) = delete;
 
   // Return underlying network resolver status.
   // net::OK ==> Host was found synchronously.
@@ -109,8 +111,6 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
   const int render_frame_id_;
   const std::string hostname_;
   std::unique_ptr<DnsLookupRequest> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsLookupRequest);
 };
 
 }  // namespace

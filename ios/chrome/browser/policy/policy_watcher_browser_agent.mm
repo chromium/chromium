@@ -9,14 +9,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/commands/policy_signout_commands.h"
+#import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 
@@ -24,15 +25,18 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
+
 BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
 
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
-    : browser_(browser),
-      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
-  prefs_change_observer_->Init(browser_->GetBrowserState()->GetPrefs());
+    : browser_(browser) {
+  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  prefs_change_observer_.Init(GetApplicationContext()->GetLocalState());
+  browser_prefs_change_observer_.Init(browser->GetBrowserState()->GetPrefs());
 }
 
-PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() {}
+PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
@@ -42,20 +46,21 @@ void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   [handler_ showPolicySignoutPrompt];
 }
 
-void PolicyWatcherBrowserAgent::Initialize(
-    id<PolicySignoutPromptCommands> handler) {
+void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(!handler_);
   DCHECK(handler);
   handler_ = handler;
 
-  // BrowserSignin policy: start observing the kSigninAllowed pref for non-OTR
-  // browsers. When the pref becomes false, send a UI command to sign the user
-  // out. This requires the given command dispatcher to be fully configured.
-  if (browser_->GetBrowserState()->IsOffTheRecord()) {
-    return;
-  }
-  prefs_change_observer_->Add(
-      prefs::kSigninAllowedByPolicy,
+  auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
+      browser_->GetBrowserState());
+  DCHECK(auth_service_);
+  auth_service_observation_.Observe(auth_service_);
+
+  // BrowserSignin policy: start observing the kSigninAllowed pref. When the
+  // pref becomes false, send a UI command to sign the user out. This requires
+  // the given command dispatcher to be fully configured.
+  prefs_change_observer_.Add(
+      prefs::kBrowserSigninPolicy,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled,
           base::Unretained(this)));
@@ -63,17 +68,22 @@ void PolicyWatcherBrowserAgent::Initialize(
   // Try to sign out in case the policy changed since last time. This should be
   // done after the handler is set to make sure the UI can be displayed.
   ForceSignOutIfSigninDisabled();
+
+  browser_prefs_change_observer_.Add(
+      syncer::prefs::kSyncManaged,
+      base::BindRepeating(
+          &PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded,
+          base::Unretained(this)));
+
+  // Try to show the alert in case the policy changed since last time.
+  ShowSyncDisabledAlertIfNeeded();
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(handler_);
-  if (!signin::IsSigninAllowedByPolicy(
-          browser_->GetBrowserState()->GetPrefs())) {
-    AuthenticationService* service =
-        AuthenticationServiceFactory::GetForBrowserState(
-            browser_->GetBrowserState());
-
-    if (service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  DCHECK(auth_service_);
+  if (!signin::IsSigninAllowedByPolicy()) {
+    if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
@@ -82,15 +92,34 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
           weak_factory_.GetWeakPtr();
       // Sign the user out, but keep synced data (bookmarks, passwords, etc)
       // locally to be consistent with the policy's behavior on other platforms.
-      service->SignOut(signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
-                       /*force_clear_browsing_data=*/false, ^{
-                         weak_ptr->OnSignOutComplete();
-                       });
+      auth_service_->SignOut(
+          signin_metrics::ProfileSignout::SIGNOUT_PREF_CHANGED,
+          /*force_clear_browsing_data=*/false, ^{
+            weak_ptr->OnSignOutComplete();
+          });
     }
 
     for (auto& observer : observers_) {
       observer.OnSignInDisallowed(this);
     }
+  }
+}
+
+void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
+  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  BOOL syncDisabledAlertShown =
+      [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+  BOOL isSyncDisabledByAdministrator =
+      browser_->GetBrowserState()->GetPrefs()->GetBoolean(
+          syncer::prefs::kSyncManaged);
+
+  if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
+    [handler_ showSyncDisabledAlert];
+    // Will never trigger again unless policy changes.
+    [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+  } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
+    // Will trigger again, if policy is turned back on.
+    [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
   }
 }
 
@@ -117,4 +146,8 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
   } else {
     scene_state.appState.shouldShowPolicySignoutPrompt = YES;
   }
+}
+
+void PolicyWatcherBrowserAgent::OnPrimaryAccountRestricted() {
+  [handler_ showEnterpriseSignout];
 }

@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/page_info/security_information_view.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/page_info/features.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -17,91 +17,77 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 
 SecurityInformationView::SecurityInformationView(int side_margin) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int icon_label_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  auto hover_button_insets = layout_provider->GetInsetsMetric(
+      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::TableLayout* layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout->AddPaddingColumn(views::TableLayout::kFixedSize, side_margin)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStart, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, side_margin)
+      // Add padding before the title so that it's in the same position as when
+      // this control is a hover button.
+      .AddPaddingRow(views::TableLayout::kFixedSize, hover_button_insets.top())
+      .AddRows(1, views::TableLayout::kFixedSize);
 
-  const int label_column_status = 1;
-  views::ColumnSet* column_set = layout->AddColumnSet(label_column_status);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
+  icon_ = AddChildView(std::make_unique<NonAccessibleImageView>());
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    // Page info v2 has icon on the left side and all other content is indented
-    // by the icon size.
-    column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                          views::GridLayout::kFixedSize,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                 icon_label_spacing);
-  }
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    // Add padding before the title so that it's in the same position as when
-    // this control is a hover button.
-    auto hover_button_insets = layout_provider->GetInsetsMetric(
-        ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          hover_button_insets.top());
-    layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
-    icon_ = layout->AddView(std::make_unique<NonAccessibleImageView>());
-
-    auto security_summary_label = std::make_unique<views::StyledLabel>();
-    // TODO(olesiamarukhno): Check padding between summary and description
-    // labels after more UI is implemented.
-    security_summary_label->SetTextContext(
-        views::style::CONTEXT_DIALOG_BODY_TEXT);
-    security_summary_label->SetID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
-    security_summary_label_ =
-        layout->AddView(std::move(security_summary_label), 1.0, 1.0,
-                        views::GridLayout::FILL, views::GridLayout::LEADING);
-  }
+  security_summary_label_ =
+      AddChildView(std::make_unique<views::StyledLabel>());
+  // TODO(olesiamarukhno): Check padding between summary and description
+  // labels after more UI is implemented.
+  security_summary_label_->SetTextContext(
+      views::style::CONTEXT_DIALOG_BODY_TEXT);
+  security_summary_label_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
 
   auto start_secondary_row = [=]() {
-    layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
-    // Skipping the icon's column.
-    if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop))
-      layout->SkipColumns(1);
+    layout->AddRows(1, views::TableLayout::kFixedSize);
+    AddChildView(std::make_unique<views::View>());  // Skipping the icon column.
   };
 
   start_secondary_row();
-  auto security_details_label = std::make_unique<views::StyledLabel>();
-  security_details_label->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_ =
-      layout->AddView(std::move(security_details_label), 1.0, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop))
-    security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+      AddChildView(std::make_unique<views::StyledLabel>());
+  security_details_label_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
+  security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  // The label defaults to a single line, which would force the dialog wider;
+  // instead give it a width that's the minimum we want it to have.  Then the
+  // TableLayout will stretch it back out into any additional space available.
+  security_details_label_->SizeToFit(
+      PageInfoViewFactory::kMinBubbleWidth - side_margin * 2 -
+      PageInfoViewFactory::GetConnectionSecureIcon().Size().width() -
+      icon_label_spacing);
 
   start_secondary_row();
-  auto reset_decisions_label_container = std::make_unique<views::View>();
-  reset_decisions_label_container->SetLayoutManager(
+  reset_decisions_label_container_ =
+      AddChildView(std::make_unique<views::View>());
+  reset_decisions_label_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
-  reset_decisions_label_container_ =
-      layout->AddView(std::move(reset_decisions_label_container), 1.0, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
 
   start_secondary_row();
   password_reuse_button_container_ =
-      layout->AddView(std::make_unique<views::View>(), 1, 1,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
+      AddChildView(std::make_unique<views::View>());
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    const int end_padding =
-        layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, end_padding);
-  }
+  const int end_padding =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+  layout->AddPaddingRow(views::TableLayout::kFixedSize, end_padding);
 }
 
 SecurityInformationView::~SecurityInformationView() = default;
@@ -141,7 +127,7 @@ void SecurityInformationView::AddResetDecisionsLabel(
     base::RepeatingClosure reset_decisions_callback) {
   if (!reset_decisions_label_container_->children().empty()) {
     // Ensure all old content is removed from the container before re-adding it.
-    reset_decisions_label_container_->RemoveAllChildViews(true);
+    reset_decisions_label_container_->RemoveAllChildViews();
   }
 
   std::vector<std::u16string> subst;
@@ -157,10 +143,8 @@ void SecurityInformationView::AddResetDecisionsLabel(
   views::StyledLabel* reset_cert_decisions_label =
       reset_decisions_label_container_->AddChildView(
           std::make_unique<views::StyledLabel>());
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    reset_cert_decisions_label->SetDefaultTextStyle(
-        views::style::STYLE_SECONDARY);
-  }
+  reset_cert_decisions_label->SetDefaultTextStyle(
+      views::style::STYLE_SECONDARY);
   reset_cert_decisions_label->SetText(text);
   gfx::Range link_range(offsets[1], text.length());
 
@@ -170,18 +154,15 @@ void SecurityInformationView::AddResetDecisionsLabel(
   link_style.disable_line_wrapping = false;
 
   reset_cert_decisions_label->AddStyleRange(link_range, link_style);
-  // Fit the styled label to occupy available width.
-  reset_cert_decisions_label->SizeToFit(0);
+  // Adjust this label's width to the width of the label above.
+  reset_cert_decisions_label->SizeToFit(security_details_label_->width());
 
   // Now that it contains a label, the container needs padding at the top.
   const int between_paragraphs_distance =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
-          ? ChromeLayoutProvider::Get()->GetDistanceMetric(
-                views::DISTANCE_RELATED_CONTROL_VERTICAL)
-          : 8;
-  reset_decisions_label_container_->SetBorder(views::CreateEmptyBorder(
-      between_paragraphs_distance, views::GridLayout::kFixedSize,
-      views::GridLayout::kFixedSize, 0));
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  reset_decisions_label_container_->SetBorder(
+      views::CreateEmptyBorder(between_paragraphs_distance, 0, 0, 0));
 
   InvalidateLayout();
 }
@@ -192,7 +173,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
     views::Button::PressedCallback password_reuse_callback) {
   if (!password_reuse_button_container_->children().empty()) {
     // Ensure all old content is removed from the container before re-adding it.
-    password_reuse_button_container_->RemoveAllChildViews(true /* delete */);
+    password_reuse_button_container_->RemoveAllChildViews();
   }
 
   int change_password_template = 0;
@@ -232,23 +213,10 @@ void SecurityInformationView::AddPasswordReuseButtons(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_ALLOWLIST_PASSWORD_REUSE);
 
   int kSpacingBetweenButtons = 8;
-  int change_password_button_size =
-      change_password_button
-          ? change_password_button->CalculatePreferredSize().width()
-          : 0;
-
-  // If these two buttons cannot fit into a single line, stack them vertically.
-  bool can_fit_in_one_line =
-      (password_reuse_button_container_->width() - kSpacingBetweenButtons) >=
-      (change_password_button_size +
-       allowlist_password_reuse_button->CalculatePreferredSize().width());
-  bool is_page_info_v2 =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop);
+  // TODO(crbug.com/1263516): Fix alignment if the buttons don't fit in one row.
   auto layout = std::make_unique<views::BoxLayout>(
-      can_fit_in_one_line || is_page_info_v2
-          ? views::BoxLayout::Orientation::kHorizontal
-          : views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(), kSpacingBetweenButtons);
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kSpacingBetweenButtons);
   // Make buttons left-aligned. For RTL languages, buttons will automatically
   // become right-aligned.
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -272,7 +240,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
 
   // Add padding at the top.
   password_reuse_button_container_->SetBorder(
-      views::CreateEmptyBorder(8, views::GridLayout::kFixedSize, 0, 0));
+      views::CreateEmptyBorder(8, 0, 0, 0));
 
   InvalidateLayout();
 }

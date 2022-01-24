@@ -20,12 +20,23 @@ using content::BrowserThread;
 
 namespace chromeos {
 
+namespace {
+
+void ForwardToUIThread(base::OnceCallback<void(bool)> ui_callback,
+                       bool result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(ui_callback), result));
+}
+
+}  // namespace
+
 CryptohomeWebUIHandler::CryptohomeWebUIHandler() {}
 
 CryptohomeWebUIHandler::~CryptohomeWebUIHandler() {}
 
 void CryptohomeWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "pageLoaded", base::BindRepeating(&CryptohomeWebUIHandler::OnPageLoaded,
                                         weak_ptr_factory_.GetWeakPtr()));
 }
@@ -48,18 +59,23 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue* args) {
       base::BindOnce(&CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&crypto::IsTPMTokenReady, base::OnceClosure()),
-      base::BindOnce(&CryptohomeWebUIHandler::DidGetNSSUtilInfoOnUIThread,
-                     weak_ptr_factory_.GetWeakPtr()));
+  auto ui_callback =
+      base::BindOnce(&CryptohomeWebUIHandler::GotIsTPMTokenEnabledOnUIThread,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&crypto::IsTPMTokenEnabled,
+                                base::BindOnce(&ForwardToUIThread,
+                                               std::move(ui_callback))));
 }
 
-void CryptohomeWebUIHandler::DidGetNSSUtilInfoOnUIThread(
-    bool is_tpm_token_ready) {
+void CryptohomeWebUIHandler::GotIsTPMTokenEnabledOnUIThread(
+    bool is_tpm_token_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::Value is_tpm_token_ready_value(is_tpm_token_ready);
-  SetCryptohomeProperty("is-tpm-token-ready", is_tpm_token_ready_value);
+  base::Value is_tpm_token_enabled_value(is_tpm_token_enabled);
+  SetCryptohomeProperty("is-tpm-token-ready",
+                        std::move(is_tpm_token_enabled_value));
 }
 
 void CryptohomeWebUIHandler::OnGetTpmStatus(

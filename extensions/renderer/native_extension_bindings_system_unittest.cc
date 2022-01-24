@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
@@ -927,10 +928,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 // does not allow for accessing the source API (networkingPrivate) directly.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermission("networkingPrivate")
           .Build();
 
@@ -959,10 +960,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // allow for accessing the alias.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasDoesntGiveAliasSourceAccess) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermission("networking.onc")
           .Build();
   RegisterExtension(extension);
@@ -989,10 +990,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
 TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermissions({"networkingPrivate", "networking.onc"})
           .Build();
   RegisterExtension(extension);
@@ -1144,6 +1145,12 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
       public testing::WithParamInterface<bool> {
  public:
   ResponseValidationNativeExtensionBindingsSystemUnittest() = default;
+
+  ResponseValidationNativeExtensionBindingsSystemUnittest(
+      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  ResponseValidationNativeExtensionBindingsSystemUnittest& operator=(
+      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+
   ~ResponseValidationNativeExtensionBindingsSystemUnittest() override = default;
 
   void SetUp() override {
@@ -1159,9 +1166,6 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
 
  private:
   std::unique_ptr<base::AutoReset<bool>> response_validation_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ResponseValidationNativeExtensionBindingsSystemUnittest);
 };
 
 TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,

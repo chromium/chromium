@@ -174,8 +174,9 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_SHOW_SIGNIN));
 
   testprofile->SetGuestSession(false);
-  IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      IncognitoModePrefs::Availability::kForced);
   chrome::BrowserCommandController ::
       UpdateSharedCommandsForIncognitoAvailability(
           browser()->command_controller(), testprofile);
@@ -263,6 +264,10 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
         toolbar_showing_(false),
         test_browser_(test_browser) {}
 
+  FullscreenTestBrowserWindow(const FullscreenTestBrowserWindow&) = delete;
+  FullscreenTestBrowserWindow& operator=(const FullscreenTestBrowserWindow&) =
+      delete;
+
   ~FullscreenTestBrowserWindow() override {}
 
   // TestBrowserWindow overrides:
@@ -286,6 +291,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleType bubble_type,
       ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
       bool force_update) override {}
+  bool IsExclusiveAccessBubbleDisplayed() const override { return false; }
   void OnExclusiveAccessUserInput() override {}
   bool CanUserExitFullscreen() const override { return true; }
 
@@ -295,8 +301,6 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   bool fullscreen_;
   bool toolbar_showing_;
   BrowserCommandControllerFullscreenTest* test_browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenTestBrowserWindow);
 };
 
 // Test that uses FullscreenTestBrowserWindow for its window.
@@ -304,6 +308,12 @@ class BrowserCommandControllerFullscreenTest
     : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerFullscreenTest() = default;
+
+  BrowserCommandControllerFullscreenTest(
+      const BrowserCommandControllerFullscreenTest&) = delete;
+  BrowserCommandControllerFullscreenTest& operator=(
+      const BrowserCommandControllerFullscreenTest&) = delete;
+
   ~BrowserCommandControllerFullscreenTest() override = default;
 
   Browser* GetBrowser() { return BrowserWithTestWindowTest::browser(); }
@@ -312,9 +322,6 @@ class BrowserCommandControllerFullscreenTest
   std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
     return std::make_unique<FullscreenTestBrowserWindow>(this);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserCommandControllerFullscreenTest);
 };
 
 Profile* FullscreenTestBrowserWindow::GetProfile() {
@@ -462,8 +469,9 @@ TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
   // Setup guest session.
   profile->SetGuestSession(true);
   // Setup forced incognito mode.
-  IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      IncognitoModePrefs::Availability::kForced);
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   // Enter fullscreen.
   browser()->command_controller()->FullscreenStateChanged();
@@ -473,10 +481,12 @@ TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
   // Reenter incognito mode, this should trigger
   // UpdateSharedCommandsForIncognitoAvailability() again.
-  IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
-                                      IncognitoModePrefs::DISABLED);
-  IncognitoModePrefs::SetAvailability(browser()->profile()->GetPrefs(),
-                                      IncognitoModePrefs::FORCED);
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      IncognitoModePrefs::Availability::kDisabled);
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      IncognitoModePrefs::Availability::kForced);
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_OPTIONS));
 }
 
@@ -510,6 +520,28 @@ TEST_F(BrowserCommandControllerTest, OnSigninAllowedPrefChange) {
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SHOW_SIGNIN));
   profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_SIGNIN));
+}
+
+TEST_F(BrowserCommandControllerTest,
+       SavePageDisabledByDownloadRestrictionsPolicy) {
+  chrome::BrowserCommandController command_controller(browser());
+  const CommandUpdater* command_updater = &command_controller;
+
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+                                    3 /*ALL_FILES*/);
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+}
+
+TEST_F(BrowserCommandControllerTest,
+       SavePageDisabledByAllowFileSelectionDialogsPolicy) {
+  chrome::BrowserCommandController command_controller(browser());
+  const CommandUpdater* command_updater = &command_controller;
+
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kAllowFileSelectionDialogs, false);
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
 }
 
 class IncognitoClearBrowsingDataCommandTest

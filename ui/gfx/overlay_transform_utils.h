@@ -6,9 +6,9 @@
 #define UI_GFX_OVERLAY_TRANSFORM_UTILS_H_
 
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 

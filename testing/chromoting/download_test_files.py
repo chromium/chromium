@@ -49,8 +49,8 @@ def main():
       cp_cmd = ['gsutil.py', 'cp', line, output_file]
       try:
         subprocess.check_call(cp_cmd)
-      except subprocess.CalledProcessError, e:
-        print e.output
+      except subprocess.CalledProcessError as e:
+        print(e.output)
         sys.exit(1)
 
 if __name__ == '__main__':

@@ -102,6 +102,11 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
 
   // Whether this was created by an ad-related CSSParserContext.
   const bool is_ad_related_;
+
+  // The url passed into the constructor had the PotentiallyDanglingMarkup flag
+  // set. That information needs to be passed on to the fetch code to block such
+  // resources from loading.
+  const bool potentially_dangling_markup_;
 };
 
 template <>

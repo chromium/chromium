@@ -18,12 +18,12 @@ namespace blink {
 class ModuleTestBase {
  public:
   static v8::Local<v8::Module> CompileModule(
-      v8::Isolate*,
+      ScriptState*,
       const char*,
       const KURL&,
       ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
   static v8::Local<v8::Module> CompileModule(
-      v8::Isolate*,
+      ScriptState*,
       String,
       const KURL&,
       ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());

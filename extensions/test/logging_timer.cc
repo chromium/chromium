@@ -20,6 +20,10 @@ const base::TickClock* g_clock_for_testing = nullptr;
 class TimeTracker {
  public:
   TimeTracker() = default;
+
+  TimeTracker(const TimeTracker&) = delete;
+  TimeTracker& operator=(const TimeTracker&) = delete;
+
   ~TimeTracker() = default;
 
   void IncrementTime(const char* key, base::TimeDelta elapsed) {
@@ -56,8 +60,6 @@ class TimeTracker {
   // NOTE(devlin): If we find that these map lookups are too expensive, we
   // could instead use a c-style array similar to RuntimeCallStats.
   std::map<const char*, Data> tracked_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeTracker);
 };
 
 base::TimeTicks GetNow() {

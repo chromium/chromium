@@ -10,7 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 // Waits for predicate to be fulfilled.
@@ -19,6 +19,10 @@ class TestPredicateWaiter : public TestConditionWaiter {
   using PredicateCheck = base::RepeatingCallback<bool(void)>;
 
   explicit TestPredicateWaiter(const PredicateCheck& is_fulfilled);
+
+  TestPredicateWaiter(const TestPredicateWaiter&) = delete;
+  TestPredicateWaiter& operator=(const TestPredicateWaiter&) = delete;
+
   ~TestPredicateWaiter() override;
 
   void set_description(const std::string& description) {
@@ -36,19 +40,17 @@ class TestPredicateWaiter : public TestConditionWaiter {
   base::RetainingOneShotTimer timer_;
   base::RunLoop run_loop_;
   std::string description_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicateWaiter);
 };
 
 }  // namespace test
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace test {
-using ::chromeos::test::TestPredicateWaiter;
-}
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::TestPredicateWaiter;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_TEST_PREDICATE_WAITER_H_

@@ -131,6 +131,10 @@ void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
     return;
   }
 
+  // Ensure every item in |updated_status| is a dictionary.
+  updated_status->EraseListValueIf(
+      [](auto const& media) { return !media.is_dict(); });
+
   base::Value::ListView media_list = updated_status->GetList();
 
   // Backfill messages from receivers to make them compatible with Cast SDK.

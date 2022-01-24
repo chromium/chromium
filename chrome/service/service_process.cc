@@ -17,15 +17,14 @@
 #include "base/environment.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -74,13 +73,14 @@ const char kDefaultServiceProcessLocale[] = "en-US";
 class ServiceIOThread : public base::Thread {
  public:
   explicit ServiceIOThread(const char* name);
+
+  ServiceIOThread(const ServiceIOThread&) = delete;
+  ServiceIOThread& operator=(const ServiceIOThread&) = delete;
+
   ~ServiceIOThread() override;
 
  protected:
   void CleanUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceIOThread);
 };
 
 ServiceIOThread::ServiceIOThread(const char* name) : base::Thread(name) {}
@@ -427,7 +427,7 @@ void ServiceProcess::ScheduleShutdownCheck() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ServiceProcess::ShutdownIfNeeded, base::Unretained(this)),
-      base::TimeDelta::FromSeconds(kShutdownDelaySeconds));
+      base::Seconds(kShutdownDelaySeconds));
 }
 
 void ServiceProcess::ShutdownIfNeeded() {

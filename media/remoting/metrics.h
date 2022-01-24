@@ -5,7 +5,6 @@
 #ifndef MEDIA_REMOTING_METRICS_H_
 #define MEDIA_REMOTING_METRICS_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/pipeline_metadata.h"
 #include "media/remoting/triggers.h"
@@ -51,6 +50,10 @@ enum class PixelRateSupport {
 class SessionMetricsRecorder {
  public:
   SessionMetricsRecorder();
+
+  SessionMetricsRecorder(const SessionMetricsRecorder&) = delete;
+  SessionMetricsRecorder& operator=(const SessionMetricsRecorder&) = delete;
+
   ~SessionMetricsRecorder();
 
   // When attempting to start a remoting session, WillStartSession() is called,
@@ -116,13 +119,15 @@ class SessionMetricsRecorder {
 
   bool did_record_pixel_rate_support_ = false;
   bool did_record_compatibility_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionMetricsRecorder);
 };
 
 class RendererMetricsRecorder {
  public:
   RendererMetricsRecorder();
+
+  RendererMetricsRecorder(const RendererMetricsRecorder&) = delete;
+  RendererMetricsRecorder& operator=(const RendererMetricsRecorder&) = delete;
+
   ~RendererMetricsRecorder();
 
   // Called when an "initialize success" message is received from the remote.
@@ -140,8 +145,6 @@ class RendererMetricsRecorder {
  private:
   const base::TimeTicks start_time_;
   bool did_record_first_playout_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererMetricsRecorder);
 };
 
 }  // namespace remoting

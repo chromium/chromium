@@ -26,6 +26,11 @@ using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesGetImagesTaskTest : public TaskTestBase {
  public:
   ExploreSitesGetImagesTaskTest() = default;
+
+  ExploreSitesGetImagesTaskTest(const ExploreSitesGetImagesTaskTest&) = delete;
+  ExploreSitesGetImagesTaskTest& operator=(
+      const ExploreSitesGetImagesTaskTest&) = delete;
+
   ~ExploreSitesGetImagesTaskTest() override = default;
 
   void SetUp() override {
@@ -68,8 +73,6 @@ class ExploreSitesGetImagesTaskTest : public TaskTestBase {
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesGetImagesTaskTest);
 };
 
 void ExploreSitesGetImagesTaskTest::PopulateTestingCatalog() {

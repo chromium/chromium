@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
   FileSystemOperationContext(FileSystemContext* context,
                              base::SequencedTaskRunner* task_runner);
 
+  FileSystemOperationContext(const FileSystemOperationContext&) = delete;
+  FileSystemOperationContext& operator=(const FileSystemOperationContext&) =
+      delete;
+
   ~FileSystemOperationContext() override;
 
   FileSystemContext* file_system_context() const {
@@ -90,8 +94,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemOperationContext
 
   // Used to check its setters are not called on arbitrary thread.
   THREAD_CHECKER(setter_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationContext);
 };
 
 }  // namespace storage

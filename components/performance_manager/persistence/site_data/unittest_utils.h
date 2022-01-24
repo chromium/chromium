@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
 #include "components/performance_manager/persistence/site_data/site_data_store.h"
@@ -23,18 +23,32 @@ class MockSiteDataImplOnDestroyDelegate
     : public internal::SiteDataImpl::OnDestroyDelegate {
  public:
   MockSiteDataImplOnDestroyDelegate();
+
+  MockSiteDataImplOnDestroyDelegate(const MockSiteDataImplOnDestroyDelegate&) =
+      delete;
+  MockSiteDataImplOnDestroyDelegate& operator=(
+      const MockSiteDataImplOnDestroyDelegate&) = delete;
+
   ~MockSiteDataImplOnDestroyDelegate();
 
   MOCK_METHOD1(OnSiteDataImplDestroyed, void(internal::SiteDataImpl*));
 
+  base::WeakPtr<MockSiteDataImplOnDestroyDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockSiteDataImplOnDestroyDelegate);
+  base::WeakPtrFactory<MockSiteDataImplOnDestroyDelegate> weak_factory_{this};
 };
 
 // An implementation of a SiteDataStore that doesn't record anything.
 class NoopSiteDataStore : public SiteDataStore {
  public:
   NoopSiteDataStore();
+
+  NoopSiteDataStore(const NoopSiteDataStore&) = delete;
+  NoopSiteDataStore& operator=(const NoopSiteDataStore&) = delete;
+
   ~NoopSiteDataStore() override;
 
   // SiteDataStore:
@@ -48,9 +62,6 @@ class NoopSiteDataStore : public SiteDataStore {
   void ClearStore() override;
   void GetStoreSize(GetStoreSizeCallback callback) override;
   void SetInitializationCallbackForTesting(base::OnceClosure callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoopSiteDataStore);
 };
 
 }  // namespace testing

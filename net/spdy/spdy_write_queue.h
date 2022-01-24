@@ -30,6 +30,10 @@ class SpdyStream;
 class NET_EXPORT_PRIVATE SpdyWriteQueue {
  public:
   SpdyWriteQueue();
+
+  SpdyWriteQueue(const SpdyWriteQueue&) = delete;
+  SpdyWriteQueue& operator=(const SpdyWriteQueue&) = delete;
+
   ~SpdyWriteQueue();
 
   // Returns whether there is anything in the write queue,
@@ -93,12 +97,14 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
                  std::unique_ptr<SpdyBufferProducer> frame_producer,
                  const base::WeakPtr<SpdyStream>& stream,
                  const MutableNetworkTrafficAnnotationTag& traffic_annotation);
-    ~PendingWrite();
+
+    PendingWrite(const PendingWrite&) = delete;
+    PendingWrite& operator=(const PendingWrite&) = delete;
+
     PendingWrite(PendingWrite&& other);
     PendingWrite& operator=(PendingWrite&& other);
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PendingWrite);
+    ~PendingWrite();
   };
 
   bool removing_writes_;
@@ -108,8 +114,6 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
 
   // The actual write queue, binned by priority.
   base::circular_deque<PendingWrite> queue_[NUM_PRIORITIES];
-
-  DISALLOW_COPY_AND_ASSIGN(SpdyWriteQueue);
 };
 
 }  // namespace net

@@ -24,6 +24,12 @@ class IOSChromeMetricsServicesManagerClient
     : public metrics_services_manager::MetricsServicesManagerClient {
  public:
   explicit IOSChromeMetricsServicesManagerClient(PrefService* local_state);
+
+  IOSChromeMetricsServicesManagerClient(
+      const IOSChromeMetricsServicesManagerClient&) = delete;
+  IOSChromeMetricsServicesManagerClient& operator=(
+      const IOSChromeMetricsServicesManagerClient&) = delete;
+
   ~IOSChromeMetricsServicesManagerClient() override;
 
  private:
@@ -60,8 +66,6 @@ class IOSChromeMetricsServicesManagerClient
 
   // Weak pointer to the local state prefs store.
   PrefService* local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServicesManagerClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_METRICS_SERVICES_MANAGER_CLIENT_H_

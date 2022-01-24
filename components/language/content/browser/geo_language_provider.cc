@@ -23,7 +23,7 @@ namespace {
 
 // Don't start requesting updates to IP-based approximation geolocation until
 // this long after receiving the last one.
-constexpr base::TimeDelta kMinUpdatePeriod = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinUpdatePeriod = base::Days(1);
 
 GeoLanguageProvider::Binder& GetBinderOverride() {
   static base::NoDestructor<GeoLanguageProvider::Binder> binder;

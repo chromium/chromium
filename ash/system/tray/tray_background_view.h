@@ -13,9 +13,7 @@
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -39,7 +37,6 @@ class TrayEventFilter;
 // PerformAction when clicked on.
 class ASH_EXPORT TrayBackgroundView : public ActionableView,
                                       public views::ContextMenuController,
-                                      public ui::LayerAnimationObserver,
                                       public ShelfBackgroundAnimatorObserver,
                                       public TrayBubbleView::Delegate,
                                       public VirtualKeyboardModel::Observer {
@@ -222,11 +219,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // child layers will still be there until all the animation finished.
   std::unique_ptr<ui::Layer> RecreateLayer() override;
 
-  // ui::ImplicitAnimationObserver:
-  void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;
-  void OnLayerAnimationScheduled(
-      ui::LayerAnimationSequence* sequence) override {}
+  // Callbacks for Animations
+  void OnAnimationAborted();
+  void OnAnimationEnded();
 
   // Applies transformations to the |layer()| to animate the view when
   // SetVisible(false) is called.

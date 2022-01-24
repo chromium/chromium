@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -100,6 +99,9 @@ class CronetURLRequestContext { // Cronet引擎上下文
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner =
           nullptr);
 
+  CronetURLRequestContext(const CronetURLRequestContext&) = delete;
+  CronetURLRequestContext& operator=(const CronetURLRequestContext&) = delete;
+
   // Releases all resources for the request context and deletes the object.
   // Blocks until network thread is destroyed after running all pending tasks.
   virtual ~CronetURLRequestContext();
@@ -170,6 +172,10 @@ class CronetURLRequestContext { // Cronet引擎上下文
     // Invoked off the network thread.
     NetworkTasks(std::unique_ptr<URLRequestContextConfig> config,
                  std::unique_ptr<CronetURLRequestContext::Callback> callback);
+
+    NetworkTasks(const NetworkTasks&) = delete;
+    NetworkTasks& operator=(const NetworkTasks&) = delete;
+
     // Invoked on the network thread.
     ~NetworkTasks() override;
 
@@ -277,7 +283,6 @@ class CronetURLRequestContext { // Cronet引擎上下文
     std::unique_ptr<CronetURLRequestContext::Callback> callback_;
 
     THREAD_CHECKER(network_thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(NetworkTasks);
   };
 
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner() const;
@@ -299,8 +304,6 @@ class CronetURLRequestContext { // Cronet引擎上下文
 
   // Task runner that runs network tasks.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CronetURLRequestContext);
 };
 
 }  // namespace cronet

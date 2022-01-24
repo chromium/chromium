@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_list.h"
@@ -67,6 +66,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Destroys the global message_center object.
   static void Shutdown();
 
+  MessageCenter(const MessageCenter&) = delete;
+  MessageCenter& operator=(const MessageCenter&) = delete;
+
   // Management of the observer list.
   virtual void AddObserver(MessageCenterObserver* observer) = 0;
   virtual void RemoveObserver(MessageCenterObserver* observer) = 0;
@@ -79,10 +81,15 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   // Returns true if chrome vox spoken feedback is enabled.
   virtual bool IsSpokenFeedbackEnabled() const = 0;
 
-  // Find the oldest notification by the corresponding notifier id. Returns null
-  // if not found. The returned instance is owned by the message center.
-  virtual Notification* FindOldestNotificationByNotiferId(
-      const NotifierId& notifier_id) = 0;
+  // Returns the notification with the corresponding id. If not found, returns
+  // nullptr. Notification instance is owned by this list.
+  virtual Notification* FindNotificationById(const std::string& id) = 0;
+
+  // Find the parent notification for the corresponding url. This is the
+  // oldest notification with the given url. Returns nullptr if not found.
+  // The returned instance is owned by the message center.
+  virtual Notification* FindParentNotificationForOriginUrl(
+      const GURL& origin_url) = 0;
 
   virtual Notification* FindPopupNotificationById(const std::string& id) = 0;
 
@@ -228,6 +235,7 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   friend class MessageCenterImplTest;
   friend class MessageCenterImplTestWithChangeQueue;
   friend class MessageCenterImplTestWithoutChangeQueue;
+  friend class NotificationViewControllerTest;
   friend class UiControllerTest;
   friend class TrayViewControllerTest;
   friend class MessagePopupCollectionTest;
@@ -235,9 +243,6 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
 
   MessageCenter();
   virtual ~MessageCenter();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageCenter);
 };
 
 }  // namespace message_center

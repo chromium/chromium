@@ -7,9 +7,7 @@
 #include <stddef.h>
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

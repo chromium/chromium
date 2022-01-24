@@ -291,6 +291,22 @@ ContentIdSet StreamModel::GetContentIds() const {
   return feedstore::GetContentIds(stream_data_);
 }
 
+ContentStats StreamModel::GetContentStats() const {
+  ContentStats stats;
+  for (auto content_revision : content_list_) {
+    const feedstore::Content* content = FindContent(content_revision);
+    if (content) {
+      stats.total_content_frame_size_bytes += content->frame().size();
+      stats.card_count++;
+    }
+  }
+
+  for (auto& entry : shared_states_) {
+    stats.shared_state_size += entry.second.data.size();
+  }
+  return stats;
+}
+
 std::string StreamModel::DumpStateForTesting() {
   std::stringstream ss;
   ss << "StreamModel{\n";

@@ -57,12 +57,10 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
                      "callback_num", callback_num_, "frames skipped",
                      frames_skipped);
 
-  base::TimeDelta delay =
-      base::TimeDelta::FromMicroseconds(buffer->params.delay_us);
+  base::TimeDelta delay = base::Microseconds(buffer->params.delay_us);
 
   base::TimeTicks delay_timestamp =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(buffer->params.delay_timestamp_us);
+      base::TimeTicks() + base::Microseconds(buffer->params.delay_timestamp_us);
 
   DVLOG(4) << __func__ << " delay:" << delay << " delay_timestamp:" << delay
            << " frames_skipped:" << frames_skipped;

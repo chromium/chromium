@@ -29,7 +29,12 @@ struct IppRequest {
   // Explicitly declared/defined defaults since [chromium-style] flagged this as
   // a complex struct.
   IppRequest();
+
+  IppRequest(const IppRequest&) = delete;
+  IppRequest& operator=(const IppRequest&) = delete;
+
   IppRequest(IppRequest&& other);
+
   ~IppRequest();
 
   // Implicitly deleted by DISALLOW, so adding back in.
@@ -41,8 +46,6 @@ struct IppRequest {
   std::vector<ipp_converter::HttpHeader> headers;
   printing::ScopedIppPtr ipp;
   std::vector<uint8_t> ipp_data;
-
-  DISALLOW_COPY_AND_ASSIGN(IppRequest);
 };
 
 // Helpful wrapper for a HTTP Response status-line.
@@ -57,7 +60,12 @@ struct IppResponse {
   // Explicitly declared/defined defaults since [chromium-style] flagged this as
   // a complex struct.
   IppResponse();
+
+  IppResponse(const IppResponse&) = delete;
+  IppResponse& operator=(const IppResponse&) = delete;
+
   IppResponse(IppResponse&& other);
+
   ~IppResponse();
 
   // Implicitly deleted by DISALLOW, so adding back in.
@@ -69,8 +77,6 @@ struct IppResponse {
   std::vector<ipp_converter::HttpHeader> headers;
   printing::ScopedIppPtr ipp;
   std::vector<uint8_t> ipp_data;
-
-  DISALLOW_COPY_AND_ASSIGN(IppResponse);
 };
 
 }  // namespace cups_proxy

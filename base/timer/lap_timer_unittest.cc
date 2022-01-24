@@ -19,8 +19,8 @@ namespace test {
 
 namespace {
 
-constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromMilliseconds(15);
-constexpr base::TimeDelta kTimeAdvance = base::TimeDelta::FromMilliseconds(1);
+constexpr base::TimeDelta kTimeLimit = base::Milliseconds(15);
+constexpr base::TimeDelta kTimeAdvance = base::Milliseconds(1);
 constexpr int kWarmupRuns = 5;
 constexpr int kTimeCheckInterval = 10;
 

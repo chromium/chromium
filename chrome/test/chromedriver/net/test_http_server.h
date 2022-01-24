@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -33,12 +32,17 @@ class TestHttpServer : public net::HttpServer::Delegate {
 
   enum WebSocketMessageAction {
     kEchoMessage,
-    kCloseOnMessage
+    kCloseOnMessage,
+    kEchoRawMessage
   };
 
   // Creates an http server. By default it accepts WebSockets and echoes
   // WebSocket messages back.
   TestHttpServer();
+
+  TestHttpServer(const TestHttpServer&) = delete;
+  TestHttpServer& operator=(const TestHttpServer&) = delete;
+
   ~TestHttpServer() override;
 
   // Starts the server. Returns whether it was started successfully.
@@ -95,8 +99,6 @@ class TestHttpServer : public net::HttpServer::Delegate {
   WebSocketRequestAction request_action_ = kAccept;
   WebSocketMessageAction message_action_ = kEchoMessage;
   base::OnceClosure message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHttpServer);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_TEST_HTTP_SERVER_H_

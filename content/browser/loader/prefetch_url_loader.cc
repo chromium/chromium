@@ -27,7 +27,7 @@ namespace content {
 namespace {
 
 constexpr char kSignedExchangeEnabledAcceptHeaderForPrefetch[] =
-    "application/signed-exchange;v=b3;q=0.9,*/*;q=0.8";
+    "application/signed-exchange;v=b3;q=0.7,*/*;q=0.8";
 
 }  // namespace
 

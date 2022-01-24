@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 
 #include <stddef.h>
@@ -31,6 +32,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
 
@@ -76,10 +78,11 @@ class LocalStorageHelperTest : public content::ContentBrowserTest {
   void CreateLocalStorageDataForTest() {
     for (const char* origin_str : {kOrigin1, kOrigin2, kOrigin3}) {
       mojo::Remote<blink::mojom::StorageArea> area;
-      url::Origin origin = url::Origin::Create(GURL(origin_str));
-      ASSERT_FALSE(origin.opaque());
+      blink::StorageKey storage_key =
+          blink::StorageKey::CreateFromStringForTesting(origin_str);
+      ASSERT_FALSE(storage_key.origin().opaque());
       GetLocalStorageControl()->BindStorageArea(
-          origin, area.BindNewPipeAndPassReceiver());
+          storage_key, area.BindNewPipeAndPassReceiver());
       ASSERT_TRUE(PutTestData(area.get()));
     }
   }
@@ -121,8 +124,8 @@ class StopTestOnCallback {
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
-  scoped_refptr<LocalStorageHelper> local_storage_helper(
-      new LocalStorageHelper(shell()->web_contents()->GetBrowserContext()));
+  auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   CreateLocalStorageDataForTest();
   StopTestOnCallback stop_test_on_callback(local_storage_helper.get());
   local_storage_helper->StartFetching(base::BindOnce(
@@ -132,12 +135,13 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
-  scoped_refptr<LocalStorageHelper> local_storage_helper(
-      new LocalStorageHelper(shell()->web_contents()->GetBrowserContext()));
+  auto local_storage_helper = base::MakeRefCounted<LocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
   CreateLocalStorageDataForTest();
   base::RunLoop delete_run_loop;
-  local_storage_helper->DeleteOrigin(url::Origin::Create(GURL(kOrigin1)),
-                                     delete_run_loop.QuitClosure());
+  local_storage_helper->DeleteStorageKey(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin1),
+      delete_run_loop.QuitClosure());
   delete_run_loop.Run();
 
   // Ensure the origin has been deleted, but other origins are intact.
@@ -169,13 +173,15 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
-  const GURL origin1("http://host1:1/");
-  const GURL origin2("http://host2:1/");
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://host2:1/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
-      shell()->web_contents()->GetBrowserContext()));
-  helper->Add(url::Origin::Create(origin1));
-  helper->Add(url::Origin::Create(origin2));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  helper->Add(storage_key1);
+  helper->Add(storage_key2);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -185,18 +191,19 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedAddLocalStorage) {
 
   ASSERT_EQ(2u, result.size());
   auto info = result.begin();
-  EXPECT_EQ(origin1, info->origin.GetURL());
+  EXPECT_EQ(storage_key1.origin(), info->origin);
   info++;
-  EXPECT_EQ(origin2, info->origin.GetURL());
+  EXPECT_EQ(storage_key2.origin(), info->origin);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
-  const GURL origin("http://host1:1/");
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host1:1/");
 
-  scoped_refptr<CannedLocalStorageHelper> helper(new CannedLocalStorageHelper(
-      shell()->web_contents()->GetBrowserContext()));
-  helper->Add(url::Origin::Create(origin));
-  helper->Add(url::Origin::Create(origin));
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  helper->Add(storage_key);
+  helper->Add(storage_key);
 
   TestCompletionCallback callback;
   helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
@@ -205,7 +212,64 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedUnique) {
   std::list<content::StorageUsageInfo> result = callback.result();
 
   ASSERT_EQ(1u, result.size());
-  EXPECT_EQ(origin, result.begin()->origin.GetURL());
+  EXPECT_EQ(storage_key.origin(), result.begin()->origin);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CannedEmptyIgnored) {
+  const blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting(kOrigin1);
+  const blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting(kOrigin2);
+  const blink::StorageKey storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  // Adds `storage_key1` and `storage_key2` to local storage.
+  CreateLocalStorageDataForTest();
+
+  // Add all three of our storage keys to our canned local storage helpers.
+  auto helper = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext());
+  helper->Add(storage_key1);
+  helper->Add(storage_key2);
+  helper->Add(storage_key3);
+  auto helper_auto_ignore = base::MakeRefCounted<CannedLocalStorageHelper>(
+      shell()->web_contents()->GetBrowserContext(),
+      /*update_ignored_empty_keys_on_fetch=*/true);
+  helper_auto_ignore->Add(storage_key1);
+  helper_auto_ignore->Add(storage_key2);
+  helper_auto_ignore->Add(storage_key3);
+
+  // No keys should be automatically ignored if `update_empty_keys_on_fetch`
+  // wasn't given.
+  TestCompletionCallback callback;
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback)));
+  std::list<content::StorageUsageInfo> result = callback.result();
+  ASSERT_EQ(3u, result.size());
+
+  // Empty keys should be automatically ignored if `update_empty_keys_on_fetch`
+  // is true.
+  TestCompletionCallback callback1;
+  helper_auto_ignore->StartFetching(base::BindOnce(
+      &TestCompletionCallback::callback, base::Unretained(&callback1)));
+  result = callback1.result();
+  ASSERT_EQ(2u, result.size());
+
+  // Empty keys should be ignored when `UpdateIgnoredEmptyKeys` is called.
+  TestCompletionCallback callback2;
+  base::RunLoop run_loop;
+  helper->UpdateIgnoredEmptyKeys(run_loop.QuitClosure());
+  run_loop.Run();
+  helper->StartFetching(base::BindOnce(&TestCompletionCallback::callback,
+                                       base::Unretained(&callback2)));
+  result = callback2.result();
+  ASSERT_EQ(2u, result.size());
+
+  // Sanity check the origins are as expected.
+  auto info = result.begin();
+  EXPECT_EQ(storage_key1.origin(), info->origin);
+  info++;
+  EXPECT_EQ(storage_key2.origin(), info->origin);
 }
 
 }  // namespace

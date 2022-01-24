@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 // Lists the priority of the OOBE screens with the highest priority at the top
 // and the lowest priority at the bottom. This is used to check if screen
@@ -52,22 +52,20 @@ struct StaticOobeScreenId {
 };
 
 struct OobeScreen {
-  constexpr static StaticOobeScreenId
-      SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED{"supervised-user-creation"};
   constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
       "saml-confirm-password"};
 
   constexpr static StaticOobeScreenId SCREEN_UNKNOWN{"unknown"};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::OobeScreen;
-using ::chromeos::OobeScreenId;
-using ::chromeos::OobeScreenPriority;
-using ::chromeos::StaticOobeScreenId;
-}
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::OobeScreen;
+using ::ash::OobeScreenId;
+using ::ash::StaticOobeScreenId;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_OOBE_SCREEN_H_

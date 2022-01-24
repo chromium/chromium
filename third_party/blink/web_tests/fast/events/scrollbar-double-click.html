@@ -1,8 +1,9 @@
+<script src="../../resources/gesture-util.js"></script>
 <body style="margin:0">
 <script>
 if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
 }
 </script>
 
@@ -14,19 +15,31 @@ if (window.testRunner) {
 <div id="console"></div>
 
 <script>
+
+const scroller = document.getElementById('overflow');
+function scrollTop() {
+  return scroller.scrollTop;
+}
+
 if (window.eventSender) {
+  waitForCompositorCommit().then(() => {
+    const scrollPromise = waitForScrollEvent(scroller);
+
     eventSender.mouseMoveTo(390, 300);
     eventSender.mouseDown();
     eventSender.mouseUp();
     eventSender.mouseDown();
     eventSender.mouseUp();
 
-    setTimeout(finished, 1000);
+    scrollPromise.then(() => {
+      waitForAnimationEndTimeBased(scrollTop).then(finished);
+    });
+  });
 }
 
-function finished()
-{
-    document.getElementById('console').innerHTML = "Scroll offset is " + document.getElementById('overflow').scrollTop;
-    testRunner.notifyDone();
+function finished() {
+  document.getElementById('console').innerHTML = "Scroll offset is " + scroller.scrollTop;
+  testRunner.notifyDone();
 }
+
 </script>

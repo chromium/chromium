@@ -171,6 +171,24 @@ TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteCollapseWhiteSpaceEnd) {
             GetItemsAsString(*text.GetLayoutObject()));
 }
 
+// http://crbug.com/1253931
+TEST_F(LayoutNGTextTest, SetTextWithOffsetCopyItemBefore) {
+  SetBodyInnerHTML(u"<p id=target><img> a</p>");
+
+  auto& target = *GetElementById("target");
+  const auto& text = *To<Text>(target.lastChild());
+
+  target.appendChild(Text::Create(GetDocument(), "YuGFkVSKiG"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // Combine Text nodes "a " and "YuGFkVSKiG".
+  target.normalize();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ("*{' aYuGFkVSKiG', ShapeResult=1+12}\n",
+            GetItemsAsString(*text.GetLayoutObject()));
+}
+
 // web_tests/external/wpt/editing/run/delete.html?993-993
 // web_tests/external/wpt/editing/run/forwarddelete.html?1193-1193
 TEST_F(LayoutNGTextTest, SetTextWithOffsetDeleteNbspInPreWrap) {

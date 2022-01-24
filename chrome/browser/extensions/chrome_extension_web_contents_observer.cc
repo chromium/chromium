@@ -167,6 +167,6 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeExtensionWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeExtensionWebContentsObserver);
 
 }  // namespace extensions

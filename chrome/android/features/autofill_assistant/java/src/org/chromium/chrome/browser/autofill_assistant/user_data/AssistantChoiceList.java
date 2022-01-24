@@ -25,6 +25,7 @@ import androidx.gridlayout.widget.GridLayout;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -424,6 +425,7 @@ public class AssistantChoiceList extends GridLayout {
         editButton.setLayoutParams(new ViewGroup.LayoutParams(editButtonSize, editButtonSize));
 
         LinearLayout editButtonLayout = createMinimumTouchSizeContainer();
+        editButtonLayout.setTag(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON);
         editButtonLayout.setGravity(Gravity.CENTER);
         editButtonLayout.addView(editButton);
         editButtonLayout.setContentDescription(editButtonContentDescription);

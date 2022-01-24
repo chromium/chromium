@@ -11,8 +11,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/android/cloud_management_android_connection.h"
 #include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
-#include "chrome/browser/policy/android/jni_headers/CloudManagementAndroidConnection_jni.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
@@ -35,19 +35,22 @@ BrowserDMTokenStorageAndroid::BrowserDMTokenStorageAndroid()
 BrowserDMTokenStorageAndroid::~BrowserDMTokenStorageAndroid() {}
 
 std::string BrowserDMTokenStorageAndroid::InitClientId() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_CloudManagementAndroidConnection_getClientId(
-               env, Java_CloudManagementAndroidConnection_getInstance(env)));
+  return android::GetClientId();
 }
 
 std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
-  PolicyService* policy_service =
-      g_browser_process->browser_policy_connector()->GetPolicyService();
-  DCHECK(policy_service);
+  // When a DMToken is available, it's possible that this method was called
+  // very early in the initialization process, even before `g_browser_process`
+  // be initialized.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector() ||
+      !g_browser_process->browser_policy_connector()->HasPolicyService()) {
+    DCHECK(!android::ReadDmTokenFromSharedPreferences().empty());
+    return std::string();
+  }
 
   const base::Value* value =
-      policy_service
+      g_browser_process->browser_policy_connector()
+          ->GetPolicyService()
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
           .GetValue(key::kCloudManagementEnrollmentToken);
   return value && value->is_string() ? value->GetString() : std::string();

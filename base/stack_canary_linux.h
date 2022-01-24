@@ -6,7 +6,6 @@
 #define BASE_STACK_CANARY_LINUX_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
 namespace base {
 

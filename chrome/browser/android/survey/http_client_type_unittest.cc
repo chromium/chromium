@@ -15,6 +15,10 @@
 namespace survey {
 
 class HttpClientTypeUnitTest : public testing::Test {
+ public:
+  HttpClientTypeUnitTest(const HttpClientTypeUnitTest&) = delete;
+  HttpClientTypeUnitTest& operator=(const HttpClientTypeUnitTest&) = delete;
+
  protected:
   HttpClientTypeUnitTest() {}
   ~HttpClientTypeUnitTest() override {}
@@ -24,7 +28,6 @@ class HttpClientTypeUnitTest : public testing::Test {
  private:
   base::HistogramTester histogram_tester_;
   const std::vector<HttpClientType> client_types_;
-  DISALLOW_COPY_AND_ASSIGN(HttpClientTypeUnitTest);
 };
 
 TEST_F(HttpClientTypeUnitTest, TestRecordHistogram) {

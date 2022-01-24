@@ -55,22 +55,6 @@ TEST(DriveMetadataDBMigrationUtilTest, RollbackFromV4ToV3) {
   // Please see metadata_database_index.cc for version 3 format, and
   // metadata_database_index_on_disk.cc for version 4 format.
 
-  const char kDatabaseVersionKey[] = "VERSION";
-  const char kServiceMetadataKey[] = "SERVICE";
-  const char kFileMetadataKeyPrefix[] = "FILE: ";
-  const char kFileTrackerKeyPrefix[] = "TRACKER: ";
-
-  // Key prefixes used in version 4.
-  const char kAppRootIDByAppIDKeyPrefix[] = "APP_ROOT: ";
-  const char kActiveTrackerIDByFileIDKeyPrefix[] = "ACTIVE_FILE: ";
-  const char kTrackerIDByFileIDKeyPrefix[] = "TRACKER_FILE: ";
-  const char kMultiTrackerByFileIDKeyPrefix[] = "MULTI_FILE: ";
-  const char kActiveTrackerIDByParentAndTitleKeyPrefix[] = "ACTIVE_PATH: ";
-  const char kTrackerIDByParentAndTitleKeyPrefix[] = "TRACKER_PATH: ";
-  const char kMultiBackingParentAndTitleKeyPrefix[] = "MULTI_PATH: ";
-  const char kDirtyIDKeyPrefix[] = "DIRTY: ";
-  const char kDemotedDirtyIDKeyPrefix[] = "DEMOTED_DIRTY: ";
-
   // Set up environment.
   base::ScopedTempDir base_dir;
   std::unique_ptr<leveldb::DB> db;

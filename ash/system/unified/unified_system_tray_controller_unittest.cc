@@ -34,6 +34,12 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
                                         public views::ViewObserver {
  public:
   UnifiedSystemTrayControllerTest() = default;
+
+  UnifiedSystemTrayControllerTest(const UnifiedSystemTrayControllerTest&) =
+      delete;
+  UnifiedSystemTrayControllerTest& operator=(
+      const UnifiedSystemTrayControllerTest&) = delete;
+
   ~UnifiedSystemTrayControllerTest() override = default;
 
   // testing::Test:
@@ -98,8 +104,6 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
   std::unique_ptr<UnifiedSystemTrayView> view_;
 
   int preferred_size_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayControllerTest);
 };
 
 TEST_F(UnifiedSystemTrayControllerTest, ToggleExpanded) {

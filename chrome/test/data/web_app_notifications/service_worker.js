@@ -16,7 +16,7 @@ self.addEventListener('fetch', function(event) {
   event.respondWith(fetch(event.request));
 });
 
-function displayPersistentNotification(message) {
+async function displayPersistentNotification(message) {
   var options = {
     body: 'Notification Body',
     vibrate: [100, 50, 100],
@@ -27,25 +27,23 @@ function displayPersistentNotification(message) {
     options.badge = 'blue-32.png';
   }
 
-  self.registration.showNotification(message.title, options);
+  return self.registration.showNotification(message.title, options);
 }
 
-self.addEventListener('message', event => {
+self.addEventListener('message', async (event) => {
   let message = event.data;
   let responsePort = event.ports[0];
 
   if (message.type === 'showNotification') {
-    displayPersistentNotification(message);
+    await displayPersistentNotification(message);
     responsePort.postMessage({result: true});
   }
 
   if (message.type === 'closeAllNotifications') {
-    self.registration.getNotifications().then(function(notifications) {
-      notifications.forEach(function(notification) {
-        notification.close();
-      });
-
-      responsePort.postMessage({result: true});
-    });
+    let notifications = await self.registration.getNotifications();
+    for (notification of notifications) {
+      notification.close();
+    }
+    responsePort.postMessage({result: true});
   }
 });

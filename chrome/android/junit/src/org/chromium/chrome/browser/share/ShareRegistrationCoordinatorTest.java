@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -35,12 +36,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareRegistrationCoordinator.ShareBroadcastReceiver;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -51,6 +54,8 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ShareRegistrationCoordinatorTest {
+    @Rule
+    public TestRule mProcessorRule = new Features.JUnitProcessor();
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule
@@ -93,6 +98,7 @@ public class ShareRegistrationCoordinatorTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_WHEN_SIGNED_IN)
     @SmallTest
     public void doSendTabToSelfShare() {
         // Setup the mocked object chain to get to the url, title and timestamp.

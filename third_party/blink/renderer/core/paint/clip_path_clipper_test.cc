@@ -20,10 +20,11 @@ TEST_F(ClipPathClipperTest, ClipPathBoundingBoxClamped) {
     </div>
   )HTML");
   auto& object = *GetLayoutObjectByElementId("e");
-  absl::optional<FloatRect> bounding_box =
+  absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(object);
   ASSERT_TRUE(bounding_box.has_value());
-  EXPECT_EQ(FloatRect(LayoutRect::InfiniteIntRect()), *bounding_box);
+  EXPECT_EQ(gfx::RectF(ToGfxRect(LayoutRect::InfiniteIntRect())),
+            *bounding_box);
 }
 
 }  // unnamed namespace

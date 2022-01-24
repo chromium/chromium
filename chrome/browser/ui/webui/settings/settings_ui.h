@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_UI_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,6 +48,10 @@ class SettingsUI :
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   explicit SettingsUI(content::WebUI* web_ui);
+
+  SettingsUI(const SettingsUI&) = delete;
+  SettingsUI& operator=(const SettingsUI&) = delete;
+
   ~SettingsUI() override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -87,8 +90,6 @@ class SettingsUI :
   WebuiLoadTimer webui_load_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsUI);
 };
 
 }  // namespace settings

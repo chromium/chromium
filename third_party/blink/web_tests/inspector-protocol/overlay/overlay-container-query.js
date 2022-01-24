@@ -4,9 +4,16 @@
       #container {
         width: 400px;
         height: 500px;
+        container-type: inline-size;
+      }
+      @container (min-width: 100px) {
+        .item {
+          width: 100px;
+          height: 100px;
+        }
       }
     </style>
-    <div id="container"></div>
+    <div id="container"><div class="item"></div></div>
   `, 'Verifies that Overlay.setShowContainerQueryOverlays works.');
 
   await dp.DOM.enable();
@@ -98,6 +105,31 @@
 
   testRunner.log('Overlay rendered:');
   testRunner.log(await getHighlightNodeCommands());
+
+  const red = {
+    r: 1,
+    g: 0,
+    b: 0,
+    a: 1,
+  };
+  await dp.Overlay.setShowContainerQueryOverlays({
+    containerQueryHighlightConfigs: [{
+      nodeId,
+      containerQueryContainerHighlightConfig: {
+        containerBorder: {
+          color: black,
+          patten: 'dashed',
+        },
+        descendantBorder: {
+          color: red,
+          patten: 'dashed',
+        }
+      },
+    }]
+  });
+
+  testRunner.log('Overlay rendered:');
+  testRunner.log(await getDrawContainerQueryHighlightCommands());
 
   testRunner.completeTest();
 });

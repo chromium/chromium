@@ -7,7 +7,7 @@
 #include "ui/aura/env.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 DialogWindowWaiter::DialogWindowWaiter(const std::u16string& dialog_title)
     : dialog_title_(dialog_title) {
@@ -49,4 +49,4 @@ void DialogWindowWaiter::OnWindowVisibilityChanged(aura::Window* window,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

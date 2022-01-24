@@ -21,6 +21,10 @@ namespace content {
 class CONTENT_EXPORT SameSiteDataRemoverImpl {
  public:
   explicit SameSiteDataRemoverImpl(BrowserContext* browser_context);
+
+  SameSiteDataRemoverImpl(const SameSiteDataRemoverImpl&) = delete;
+  SameSiteDataRemoverImpl& operator=(const SameSiteDataRemoverImpl&) = delete;
+
   ~SameSiteDataRemoverImpl();
 
   // Returns a set containing domains associated with deleted SameSite=None
@@ -53,8 +57,6 @@ class CONTENT_EXPORT SameSiteDataRemoverImpl {
   BrowserContext* browser_context_;
   StoragePartition* storage_partition_;
   std::set<std::string> same_site_none_domains_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImpl);
 };
 
 }  // namespace content

@@ -145,6 +145,6 @@ void LoginDetectionTabHelper::ProcessNewSignedInSite(
       web_contents()->GetBrowserContext(), signedin_site);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginDetectionTabHelper);
 
 }  // namespace login_detection

@@ -13,4 +13,4 @@ AudioCapturerSource::ErrorCode ConvertToCaptureCallbackCode(
     mojom::InputStreamErrorCode code);
 }
 
-#endif
+#endif  // MEDIA_MOJO_COMMON_INPUT_ERROR_CODE_CONVERTER_H_

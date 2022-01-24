@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/file_system_provider/operations/operation.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
@@ -38,6 +37,10 @@ class ReadFile : public Operation {
            int64_t offset,
            int length,
            ProvidedFileSystemInterface::ReadChunkReceivedCallback callback);
+
+  ReadFile(const ReadFile&) = delete;
+  ReadFile& operator=(const ReadFile&) = delete;
+
   ~ReadFile() override;
 
   // Operation overrides.
@@ -56,8 +59,6 @@ class ReadFile : public Operation {
   int length_;
   int64_t current_offset_;
   ProvidedFileSystemInterface::ReadChunkReceivedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadFile);
 };
 
 }  // namespace operations

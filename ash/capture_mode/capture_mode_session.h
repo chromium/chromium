@@ -10,6 +10,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -30,11 +31,13 @@ class Canvas;
 
 namespace ash {
 
+class CaptureModeAdvancedSettingsView;
 class CaptureModeBarView;
 class CaptureModeController;
-class CaptureModeSettingsView;
 class CaptureModeSessionFocusCycler;
+class CaptureModeSettingsView;
 class CaptureWindowObserver;
+class UserNudgeController;
 class WindowDimmer;
 
 // Encapsulates an active capture mode session (i.e. an instance of this class
@@ -44,15 +47,18 @@ class WindowDimmer;
 // beneath the layer of the bar widget. This layer is used to paint a dimming
 // shield of the areas that won't be captured, and another bright region showing
 // the one that will be.
-class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
-                                      public ui::LayerDelegate,
-                                      public ui::EventHandler,
-                                      public TabletModeObserver,
-                                      public aura::WindowObserver,
-                                      public display::DisplayObserver {
+class ASH_EXPORT CaptureModeSession
+    : public ui::LayerOwner,
+      public ui::LayerDelegate,
+      public ui::EventHandler,
+      public TabletModeObserver,
+      public aura::WindowObserver,
+      public display::DisplayObserver,
+      public FolderSelectionDialogController::Delegate {
  public:
-  // Creates the bar widget on a calculated root window.
-  explicit CaptureModeSession(CaptureModeController* controller);
+  // Creates the bar widget on a calculated root window. |projector_mode|
+  // specifies whether this session was started for the projector workflow.
+  CaptureModeSession(CaptureModeController* controller, bool projector_mode);
   CaptureModeSession(const CaptureModeSession&) = delete;
   CaptureModeSession& operator=(const CaptureModeSession&) = delete;
   ~CaptureModeSession() override;
@@ -68,12 +74,21 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   views::Widget* capture_mode_bar_widget() {
     return capture_mode_bar_widget_.get();
   }
+  views::Widget* capture_label_widget() { return capture_label_widget_.get(); }
+  views::Widget* capture_mode_settings_widget() {
+    return capture_mode_settings_widget_.get();
+  }
+  bool is_in_projector_mode() const { return is_in_projector_mode_; }
+  void set_can_exit_on_escape(bool value) { can_exit_on_escape_ = value; }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
   void set_a11y_alert_on_session_exit(bool value) {
     a11y_alert_on_session_exit_ = value;
   }
   bool is_shutting_down() const { return is_shutting_down_; }
+  void set_is_stopping_to_start_video_recording(bool value) {
+    is_stopping_to_start_video_recording_ = value;
+  }
 
   // Initializes the capture mode session. This should be called right after the
   // object is created.
@@ -104,8 +119,21 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Called when starting 3-seconds count down before recording video.
   void StartCountDown(base::OnceClosure countdown_finished_callback);
 
+  // Opens the dialog that lets users pick the folder to which they want the
+  // captured files to be saved.
+  void OpenFolderSelectionDialog();
+
   // Returns true if we are currently in video recording countdown animation.
   bool IsInCountDownAnimation() const;
+
+  // Called when the capture folder may have changed to update the set of menu
+  // options in the settings menu and resize it so that it fits its potentially
+  // new contents.
+  void OnCaptureFolderMayHaveChanged();
+
+  // Called when we change the setting to force-use the default downloads folder
+  // as the save folder.
+  void OnDefaultCaptureFolderSelectionChanged();
 
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -128,17 +156,26 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t metrics) override;
 
+  // FolderSelectionDialogController::Delegate:
+  void OnFolderSelected(const base::FilePath& path) override;
+  void OnSelectionWindowClosed() override;
+
   // Updates the current cursor depending on current |location_in_screen| and
   // current capture type and source. |is_touch| is used when calculating fine
   // tune position in region capture mode. We'll have a larger hit test region
   // for the touch events than the mouse events.
   void UpdateCursor(const gfx::Point& location_in_screen, bool is_touch);
 
+  // Highlights the give |window| for keyboard navigation
+  // events (tabbing through windows in capture window mode).
+  void HighlightWindowForTab(aura::Window* window);
+
  private:
+  friend class CaptureModeAdvancedSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
   friend class CaptureModeSessionTestApi;
+  friend class CaptureModeTestApi;
   class CursorSetter;
-  class ScopedA11yOverrideWindowSetter;
 
   enum class CaptureLabelAnimation {
     // No animation on the capture label.
@@ -150,6 +187,25 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
     // the capture label animates into a countdown label.
     kCountdownStart,
   };
+
+  // Sets the correct screen bounds on the `capture_mode_bar_widget_` based on
+  // the `current_root_`, potentially moving the bar to a new display if
+  // `current_root_` is different`.
+  void RefreshBarWidgetBounds();
+
+  // If possible, this recreates and shows the nudge that alerts the user about
+  // the new folder selection settings. The nudge will be created on top of the
+  // the settings button on the capture mode bar.
+  void MaybeCreateUserNudge();
+
+  // If there's a user nudge currently showing, it will be dismissed forever,
+  // and will no longer be shown to the user.
+  void MaybeDismissUserNudgeForever();
+
+  // Called to accept and trigger a capture operation. This happens e.g. when
+  // the user hits enter, selects a window/display to capture, or presses on the
+  // record button in the capture label view.
+  void DoPerformCapture();
 
   // Gets the bounds of current window selected for |kWindow| capture source.
   gfx::Rect GetSelectedWindowBounds() const;
@@ -308,6 +364,15 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;
 
+  // Whether this session was started from a projector workflow.
+  const bool is_in_projector_mode_ = false;
+
+  // Whether pressing the escape key can exit the session. This is used when we
+  // find capturable content at the end of the 3-second count down, but we need
+  // to do some extra asynchronous operations before we start the actual
+  // recording. At this point we don't want the user to be able to bail out.
+  bool can_exit_on_escape_ = true;
+
   // Stores the data needed to select a region during a region capture session.
   // This variable indicates if the user is currently selecting a region to
   // capture, it will be true when the first mouse/touch presses down and will
@@ -365,12 +430,34 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // True once Shutdown() is called.
   bool is_shutting_down_ = false;
 
+  // True when the session is being stopped to start video recording, at which
+  // point, it's guaranteed that recording will start and will not be blocked by
+  // any errors, DLP restrictions, or any user cancellation.
+  bool is_stopping_to_start_video_recording_ = false;
+
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
 
-  // Accessibility features will focus on the capture bar widget while this
-  // object is alive.
-  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
+  // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
+  // TODO(conniekxu): remove it when the work of capture mode new settings
+  // is done.
+  CaptureModeAdvancedSettingsView* capture_mode_advanced_settings_view_ =
+      nullptr;
+
+  // This helps indicating whether located events should be handled by the
+  // capture mode settings menu view or the capture mode Pre-EventHandler. When
+  // it's true, settings menu view should handle the event. Set it to true when
+  // the event is a press event and is located on the settings menu view. Set it
+  // to false when the event is a release event and "event_on_settings_menu_" is
+  // true.
+  bool located_press_event_on_settings_menu_ = false;
+
+  // Controls the folder selection dialog. Not null only while the dialog is
+  // shown.
+  std::unique_ptr<FolderSelectionDialogController>
+      folder_selection_dialog_controller_;
+
+  std::unique_ptr<UserNudgeController> user_nudge_controller_;
 };
 
 }  // namespace ash

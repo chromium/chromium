@@ -21,6 +21,10 @@ namespace ash {
 namespace {
 
 class LoginPinViewTest : public LoginTestBase {
+ public:
+  LoginPinViewTest(const LoginPinViewTest&) = delete;
+  LoginPinViewTest& operator=(const LoginPinViewTest&) = delete;
+
  protected:
   LoginPinViewTest() = default;
   ~LoginPinViewTest() override = default;
@@ -51,9 +55,6 @@ class LoginPinViewTest : public LoginTestBase {
   int backspace_ = 0;
   // Number of times the submit event has been fired.
   int submit_ = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginPinViewTest);
 };
 
 }  // namespace

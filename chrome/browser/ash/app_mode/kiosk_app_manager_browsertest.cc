@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -25,7 +26,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -35,7 +36,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
@@ -107,7 +107,7 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
   value.SetString("name", name);
   value.SetString("version", version);
   base::ListValue scripts;
-  scripts.AppendString("main.js");
+  scripts.Append("main.js");
   value.SetPath("app.background.scripts", std::move(scripts));
   value.SetBoolean("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
@@ -129,7 +129,8 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
       : manager_(manager), expected_data_change_(expected_data_change) {
     manager_->AddObserver(this);
   }
-
+  AppDataLoadWaiter(const AppDataLoadWaiter&) = delete;
+  AppDataLoadWaiter& operator=(const AppDataLoadWaiter&) = delete;
   ~AppDataLoadWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
@@ -187,14 +188,14 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   int data_change_count_ = 0;
   int expected_data_change_;
   int data_load_failure_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppDataLoadWaiter);
 };
 
 // A class to wait for ExternalCache to finish putting the extension crx.
 class ExternalCachePutWaiter {
  public:
   ExternalCachePutWaiter() {}
+  ExternalCachePutWaiter(const ExternalCachePutWaiter&) = delete;
+  ExternalCachePutWaiter& operator=(const ExternalCachePutWaiter&) = delete;
   ~ExternalCachePutWaiter() {}
 
   void Wait() {
@@ -217,8 +218,6 @@ class ExternalCachePutWaiter {
   std::unique_ptr<base::RunLoop> run_loop_;
   bool quit_ = false;
   bool success_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalCachePutWaiter);
 };
 
 }  // namespace
@@ -229,6 +228,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
       : settings_helper_(false),
         fake_cws_(new FakeCWS()),
         verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
+  KioskAppManagerTest(const KioskAppManagerTest&) = delete;
+  KioskAppManagerTest& operator=(const KioskAppManagerTest&) = delete;
   ~KioskAppManagerTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -291,8 +292,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         std::make_unique<InstallAttributes::LockResult>(
             InstallAttributes::LOCK_NOT_READY);
     base::RunLoop run_loop;
-    policy::BrowserPolicyConnectorChromeOS* connector =
-        g_browser_process->platform_part()->browser_policy_connector_chromeos();
+    policy::BrowserPolicyConnectorAsh* connector =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
     connector->GetInstallAttributes()->LockDevice(
         policy::DEVICE_MODE_ENTERPRISE, "domain.com",
         std::string(),  // realm
@@ -465,8 +466,6 @@ class KioskAppManagerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeCWS> fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, Basic) {
@@ -553,11 +552,11 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
       local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
   const base::DictionaryValue* apps_dict;
   EXPECT_TRUE(dict->GetDictionary(KioskAppDataBase::kKeyApps, &apps_dict));
-  EXPECT_TRUE(apps_dict->HasKey("app_1"));
+  EXPECT_TRUE(apps_dict->FindKey("app_1") != nullptr);
 
   manager()->ClearAppData("app_1");
 
-  EXPECT_FALSE(apps_dict->HasKey("app_1"));
+  EXPECT_EQ(apps_dict->FindKey("app_1"), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {

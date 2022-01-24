@@ -26,6 +26,10 @@ class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
                    VkSurfaceKHR vk_surface,
                    x11::Window parent_window,
                    x11::Window window);
+
+  VulkanSurfaceX11(const VulkanSurfaceX11&) = delete;
+  VulkanSurfaceX11& operator=(const VulkanSurfaceX11&) = delete;
+
   ~VulkanSurfaceX11() override;
 
   // VulkanSurface:
@@ -40,8 +44,6 @@ class VulkanSurfaceX11 : public VulkanSurface, public x11::EventObserver {
   const x11::Window parent_window_;
   x11::Window window_;
   std::unique_ptr<x11::XScopedEventSelector> event_selector_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanSurfaceX11);
 };
 
 }  // namespace gpu

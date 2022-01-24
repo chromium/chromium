@@ -14,15 +14,14 @@ namespace recording {
 constexpr int kMaxFrameRate = 30;
 
 // Based on the above FPS, this is the minimum duration between any two frames.
-constexpr base::TimeDelta kMinCapturePeriod =
-    base::TimeDelta::FromHz(kMaxFrameRate);
+constexpr base::TimeDelta kMinCapturePeriod = base::Hertz(kMaxFrameRate);
 
 // The minimum amount of time that must pass between any two successive size
 // changes of video frames. This is needed to avoid producing a lot of video
 // frames with different sizes (e.g. when resizing a window) which can result in
 // a large output.
 constexpr base::TimeDelta kMinPeriodForResizeThrottling =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 // The requested audio sample rate of the audio capturer.
 constexpr int kAudioSampleRate = 48000;

@@ -7,9 +7,9 @@
 #import <CoreSpotlight/CoreSpotlight.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/spotlight/spotlight_provider.h"
+#include "build/branding_buildflags.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -65,6 +65,28 @@ void DoWithRetry(BlockWithError completion,
   DoWithRetry(completion, kMaxDeletionAttempts, blockName);
 }
 
+// Strings corresponding to the domain/prefix for respectively bookmarks,
+// top sites and actions items for spotlight.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+NSString* const kSpotlightBookmarkDomain = @"com.google.chrome.bookmarks";
+NSString* const kSpotlightBookmarkPrefix = @"com.google.chrome.bookmarks.";
+
+NSString* const kSpotlightTopSitesDomain = @"com.google.chrome.topsites";
+NSString* const kSpotlightTopSitesPrefix = @"com.google.chrome.topsites.";
+
+NSString* const kSpotlightActionsDomain = @"com.google.chrome.actions";
+NSString* const kSpotlightActionsPrefix = @"com.google.chrome.actions.";
+#else
+NSString* const kSpotlightBookmarkDomain = @"org.chromium.bookmarks";
+NSString* const kSpotlightBookmarkPrefix = @"org.chromium.bookmarks.";
+
+NSString* const kSpotlightTopSitesDomain = @"org.chromium.topsites";
+NSString* const kSpotlightTopSitesPrefix = @"org.chromium.topsites.";
+
+NSString* const kSpotlightActionsDomain = @"org.chromium.actions";
+NSString* const kSpotlightActionsPrefix = @"org.chromium.actions.";
+#endif
+
 }  // namespace
 
 namespace spotlight {
@@ -83,16 +105,11 @@ const char kSpotlightLastIndexingVersionKey[] = "SpotlightLastIndexingVersion";
 const int kCurrentSpotlightIndexVersion = 3;
 
 Domain SpotlightDomainFromString(NSString* domain) {
-  SpotlightProvider* provider =
-      ios::GetChromeBrowserProvider().GetSpotlightProvider();
-  if ([domain hasPrefix:[provider->GetBookmarkDomain()
-                            stringByAppendingString:@"."]]) {
+  if ([domain hasPrefix:kSpotlightBookmarkPrefix]) {
     return DOMAIN_BOOKMARKS;
-  } else if ([domain hasPrefix:[provider->GetTopSitesDomain()
-                                   stringByAppendingString:@"."]]) {
+  } else if ([domain hasPrefix:kSpotlightTopSitesPrefix]) {
     return DOMAIN_TOPSITES;
-  } else if ([domain hasPrefix:[provider->GetActionsDomain()
-                                   stringByAppendingString:@"."]]) {
+  } else if ([domain hasPrefix:kSpotlightActionsPrefix]) {
     return DOMAIN_ACTIONS;
   }
   // On normal flow, it is not possible to reach this point. When testing the
@@ -102,15 +119,13 @@ Domain SpotlightDomainFromString(NSString* domain) {
 }
 
 NSString* StringFromSpotlightDomain(Domain domain) {
-  SpotlightProvider* provider =
-      ios::GetChromeBrowserProvider().GetSpotlightProvider();
   switch (domain) {
     case DOMAIN_BOOKMARKS:
-      return provider->GetBookmarkDomain();
+      return kSpotlightBookmarkDomain;
     case DOMAIN_TOPSITES:
-      return provider->GetTopSitesDomain();
+      return kSpotlightTopSitesDomain;
     case DOMAIN_ACTIONS:
-      return provider->GetActionsDomain();
+      return kSpotlightActionsDomain;
     default:
       // On normal flow, it is not possible to reach this point. When testing
       // the app, it may be possible though if the app is downgraded.
@@ -158,13 +173,6 @@ void ClearAllSpotlightEntries(BlockWithError callback) {
 }
 
 bool IsSpotlightAvailable() {
-  bool provided = ios::GetChromeBrowserProvider()
-                      .GetSpotlightProvider()
-                      ->IsSpotlightEnabled();
-  if (!provided) {
-    // The product does not support Spotlight, do not go further.
-    return false;
-  }
   bool loaded = !![CSSearchableIndex class];
   bool available = loaded && [CSSearchableIndex isIndexingAvailable];
   static dispatch_once_t once;
@@ -188,9 +196,11 @@ void ClearSpotlightIndexWithCompletion(BlockWithError completion) {
 }
 
 NSString* GetSpotlightCustomAttributeItemID() {
-  return ios::GetChromeBrowserProvider()
-      .GetSpotlightProvider()
-      ->GetCustomAttributeItemID();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return @"ComGoogleChromeItemID";
+#else
+  return @"OrgChromiumItemID";
+#endif
 }
 
 void GetURLForSpotlightItemID(NSString* itemID, BlockWithNSURL completion) {

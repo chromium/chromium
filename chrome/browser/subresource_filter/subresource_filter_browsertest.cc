@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"
@@ -55,6 +54,7 @@
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
@@ -66,7 +66,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -86,44 +85,6 @@ namespace proto = url_pattern_index::proto;
 // The path to a multi-frame document used for tests.
 static constexpr const char kTestFrameSetPath[] =
     "/subresource_filter/frame_set.html";
-
-// Names of DocumentLoad histograms.
-constexpr const char kDocumentLoadActivationLevel[] =
-    "SubresourceFilter.DocumentLoad.ActivationState";
-
-constexpr const char kSubresourceLoadsTotalForPage[] =
-    "SubresourceFilter.PageLoad.NumSubresourceLoads.Total";
-constexpr const char kSubresourceLoadsEvaluatedForPage[] =
-    "SubresourceFilter.PageLoad.NumSubresourceLoads.Evaluated";
-constexpr const char kSubresourceLoadsMatchedRulesForPage[] =
-    "SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules";
-constexpr const char kSubresourceLoadsDisallowedForPage[] =
-    "SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed";
-
-// Names of the performance measurement histograms.
-constexpr const char kEvaluationTotalWallDurationForPage[] =
-    "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration";
-constexpr const char kEvaluationTotalCPUDurationForPage[] =
-    "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration";
-constexpr const char kEvaluationWallDuration[] =
-    "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration";
-constexpr const char kEvaluationCPUDuration[] =
-    "SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration";
-
-constexpr const char kActivationDecision[] =
-    "SubresourceFilter.PageLoad.ActivationDecision";
-
-// Names of navigation chain patterns histogram.
-const char kActivationListHistogram[] =
-    "SubresourceFilter.PageLoad.ActivationList";
-
-const char kPageLoadActivationStateHistogram[] =
-    "SubresourceFilter.PageLoad.ActivationState";
-const char kPageLoadActivationStateDidInheritHistogram[] =
-    "SubresourceFilter.PageLoad.ActivationState.DidInherit";
-
-// Other histograms.
-const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
 GURL GetURLWithFragment(const GURL& url, base::StringPiece fragment) {
   GURL::Replacements replacements;
@@ -156,19 +117,19 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
                        subresource_filter::ActivationList::SUBRESOURCE_FILTER);
   ResetConfiguration(std::move(config));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   EXPECT_FALSE(console_observer.messages().empty());
 
   // The main frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
@@ -187,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
                        subresource_filter::ActivationList::BETTER_ADS);
   ResetConfiguration(std::move(config));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
   ASSERT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ(kActivationWarningConsoleMessage,
@@ -195,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterListInsertingBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   ASSERT_EQ(2u, console_observer.messages().size());
@@ -216,9 +177,9 @@ IN_PROC_BROWSER_TEST_F(
   GURL url(embedded_test_server()->GetURL(
       initial_host, "/server-redirect?" + redirect_url.spec()));
 
-  ConfigureAsSubresourceFilterOnlyURL(url.GetOrigin());
+  ConfigureAsSubresourceFilterOnlyURL(url.DeprecatedGetOriginAsURL());
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   tester.ExpectUniqueSample(kActivationListHistogram,
                             static_cast<int>(ActivationList::NONE), 1);
 }
@@ -243,19 +204,19 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, MainFrameActivation) {
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   EXPECT_FALSE(console_observer.messages().empty());
 
   // The main frame document should never be filtered.
   SetRulesetToDisallowURLsWithPathSuffix("frame_with_included_script.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
@@ -267,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Deactivation would already detected by the IsDynamicScriptElementLoaded
   // line alone. To ensure no reactivation, which would muddy up recorded
@@ -291,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, SubFrameActivation) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   const std::vector<const char*> kSubframeNames{"one", "two", "three"};
   const std::vector<bool> kExpectScriptInFrameToLoad{false, true, false};
@@ -326,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Console message for subframe blocking should not be displayed as filtering
   // is disabled.
@@ -350,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Console message for subframe blocking should not be displayed as filtering
   // is enabled in dryrun mode.
@@ -374,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   allowlist_rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
   ASSERT_NO_FATAL_FAILURE(SetRulesetWithRules({rule, allowlist_rule}));
 
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   const std::vector<const char*> kSubframeNames{"one", "two", "three"};
   const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
@@ -437,14 +398,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   const std::vector<bool> kExpectScriptInFrameToLoadWithActivation{false, true,
                                                                    false};
 
-  ui_test_utils::NavigateToURL(browser(), url_without_activation);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_without_activation));
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectScriptInFrameToLoadWithoutActivation));
 
   // No message should be displayed for navigating to URL without activation.
   EXPECT_TRUE(console_observer.messages().empty());
 
-  ui_test_utils::NavigateToURL(browser(), url_with_activation);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_activation));
   ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
       kSubframeNames, kExpectScriptInFrameToLoadWithActivation));
 
@@ -490,8 +451,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
         url_with_activation_but_not_existent}) {
     SCOPED_TRACE(url_with_activation);
 
-    ui_test_utils::NavigateToURL(browser(), url_with_activation);
-    ui_test_utils::NavigateToURL(browser(), url_without_activation);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_with_activation));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), url_without_activation));
     ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
         kSubframeNames, kExpectScriptInFrameToLoad));
   }
@@ -508,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderFrameHost* frame = FindFrameByName("one");
   ASSERT_TRUE(frame);
@@ -532,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::RenderFrameHost* frame = FindFrameByName("one");
   EXPECT_FALSE(WasParsedScriptElementLoaded(frame));
@@ -563,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, DynamicFrame) {
   ConfigureAsPhishingURL(url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_NO_FATAL_FAILURE(InsertDynamicFrameWithScript());
   content::RenderFrameHost* dynamic_frame = FindFrameByName("dynamic");
@@ -582,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
   // Verify that the ruleset persisted in the previous session is used for this
   // page load right after start-up.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
@@ -595,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       "a.com", "/subresource_filter/frame_with_included_script.html"));
   ConfigureAsPhishingURL(url);
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUIShown, 1);
@@ -607,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   // Check that bubble is shown for new navigation. Must be cross site to avoid
   // triggering smart UI on Android.
   ConfigureAsPhishingURL(a_url);
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   tester.ExpectBucketCount(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUIShown, 2);
@@ -620,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(a_url);
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   ExpectParsedScriptElementLoadedStatusInFrames(
       std::vector<const char*>{"b", "c", "d"}, {false, false, false});
 }
@@ -633,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetWithRules({testing::CreateSuffixRule("included_script.js"),
                            testing::CreateAllowlistRuleForDocument("c.com")}));
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   ExpectParsedScriptElementLoadedStatusInFrames(
       std::vector<const char*>{"b", "d"}, {false, true});
 }
@@ -688,10 +650,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   content::TitleWatcher title_watcher(web_contents(), u"failed");
   title_watcher.AlsoWaitForTitle(u"loaded");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
-          "/subresource_filter/docwrite_loads_disallowed_resource.html"));
+          "/subresource_filter/docwrite_loads_disallowed_resource.html")));
 
   // Check the load was blocked.
   EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
@@ -713,10 +675,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   content::TitleWatcher title_watcher(web_contents(), u"failed");
   title_watcher.AlsoWaitForTitle(u"loaded");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
-          "/subresource_filter/window_stop_loads_disallowed_resource.html"));
+          "/subresource_filter/window_stop_loads_disallowed_resource.html")));
 
   // Check the load was blocked.
   EXPECT_EQ(u"failed", title_watcher.WaitAndGetTitle());
@@ -728,9 +690,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        FrameDeletedDuringLoad_DoesNotCrash) {
   // Watches for title set by end of frame deletion script.
   content::TitleWatcher title_watcher(web_contents(), u"done");
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/subresource_filter/delete_loading_frame.html"));
+                     "/subresource_filter/delete_loading_frame.html")));
 
   // Wait for the script to complete.
   EXPECT_EQ(u"done", title_watcher.WaitAndGetTitle());
@@ -753,10 +715,10 @@ IN_PROC_BROWSER_TEST_F(
   content::TitleWatcher title_watcher(web_contents(), u"failed");
   title_watcher.AlsoWaitForTitle(u"loaded");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/subresource_filter/"
-                                     "docwrite_creates_subframe.html"));
+                                     "docwrite_creates_subframe.html")));
 
   content::RenderFrameHost* frame = FindFrameByName("grandchild");
 
@@ -793,10 +755,10 @@ IN_PROC_BROWSER_TEST_F(
   content::TitleWatcher title_watcher(web_contents(), u"failed");
   title_watcher.AlsoWaitForTitle(u"loaded");
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/subresource_filter/"
-                                     "docwrite_creates_subframe.html"));
+                                     "docwrite_creates_subframe.html")));
 
   content::RenderFrameHost* frame = FindFrameByName("grandchild");
 
@@ -856,10 +818,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
   for (const auto& test_case_script : test_case_scripts) {
     content::WebContentsAddedObserver popup_observer;
-    ui_test_utils::NavigateToURL(
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
-            "/subresource_filter/popup_disallowed_load_helper.html"));
+            "/subresource_filter/popup_disallowed_load_helper.html")));
     ASSERT_TRUE(ExecJs(web_contents(), test_case_script));
     content::TitleWatcher title_watcher(popup_observer.GetWebContents(),
                                         u"failed");
@@ -887,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ResetConfiguration(std::move(config));
   ConfigureAsPhishingURL(kInitialUrl);
 
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
   content::WebContents* initial_web_contents = web_contents();
   content::WebContents* popup_web_contents = nullptr;
@@ -981,8 +943,8 @@ IN_PROC_BROWSER_TEST_F(
   ResetConfiguration(std::move(config));
 
   content::WebContents* original_web_contents = web_contents();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
 
   base::HistogramTester tester;
   content::WebContentsAddedObserver popup_observer;
@@ -1027,12 +989,20 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
       expect_performance_measurements && ScopedThreadTimers::IsSupported();
 
   // The following histograms are generated on the browser side.
-  tester.ExpectUniqueSample(kSubresourceLoadsTotalForPage, 6, 1);
-  tester.ExpectUniqueSample(kSubresourceLoadsEvaluatedForPage, 6, 1);
-  tester.ExpectUniqueSample(kSubresourceLoadsMatchedRulesForPage, 4, 1);
-  tester.ExpectUniqueSample(kSubresourceLoadsDisallowedForPage, 4, 1);
-  tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, time_recorded);
-  tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, time_recorded);
+  tester.ExpectUniqueSample(
+      SubresourceFilterBrowserTest::kSubresourceLoadsTotalForPage, 6, 1);
+  tester.ExpectUniqueSample(
+      SubresourceFilterBrowserTest::kSubresourceLoadsEvaluatedForPage, 6, 1);
+  tester.ExpectUniqueSample(
+      SubresourceFilterBrowserTest::kSubresourceLoadsMatchedRulesForPage, 4, 1);
+  tester.ExpectUniqueSample(
+      SubresourceFilterBrowserTest::kSubresourceLoadsDisallowedForPage, 4, 1);
+  tester.ExpectTotalCount(
+      SubresourceFilterBrowserTest::kEvaluationTotalWallDurationForPage,
+      time_recorded);
+  tester.ExpectTotalCount(
+      SubresourceFilterBrowserTest::kEvaluationTotalCPUDurationForPage,
+      time_recorded);
 
   // The rest is produced by renderers, therefore needs to be merged here.
   content::FetchHistogramsFromChildProcesses();
@@ -1040,13 +1010,13 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
 
   // 5 subframes, each with an include.js, plus a top level include.js.
   int num_subresource_checks = 5 + 5 + 1;
-  tester.ExpectTotalCount(kEvaluationWallDuration,
+  tester.ExpectTotalCount(SubresourceFilterBrowserTest::kEvaluationWallDuration,
                           time_recorded ? num_subresource_checks : 0);
-  tester.ExpectTotalCount(kEvaluationCPUDuration,
+  tester.ExpectTotalCount(SubresourceFilterBrowserTest::kEvaluationCPUDuration,
                           time_recorded ? num_subresource_checks : 0);
 
   tester.ExpectUniqueSample(
-      kDocumentLoadActivationLevel,
+      SubresourceFilterBrowserTest::kDocumentLoadActivationLevel,
       static_cast<base::Histogram::Sample>(mojom::ActivationLevel::kEnabled),
       6);
 }
@@ -1062,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   ConfigureAsPhishingURL(url);
 
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ExpectHistogramsAreRecordedForTestFrameSet(
       tester, true /* expect_performance_measurements */);
@@ -1090,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithoutAdTagging,
   // Note: The |url| is not configured to be fishing.
 
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The following histograms are generated only when filtering is activated.
   tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 0);
@@ -1123,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
 
   base::HistogramTester tester;
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 
   content::TestNavigationObserver observer(
@@ -1155,62 +1125,66 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   GURL a_url(embedded_test_server()->GetURL(
       "a.com", "/subresource_filter/frame_cross_site_set.html"));
   ConfigureAsPhishingURL(a_url);
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   ExpectParsedScriptElementLoadedStatusInFrames(
       std::vector<const char*>{"b", "d"}, {true, true});
 
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
-  ui_test_utils::NavigateToURL(browser(), a_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
   ExpectParsedScriptElementLoadedStatusInFrames(
       std::vector<const char*>{"b", "d"}, {false, false});
 }
 
-class SubresourceFilterPrerenderingBrowserTest
-    : public SubresourceFilterBrowserTest {
- public:
-  SubresourceFilterPrerenderingBrowserTest()
-      : prerender_helper_(base::BindRepeating(
-            &SubresourceFilterPrerenderingBrowserTest::web_contents,
-            base::Unretained(this))) {}
+// Perform a hash change before the initial URL of a frame is navigated. Ensure
+// we don't trip any DCHECKs (crbug.com/1237409) and that filtering works as
+// expected.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+                       SameDocumentBeforeInitialNavigation) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/title1.html");
+  const GURL kFrameUrl(
+      GetTestUrl("subresource_filter/frame_with_included_script.html"));
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  // Configure to filtering included_script.js
+  {
+    ConfigureAsPhishingURL(kInitialUrl);
+    ASSERT_NO_FATAL_FAILURE(
+        SetRulesetWithRules({testing::CreateSuffixRule("included_script.js")}));
+    Configuration config(subresource_filter::mojom::ActivationLevel::kEnabled,
+                         subresource_filter::ActivationScope::ALL_SITES);
+    ResetConfiguration(std::move(config));
   }
 
-  void SetUpOnMainThread() override {
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
-    SubresourceFilterBrowserTest::SetUpOnMainThread();
-  }
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
 
- protected:
-  content::test::PrerenderTestHelper prerender_helper_;
-};
+  content::TestNavigationManager navigation_manager(web_contents(), kFrameUrl);
 
-// A very basic smoke test for prerendering; this test just activates on the
-// main frame of a prerender. It currently doesn't check any behavior but
-// passes if we don't crash.
-// TODO(bokan): Test activating the prerender and make stronger assertions
-// about what happens with subresource filtering inside a prerender once that
-// works.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
-                       PrerenderingMainFrameActivated) {
-  const GURL kPrerenderingUrl =
-      embedded_test_server()->GetURL("/page_with_iframe.html");
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  // Create an iframe that will navigate to the page with the filtered script.
+  // However, perform a hash change that will cause a same document navigation
+  // which will finish before the iframe `src` navigation.
+  ASSERT_TRUE(ExecJs(web_contents(), content::JsReplace(R"SCRIPT(
+      var i = document.createElement("iframe");
+      i.src = $1;
+      i.onload = () => {window.document.title = "loaded"};
+      document.body.appendChild(i);
+      i.contentWindow.location.hash = 'test';
+    )SCRIPT",
+                                                        kFrameUrl)));
 
-  ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
-      "suffix-that-does-not-match-anything"));
+  // Get the child RFH
+  ASSERT_TRUE(navigation_manager.WaitForResponse());
+  auto* child_rfh =
+      navigation_manager.GetNavigationHandle()->GetRenderFrameHost();
+  ASSERT_TRUE(child_rfh);
+  navigation_manager.WaitForNavigationFinished();
+  ASSERT_EQ(child_rfh->GetLastCommittedURL(), kFrameUrl);
 
-  Configuration config(subresource_filter::mojom::ActivationLevel::kDryRun,
-                       subresource_filter::ActivationScope::ALL_SITES);
-  ResetConfiguration(std::move(config));
+  // Wait until the iframe is loaded.
+  content::TitleWatcher title_watcher(web_contents(), u"loaded");
+  EXPECT_EQ(u"loaded", title_watcher.WaitAndGetTitle());
 
-  ui_test_utils::NavigateToURL(browser(), kInitialUrl);
-
-  ASSERT_EQ(prerender_helper_.GetRequestCount(kPrerenderingUrl), 0);
-  prerender_helper_.AddPrerender(kPrerenderingUrl);
-  ASSERT_EQ(prerender_helper_.GetRequestCount(kPrerenderingUrl), 1);
+  // Ensure the included_script.js script was filtered.
+  EXPECT_FALSE(WasParsedScriptElementLoaded(child_rfh));
 }
 
 }  // namespace subresource_filter

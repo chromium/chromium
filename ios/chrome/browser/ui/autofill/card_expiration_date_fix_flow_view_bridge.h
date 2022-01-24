@@ -22,6 +22,12 @@ class CardExpirationDateFixFlowViewBridge
   CardExpirationDateFixFlowViewBridge(
       CardExpirationDateFixFlowController* controller,
       UIViewController* base_view_controller);
+
+  CardExpirationDateFixFlowViewBridge(
+      const CardExpirationDateFixFlowViewBridge&) = delete;
+  CardExpirationDateFixFlowViewBridge& operator=(
+      const CardExpirationDateFixFlowViewBridge&) = delete;
+
   ~CardExpirationDateFixFlowViewBridge() override;
 
   // CardExpirationDateFixFlowView:
@@ -57,8 +63,6 @@ class CardExpirationDateFixFlowViewBridge
 
   base::WeakPtrFactory<CardExpirationDateFixFlowViewBridge> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CardExpirationDateFixFlowViewBridge);
 };
 
 }  // namespace autofill

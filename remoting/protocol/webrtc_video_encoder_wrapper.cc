@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -22,7 +22,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
-#include "third_party/webrtc/media/base/vp9_profile.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
@@ -37,7 +37,7 @@ namespace protocol {
 namespace {
 
 constexpr base::TimeDelta kTargetFrameInterval =
-    base::TimeDelta::FromMilliseconds(1000 / kTargetFrameRate);
+    base::Milliseconds(1000 / kTargetFrameRate);
 
 // Maximum quantizer at which to encode frames. Lowering this value will
 // improve image quality (in cases of low-bandwidth or large frames) at the
@@ -70,7 +70,7 @@ const int kEstimatedBytesPerMegapixel = 100000;
 // 3-second period. This is effectively a minimum frame-rate, so the value
 // should not be too small, otherwise the client may waste CPU cycles on
 // processing and rendering lots of identical frames.
-constexpr base::TimeDelta kKeepAliveInterval = base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kKeepAliveInterval = base::Seconds(2);
 
 std::string EncodeResultToString(WebrtcVideoEncoder::EncodeResult result) {
   using EncodeResult = WebrtcVideoEncoder::EncodeResult;
@@ -320,10 +320,7 @@ void WebrtcVideoEncoderWrapper::SetRates(
 void WebrtcVideoEncoderWrapper::OnRttUpdate(int64_t rtt_ms) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnRttUpdate,
-                                video_channel_state_observer_,
-                                base::TimeDelta::FromMilliseconds(rtt_ms)));
+  rtt_estimate_ = base::Milliseconds(rtt_ms);
 }
 
 webrtc::VideoEncoder::EncoderInfo WebrtcVideoEncoderWrapper::GetEncoderInfo()
@@ -420,6 +417,8 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
     // |frame_stats_| to non-null.
     DCHECK(frame_stats_);
     frame_stats_->encode_ended_time = base::TimeTicks::Now();
+    frame_stats_->rtt_estimate = rtt_estimate_;
+    frame_stats_->bandwidth_estimate_kbps = bitrate_kbps_;
     frame->stats = std::move(frame_stats_);
   }
 
@@ -439,13 +438,13 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   }
 
   if (!frame || frame->data.empty()) {
-    SetTopOffActive(false);
+    top_off_active_ = false;
     NotifyFrameDropped();
     return;
   }
 
   // Top-off until the best quantizer value is reached.
-  SetTopOffActive(frame->quantizer > kMinQuantizer);
+  top_off_active_ = (frame->quantizer > kMinQuantizer);
 
   // Non-null, because WebRTC registers a callback before calling Encode().
   DCHECK(encoded_callback_);
@@ -469,17 +468,6 @@ void WebrtcVideoEncoderWrapper::NotifyFrameDropped() {
       webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
 }
 
-void WebrtcVideoEncoderWrapper::SetTopOffActive(bool active) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (top_off_active_ != active) {
-    top_off_active_ = active;
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnTopOffActive,
-                                  video_channel_state_observer_, active));
-  }
-}
-
 bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
     const webrtc::DesktopFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -497,8 +485,8 @@ bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(
   if (updated_area - updated_region_area_.Max() > kBigFrameThresholdPixels) {
     int expected_frame_size =
         updated_area * kEstimatedBytesPerMegapixel / kPixelsPerMegapixel;
-    base::TimeDelta expected_send_delay = base::TimeDelta::FromSecondsD(
-        expected_frame_size * 8 / (bitrate_kbps_ * 1000.0));
+    base::TimeDelta expected_send_delay =
+        base::Seconds(expected_frame_size * 8 / (bitrate_kbps_ * 1000.0));
     if (expected_send_delay > kTargetFrameInterval) {
       should_drop_quality = true;
     }

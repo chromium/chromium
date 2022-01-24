@@ -15,6 +15,7 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -228,7 +229,7 @@ void WaitForOperationConfirmed() {
 
 // Verify clipboard history's features in the multiprofile environment.
 class ClipboardHistoryWithMultiProfileBrowserTest
-    : public chromeos::LoginManagerTest {
+    : public ash::LoginManagerTest {
  public:
   ClipboardHistoryWithMultiProfileBrowserTest() : LoginManagerTest() {
     login_mixin_.AppendRegularUsers(2);
@@ -348,16 +349,16 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     EXPECT_TRUE(item_view->IsSelected());
   }
 
-  // chromeos::LoginManagerTest:
+  // ash::LoginManagerTest:
   void SetUpOnMainThread() override {
-    chromeos::LoginManagerTest::SetUpOnMainThread();
+    ash::LoginManagerTest::SetUpOnMainThread();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         ash::Shell::GetPrimaryRootWindow());
   }
 
   AccountId account_id1_;
   AccountId account_id2_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
@@ -857,8 +858,8 @@ class ClipboardHistoryBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
                        DISABLED_VerifyHTMLRendering) {
   // Load the web page which contains images and text.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/image-and-text.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/image-and-text.html")));
 
   // Select one part of the web page. Wait until the selection region updates.
   // Then copy the selected part to clipboard.
@@ -1175,14 +1176,12 @@ class FakeDataTransferPolicyController
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
                       const absl::optional<size_t> size,
-                      content::WebContents* web_contents,
+                      content::RenderFrameHost* rfh,
                       base::OnceCallback<void(bool)> callback) override {}
 
-  bool IsDragDropAllowed(const ui::DataTransferEndpoint* const data_src,
-                         const ui::DataTransferEndpoint* const data_dst,
-                         const bool is_drop) override {
-    return false;
-  }
+  void DropIfAllowed(const ui::DataTransferEndpoint* data_src,
+                     const ui::DataTransferEndpoint* data_dst,
+                     base::OnceClosure drop_cb) override {}
 
  private:
   const url::Origin allowed_origin_;

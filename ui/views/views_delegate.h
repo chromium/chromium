@@ -15,7 +15,6 @@
 
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -78,6 +77,9 @@ class VIEWS_EXPORT ViewsDelegate {
     // handling should stop for this event.
     CLOSE_MENU,
   };
+
+  ViewsDelegate(const ViewsDelegate&) = delete;
+  ViewsDelegate& operator=(const ViewsDelegate&) = delete;
 
   virtual ~ViewsDelegate();
 
@@ -201,8 +203,6 @@ class VIEWS_EXPORT ViewsDelegate {
 #endif
 
   NativeWidgetFactory native_widget_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsDelegate);
 };
 
 }  // namespace views

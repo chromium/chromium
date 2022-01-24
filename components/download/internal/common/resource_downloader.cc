@@ -23,6 +23,10 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
   using URLLoaderStatusChangeCallback =
       base::OnceCallback<void(const network::URLLoaderCompletionStatus&)>;
   explicit URLLoaderStatusMonitor(URLLoaderStatusChangeCallback callback);
+
+  URLLoaderStatusMonitor(const URLLoaderStatusMonitor&) = delete;
+  URLLoaderStatusMonitor& operator=(const URLLoaderStatusMonitor&) = delete;
+
   ~URLLoaderStatusMonitor() override = default;
 
   // network::mojom::URLLoaderClient
@@ -40,7 +44,6 @@ class URLLoaderStatusMonitor : public network::mojom::URLLoaderClient {
 
  private:
   URLLoaderStatusChangeCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderStatusMonitor);
 };
 
 URLLoaderStatusMonitor::URLLoaderStatusMonitor(
@@ -161,7 +164,7 @@ void ResourceDownloader::Start(
   url_loader_client_ = std::make_unique<DownloadResponseHandler>(
       resource_request_.get(), this,
       std::make_unique<DownloadSaveInfo>(
-          download_url_parameters->GetSaveInfo()),
+          download_url_parameters->TakeSaveInfo()),
       is_parallel_request, download_url_parameters->is_transient(),
       download_url_parameters->fetch_error_body(),
       download_url_parameters->cross_origin_redirects(),

@@ -4,44 +4,149 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 
+#include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_install_queue.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/connection_holder.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr char kGeneratedWebApkPackagePrefix[] = "org.chromium.webapk.";
+
+bool HasShareIntentFilter(const apps::AppUpdate& app) {
+  auto intent = apps::mojom::Intent::New();
+  intent->action = apps_util::kIntentActionSend;
+  for (const auto& filter : app.IntentFilters()) {
+    for (const auto& condition : filter->conditions) {
+      if (apps_util::IntentMatchesCondition(intent, condition)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      web_app_registrar_(web_app::WebAppProvider::Get(profile)->registrar()),
-      initialized_(false) {
-  proxy_ = AppServiceProxyFactory::GetForProfile(profile);
+      initialized_(false),
+      install_queue_(std::make_unique<WebApkInstallQueue>(profile_)),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
+  DCHECK(web_app::AreWebAppsEnabled(profile_));
+  proxy_ = AppServiceProxyFactory::GetForProfile(profile_);
   apk_service_ = ash::ApkWebAppService::Get(profile_);
   DCHECK(apk_service_);
   app_list_prefs_ = ArcAppListPrefs::Get(profile_);
   DCHECK(app_list_prefs_);
-  install_queue_ = std::make_unique<WebApkInstallQueue>(profile);
 
+  // Always observe AppListPrefs, even when the rest of WebAPKs is not enabled,
+  // so that we can detect WebAPK uninstalls that happen when the feature is
+  // disabled.
   arc_app_list_prefs_observer_.Observe(app_list_prefs_);
-  Observe(&proxy_->AppRegistryCache());
+  arc::ArcSessionManager::Get()->AddObserver(this);
+  pref_change_registrar_->Init(profile_->GetPrefs());
+  pref_change_registrar_->Add(
+      webapk_prefs::kGeneratedWebApksEnabled,
+      base::BindRepeating(&WebApkManager::StartOrStopObserving,
+                          base::Unretained(this)));
+
+  StartOrStopObserving();
 }
 
-WebApkManager::~WebApkManager() = default;
+WebApkManager::~WebApkManager() {
+  auto* arc_session_manager = arc::ArcSessionManager::Get();
+  // ArcSessionManager can be destroyed early in unit tests.
+  if (arc_session_manager) {
+    arc_session_manager->RemoveObserver(this);
+  }
+}
+
+void WebApkManager::StartOrStopObserving() {
+  // WebApkManager is only created when arc::IsArcAllowedForProfile() is true.
+  // We additionally check whether Play Store is enabled through Settings before
+  // enabling anything.
+  bool arc_enabled = arc::IsArcPlayStoreEnabledForProfile(profile_);
+  bool policy_enabled =
+      profile_->GetPrefs()->GetBoolean(webapk_prefs::kGeneratedWebApksEnabled);
+
+  if (arc_enabled && policy_enabled) {
+    auto* cache = &proxy_->AppRegistryCache();
+    Observe(cache);
+
+    if (cache->IsAppTypeInitialized(apps::mojom::AppType::kWeb)) {
+      Synchronize();
+    }
+    return;
+  }
+
+  Observe(nullptr);
+  initialized_ = false;
+
+  if (!policy_enabled) {
+    // Remove any WebAPKs which were installed before the policy was enacted.
+    // Ensures we don't end up in a confusing half-state with apps which can
+    // never update, and allows us to start from scratch if the feature is
+    // re-enabled.
+    base::flat_set<std::string> current_installs =
+        webapk_prefs::GetWebApkAppIds(profile_);
+    for (const std::string& id : current_installs) {
+      QueueUninstall(id);
+    }
+  }
+}
+
+void WebApkManager::Synchronize() {
+  initialized_ = true;
+  base::flat_set<std::string> current_installs =
+      webapk_prefs::GetWebApkAppIds(profile_);
+  base::flat_set<std::string> eligible_installs;
+
+  proxy_->AppRegistryCache().ForEachApp([&](const apps::AppUpdate& update) {
+    if (IsAppEligibleForWebApk(update)) {
+      eligible_installs.insert(update.AppId());
+    }
+  });
+
+  // Install any WebAPK which should be installed but currently isn't.
+  for (const std::string& id : eligible_installs) {
+    if (!current_installs.contains(id)) {
+      QueueInstall(id);
+    }
+  }
+
+  // Uninstall any WebAPK which shouldn't be installed but currently is.
+  for (const std::string& id : current_installs) {
+    if (!eligible_installs.contains(id)) {
+      QueueUninstall(id);
+    }
+  }
+
+  // Update any WebAPK for which an update was previously queued but
+  // unsuccessful.
+  for (const std::string& id : webapk_prefs::GetUpdateNeededAppIds(profile_)) {
+    QueueUpdate(id);
+  }
+}
 
 void WebApkManager::OnAppUpdate(const AppUpdate& update) {
   if (!initialized_) {
@@ -76,37 +181,7 @@ void WebApkManager::OnAppUpdate(const AppUpdate& update) {
 // initialized.
 void WebApkManager::OnAppTypeInitialized(apps::mojom::AppType type) {
   if (type == apps::mojom::AppType::kWeb) {
-    initialized_ = true;
-    base::flat_set<std::string> current_installs =
-        webapk_prefs::GetWebApkAppIds(profile_);
-    base::flat_set<std::string> eligible_installs;
-
-    proxy_->AppRegistryCache().ForEachApp([&](const apps::AppUpdate& update) {
-      if (IsAppEligibleForWebApk(update)) {
-        eligible_installs.insert(update.AppId());
-      }
-    });
-
-    // Install any WebAPK which should be installed but currently isn't.
-    for (const std::string& id : eligible_installs) {
-      if (!current_installs.contains(id)) {
-        QueueInstall(id);
-      }
-    }
-
-    // Uninstall any WebAPK which shouldn't be installed but currently is.
-    for (const std::string& id : current_installs) {
-      if (!eligible_installs.contains(id)) {
-        QueueUninstall(id);
-      }
-    }
-
-    // Update any WebAPK for which an update was previously queued but
-    // unsuccessful.
-    for (const std::string& id :
-         webapk_prefs::GetUpdateNeededAppIds(profile_)) {
-      QueueUpdate(id);
-    }
+    Synchronize();
   }
 }
 
@@ -119,6 +194,39 @@ void WebApkManager::OnPackageListInitialRefreshed() {
     UninstallInternal(app_id);
   }
   uninstall_queue_.clear();
+
+  // Uninstall any WebAPK packages which are installed in ARC but not linked to
+  // an app in Prefs. This could happen if the WebAPK installation callback is
+  // never delivered properly, or if the Play Store retries an error in the
+  // background.
+  // If an installed WebAPK is not listed in WebAPK prefs, then we will generate
+  // and install a new WebAPK automatically, possibly resulting in duplicate
+  // apps visible to the user.
+  int uninstall_count = 0;
+  std::vector<std::string> installed_packages =
+      app_list_prefs_->GetPackagesFromPrefs();
+  base::flat_set<std::string> installed_webapk_packages =
+      webapk_prefs::GetInstalledWebApkPackageNames(profile_);
+  for (const auto& package_name : installed_packages) {
+    if (base::StartsWith(package_name, kGeneratedWebApkPackagePrefix) &&
+        !installed_webapk_packages.contains(package_name)) {
+      uninstall_count++;
+      auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+          app_list_prefs_->app_connection_holder(), UninstallPackage);
+      if (!instance) {
+        return;
+      }
+      instance->UninstallPackage(package_name);
+    }
+  }
+
+  if (uninstall_count > 0) {
+    // Record the number of instances of this issue so we can determine whether
+    // further investigation/prevention is warranted.
+    base::UmaHistogramCustomCounts("ChromeOS.WebAPK.UnlinkedWebAPKCount",
+                                   uninstall_count, /*min=*/1, /*max=*/20,
+                                   /*buckets=*/10);
+  }
 }
 
 void WebApkManager::OnPackageRemoved(const std::string& package_name,
@@ -143,7 +251,11 @@ void WebApkManager::OnPackageRemoved(const std::string& package_name,
 
   webapk_prefs::RemoveWebApkByPackageName(profile_, package_name);
   // TODO(crbug.com/1200199): Remove the web app as well, if it is still
-  // installed and eligible.
+  // installed and eligible, and WebAPKs are not disabled by policy.
+}
+
+void WebApkManager::OnArcPlayStoreEnabledChanged(bool enabled) {
+  StartOrStopObserving();
 }
 
 WebApkInstallQueue* WebApkManager::GetInstallQueueForTest() {
@@ -159,7 +271,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
     return false;
   }
 
-  if (app.InstallSource() == apps::mojom::InstallSource::kSystem) {
+  if (app.InstallReason() == apps::mojom::InstallReason::kSystem) {
     return false;
   }
 
@@ -167,8 +279,7 @@ bool WebApkManager::IsAppEligibleForWebApk(const AppUpdate& app) {
     return false;
   }
 
-  if (!(web_app_registrar_.IsInstalled(app.AppId()) &&
-        web_app_registrar_.GetAppShareTarget(app.AppId()))) {
+  if (!HasShareIntentFilter(app)) {
     return false;
   }
 

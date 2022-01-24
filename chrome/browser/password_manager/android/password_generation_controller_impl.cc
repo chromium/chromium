@@ -171,6 +171,10 @@ gfx::NativeWindow PasswordGenerationControllerImpl::top_level_native_window()
   return web_contents_->GetTopLevelNativeWindow();
 }
 
+content::WebContents* PasswordGenerationControllerImpl::web_contents() const {
+  return web_contents_;
+}
+
 // static
 void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
@@ -222,7 +226,7 @@ void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {
 
   std::u16string password =
       active_frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
-          web_contents_->GetLastCommittedURL().GetOrigin(),
+          web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
           generation_element_data_->form_signature,
           generation_element_data_->field_signature,
           generation_element_data_->max_password_length);
@@ -245,4 +249,4 @@ void PasswordGenerationControllerImpl::ResetState() {
   manual_generation_requested_ = false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl);

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/common/content_export.h"
@@ -42,6 +41,9 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       public network::mojom::URLLoaderFactory {
  public:
   explicit PrefetchURLLoaderService(BrowserContext* browser_context);
+
+  PrefetchURLLoaderService(const PrefetchURLLoaderService&) = delete;
+  PrefetchURLLoaderService& operator=(const PrefetchURLLoaderService&) = delete;
 
   void GetFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
@@ -124,8 +126,6 @@ class CONTENT_EXPORT PrefetchURLLoaderService final
       signed_exchange_prefetch_metric_recorder_;
 
   std::string accept_langs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchURLLoaderService);
 };
 
 }  // namespace content

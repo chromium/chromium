@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/mock_callback.h"
 #include "components/mirroring/service/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,10 +21,11 @@ namespace mirroring {
 class ReceiverResponseTest : public ::testing::Test {
  public:
   ReceiverResponseTest() {}
-  ~ReceiverResponseTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReceiverResponseTest);
+  ReceiverResponseTest(const ReceiverResponseTest&) = delete;
+  ReceiverResponseTest& operator=(const ReceiverResponseTest&) = delete;
+
+  ~ReceiverResponseTest() override {}
 };
 
 TEST_F(ReceiverResponseTest, ParseValidJson) {

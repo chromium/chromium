@@ -126,7 +126,7 @@ std::string GenerateSessionId() {
 // Add |behaviour_flag| to |supported_behaviours| if |behaviour_name| is found
 // in the dictionary. Returns false on error.
 bool GetOptionalBehaviour(
-    const base::DictionaryValue* invocation_params,
+    const base::Value* invocation_params,
     base::StringPiece behaviour_name,
     SwReporterInvocation::Behaviours behaviour_flag,
     SwReporterInvocation::Behaviours* supported_behaviours) {
@@ -135,8 +135,8 @@ bool GetOptionalBehaviour(
 
   // Parameters enabling behaviours are optional, but if present must be
   // boolean.
-  const base::Value* value = nullptr;
-  if (invocation_params->Get(behaviour_name, &value)) {
+  const base::Value* value = invocation_params->FindPath(behaviour_name);
+  if (value) {
     if (!value->is_bool()) {
       ReportConfigurationError(kBadParams);
       return false;
@@ -152,15 +152,12 @@ bool GetOptionalBehaviour(
 // Returns whether the manifest was successfully read.
 bool ExtractInvocationSequenceFromManifest(
     const base::FilePath& exe_path,
-    std::unique_ptr<base::DictionaryValue> manifest,
+    base::Value manifest,
     safe_browsing::SwReporterInvocationSequence* out_sequence) {
-  const base::ListValue* parameter_list = nullptr;
-
-  // Allow an empty or missing launch_params list, but log an error if
-  // launch_params cannot be parsed as a list.
-  base::Value* launch_params = nullptr;
-  if (manifest->Get("launch_params", &launch_params) &&
-      !launch_params->GetAsList(&parameter_list)) {
+  // Allow an empty or missing |parameter_list| list, but log an error if
+  // |parameter_list| cannot be parsed as a list.
+  base::Value* parameter_list = manifest.FindPath("launch_params");
+  if (parameter_list && !parameter_list->is_list()) {
     ReportConfigurationError(kBadParams);
     return false;
   }
@@ -181,9 +178,8 @@ bool ExtractInvocationSequenceFromManifest(
     return true;
   }
 
-  for (const auto& iter : parameter_list->GetList()) {
-    const base::DictionaryValue* invocation_params = nullptr;
-    if (!iter.GetAsDictionary(&invocation_params)) {
+  for (const auto& invocation_params : parameter_list->GetList()) {
+    if (!invocation_params.is_dict()) {
       ReportConfigurationError(kBadParams);
       return false;
     }
@@ -195,9 +191,8 @@ bool ExtractInvocationSequenceFromManifest(
 
     // The suffix must be an alphanumeric string. (Empty is fine as long as the
     // "suffix" key is present.)
-    std::string suffix;
-    if (!invocation_params->GetString("suffix", &suffix) ||
-        !ValidateString(suffix, std::string(), kMaxSuffixLength)) {
+    const std::string* suffix = invocation_params.FindStringPath("suffix");
+    if (!suffix || !ValidateString(*suffix, std::string(), kMaxSuffixLength)) {
       ReportConfigurationError(kBadParams);
       return false;
     }
@@ -205,8 +200,8 @@ bool ExtractInvocationSequenceFromManifest(
     // Build a command line for the reporter out of the executable path and the
     // arguments from the manifest. (The "arguments" key must be present, but
     // it's ok if it's an empty list or a list of empty strings.)
-    const base::ListValue* arguments = nullptr;
-    if (!invocation_params->GetList("arguments", &arguments)) {
+    const base::Value* arguments = invocation_params.FindListPath("arguments");
+    if (!arguments) {
       ReportConfigurationError(kBadParams);
       return false;
     }
@@ -229,12 +224,12 @@ bool ExtractInvocationSequenceFromManifest(
     // Add the histogram suffix to the command-line as well, so that the
     // reporter will add the same suffix to registry keys where it writes
     // metrics.
-    if (!suffix.empty())
+    if (!suffix->empty())
       command_line.AppendSwitchASCII(chrome_cleaner::kRegistrySuffixSwitch,
-                                     suffix);
+                                     *suffix);
 
     SwReporterInvocation::Behaviours supported_behaviours = 0;
-    if (!GetOptionalBehaviour(invocation_params, "prompt",
+    if (!GetOptionalBehaviour(&invocation_params, "prompt",
                               SwReporterInvocation::BEHAVIOUR_TRIGGER_PROMPT,
                               &supported_behaviours)) {
       return false;
@@ -242,7 +237,7 @@ bool ExtractInvocationSequenceFromManifest(
 
     out_sequence->PushInvocation(
         SwReporterInvocation(command_line)
-            .WithSuffix(suffix)
+            .WithSuffix(*suffix)
             .WithSupportedBehaviours(supported_behaviours));
   }
 
@@ -262,7 +257,7 @@ SwReporterInstallerPolicy::SwReporterInstallerPolicy(
 SwReporterInstallerPolicy::~SwReporterInstallerPolicy() = default;
 
 bool SwReporterInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& dir) const {
   return base::PathExists(dir.Append(kSwReporterExeName));
 }
@@ -277,7 +272,7 @@ bool SwReporterInstallerPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result SwReporterInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -287,7 +282,7 @@ void SwReporterInstallerPolicy::OnCustomUninstall() {}
 void SwReporterInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   safe_browsing::SwReporterInvocationSequence invocations(version);
   const base::FilePath exe_path(install_dir.Append(kSwReporterExeName));
   if (ExtractInvocationSequenceFromManifest(exe_path, std::move(manifest),
@@ -433,7 +428,7 @@ void ReportUMAForLastCleanerRun() {
       cleaner_key.ReadInt64(chrome_cleaner::kStartTimeValueName,
                             &start_time_value);
       const base::Time start_time = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(start_time_value));
+          base::Microseconds(start_time_value));
 
       const bool completed =
           cleaner_key.HasValue(chrome_cleaner::kEndTimeValueName);
@@ -442,7 +437,7 @@ void ReportUMAForLastCleanerRun() {
         cleaner_key.ReadInt64(chrome_cleaner::kEndTimeValueName,
                               &end_time_value);
         const base::Time end_time = base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(end_time_value));
+            base::Microseconds(end_time_value));
 
         cleaner_key.DeleteValue(chrome_cleaner::kEndTimeValueName);
         UMA_HISTOGRAM_LONG_TIMES("SoftwareReporter.Cleaner.RunningTime",
@@ -464,9 +459,6 @@ void ReportUMAForLastCleanerRun() {
         // Check if we are running after the user has rebooted.
         const base::TimeDelta elapsed = base::Time::Now() - start_time;
         DCHECK_GT(elapsed.InMilliseconds(), 0);
-        UMA_HISTOGRAM_BOOLEAN(
-            "SoftwareReporter.Cleaner.HasRebooted",
-            static_cast<uint64_t>(elapsed.InMilliseconds()) > ::GetTickCount());
       }
 
       if (cleaner_key.HasValue(chrome_cleaner::kUploadResultsValueName)) {

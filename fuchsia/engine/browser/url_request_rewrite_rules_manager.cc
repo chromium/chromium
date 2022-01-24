@@ -151,10 +151,8 @@ zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
     return ZX_ERR_INVALID_ARGS;
   }
 
-  cached_rules_ =
-      base::MakeRefCounted<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>(
-          mojo::ConvertTo<std::vector<mojom::UrlRequestRulePtr>>(
-              std::move(rules)));
+  cached_rules_ = base::MakeRefCounted<url_rewrite::UrlRequestRewriteRules>(
+      mojo::ConvertTo<mojom::UrlRequestRewriteRulesPtr>(std::move(rules)));
 
   // Send the updated rules to the receivers.
   for (const auto& receiver_pair : active_remotes_) {
@@ -167,7 +165,7 @@ zx_status_t UrlRequestRewriteRulesManager::OnRulesUpdated(
   return ZX_OK;
 }
 
-scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>&
+scoped_refptr<url_rewrite::UrlRequestRewriteRules>&
 UrlRequestRewriteRulesManager::GetCachedRules() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_rules_;

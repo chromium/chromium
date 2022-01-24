@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -72,6 +71,9 @@ class IndexedDBQuotaClientTest : public testing::Test {
   void SetupTempDir() {
     ASSERT_TRUE(base::CreateDirectory(idb_context_->data_path()));
   }
+
+  IndexedDBQuotaClientTest(const IndexedDBQuotaClientTest&) = delete;
+  IndexedDBQuotaClientTest& operator=(const IndexedDBQuotaClientTest&) = delete;
 
   ~IndexedDBQuotaClientTest() override {
     base::RunLoop().RunUntilIdle();
@@ -182,8 +184,6 @@ class IndexedDBQuotaClientTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   base::WeakPtrFactory<IndexedDBQuotaClientTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBQuotaClientTest);
 };
 
 TEST_F(IndexedDBQuotaClientTest, GetStorageKeyUsage) {

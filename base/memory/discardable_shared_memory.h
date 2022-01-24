@@ -52,6 +52,9 @@ class BASE_EXPORT DiscardableSharedMemory {
   // memory file. Memory must be locked.
   explicit DiscardableSharedMemory(UnsafeSharedMemoryRegion region);
 
+  DiscardableSharedMemory(const DiscardableSharedMemory&) = delete;
+  DiscardableSharedMemory& operator=(const DiscardableSharedMemory&) = delete;
+
   // Closes any open files.
   virtual ~DiscardableSharedMemory();
 
@@ -191,8 +194,6 @@ class BASE_EXPORT DiscardableSharedMemory {
   // synchronized somehow. Use a collision warner to detect incorrect usage.
   DFAKE_MUTEX(thread_collision_warner_);
   Time last_known_usage_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableSharedMemory);
 };
 
 }  // namespace base

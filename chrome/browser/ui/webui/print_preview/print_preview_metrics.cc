@@ -32,19 +32,8 @@ void ReportNumberOfPrinters(size_t number) {
   UMA_HISTOGRAM_COUNTS_1M("PrintPreview.NumberOfPrinters", number);
 }
 
-void ReportPrintDocumentTypeAndSizeHistograms(PrintDocumentTypeBuckets doctype,
-                                              size_t average_page_size_in_kb) {
+void ReportPrintDocumentTypeHistograms(PrintDocumentTypeBuckets doctype) {
   base::UmaHistogramEnumeration("PrintPreview.PrintDocumentType", doctype);
-  switch (doctype) {
-    case PrintDocumentTypeBuckets::kHtmlDocument:
-      base::UmaHistogramMemoryKB("PrintPreview.PrintDocumentSize.HTML",
-                                 average_page_size_in_kb);
-      return;
-    case PrintDocumentTypeBuckets::kPdfDocument:
-      base::UmaHistogramMemoryKB("PrintPreview.PrintDocumentSize.PDF",
-                                 average_page_size_in_kb);
-      return;
-  }
 }
 
 void ReportPrintSettingsStats(const base::Value& print_settings,

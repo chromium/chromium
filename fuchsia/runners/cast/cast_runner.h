@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_RUNNERS_CAST_CAST_RUNNER_H_
 #define FUCHSIA_RUNNERS_CAST_CAST_RUNNER_H_
 
-#include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
@@ -19,6 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/startup_context.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_component.h"
 #include "fuchsia/runners/cast/pending_cast_component.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,8 +34,8 @@ class WebInstanceHost;
 class WebContentRunner;
 
 // sys::Runner which instantiates Cast activities specified via cast/casts URIs.
-class CastRunner : public fuchsia::sys::Runner,
-                   public PendingCastComponent::Delegate {
+class CastRunner final : public fuchsia::sys::Runner,
+                         public PendingCastComponent::Delegate {
  public:
   static constexpr uint16_t kRemoteDebuggingPort = 9222;
 
@@ -45,7 +45,7 @@ class CastRunner : public fuchsia::sys::Runner,
   // |is_headless|: True if this instance should create Contexts with the
   //                HEADLESS feature set.
   CastRunner(cr_fuchsia::WebInstanceHost* web_instance_host, bool is_headless);
-  ~CastRunner() final;
+  ~CastRunner() override;
 
   CastRunner(const CastRunner&) = delete;
   CastRunner& operator=(const CastRunner&) = delete;
@@ -54,7 +54,7 @@ class CastRunner : public fuchsia::sys::Runner,
   void StartComponent(fuchsia::sys::Package package,
                       fuchsia::sys::StartupInfo startup_info,
                       fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                          controller_request) final;
+                          controller_request) override;
 
   // Enables the special component that provides the fuchsia.web.FrameHost API,
   // hosted using the same WebEngine instance as the main web.Context.
@@ -69,8 +69,8 @@ class CastRunner : public fuchsia::sys::Runner,
  private:
   // PendingCastComponent::Delegate implementation.
   void LaunchPendingComponent(PendingCastComponent* pending_component,
-                              CastComponent::Params params) final;
-  void CancelPendingComponent(PendingCastComponent* pending_component) final;
+                              CastComponent::Params params) override;
+  void CancelPendingComponent(PendingCastComponent* pending_component) override;
 
   // Handles component destruction.
   void OnComponentDestroyed(CastComponent* component);

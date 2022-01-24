@@ -42,7 +42,7 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds,
   DCHECK(NeedsBeginFrame());
   DCHECK_GT(time_delta_in_seconds, 0);
 
-  last_frame_time_ += base::TimeDelta::FromSecondsD(time_delta_in_seconds);
+  last_frame_time_ += base::Seconds(time_delta_in_seconds);
 
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
@@ -60,13 +60,13 @@ SimCanvas::Commands SimCompositor::PaintFrame() {
     return SimCanvas::Commands();
 
   auto* frame = web_view_->MainFrameImpl()->GetFrame();
-  PaintRecordBuilder builder;
-  frame->View()->PaintOutsideOfLifecycle(builder.Context(),
+  auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
+  frame->View()->PaintOutsideOfLifecycle(builder->Context(),
                                          kGlobalPaintFlattenCompositingLayers);
 
   auto infinite_rect = LayoutRect::InfiniteIntRect();
-  SimCanvas canvas(infinite_rect.Width(), infinite_rect.Height());
-  builder.EndRecording()->Playback(&canvas);
+  SimCanvas canvas(infinite_rect.width(), infinite_rect.height());
+  builder->EndRecording()->Playback(&canvas);
   return canvas.GetCommands();
 }
 

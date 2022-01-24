@@ -192,10 +192,6 @@ AccountReconcilorDelegate::ShouldRevokeSecondaryTokensBeforeReconcile(
   return RevokeTokenOption::kDoNotRevoke;
 }
 
-bool AccountReconcilorDelegate::ShouldRevokeTokensNotInCookies() const {
-  return false;
-}
-
 bool AccountReconcilorDelegate::ShouldRevokeTokensOnCookieDeleted() {
   return false;
 }

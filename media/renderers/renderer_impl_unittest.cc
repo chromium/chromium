@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
@@ -66,6 +65,10 @@ class RendererImplTest : public ::testing::Test {
   class CallbackHelper : public MockRendererClient {
    public:
     CallbackHelper() = default;
+
+    CallbackHelper(const CallbackHelper&) = delete;
+    CallbackHelper& operator=(const CallbackHelper&) = delete;
+
     virtual ~CallbackHelper() = default;
 
     // Completion callbacks.
@@ -75,9 +78,6 @@ class RendererImplTest : public ::testing::Test {
     MOCK_METHOD1(OnDurationChange, void(base::TimeDelta duration));
     MOCK_METHOD0(OnVideoTrackChangeComplete, void());
     MOCK_METHOD0(OnAudioTrackChangeComplete, void());
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CallbackHelper);
   };
 
   RendererImplTest()
@@ -96,6 +96,9 @@ class RendererImplTest : public ::testing::Test {
     // expected non-NULL streams.
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(streams_));
   }
+
+  RendererImplTest(const RendererImplTest&) = delete;
+  RendererImplTest& operator=(const RendererImplTest&) = delete;
 
   ~RendererImplTest() override { Destroy(); }
 
@@ -244,8 +247,7 @@ class RendererImplTest : public ::testing::Test {
                 OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
                                        BUFFERING_CHANGE_REASON_UNKNOWN));
 
-    base::TimeDelta start_time(
-        base::TimeDelta::FromMilliseconds(kStartPlayingTimeInMs));
+    base::TimeDelta start_time(base::Milliseconds(kStartPlayingTimeInMs));
     EXPECT_CALL(time_source_, SetMediaTime(start_time));
     EXPECT_CALL(time_source_, StartTicking());
 
@@ -295,8 +297,7 @@ class RendererImplTest : public ::testing::Test {
     int64_t start_time_ms = GetMediaTimeMs();
     const int64_t time_to_advance_ms = 100;
 
-    test_tick_clock_.Advance(
-        base::TimeDelta::FromMilliseconds(time_to_advance_ms));
+    test_tick_clock_.Advance(base::Milliseconds(time_to_advance_ms));
 
     if (GetMediaTimeMs() == start_time_ms + time_to_advance_ms * playback_rate)
       return true;
@@ -374,9 +375,6 @@ class RendererImplTest : public ::testing::Test {
   PipelineStatus initialization_status_;
   bool is_encrypted_ = false;
   bool is_cdm_set_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RendererImplTest);
 };
 
 TEST_F(RendererImplTest, Destroy_BeforeInitialize) {
@@ -815,8 +813,7 @@ TEST_F(RendererImplTest, VideoUnderflowWithAudioFlush) {
   Play();
 
   // Set a massive threshold such that it shouldn't fire within this test.
-  renderer_impl_->set_video_underflow_threshold_for_testing(
-      base::TimeDelta::FromSeconds(100));
+  renderer_impl_->set_video_underflow_threshold_for_testing(base::Seconds(100));
 
   // Simulate the cases where audio underflows and then video underflows.
   EXPECT_CALL(time_source_, StopTicking());

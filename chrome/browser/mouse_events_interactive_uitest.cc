@@ -4,7 +4,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -28,7 +27,10 @@ namespace {
 // Integration test of browser event forwarding and web content event handling.
 class MouseEventsTest : public InProcessBrowserTest {
  public:
-  MouseEventsTest() {}
+  MouseEventsTest() = default;
+
+  MouseEventsTest(const MouseEventsTest&) = delete;
+  MouseEventsTest& operator=(const MouseEventsTest&) = delete;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -60,7 +62,7 @@ class MouseEventsTest : public InProcessBrowserTest {
     const GURL url = ui_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath(FILE_PATH_LITERAL("mouse_events_test.html")));
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     WaitForTitle("onload");
 
     // Move the mouse over the div and wait for onmouseover to be called.
@@ -77,12 +79,10 @@ class MouseEventsTest : public InProcessBrowserTest {
     ui_controls::SendMouseMove(bounds.CenterPoint().x(), bounds.y() - 10);
     WaitForTitle("onmouseout");
   }
-
-  DISALLOW_COPY_AND_ASSIGN(MouseEventsTest);
 };
 
 #if defined(OS_MAC)
-// OS_MAC: Missing automation provider support: http://crbug.com/45892.
+// Flaky; http://crbug.com/133361.
 #define MAYBE_MouseOver DISABLED_MouseOver
 #else
 #define MAYBE_MouseOver MouseOver
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_MouseOver) {
 }
 
 #if defined(OS_MAC)
-// OS_MAC: Missing automation provider support: http://crbug.com/45892.
+// Flaky; http://crbug.com/133361.
 #define MAYBE_ClickAndDoubleClick DISABLED_ClickAndDoubleClick
 #else
 #define MAYBE_ClickAndDoubleClick ClickAndDoubleClick
@@ -111,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ClickAndDoubleClick) {
 
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_WIN)
-// OS_MAC: Missing automation provider support: http://crbug.com/45892.
-// OS_LINUX, OS_WIN: http://crbug.com/133361.
+// Flaky; http://crbug.com/133361.
 #define MAYBE_TestOnMouseOut DISABLED_TestOnMouseOut
 #else
 #define MAYBE_TestOnMouseOut TestOnMouseOut
@@ -123,8 +122,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_TestOnMouseOut) {
 }
 
 #if defined(OS_WIN)
-// OS_MAC: Missing automation provider support: http://crbug.com/45892
-// OS_LINUX: http://crbug.com/133361. interactive mouse tests are flaky.
+// Mac/Linux are flaky; http://crbug.com/133361.
 IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
   gfx::Rect browser_bounds = browser()->window()->GetBounds();
   ui_controls::SendMouseMove(browser_bounds.x() + 200, browser_bounds.y() + 10);
@@ -140,10 +138,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MouseDownOnBrowserCaption) {
 // when showing the context menu and it could make the unexpecting
 // content behavior such as clearing the hover status.
 // Please refer to the below issue for understanding what happens .
-// TODO: Make test pass on OS_WIN and OS_MAC
-// OS_WIN: Flaky. See http://crbug.com/656101.
-// OS_MAC: Missing automation provider support: http://crbug.com/45892.
-// USE_OZONE: Flaky. See http://crbug.com/656101.
+// Flaky; See http://crbug.com/656101.
 #define MAYBE_ContextMenu DISABLED_ContextMenu
 #else
 #define MAYBE_ContextMenu ContextMenu
@@ -171,10 +166,7 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
     defined(OS_CHROMEOS)
 // Test that a mouseleave is not triggered when showing a modal dialog.
 // Sample regression: crbug.com/394672
-// TODO: Make test pass on OS_WIN and OS_MAC
-// OS_WIN: http://crbug.com/450138
-// OS_MAC: Missing automation provider support: http://crbug.com/45892.
-// OS_LINUX: Flaky http://crbug.com/838120
+// Flaky; http://crbug.com/838120
 #define MAYBE_ModalDialog DISABLED_ModalDialog
 #else
 #define MAYBE_ModalDialog ModalDialog

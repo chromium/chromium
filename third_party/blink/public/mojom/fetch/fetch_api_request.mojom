@@ -14,6 +14,7 @@ import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -161,6 +162,23 @@ struct FetchAPIRequest {
   // TODO(crbug.com/911930): Remove |blob| and use |body| instead everywhere.
   SerializedBlob? blob;
   FetchAPIRequestBody? body;
+
+  // `request_initiator` indicates the origin that initiated the request.  See
+  // also `network::ResourceRequest::request_initiator`, and the doc comment
+  // for `request_initiator` in services/network/public/mojom/url_request.mojom.
+  //
+  // Note that the origin may be missing for browser-initiated navigations
+  // (e.g. ones initiated from the Omnibox).
+  url.mojom.Origin? request_initiator;
+
+  // The chain of URLs seen during navigation redirects.  This should only
+  // contain values if the mode is `RedirectMode::kNavigate`.  This list
+  // will contain the initial network request URL, but not URLs from previous
+  // state in the DOM.  For example, if a frame has URL A and sets its location
+  // to URL B, then the redirect chain will begin with URL B.  The chain also
+  // includes the current request URL, however, it will not reflect any changes
+  // made by throttles.
+  array<url.mojom.Url> navigation_redirect_chain;
 
   Referrer? referrer;
   network.mojom.CredentialsMode credentials_mode =

@@ -1,17 +1,3 @@
-<link rel="import" href="../../../html/polymer.html">
-
-<link rel="import" href="../../../cr_elements/cr_button/cr_button.html">
-<link rel="import" href="../../../cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="../../../cr_elements/cr_input/cr_input.html">
-<link rel="import" href="../../../cr_elements/hidden_style_css.html">
-<link rel="import" href="../../../html/cr.html">
-<link rel="import" href="../../../html/i18n_behavior.html">
-<link rel="import" href="../../../html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-
-<dom-module id="bluetooth-dialog">
-  <template>
     <style include="cr-hidden-style iron-flex">
       #pairing {
         margin-bottom: 10px;
@@ -33,40 +19,36 @@
         height: 250px;
       }
 
-      /* .display indicates a displayed pin code or passkey. */
-      span.display {
-        border: 1px solid #ccc;
+      span {
         border-radius: 4px;
-        box-shadow: 0 0 0 1px #222;
-        color: #222;
-        font-size: 123.08%;  /* 16px / 13px */
-        height: 38px;
-        line-height: 38px;
+        font-size: 20px;
+        height: 40px;
+        line-height: 40px;
         margin: 0 5px;
         padding: 0 15px;
         text-align: center;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+      }
+
+      /* .display indicates a displayed pin code or passkey. */
+      span.display {
+        background: var(--cros-bg-color-dropped-elevation-1);
+        color: var(--cros-text-color-secondary);
       }
 
       span.display.next {
-        background: rgb(77, 144, 254);
-        border: 2px solid rgb(77, 144, 254);
-        box-shadow: none;
-        color: #fff;
+        background: var(--cros-highlight-color);
+        color: var(--cros-button-label-color-secondary);
       }
 
       span.display.untyped {
-        border: 1px solid #d4d4d4;
-        box-shadow: 0 0 0 1px #888;
-        color: #666;
+        background: var(--cros-bg-color-dropped-elevation-2);
+        color: var(--cros-text-color-primary);
       }
 
       /* .confirm indicates a confirmation passkey. */
       span.confirm {
-        color: #999;
-        font-size: 153.85%;  /* 20px / 13px */
-        font-weight: 600;  /* semibold */
-        margin: 0 20px;
+        background: var(--cros-bg-color-dropped-elevation-1);
+        color: var(--cros-text-color-primary);
       }
 
       /* Override default style since it assumes a single action-button */
@@ -151,6 +133,3 @@
         </template>
       </div>
     </cr-dialog>
-  </template>
-  <script src="bluetooth_dialog.js"></script>
-</dom-module>

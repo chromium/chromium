@@ -60,6 +60,7 @@ enum class IntelGpuSeriesType {
   kApollolake = 7,
   kSkylake = 8,
   kGeminilake = 9,
+  kAmberlake = 23,
   kKabylake = 10,
   kCoffeelake = 11,
   kWhiskeylake = 12,
@@ -72,8 +73,11 @@ enum class IntelGpuSeriesType {
   kJasperlake = 20,
   // Intel 12th gen
   kTigerlake = 21,
+  kRocketlake = 24,
+  kDG1 = 25,
+  kAlderlake = 22,
   // Please also update |gpu_series_map| in process_json.py.
-  kMaxValue = kTigerlake,
+  kMaxValue = kDG1,
 };
 
 // Video profile.  This *must* match media::VideoCodecProfile.
@@ -412,6 +416,8 @@ struct GPU_EXPORT GPUInfo {
   bool oop_rasterization_supported;
 
   bool subpixel_font_rendering;
+
+  uint32_t visibility_callback_call_count = 0;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   absl::optional<VulkanInfo> vulkan_info;

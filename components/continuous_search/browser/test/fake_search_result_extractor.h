@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTINUOUS_SEARCH_BROWSER_TEST_FAKE_SEARCH_RESULT_EXTRACTOR_H_
 #define COMPONENTS_CONTINUOUS_SEARCH_BROWSER_TEST_FAKE_SEARCH_RESULT_EXTRACTOR_H_
 
+#include <vector>
+
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
@@ -20,6 +22,7 @@ class FakeSearchResultExtractor : public mojom::SearchResultExtractor {
       delete;
 
   void ExtractCurrentSearchResults(
+      const std::vector<mojom::ResultType>& result_types,
       ExtractCurrentSearchResultsCallback callback) override;
 
   // Sets the `status` and `results` returned the next time

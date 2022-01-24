@@ -44,6 +44,10 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
   class Handle {
    public:
     explicit Handle(ChromeBrowserState* browser_state);
+
+    Handle(const Handle&) = delete;
+    Handle& operator=(const Handle&) = delete;
+
     ~Handle();
 
     scoped_refptr<IOSChromeURLRequestContextGetter>
@@ -77,9 +81,12 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
     ChromeBrowserState* const browser_state_;
 
     mutable bool initialized_;
-
-    DISALLOW_COPY_AND_ASSIGN(Handle);
   };
+
+  OffTheRecordChromeBrowserStateIOData(
+      const OffTheRecordChromeBrowserStateIOData&) = delete;
+  OffTheRecordChromeBrowserStateIOData& operator=(
+      const OffTheRecordChromeBrowserStateIOData&) = delete;
 
  private:
   friend class base::RefCountedThreadSafe<OffTheRecordChromeBrowserStateIOData>;
@@ -103,8 +110,6 @@ class OffTheRecordChromeBrowserStateIOData : public ChromeBrowserStateIOData {
 
   // Server bound certificates and cookies are persisted to the disk on iOS.
   base::FilePath cookie_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(OffTheRecordChromeBrowserStateIOData);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_OFF_THE_RECORD_CHROME_BROWSER_STATE_IO_DATA_H_

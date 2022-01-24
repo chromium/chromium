@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/importer/profile_writer.h"
@@ -27,6 +26,9 @@ class InProcessImporterBridge : public ImporterBridge {
  public:
   InProcessImporterBridge(ProfileWriter* writer,
                           base::WeakPtr<ExternalProcessImporterHost> host);
+
+  InProcessImporterBridge(const InProcessImporterBridge&) = delete;
+  InProcessImporterBridge& operator=(const InProcessImporterBridge&) = delete;
 
   // Begin ImporterBridge implementation:
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
@@ -61,8 +63,6 @@ class InProcessImporterBridge : public ImporterBridge {
 
   ProfileWriter* const writer_;  // weak
   const base::WeakPtr<ExternalProcessImporterHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessImporterBridge);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_IN_PROCESS_IMPORTER_BRIDGE_H_

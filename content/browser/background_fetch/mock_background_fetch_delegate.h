@@ -29,15 +29,16 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
   // created by the builder, which also defines the ownership semantics.
   struct TestResponse {
     TestResponse();
+
+    TestResponse(const TestResponse&) = delete;
+    TestResponse& operator=(const TestResponse&) = delete;
+
     ~TestResponse();
 
     bool succeeded = false;
     bool pending = false;
     scoped_refptr<net::HttpResponseHeaders> headers;
     std::string data;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TestResponse);
   };
 
   // Builder for creating a TestResponse object with the given data.
@@ -46,6 +47,10 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
   class TestResponseBuilder {
    public:
     explicit TestResponseBuilder(int response_code);
+
+    TestResponseBuilder(const TestResponseBuilder&) = delete;
+    TestResponseBuilder& operator=(const TestResponseBuilder&) = delete;
+
     ~TestResponseBuilder();
 
     TestResponseBuilder& AddResponseHeader(const std::string& name,
@@ -60,11 +65,14 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
    private:
     std::unique_ptr<TestResponse> response_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestResponseBuilder);
   };
 
   MockBackgroundFetchDelegate();
+
+  MockBackgroundFetchDelegate(const MockBackgroundFetchDelegate&) = delete;
+  MockBackgroundFetchDelegate& operator=(const MockBackgroundFetchDelegate&) =
+      delete;
+
   ~MockBackgroundFetchDelegate() override;
 
   // BackgroundFetchDelegate implementation:
@@ -77,6 +85,7 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
                    const std::string& guid,
                    const std::string& method,
                    const GURL& url,
+                   ::network::mojom::CredentialsMode credentials_mode,
                    const net::NetworkTrafficAnnotationTag& traffic_annotation,
                    const net::HttpRequestHeaders& headers,
                    bool has_request_body) override;
@@ -124,8 +133,6 @@ class MockBackgroundFetchDelegate : public BackgroundFetchDelegate {
 
   // Map from job GUIDs to Clients.
   std::map<std::string, base::WeakPtr<Client>> job_id_to_client_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBackgroundFetchDelegate);
 };
 
 }  // namespace content

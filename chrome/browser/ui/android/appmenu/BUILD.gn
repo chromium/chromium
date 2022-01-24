@@ -13,14 +13,19 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandler.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemProperties.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuObserver.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPropertiesDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuUtil.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/CustomViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/MenuButtonDelegate.java",
   ]
   deps = [
+    ":java_resources",
+    "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.appmenu"
 }
@@ -38,7 +43,10 @@ android_library_factory("factory_java") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/values/styles.xml" ]
+  sources = [
+    "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
+  ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",
     "//ui/android:ui_java_resources",

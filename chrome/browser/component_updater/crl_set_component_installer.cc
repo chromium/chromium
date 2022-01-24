@@ -112,7 +112,7 @@ void CRLSetPolicy::ReconfigureAfterNetworkRestart() {
   g_crl_set_data.Get().ConfigureNetworkService();
 }
 
-bool CRLSetPolicy::VerifyInstallation(const base::DictionaryValue& manifest,
+bool CRLSetPolicy::VerifyInstallation(const base::Value& manifest,
                                       const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kCRLSetFile));
 }
@@ -126,17 +126,16 @@ bool CRLSetPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result CRLSetPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
 
 void CRLSetPolicy::OnCustomUninstall() {}
 
-void CRLSetPolicy::ComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void CRLSetPolicy::ComponentReady(const base::Version& version,
+                                  const base::FilePath& install_dir,
+                                  base::Value manifest) {
   g_crl_set_data.Get().set_crl_set_path(install_dir.Append(kCRLSetFile));
   g_crl_set_data.Get().ConfigureNetworkService();
 }

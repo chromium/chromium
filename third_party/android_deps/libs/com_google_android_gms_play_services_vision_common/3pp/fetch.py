@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/android/gms/play-services-vision-common/18.0.0/play-services-vision-common-18.0.0.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-vision-common/18.0.0/play-services-vision-common-18.0.0.aar'
 _FILE_NAME = 'play-services-vision-common-18.0.0.aar'
 _FILE_VERSION = '18.0.0'
 

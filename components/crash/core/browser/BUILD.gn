@@ -4,22 +4,21 @@
 
 static_library("browser") {
   sources = [
-    "crash_upload_list_crashpad.cc",
-    "crash_upload_list_crashpad.h",
     "crashes_ui_util.cc",
     "crashes_ui_util.h",
   ]
   deps = [
     "//base",
     "//base:i18n",
-    "//components/crash/core/app",
     "//components/strings",
     "//components/upload_list",
   ]
-  if (is_chromeos) {
-    sources -= [
+
+  if (!is_chromeos && !is_fuchsia) {
+    sources += [
       "crash_upload_list_crashpad.cc",
       "crash_upload_list_crashpad.h",
     ]
+    deps += [ "//components/crash/core/app" ]
   }
 }

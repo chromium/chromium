@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PENDING_PREVENT_SILENT_ACCESS_TASK_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PENDING_PREVENT_SILENT_ACCESS_TASK_H_
 
-#include "base/macros.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include <memory>
+#include <vector>
+
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
@@ -31,6 +33,10 @@ class CredentialManagerPendingPreventSilentAccessTask
  public:
   explicit CredentialManagerPendingPreventSilentAccessTask(
       CredentialManagerPendingPreventSilentAccessTaskDelegate* delegate);
+  CredentialManagerPendingPreventSilentAccessTask(
+      const CredentialManagerPendingPreventSilentAccessTask&) = delete;
+  CredentialManagerPendingPreventSilentAccessTask& operator=(
+      const CredentialManagerPendingPreventSilentAccessTask&) = delete;
   ~CredentialManagerPendingPreventSilentAccessTask() override;
 
   // Adds an origin to require user mediation.
@@ -49,8 +55,6 @@ class CredentialManagerPendingPreventSilentAccessTask
 
   // Number of password store requests to be resolved.
   int pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialManagerPendingPreventSilentAccessTask);
 };
 
 }  // namespace password_manager

@@ -13,6 +13,10 @@ class UpgradeMetricsProviderTest : public testing::Test {
  public:
   UpgradeMetricsProviderTest() {}
 
+  UpgradeMetricsProviderTest(const UpgradeMetricsProviderTest&) = delete;
+  UpgradeMetricsProviderTest& operator=(const UpgradeMetricsProviderTest&) =
+      delete;
+
   void TestHistogramLevel(
       UpgradeDetector::UpgradeNotificationAnnoyanceLevel level) {
     UpgradeDetector::GetInstance()->set_upgrade_notification_stage(level);
@@ -24,8 +28,6 @@ class UpgradeMetricsProviderTest : public testing::Test {
 
  private:
   UpgradeMetricsProvider metrics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpgradeMetricsProviderTest);
 };
 
 TEST_F(UpgradeMetricsProviderTest, HistogramCheck) {

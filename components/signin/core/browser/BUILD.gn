@@ -50,15 +50,12 @@ static_library("browser") {
     "signin_status_metrics_provider_delegate.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   public_deps = [
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
-    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//google_apis",
     "//net",
@@ -134,7 +131,6 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/signin/public/base",
     "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager",

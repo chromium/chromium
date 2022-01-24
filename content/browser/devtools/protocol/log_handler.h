@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_LOG_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_LOG_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/log.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,6 +18,10 @@ namespace protocol {
 class LogHandler final : public DevToolsDomainHandler, public Log::Backend {
  public:
   LogHandler();
+
+  LogHandler(const LogHandler&) = delete;
+  LogHandler& operator=(const LogHandler&) = delete;
+
   ~LogHandler() override;
 
   static std::vector<LogHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -35,8 +38,6 @@ class LogHandler final : public DevToolsDomainHandler, public Log::Backend {
  private:
   std::unique_ptr<Log::Frontend> frontend_;
   bool enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LogHandler);
 };
 
 }  // namespace protocol

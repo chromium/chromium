@@ -1,0 +1,171 @@
+<style include="history-clusters-shared-style">
+  :host {
+    align-items: center;
+    display: flex;
+    height: 64px;
+  }
+
+  :host(:hover) {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  #header {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    min-width: 0;
+    padding-inline-start: var(--cluster-padding-horizontal);
+    user-select: none;
+  }
+
+  :host(:not([is-top-visit])) #header {
+    padding-inline-start: calc(var(--cluster-padding-horizontal) +
+                               var(--top-visit-favicon-size) +
+                               var(--favicon-margin));
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #start-justified {
+    align-items: center;
+    display: flex;
+    min-width: 0;
+    outline: none;
+  }
+
+  :host-context(.focus-outline-visible) #start-justified:focus {
+    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+  }
+
+  #page-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  #title-and-annotations {
+    display: flex;
+    line-height: 28px;
+  }
+
+  .annotation {
+    background-color: var(--annotation-background-color);
+    border-radius: 4px;
+    color: var(--annotation-text-color);
+    flex-shrink: 0;
+    font-weight: 500;
+    margin-inline-start: 12px;
+    padding: 0 8px;
+  }
+
+  .annotation + .annotation {
+    margin-inline-start: 8px;
+  }
+
+  #title,
+  #hostname {
+    font-size: .875rem;  /* 14px */
+  }
+
+  :host([is-top-visit]) #title,
+  :host([is-top-visit]) #hostname {
+    font-size: 1.125rem;  /* 18px */
+    font-weight: 500;
+  }
+
+  #hostname {
+    color: var(--url-hostname-color);
+    line-height: 20px;
+  }
+
+  #debug-info {
+    color: var(--cr-secondary-text-color);
+  }
+
+  #end-justified {
+    align-items: center;
+    display: flex;
+    flex-shrink: 0;
+    margin-inline-start: 24px;
+  }
+
+  :host(:not([is-top-visit])) #end-justified {
+    opacity: 0; /* Hides the element while keeping it in tab order. */
+  }
+
+  :host(:not([is-top-visit]):-webkit-any(:focus-within, :hover)) #end-justified {
+    opacity: 1;
+  }
+
+  #timestamp {
+    color: var(--cr-secondary-text-color);
+    flex-shrink: 0;
+  }
+
+  :host(:not([is-top-visit])) #timestamp {
+    display: none;
+  }
+
+  #actionMenuButton {
+    --cr-icon-button-margin-end: 8px;
+  }
+
+  :host([is-top-visit]) #actionMenuButton {
+    --cr-icon-button-icon-size: 24px;
+  }
+
+  :host(:not([has-related-visits])) #removeAllButton,
+  :host(:not([has-related-visits])) #openAllButton {
+    display: none;
+  }
+</style>
+<div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
+    on-keydown="onKeydown_">
+  <a id="start-justified" href="[[visit.normalizedUrl.url]]">
+    <page-favicon is-top-visit-favicon="[[isTopVisit]]"
+        url="[[visit.normalizedUrl]]">
+    </page-favicon>
+    <div id="page-info">
+      <div id="title-and-annotations">
+        <span id="title" class="truncate">[[visit.pageTitle]]</span>
+        <template is="dom-repeat" items="[[annotations_]]">
+          <span class="annotation">[[item]]</span>
+        </template>
+      </div>
+      <span id="hostname" class="truncate" hidden="[[isSearchResultsPage_]]">
+        [[getHostname_(visit)]]
+        <!-- Print the debug next to the hostname to keep layout the same. -->
+        <span id="debug-info" hidden="[[!debugInfo_]]">[[debugInfo_]]</span>
+      </span>
+    </div>
+  </a>
+  <div id="end-justified">
+    <div id="timestamp">[[visit.relativeDate]]</div>
+    <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+        title="$i18n{actionMenuDescription}" aria-haspopup="menu"
+        on-click="onActionMenuButtonClick_">
+    </cr-icon-button>
+  </div>
+</div>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{actionMenuDescription}">
+      <button id="openAllButton" class="dropdown-item"
+          on-click="onOpenAllButtonClick_">
+        $i18n{openAllInTabGroup}
+      </button>
+      <button class="dropdown-item" on-click="onRemoveSelfButtonClick_">
+        $i18n{removeFromHistory}
+      </button>
+      <button id="removeAllButton" class="dropdown-item"
+          on-click="onRemoveAllButtonClick_">
+        $i18n{removeAllFromHistory}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

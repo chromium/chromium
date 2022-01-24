@@ -6,8 +6,10 @@
 
 #import <MaterialComponents/MaterialOverlayWindow.h>
 
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -26,7 +28,9 @@ TEST_F(SigninPromoViewTest, ChromiumLogoImage) {
   UIImage* chromiumLogo = view.imageView.image;
   EXPECT_NE(nil, chromiumLogo);
   view.mode = SigninPromoViewModeSigninWithAccount;
-  UIImage* customImage = [[UIImage alloc] init];
+  UIImage* customImage = ios::provider::GetSigninDefaultAvatar();
+  CGSize size = GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize);
+  customImage = ResizeImage(customImage, size, ProjectionMode::kAspectFit);
   [view setProfileImage:customImage];
   EXPECT_NE(nil, view.imageView.image);
   // The image should has been changed from the logo.

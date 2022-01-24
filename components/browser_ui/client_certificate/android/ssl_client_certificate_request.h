@@ -27,6 +27,9 @@ base::OnceClosure ShowSSLClientCertificateSelector(
     net::SSLCertRequestInfo* cert_request_info,
     std::unique_ptr<content::ClientCertificateDelegate> delegate);
 
+size_t GetCountOfSSLClientCertificateSelectorForTesting(
+    content::WebContents* contents);
+
 }  // namespace browser_ui
 
 #endif  // COMPONENTS_BROWSER_UI_CLIENT_CERTIFICATE_ANDROID_SSL_CLIENT_CERTIFICATE_REQUEST_H_

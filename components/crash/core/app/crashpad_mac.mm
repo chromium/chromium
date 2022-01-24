@@ -126,14 +126,14 @@ void DumpProcessWithoutCrashing(task_t task_port) {
 
 namespace internal {
 
-base::FilePath PlatformCrashpadInitialization(
+bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
     bool embedded_handler,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
-  base::FilePath database_path;  // Only valid in the browser process.
+    const std::vector<std::string>& initial_arguments,
+    base::FilePath* database_path) {
   base::FilePath metrics_path;  // Only valid in the browser process.
   DCHECK(!embedded_handler);  // This is not used on Mac.
   DCHECK(exe_path.empty());   // This is not used on Mac.
@@ -148,7 +148,7 @@ base::FilePath PlatformCrashpadInitialization(
 
       // Is there a way to recover if this fails?
       CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
-      crash_reporter_client->GetCrashDumpLocation(&database_path);
+      crash_reporter_client->GetCrashDumpLocation(database_path);
       crash_reporter_client->GetCrashMetricsLocation(&metrics_path);
 
       std::string url = crash_reporter_client->GetUploadUrl();
@@ -174,7 +174,7 @@ base::FilePath PlatformCrashpadInitialization(
       }
 
       bool result = GetCrashpadClient().StartHandler(
-          handler_path, database_path, metrics_path, url,
+          handler_path, *database_path, metrics_path, url,
           GetProcessSimpleAnnotations(), arguments, true, false);
 
       // If this is an initial client that's not the browser process, it's
@@ -183,11 +183,12 @@ base::FilePath PlatformCrashpadInitialization(
       // to the existing handler.
       if (!result && !browser_process) {
         crashpad::CrashpadClient::UseSystemDefaultHandler();
+        return false;
       }
     }  // @autoreleasepool
   }
 
-  return database_path;
+  return true;
 }
 
 }  // namespace internal

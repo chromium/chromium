@@ -54,9 +54,9 @@
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #include "ios/net/cookies/cookie_store_ios.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
-#include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "net/url_request/url_request_context.h"
@@ -151,7 +151,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 // while queueTransitionToNextInitStage is already on the call stack.
 @property(nonatomic, assign) BOOL needsIncrementInitStage;
 
-// Redefined internaly as readwrite.
+// Redefined internally as readwrite.
 @property(nonatomic, assign, readwrite) InitStage initStage;
 
 @end
@@ -240,7 +240,6 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Exit the app if backgrounding the app while being in safe mode.
   if (self.initStage == InitStageSafeMode) {
     exit(0);
-    return;
   }
 
   if (_applicationInBackground) {
@@ -374,8 +373,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (EnableSyntheticCrashReportsForUte()) {
     [[PreviousSessionInfo sharedInstance]
         startRecordingMemoryFootprintWithInterval:
-            base::TimeDelta::FromSeconds(
-                kMemoryFootprintRecordingTimeInterval)];
+            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
 }
 
@@ -396,9 +394,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [_appCommandDispatcher prepareForShutdown];
 
   // Cancel any in-flight distribution notifications.
-  ios::GetChromeBrowserProvider()
-      .GetAppDistributionProvider()
-      ->CancelDistributionNotifications();
+  ios::provider::CancelAppDistributionNotifications();
 
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
@@ -612,8 +608,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
     // startUpBrowserToStage: method called above.
     [[PreviousSessionInfo sharedInstance]
         startRecordingMemoryFootprintWithInterval:
-            base::TimeDelta::FromSeconds(
-                kMemoryFootprintRecordingTimeInterval)];
+            base::Seconds(kMemoryFootprintRecordingTimeInterval)];
   }
 }
 

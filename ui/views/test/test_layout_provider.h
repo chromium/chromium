@@ -8,7 +8,6 @@
 #include <map>
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -19,6 +18,10 @@ namespace test {
 class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
  public:
   TestLayoutProvider();
+
+  TestLayoutProvider(const TestLayoutProvider&) = delete;
+  TestLayoutProvider& operator=(const TestLayoutProvider&) = delete;
+
   ~TestLayoutProvider() override;
 
   // Override requests for the |metric| DistanceMetric to return |value| rather
@@ -46,8 +49,6 @@ class TestLayoutProvider : public LayoutProvider, public TypographyProvider {
   std::map<int, int> distance_metrics_;
   std::map<std::pair<int, int>, ui::ResourceBundle::FontDetails> details_;
   int snapped_dialog_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLayoutProvider);
 };
 
 }  // namespace test

@@ -13,8 +13,8 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -34,6 +34,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
+#include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -216,7 +217,7 @@ int TestTransactionConsumer::quit_counter_ = 0;
 TestTransactionConsumer::TestTransactionConsumer(
     RequestPriority priority,
     HttpTransactionFactory* factory)
-    : state_(IDLE), error_(OK) {
+    : state_(State::kIdle), error_(OK) {
   // Disregard the error code.
   factory->CreateTransaction(priority, &trans_);
   ++quit_counter_;
@@ -226,7 +227,7 @@ TestTransactionConsumer::~TestTransactionConsumer() = default;
 
 void TestTransactionConsumer::Start(const HttpRequestInfo* request,
                                     const NetLogWithSource& net_log) {
-  state_ = STARTING;
+  state_ = State::kStarting;
   int result =
       trans_->Start(request,
                     base::BindOnce(&TestTransactionConsumer::OnIOComplete,
@@ -254,14 +255,14 @@ void TestTransactionConsumer::DidRead(int result) {
 }
 
 void TestTransactionConsumer::DidFinish(int result) {
-  state_ = DONE;
+  state_ = State::kDone;
   error_ = result;
   if (--quit_counter_ == 0)
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
 void TestTransactionConsumer::Read() {
-  state_ = READING;
+  state_ = State::kReading;
   read_buf_ = base::MakeRefCounted<IOBuffer>(1024);
   int result =
       trans_->Read(read_buf_.get(), 1024,
@@ -273,10 +274,10 @@ void TestTransactionConsumer::Read() {
 
 void TestTransactionConsumer::OnIOComplete(int result) {
   switch (state_) {
-    case STARTING:
+    case State::kStarting:
       DidStart(result);
       break;
-    case READING:
+    case State::kReading:
       DidRead(result);
       break;
     default:
@@ -551,8 +552,7 @@ int MockNetworkTransaction::StartInternal(const HttpRequestInfo* request,
 
   int result = OK;
   if (!connected_callback_.is_null()) {
-    result = connected_callback_.Run(t->transport_info,
-                                     base::DoNothing::Repeatedly<int>());
+    result = connected_callback_.Run(t->transport_info, base::DoNothing());
   }
 
   CallbackLater(std::move(callback), result);

@@ -22,7 +22,8 @@ message Tracking {
     UNKNOWN_TYPE = -1;
 
     INTENT = 0;
-    INLINE = 1;
+    // Inline updates are deprecated.
+    // INLINE = 1;
   }
   // The type of update that was started.
   optional Type type = 3 [default = UNKNOWN_TYPE];

@@ -26,13 +26,15 @@ const char kNearbySharingDataUsageName[] = "nearby_sharing.data_usage";
 const char kNearbySharingDeviceIdPrefName[] = "nearby_sharing.device_id";
 const char kNearbySharingDeviceNamePrefName[] = "nearby_sharing.device_name";
 const char kNearbySharingEnabledPrefName[] = "nearby_sharing.enabled";
+const char kNearbySharingFastInitiationNotificationStatePrefName[] =
+    "nearby_sharing.fast_initiation_notification_state";
 const char kNearbySharingOnboardingCompletePrefName[] =
     "nearby_sharing.onboarding_complete";
 const char kNearbySharingFullNamePrefName[] = "nearby_sharing.full_name";
 const char kNearbySharingIconUrlPrefName[] = "nearby_sharing.icon_url";
 const char kNearbySharingIconTokenPrefName[] = "nearby_sharing.icon_token";
-const char kNearbySharingOnboardingDismissedTimePrefName[] =
-    "nearby_sharing.onboarding_dismissed_time";
+const char kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName[] =
+    "nearby_sharing.nearby_device_trying_to_share_dismissed_time";
 const char kNearbySharingPublicCertificateExpirationDictPrefName[] =
     "nearbyshare.public_certificate_expiration_dict";
 const char kNearbySharingPrivateCertificateListPrefName[] =
@@ -61,6 +63,10 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
                                 /*default_value=*/false);
+  registry->RegisterIntegerPref(
+      prefs::kNearbySharingFastInitiationNotificationStatePrefName,
+      /*default_value=*/static_cast<int>(
+          FastInitiationNotificationState::kEnabled));
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
   registry->RegisterIntegerPref(
@@ -83,7 +89,7 @@ void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kNearbySharingIconTokenPrefName,
                                /*default_value=*/std::string());
   registry->RegisterTimePref(
-      prefs::kNearbySharingOnboardingDismissedTimePrefName,
+      prefs::kNearbySharingNearbyDeviceTryingToShareDismissedTimePrefName,
       /*default_value=*/base::Time());
   registry->RegisterDictionaryPref(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);

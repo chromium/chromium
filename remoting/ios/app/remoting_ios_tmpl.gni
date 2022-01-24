@@ -74,13 +74,12 @@ template("ios_remoting_app_tmpl") {
     info_plist_target = ":$_info_plist_target_name"
 
     if (defined(invoker.bundle_id)) {
-      bundle_id = invoker.bundle_id
+      bundle_identifier = invoker.bundle_id
     } else {
-      bundle_id = remoting_ios_bundle_id
+      bundle_identifier = remoting_ios_bundle_id
     }
 
     extra_substitutions = [
-      "BUNDLE_IDENTIFIER=$bundle_id",
       "DISPLAY_NAME=$remoting_ios_display_name",
       "EXECUTABLE_NAME=$output_name",
       "PRODUCT_NAME=$output_name",

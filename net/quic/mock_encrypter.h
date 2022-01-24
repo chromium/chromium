@@ -22,6 +22,10 @@ namespace net {
 class MockEncrypter : public quic::QuicEncrypter {
  public:
   explicit MockEncrypter(quic::Perspective perspective);
+
+  MockEncrypter(const MockEncrypter&) = delete;
+  MockEncrypter& operator=(const MockEncrypter&) = delete;
+
   ~MockEncrypter() override {}
 
   // QuicEncrypter implementation
@@ -44,9 +48,6 @@ class MockEncrypter : public quic::QuicEncrypter {
   quic::QuicPacketCount GetConfidentialityLimit() const override;
   absl::string_view GetKey() const override;
   absl::string_view GetNoncePrefix() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEncrypter);
 };
 
 }  // namespace net

@@ -24,6 +24,7 @@ void FakeCrostiniFeatures::SetAll(bool flag) {
   container_upgrade_ui_allowed_ = flag;
   can_change_adb_sideloading_ = flag;
   port_forwarding_allowed_ = flag;
+  multi_container_allowed_ = flag;
 }
 
 void FakeCrostiniFeatures::ClearAll() {
@@ -35,6 +36,7 @@ void FakeCrostiniFeatures::ClearAll() {
   container_upgrade_ui_allowed_ = absl::nullopt;
   can_change_adb_sideloading_ = absl::nullopt;
   port_forwarding_allowed_ = absl::nullopt;
+  multi_container_allowed_ = absl::nullopt;
 }
 
 bool FakeCrostiniFeatures::CouldBeAllowed(Profile* profile,
@@ -96,6 +98,11 @@ bool FakeCrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
   if (port_forwarding_allowed_.has_value())
     return *port_forwarding_allowed_;
   return original_features_->IsPortForwardingAllowed(profile);
+}
+
+bool FakeCrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {
+  return multi_container_allowed_.value_or(
+      original_features_->IsMultiContainerAllowed(profile));
 }
 
 }  // namespace crostini

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/webapk/webapk_handler_delegate.h"
 #include "chrome/browser/android/webapk/webapk_info.h"
@@ -19,6 +18,10 @@ class ListValue;
 class WebApksHandler : public content::WebUIMessageHandler {
  public:
   WebApksHandler();
+
+  WebApksHandler(const WebApksHandler&) = delete;
+  WebApksHandler& operator=(const WebApksHandler&) = delete;
+
   ~WebApksHandler() override;
 
   // content::WebUIMessageHandler:
@@ -39,8 +42,6 @@ class WebApksHandler : public content::WebUIMessageHandler {
   void OnWebApkInfoRetrieved(const WebApkInfo& webapk_info);
 
   WebApkHandlerDelegate delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebApksHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBAPKS_WEBAPKS_HANDLER_H_

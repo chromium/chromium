@@ -36,7 +36,8 @@ export enum HistoryPageViewHistogram {
   DEPRECATED_GROUPED_MONTH = 2,
   SYNCED_TABS = 3,
   SIGNIN_PROMO = 4,
-  END = 5,  // Should always be last.
+  JOURNEYS = 5,
+  END = 6,  // Should always be last.
 }
 
 export const SYNCED_TABS_HISTOGRAM_NAME = 'HistoryPage.OtherDevicesMenu';

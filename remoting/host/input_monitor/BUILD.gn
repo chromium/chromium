@@ -36,7 +36,7 @@ source_set("input_monitor") {
     deps += [ "//third_party/google_toolbox_for_mac" ]
   }
 
-  if (use_x11 && (!is_chromeos_ash || use_ozone)) {
+  if (remoting_use_x11) {
     sources += [
       "local_hotkey_input_monitor_x11.cc",
       "local_input_monitor_x11_common.cc",

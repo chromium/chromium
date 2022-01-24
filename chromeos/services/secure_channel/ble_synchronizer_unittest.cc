@@ -118,6 +118,10 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
           device::BluetoothAdvertisement::ErrorCallback)>& unregister_callback)
       : unregister_callback_(unregister_callback) {}
 
+  FakeBluetoothAdvertisement(const FakeBluetoothAdvertisement&) = delete;
+  FakeBluetoothAdvertisement& operator=(const FakeBluetoothAdvertisement&) =
+      delete;
+
   // BluetoothAdvertisement:
   void Unregister(
       device::BluetoothAdvertisement::SuccessCallback success_callback,
@@ -132,8 +136,6 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
   base::RepeatingCallback<void(device::BluetoothAdvertisement::SuccessCallback,
                                device::BluetoothAdvertisement::ErrorCallback)>
       unregister_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothAdvertisement);
 };
 
 // Creates a UUIDList with one element of value |id|.
@@ -155,6 +157,12 @@ std::unique_ptr<device::BluetoothAdvertisement::Data> GenerateAdvertisementData(
 }  // namespace
 
 class SecureChannelBleSynchronizerTest : public testing::Test {
+ public:
+  SecureChannelBleSynchronizerTest(const SecureChannelBleSynchronizerTest&) =
+      delete;
+  SecureChannelBleSynchronizerTest& operator=(
+      const SecureChannelBleSynchronizerTest&) = delete;
+
  protected:
   SecureChannelBleSynchronizerTest()
       : fake_advertisement_(base::MakeRefCounted<FakeBluetoothAdvertisement>(
@@ -200,7 +208,7 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   }
 
   base::TimeDelta TimeDeltaMillis(int64_t num_millis) {
-    return base::TimeDelta::FromMilliseconds(num_millis);
+    return base::Milliseconds(num_millis);
   }
 
   void OnAdapterRegisterAdvertisement(RegisterAdvertisementArgs* args) {
@@ -465,9 +473,6 @@ class SecureChannelBleSynchronizerTest : public testing::Test {
   std::unique_ptr<BleSynchronizerBase> synchronizer_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleSynchronizerTest);
 };
 
 TEST_F(SecureChannelBleSynchronizerTest, TestRegisterSuccess) {

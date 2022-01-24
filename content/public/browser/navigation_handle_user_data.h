@@ -20,20 +20,23 @@ namespace content {
 // - NavigationHandle is deleted, or
 // - DeleteForCurrentNavigation is called.
 //
-// This is similar to RenderDocumentHostUserData but attached to a navigation
+// This is similar to DocumentUserData but attached to a navigation
 // instead. This class can be used before there's a document assigned for this
 // navigation. Example usage of NavigationHandleUserData:
 //
 // --- in foo_data.h ---
-// class FooData : public
-// content::NavigationHandleUserData<FooData> {
+// class FooData : public content::NavigationHandleUserData<FooData> {
 //  public:
 //   ~FooData() override;
+//
 //   // ... more public stuff here ...
+//
 //  private:
 //   explicit FooData(content::NavigationHandle& navigation_handle);
-//   friend NavigationHandleUserData<FooData>;
+//
+//   friend NavigationHandleUserData;
 //   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+//
 //   // ... more private stuff here ...
 // };
 //
@@ -84,7 +87,7 @@ class NavigationHandleUserData : public base::SupportsUserData::Data {
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation
 // of the static variable.
-#define NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+#define NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey
 
 }  // namespace content
 

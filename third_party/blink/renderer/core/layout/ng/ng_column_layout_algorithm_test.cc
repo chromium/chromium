@@ -4981,10 +4981,8 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginAndBorderTopWithSpanner) {
     <style>
       #parent {
         columns: 3;
-        column-fill: auto;
         column-gap: 10px;
         width: 320px;
-        height: 300px;
       }
     </style>
     <div id="container">
@@ -4998,19 +4996,18 @@ TEST_F(NGColumnLayoutAlgorithmTest, MarginAndBorderTopWithSpanner) {
 
   String dump = DumpFragmentTree(GetElementById("container"));
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
-  offset:unplaced size:1000x300
-    offset:0,0 size:320x300
-      offset:0,0 size:100x100
-      offset:110,0 size:100x100
-        offset:0,0 size:22x100
-      offset:0,100 size:33x100
-      offset:0,200 size:100x100
-        offset:0,0 size:22x100
-          offset:0,0 size:44x100
-      offset:110,200 size:100x100
+  offset:unplaced size:1000x500
+    offset:0,0 size:320x500
+      offset:0,0 size:100x300
+        offset:0,200 size:22x100
+      offset:0,300 size:33x100
+      offset:0,400 size:100x100
         offset:0,0 size:22x100
           offset:0,0 size:44x100
-      offset:220,200 size:100x100
+      offset:110,400 size:100x100
+        offset:0,0 size:22x100
+          offset:0,0 size:44x100
+      offset:220,400 size:100x100
         offset:0,0 size:22x100
           offset:0,0 size:44x100
 )DUMP";

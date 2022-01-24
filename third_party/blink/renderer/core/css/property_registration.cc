@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/css_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -55,6 +56,8 @@ PropertyRegistration::PropertyRegistration(
               *this)),
       referenced_(false) {
 }
+
+PropertyRegistration::~PropertyRegistration() = default;
 
 static bool ComputationallyIndependent(const CSSValue& value) {
   DCHECK(!value.IsCSSWideKeyword());
@@ -99,21 +102,22 @@ static scoped_refptr<CSSVariableData> ConvertInitialVariableData(
   return To<CSSCustomPropertyDeclaration>(*value).Value();
 }
 
-void PropertyRegistration::DeclareProperty(Document& document,
-                                           const AtomicString& name,
-                                           StyleRuleProperty& rule) {
+PropertyRegistration* PropertyRegistration::MaybeCreateForDeclaredProperty(
+    Document& document,
+    const AtomicString& name,
+    StyleRuleProperty& rule) {
   // https://drafts.css-houdini.org/css-properties-values-api-1/#the-syntax-descriptor
   const CSSValue* syntax_value = rule.GetSyntax();
   if (!syntax_value)
-    return;
+    return nullptr;
   absl::optional<CSSSyntaxDefinition> syntax = ConvertSyntax(*syntax_value);
   if (!syntax)
-    return;
+    return nullptr;
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#inherits-descriptor
   const CSSValue* inherits_value = rule.Inherits();
   if (!inherits_value)
-    return;
+    return nullptr;
   bool inherits = ConvertInherts(*inherits_value);
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#initial-value-descriptor
@@ -130,9 +134,9 @@ void PropertyRegistration::DeclareProperty(Document& document,
     initial = syntax->Parse(initial_variable_data->TokenRange(),
                             *parser_context, is_animation_tainted);
     if (!initial)
-      return;
+      return nullptr;
     if (!ComputationallyIndependent(*initial))
-      return;
+      return nullptr;
     initial = &StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
         document, *initial);
     initial_variable_data =
@@ -143,13 +147,10 @@ void PropertyRegistration::DeclareProperty(Document& document,
   // For non-universal @property rules, the initial value is required for the
   // the rule to be valid.
   if (!initial && !syntax->IsUniversal())
-    return;
+    return nullptr;
 
-  document.EnsurePropertyRegistry().DeclareProperty(
-      name, *MakeGarbageCollected<PropertyRegistration>(
-                name, *syntax, inherits, initial, initial_variable_data));
-
-  document.GetStyleEngine().PropertyRegistryChanged();
+  return MakeGarbageCollected<PropertyRegistration>(
+      name, *syntax, inherits, initial, initial_variable_data);
 }
 
 void PropertyRegistration::registerProperty(

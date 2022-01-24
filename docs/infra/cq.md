@@ -20,6 +20,12 @@ The Chromium CQ supports a variety of options that can change what it checks.
 > paragraph of your commit message to be used. See `git help footers` or
 > [git_footers.py][1] for more information.
 
+* `Binary-Size: <rationale>`
+
+  This should be used when you are landing a change that will intentionally
+  increase the size of the Chrome binaries on Android (since we try not to
+  accidentally do so). The rationale should explain why this is okay to do.
+
 * `Commit: false`
 
   You can mark a CL with this if you are working on experimental code and do not
@@ -31,6 +37,20 @@ The Chromium CQ supports a variety of options that can change what it checks.
   This flag allows you to specify some additional bots to run for this CL, in
   addition to the default bots. The format for the list of trybots is
   "bucket:trybot1,trybot2;bucket2:trybot3".
+
+* `Disable-Retries: true`
+
+  The CQ will normally try to retry failed test shards (up to a point) to work
+  around any intermittent infra failures. If this footer is set, it won't try
+  to retry failed shards no matter what happens.
+
+* `Include-Ci-Only-Tests: true`
+
+  Some builder configurations may run some tests only post-submit (on CI), and
+  not pre-submit by default (in the CQ), for one reason or another (for
+  example, if the tests are too slow, or too expensive). In order to still be
+  able to explicitly reproduce what the CI builder is doing, you can specify
+  this footer to run those tests pre-submit anyway.
 
 * `No-Presubmit: true`
 
@@ -126,7 +146,7 @@ There are several requirements for a builder to be added to the Commit Queue.
 * It should be possible for any committer to replicate any testing run; i.e.
   tests and their data must be in the public repository.
 * Median cycle time needs to be under 40 minutes for trybots. 90th percentile
-  should be around an hour (preferrably shorter).
+  should be around an hour (preferably shorter).
 * Configurations need to catch enough failures to be worth adding to the CQ.
   Running builds on every CL requires a significant amount of compute resources.
   If a configuration only fails once every couple of weeks on the waterfalls,

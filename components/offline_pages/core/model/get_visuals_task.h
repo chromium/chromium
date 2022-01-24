@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_GET_VISUALS_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_GET_VISUALS_TASK_H_
 
-#include <vector>
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_visuals.h"
 #include "components/offline_pages/task/task.h"
@@ -25,6 +22,10 @@ class GetVisualsTask : public Task {
   GetVisualsTask(OfflinePageMetadataStore* store,
                  int64_t offline_id,
                  CompleteCallback complete_callback);
+
+  GetVisualsTask(const GetVisualsTask&) = delete;
+  GetVisualsTask& operator=(const GetVisualsTask&) = delete;
+
   ~GetVisualsTask() override;
 
  private:
@@ -40,7 +41,6 @@ class GetVisualsTask : public Task {
   base::OnceCallback<void(std::unique_ptr<OfflinePageVisuals>)>
       complete_callback_;
   base::WeakPtrFactory<GetVisualsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(GetVisualsTask);
 };
 
 }  // namespace offline_pages

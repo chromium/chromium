@@ -1,23 +1,15 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview An example of how to write a dialog to be opened by a plugin.
  */
 
 
-// TODO(b/130421259): We're trying to migrate all ES5 subclasses of Closure
+// TODO(user): We're trying to migrate all ES5 subclasses of Closure
 // Library to ES6. In ES6 this cannot be referenced before super is called. This
 // file has at least one this before a super call (in ES5) and cannot be
 // automatically upgraded to ES6 as a result. Please fix this if you have a
@@ -32,6 +24,7 @@ goog.require('goog.dom.TagName');
 goog.require('goog.events.Event');
 goog.require('goog.string');
 goog.require('goog.ui.editor.AbstractDialog');
+goog.requireType('goog.dom.DomHelper');
 
 
 // *** Public interface ***************************************************** //
@@ -47,6 +40,7 @@ goog.require('goog.ui.editor.AbstractDialog');
  * @final
  */
 goog.demos.editor.HelloWorldDialog = function(domHelper) {
+  'use strict';
   goog.ui.editor.AbstractDialog.call(this, domHelper);
 };
 goog.inherits(
@@ -65,6 +59,7 @@ goog.inherits(
  * @final
  */
 goog.demos.editor.HelloWorldDialog.OkEvent = function(message) {
+  'use strict';
   this.message = message;
 };
 goog.inherits(goog.demos.editor.HelloWorldDialog.OkEvent, goog.events.Event);
@@ -91,9 +86,10 @@ goog.demos.editor.HelloWorldDialog.OkEvent.prototype.message;
 
 /** @override */
 goog.demos.editor.HelloWorldDialog.prototype.createDialogControl = function() {
-  var builder = new goog.ui.editor.AbstractDialog.Builder(this);
+  'use strict';
+  const builder = new goog.ui.editor.AbstractDialog.Builder(this);
   /** @desc Title of the hello world dialog. */
-  var MSG_HELLO_WORLD_DIALOG_TITLE = goog.getMsg('Add a Hello World message');
+  const MSG_HELLO_WORLD_DIALOG_TITLE = goog.getMsg('Add a Hello World message');
   builder.setTitle(MSG_HELLO_WORLD_DIALOG_TITLE)
       .setContent(this.createContent_());
   return builder.build();
@@ -111,13 +107,14 @@ goog.demos.editor.HelloWorldDialog.prototype.createDialogControl = function() {
  * @override
  */
 goog.demos.editor.HelloWorldDialog.prototype.createOkEvent = function(e) {
-  var message = this.getMessage_();
+  'use strict';
+  const message = this.getMessage_();
   if (message &&
       goog.demos.editor.HelloWorldDialog.isValidHelloWorld_(message)) {
     return new goog.demos.editor.HelloWorldDialog.OkEvent(message);
   } else {
     /** @desc Error message telling the user why their message was rejected. */
-    var MSG_HELLO_WORLD_DIALOG_ERROR =
+    const MSG_HELLO_WORLD_DIALOG_ERROR =
         goog.getMsg('Your message must contain the words "hello" and "world".');
     this.dom.getWindow().alert(MSG_HELLO_WORLD_DIALOG_ERROR);
     return null;  // Prevents the dialog from closing.
@@ -138,16 +135,17 @@ goog.demos.editor.HelloWorldDialog.prototype.input_;
 
 /**
  * Creates the DOM structure that makes up the dialog's content area.
- * @return {Element} The DOM structure that makes up the dialog's content area.
+ * @return {!Element} The DOM structure that makes up the dialog's content area.
  * @private
  */
 goog.demos.editor.HelloWorldDialog.prototype.createContent_ = function() {
+  'use strict';
   /** @desc Sample hello world message to prepopulate the dialog with. */
-  var MSG_HELLO_WORLD_DIALOG_SAMPLE = goog.getMsg('Hello, world!');
+  const MSG_HELLO_WORLD_DIALOG_SAMPLE = goog.getMsg('Hello, world!');
   this.input_ = this.dom.createDom(
       goog.dom.TagName.INPUT, {size: 25, value: MSG_HELLO_WORLD_DIALOG_SAMPLE});
   /** @desc Prompt telling the user to enter a hello world message. */
-  var MSG_HELLO_WORLD_DIALOG_PROMPT =
+  const MSG_HELLO_WORLD_DIALOG_PROMPT =
       goog.getMsg('Enter your Hello World message');
   return this.dom.createDom(
       goog.dom.TagName.DIV, null, [MSG_HELLO_WORLD_DIALOG_PROMPT, this.input_]);
@@ -161,6 +159,7 @@ goog.demos.editor.HelloWorldDialog.prototype.createContent_ = function() {
  * @private
  */
 goog.demos.editor.HelloWorldDialog.prototype.getMessage_ = function() {
+  'use strict';
   return this.input_ && this.input_.value;
 };
 
@@ -174,6 +173,7 @@ goog.demos.editor.HelloWorldDialog.prototype.getMessage_ = function() {
  * @private
  */
 goog.demos.editor.HelloWorldDialog.isValidHelloWorld_ = function(message) {
+  'use strict';
   message = message.toLowerCase();
   return goog.string.contains(message, 'hello') &&
       goog.string.contains(message, 'world');

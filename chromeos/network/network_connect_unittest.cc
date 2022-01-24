@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -90,6 +89,10 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
 class NetworkConnectTest : public testing::Test {
  public:
   NetworkConnectTest() = default;
+
+  NetworkConnectTest(const NetworkConnectTest&) = delete;
+  NetworkConnectTest& operator=(const NetworkConnectTest&) = delete;
+
   ~NetworkConnectTest() override = default;
 
   void SetUp() override {
@@ -192,9 +195,6 @@ class NetworkConnectTest : public testing::Test {
   NetworkHandlerTestHelper network_handler_test_helper_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectTest);
 };
 
 TEST_F(NetworkConnectTest, ConnectToNetworkId_NoConfiguration) {

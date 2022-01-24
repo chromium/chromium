@@ -8,7 +8,7 @@
       names of its global variables. Test passes if all global variables are found among completions
       AND there are NO console messages. Bug 65457.
       https://bugs.webkit.org/show_bug.cgi?id=65457\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.addIframe("http://localhost:8000/devtools/resources/console-cd-completions-iframe.html", {
     name: "myIFrame"
   });
@@ -99,7 +99,7 @@
 
   ConsoleTestRunner.changeExecutionContext('myIFrame');
 
-  ObjectUI.javaScriptAutocomplete._completionsForExpression('', 'myGlob').then(checkCompletions.bind(this));
+  ObjectUI.javaScriptAutocomplete.completionsForExpression('', 'myGlob').then(checkCompletions.bind(this));
   function checkCompletions(completions) {
     TestRunner.addResult('myGlob completions:');
     dumpCompletions(completions, ['myGlobalVar', 'myGlobalFunction']);
@@ -108,7 +108,7 @@
 
   function requestIFrameCompletions() {
     ConsoleTestRunner.changeExecutionContext('top');
-    ObjectUI.javaScriptAutocomplete._completionsForExpression('myIFrame.', '').then(checkIframeCompletions.bind(this));
+    ObjectUI.javaScriptAutocomplete.completionsForExpression('myIFrame.', '').then(checkIframeCompletions.bind(this));
   }
 
   function checkIframeCompletions(completions) {
@@ -120,7 +120,7 @@
 
   function requestProxyCompletions() {
     ConsoleTestRunner.changeExecutionContext('top');
-    ObjectUI.javaScriptAutocomplete._completionsForExpression('window.proxy2.', '')
+    ObjectUI.javaScriptAutocomplete.completionsForExpression('window.proxy2.', '')
         .then(checkProxyCompletions.bind(this));
   }
 
@@ -138,7 +138,7 @@
 
   function requestMyClassWithMixinCompletions() {
     ConsoleTestRunner.changeExecutionContext('top');
-    ObjectUI.javaScriptAutocomplete._completionsForExpression('window.x.', '')
+    ObjectUI.javaScriptAutocomplete.completionsForExpression('window.x.', '')
         .then(checkMyClassWithMixinCompletions.bind(this));
   }
 
@@ -151,7 +151,7 @@
 
   function requestObjectCompletions() {
     ConsoleTestRunner.changeExecutionContext('top');
-    ObjectUI.javaScriptAutocomplete._completionsForExpression('Object.', '').then(checkObjectCompletions.bind(this));
+    ObjectUI.javaScriptAutocomplete.completionsForExpression('Object.', '').then(checkObjectCompletions.bind(this));
   }
 
   async function checkObjectCompletions(completions) {

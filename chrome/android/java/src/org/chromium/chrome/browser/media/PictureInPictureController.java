@@ -17,7 +17,6 @@ import android.util.Rational;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -28,12 +27,15 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -60,6 +62,7 @@ public class PictureInPictureController {
             MetricsAttemptResult.FINISHING,
             MetricsAttemptResult.NO_WEB_CONTENTS,
             MetricsAttemptResult.NO_VIDEO,
+            MetricsAttemptResult.APP_TASKS,
     })
     private @interface MetricsAttemptResult {
         static final int SUCCESS = 0;
@@ -71,6 +74,7 @@ public class PictureInPictureController {
         static final int FINISHING = 6;
         static final int NO_WEB_CONTENTS = 7;
         static final int NO_VIDEO = 8;
+        static final int APP_TASKS = 9;
     }
     // For UMA, not a valid MetricsAttemptResult.
     private static final int METRICS_ATTEMPT_RESULT_COUNT = 9;
@@ -100,6 +104,12 @@ public class PictureInPictureController {
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
     private static final float MAX_ASPECT_RATIO = 2.39f;
 
+    // Components names that won't trigger the pip mode. Use cases like notification clicks won't
+    // trigger pip.
+    private static final HashSet<String> NO_PIP_COMPONENT_NAMES = new HashSet<String>() {
+        { add(NotificationIntentInterceptor.TrampolineActivity.class.getName()); }
+    };
+
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
     /** Current observers, if any. */
@@ -124,7 +134,7 @@ public class PictureInPictureController {
         mActivityTabProvider = activityTabProvider;
         mFullscreenManager = fullscreenManager;
 
-        mListenForAutoEnterability = BuildInfo.isAtLeastS();
+        mListenForAutoEnterability = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
         if (mListenForAutoEnterability) addObserversIfNeeded();
     }
 
@@ -195,7 +205,19 @@ public class PictureInPictureController {
             return MetricsAttemptResult.FINISHING;
         }
 
+        // Don't trigger pip mode for certain types of usage, like notification click.
+        if (!canStartPipBasedOnRecentTasks()) {
+            Log.d(TAG, "Block pip due to recent app tasks.");
+            return MetricsAttemptResult.APP_TASKS;
+        }
+
         return MetricsAttemptResult.SUCCESS;
+    }
+
+    private boolean canStartPipBasedOnRecentTasks() {
+        return AndroidTaskUtils
+                .getRecentAppTasksMatchingComponentNames(mActivity, NO_PIP_COMPONENT_NAMES)
+                .isEmpty();
     }
 
     /**
@@ -244,7 +266,8 @@ public class PictureInPictureController {
     public void onEnteredPictureInPictureMode() {
         // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
-        assert webContents != null;
+        // If we're closing the tab, just stop here.
+        if (webContents == null) return;
 
         webContents.setHasPersistentVideo(true);
 

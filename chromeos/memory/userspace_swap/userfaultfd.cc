@@ -21,8 +21,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -256,8 +256,9 @@ bool UserfaultFD::DispatchMessage(const uffd_msg& msg) {
   }
 
   return DrainPendingFaults();
-#endif
+#else
   return true;
+#endif
 }
 
 bool UserfaultFD::DrainPendingFaults() {

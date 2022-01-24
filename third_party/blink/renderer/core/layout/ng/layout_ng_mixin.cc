@@ -50,7 +50,9 @@ void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
   // instead of |LayoutObject|, because this function cannot handle block
   // fragmented objects. We can come here only when |this| cannot traverse
   // fragments, or the parent is legacy.
-  DCHECK(!Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::GetNGPaginationBreakability() ==
+             LayoutNGBlockFlow::kForbidBreaks ||
+         !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
 
@@ -78,7 +80,9 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
                                       const PhysicalOffset& accumulated_offset,
                                       HitTestAction action) {
   // See |Paint()|.
-  DCHECK(!Base::CanTraversePhysicalFragments() ||
+  DCHECK(Base::GetNGPaginationBreakability() ==
+             LayoutNGBlockFlow::kForbidBreaks ||
+         !Base::CanTraversePhysicalFragments() ||
          !Base::Parent()->CanTraversePhysicalFragments());
   DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
 
@@ -95,17 +99,12 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   RecalcLayoutOverflowResult child_result;
-  if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
-      Base::ChildNeedsLayoutOverflowRecalc())
-    child_result = Base::RecalcChildLayoutOverflow();
-
   // Don't attempt to rebuild the fragment tree or recalculate
   // scrollable-overflow, layout will do this for us.
   if (Base::NeedsLayout())
     return RecalcLayoutOverflowResult();
 
-  if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
-      Base::ChildNeedsLayoutOverflowRecalc())
+  if (Base::ChildNeedsLayoutOverflowRecalc())
     child_result = RecalcChildLayoutOverflow();
 
   bool should_recalculate_layout_overflow =
@@ -182,7 +181,6 @@ static void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
 
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
-  DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled());
   DCHECK(Base::ChildNeedsLayoutOverflowRecalc());
   Base::ClearChildNeedsLayoutOverflowRecalc();
 
@@ -376,7 +374,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // should get laid out by the actual containing block.
   NGOutOfFlowLayoutPart(css_container->CanContainAbsolutePositionObjects(),
                         css_container->CanContainFixedPositionObjects(),
-                        *container_style, constraint_space, &container_builder,
+                        css_container->IsLayoutGrid(), *container_style,
+                        constraint_space, &container_builder,
                         initial_containing_block_fixed_size)
       .Run(/* only_layout */ this);
   scoped_refptr<const NGLayoutResult> result =
@@ -423,6 +422,9 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
       is_layout_root && previous_result
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
+
+  DCHECK_EQ(constraint_space.GetWritingMode(),
+            Base::StyleRef().GetWritingMode());
 
   scoped_refptr<const NGLayoutResult> result =
       NGBlockNode(this).Layout(constraint_space);

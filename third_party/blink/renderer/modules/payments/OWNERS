@@ -1,6 +1,6 @@
 file://components/payments/OWNERS
 
-jinho.bang@samsung.com
+zino@chromium.org
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

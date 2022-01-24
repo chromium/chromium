@@ -10,13 +10,12 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
+#include "chrome/browser/ash/attestation/certificate_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
@@ -42,8 +41,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "net/cert/pem.h"
-#include "net/cert/x509_certificate.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace {
@@ -55,7 +52,7 @@ const char kAttestationResultHistogram[] =
     "ChromeOS.PlatformVerification.Result2";
 const char kAttestationAvailableHistogram[] =
     "ChromeOS.PlatformVerification.Available";
-const int kOpportunisticRenewalThresholdInDays = 30;
+constexpr base::TimeDelta kOpportunisticRenewalThreshold = base::Days(30);
 
 // A helper to call a ChallengeCallback with an error result.
 void ReportError(PlatformVerificationFlow::ChallengeCallback callback,
@@ -74,6 +71,10 @@ namespace attestation {
 class DefaultDelegate : public PlatformVerificationFlow::Delegate {
  public:
   DefaultDelegate() {}
+
+  DefaultDelegate(const DefaultDelegate&) = delete;
+  DefaultDelegate& operator=(const DefaultDelegate&) = delete;
+
   ~DefaultDelegate() override {}
 
   bool IsInSupportedMode() override {
@@ -81,9 +82,6 @@ class DefaultDelegate : public PlatformVerificationFlow::Delegate {
     return !command_line->HasSwitch(chromeos::switches::kSystemDevMode) ||
            command_line->HasSwitch(chromeos::switches::kAllowRAInDevMode);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultDelegate);
 };
 
 PlatformVerificationFlow::ChallengeContext::ChallengeContext(
@@ -105,7 +103,7 @@ PlatformVerificationFlow::PlatformVerificationFlow()
     : attestation_flow_(NULL),
       attestation_client_(AttestationClient::Get()),
       delegate_(NULL),
-      timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
+      timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
   default_attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
@@ -122,7 +120,7 @@ PlatformVerificationFlow::PlatformVerificationFlow(
     : attestation_flow_(attestation_flow),
       attestation_client_(attestation_client),
       delegate_(delegate),
-      timeout_delay_(base::TimeDelta::FromSeconds(kTimeoutInSeconds)) {
+      timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!delegate_) {
     default_delegate_ = std::make_unique<DefaultDelegate>();
@@ -267,6 +265,10 @@ void PlatformVerificationFlow::OnCertificateReady(
     ReportError(std::move(*context).data.callback, PLATFORM_NOT_VERIFIED);
     return;
   }
+  // EXPIRY_STATUS_INVALID_PEM_CHAIN and EXPIRY_STATUS_INVALID_X509 are not
+  // handled intentionally.
+  // Renewal is expensive so we only renew certificates with good evidence that
+  // they have expired or will soon expire; if we don't know, we don't renew.
   ExpiryStatus expiry_status = CheckExpiry(certificate_chain);
   if (expiry_status == EXPIRY_STATUS_EXPIRED) {
     GetCertificate(std::move(context), true /* Force a new key */);
@@ -333,47 +335,25 @@ void PlatformVerificationFlow::OnChallengeReady(
 
 PlatformVerificationFlow::ExpiryStatus PlatformVerificationFlow::CheckExpiry(
     const std::string& certificate_chain) {
-  bool is_expiring_soon = false;
-  bool invalid_certificate_found = false;
-  int num_certificates = 0;
-  net::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
-  while (pem_tokenizer.GetNext()) {
-    ++num_certificates;
-    scoped_refptr<net::X509Certificate> x509 =
-        net::X509Certificate::CreateFromBytes(
-            base::as_bytes(base::make_span(pem_tokenizer.data())));
-    if (!x509.get() || x509->valid_expiry().is_null()) {
-      // This logic intentionally fails open. In theory this should not happen
-      // but in practice parsing X.509 can be brittle and there are a lot of
-      // factors including which underlying module is parsing the certificate,
-      // whether that module performs more checks than just ASN.1/DER format,
-      // and the server module that generated the certificate(s). Renewal is
-      // expensive so we only renew certificates with good evidence that they
-      // have expired or will soon expire; if we don't know, we don't renew.
-      LOG(WARNING) << "Failed to parse certificate, cannot check expiry.";
-      invalid_certificate_found = true;
-      continue;
-    }
-    if (base::Time::Now() > x509->valid_expiry()) {
+  CertificateExpiryStatus cert_status =
+      CheckCertificateExpiry(certificate_chain, kOpportunisticRenewalThreshold);
+  LOG_IF(ERROR, cert_status != CertificateExpiryStatus::kValid)
+      << "Failed to parse certificate, cannot check expiry: "
+      << CertificateExpiryStatusToString(cert_status);
+  switch (cert_status) {
+    case CertificateExpiryStatus::kValid:
+      return EXPIRY_STATUS_OK;
+    case CertificateExpiryStatus::kExpiringSoon:
+      return EXPIRY_STATUS_EXPIRING_SOON;
+    case CertificateExpiryStatus::kExpired:
       return EXPIRY_STATUS_EXPIRED;
-    }
-    base::TimeDelta threshold =
-        base::TimeDelta::FromDays(kOpportunisticRenewalThresholdInDays);
-    if (x509->valid_expiry() - base::Time::Now() < threshold) {
-      is_expiring_soon = true;
-    }
+    case CertificateExpiryStatus::kInvalidPemChain:
+      return EXPIRY_STATUS_INVALID_PEM_CHAIN;
+    case CertificateExpiryStatus::kInvalidX509:
+      return EXPIRY_STATUS_INVALID_X509;
   }
-  if (is_expiring_soon) {
-    return EXPIRY_STATUS_EXPIRING_SOON;
-  }
-  if (invalid_certificate_found) {
-    return EXPIRY_STATUS_INVALID_X509;
-  }
-  if (num_certificates == 0) {
-    LOG(WARNING) << "Failed to parse certificate chain, cannot check expiry.";
-    return EXPIRY_STATUS_INVALID_PEM_CHAIN;
-  }
-  return EXPIRY_STATUS_OK;
+
+  NOTREACHED() << "Unknown certificate status";
 }
 
 void PlatformVerificationFlow::RenewCertificateCallback(

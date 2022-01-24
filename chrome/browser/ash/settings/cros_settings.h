@@ -10,22 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/cros_settings_provider.h"
+#include "base/values.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
 
 namespace ash {
 
@@ -55,6 +49,10 @@ class CrosSettings {
   // production code uses the singleton returned by Get() above.
   CrosSettings(DeviceSettingsService* device_settings_service,
                PrefService* local_state);
+
+  CrosSettings(const CrosSettings&) = delete;
+  CrosSettings& operator=(const CrosSettings&) = delete;
+
   virtual ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
@@ -110,7 +108,7 @@ class CrosSettings {
                        bool* wildcard_match) const;
 
   // Same as above, but receives already populated user list.
-  static bool FindEmailInList(const base::ListValue* list,
+  static bool FindEmailInList(const base::Value::ConstListView& list,
                               const std::string& email,
                               bool* wildcard_match);
 
@@ -150,8 +148,6 @@ class CrosSettings {
       settings_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrosSettings);
 };
 
 // Helper class for tests. Initializes the CrosSettings singleton on
@@ -159,10 +155,11 @@ class CrosSettings {
 class ScopedTestCrosSettings {
  public:
   explicit ScopedTestCrosSettings(PrefService* local_state);
-  ~ScopedTestCrosSettings();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestCrosSettings);
+  ScopedTestCrosSettings(const ScopedTestCrosSettings&) = delete;
+  ScopedTestCrosSettings& operator=(const ScopedTestCrosSettings&) = delete;
+
+  ~ScopedTestCrosSettings();
 };
 
 }  // namespace ash

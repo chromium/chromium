@@ -18,10 +18,11 @@ namespace {
 class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionDialogUiTest() = default;
-  ~ExtensionDialogUiTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialogUiTest);
+  ExtensionDialogUiTest(const ExtensionDialogUiTest&) = delete;
+  ExtensionDialogUiTest& operator=(const ExtensionDialogUiTest&) = delete;
+
+  ~ExtensionDialogUiTest() override = default;
 };
 
 }  // namespace

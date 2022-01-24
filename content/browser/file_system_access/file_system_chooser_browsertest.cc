@@ -232,8 +232,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFile_ExternalPath) {
   const std::string file_contents = "hello world!";
   const base::FilePath test_file = CreateTestFile(file_contents);
   const base::FilePath virtual_path =
-      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-          .Append(test_file.BaseName());
+      base::FilePath::FromASCII(kTestMountPoint).Append(test_file.BaseName());
 
   ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
   selected_file.virtual_path = virtual_path;
@@ -882,6 +881,22 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
   EXPECT_EQ(u"", dialog_params.file_types->extension_description_overrides[1]);
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, UndefinedAccepts) {
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new CancellingSelectFileDialogFactory(&dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  auto result =
+      EvalJs(shell(), "self.showOpenFilePicker({types: [undefined]})");
+  EXPECT_TRUE(result.error.find("aborted") != std::string::npos)
+      << result.error;
+
+  ASSERT_TRUE(dialog_params.file_types);
+  EXPECT_TRUE(dialog_params.file_types->include_all_files);
+  ASSERT_EQ(0u, dialog_params.file_types->extensions.size());
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        FileSystemAccessUsageDisablesBackForwardCache) {
   BackForwardCacheDisabledTester tester;
@@ -1110,7 +1125,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   // The last picked directory exists.
   PathInfo good_dir_info;
-  good_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint);
+  good_dir_info.path = base::FilePath::FromASCII(kTestMountPoint);
   good_dir_info.type = PathType::kExternal;
 
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin, std::string()))
@@ -1196,8 +1211,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   // The last picked directory no longer exists, so resort to showing the
   // default directory, then set the test_file's dir as last picked.
   PathInfo bad_dir_info;
-  bad_dir_info.path = base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-                          .AppendASCII("nonexistent");
+  bad_dir_info.path =
+      base::FilePath::FromASCII(kTestMountPoint).AppendASCII("nonexistent");
   base::FilePath default_dir;
   default_dir = temp_dir_.GetPath().AppendASCII("default");
 
@@ -1349,13 +1364,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
   // Ensure test file exists in a directory which could not be a default.
   base::FilePath test_file_dir;
+  base::FilePath test_file;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::CreateTemporaryDirInDir(
         temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_file_dir));
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(test_file_dir, &test_file));
   }
-  const base::FilePath test_file =
-      test_file_dir.Append(base::FilePath::FromUTF8Unsafe("file.txt"));
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
@@ -1424,8 +1439,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                        StartIn_FileHandle_External) {
   const base::FilePath test_file = CreateTestFile("");
   const base::FilePath virtual_path =
-      base::FilePath::FromUTF8Unsafe(kTestMountPoint)
-          .Append(test_file.BaseName());
+      base::FilePath::FromASCII(kTestMountPoint).Append(test_file.BaseName());
 
   ui::SelectedFileInfo selected_file = {base::FilePath(), base::FilePath()};
   selected_file.virtual_path = virtual_path;
@@ -1458,6 +1472,48 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(temp_dir_.GetPath(), dialog_params.default_path);
 }
 
+// Correctly saving a symlink as the starting directory should work on all OSes,
+// but `base::CreateSymbolicLink` is only available on Posix.
+#if defined(OS_POSIX)
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
+  // Ensure test directory exists and could not be a default.
+  base::FilePath test_dir;
+  base::FilePath symlink = temp_dir_.GetPath().AppendASCII("symbolic");
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryDirInDir(
+        temp_dir_.GetPath(), FILE_PATH_LITERAL("handles"), &test_dir));
+    base::CreateSymbolicLink(test_dir, symlink);
+  }
+
+  SelectFileDialogParams dialog_params;
+  ui::SelectFileDialog::SetFactory(
+      new FakeSelectFileDialogFactory({symlink}, &dialog_params));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  // Acquire a FileSystemHandle to the symlink.
+  EXPECT_EQ(symlink.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker();"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(shell()->web_contents()->GetTopLevelNativeWindow(),
+            dialog_params.owning_window);
+
+  EXPECT_EQ(symlink.BaseName().AsUTF8Unsafe(),
+            EvalJs(shell(),
+                   "(async () => {"
+                   "  let e = await self.showDirectoryPicker({ startIn: "
+                   "              self.selected_entry });"
+                   "  self.selected_entry = e;"
+                   "  return e.name; })()"));
+  EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
+  EXPECT_EQ(symlink, dialog_params.default_path);
+}
+#endif  // defined(OS_POSIX)
+
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   const base::FilePath test_file = CreateTestFile("");
   SelectFileDialogParams dialog_params;
@@ -1485,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
       {"ext_match.txt", ListValueOf(), true, "ext_match.txt", false});
 
   // No suggested extension. Don't try to infer one, and behave as if
-  // |excludeAcceptAllOption| is false.
+  // `excludeAcceptAllOption` is false.
   name_infos.push_back(
       {"no_extension", ListValueOf(".txt"), true, "no_extension", false});
   name_infos.push_back(
@@ -1494,7 +1550,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
       {"no_extension", ListValueOf(), true, "no_extension", false});
 
   // Suggested extension not listed as an accepted extension. Allow extension,
-  // but behave as if |excludeAcceptAllOption| is false.
+  // but behave as if `excludeAcceptAllOption` is false.
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), true,
                         "not_matching.jpg", false});
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), false,

@@ -15,13 +15,13 @@ TEST(TotalDurationMetricReporterTest, Test) {
   TotalDurationMetricReporter metric_reporter("TestHistogram.Positive",
                                               "TestHistogram.Negative");
 
-  metric_reporter.RecordAdditionalDuration(base::TimeDelta::FromSeconds(1));
-  metric_reporter.RecordAdditionalDuration(base::TimeDelta::FromSeconds(2));
-  metric_reporter.RecordAdditionalDuration(base::TimeDelta::FromSeconds(5));
+  metric_reporter.RecordAdditionalDuration(base::Seconds(1));
+  metric_reporter.RecordAdditionalDuration(base::Seconds(2));
+  metric_reporter.RecordAdditionalDuration(base::Seconds(5));
 
   metric_reporter.Reset();
 
-  metric_reporter.RecordAdditionalDuration(base::TimeDelta::FromSeconds(10));
+  metric_reporter.RecordAdditionalDuration(base::Seconds(10));
 
   std::map<base::Histogram::Sample, base::HistogramBase::Count> result;
 

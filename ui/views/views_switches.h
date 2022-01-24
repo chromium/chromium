@@ -14,6 +14,8 @@ namespace switches {
 // Please keep alphabetized.
 VIEWS_EXPORT extern const char kDrawViewBoundsRects[];
 
+VIEWS_EXPORT extern const char kViewStackTraces[];
+
 }  // namespace switches
 }  // namespace views
 

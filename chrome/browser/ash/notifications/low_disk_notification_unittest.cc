@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -19,7 +20,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,8 +46,8 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
     chromeos::UserDataAuthClient::InitializeFake();
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
-    GetCrosSettingsHelper()->SetBoolean(
-        chromeos::kDeviceShowLowDiskSpaceNotification, true);
+    GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
+                                        true);
 
     auto user_manager = std::make_unique<user_manager::FakeUserManager>();
     user_manager_ = user_manager.get();
@@ -79,7 +79,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void SetNotificationThrottlingInterval(int ms) {
     low_disk_notification_->SetNotificationIntervalForTest(
-        base::TimeDelta::FromMilliseconds(ms));
+        base::Milliseconds(ms));
   }
 
   void OnNotificationAdded() { notification_count_++; }
@@ -156,8 +156,8 @@ TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
   user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
 
-  GetCrosSettingsHelper()->SetBoolean(
-      chromeos::kDeviceShowLowDiskSpaceNotification, false);
+  GetCrosSettingsHelper()->SetBoolean(kDeviceShowLowDiskSpaceNotification,
+                                      false);
 
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->LowDiskSpace(high_message_);

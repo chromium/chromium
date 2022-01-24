@@ -52,7 +52,7 @@ PresentationReceiverWindowController::~PresentationReceiverWindowController() {
   DCHECK(!window_);
 
   if (otr_profile_) {
-    otr_profile_->RemoveObserver(this);
+    otr_profile_observation_.Reset();
     ProfileDestroyer::DestroyProfileWhenAppropriate(otr_profile_);
   }
 }
@@ -122,7 +122,7 @@ PresentationReceiverWindowController::PresentationReceiverWindowController(
       title_change_callback_(std::move(title_change_callback)) {
   DCHECK(otr_profile_);
   DCHECK(otr_profile_->IsOffTheRecord());
-  otr_profile_->AddObserver(this);
+  otr_profile_observation_.Observe(otr_profile_);
   content::WebContentsObserver::Observe(web_contents_.get());
   web_contents_->SetDelegate(this);
 }
@@ -136,6 +136,7 @@ void PresentationReceiverWindowController::OnProfileWillBeDestroyed(
     Profile* profile) {
   DCHECK(profile == otr_profile_);
   web_contents_.reset();
+  otr_profile_observation_.Reset();
   otr_profile_ = nullptr;
   Terminate();
 }

@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -14,10 +12,6 @@
 #include "ios/web/public/download/download_task_observer.h"
 
 @protocol DownloadManagerConsumer;
-
-namespace net {
-class URLFetcherFileWriter;
-}  // namespace net
 
 namespace web {
 class DownloadTask;
@@ -28,6 +22,10 @@ class DownloadTask;
 class DownloadManagerMediator : public web::DownloadTaskObserver {
  public:
   DownloadManagerMediator();
+
+  DownloadManagerMediator(const DownloadManagerMediator&) = delete;
+  DownloadManagerMediator& operator=(const DownloadManagerMediator&) = delete;
+
   ~DownloadManagerMediator() override;
 
   // Sets download manager consumer. Not retained by mediator.
@@ -49,16 +47,11 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
                                   web::DownloadTask* task,
                                   bool directory_created);
 
-  // Asynchronously starts download operation with the given writer.
-  void DownloadWithWriter(std::unique_ptr<net::URLFetcherFileWriter> writer,
-                          web::DownloadTask* task,
-                          int writer_initialization_status);
-
   // Updates consumer from web::DownloadTask.
   void UpdateConsumer();
 
   // Moves the downloaded file to user's Documents if it exists.
-  void MoveToUserDocumentsIfFileExists(base::FilePath download_path_,
+  void MoveToUserDocumentsIfFileExists(base::FilePath download_path,
                                        bool file_exists);
 
   // Restores the download path once the downloaded file has been moved to
@@ -84,7 +77,6 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   web::DownloadTask* task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
-  DISALLOW_COPY_AND_ASSIGN(DownloadManagerMediator);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_

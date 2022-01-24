@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/arc_migration_constants.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"

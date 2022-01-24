@@ -10,7 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -29,7 +29,7 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
         IDR_ASH_SHORTCUT_CUSTOMIZATION_APP_APP_ICON_192_PNG}},
       *info);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->open_as_window = true;
+  info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
   return info;
 }
@@ -49,4 +49,8 @@ ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
 
 bool ShortcutCustomizationSystemAppDelegate::IsAppEnabled() const {
   return features::IsShortcutCustomizationAppEnabled();
+}
+
+gfx::Size ShortcutCustomizationSystemAppDelegate::GetMinimumWindowSize() const {
+  return {600, 600};
 }

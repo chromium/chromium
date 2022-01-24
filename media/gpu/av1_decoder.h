@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"

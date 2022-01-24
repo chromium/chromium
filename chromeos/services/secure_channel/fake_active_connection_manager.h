@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/connection_details.h"
@@ -27,6 +26,11 @@ class FakeActiveConnectionManager : public ActiveConnectionManager {
  public:
   explicit FakeActiveConnectionManager(
       ActiveConnectionManager::Delegate* delegate);
+
+  FakeActiveConnectionManager(const FakeActiveConnectionManager&) = delete;
+  FakeActiveConnectionManager& operator=(const FakeActiveConnectionManager&) =
+      delete;
+
   ~FakeActiveConnectionManager() override;
 
   using DetailsToMetadataMap = base::flat_map<
@@ -55,8 +59,6 @@ class FakeActiveConnectionManager : public ActiveConnectionManager {
       const ConnectionDetails& connection_details) override;
 
   DetailsToMetadataMap connection_details_to_active_metadata_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeActiveConnectionManager);
 };
 
 // Test ActiveConnectionManager::Delegate implementation.
@@ -64,6 +66,12 @@ class FakeActiveConnectionManagerDelegate
     : public ActiveConnectionManager::Delegate {
  public:
   FakeActiveConnectionManagerDelegate();
+
+  FakeActiveConnectionManagerDelegate(
+      const FakeActiveConnectionManagerDelegate&) = delete;
+  FakeActiveConnectionManagerDelegate& operator=(
+      const FakeActiveConnectionManagerDelegate&) = delete;
+
   ~FakeActiveConnectionManagerDelegate() override;
 
   const base::flat_map<ConnectionDetails, size_t>&
@@ -76,8 +84,6 @@ class FakeActiveConnectionManagerDelegate
 
   base::flat_map<ConnectionDetails, size_t>
       connection_details_to_num_disconnections_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeActiveConnectionManagerDelegate);
 };
 
 }  // namespace secure_channel

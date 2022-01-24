@@ -174,7 +174,7 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
 
   void ComputeAndSetTypingStyle(CSSPropertyValueSet*, InputEvent::InputType);
 
-  EphemeralRange RangeForPoint(const IntPoint&) const;
+  EphemeralRange RangeForPoint(const gfx::Point&) const;
 
   void RespondToChangedSelection();
   void SyncSelection(blink::SyncCondition force_sync);

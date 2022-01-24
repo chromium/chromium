@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -53,6 +52,9 @@ class MEDIA_EXPORT BitstreamBuffer {
   // Move operations are allowed.
   BitstreamBuffer(BitstreamBuffer&&);
   BitstreamBuffer& operator=(BitstreamBuffer&&);
+
+  BitstreamBuffer(const BitstreamBuffer&) = delete;
+  BitstreamBuffer& operator=(const BitstreamBuffer&) = delete;
 
   ~BitstreamBuffer();
 
@@ -130,8 +132,6 @@ class MEDIA_EXPORT BitstreamBuffer {
   std::vector<SubsampleEntry> subsamples_;  // clear/cypher sizes
 
   friend struct IPC::ParamTraits<media::BitstreamBuffer>;
-
-  DISALLOW_COPY_AND_ASSIGN(BitstreamBuffer);
 };
 
 }  // namespace media

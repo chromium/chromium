@@ -23,7 +23,6 @@
 
 #include "base/bit_cast.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "snapshot/cpu_architecture.h"
@@ -333,6 +332,9 @@ class ScopedSigactionRestore {
  public:
   ScopedSigactionRestore() : old_action_(), signo_(-1), valid_(false) {}
 
+  ScopedSigactionRestore(const ScopedSigactionRestore&) = delete;
+  ScopedSigactionRestore& operator=(const ScopedSigactionRestore&) = delete;
+
   ~ScopedSigactionRestore() { Reset(); }
 
   bool Reset() {
@@ -361,12 +363,14 @@ class ScopedSigactionRestore {
   struct sigaction old_action_;
   int signo_;
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSigactionRestore);
 };
 
 class RaiseTest {
  public:
+  RaiseTest() = delete;
+  RaiseTest(const RaiseTest&) = delete;
+  RaiseTest& operator=(const RaiseTest&) = delete;
+
   static void Run() {
     test_complete_ = false;
 
@@ -406,8 +410,6 @@ class RaiseTest {
 
   static constexpr uint32_t kSigno = SIGUSR1;
   static bool test_complete_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(RaiseTest);
 };
 bool RaiseTest::test_complete_ = false;
 
@@ -418,6 +420,10 @@ TEST(ExceptionSnapshotLinux, Raise) {
 class TimerTest {
  public:
   TimerTest() : event_(), timer_(-1), test_complete_(false) { test_ = this; }
+
+  TimerTest(const TimerTest&) = delete;
+  TimerTest& operator=(const TimerTest&) = delete;
+
   ~TimerTest() { test_ = nullptr; }
 
   void Run() {
@@ -479,8 +485,6 @@ class TimerTest {
 
   static constexpr uint32_t kSigno = SIGALRM;
   static TimerTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimerTest);
 };
 TimerTest* TimerTest::test_;
 

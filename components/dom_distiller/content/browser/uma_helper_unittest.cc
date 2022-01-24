@@ -21,8 +21,7 @@ const std::string kDistilledPageHistogram =
 class UMAHelperTest : public testing::Test {
  public:
   void FastForwardBy(int milliseconds) {
-    task_environment_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(milliseconds));
+    task_environment_.FastForwardBy(base::Milliseconds(milliseconds));
   }
 
  protected:
@@ -101,16 +100,16 @@ TEST_F(UMAHelperTest, TestTimerForDistilledPage) {
   // Destroy the timer. Since it was running and on a distilled page, expect
   // logging to have happened.
   delete timer;
-  histogram_tester.ExpectTimeBucketCount(
-      kDistilledPageHistogram, base::TimeDelta::FromMilliseconds(100), 1);
+  histogram_tester.ExpectTimeBucketCount(kDistilledPageHistogram,
+                                         base::Milliseconds(100), 1);
 
   // Nothing is logged if it wasn't destroyed while on a distilled page.
   timer = new UMAHelper::DistillabilityDriverTimer();
   timer->Start(false);
   FastForwardBy(200);
   delete timer;
-  histogram_tester.ExpectTimeBucketCount(
-      kDistilledPageHistogram, base::TimeDelta::FromMilliseconds(200), 0);
+  histogram_tester.ExpectTimeBucketCount(kDistilledPageHistogram,
+                                         base::Milliseconds(200), 0);
 }
 
 }  // namespace dom_distiller

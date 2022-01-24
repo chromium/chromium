@@ -19,23 +19,29 @@
 #include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkTypes.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/background.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
@@ -63,6 +69,11 @@ int GetPreferredHeightForAppListState(AppListView* app_list_view) {
     default:
       return kMinHeightDip;
   }
+}
+
+bool IsInTabletMode() {
+  // Shell might not has an instance in tests.
+  return Shell::HasInstance() && Shell::Get()->IsInTabletMode();
 }
 
 // AssistantPageViewLayout -----------------------------------------------------
@@ -147,6 +158,9 @@ AssistantPageView::AssistantPageView(
 
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
+
+  if (Shell::HasInstance())  // Shell might not has an instance in tests.
+    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 AssistantPageView::~AssistantPageView() {
@@ -286,8 +300,9 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
     ui::AnimationThroughputReporter reporter(
         settings->GetAnimator(),
         metrics_util::ForSmoothness(base::BindRepeating([](int value) {
-          base::UmaHistogramPercentageObsoleteDoNotUse(
-              assistant::ui::kAssistantResizePageViewHistogram, value);
+          base::UmaHistogramPercentage(
+              "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView",
+              value);
         })));
 
     layer()->SetClipRect(gfx::Rect(to_rect.size()));
@@ -315,29 +330,6 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
 
 gfx::Size AssistantPageView::GetPreferredSearchBoxSize() const {
   return gfx::Size(kPreferredWidthDip, kSearchBoxHeightDip);
-}
-
-absl::optional<int> AssistantPageView::GetSearchBoxTop(
-    AppListViewState view_state) const {
-  if (view_state == AppListViewState::kPeeking ||
-      view_state == AppListViewState::kHalf) {
-    return contents_view()
-        ->GetAppListConfig()
-        .search_box_fullscreen_top_padding();
-  }
-  // For other view states, return absl::nullopt so the ContentsView
-  // sets the default search box widget origin.
-  return absl::nullopt;
-}
-
-views::View* AssistantPageView::GetFirstFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/false, /*dont_loop=*/false);
-}
-
-views::View* AssistantPageView::GetLastFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
 }
 
 void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
@@ -425,24 +417,29 @@ void AssistantPageView::OnUiVisibilityChanged(
   }
 }
 
+void AssistantPageView::OnTabletModeStarted() {
+  UpdateBackground(/*in_tablet_mode=*/true);
+}
+
+void AssistantPageView::OnTabletModeEnded() {
+  UpdateBackground(/*in_tablet_mode=*/false);
+}
+
 void AssistantPageView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  background()->SetNativeControlColor(ash::assistant::ResolveAssistantColor(
-      assistant_colors::ColorName::kBgAssistantPlate));
+  UpdateBackground(IsInTabletMode());
 }
 
 void AssistantPageView::InitLayout() {
-  SetPaintToLayer();
+  // Use a solid color layer. The color is set in OnThemeChanged().
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
 
   view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
       kSearchBoxBorderCornerRadiusSearchResult);
 
-  SetBackground(
-      views::CreateSolidBackground(ash::assistant::ResolveAssistantColor(
-          assistant_colors::ColorName::kBgAssistantPlate)));
   SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));
 
   // |assistant_view_delegate_| could be nullptr in test.
@@ -451,6 +448,32 @@ void AssistantPageView::InitLayout() {
 
   assistant_main_view_ = AddChildView(
       std::make_unique<AssistantMainView>(assistant_view_delegate_));
+}
+
+void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
+  // Blur
+  if (features::IsProductivityLauncherEnabled() ||
+      (in_tablet_mode && features::IsDarkLightModeEnabled() &&
+       features::IsBackgroundBlurEnabled())) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  } else {
+    layer()->SetBackgroundBlur(0.0f);
+    layer()->SetBackdropFilterQuality(0.0f);
+  }
+
+  // Color
+  if (features::IsProductivityLauncherEnabled()) {
+    layer()->SetColor(ColorProvider::Get()->GetBaseLayerColor(
+        ColorProvider::BaseLayerType::kTransparent80));
+  } else if (features::IsDarkLightModeEnabled()) {
+    layer()->SetColor(ColorProvider::Get()->GetShieldLayerColor(
+        features::IsBackgroundBlurEnabled()
+            ? ColorProvider::ShieldLayerType::kShield80
+            : ColorProvider::ShieldLayerType::kShield95));
+  } else {
+    layer()->SetColor(SK_ColorWHITE);
+  }
 }
 
 void AssistantPageView::MaybeUpdateAppListState(int child_height) {

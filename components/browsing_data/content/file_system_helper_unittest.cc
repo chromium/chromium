@@ -8,11 +8,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/native_io_context.h"
@@ -24,6 +26,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -53,12 +58,17 @@ class FileSystemHelperTest : public testing::Test {
         browser_context_.GetDefaultStoragePartition()->GetFileSystemContext();
     auto* native_io_context =
         browser_context_.GetDefaultStoragePartition()->GetNativeIOContext();
-    helper_ =
-        FileSystemHelper::Create(file_system_context, {}, native_io_context);
+    helper_ = base::MakeRefCounted<FileSystemHelper>(
+        file_system_context, std::vector<storage::FileSystemType>(),
+        native_io_context);
     content::RunAllTasksUntilIdle();
-    canned_helper_ =
-        new CannedFileSystemHelper(file_system_context, {}, native_io_context);
+    canned_helper_ = base::MakeRefCounted<CannedFileSystemHelper>(
+        file_system_context, std::vector<storage::FileSystemType>(),
+        native_io_context);
   }
+
+  FileSystemHelperTest(const FileSystemHelperTest&) = delete;
+  FileSystemHelperTest& operator=(const FileSystemHelperTest&) = delete;
 
   // Blocks on the run_loop quits.
   void BlockUntilQuit(base::RunLoop* run_loop) {
@@ -83,7 +93,7 @@ class FileSystemHelperTest : public testing::Test {
     browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
-            origin, type, open_mode,
+            blink::StorageKey(origin), type, open_mode,
             base::BindOnce(&FileSystemHelperTest::OpenFileSystemCallback,
                            base::Unretained(this), &run_loop));
     BlockUntilQuit(&run_loop);
@@ -174,9 +184,6 @@ class FileSystemHelperTest : public testing::Test {
 
   scoped_refptr<FileSystemHelper> helper_;
   scoped_refptr<CannedFileSystemHelper> canned_helper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FileSystemHelperTest);
 };
 
 // Verifies that the FileSystemHelper correctly finds the test file

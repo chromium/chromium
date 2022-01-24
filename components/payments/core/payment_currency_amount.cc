@@ -17,27 +17,33 @@ static const char kPaymentCurrencyAmountValue[] = "value";
 
 }  // namespace
 
-bool PaymentCurrencyAmountFromDictionaryValue(
-    const base::DictionaryValue& dictionary_value,
-    mojom::PaymentCurrencyAmount* amount) {
-  if (!dictionary_value.GetString(kPaymentCurrencyAmountCurrency,
-                                  &amount->currency)) {
+bool PaymentCurrencyAmountFromValue(const base::Value& dictionary_value,
+                                    mojom::PaymentCurrencyAmount* amount) {
+  if (!dictionary_value.is_dict())
     return false;
-  }
 
-  if (!dictionary_value.GetString(kPaymentCurrencyAmountValue,
-                                  &amount->value)) {
+  const std::string* currency =
+      dictionary_value.FindStringKey(kPaymentCurrencyAmountCurrency);
+  if (!currency) {
     return false;
   }
+  amount->currency = *currency;
+
+  const std::string* value =
+      dictionary_value.FindStringKey(kPaymentCurrencyAmountValue);
+  if (!value) {
+    return false;
+  }
+  amount->value = *value;
 
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> PaymentCurrencyAmountToDictionaryValue(
+base::Value PaymentCurrencyAmountToValue(
     const mojom::PaymentCurrencyAmount& amount) {
-  auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString(kPaymentCurrencyAmountCurrency, amount.currency);
-  result->SetString(kPaymentCurrencyAmountValue, amount.value);
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kPaymentCurrencyAmountCurrency, amount.currency);
+  result.SetStringKey(kPaymentCurrencyAmountValue, amount.value);
 
   return result;
 }

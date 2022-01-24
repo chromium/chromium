@@ -11,9 +11,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
@@ -45,6 +47,8 @@ using blink::WebNode;
 using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
+using ::testing::ElementsAre;
+using ::testing::Values;
 
 namespace autofill {
 namespace form_util {
@@ -158,25 +162,21 @@ void VerifyButtonTitleCache(const WebFormElement& form_target,
                                                  expected_button_titles)));
 }
 
-FrameToken GetFrameToken(const blink::WebElement& iframe_element) {
-  blink::WebFrame* frame =
-      blink::WebFrame::FromFrameOwnerElement(iframe_element);
-  if (frame && frame->IsWebLocalFrame()) {
-    return LocalFrameToken(
-        frame->ToWebLocalFrame()->GetLocalFrameToken().value());
-  } else if (frame && frame->IsWebRemoteFrame()) {
-    return RemoteFrameToken(
-        frame->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-  } else {
-    NOTREACHED();
-    return FrameToken();
-  }
-}
-
 class FormAutofillUtilsTest : public content::RenderViewTest {
  public:
   FormAutofillUtilsTest() {}
   ~FormAutofillUtilsTest() override {}
+};
+
+class FormAutofillUtilsTestWithIframesEnabled : public FormAutofillUtilsTest {
+ public:
+  FormAutofillUtilsTestWithIframesEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
+  }
+  ~FormAutofillUtilsTestWithIframesEnabled() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
@@ -198,8 +198,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextTest) {
     LoadHTML(test_case.html);
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
-    WebElement target = web_frame->GetDocument().GetElementById("target");
-    ASSERT_FALSE(target.IsNull());
+    WebElement target = GetElementById(web_frame->GetDocument(), "target");
     EXPECT_EQ(test_case.expected_label, FindChildText(target));
   }
 }
@@ -213,8 +212,7 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
     LoadHTML(test_case.html);
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
-    WebElement target = web_frame->GetDocument().GetElementById("target");
-    ASSERT_FALSE(target.IsNull());
+    WebElement target = GetElementById(web_frame->GetDocument(), "target");
     WebVector<WebElement> web_to_skip =
         web_frame->GetDocument().QuerySelectorAll("div[class='skip']");
     std::set<WebNode> to_skip;
@@ -241,11 +239,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     LoadHTML(test_case.html);
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
-    WebElement target = web_frame->GetDocument().GetElementById("target");
-    ASSERT_FALSE(target.IsNull());
-    const WebFormControlElement form_target =
-        target.ToConst<WebFormControlElement>();
-    ASSERT_FALSE(form_target.IsNull());
+    WebFormControlElement form_target =
+        GetFormControlElementById(web_frame->GetDocument(), "target");
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
@@ -285,11 +280,8 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     LoadHTML(test_case.html);
     WebLocalFrame* web_frame = GetMainFrame();
     ASSERT_NE(nullptr, web_frame);
-    WebElement target = web_frame->GetDocument().GetElementById("target");
-    ASSERT_FALSE(target.IsNull());
-    const WebFormControlElement form_target =
-        target.ToConst<WebFormControlElement>();
-    ASSERT_FALSE(form_target.IsNull());
+    WebFormControlElement form_target =
+        GetFormControlElementById(web_frame->GetDocument(), "target");
 
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
@@ -319,10 +311,8 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
   LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
-  const WebElement& target = web_frame->GetDocument().GetElementById("target");
-  ASSERT_FALSE(target.IsNull());
-  const WebFormElement& form_target = target.ToConst<WebFormElement>();
-  ASSERT_FALSE(form_target.IsNull());
+  WebFormElement form_target =
+      GetFormElementById(web_frame->GetDocument(), "target");
   ButtonTitlesCache cache;
 
   autofill::ButtonTitleList actual =
@@ -356,19 +346,17 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   LoadHTML(kFormHtml.c_str());
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
-  const WebElement& target = web_frame->GetDocument().GetElementById("target");
-  ASSERT_FALSE(target.IsNull());
-  const WebFormElement& form_target = target.ToConst<WebFormElement>();
-  ASSERT_FALSE(form_target.IsNull());
+  WebFormElement form_target =
+      GetFormElementById(web_frame->GetDocument(), "target");
   ButtonTitlesCache cache;
 
   autofill::ButtonTitleList actual =
       GetButtonTitles(form_target, web_frame->GetDocument(), &cache);
 
   int total_length = 0;
-  for (auto title : actual) {
-    EXPECT_GE(30u, title.first.length());
-    total_length += title.first.length();
+  for (auto button_title : actual) {
+    EXPECT_GE(30u, button_title.first.length());
+    total_length += button_title.first.length();
   }
   EXPECT_EQ(200, total_length);
 }
@@ -529,12 +517,10 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   ASSERT_TRUE(web_frame);
 
   std::vector<WebFormControlElement> control_elements;
-  control_elements.push_back(web_frame->GetDocument()
-                                 .GetElementById("name1")
-                                 .To<WebFormControlElement>());
-  control_elements.push_back(web_frame->GetDocument()
-                                 .GetElementById("name2")
-                                 .To<WebFormControlElement>());
+  control_elements.push_back(
+      GetFormControlElementById(web_frame->GetDocument(), "name1"));
+  control_elements.push_back(
+      GetFormControlElementById(web_frame->GetDocument(), "name2"));
 
   EXPECT_TRUE(autofill::form_util::IsWebElementVisible(control_elements[0]));
   EXPECT_FALSE(autofill::form_util::IsWebElementVisible(control_elements[1]));
@@ -557,44 +543,123 @@ TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
   WebDocument doc = GetMainFrame()->GetDocument();
   WebVector<WebFormElement> forms = doc.Forms();
 
-  for (const auto& form : forms) {
-    EXPECT_EQ(form, FindFormByUniqueRendererId(
-                        doc, FormRendererId(form.UniqueRendererFormId())));
-  }
+  for (const auto& form : forms)
+    EXPECT_EQ(form, FindFormByUniqueRendererId(doc, GetFormRendererId(form)));
 
   // Expect null form element for non-existing form id.
   FormRendererId non_existing_id(forms[0].UniqueRendererFormId() + 1000);
   EXPECT_TRUE(FindFormByUniqueRendererId(doc, non_existing_id).IsNull());
 }
 
-TEST_F(FormAutofillUtilsTest, FindFormControlByUniqueId) {
+// Tests FindFormControlElementByUniqueRendererId().
+// TODO(crbug/1201875): Delete once
+// `features::kAutofillUseUnassociatedListedElements` is enabled.
+TEST_F(FormAutofillUtilsTest,
+       FindFormControlElementByUniqueRendererId_WithoutFeature) {
   LoadHTML(
       "<body><form id='form1'><input id='i1'></form><input id='i2'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto input1 = doc.GetElementById("i1").To<WebInputElement>();
-  auto input2 = doc.GetElementById("i2").To<WebInputElement>();
+  auto input1 = GetFormControlElementById(doc, "i1");
+  auto input2 = GetFormControlElementById(doc, "i2");
   FieldRendererId non_existing_id(input2.UniqueRendererFormControlId() + 1000);
 
-  EXPECT_EQ(input1,
-            FindFormControlElementByUniqueRendererId(
-                doc, FieldRendererId(input1.UniqueRendererFormControlId())));
-  EXPECT_EQ(input2,
-            FindFormControlElementByUniqueRendererId(
-                doc, FieldRendererId(input2.UniqueRendererFormControlId())));
+  EXPECT_EQ(input1, FindFormControlElementByUniqueRendererId(
+                        doc, GetFieldRendererId(input1)));
+  EXPECT_EQ(input2, FindFormControlElementByUniqueRendererId(
+                        doc, GetFieldRendererId(input2)));
   EXPECT_TRUE(
       FindFormControlElementByUniqueRendererId(doc, non_existing_id).IsNull());
 }
 
+// Used in ParameterizedFindFormControlByRendererIdTest.
+struct FindFormControlTestParam {
+  std::string queried_field;
+  absl::optional<std::string> form_to_be_searched;
+  bool expectation;
+};
+
+// Tests FindFormControlElementByUniqueRendererId() with
+// `features::kAutofillUseUnassociatedListedElements` enabled.
+class ParameterizedFindFormControlByRendererIdTest
+    : public FormAutofillUtilsTest,
+      public testing::WithParamInterface<FindFormControlTestParam> {
+ public:
+  ParameterizedFindFormControlByRendererIdTest() {
+    scoped_features_.InitAndEnableFeature(
+        features::kAutofillUseUnassociatedListedElements);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+TEST_P(ParameterizedFindFormControlByRendererIdTest,
+       FindFormControlElementByUniqueRendererId) {
+  LoadHTML(R"(
+    <body>
+      <input id="nonexistentField">
+      <form id="form1"><input id="ownedField1"></form>
+      <form id="form2"><input id="ownedField2"></form>
+      <input id="unownedField">
+    </body>
+  )");
+  WebDocument doc = GetMainFrame()->GetDocument();
+
+  absl::optional<FormRendererId> form_to_be_searched_id;
+  if (GetParam().form_to_be_searched.has_value()) {
+    if (GetParam().form_to_be_searched.value().empty()) {
+      // Only the unowned form will be searched.
+      form_to_be_searched_id = FormRendererId();
+    } else {
+      // Only the given form will be searched.
+      form_to_be_searched_id = GetFormRendererId(
+          GetFormElementById(doc, GetParam().form_to_be_searched.value()));
+    }
+  }
+
+  WebFormControlElement queried_field =
+      GetFormControlElementById(doc, GetParam().queried_field);
+  FieldRendererId queried_field_id = GetFieldRendererId(queried_field);
+
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('nonexistentField').remove();)");
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(
+      GetParam().expectation,
+      queried_field == FindFormControlElementByUniqueRendererId(
+                           doc, queried_field_id, form_to_be_searched_id));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ParameterizedFindFormControlByRendererIdTest,
+    Values(FindFormControlTestParam{"nonexistentField", absl::nullopt, false},
+           FindFormControlTestParam{"nonexistentField", std::string(), false},
+           FindFormControlTestParam{"nonexistentField", "form1", false},
+           FindFormControlTestParam{"nonexistentField", "form2", false},
+           FindFormControlTestParam{"ownedField1", absl::nullopt, true},
+           FindFormControlTestParam{"ownedField1", std::string(), false},
+           FindFormControlTestParam{"ownedField1", "form1", true},
+           FindFormControlTestParam{"ownedField1", "form2", false},
+           FindFormControlTestParam{"ownedField2", absl::nullopt, true},
+           FindFormControlTestParam{"ownedField2", std::string(), false},
+           FindFormControlTestParam{"ownedField2", "form1", false},
+           FindFormControlTestParam{"ownedField2", "form2", true},
+           FindFormControlTestParam{"unownedField", absl::nullopt, true},
+           FindFormControlTestParam{"unownedField", std::string(), true},
+           FindFormControlTestParam{"unownedField", "form1", false},
+           FindFormControlTestParam{"unownedField", "form2", false}));
+
 TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdNoForm) {
   LoadHTML("<body><input id='i1'><input id='i2'><input id='i3'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto input1 = doc.GetElementById("i1").To<WebInputElement>();
-  auto input3 = doc.GetElementById("i3").To<WebInputElement>();
+  auto input1 = GetFormControlElementById(doc, "i1");
+  auto input3 = GetFormControlElementById(doc, "i3");
   FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
 
   std::vector<FieldRendererId> renderer_ids = {
-      FieldRendererId(input3.UniqueRendererFormControlId()), non_existing_id,
-      FieldRendererId(input1.UniqueRendererFormControlId())};
+      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(doc, renderer_ids);
 
@@ -609,17 +674,16 @@ TEST_F(FormAutofillUtilsTest, FindFormControlElementsByUniqueIdWithForm) {
       "<body><form id='f1'><input id='i1'><input id='i2'></form><input "
       "id='i3'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto form = doc.GetElementById("f1").To<WebFormElement>();
-  auto input1 = doc.GetElementById("i1").To<WebInputElement>();
-  auto input3 = doc.GetElementById("i3").To<WebInputElement>();
+  auto form = GetFormElementById(doc, "f1");
+  auto input1 = GetFormControlElementById(doc, "i1");
+  auto input3 = GetFormControlElementById(doc, "i3");
   FieldRendererId non_existing_id(input3.UniqueRendererFormControlId() + 1000);
 
   std::vector<FieldRendererId> renderer_ids = {
-      FieldRendererId(input3.UniqueRendererFormControlId()), non_existing_id,
-      FieldRendererId(input1.UniqueRendererFormControlId())};
+      GetFieldRendererId(input3), non_existing_id, GetFieldRendererId(input1)};
 
   auto elements = FindFormControlElementsByUniqueRendererId(
-      doc, FormRendererId(form.UniqueRendererFormId()), renderer_ids);
+      doc, GetFormRendererId(form), renderer_ids);
 
   // |input3| is not in the form, so it shouldn't be returned.
   ASSERT_EQ(3u, elements.size());
@@ -642,7 +706,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabel) {
   LoadHTML("<input id='input' type='text' aria-label='the label'/>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"the label");
 }
 
@@ -656,7 +720,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledBySingle) {
       "</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
@@ -670,7 +734,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByMulti) {
       "</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Billing Name");
 }
 
@@ -685,7 +749,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByTakesPrecedence) {
       "</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"Name");
 }
 
@@ -700,7 +764,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByInvalid) {
       "</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"");
 }
 
@@ -715,7 +779,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaLabelledByFallback) {
       "</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaLabel(doc, element), u"valid");
 }
 
@@ -726,7 +790,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedBySingle) {
       "<div id='div1'>aria description</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
             u"aria description");
 }
@@ -739,7 +803,7 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByMulti) {
       "<div id='div1'>aria</div>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element),
             u"aria description");
 }
@@ -749,35 +813,32 @@ TEST_F(FormAutofillUtilsTest, GetAriaDescribedByInvalid) {
   LoadHTML("<input id='input' type='text' aria-describedby='invalid'/>");
 
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto element = doc.GetElementById("input").To<WebInputElement>();
+  auto element = GetFormControlElementById(doc, "input");
   EXPECT_EQ(autofill::form_util::GetAriaDescription(doc, element), u"");
 }
 
-TEST_F(FormAutofillUtilsTest, IsFormVisible) {
-  LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
+// Tests IsOwnedByFrame().
+TEST_F(FormAutofillUtilsTestWithIframesEnabled, IsOwnedByFrame) {
+  LoadHTML(R"(
+    <body>
+      <div id="div"></div>
+      <iframe id="child_frame"></iframe>
+    </body>
+  )");
+
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto form = doc.GetElementById("form1").To<WebFormElement>();
-  FormRendererId form_id(form.UniqueRendererFormId());
+  content::RenderFrame* main_frame = GetMainRenderFrame();
+  content::RenderFrame* child_frame = GetIframeById(doc, "child_frame");
+  WebElement div = GetElementById(doc, "div");
 
-  EXPECT_TRUE(autofill::form_util::IsFormVisible(GetMainFrame(), form_id));
-
-  // Hide a form.
-  form.SetAttribute("style", "display:none");
-  EXPECT_FALSE(autofill::form_util::IsFormVisible(GetMainFrame(), form_id));
-}
-
-TEST_F(FormAutofillUtilsTest, IsFormControlVisible) {
-  LoadHTML("<body><input id='input1'></body>");
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto input = doc.GetElementById("input1").To<WebFormControlElement>();
-  FieldRendererId input_id(input.UniqueRendererFormControlId());
-
-  EXPECT_TRUE(IsFormControlVisible(GetMainFrame(), input_id));
-
-  // Hide a field.
-  input.SetAttribute("style", "display:none");
-  EXPECT_FALSE(
-      autofill::form_util::IsFormControlVisible(GetMainFrame(), input_id));
+  EXPECT_FALSE(IsOwnedByFrame(WebElement(), nullptr));
+  EXPECT_FALSE(IsOwnedByFrame(WebElement(), main_frame));
+  EXPECT_FALSE(IsOwnedByFrame(div, nullptr));
+  EXPECT_FALSE(IsOwnedByFrame(div, child_frame));
+  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
+  ExecuteJavaScriptForTests(R"(document.getElementById('div').remove();)");
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(IsOwnedByFrame(div, main_frame));
 }
 
 TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
@@ -785,7 +846,7 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
       "<body><form id='form1' action='done.html'><input "
       "id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_form = doc.GetElementById("form1").To<WebFormElement>();
+  auto web_form = GetFormElementById(doc, "form1");
 
   FormData form_data;
   ASSERT_TRUE(WebFormElementToFormData(
@@ -798,7 +859,7 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
 TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_form = doc.GetElementById("form1").To<WebFormElement>();
+  auto web_form = GetFormElementById(doc, "form1");
 
   FormData form_data;
   ASSERT_TRUE(WebFormElementToFormData(
@@ -811,7 +872,7 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
 TEST_F(FormAutofillUtilsTest, ExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebFormControlElement>();
+  auto web_control = GetFormControlElementById(doc, "i1");
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
@@ -824,7 +885,7 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
 TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
   LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebFormControlElement>();
+  auto web_control = GetFormControlElementById(doc, "i1");
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
@@ -837,7 +898,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
 TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebFormControlElement>();
+  auto web_control = GetFormControlElementById(doc, "i1");
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
@@ -853,7 +914,7 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
       "id='datalist_id'><option value='1'><option "
       "value='2'></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebInputElement>();
+  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<std::u16string> values;
   std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
@@ -871,7 +932,7 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
       "id='datalist_id'><option value='1'>one</option><option "
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebInputElement>();
+  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   std::vector<std::u16string> values;
   std::vector<std::u16string> labels;
   GetDataListSuggestions(web_control, &values, &labels);
@@ -889,7 +950,7 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
       "id='datalist_id'><option value='1'>one</option><option "
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebInputElement>();
+  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   FormData form_data;
   FormFieldData form_field_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
@@ -914,7 +975,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
       "id='datalist_id'><option value='1'>one</option><option "
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
-  auto web_control = doc.GetElementById("i1").To<WebInputElement>();
+  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
   FormData form_data;
   FormFieldData form_field_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
@@ -1027,6 +1088,28 @@ TEST_F(FormAutofillUtilsTest, IsVisibleIframeTest) {
   }
 }
 
+// Tests `GetTopmostAncestorFormElement(element)`.
+TEST_F(FormAutofillUtilsTest, GetTopmostAncestorFormElement) {
+  LoadHTML(R"(
+      <body>
+        <iframe id=unowned></iframe>
+        <form id=topmost_form>
+          <iframe id=owned></iframe>
+          <form id=inner_form>
+            <iframe id=nested></iframe>
+          </form>
+        </form>
+      </body>)");
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "unowned")),
+            WebFormElement());
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "owned")),
+            GetFormElementById(doc, "topmost_form"));
+  EXPECT_EQ(GetTopmostAncestorFormElement(GetElementById(doc, "nested")),
+            GetFormElementById(doc, "topmost_form"));
+}
+
 // Tests that `IsDomPredecessor(lhs, rhs, common_ancestor)` holds iff a DOM
 // traversal visits the DOM element with ID |lhs| before the one with ID |rhs|,
 // where |common_ancestor| is the ID of an ancestor DOM node.
@@ -1086,13 +1169,9 @@ TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
     ASSERT_TRUE(base::StartsWith(test.lhs_id, test.common_ancestor_id));
     ASSERT_TRUE(base::StartsWith(test.rhs_id, test.common_ancestor_id));
     WebDocument doc = GetMainFrame()->GetDocument();
-    WebNode lhs = doc.GetElementById(WebString::FromASCII(test.lhs_id));
-    WebNode rhs = doc.GetElementById(WebString::FromASCII(test.rhs_id));
-    WebNode common_ancestor =
-        doc.GetElementById(WebString::FromASCII(test.common_ancestor_id));
-    ASSERT_FALSE(lhs.IsNull());
-    ASSERT_FALSE(rhs.IsNull());
-    ASSERT_FALSE(common_ancestor.IsNull());
+    WebNode lhs = GetElementById(doc, test.lhs_id);
+    WebNode rhs = GetElementById(doc, test.rhs_id);
+    WebNode common_ancestor = GetElementById(doc, test.common_ancestor_id);
     EXPECT_EQ(test.lhs_id < test.rhs_id,
               IsDomPredecessor(lhs, rhs, common_ancestor));
     EXPECT_EQ(test.rhs_id < test.lhs_id,
@@ -1116,17 +1195,85 @@ struct FieldFramesTestParam {
 };
 
 class FieldFramesTest
-    : public content::RenderViewTest,
+    : public FormAutofillUtilsTestWithIframesEnabled,
       public testing::WithParamInterface<FieldFramesTestParam> {
  public:
-  FieldFramesTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAcrossIframes);
-  }
+  FieldFramesTest() = default;
   ~FieldFramesTest() override = default;
+};
+
+// Test getting the unowned form control elements from the WebDocument with the
+// old or the new version of GetUnownedFormFieldElements().
+// TODO(crbug.com/1201875): Remove when the
+// kAutofillUseUnassociatedListedElements feature is deleted.
+class FormAutofillUtilsTestUnownedFormFields
+    : public FormAutofillUtilsTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FormAutofillUtilsTestUnownedFormFields() {
+    bool use_new_get_unowned_form_field_elements = GetParam();
+    scoped_features_.InitWithFeatureState(
+        features::kAutofillUseUnassociatedListedElements,
+        use_new_get_unowned_form_field_elements);
+  }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_features_;
 };
+
+// Check if the unowned form control elements are properly extracted.
+// Form control elements are button, fieldset, input, textarea, output and
+// select elements.
+TEST_P(FormAutofillUtilsTestUnownedFormFields, GetUnownedFormFieldElements) {
+  LoadHTML(R"(
+    <button id='unowned_button'>Unowned button</button>
+    <fieldset id='unowned_fieldset'>
+      <label>Unowned fieldset</label>
+    </fieldset>
+    <input id='unowned_input'>
+    <textarea id='unowned_textarea'>I am unowned</textarea>
+    <output id='unowned_output'>Unowned output</output>
+    <select id='unowned_select'>
+      <option value='first'>first</option>
+      <option value='second' selected>second</option>
+    </select>
+    <object id='unowned_object'></object>
+
+    <form id='form'>
+      <button id='form_button'>Form button</button>
+      <fieldset id='form_fieldset'>
+        <label>Form fieldset</label>
+      </fieldset>
+      <input id='form_input'>
+      <textarea id='form_textarea'>I am in a form</textarea>
+      <output id='form_output'>Form output</output>
+      <select name='form_select' id='form_select'>
+        <option value='june'>june</option>
+        <option value='july' selected>july</option>
+      </select>
+      <object id='form_object'></object>
+    </form>
+  )");
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  std::vector<blink::WebElement> unowned_fieldsets;
+  std::vector<WebFormControlElement> unowned_form_fields =
+      GetUnownedFormFieldElements(doc, &unowned_fieldsets);
+
+  EXPECT_THAT(unowned_form_fields,
+              ElementsAre(GetFormControlElementById(doc, "unowned_button"),
+                          GetFormControlElementById(doc, "unowned_fieldset"),
+                          GetFormControlElementById(doc, "unowned_input"),
+                          GetFormControlElementById(doc, "unowned_textarea"),
+                          GetFormControlElementById(doc, "unowned_output"),
+                          GetFormControlElementById(doc, "unowned_select")));
+  EXPECT_THAT(unowned_fieldsets,
+              ElementsAre(GetFormControlElementById(doc, "unowned_fieldset")));
+}
+
+INSTANTIATE_TEST_SUITE_P(FormAutofillUtilsTest,
+                         FormAutofillUtilsTestUnownedFormFields,
+                         testing::Bool());
 
 // Tests that FormData::fields and FormData::child_frames are extracted fully
 // and in the correct relative order.
@@ -1142,7 +1289,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
   if (!test_case.form_id) {  // Synthetic form.
     std::vector<blink::WebElement> fieldsets;
     std::vector<WebFormControlElement> control_elements =
-        GetUnownedAutofillableFormFieldElements(doc.All(), &fieldsets);
+        GetUnownedAutofillableFormFieldElements(doc, &fieldsets);
     std::vector<WebElement> iframe_elements =
         form_util::GetUnownedIframeElements(doc);
     ASSERT_TRUE(UnownedFormElementsAndFieldSetsToFormData(
@@ -1151,13 +1298,11 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     host_form = FormRendererId();
   } else {  // Real <form>.
     ASSERT_GT(std::strlen(test_case.form_id), 0u);
-    auto form_element =
-        doc.GetElementById(blink::WebString::FromASCII(test_case.form_id))
-            .To<WebFormElement>();
+    auto form_element = GetFormElementById(doc, test_case.form_id);
     ASSERT_TRUE(WebFormElementToFormData(form_element, WebFormControlElement(),
                                          nullptr, EXTRACT_NONE, &form_data,
                                          nullptr));
-    host_form = FormRendererId(form_element.UniqueRendererFormId());
+    host_form = GetFormRendererId(form_element);
   }
 
   // Check that all fields and iframes were extracted.
@@ -1173,8 +1318,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
       continue;
     SCOPED_TRACE(testing::Message() << "Checking the " << i
                                     << "th field (id = " << field.id << ")");
-    WebElement element =
-        doc.GetElementById(blink::WebString::FromASCII(field.id));
+    WebElement element = GetElementById(doc, field.id);
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
     WebFormControlElement control = element.To<WebFormControlElement>();
@@ -1201,14 +1345,9 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     }
     SCOPED_TRACE(testing::Message() << "Checking the " << i
                                     << "th frame (id = " << frame.id << ")");
-    WebElement element =
-        doc.GetElementById(blink::WebString::FromASCII(frame.id));
-    ASSERT_FALSE(element.IsNull());
-    ASSERT_TRUE(element.HasHTMLTagName("iframe"));
     auto is_empty = [](auto token) { return token.is_empty(); };
-    FrameToken frame_token = GetFrameToken(element);
     EXPECT_FALSE(absl::visit(is_empty, form_data.child_frames[i].token));
-    EXPECT_EQ(form_data.child_frames[i].token, frame_token);
+    EXPECT_EQ(form_data.child_frames[i].token, GetFrameToken(doc, frame.id));
     EXPECT_EQ(form_data.child_frames[i].predecessor, preceding_field_index);
     ++i;
   }
@@ -1297,6 +1436,92 @@ INSTANTIATE_TEST_SUITE_P(
       }));
       return cases;
     }()));
+
+// Tests that if the number of iframes exceeds kMaxParseableChildFrames,
+// child frames of that form are not extracted.
+TEST_F(FormAutofillUtilsTestWithIframesEnabled,
+       ExtractNoFramesIfTooManyIframes) {
+  auto CreateFormElement = [this](const char* element) {
+    std::string js = base::StringPrintf(
+        "document.forms[0].appendChild(document.createElement('%s'))", element);
+    ExecuteJavaScriptForTests(js.c_str());
+  };
+
+  LoadHTML(R"(<html><body><form id='f'></form>)");
+  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxParseableChildFrames; ++i)
+    CreateFormElement("iframe");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement form = GetFormElementById(doc, "f");
+  {
+    FormData form_data;
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableChildFrames);
+  }
+
+  // There may be multiple checks (e.g., == kMaxParseableChildFrames, <=
+  // kMaxParseableChildFrames, < kMaxParseableChildFrames), so we test different
+  // numbers of <iframe> elements.
+  for (int i = 0; i < 3; ++i) {
+    CreateFormElement("iframe");
+    FormData form_data;
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_TRUE(form_data.child_frames.empty());
+  }
+}
+
+// Tests that if the number of fields exceeds |kMaxParseableFields|, neither
+// fields nor child frames of that form are extracted.
+TEST_F(FormAutofillUtilsTestWithIframesEnabled,
+       ExtractNoFieldsOrFramesIfTooManyFields) {
+  auto CreateFormElement = [this](const char* element) {
+    std::string js = base::StringPrintf(
+        "document.forms[0].appendChild(document.createElement('%s'))", element);
+    ExecuteJavaScriptForTests(js.c_str());
+  };
+
+  LoadHTML(R"(<html><body><form id='f'></form>)");
+  for (size_t i = 0; i < kMaxParseableFields - 1; ++i)
+    CreateFormElement("input");
+  for (size_t i = 0; i < kMaxParseableChildFrames; ++i)
+    CreateFormElement("iframe");
+
+  // Ensure that Android runs at default page scale.
+  web_view_->SetPageScaleFactor(1.0);
+
+  WebDocument doc = GetMainFrame()->GetDocument();
+  WebFormElement form = GetFormElementById(doc, "f");
+  {
+    FormData form_data;
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(), nullptr,
+                                         EXTRACT_NONE, &form_data, nullptr));
+    EXPECT_EQ(form_data.fields.size(), kMaxParseableFields - 1);
+    EXPECT_EQ(form_data.child_frames.size(), kMaxParseableChildFrames);
+  }
+
+  // There may be multiple checks (e.g., == kMaxParseableFields, <=
+  // kMaxParseableFields, < kMaxParseableFields), so we test different numbers
+  // of <input> elements.
+  for (int i = 0; i < 3; ++i) {
+    SCOPED_TRACE(base::NumberToString(i));
+    CreateFormElement("input");
+    FormData form_data;
+    ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
+                                          nullptr, EXTRACT_NONE, &form_data,
+                                          nullptr));
+    EXPECT_TRUE(form_data.fields.empty());
+    EXPECT_TRUE(form_data.child_frames.empty());
+  }
+}
 
 }  // namespace
 }  // namespace form_util

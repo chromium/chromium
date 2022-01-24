@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "dbus/object_proxy.h"
@@ -27,6 +26,9 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Returns the global instance if initialized.
   static WilcoDtcSupportdClient* Get();
 
+  WilcoDtcSupportdClient(const WilcoDtcSupportdClient&) = delete;
+  WilcoDtcSupportdClient& operator=(const WilcoDtcSupportdClient&) = delete;
+
   // Registers |callback| to run when the wilco_dtc_supportd service becomes
   // available.
   virtual void WaitForServiceToBeAvailable(
@@ -41,9 +43,6 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Create() should be used instead.
   WilcoDtcSupportdClient();
   ~WilcoDtcSupportdClient() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WilcoDtcSupportdClient);
 };
 
 }  // namespace ash

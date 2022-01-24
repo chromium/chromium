@@ -43,6 +43,9 @@ class NetBiosHostLocator : public HostLocator,
                      SmbProviderClient* smb_provider_client,
                      std::unique_ptr<base::OneShotTimer> timer);
 
+  NetBiosHostLocator(const NetBiosHostLocator&) = delete;
+  NetBiosHostLocator& operator=(const NetBiosHostLocator&) = delete;
+
   ~NetBiosHostLocator() override;
 
   // HostLocator override.
@@ -108,8 +111,6 @@ class NetBiosHostLocator : public HostLocator,
   // scope. One NetBiosClient exists for each network interface on the device.
   std::list<std::unique_ptr<NetBiosClientInterface>> netbios_clients_;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetBiosHostLocator);
 };
 
 }  // namespace smb_client

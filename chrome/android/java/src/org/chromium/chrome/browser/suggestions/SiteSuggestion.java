@@ -21,9 +21,6 @@ public class SiteSuggestion {
     /** URL of the suggested site. */
     public final GURL url;
 
-    /** The path to the icon image file for allowlisted tile, empty string otherwise. */
-    public final String allowlistIconPath;
-
     /** The generated tile's title originated from this {@code TileTitleSource}. */
     @TileTitleSource
     public final int titleSource;
@@ -39,11 +36,9 @@ public class SiteSuggestion {
     @TileSectionType
     public final int sectionType;
 
-    public SiteSuggestion(String title, GURL url, String allowlistIconPath, int titleSource,
-            int source, int sectionType) {
+    public SiteSuggestion(String title, GURL url, int titleSource, int source, int sectionType) {
         this.title = title;
         this.url = url;
-        this.allowlistIconPath = allowlistIconPath;
         this.source = source;
         this.titleSource = titleSource;
         this.sectionType = sectionType;
@@ -60,15 +55,13 @@ public class SiteSuggestion {
         if (titleSource != that.titleSource) return false;
         if (sectionType != that.sectionType) return false;
         if (!title.equals(that.title)) return false;
-        if (!url.equals(that.url)) return false;
-        return allowlistIconPath.equals(that.allowlistIconPath);
+        return url.equals(that.url);
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
         result = 31 * result + url.hashCode();
-        result = 31 * result + allowlistIconPath.hashCode();
         result = 31 * result + source;
         result = 31 * result + sectionType;
         result = 31 * result + titleSource;

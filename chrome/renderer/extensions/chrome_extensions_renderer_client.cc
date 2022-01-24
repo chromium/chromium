@@ -22,6 +22,7 @@
 #include "chrome/renderer/extensions/extension_process_policy.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
 #include "chrome/renderer/extensions/resource_request_policy.h"
+#include "components/guest_view/renderer/guest_view_container_dispatcher.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -36,7 +37,6 @@
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_render_frame_observer.h"
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "extensions/renderer/guest_view/extensions_guest_view_container_dispatcher.h"
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/script_context.h"
@@ -149,7 +149,7 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
       std::make_unique<extensions::ResourceRequestPolicy>(
           extension_dispatcher_.get());
   guest_view_container_dispatcher_ =
-      std::make_unique<extensions::ExtensionsGuestViewContainerDispatcher>();
+      std::make_unique<guest_view::GuestViewContainerDispatcher>();
 
   thread->AddObserver(extension_dispatcher_.get());
   thread->AddObserver(guest_view_container_dispatcher_.get());

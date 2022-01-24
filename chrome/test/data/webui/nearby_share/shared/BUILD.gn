@@ -62,7 +62,7 @@ js_library("nearby_contact_visibility_test.m") {
     ":fake_nearby_contact_manager.m",
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -94,7 +94,7 @@ js_library("nearby_onboarding_page_test.m") {
   deps = [
     ":fake_nearby_share_settings.m",
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
@@ -106,7 +106,7 @@ js_library("nearby_page_template_test.m") {
   sources = [ "$root_gen_dir/chrome/test/data/webui/nearby_share/shared/nearby_page_template_test.m.js" ]
   deps = [
     "../..:chai_assert",
-    "../..:test_util.m",
+    "../..:test_util",
     "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
   ]
   extra_deps = [ ":modulize" ]

@@ -129,6 +129,9 @@ struct VisitedLinkWriter::LoadFromFileResult
                      int32_t used_count,
                      uint8_t salt[LINK_SALT_LENGTH]);
 
+  LoadFromFileResult(const LoadFromFileResult&) = delete;
+  LoadFromFileResult& operator=(const LoadFromFileResult&) = delete;
+
   base::ScopedFILE file;
   base::MappedReadOnlyRegion hash_table_memory;
   int32_t num_entries;
@@ -138,8 +141,6 @@ struct VisitedLinkWriter::LoadFromFileResult
  private:
   friend class base::RefCountedThreadSafe<LoadFromFileResult>;
   virtual ~LoadFromFileResult();
-
-  DISALLOW_COPY_AND_ASSIGN(LoadFromFileResult);
 };
 
 VisitedLinkWriter::LoadFromFileResult::LoadFromFileResult(
@@ -181,6 +182,9 @@ class VisitedLinkWriter::TableBuilder
  public:
   TableBuilder(VisitedLinkWriter* writer, const uint8_t salt[LINK_SALT_LENGTH]);
 
+  TableBuilder(const TableBuilder&) = delete;
+  TableBuilder& operator=(const TableBuilder&) = delete;
+
   // Called on the main thread when the writer is being destroyed. This will
   // prevent a crash when the query completes and the writer is no longer
   // around. We can not actually do anything but mark this fact, since the
@@ -209,8 +213,6 @@ class VisitedLinkWriter::TableBuilder
 
   // Stores the fingerprints we computed on the background thread.
   VisitedLinkCommon::Fingerprints fingerprints_;
-
-  DISALLOW_COPY_AND_ASSIGN(TableBuilder);
 };
 
 // VisitedLinkWriter ----------------------------------------------------------

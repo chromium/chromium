@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,6 +32,10 @@ class FakeAppInstance : public mojom::AppInstance {
    public:
     Request(const std::string& package_name, const std::string& activity)
         : package_name_(package_name), activity_(activity) {}
+
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+
     ~Request() {}
 
     const std::string& package_name() const { return package_name_; }
@@ -47,8 +50,6 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     std::string package_name_;
     std::string activity_;
-
-    DISALLOW_COPY_AND_ASSIGN(Request);
   };
 
   class IconRequest : public Request {
@@ -58,14 +59,16 @@ class FakeAppInstance : public mojom::AppInstance {
                 int dimension)
         : Request(package_name, activity),
           dimension_(static_cast<int>(dimension)) {}
+
+    IconRequest(const IconRequest&) = delete;
+    IconRequest& operator=(const IconRequest&) = delete;
+
     ~IconRequest() {}
 
     int dimension() const { return dimension_; }
 
    private:
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(IconRequest);
   };
 
   class ShortcutIconRequest {
@@ -73,6 +76,10 @@ class FakeAppInstance : public mojom::AppInstance {
     ShortcutIconRequest(const std::string& icon_resource_id, int dimension)
         : icon_resource_id_(icon_resource_id),
           dimension_(static_cast<int>(dimension)) {}
+
+    ShortcutIconRequest(const ShortcutIconRequest&) = delete;
+    ShortcutIconRequest& operator=(const ShortcutIconRequest&) = delete;
+
     ~ShortcutIconRequest() {}
 
     const std::string& icon_resource_id() const { return icon_resource_id_; }
@@ -81,11 +88,13 @@ class FakeAppInstance : public mojom::AppInstance {
    private:
     const std::string icon_resource_id_;
     const int dimension_;
-
-    DISALLOW_COPY_AND_ASSIGN(ShortcutIconRequest);
   };
 
   explicit FakeAppInstance(mojom::AppHost* app_host);
+
+  FakeAppInstance(const FakeAppInstance&) = delete;
+  FakeAppInstance& operator=(const FakeAppInstance&) = delete;
+
   ~FakeAppInstance() override;
 
   // mojom::AppInstance overrides:
@@ -163,10 +172,6 @@ class FakeAppInstance : public mojom::AppInstance {
       const std::string& query,
       int32_t max_results,
       GetRecentAndSuggestedAppsFromPlayStoreCallback callback) override;
-  void GetIcingGlobalQueryResults(
-      const std::string& query,
-      int32_t max_results,
-      GetIcingGlobalQueryResultsCallback callback) override;
   void GetAppShortcutGlobalQueryItems(
       const std::string& query,
       int32_t max_results,
@@ -314,8 +319,6 @@ class FakeAppInstance : public mojom::AppInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::AppHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAppInstance);
 };
 
 }  // namespace arc

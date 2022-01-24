@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -27,6 +26,9 @@ class TestUserActivityObserver : public UserActivityObserver {
  public:
   TestUserActivityObserver() : num_invocations_(0) {}
 
+  TestUserActivityObserver(const TestUserActivityObserver&) = delete;
+  TestUserActivityObserver& operator=(const TestUserActivityObserver&) = delete;
+
   int num_invocations() const { return num_invocations_; }
   void reset_stats() { num_invocations_ = 0; }
 
@@ -36,8 +38,6 @@ class TestUserActivityObserver : public UserActivityObserver {
  private:
   // Number of times that OnUserActivity() has been called.
   int num_invocations_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUserActivityObserver);
 };
 
 // A test implementation of PlatformEventSource that we can instantiate to make
@@ -45,10 +45,11 @@ class TestUserActivityObserver : public UserActivityObserver {
 class TestPlatformEventSource : public PlatformEventSource {
  public:
   TestPlatformEventSource() {}
-  ~TestPlatformEventSource() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPlatformEventSource);
+  TestPlatformEventSource(const TestPlatformEventSource&) = delete;
+  TestPlatformEventSource& operator=(const TestPlatformEventSource&) = delete;
+
+  ~TestPlatformEventSource() override {}
 };
 
 class UserActivityDetectorTest : public testing::Test {
@@ -61,6 +62,9 @@ class UserActivityDetectorTest : public testing::Test {
     now_ = base::TimeTicks::Now();
     detector_->set_now_for_test(now_);
   }
+
+  UserActivityDetectorTest(const UserActivityDetectorTest&) = delete;
+  UserActivityDetectorTest& operator=(const UserActivityDetectorTest&) = delete;
 
   ~UserActivityDetectorTest() override {
     detector_->RemoveObserver(observer_.get());
@@ -82,9 +86,6 @@ class UserActivityDetectorTest : public testing::Test {
   std::unique_ptr<TestUserActivityObserver> observer_;
 
   base::TimeTicks now_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserActivityDetectorTest);
 };
 
 // Checks that the observer is notified in response to different types of input
@@ -97,8 +98,8 @@ TEST_F(UserActivityDetectorTest, Basic) {
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs);
+  base::TimeDelta advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs);
   AdvanceTime(advance_delta);
   ui::MouseEvent mouse_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
@@ -118,9 +119,8 @@ TEST_F(UserActivityDetectorTest, Basic) {
   EXPECT_EQ(0, observer_->num_invocations());
   observer_->reset_stats();
 
-  const base::TimeDelta kIgnoreMouseTime =
-      base::TimeDelta::FromMilliseconds(
-          UserActivityDetector::kDisplayPowerChangeIgnoreMouseMs);
+  const base::TimeDelta kIgnoreMouseTime = base::Milliseconds(
+      UserActivityDetector::kDisplayPowerChangeIgnoreMouseMs);
   AdvanceTime(kIgnoreMouseTime / 2);
   OnEvent(&mouse_event);
   EXPECT_FALSE(mouse_event.handled());
@@ -174,8 +174,7 @@ TEST_F(UserActivityDetectorTest, RateLimitNotifications) {
 
   // Advance the time, but not quite enough for another notification to be sent.
   AdvanceTime(
-      base::TimeDelta::FromMilliseconds(
-          UserActivityDetector::kNotifyIntervalMs - 100));
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs - 100));
   OnEvent(&event);
   EXPECT_FALSE(event.handled());
   EXPECT_EQ(0, observer_->num_invocations());
@@ -183,8 +182,7 @@ TEST_F(UserActivityDetectorTest, RateLimitNotifications) {
 
   // Advance time by the notification interval, definitely moving out of the
   // rate limit. This should let us trigger another notification.
-  AdvanceTime(base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs));
+  AdvanceTime(base::Milliseconds(UserActivityDetector::kNotifyIntervalMs));
 
   OnEvent(&event);
   EXPECT_FALSE(event.handled());
@@ -208,15 +206,15 @@ TEST_F(UserActivityDetectorTest, HandleExternalUserActivity) {
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs);
+  base::TimeDelta advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs);
   AdvanceTime(advance_delta);
   detector_->HandleExternalUserActivity();
   EXPECT_EQ(1, observer_->num_invocations());
   observer_->reset_stats();
 
-  base::TimeDelta half_advance_delta = base::TimeDelta::FromMilliseconds(
-      UserActivityDetector::kNotifyIntervalMs / 2);
+  base::TimeDelta half_advance_delta =
+      base::Milliseconds(UserActivityDetector::kNotifyIntervalMs / 2);
   AdvanceTime(half_advance_delta);
   detector_->HandleExternalUserActivity();
   EXPECT_EQ(0, observer_->num_invocations());

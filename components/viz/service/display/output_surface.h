@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -153,6 +152,9 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   explicit OutputSurface(scoped_refptr<ContextProvider> context_provider);
   // Constructor for software compositing.
   explicit OutputSurface(std::unique_ptr<SoftwareOutputDevice> software_device);
+
+  OutputSurface(const OutputSurface&) = delete;
+  OutputSurface& operator=(const OutputSurface&) = delete;
 
   virtual ~OutputSurface();
 
@@ -305,8 +307,6 @@ class VIZ_SERVICE_EXPORT OutputSurface {
  private:
   const Type type_;
   skia::Matrix44 color_matrix_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputSurface);
 };
 
 }  // namespace viz

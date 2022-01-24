@@ -26,6 +26,11 @@ constexpr uint64_t kTestBlobStorageMaxDiskSpace = 1000;
 }  // namespace
 
 class WebBundleBlobDataSourceTest : public testing::Test {
+ public:
+  WebBundleBlobDataSourceTest(const WebBundleBlobDataSourceTest&) = delete;
+  WebBundleBlobDataSourceTest& operator=(const WebBundleBlobDataSourceTest&) =
+      delete;
+
  protected:
   WebBundleBlobDataSourceTest() = default;
   ~WebBundleBlobDataSourceTest() override = default;
@@ -75,7 +80,6 @@ class WebBundleBlobDataSourceTest : public testing::Test {
 
   base::ScopedTempDir data_dir_;
   BrowserTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(WebBundleBlobDataSourceTest);
 };
 
 TEST_F(WebBundleBlobDataSourceTest, Read) {

@@ -30,7 +30,7 @@ enum {
 
 const int kMinutesInHour = 60;
 
-constexpr base::TimeDelta kMinute = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kMinute = base::Minutes(1);
 
 constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,

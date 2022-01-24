@@ -265,8 +265,7 @@ blink::WebKeyboardEvent WebKeyboardEventBuilder::Build(NSEvent* event,
       base::TimeDelta diff = (now - hardware_timestamp).magnitude();
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Event.Latency.OS_NO_VALIDATION.POSITIVE.KEY_PRESSED", diff,
-          base::TimeDelta::FromMilliseconds(1),
-          base::TimeDelta::FromSeconds(60), 50);
+          base::Milliseconds(1), base::Seconds(60), 50);
     }
   }
 
@@ -335,8 +334,7 @@ blink::WebMouseEvent WebMouseEventBuilder::Build(
     base::TimeDelta diff = (now - hardware_timestamp).magnitude();
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Event.Latency.OS_NO_VALIDATION.POSITIVE.MOUSE_PRESSED", diff,
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
   blink::WebInputEvent::Type event_type =
       blink::WebInputEvent::Type::kUndefined;
@@ -462,8 +460,7 @@ blink::WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   base::TimeDelta diff = (now - hardware_timestamp).magnitude();
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Event.Latency.OS_NO_VALIDATION.POSITIVE.MOUSE_WHEEL", diff,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
   blink::WebMouseWheelEvent result(
       blink::WebInputEvent::Type::kMouseWheel, ModifiersFromEvent(event),
       ui::EventTimeStampFromSeconds([event timestamp]));
@@ -701,9 +698,8 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(NSEvent* event, NSView* view) {
         ui::EventTimeStampFromSeconds([event timestamp]);
     UMA_HISTOGRAM_CUSTOM_TIMES(
         "Event.Latency.OS.NO_VALIDATION.POSITIVE.TOUCH_PRESSED",
-        (now - hardware_timestamp).magnitude(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        (now - hardware_timestamp).magnitude(), base::Milliseconds(1),
+        base::Seconds(60), 50);
   }
   ui::ComputeEventLatencyOS(event);
   result.hovering = event_type == blink::WebInputEvent::Type::kTouchEnd;

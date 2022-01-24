@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -55,8 +54,8 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -291,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for https://crbug.com/1205901
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
+  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   FeaturePromoControllerViews* promo_controller =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->feature_promo_controller();
@@ -323,6 +323,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
       feature_engagement::kIPHProfileSwitchFeature));
 }
 
+// Signing out on Lacros is not possible.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that sets up a primary account (without sync) and simulates a click on
 // the signout button.
 class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
@@ -358,7 +360,8 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
 // Checks that signout opens a new logout tab.
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
   // Start from a page that is not the NTP.
-  ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
@@ -386,7 +389,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 #endif
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, MAYBE_SignoutFromNTP) {
   // Start from the NTP.
-  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
   EXPECT_EQ(0, tab_strip->active_index());
@@ -490,6 +494,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
 INSTANTIATE_TEST_SUITE_P(NetworkOnOrOff,
                          ProfileMenuViewSignoutTestWithNetwork,
                          ::testing::Bool());
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // This class is used to test the existence, the correct order and the call to
 // the correct action of the buttons in the profile menu. This is done by
@@ -524,6 +529,10 @@ class ProfileMenuClickTestBase : public SyncTest,
                                  public ProfileMenuViewTestBase {
  public:
   ProfileMenuClickTestBase() : SyncTest(SINGLE_CLIENT) {}
+
+  ProfileMenuClickTestBase(const ProfileMenuClickTestBase&) = delete;
+  ProfileMenuClickTestBase& operator=(const ProfileMenuClickTestBase&) = delete;
+
   ~ProfileMenuClickTestBase() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -568,14 +577,16 @@ class ProfileMenuClickTestBase : public SyncTest,
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<SyncServiceImplHarness> sync_harness_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuClickTestBase);
 };
 
 class ProfileMenuClickTest : public ProfileMenuClickTestBase,
                              public testing::WithParamInterface<size_t> {
  public:
   ProfileMenuClickTest() = default;
+
+  ProfileMenuClickTest(const ProfileMenuClickTest&) = delete;
+  ProfileMenuClickTest& operator=(const ProfileMenuClickTest&) = delete;
+
   ~ProfileMenuClickTest() override = default;
 
   virtual ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex(
@@ -598,22 +609,19 @@ class ProfileMenuClickTest : public ProfileMenuClickTestBase,
         "Profile.Menu.ClickedActionableItem",
         GetExpectedActionableItemAtIndex(GetParam()), /*count=*/1);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileMenuClickTest);
 };
 
 #define PROFILE_MENU_CLICK_TEST(actionable_item_list, test_case_name)     \
   class test_case_name : public ProfileMenuClickTest {                    \
    public:                                                                \
     test_case_name() = default;                                           \
+    test_case_name(const test_case_name&) = delete;                       \
+    test_case_name& operator=(const test_case_name&) = delete;            \
                                                                           \
     ProfileMenuViewBase::ActionableItem GetExpectedActionableItemAtIndex( \
         size_t index) override {                                          \
       return actionable_item_list[index];                                 \
     }                                                                     \
-                                                                          \
-    DISALLOW_COPY_AND_ASSIGN(test_case_name);                             \
   };                                                                      \
                                                                           \
   INSTANTIATE_TEST_SUITE_P(                                               \
@@ -757,6 +765,10 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
   RunTest();
 }
 
+// Lacros doesn't allow to disable sign-in in regular profiles yet.
+// TODO(https://crbug.com/1220066): re-enable this test once kSigninAllowed is
+// no longer force set to true on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
@@ -786,6 +798,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
@@ -807,7 +820,7 @@ constexpr ProfileMenuViewBase::ActionableItem
 
 PROFILE_MENU_CLICK_TEST(kActionableItems_WithUnconsentedPrimaryAccount,
                         ProfileMenuClickTest_WithUnconsentedPrimaryAccount) {
-  secondary_account_helper::SignInSecondaryAccount(
+  secondary_account_helper::SignInUnconsentedAccount(
       browser()->profile(), &test_url_loader_factory_, "user@example.com");
   UnconsentedPrimaryAccountChecker(identity_manager()).Wait();
   // Check that the setup was successful.

@@ -5,7 +5,6 @@
 #include "components/translate/core/language_detection/ngram_hash_ops_utils.h"
 
 #include <cstring>
-#include <vector>
 
 #include "third_party/utf/src/include/utf.h"
 

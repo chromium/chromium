@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_TEST_PAINT_ARTIFACT_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
@@ -92,36 +91,37 @@ class TestPaintArtifact {
 
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
-  TestPaintArtifact& RectDrawing(const IntRect& bounds, Color color);
+  TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
-                                  const IntPoint& offset);
+                                  const gfx::Point& offset);
 
   // Add display item with the specified client in the chunk.
   TestPaintArtifact& RectDrawing(DisplayItemClient&,
-                                 const IntRect& bounds,
+                                 const gfx::Rect& bounds,
                                  Color color);
   TestPaintArtifact& ScrollHitTest(
       DisplayItemClient&,
-      const IntRect&,
+      const gfx::Rect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
   // display items. Bounds() sets both bounds and drawable_bounds, while
   // DrawableBounds() sets drawable_bounds only.
-  TestPaintArtifact& Bounds(const IntRect&);
-  TestPaintArtifact& DrawableBounds(const IntRect&);
+  TestPaintArtifact& Bounds(const gfx::Rect&);
+  TestPaintArtifact& DrawableBounds(const gfx::Rect&);
 
   TestPaintArtifact& SetRasterEffectOutset(RasterEffectOutset);
-  TestPaintArtifact& RectKnownToBeOpaque(const IntRect&);
+  TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
   TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
   TestPaintArtifact& HasText();
   TestPaintArtifact& EffectivelyInvisible();
   TestPaintArtifact& Uncacheable();
+  TestPaintArtifact& IsMovedFromCachedSubsequence();
 
   // Build the paint artifact. After that, if this object has automatically
   // created any display item client, the caller must retain this object when
@@ -136,7 +136,7 @@ class TestPaintArtifact {
  private:
   void DidAddDisplayItem();
 
-  Vector<std::unique_ptr<FakeDisplayItemClient>> clients_;
+  HeapVector<Member<FakeDisplayItemClient>> clients_;
   scoped_refptr<PaintArtifact> paint_artifact_ =
       base::MakeRefCounted<PaintArtifact>();
 };

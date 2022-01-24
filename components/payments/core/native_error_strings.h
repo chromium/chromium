@@ -183,9 +183,6 @@ extern const char kCanMakePaymentEventTimeout[];
 // The payment handler did not respond to the "canmakepayment" event.
 extern const char kCanMakePaymentEventNoResponse[];
 
-// The payment handler did not specify a value for "readyForMinimalUI" field.
-extern const char kCanMakePaymentEventNoReadyForMinimalUiValue[];
-
 // The payment handler called CanMakePaymentEvent.respondWith(value) with a
 // non-boolean value.
 extern const char kCanMakePaymentEventBooleanConversionError[];
@@ -196,21 +193,6 @@ extern const char kCanMakePaymentEventBrowserError[];
 // The payment handler threw a JavaScript exception while handling the
 // "canmakepayment" event.
 extern const char kCanMakePaymentEventInternalError[];
-
-// The payment handler specified an invalid value for "accountBalance".
-extern const char kCanMakePaymentEventInvalidAccountBalanceValue[];
-
-// The payment handler called CanMakePaymentEvent.respondWithMinimalUI(value)
-// with a value that could not be converted into a JavaScript dictionary with
-// values for "canMakePayment", "readyForMinimalUI", and "accountBalance".
-extern const char kCanMakePaymentEventMinimalUiResponseConversionError[];
-
-// The payment handler did not specify a value for "accountBalance".
-extern const char kCanMakePaymentEventNoAccountBalanceValue[];
-
-// The payment handler did not specify a value for "canMakePayment" field in
-// CanMakePaymentEvent.respondWithMinimalUI().
-extern const char kCanMakePaymentEventNoCanMakePaymentValue[];
 
 // Browser does not fire the "canmakepayment" event if the payment handler does
 // not support any URL-based payment methods.

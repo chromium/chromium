@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "components/viz/common/features.h"

@@ -315,8 +315,8 @@ const char16_t kEmailRe[] =
     u"|correo.*electr(o|ó)nico"      // es-ES
     u"|メールアドレス"               // ja-JP
     u"|Электронн(ая|ой).?Почт(а|ы)"  // ru
-    u"|邮件|邮箱"                    // zh-CN
-    u"|電郵地址"                     // zh-TW
+    u"|邮件|邮箱|電子郵件"           // zh-CN
+    u"|電郵地址|電子信箱"            // zh-TW
     u"|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
     u"മെയിൽ"                                        // ml
     u"|ایمیل|پست.*الکترونیک"                        // fa
@@ -340,7 +340,7 @@ const char16_t kNameRe[] =
     u"|お名前|氏名"                             // ja-JP
     u"|^nome"                                   // pt-BR, pt-PT
     u"|نام.*نام.*خانوادگی"                      // fa
-    u"|姓名"                                    // zh-CN
+    u"|姓\\s*名"                                // zh-CN
     u"|контактное.?лицо"                        // ru
     u"|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
     u"|성명"                                    // ko-KR
@@ -604,6 +604,14 @@ const char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
 // merchant_promo_code_field.cc
 /////////////////////////////////////////////////////////////////////////////
 const char16_t kMerchantPromoCodeRe[] =
-    u"\\bpromo code\\b|\\bcoupon code\\b|\\bgift code\\b";
+    u"\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b";
+
+/////////////////////////////////////////////////////////////////////////////
+// votes_uploader.cc
+/////////////////////////////////////////////////////////////////////////////
+const char16_t kEmailValueRe[] =
+    u"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
+const char16_t kPhoneValueRe[] = u"^[0-9()+-]{6,25}$";
+const char16_t kUsernameLikeValueRe[] = u"[A-Za-z0-9_\\-.]{7,30}";
 
 }  // namespace autofill

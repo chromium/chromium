@@ -17,28 +17,6 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Returns a promise that gets resolved after "window.requestAnimationFrame"
-// callbacks happened on a front window.
-var pendingRafPromise = null;
-function raf() {
-  chrome.test.assertTrue(pendingRafPromise === null);
-
-  var res;
-  pendingRafPromise = new Promise((resolve) => {
-    res = resolve;
-  });
-  pendingRafPromise.resolve = res;
-
-  chrome.windows.create({'url': 'raf.html'}, function() {});
-  return pendingRafPromise;
-}
-function onRaf(rafWin) {
-  chrome.test.assertTrue(pendingRafPromise !== null);
-  pendingRafPromise.resolve();
-  pendingRafPromise = null;
-  rafWin.close();
-}
-
 function promisify(f, ...args) {
   return new Promise((resolve, reject) => {
     f(...args, (result) => {
@@ -83,6 +61,7 @@ var defaultTests = [
           chrome.test.assertTrue(status.hasOwnProperty("email"));
           chrome.test.assertTrue(status.hasOwnProperty("displayEmail"));
           chrome.test.assertTrue(status.hasOwnProperty("userImage"));
+          chrome.test.assertTrue(status.hasOwnProperty("hasValidOauth2Token"));
         }));
   },
   function getExtensionsInfo() {
@@ -733,6 +712,7 @@ var defaultTests = [
         chrome.autotestPrivate.setAppWindowState(
             window.id,
             change,
+            true /* wait */,
             function(state) {
               chrome.test.assertEq(state, 'Fullscreen');
               chrome.autotestPrivate.getAppWindowList(async function(list) {
@@ -755,7 +735,8 @@ var defaultTests = [
                   var revert_change = new Object();
                   revert_change.eventType = 'WMEventNormal';
                   chrome.autotestPrivate.setAppWindowState(
-                      window.id, revert_change, function(state) {
+                      window.id, revert_change, true /* wait */,
+                      function(state) {
                         chrome.test.assertEq(state, 'Normal');
                         chrome.test.assertNoLastError();
                         chrome.test.succeed();
@@ -783,24 +764,35 @@ var defaultTests = [
         var change = new Object();
         change.eventType = 'WMEventFullscreen';
         chrome.autotestPrivate.setAppWindowState(
-            window.id, change, function(state) {
+            window.id, change, true /* wait */, function(state) {
               chrome.test.assertEq(state, 'Fullscreen');
 
-              chrome.autotestPrivate.setTabletModeEnabled(
-                  false, function(isEnabled) {
-                    chrome.test.assertFalse(isEnabled);
+              // Just send the rejectable request (normal state request in
+              // tablet mode) but without waiting for the state change.
+              const rejectable_change = {
+                eventType: 'WMEventNormal'
+              };
+              chrome.autotestPrivate.setAppWindowState(
+                  window.id, rejectable_change, false /* wait */,
+                  function(state) {
+                    chrome.autotestPrivate.setTabletModeEnabled(
+                        false, function(isEnabled) {
+                          chrome.test.assertFalse(isEnabled);
 
-                    // Revert window state back to normal and exit tablet mode
-                    // for the next test.
-                    var revert_change = new Object();
-                    revert_change.eventType = 'WMEventNormal';
-                    chrome.autotestPrivate.setAppWindowState(
-                        window.id, revert_change, function(state) {
-                          chrome.test.assertEq(state, 'Normal');
-                          chrome.test.assertNoLastError();
-                          chrome.test.succeed();
+                          // Revert window state back to normal and exit tablet
+                          // mode for the next test.
+                          const revert_change = {
+                            eventType: 'WMEventNormal'
+                          };
+                          chrome.autotestPrivate.setAppWindowState(
+                              window.id, revert_change, true /* wait */,
+                              function(state) {
+                                chrome.test.assertEq(state, 'Normal');
+                                chrome.test.assertNoLastError();
+                                chrome.test.succeed();
+                              });
                         });
-                  });
+                      });
             });
       });
     });
@@ -919,9 +911,6 @@ var defaultTests = [
     chrome.autotestPrivate.startSmoothnessTracking(async function() {
       chrome.test.assertNoLastError();
 
-      // Wait for a few frames.
-      await raf();
-
       chrome.autotestPrivate.stopSmoothnessTracking(function(data) {
         chrome.test.assertNoLastError();
         chrome.test.assertTrue(data.hasOwnProperty('framesExpected') ||
@@ -942,9 +931,6 @@ var defaultTests = [
                                                        async function() {
           chrome.test.assertNoLastError();
 
-          // Wait for a few frames.
-          await raf();
-
           chrome.autotestPrivate.stopSmoothnessTracking(badDisplay,
                                                         function(data) {
             chrome.test.assertEq(chrome.runtime.lastError.message,
@@ -961,6 +947,37 @@ var defaultTests = [
           });
         });
       });
+    });
+  },
+  function stopSmoothnessTrackingMultiple() {
+    chrome.autotestPrivate.startSmoothnessTracking(async function() {
+      chrome.test.assertNoLastError();
+
+      // A few racing stopSmoothnessTracking calls.
+      const count = 3;
+      let promises = [];
+      for (let i = 0; i < count; ++i)
+        promises.push(promisify(chrome.autotestPrivate.stopSmoothnessTracking));
+
+      // Only one should succeed and no crashes/DCHECKs.
+      let success = 0;
+      for (let i = 0; i < count; ++i) {
+        try {
+          await promises[i];
+          ++success;
+        } catch(error) {}
+      }
+      chrome.test.assertEq(success, 1);
+      chrome.test.succeed();
+    });
+  },
+
+  function getDisplaySmoothness() {
+    chrome.autotestPrivate.getDisplaySmoothness(function(smoothness) {
+      chrome.test.assertNoLastError();
+
+      chrome.test.assertTrue(smoothness >= 0);
+      chrome.test.succeed();
     });
   },
 
@@ -1288,22 +1305,6 @@ var splitviewLeftSnappedTests = [
   }
 ];
 
-var startStopTracingTests = [function startStopTracing() {
-  chrome.autotestPrivate.startTracing({}, function() {
-    chrome.test.assertNoLastError();
-    chrome.autotestPrivate.stopTracing(function(trace) {
-      chrome.test.assertNoLastError();
-      chrome.test.assertTrue(trace.length > 0);
-      try {
-        chrome.test.assertTrue(JSON.parse(trace) instanceof Object);
-        chrome.test.succeed();
-      } catch (e) {
-        chrome.test.fail('stopTracing callback returned invalid JSON');
-      }
-    });
-  });
-}];
-
 var scrollableShelfTests = [
   function fetchScrollableShelfInfoWithoutScroll() {
     chrome.autotestPrivate.getScrollableShelfInfoForState(
@@ -1453,7 +1454,6 @@ var test_suites = {
   'overviewDefault': overviewTests,
   'overviewDrag': overviewDragTests,
   'splitviewLeftSnapped': splitviewLeftSnappedTests,
-  'startStopTracing': startStopTracingTests,
   'scrollableShelf': scrollableShelfTests,
   'shelf': shelfTests,
   'systemWebApps': systemWebAppsTests,

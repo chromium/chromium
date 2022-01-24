@@ -1,0 +1,20 @@
+# cross-origin-redirect-on-back.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "cross-origin-redirect-on-back.html">
+Header set Cache-Control "no-store"
+</Files>
+# dynamic-frame-creation-order-inline-scripts.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "dynamic-frame-creation-order-inline-scripts.html">
+Header set Cache-Control "no-store"
+</Files>
+# dynamic-frame-creation-order-onload-handler.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "dynamic-frame-creation-order-onload-handler.html">
+Header set Cache-Control "no-store"
+</Files>
+# replacestate-post-to-get-2.html is not compatible with back-forward cache.
+# The following setting disables back-forward cache.
+<Files "replacestate-post-to-get-2.html">
+Header set Cache-Control "no-store"
+</Files>

@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -36,6 +37,7 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
@@ -279,6 +281,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 #if defined(OS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
+  std::swap(matching_java_tab_, match.matching_java_tab_);
   UpdateJavaObjectNativeRef();
 #endif
   return *this;
@@ -360,15 +363,36 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 }
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+// static
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
+  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
+    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+      return omnibox::kAnswerCurrencyIcon;
+    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+      return omnibox::kAnswerDictionaryIcon;
+    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+      return omnibox::kAnswerFinanceIcon;
+    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+      return omnibox::kAnswerSunriseIcon;
+    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      return omnibox::kAnswerTranslationIcon;
+    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+      return omnibox::kAnswerWhenIsIcon;
+    default:
+      return omnibox::kAnswerDefaultIcon;
+  }
+}
+
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark) const {
   // TODO(https://crbug.com/1024114): Remove crash logging once fixed.
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "type", type);
   SCOPED_CRASH_KEY_NUMBER("AutocompleteMatch", "provider_type",
                           provider ? provider->type() : -1);
-
   if (is_bookmark)
     return omnibox::kBookmarkIcon;
+  if (answer.has_value())
+    return AnswerTypeToAnswerIcon(answer->type());
   switch (type) {
     case Type::URL_WHAT_YOU_TYPED:
     case Type::HISTORY_URL:
@@ -900,11 +924,13 @@ void AutocompleteMatch::ComputeStrippedDestinationURL(
 
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
-    std::u16string* keyword,
+    std::u16string* keyword_out,
     bool* is_keyword_hint) const {
   *is_keyword_hint = associated_keyword != nullptr;
-  keyword->assign(*is_keyword_hint ? associated_keyword->keyword :
-      GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+  keyword_out->assign(
+      *is_keyword_hint
+          ? associated_keyword->keyword
+          : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
 }
 
 std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
@@ -1389,6 +1415,14 @@ bool AutocompleteMatch::TryRichAutocompletion(
 bool AutocompleteMatch::IsEmptyAutocompletion() const {
   return inline_autocompletion.empty() && prefix_autocompletion.empty() &&
          split_autocompletion.Empty();
+}
+
+void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  dict.Add("fill_into_edit", fill_into_edit);
+  dict.Add("additional_text", additional_text);
+  dict.Add("destination_url", destination_url);
+  dict.Add("keyword", keyword);
 }
 
 #if DCHECK_IS_ON()

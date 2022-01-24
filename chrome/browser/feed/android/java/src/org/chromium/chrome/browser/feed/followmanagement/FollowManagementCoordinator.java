@@ -7,15 +7,15 @@ package org.chromium.chrome.browser.feed.followmanagement;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.feed.webfeed.R;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -26,11 +26,11 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class FollowManagementCoordinator {
     private static final String TAG = "FollowMMCoordinator";
     private FollowManagementMediator mMediator;
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private final View mView;
 
     public FollowManagementCoordinator(Activity activity) {
-        mActivity = activity;
+        mActivity = (AppCompatActivity) activity;
         ModelList listItems = new ModelList();
 
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(listItems);
@@ -53,12 +53,14 @@ public class FollowManagementCoordinator {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        // Set up a handler for the header to act as a back button.
-        ImageView backArrowView = (ImageView) mView.findViewById(R.id.follow_management_back_arrow);
-        backArrowView.setOnClickListener(this::handleBackArrowClick);
+        // Set up the toolbar and back button.
+        Toolbar toolbar = (Toolbar) mView.findViewById(R.id.action_bar);
+        mActivity.setSupportActionBar(toolbar);
+        mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
 
-        mMediator = new FollowManagementMediator(activity, listItems, adapter,
-                new LargeIconBridge(Profile.getLastUsedRegularProfile()));
+        mMediator = new FollowManagementMediator(
+                activity, listItems, WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {

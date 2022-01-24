@@ -97,9 +97,10 @@ void HeaderModificationDelegateImpl::ProcessRequest(
   int incognito_mode_availability =
       prefs->GetInteger(prefs::kIncognitoModeAvailability);
 #if defined(OS_ANDROID)
-  incognito_mode_availability = incognito_enabled_
-                                    ? incognito_mode_availability
-                                    : IncognitoModePrefs::DISABLED;
+  incognito_mode_availability =
+      incognito_enabled_
+          ? incognito_mode_availability
+          : static_cast<int>(IncognitoModePrefs::Availability::kDisabled);
 #endif
 
   FixAccountConsistencyRequestHeader(

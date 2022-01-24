@@ -122,14 +122,14 @@ bool CanShare() {
 
 - (void)sharingService:(NSSharingService*)service
          didShareItems:(NSArray*)items {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", true);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", true);
   [self clearTransitionData];
 }
 
 - (void)sharingService:(NSSharingService*)service
     didFailToShareItems:(NSArray*)items
                   error:(NSError*)error {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", false);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", false);
   [self clearTransitionData];
 }
 

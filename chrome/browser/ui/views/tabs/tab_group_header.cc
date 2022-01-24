@@ -30,12 +30,13 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -92,6 +93,10 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   // The size and color of the chip are set in VisualsChanged().
   title_chip_ = AddChildView(std::make_unique<views::View>());
 
+  // Disable events processing (like tooltip handling)
+  // for children of TabGroupHeader.
+  title_chip_->SetCanProcessEventsWithinSubtree(false);
+
   // The text and color of the title are set in VisualsChanged().
   title_ = title_chip_->AddChildView(std::make_unique<views::Label>());
   title_->SetCollapseWhenHidden(true);
@@ -105,6 +110,12 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   views::HighlightPathGenerator::Install(
       this,
       std::make_unique<TabGroupHighlightPathGenerator>(title_chip_, title_));
+  // The tab group gets painted with a solid color that may not contrast well
+  // with the focus indicator, so draw an outline around the focus ring for it
+  // to contrast with the solid color.
+  SetProperty(views::kDrawFocusRingBackgroundOutline, true);
+
+  SetProperty(views::kElementIdentifierKey, kTabGroupHeaderIdentifier);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -285,16 +296,27 @@ void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-views::View* TabGroupHeader::GetTooltipHandlerForPoint(
-    const gfx::Point& point) {
-  return this;
+std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
+  if (!title_->GetText().empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, title_->GetText(),
+        tab_strip_->controller()->GetGroupContentString(group().value()));
+  } else {
+    return l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+        tab_strip_->controller()->GetGroupContentString(group().value()));
+  }
 }
 
-std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
-  if (!title_->GetText().empty())
-    return title_->GetText();
-  else
-    return l10n_util::GetStringUTF16(IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP);
+gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
+  // Skip the insetting in TabSlotView::GetAnchorBoundsInScreen(). In this
+  // context insetting makes the anchored bubble partially cut into the tab
+  // outline.
+  // TODO(crbug.com/1268481): See if the layout of TabGroupHeader can be unified
+  // with tabs so that bounds do not need to be calculated differently between
+  // tabs and headers. As of writing this, hover cards to not cut into the tab
+  // outline but without this change TabGroupEditorBubbleView does.
+  return View::GetAnchorBoundsInScreen();
 }
 
 TabSlotView::ViewType TabGroupHeader::GetTabSlotViewType() const {
@@ -487,3 +509,6 @@ void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroyed(
     views::Widget* widget) {
   is_open_ = false;
 }
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
+                                      kTabGroupHeaderIdentifier);

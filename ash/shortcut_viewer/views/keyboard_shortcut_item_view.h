@@ -19,6 +19,10 @@ class KeyboardShortcutItemView : public views::View {
  public:
   KeyboardShortcutItemView(const ash::KeyboardShortcutItem& item,
                            ash::ShortcutCategory category);
+
+  KeyboardShortcutItemView(const KeyboardShortcutItemView&) = delete;
+  KeyboardShortcutItemView& operator=(const KeyboardShortcutItemView&) = delete;
+
   ~KeyboardShortcutItemView() override = default;
 
   // views::View:
@@ -73,8 +77,6 @@ class KeyboardShortcutItemView : public views::View {
 
   // Accessibility data.
   std::u16string accessible_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutItemView);
 };
 
 }  // namespace keyboard_shortcut_viewer

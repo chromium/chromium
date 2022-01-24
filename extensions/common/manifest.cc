@@ -100,9 +100,8 @@ int GetManifestVersion(const base::DictionaryValue& manifest_value,
                        Manifest::Type type) {
   // Platform apps were launched after manifest version 2 was the preferred
   // version, so they default to that.
-  int manifest_version = type == Manifest::TYPE_PLATFORM_APP ? 2 : 1;
-  manifest_value.GetInteger(keys::kManifestVersion, &manifest_version);
-  return manifest_version;
+  return manifest_value.FindIntKey(keys::kManifestVersion)
+      .value_or(type == Manifest::TYPE_PLATFORM_APP ? 2 : 1);
 }
 
 // Helper class to filter available values from a manifest.
@@ -338,12 +337,18 @@ bool Manifest::Get(
 
 bool Manifest::GetBoolean(
     const std::string& path, bool* out_value) const {
-  return available_values_->GetBoolean(path, out_value);
+  absl::optional<bool> value = available_values_->FindBoolPath(path);
+  if (value)
+    *out_value = *value;
+  return value.has_value();
 }
 
 bool Manifest::GetInteger(
     const std::string& path, int* out_value) const {
-  return available_values_->GetInteger(path, out_value);
+  absl::optional<int> value = available_values_->FindIntPath(path);
+  if (value)
+    *out_value = *value;
+  return value.has_value();
 }
 
 bool Manifest::GetString(
@@ -363,25 +368,19 @@ bool Manifest::GetDictionary(
 
 bool Manifest::GetDictionary(const std::string& path,
                              const base::Value** out_value) const {
-  return GetPathOfType(path, base::Value::Type::DICTIONARY, out_value);
-}
-
-bool Manifest::GetList(
-    const std::string& path, const base::ListValue** out_value) const {
-  return available_values_->GetList(path, out_value);
+  const std::vector<base::StringPiece> components =
+      manifest_handler_helpers::TokenizeDictionaryPath(path);
+  *out_value = available_values_->FindPathOfType(components,
+                                                 base::Value::Type::DICTIONARY);
+  return *out_value != nullptr;
 }
 
 bool Manifest::GetList(const std::string& path,
                        const base::Value** out_value) const {
-  return GetPathOfType(path, base::Value::Type::LIST, out_value);
-}
-
-bool Manifest::GetPathOfType(const std::string& path,
-                             base::Value::Type type,
-                             const base::Value** out_value) const {
   const std::vector<base::StringPiece> components =
       manifest_handler_helpers::TokenizeDictionaryPath(path);
-  *out_value = available_values_->FindPathOfType(components, type);
+  *out_value =
+      available_values_->FindPathOfType(components, base::Value::Type::LIST);
   return *out_value != nullptr;
 }
 

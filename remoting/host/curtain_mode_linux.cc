@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/client_session_control.h"
 #include "ui/gfx/x/connection.h"
@@ -21,14 +21,15 @@ class CurtainModeLinux : public CurtainMode {
  public:
   CurtainModeLinux();
 
+  CurtainModeLinux(const CurtainModeLinux&) = delete;
+  CurtainModeLinux& operator=(const CurtainModeLinux&) = delete;
+
   // Overriden from CurtainMode.
   bool Activate() override;
 
  private:
   // Returns true if the host is running under a virtual session.
   bool IsVirtualSession();
-
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeLinux);
 };
 
 CurtainModeLinux::CurtainModeLinux() = default;

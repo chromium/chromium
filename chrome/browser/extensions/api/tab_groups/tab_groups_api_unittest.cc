@@ -190,7 +190,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
   std::unique_ptr<base::ListValue> groups_list(
       RunTabGroupsQueryFunction(browser(), extension.get(), kTitleQueryInfo));
   ASSERT_TRUE(groups_list);
-  ASSERT_EQ(1u, groups_list->GetSize());
+  ASSERT_EQ(1u, groups_list->GetList().size());
 
   const base::Value& group_info = groups_list->GetList()[0];
   ASSERT_EQ(base::Value::Type::DICTIONARY, group_info.type());
@@ -227,7 +227,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
   std::unique_ptr<base::ListValue> groups_list(
       RunTabGroupsQueryFunction(browser(), extension.get(), kColorQueryInfo));
   ASSERT_TRUE(groups_list);
-  ASSERT_EQ(1u, groups_list->GetSize());
+  ASSERT_EQ(1u, groups_list->GetList().size());
 
   const base::Value& group_info = groups_list->GetList()[0];
   ASSERT_EQ(base::Value::Type::DICTIONARY, group_info.type());

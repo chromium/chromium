@@ -18,8 +18,7 @@ class ExtensionManagement;
 // extension block/allowlists and admin block/allowlists.
 class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
  public:
-  explicit StandardManagementPolicyProvider(
-      const ExtensionManagement* settings);
+  explicit StandardManagementPolicyProvider(ExtensionManagement* settings);
 
   ~StandardManagementPolicyProvider() override;
 
@@ -45,7 +44,7 @@ class StandardManagementPolicyProvider : public ManagementPolicy::Provider {
                             std::u16string* error) const override;
 
  private:
-  const ExtensionManagement* settings_;
+  ExtensionManagement* settings_;
   bool ReturnLoadError(const extensions::Extension* extension,
                        std::u16string* error) const;
 };

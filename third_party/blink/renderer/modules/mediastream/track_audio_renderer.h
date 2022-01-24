@@ -12,8 +12,8 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
@@ -66,6 +66,9 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
                      const base::UnguessableToken& session_id,
                      const String& device_id,
                      base::RepeatingCallback<void()> on_render_error_callback);
+
+  TrackAudioRenderer(const TrackAudioRenderer&) = delete;
+  TrackAudioRenderer& operator=(const TrackAudioRenderer&) = delete;
 
   // WebMediaStreamAudioRenderer implementation.
   // Called on the main thread.
@@ -172,8 +175,6 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
 
   // Flag to indicate whether |sink_| has been started yet.
   bool sink_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackAudioRenderer);
 };
 
 }  // namespace blink

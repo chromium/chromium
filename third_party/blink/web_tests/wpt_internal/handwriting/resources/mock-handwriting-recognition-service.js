@@ -1,4 +1,12 @@
-import {CreateHandwritingRecognizerResult, HandwritingRecognitionService, HandwritingRecognitionServiceReceiver, HandwritingRecognizerReceiver, HandwritingRecognizerRemote} from '/gen/third_party/blink/public/mojom/handwriting/handwriting.mojom.m.js';
+import {
+  CreateHandwritingRecognizerResult,
+  HandwritingRecognitionService,
+  HandwritingRecognitionServiceReceiver,
+  HandwritingRecognizerReceiver,
+  HandwritingRecognizerRemote,
+  HandwritingRecognitionType,
+  HandwritingInputType,
+} from '/gen/third_party/blink/public/mojom/handwriting/handwriting.mojom.m.js';
 
 // Generates the prediction result based on strokes and hints.
 // The segmentation result is empty.
@@ -90,6 +98,28 @@ class MockHandwritingRecognitionService {
     }
 
     return {result: support};
+  }
+
+  async queryHandwritingRecognizer(constraint) {
+    // Pretend to support all features.
+    let desc =  {
+      textAlternatives: true,
+      textSegmentation: true,
+      hints: {
+        recognitionType: [
+          HandwritingRecognitionType.kText,
+        ],
+        inputType: [
+          HandwritingInputType.kMouse,
+          HandwritingInputType.kStylus,
+          HandwritingInputType.kTouch,
+        ],
+        textContext: true,
+        alternatives: true,
+      }
+    };
+
+    return { result: desc };
   }
 }
 

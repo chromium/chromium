@@ -39,6 +39,9 @@ class EtwTraceConsumerBase {
   // Constructs a closed consumer.
   EtwTraceConsumerBase() = default;
 
+  EtwTraceConsumerBase(const EtwTraceConsumerBase&) = delete;
+  EtwTraceConsumerBase& operator=(const EtwTraceConsumerBase&) = delete;
+
   ~EtwTraceConsumerBase() { Close(); }
 
   // Opens the named realtime session, which must be existent.
@@ -80,8 +83,6 @@ class EtwTraceConsumerBase {
   static ULONG WINAPI ProcessBufferCallback(PEVENT_TRACE_LOGFILE buffer) {
     return ImplClass::ProcessBuffer(buffer);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceConsumerBase);
 };
 
 template <class ImplClass>

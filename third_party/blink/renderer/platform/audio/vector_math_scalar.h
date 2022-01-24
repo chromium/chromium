@@ -347,7 +347,7 @@ static ALWAYS_INLINE void Vclip(const float* source_p,
                                 int dest_stride,
                                 uint32_t frames_to_process) {
   while (frames_to_process > 0u) {
-    *dest_p = clampTo(*source_p, *low_threshold_p, *high_threshold_p);
+    *dest_p = ClampTo(*source_p, *low_threshold_p, *high_threshold_p);
     source_p += source_stride;
     dest_p += dest_stride;
     --frames_to_process;

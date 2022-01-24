@@ -4,11 +4,16 @@
 
 #include "components/translate/content/browser/translate_waiter.h"
 
+#include "base/run_loop.h"
+
 namespace translate {
 
 TranslateWaiter::TranslateWaiter(ContentTranslateDriver* translate_driver,
                                  WaitEvent wait_event)
-    : wait_event_(wait_event) {
+    : wait_event_(wait_event),
+      // Ensure recursive tasks on the message loop so we get translate script
+      // fetch events. This is required for macOS.
+      run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {
   scoped_translation_observation_.Observe(translate_driver);
   scoped_language_detection_observation_.Observe(translate_driver);
 }

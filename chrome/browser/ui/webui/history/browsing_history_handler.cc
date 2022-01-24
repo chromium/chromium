@@ -265,9 +265,8 @@ base::Value HistoryEntryToValue(
   result.SetStringKey("remoteIconUrlForUma",
                       entry.remote_icon_url_for_uma.spec());
 
-  // Additional debugging fields that are only shown if the
-  // history_clusters::kDebug feature is enabled.
-  if (base::FeatureList::IsEnabled(history_clusters::kDebug)) {
+  // Additional debugging fields shown only if the debug feature is enabled.
+  if (base::FeatureList::IsEnabled(history_clusters::kUserVisibleDebug)) {
     base::Value debug(base::Value::Type::DICTIONARY);
     debug.SetBoolKey("isUrlInLocalDatabase", IsUrlInLocalDatabase(entry));
     debug.SetIntKey("visitCount", entry.visit_count);
@@ -314,24 +313,24 @@ void BrowsingHistoryHandler::RegisterMessages() {
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "queryHistory",
       base::BindRepeating(&BrowsingHistoryHandler::HandleQueryHistory,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "queryHistoryContinuation",
       base::BindRepeating(
           &BrowsingHistoryHandler::HandleQueryHistoryContinuation,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeVisits",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveVisits,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&BrowsingHistoryHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeBookmark",
       base::BindRepeating(&BrowsingHistoryHandler::HandleRemoveBookmark,
                           base::Unretained(this)));

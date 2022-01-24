@@ -134,7 +134,7 @@ base::TimeDelta CalculateTimerExpirationDelayInDailyPolicyForTimeZone(
   // If the scheduled task time in the new time zone has already passed then it
   // will happen on the next day.
   if (result <= scheduled_task_internal::kInvalidDelay)
-    result += base::TimeDelta::FromDays(1);
+    result += base::Days(1);
   return result;
 }
 

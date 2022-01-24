@@ -11,11 +11,10 @@
 namespace media {
 
 MojoMediaLog::MojoMediaLog(
-    mojo::PendingAssociatedRemote<mojom::MediaLog> remote_media_log,
+    mojo::PendingRemote<mojom::MediaLog> remote_media_log,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : remote_media_log_(std::move(remote_media_log)),
       task_runner_(std::move(task_runner)) {
-  weak_this_ = weak_ptr_factory_.GetWeakPtr();
   DVLOG(1) << __func__;
 }
 
@@ -28,7 +27,7 @@ MojoMediaLog::~MojoMediaLog() {
 }
 
 void MojoMediaLog::AddLogRecordLocked(std::unique_ptr<MediaLogRecord> event) {
-  DVLOG(1) << __func__;
+  DVLOG(2) << __func__;
   DCHECK(event);
 
   // Don't post unless we need to.  Otherwise, we can order a log entry after
@@ -43,9 +42,10 @@ void MojoMediaLog::AddLogRecordLocked(std::unique_ptr<MediaLogRecord> event) {
   }
 
   // From other threads, we have little choice.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&MojoMediaLog::AddLogRecord, weak_this_,
-                                        std::move(event)));
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MojoMediaLog::AddLogRecord,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(event)));
 }
 
 }  // namespace media

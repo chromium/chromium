@@ -145,10 +145,10 @@
         on-settings-boolean-control-change="onNetworkPredictionChange_">
     </settings-toggle-button>
     <cr-link-row id="site-data-trigger" class="hr"
-        on-click="onSiteDataClick_" label="$i18n{siteSettingsCookieLink}"
+        on-click="onSiteDataClick_" label="[[getSiteDataLabel_()]]"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <div  id="exceptionHeader" hidden="[[!enableContentSettingsRedesign_]]">
+    <div id="exceptionHeader">
       <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
     </div>
     <site-list id="allowExceptionsList"

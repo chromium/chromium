@@ -22,12 +22,13 @@ class CORE_EXPORT PaintWorkletInput : public cc::PaintWorkletInput {
   enum class PaintWorkletInputType {
     kCSS,
     kBackgroundColor,
+    kBoxShadow,
     kClipPath,
   };
 
   // PaintWorkletInput implementation
   gfx::SizeF GetSize() const override {
-    return gfx::SizeF(container_size_.Width(), container_size_.Height());
+    return gfx::SizeF(container_size_.width(), container_size_.height());
   }
   int WorkletId() const override { return worklet_id_; }
   const cc::PaintWorkletInput::PropertyKeys& GetPropertyKeys() const override {
@@ -40,8 +41,6 @@ class CORE_EXPORT PaintWorkletInput : public cc::PaintWorkletInput {
   virtual PaintWorkletInputType GetType() const = 0;
 
  protected:
-  PaintWorkletInput(const FloatSize& container_size, int worklet_id)
-      : container_size_(container_size), worklet_id_(worklet_id) {}
   PaintWorkletInput(const FloatSize& container_size,
                     int worklet_id,
                     cc::PaintWorkletInput::PropertyKeys property_keys)

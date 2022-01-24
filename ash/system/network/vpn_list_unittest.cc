@@ -9,7 +9,6 @@
 
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +44,10 @@ std::vector<VpnProviderPtr> CopyProviders(
 class VpnListTest : public AshTestBase {
  public:
   VpnListTest() = default;
+
+  VpnListTest(const VpnListTest&) = delete;
+  VpnListTest& operator=(const VpnListTest&) = delete;
+
   ~VpnListTest() override = default;
 
   void SetUp() override {
@@ -62,8 +65,6 @@ class VpnListTest : public AshTestBase {
  private:
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<VpnList> vpn_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnListTest);
 };
 
 TEST_F(VpnListTest, BuiltInProvider) {

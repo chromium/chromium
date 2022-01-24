@@ -154,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, DISABLED_Delegation) {
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
 
-  ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("example.com", "/example.com.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForPath("example.com", "/example.com.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {true, true, false, false, false,

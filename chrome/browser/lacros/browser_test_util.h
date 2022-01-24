@@ -30,6 +30,10 @@ void WaitForWindowCreation(const std::string& id);
 // Waits for the window to be destroyed. |id| comes from |GetWindowId|.
 void WaitForWindowDestruction(const std::string& id);
 
+// Waits for the shelf item to either be created or destroyed, matching
+// |exists|.
+void WaitForShelfItem(const std::string& id, bool exists);
+
 // This function relies on |window| already being available in ash. It prompts
 // ash to send the Wayland events associated with a mouse click to the |window|.
 // It waits for the events to be seen by Aura.

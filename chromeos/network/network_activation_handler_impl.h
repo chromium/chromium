@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/network_activation_handler.h"
 #include "chromeos/network/network_handler_callbacks.h"
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
     : public NetworkActivationHandler,
       public base::SupportsWeakPtr<NetworkActivationHandlerImpl> {
  public:
+  NetworkActivationHandlerImpl(const NetworkActivationHandlerImpl&) = delete;
+  NetworkActivationHandlerImpl& operator=(const NetworkActivationHandlerImpl&) =
+      delete;
+
   ~NetworkActivationHandlerImpl() override;
 
  private:
@@ -36,8 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
   NetworkActivationHandlerImpl();
 
   void HandleShillSuccess(base::OnceClosure success_callback);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkActivationHandlerImpl);
 };
 
 }  // namespace chromeos

@@ -25,6 +25,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattServiceServiceProvider
       const dbus::ObjectPath& object_path,
       const std::string& uuid,
       const std::vector<dbus::ObjectPath>& includes);
+
+  FakeBluetoothGattServiceServiceProvider(
+      const FakeBluetoothGattServiceServiceProvider&) = delete;
+  FakeBluetoothGattServiceServiceProvider& operator=(
+      const FakeBluetoothGattServiceServiceProvider&) = delete;
+
   ~FakeBluetoothGattServiceServiceProvider() override;
 
   const dbus::ObjectPath& object_path() const override;
@@ -39,8 +45,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattServiceServiceProvider
 
   // List of included GATT services.
   std::vector<dbus::ObjectPath> includes_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattServiceServiceProvider);
 };
 
 }  // namespace bluez

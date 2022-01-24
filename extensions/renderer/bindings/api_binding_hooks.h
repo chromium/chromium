@@ -51,6 +51,10 @@ class APIBindingHooks {
   };
 
   explicit APIBindingHooks(const std::string& api_name);
+
+  APIBindingHooks(const APIBindingHooks&) = delete;
+  APIBindingHooks& operator=(const APIBindingHooks&) = delete;
+
   ~APIBindingHooks();
 
   // Looks for any custom hooks associated with the given request, and, if any
@@ -63,10 +67,6 @@ class APIBindingHooks {
 
   // Returns a JS interface that can be used to register hooks.
   v8::Local<v8::Object> GetJSHookInterface(v8::Local<v8::Context> context);
-
-  // Gets the custom-set JS callback for the given method, if one exists.
-  v8::Local<v8::Function> GetCustomJSCallback(const std::string& method_name,
-                                              v8::Local<v8::Context> context);
 
   // Creates a new JS event for the given |event_name|, if a custom event is
   // provided. Returns true if an event was created.
@@ -96,8 +96,6 @@ class APIBindingHooks {
   std::string api_name_;
 
   std::unique_ptr<APIBindingHooksDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingHooks);
 };
 
 }  // namespace extensions

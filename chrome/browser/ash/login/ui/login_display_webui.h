@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_DISPLAY_WEBUI_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "components/user_manager/user.h"
@@ -21,6 +20,10 @@ class LoginDisplayWebUI : public LoginDisplay,
                           public ui::UserActivityObserver {
  public:
   LoginDisplayWebUI();
+
+  LoginDisplayWebUI(const LoginDisplayWebUI&) = delete;
+  LoginDisplayWebUI& operator=(const LoginDisplayWebUI&) = delete;
+
   ~LoginDisplayWebUI() override;
 
   // LoginDisplay implementation:
@@ -57,8 +60,6 @@ class LoginDisplayWebUI : public LoginDisplay,
 
   // Reference to the WebUI handling layer for the login screen
   LoginDisplayWebUIHandler* webui_handler_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginDisplayWebUI);
 };
 
 }  // namespace ash

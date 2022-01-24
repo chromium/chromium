@@ -21,7 +21,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/instant_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -83,8 +83,7 @@ ProfileResetter::ProfileResetter(Profile* profile)
     : profile_(profile),
       template_url_service_(TemplateURLServiceFactory::GetForProfile(profile_)),
       pending_reset_flags_(0),
-      cookies_remover_(nullptr),
-      ntp_service_(InstantServiceFactory::GetForProfile(profile)) {
+      cookies_remover_(nullptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(profile_);
 }
@@ -342,7 +341,7 @@ void ProfileResetter::ResetShortcuts() {
 }
 
 void ProfileResetter::ResetNtpCustomizations() {
-  ntp_service_->ResetToDefault();
+  NtpCustomBackgroundService::ResetProfilePrefs(profile_);
   NewTabPageUI::ResetProfilePrefs(profile_->GetPrefs());
   MarkAsDone(NTP_CUSTOMIZATIONS);
 }

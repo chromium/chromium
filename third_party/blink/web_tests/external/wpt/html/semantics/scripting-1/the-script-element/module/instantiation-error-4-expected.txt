@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that loading a graph in which a module is already errored results in an error. assert_array_equals: expected property 2 to be "Uncaught SyntaxError: The requested module './instantiation-error-4c.js' does not provide an export named 'something'" but got "Uncaught SyntaxError: The requested module './instantiation-error-4d.js' does not provide an export named 'something'" (expected array ["Uncaught SyntaxError: The requested module './instantiation-error-4c.js' does not provide an export named 'something'", 1, "Uncaught SyntaxError: The requested module './instantiation-error-4c.js' does not provide an export named 'something'", 2] got ["Uncaught SyntaxError: The requested module './instantiation-error-4c.js' does not provide an export named 'something'", 1, "Uncaught SyntaxError: The requested module './instantiation-error-4d.js' does not provide an export named 'something'", 2])
-Harness: the test ran to completion.
-

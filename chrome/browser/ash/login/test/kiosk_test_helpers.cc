@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
   scoped_observations_.AddObservation(KioskAppManager::Get());
@@ -60,4 +60,4 @@ ScopedCanConfigureNetwork::~ScopedCanConfigureNetwork() {
       nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

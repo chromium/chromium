@@ -29,6 +29,7 @@ const char kMailToScheme[] = "mailto";
 const char kQuicTransportScheme[] = "quic-transport";
 const char kTelScheme[] = "tel";
 const char kUrnScheme[] = "urn";
+const char kUuidInPackageScheme[] = "uuid-in-package";
 const char kWsScheme[] = "ws";
 const char kWssScheme[] = "wss";
 

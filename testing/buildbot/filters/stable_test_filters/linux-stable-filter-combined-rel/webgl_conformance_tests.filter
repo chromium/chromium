@@ -1,0 +1,7 @@
+-conformance/buffers/buffer-data-and-buffer-sub-data.html
+-conformance/extensions/angle-instanced-arrays-out-of-bounds.html
+-conformance/extensions/khr-parallel-shader-compile.html
+-conformance/extensions/s3tc-and-rgtc.html
+-conformance/limits/gl-max-texture-dimensions.html
+-conformance/programs/program-handling.html
+-conformance/rendering/blending.html

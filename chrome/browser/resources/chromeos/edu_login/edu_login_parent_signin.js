@@ -8,7 +8,7 @@ import './edu_login_template.js';
 import './edu_login_button.js';
 import './icons.js';
 
-import {getImage} from 'chrome://resources/js/icon.m.js';
+import {getImage} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

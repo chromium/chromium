@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -28,7 +27,9 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/payments/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -52,14 +53,6 @@ namespace {
 
 const char kGetUnmaskDetailsRequestPath[] =
     "payments/apis/chromepaymentsservice/getdetailsforgetrealpan";
-
-const char kUnmaskCardRequestPath[] =
-    "payments/apis-secure/creditcardservice/getrealpan?s7e_suffix=chromewallet";
-const char kUnmaskCardRequestFormat[] =
-    "requestContentType=application/json; charset=utf-8&request=%s"
-    "&s7e_13_cvc=%s";
-const char kUnmaskCardRequestFormatWithoutCvc[] =
-    "requestContentType=application/json; charset=utf-8&request=%s";
 
 const char kOptChangeRequestPath[] =
     "payments/apis/chromepaymentsservice/updateautofilluserpreference";
@@ -103,31 +96,6 @@ GURL GetRequestUrl(const std::string& path) {
   }
 
   return GetBaseSecureUrl().Resolve(path);
-}
-
-base::Value BuildCustomerContextDictionary(int64_t external_customer_id) {
-  base::Value customer_context(base::Value::Type::DICTIONARY);
-  customer_context.SetKey("external_customer_id",
-                          base::Value(std::to_string(external_customer_id)));
-  return customer_context;
-}
-
-base::Value BuildRiskDictionary(const std::string& encoded_risk_data) {
-  base::Value risk_data(base::Value::Type::DICTIONARY);
-#if defined(OS_IOS)
-  // Browser fingerprinting is not available on iOS. Instead, we generate
-  // RiskAdvisoryData.
-  risk_data.SetKey("message_type", base::Value("RISK_ADVISORY_DATA"));
-  risk_data.SetKey("encoding_type", base::Value("BASE_64_URL"));
-#else
-  risk_data.SetKey("message_type",
-                   base::Value("BROWSER_NATIVE_FINGERPRINTING"));
-  risk_data.SetKey("encoding_type", base::Value("BASE_64"));
-#endif
-
-  risk_data.SetKey("value", base::Value(encoded_risk_data));
-
-  return risk_data;
 }
 
 void SetStringIfNotEmpty(const AutofillDataModel& profile,
@@ -241,6 +209,7 @@ void SetActiveExperiments(const std::vector<const char*>& active_experiments,
                       std::move(active_chrome_experiments));
 }
 
+// TODO(crbug.com/1249665): Move requests to separate files.
 class GetUnmaskDetailsRequest : public PaymentsRequest {
  public:
   GetUnmaskDetailsRequest(
@@ -251,6 +220,10 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
       : callback_(std::move(callback)),
         app_locale_(app_locale),
         full_sync_enabled_(full_sync_enabled) {}
+
+  GetUnmaskDetailsRequest(const GetUnmaskDetailsRequest&) = delete;
+  GetUnmaskDetailsRequest& operator=(const GetUnmaskDetailsRequest&) = delete;
+
   ~GetUnmaskDetailsRequest() override {}
 
   std::string GetRequestUrlPath() override {
@@ -283,10 +256,10 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
     if (method) {
       if (*method == "CVC") {
         unmask_details_.unmask_auth_method =
-            AutofillClient::UnmaskAuthMethod::CVC;
+            AutofillClient::UnmaskAuthMethod::kCvc;
       } else if (*method == "FIDO") {
         unmask_details_.unmask_auth_method =
-            AutofillClient::UnmaskAuthMethod::FIDO;
+            AutofillClient::UnmaskAuthMethod::kFido;
       }
     }
 
@@ -311,7 +284,7 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
 
   bool IsResponseComplete() override {
     return unmask_details_.unmask_auth_method !=
-           AutofillClient::UnmaskAuthMethod::UNKNOWN;
+           AutofillClient::UnmaskAuthMethod::kUnknown;
   }
 
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override {
@@ -328,193 +301,6 @@ class GetUnmaskDetailsRequest : public PaymentsRequest {
   // Suggested authentication method and other information to facilitate card
   // unmasking.
   payments::PaymentsClient::UnmaskDetails unmask_details_;
-  DISALLOW_COPY_AND_ASSIGN(GetUnmaskDetailsRequest);
-};
-
-class UnmaskCardRequest : public PaymentsRequest {
- public:
-  UnmaskCardRequest(
-      const PaymentsClient::UnmaskRequestDetails& request_details,
-      const bool full_sync_enabled,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              PaymentsClient::UnmaskResponseDetails&)> callback)
-      : request_details_(request_details),
-        full_sync_enabled_(full_sync_enabled),
-        callback_(std::move(callback)) {
-    DCHECK_NE(CreditCard::LOCAL_CARD, request_details.card.record_type());
-  }
-  ~UnmaskCardRequest() override {}
-
-  std::string GetRequestUrlPath() override { return kUnmaskCardRequestPath; }
-
-  std::string GetRequestContentType() override {
-    return "application/x-www-form-urlencoded";
-  }
-
-  std::string GetRequestContent() override {
-    base::Value request_dict(base::Value::Type::DICTIONARY);
-    request_dict.SetKey("credit_card_id",
-                        base::Value(request_details_.card.server_id()));
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillAlwaysReturnCloudTokenizedCard)) {
-      // See b/140727361.
-      request_dict.SetKey("instrument_token",
-                          base::Value("INSTRUMENT_TOKEN_FOR_TEST"));
-    }
-    request_dict.SetKey("risk_data_encoded",
-                        BuildRiskDictionary(request_details_.risk_data));
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetKey("billable_service",
-                   base::Value(kUnmaskCardBillableServiceNumber));
-    if (request_details_.billing_customer_number != 0) {
-      context.SetKey("customer_context",
-                     BuildCustomerContextDictionary(
-                         request_details_.billing_customer_number));
-    }
-    request_dict.SetKey("context", std::move(context));
-
-    base::Value chrome_user_context(base::Value::Type::DICTIONARY);
-    chrome_user_context.SetKey("full_sync_enabled",
-                               base::Value(full_sync_enabled_));
-    request_dict.SetKey("chrome_user_context", std::move(chrome_user_context));
-
-    int value = 0;
-    if (base::StringToInt(request_details_.user_response.exp_month, &value))
-      request_dict.SetKey("expiration_month", base::Value(value));
-    if (base::StringToInt(request_details_.user_response.exp_year, &value))
-      request_dict.SetKey("expiration_year", base::Value(value));
-
-    request_dict.SetKey(
-        "opt_in_fido_auth",
-        base::Value(request_details_.user_response.enable_fido_auth));
-
-    // Either FIDO assertion info is set or CVC is set, never both.
-    bool is_cvc_auth = !request_details_.user_response.cvc.empty();
-    bool is_fido_auth = request_details_.fido_assertion_info.has_value();
-
-    DCHECK_NE(is_cvc_auth, is_fido_auth);
-    if (is_cvc_auth) {
-      request_dict.SetKey("encrypted_cvc", base::Value("__param:s7e_13_cvc"));
-    } else {
-      request_dict.SetKey(
-          "fido_assertion_info",
-          std::move(request_details_.fido_assertion_info.value()));
-    }
-
-    if (request_details_.last_committed_url_origin.has_value()) {
-      base::Value virtual_card_request_info(base::Value::Type::DICTIONARY);
-      virtual_card_request_info.SetKey(
-          "merchant_domain",
-          base::Value(
-              request_details_.last_committed_url_origin.value().spec()));
-      request_dict.SetKey("virtual_card_request_info",
-                          std::move(virtual_card_request_info));
-    }
-
-    std::string json_request;
-    base::JSONWriter::Write(request_dict, &json_request);
-    std::string request_content;
-    if (is_cvc_auth) {
-      request_content = base::StringPrintf(
-          kUnmaskCardRequestFormat,
-          net::EscapeUrlEncodedData(json_request, true).c_str(),
-          net::EscapeUrlEncodedData(
-              base::UTF16ToASCII(request_details_.user_response.cvc), true)
-              .c_str());
-    } else {
-      request_content = base::StringPrintf(
-          kUnmaskCardRequestFormatWithoutCvc,
-          net::EscapeUrlEncodedData(json_request, true).c_str());
-    }
-
-    // Payments is reporting receiving blank or non-standard-length CVCs.
-    // Log CVC length being sent to gauge how often this is happening.
-    if (request_details_.reason == AutofillClient::UNMASK_FOR_AUTOFILL) {
-      base::UmaHistogramCounts1000("Autofill.CardUnmask.CvcLength.ForAutofill",
-                                   request_details_.user_response.cvc.length());
-    } else if (request_details_.reason ==
-               AutofillClient::UNMASK_FOR_PAYMENT_REQUEST) {
-      base::UmaHistogramCounts1000(
-          "Autofill.CardUnmask.CvcLength.ForPaymentRequest",
-          request_details_.user_response.cvc.length());
-    }
-
-    VLOG(3) << "getrealpan request body: " << request_content;
-    return request_content;
-  }
-
-  void ParseResponse(const base::Value& response) override {
-    const std::string* pan = response.FindStringKey("pan");
-    response_details_.real_pan = pan ? *pan : std::string();
-
-    const std::string* dcvv = response.FindStringKey("dcvv");
-    response_details_.dcvv = dcvv ? *dcvv : std::string();
-
-    const base::Value* expiration =
-        response.FindKeyOfType("expiration", base::Value::Type::DICTIONARY);
-    if (expiration) {
-      if (absl::optional<int> month = expiration->FindIntKey("month")) {
-        response_details_.expiration_month =
-            base::NumberToString(month.value());
-      }
-
-      if (absl::optional<int> year = expiration->FindIntKey("year"))
-        response_details_.expiration_year = base::NumberToString(year.value());
-    }
-
-    const base::Value* creation_options = response.FindKeyOfType(
-        "fido_creation_options", base::Value::Type::DICTIONARY);
-    if (creation_options)
-      response_details_.fido_creation_options = creation_options->Clone();
-
-    const base::Value* request_options = response.FindKeyOfType(
-        "fido_request_options", base::Value::Type::DICTIONARY);
-    if (request_options)
-      response_details_.fido_request_options = request_options->Clone();
-
-    const std::string* token =
-        response.FindStringKey("card_authorization_token");
-    response_details_.card_authorization_token = token ? *token : std::string();
-
-    if (request_details_.card.record_type() == CreditCard::VIRTUAL_CARD) {
-      response_details_.card_type =
-          AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD;
-    } else if (request_details_.card.record_type() ==
-               CreditCard::MASKED_SERVER_CARD) {
-      response_details_.card_type =
-          AutofillClient::PaymentsRpcCardType::SERVER_CARD;
-    } else {
-      NOTREACHED();
-    }
-  }
-
-  bool IsResponseComplete() override {
-    switch (response_details_.card_type) {
-      case AutofillClient::PaymentsRpcCardType::UNKNOWN_TYPE:
-        return false;
-      case AutofillClient::PaymentsRpcCardType::SERVER_CARD:
-        return !response_details_.real_pan.empty();
-      case AutofillClient::PaymentsRpcCardType::VIRTUAL_CARD:
-        return !response_details_.real_pan.empty() &&
-               !response_details_.expiration_month.empty() &&
-               !response_details_.expiration_year.empty() &&
-               !response_details_.dcvv.empty();
-    }
-  }
-
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override {
-    std::move(callback_).Run(result, response_details_);
-  }
-
- private:
-  PaymentsClient::UnmaskRequestDetails request_details_;
-  const bool full_sync_enabled_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          PaymentsClient::UnmaskResponseDetails&)>
-      callback_;
-  PaymentsClient::UnmaskResponseDetails response_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnmaskCardRequest);
 };
 
 class OptChangeRequest : public PaymentsRequest {
@@ -528,6 +314,10 @@ class OptChangeRequest : public PaymentsRequest {
       : request_details_(request_details),
         callback_(std::move(callback)),
         full_sync_enabled_(full_sync_enabled) {}
+
+  OptChangeRequest(const OptChangeRequest&) = delete;
+  OptChangeRequest& operator=(const OptChangeRequest&) = delete;
+
   ~OptChangeRequest() override {}
 
   std::string GetRequestUrlPath() override { return kOptChangeRequestPath; }
@@ -625,8 +415,6 @@ class OptChangeRequest : public PaymentsRequest {
       callback_;
   const bool full_sync_enabled_;
   PaymentsClient::OptChangeResponseDetails response_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptChangeRequest);
 };
 
 class GetUploadDetailsRequest : public PaymentsRequest {
@@ -651,6 +439,10 @@ class GetUploadDetailsRequest : public PaymentsRequest {
         callback_(std::move(callback)),
         billable_service_number_(billable_service_number),
         upload_card_source_(upload_card_source) {}
+
+  GetUploadDetailsRequest(const GetUploadDetailsRequest&) = delete;
+  GetUploadDetailsRequest& operator=(const GetUploadDetailsRequest&) = delete;
+
   ~GetUploadDetailsRequest() override {}
 
   std::string GetRequestUrlPath() override {
@@ -797,8 +589,6 @@ class GetUploadDetailsRequest : public PaymentsRequest {
   std::vector<std::pair<int, int>> supported_card_bin_ranges_;
   const int billable_service_number_;
   PaymentsClient::UploadCardSource upload_card_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetUploadDetailsRequest);
 };
 
 class UploadCardRequest : public PaymentsRequest {
@@ -810,6 +600,10 @@ class UploadCardRequest : public PaymentsRequest {
       : request_details_(request_details),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {}
+
+  UploadCardRequest(const UploadCardRequest&) = delete;
+  UploadCardRequest& operator=(const UploadCardRequest&) = delete;
+
   ~UploadCardRequest() override {}
 
   std::string GetRequestUrlPath() override { return kUploadCardRequestPath; }
@@ -914,8 +708,6 @@ class UploadCardRequest : public PaymentsRequest {
                           const std::string&)>
       callback_;
   std::string server_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadCardRequest);
 };
 
 class MigrateCardsRequest : public PaymentsRequest {
@@ -929,6 +721,10 @@ class MigrateCardsRequest : public PaymentsRequest {
         migratable_credit_cards_(migratable_credit_cards),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {}
+
+  MigrateCardsRequest(const MigrateCardsRequest&) = delete;
+  MigrateCardsRequest& operator=(const MigrateCardsRequest&) = delete;
+
   ~MigrateCardsRequest() override {}
 
   std::string GetRequestUrlPath() override { return kMigrateCardsRequestPath; }
@@ -1042,8 +838,6 @@ class MigrateCardsRequest : public PaymentsRequest {
   MigrateCardsCallback callback_;
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   std::string display_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(MigrateCardsRequest);
 };
 
 }  // namespace
@@ -1069,8 +863,12 @@ PaymentsClient::UnmaskDetails& PaymentsClient::UnmaskDetails::operator=(
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails() = default;
 PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
     const UnmaskRequestDetails& other) {
+  *this = other;
+}
+PaymentsClient::UnmaskRequestDetails&
+PaymentsClient::UnmaskRequestDetails::operator=(
+    const PaymentsClient::UnmaskRequestDetails& other) {
   billing_customer_number = other.billing_customer_number;
-  reason = other.reason;
   card = other.card;
   risk_data = other.risk_data;
   user_response = other.user_response;
@@ -1079,7 +877,10 @@ PaymentsClient::UnmaskRequestDetails::UnmaskRequestDetails(
   } else {
     fido_assertion_info.reset();
   }
+  context_token = other.context_token;
+  otp = other.otp;
   last_committed_url_origin = other.last_committed_url_origin;
+  return *this;
 }
 PaymentsClient::UnmaskRequestDetails::~UnmaskRequestDetails() = default;
 
@@ -1102,7 +903,10 @@ operator=(const PaymentsClient::UnmaskResponseDetails& other) {
   } else {
     fido_request_options.reset();
   }
+  card_unmask_challenge_options = other.card_unmask_challenge_options;
   card_authorization_token = other.card_authorization_token;
+  flow_status = other.flow_status;
+  context_token = other.context_token;
   return *this;
 }
 
@@ -1147,6 +951,14 @@ PaymentsClient::MigrationRequestDetails::MigrationRequestDetails() = default;
 PaymentsClient::MigrationRequestDetails::MigrationRequestDetails(
     const MigrationRequestDetails& other) = default;
 PaymentsClient::MigrationRequestDetails::~MigrationRequestDetails() = default;
+
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    SelectChallengeOptionRequestDetails() = default;
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    SelectChallengeOptionRequestDetails(
+        const SelectChallengeOptionRequestDetails& other) = default;
+PaymentsClient::SelectChallengeOptionRequestDetails::
+    ~SelectChallengeOptionRequestDetails() = default;
 
 PaymentsClient::PaymentsClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -1239,6 +1051,15 @@ void PaymentsClient::MigrateCards(
       /*authenticate=*/true);
 }
 
+void PaymentsClient::SelectChallengeOption(
+    const SelectChallengeOptionRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const std::string&)> callback) {
+  IssueRequest(std::make_unique<SelectChallengeOptionRequest>(
+                   request_details, std::move(callback)),
+               /*authenticate=*/true);
+}
+
 void PaymentsClient::CancelRequest() {
   request_.reset();
   resource_request_.reset();
@@ -1304,7 +1125,8 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
                                                     const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
-  AutofillClient::PaymentsRpcResult result = AutofillClient::SUCCESS;
+  AutofillClient::PaymentsRpcResult result =
+      AutofillClient::PaymentsRpcResult::kSuccess;
 
   if (!request_)
     return;
@@ -1331,14 +1153,16 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
 
       if (base::LowerCaseEqualsASCII(error_api_error_reason,
                                      "virtual_card_temporary_error")) {
-        result = AutofillClient::VCN_RETRIEVAL_TRY_AGAIN_FAILURE;
+        result =
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure;
       } else if (base::LowerCaseEqualsASCII(error_api_error_reason,
                                             "virtual_card_permanent_error")) {
-        result = AutofillClient::VCN_RETRIEVAL_PERMANENT_FAILURE;
+        result =
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
       } else if (base::LowerCaseEqualsASCII(error_code, "internal")) {
-        result = AutofillClient::TRY_AGAIN_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
-        result = AutofillClient::PERMANENT_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
       }
 
       break;
@@ -1346,7 +1170,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
 
     case net::HTTP_UNAUTHORIZED: {
       if (has_retried_authorization_) {
-        result = AutofillClient::PERMANENT_FAILURE;
+        result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
         break;
       }
       has_retried_authorization_ = true;
@@ -1359,18 +1183,18 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
     // TODO(estade): is this actually how network connectivity issues are
     // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
-      result = AutofillClient::NETWORK_ERROR;
+      result = AutofillClient::PaymentsRpcResult::kNetworkError;
       break;
     }
 
     // Handle anything else as a generic (permanent) failure.
     default: {
-      result = AutofillClient::PERMANENT_FAILURE;
+      result = AutofillClient::PaymentsRpcResult::kPermanentFailure;
       break;
     }
   }
 
-  if (result != AutofillClient::SUCCESS) {
+  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
     VLOG(1) << "Payments returned error: " << response_code
             << " with data: " << data;
   }
@@ -1399,7 +1223,8 @@ void PaymentsClient::AccessTokenError(const GoogleServiceAuthError& error) {
   if (simple_url_loader_)
     simple_url_loader_.reset();
   if (request_)
-    request_->RespondToDelegate(AutofillClient::PERMANENT_FAILURE);
+    request_->RespondToDelegate(
+        AutofillClient::PaymentsRpcResult::kPermanentFailure);
 }
 
 void PaymentsClient::StartTokenFetch(bool invalidate_old) {

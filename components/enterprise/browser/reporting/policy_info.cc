@@ -59,8 +59,8 @@ em::Policy_PolicySource GetSource(const base::Value& policy) {
           Policy_PolicySource_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED;
     case policy::POLICY_SOURCE_PLATFORM:
       return em::Policy_PolicySource_SOURCE_PLATFORM;
-    case policy::POLICY_SOURCE_PRIORITY_CLOUD:
-      return em::Policy_PolicySource_SOURCE_PRIORITY_CLOUD;
+    case policy::POLICY_SOURCE_PRIORITY_CLOUD_DEPRECATED:
+      return em::Policy_PolicySource_SOURCE_PRIORITY_CLOUD_DEPRECATED;
     case policy::POLICY_SOURCE_MERGED:
       return em::Policy_PolicySource_SOURCE_MERGED;
     case policy::POLICY_SOURCE_CLOUD_FROM_ASH:
@@ -126,12 +126,12 @@ void AppendExtensionPolicyInfoIntoProfileReport(
 
   for (auto extension_iter :
        policies.FindKey("extensionPolicies")->DictItems()) {
-    const base::Value& policies = extension_iter.second;
-    if (policies.DictSize() == 0)
+    const base::Value& policies_value = extension_iter.second;
+    if (policies_value.DictSize() == 0)
       continue;
     auto* extension = profile_info->add_extension_policies();
     extension->set_extension_id(extension_iter.first);
-    for (auto policy_iter : policies.DictItems()) {
+    for (auto policy_iter : policies_value.DictItems()) {
       UpdatePolicyInfo(extension->add_policies(), policy_iter.first,
                        policy_iter.second);
     }

@@ -5,6 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_
 
+#include <cstdint>
+
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/check.h"
@@ -59,6 +61,20 @@
 #define PA_PCHECK(condition) PCHECK(condition)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+// Expensive dchecks that run within *Scan. These checks are only enabled in
+// debug builds with dchecks enabled.
+#if !defined(NDEBUG)
+#define PA_SCAN_DCHECK_IS_ON() DCHECK_IS_ON()
+#else
+#define PA_SCAN_DCHECK_IS_ON() 0
+#endif
+
+#if PA_SCAN_DCHECK_IS_ON()
+#define PA_SCAN_DCHECK(expr) PA_DCHECK(expr)
+#else
+#define PA_SCAN_DCHECK(expr) EAT_CHECK_STREAM_PARAMS(!(expr))
+#endif
+
 #if defined(PAGE_ALLOCATOR_CONSTANTS_ARE_CONSTEXPR)
 
 // Use this macro to assert on things that are conditionally constexpr as
@@ -79,5 +95,57 @@
   } while (false)
 
 #endif
+
+namespace pa {
+
+// Used for PA_DEBUG_DATA_ON_STACK, below.
+struct alignas(16) DebugKv {
+  // 16 bytes object aligned on 16 bytes, to make it easier to see in crash
+  // reports.
+  char k[8] = {};  // Not necessarily 0-terminated.
+  uint64_t v = 0;
+
+  DebugKv(const char* key, size_t value) {
+    // Fill with ' ', so that the stack dump is nicer to read.  Not using
+    // memset() on purpose, this header is included from *many* places.
+    for (int index = 0; index < 8; index++) {
+      k[index] = ' ';
+    }
+
+    for (int index = 0; index < 8; index++) {
+      k[index] = key[index];
+      if (key[index] == '\0')
+        break;
+    }
+    v = value;
+  }
+};
+}  // namespace pa
+
+#define PA_CONCAT(x, y) x##y
+#define PA_CONCAT2(x, y) PA_CONCAT(x, y)
+#define PA_DEBUG_UNIQUE_NAME PA_CONCAT2(kv, __LINE__)
+
+// Puts a key-value pair on the stack for debugging. `base::debug::Alias()`
+// makes sure a local variable is saved on the stack, but the variables can be
+// hard to find in crash reports, particularly if the frame pointer is not
+// present / invalid.
+//
+// This puts a key right before the value on the stack. The key has to be a C
+// string, which gets truncated if it's longer than 8 characters.
+// Example use:
+// PA_DEBUG_DATA_ON_STACK("size", 0x42)
+//
+// Sample output in lldb:
+// (lldb) x 0x00007fffffffd0d0 0x00007fffffffd0f0
+// 0x7fffffffd0d0: 73 69 7a 65 00 00 00 00 42 00 00 00 00 00 00 00
+// size............
+//
+// With gdb, one can use:
+// x/8g <STACK_POINTER>
+// to see the data. With lldb, "x <STACK_POINTER> <FRAME_POJNTER>" can be used.
+#define PA_DEBUG_DATA_ON_STACK(name, value)      \
+  pa::DebugKv PA_DEBUG_UNIQUE_NAME{name, value}; \
+  base::debug::Alias(&PA_DEBUG_UNIQUE_NAME);
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CHECK_H_

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 
 import android.content.res.Configuration;
@@ -34,7 +35,6 @@ import android.widget.TextView;
 
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -46,9 +46,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.tab_ui.R;
@@ -71,7 +71,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceTrackingDialogTest {
     // clang-format on
@@ -91,14 +91,8 @@ public class PriceTrackingDialogTest {
                                                           .setRevision(RENDER_TEST_REVISION)
                                                           .build();
 
-    @Rule
-    public IntentsTestRule<ChromeActivity> mIntentTestRule =
-            new IntentsTestRule<>(ChromeActivity.class, false, false);
-
     @Before
     public void setUp() throws Exception {
-        // Since we don't use IntentsTestRule to start an Activity, we have to call init() here.
-        // IntentsTestRule will call release() regardless of whether an Activity was started.
         Intents.init();
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -113,12 +107,12 @@ public class PriceTrackingDialogTest {
     public void tearDown() {
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(null);
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
+        Intents.release();
     }
 
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
-    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testShowAndHidePriceTrackingDialog() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -228,6 +222,7 @@ public class PriceTrackingDialogTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_price_notification/true"})
+    @FlakyTest(message = "https://crbug.com/1233364")
     public void testRenderPriceTrackingDialog_Landscape() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 

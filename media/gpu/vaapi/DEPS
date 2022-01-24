@@ -7,7 +7,4 @@ specific_include_rules = {
   ".*_unittest\.cc": [
     "+third_party/libwebp",
   ],
-  "vaapi_wrapper.cc": [
-    "+third_party/minigbm/src/external/i915_drm.h",
-  ],
 }

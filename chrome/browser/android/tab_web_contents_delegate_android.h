@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -40,6 +39,11 @@ class TabWebContentsDelegateAndroid
       public find_in_page::FindResultObserver {
  public:
   TabWebContentsDelegateAndroid(JNIEnv* env, jobject obj);
+
+  TabWebContentsDelegateAndroid(const TabWebContentsDelegateAndroid&) = delete;
+  TabWebContentsDelegateAndroid& operator=(
+      const TabWebContentsDelegateAndroid&) = delete;
+
   ~TabWebContentsDelegateAndroid() override;
 
   void PortalWebContentsCreated(content::WebContents* portal_contents) override;
@@ -86,9 +90,6 @@ class TabWebContentsDelegateAndroid
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
                       bool* was_blocked) override;
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
@@ -132,6 +133,7 @@ class TabWebContentsDelegateAndroid
   bool ShouldEnableEmbeddedMediaExperience() const;
   bool IsPictureInPictureEnabled() const;
   bool IsNightModeEnabled() const;
+  bool IsForceDarkWebContentEnabled() const;
   bool CanShowAppBanners() const;
   bool IsTabLargeEnoughForDesktopSite() const;
 
@@ -149,8 +151,6 @@ class TabWebContentsDelegateAndroid
   base::ScopedMultiSourceObservation<find_in_page::FindTabHelper,
                                      find_in_page::FindResultObserver>
       find_result_observations_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabWebContentsDelegateAndroid);
 };
 
 }  // namespace android

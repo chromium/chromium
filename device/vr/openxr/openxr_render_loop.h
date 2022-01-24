@@ -44,6 +44,10 @@ class OpenXrRenderLoop : public XRCompositorCommon,
       VizContextProviderFactoryAsync context_provider_factory_async,
       XrInstance instance,
       const OpenXrExtensionHelper& extension_helper_);
+
+  OpenXrRenderLoop(const OpenXrRenderLoop&) = delete;
+  OpenXrRenderLoop& operator=(const OpenXrRenderLoop&) = delete;
+
   ~OpenXrRenderLoop() override;
 
  private:
@@ -74,7 +78,7 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void InitializeDisplayInfo();
+  void SendInitialDisplayInfo();
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
@@ -137,7 +141,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
       on_display_info_changed_;
-  mojom::VRDisplayInfoPtr current_display_info_;
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};
@@ -147,8 +150,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXrRenderLoop);
 };
 
 }  // namespace device

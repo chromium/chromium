@@ -8,6 +8,7 @@
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 
+#include "base/containers/flat_map.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,7 +18,6 @@ namespace autofill_assistant {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
-using ::testing::Return;
 
 namespace {
 
@@ -77,7 +77,8 @@ TEST_F(StaticTriggerConditionsTest, HasResults) {
 TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
   TriggerContext trigger_context = {
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"must_match", "matching_value"}}),
+          base::flat_map<std::string, std::string>{
+              {"must_match", "matching_value"}}),
       {}};
   StaticTriggerConditions static_trigger_conditions = {
       &fake_platform_delegate_, &trigger_context, GURL(kFakeUrl)};

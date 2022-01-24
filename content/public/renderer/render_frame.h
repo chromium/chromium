@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -213,9 +213,6 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual void PluginDidStartLoading() = 0;
   virtual void PluginDidStopLoading() = 0;
 #endif
-
-  // Returns true if this frame is a FTP directory listing.
-  virtual bool IsFTPDirectoryListing() = 0;
 
   // Notifies the browser of text selection changes made.
   virtual void SetSelectedText(const std::u16string& selection_text,

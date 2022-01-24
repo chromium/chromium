@@ -7,9 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/platform/heap/gc_task_runner.h"

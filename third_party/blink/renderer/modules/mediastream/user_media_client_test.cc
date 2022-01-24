@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -262,6 +263,12 @@ class MockMediaDevicesDispatcherHost
   void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
     NOTREACHED();
   }
+
+#if !defined(OS_ANDROID)
+  void CloseFocusWindowOfOpportunity(const String& label) override {
+    NOTREACHED();
+  }
+#endif
 
   void GetAllVideoInputDeviceFormats(
       const String&,

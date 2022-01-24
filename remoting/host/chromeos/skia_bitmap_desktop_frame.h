@@ -20,6 +20,10 @@ namespace remoting {
 class SkiaBitmapDesktopFrame : public webrtc::DesktopFrame {
  public:
   static SkiaBitmapDesktopFrame* Create(std::unique_ptr<SkBitmap> bitmap);
+
+  SkiaBitmapDesktopFrame(const SkiaBitmapDesktopFrame&) = delete;
+  SkiaBitmapDesktopFrame& operator=(const SkiaBitmapDesktopFrame&) = delete;
+
   ~SkiaBitmapDesktopFrame() override;
 
  private:
@@ -29,8 +33,6 @@ class SkiaBitmapDesktopFrame : public webrtc::DesktopFrame {
                          std::unique_ptr<SkBitmap> bitmap);
 
   std::unique_ptr<SkBitmap> bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaBitmapDesktopFrame);
 };
 
 }  // namespace remoting

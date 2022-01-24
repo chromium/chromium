@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "ui/base/x/x11_menu_list.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -34,22 +33,10 @@ bool EnumerateChildren(ShouldStopIteratingCallback should_stop_iterating,
   if (depth > max_depth)
     return false;
 
-  std::vector<x11::Window> windows;
-  if (depth == 0) {
-    XMenuList::GetInstance()->InsertMenuWindows(&windows);
-    // Enumerate the menus first.
-    std::vector<x11::Window>::iterator iter;
-    for (iter = windows.begin(); iter != windows.end(); iter++) {
-      if (should_stop_iterating.Run(*iter))
-        return true;
-    }
-    windows.clear();
-  }
-
   auto query_tree = x11::Connection::Get()->QueryTree({window}).Sync();
   if (!query_tree)
     return false;
-  windows = std::move(query_tree->children);
+  std::vector<x11::Window> windows = std::move(query_tree->children);
 
   // XQueryTree returns the children of |window| in bottom-to-top order, so
   // reverse-iterate the list to check the windows from top-to-bottom.
@@ -81,36 +68,23 @@ bool EnumerateAllWindows(ShouldStopIteratingCallback should_stop_iterating,
 
 void EnumerateTopLevelWindows(
     ui::ShouldStopIteratingCallback should_stop_iterating) {
-  std::vector<x11::Window> stack;
-  if (!ui::GetXWindowStack(ui::GetX11RootWindow(), &stack)) {
-    // Window Manager doesn't support _NET_CLIENT_LIST_STACKING, so fall back
-    // to old school enumeration of all X windows.  Some WMs parent 'top-level'
-    // windows in unnamed actual top-level windows (ion WM), so extend the
-    // search depth to all children of top-level windows.
-    const int kMaxSearchDepth = 1;
-    ui::EnumerateAllWindows(should_stop_iterating, kMaxSearchDepth);
-    return;
-  }
-  XMenuList::GetInstance()->InsertMenuWindows(&stack);
-
-  std::vector<x11::Window>::iterator iter;
-  for (iter = stack.begin(); iter != stack.end(); iter++) {
-    if (should_stop_iterating.Run(*iter))
-      return;
-  }
+  // Some WMs parent 'top-level' windows in unnamed actual top-level windows
+  // (ion WM), so extend the search depth to all children of top-level windows.
+  const int kMaxSearchDepth = 1;
+  ui::EnumerateAllWindows(should_stop_iterating, kMaxSearchDepth);
 }
 
 }  // namespace
 
-X11TopmostWindowFinder::X11TopmostWindowFinder() = default;
+X11TopmostWindowFinder::X11TopmostWindowFinder(
+    const std::set<gfx::AcceleratedWidget>& ignore)
+    : ignore_(ignore) {}
 
 X11TopmostWindowFinder::~X11TopmostWindowFinder() = default;
 
 x11::Window X11TopmostWindowFinder::FindLocalProcessWindowAt(
-    const gfx::Point& screen_loc_in_pixels,
-    const std::set<gfx::AcceleratedWidget>& ignore) {
+    const gfx::Point& screen_loc_in_pixels) {
   screen_loc_in_pixels_ = screen_loc_in_pixels;
-  ignore_ = ignore;
 
   std::vector<X11Window*> local_process_windows =
       X11WindowManager::GetInstance()->GetAllOpenWindows();

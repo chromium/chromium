@@ -1,0 +1,67 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.review-views {
+  background: var(--grey-900);
+}
+
+.review-frame {
+  align-items: center;
+  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
+  bottom: calc(var(--bottom-line) * 2);
+  display: flex;
+  justify-content: center;
+  left: calc(var(--left-line) * 2);
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: 0;
+}
+
+.review-image {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+#view-crop-document .review-image {
+  max-height: unset;
+  max-width: unset;
+}
+
+.review-views .button-groups {
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  left: calc(var(--left-line) * 2);
+  position: absolute;
+  right: calc(var(--right-line) * 2);
+  top: calc(100% - calc(var(--bottom-line) * 2));
+}
+
+.review-views .button-group {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+.review-views .button-group button {
+  margin: 0 8px;
+}
+
+.review-views .button-group button:first-child {
+  margin-inline-end: 0;
+}
+
+.review-views .button-group button:last-child {
+  margin-inline-start: 0;
+}
+
+.review-views .button-group button[i18n-text=label_share]::before {
+  content: url(/images/review_share.svg);
+  display: inline-block;
+  line-height: normal;
+  margin-inline-end: 5px;
+  vertical-align: middle;
+}

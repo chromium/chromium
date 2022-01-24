@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/check.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -23,6 +24,8 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -31,6 +34,9 @@
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "gin/gin_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "v8/include/v8-initialization.h"
+#include "v8/include/v8-snapshot.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(OS_ANDROID)
@@ -46,6 +52,10 @@ namespace {
 
 // This global is never freed nor closed.
 base::MemoryMappedFile* g_mapped_snapshot = nullptr;
+
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+absl::optional<gin::V8SnapshotFileType> g_snapshot_file_type;
+#endif
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
   base::RandBytes(buffer, amount);
@@ -86,12 +96,11 @@ const char kV8ContextSnapshotFileName[] = V8_CONTEXT_SNAPSHOT_FILENAME;
 const char kSnapshotFileName[] = "snapshot_blob.bin";
 #endif  // defined(OS_ANDROID)
 
-const char* GetSnapshotFileName(
-    const V8Initializer::V8SnapshotFileType file_type) {
+const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
   switch (file_type) {
-    case V8Initializer::V8SnapshotFileType::kDefault:
+    case V8SnapshotFileType::kDefault:
       return kSnapshotFileName;
-    case V8Initializer::V8SnapshotFileType::kWithAdditionalContext:
+    case V8SnapshotFileType::kWithAdditionalContext:
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
 #else
@@ -177,8 +186,7 @@ base::File OpenV8File(const char* file_name,
       result = OpenV8FileResult::FAILED_OTHER;
       break;
     } else if (kMaxOpenAttempts - 1 != attempt) {
-      base::PlatformThread::Sleep(
-          base::TimeDelta::FromMilliseconds(kOpenRetryDelayMillis));
+      base::PlatformThread::Sleep(base::Milliseconds(kOpenRetryDelayMillis));
     }
   }
 #endif  // defined(OS_ANDROID)
@@ -207,48 +215,6 @@ void SetV8FlagsFormatted(const char* format, ...) {
   v8::V8::SetFlagsFromString(buffer, length - 1);
 }
 
-void RunArrayBufferCageReservationExperiment() {
-  // TODO(1218005) remove this function and windows_version.h include once the
-  // experiment has ended.
-#if defined(ARCH_CPU_64_BITS)
-  constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
-  constexpr size_t kTeraBytes = 1024 * kGigaBytes;
-
-  constexpr size_t kCageMaxSize = 1 * kTeraBytes;
-  constexpr size_t kCageMinSize = 8 * kGigaBytes;
-
-#if defined(OS_WIN)
-  // Windows prior to Win10 (or possibly Win8/8.1) appears to create page table
-  // entries when reserving virtual memory, causing unacceptably high memory
-  // consumption (e.g. ~2GB when reserving 1TB). As such, the experiment is
-  // only enabled on Win10.
-  if (base::win::GetVersion() < base::win::Version::WIN10) {
-    return;
-  }
-#endif
-
-  void* reservation = nullptr;
-  size_t current_size = kCageMaxSize;
-  while (!reservation && current_size >= kCageMinSize) {
-    // The cage reservation will need to be 4GB aligned.
-    reservation = base::AllocPages(nullptr, current_size, 4 * kGigaBytes,
-                                   base::PageInaccessible, base::PageTag::kV8);
-    if (!reservation) {
-      current_size /= 2;
-    }
-  }
-
-  int result = current_size / kGigaBytes;
-  if (reservation) {
-    base::FreePages(reservation, current_size);
-  } else {
-    result = 0;
-  }
-
-  base::UmaHistogramSparse("V8.MaxArrayBufferCageReservationSize", result);
-#endif
-}
-
 template <size_t N, size_t M>
 void SetV8FlagsIfOverridden(const base::Feature& feature,
                             const char (&enabling_flag)[N],
@@ -264,102 +230,55 @@ void SetV8FlagsIfOverridden(const base::Feature& feature,
   }
 }
 
-}  // namespace
-
-// static
-void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
-  static bool v8_is_initialized = false;
-  if (v8_is_initialized)
-    return;
-
-  if (base::FeatureList::IsEnabled(
-          features::kV8ArrayBufferCageReservationExperiment)) {
-    RunArrayBufferCageReservationExperiment();
-  }
-
-  v8::V8::InitializePlatform(V8Platform::Get());
-
-  if (!base::FeatureList::IsEnabled(features::kV8OptimizeJavascript)) {
-    // We avoid explicitly passing --opt if kV8OptimizeJavascript is enabled
-    // since it is the default, and doing so would override flags passed
-    // explicitly, e.g., via --js-flags=--no-opt.
-    SetV8Flags("--no-opt");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8FlushBytecode)) {
-    SetV8Flags("--no-flush-bytecode");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8OffThreadFinalization)) {
-    SetV8Flags("--finalize-streaming-on-background");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8LazyFeedbackAllocation)) {
-    SetV8Flags("--no-lazy-feedback-allocation");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8ConcurrentInlining)) {
-    SetV8Flags("--concurrent_inlining");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8PerContextMarkingWorklist)) {
-    SetV8Flags("--stress-per-context-marking-worklist");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8FlushEmbeddedBlobICache)) {
-    SetV8Flags("--experimental-flush-embedded-blob-icache");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8ReduceConcurrentMarkingTasks)) {
-    SetV8Flags("--gc-experiment-reduce-concurrent-marking-tasks");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8NoReclaimUnmodifiedWrappers)) {
-    SetV8Flags("--no-reclaim-unmodified-wrappers");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8LocalHeaps)) {
-    // The --local-heaps flag is enabled by default, so we need to explicitly
-    // disable it if kV8LocalHeaps is disabled.
-    // Also disable TurboFan's direct access if local heaps are not enabled.
-    SetV8Flags("--no-local-heaps --no-turbo-direct-heap-access");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8TurboDirectHeapAccess)) {
-    // The --turbo-direct-heap-access flag is enabled by default, so we need to
-    // explicitly disable it if kV8TurboDirectHeapAccess is disabled.
-    SetV8Flags("--no-turbo-direct-heap-access");
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kV8ExperimentalRegexpEngine)) {
-    // The --enable-experimental-regexp-engine-on-excessive-backtracks flag is
-    // enabled by default, so we need to explicitly disable it if
-    // kV8ExperimentalRegexpEngine is disabled.
-    SetV8Flags(
-        "--no-enable-experimental-regexp-engine-on-excessive-backtracks");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8TurboFastApiCalls)) {
-    SetV8Flags("--turbo-fast-api-calls");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8Turboprop)) {
-    SetV8Flags("--turboprop");
-  }
-
+void SetFlags(IsolateHolder::ScriptMode mode,
+              const std::string js_command_line_flags) {
+  // We assume that all feature flag defaults correspond to the default
+  // values of the coresponding V8 flags.
+  SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
+  SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
+                         "--no-flush-bytecode");
+  SetV8FlagsIfOverridden(features::kV8FlushBaselineCode,
+                         "--flush-baseline-code", "--no-flush-baseline-code");
+  SetV8FlagsIfOverridden(features::kV8OffThreadFinalization,
+                         "--finalize-streaming-on-background",
+                         "--no-finalize-streaming-on-background");
+  SetV8FlagsIfOverridden(features::kV8LazyFeedbackAllocation,
+                         "--lazy-feedback-allocation",
+                         "--no-lazy-feedback-allocation");
+  SetV8FlagsIfOverridden(features::kV8ConcurrentInlining,
+                         "--concurrent_inlining", "--no-concurrent_inlining");
+  SetV8FlagsIfOverridden(features::kV8PerContextMarkingWorklist,
+                         "--stress-per-context-marking-worklist",
+                         "--no-stress-per-context-marking-worklist");
+  SetV8FlagsIfOverridden(features::kV8FlushEmbeddedBlobICache,
+                         "--experimental-flush-embedded-blob-icache",
+                         "--no-experimental-flush-embedded-blob-icache");
+  SetV8FlagsIfOverridden(features::kV8ReduceConcurrentMarkingTasks,
+                         "--gc-experiment-reduce-concurrent-marking-tasks",
+                         "--no-gc-experiment-reduce-concurrent-marking-tasks");
+  SetV8FlagsIfOverridden(features::kV8NoReclaimUnmodifiedWrappers,
+                         "--no-reclaim-unmodified-wrappers",
+                         "--reclaim-unmodified-wrappers");
+  SetV8FlagsIfOverridden(
+      features::kV8ExperimentalRegexpEngine,
+      "--enable-experimental-regexp-engine-on-excessive-backtracks",
+      "--no-enable-experimental-regexp-engine-on-excessive-backtracks");
+  SetV8FlagsIfOverridden(features::kV8TurboFastApiCalls,
+                         "--turbo-fast-api-calls", "--no-turbo-fast-api-calls");
+  SetV8FlagsIfOverridden(features::kV8Turboprop, "--turboprop",
+                         "--no-turboprop");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");
-
-  if (base::FeatureList::IsEnabled(
-          features::kV8SparkplugNeedsShortBuiltinCalls)) {
-    SetV8Flags("--sparkplug-needs-short-builtins");
-  }
-
-  if (base::FeatureList::IsEnabled(features::kV8UntrustedCodeMitigations)) {
-    SetV8Flags("--untrusted-code-mitigations");
-  } else {
-    SetV8Flags("--no-untrusted-code-mitigations");
-  }
+  SetV8FlagsIfOverridden(features::kV8SparkplugNeedsShortBuiltinCalls,
+                         "--sparkplug-needs-short-builtins",
+                         "--no-sparkplug-needs-short-builtins");
+  SetV8FlagsIfOverridden(features::kV8ShortBuiltinCalls,
+                         "--short-builtin-calls", "--no-short-builtin-calls");
+  SetV8FlagsIfOverridden(features::kV8CodeMemoryWriteProtection,
+                         "--write-protect-code-memory",
+                         "--no-write-protect-code-memory");
+  SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
+                         "--no-slow-histograms");
 
   if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
     if (int delay = features::kV8ScriptDelayMs.Get()) {
@@ -373,18 +292,78 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
     }
   }
 
-  if (!base::FeatureList::IsEnabled(features::kV8ShortBuiltinCalls)) {
-    // The --short-builtin-calls flag is enabled by default on x64 and arm64
-    // desktop configurations, so we need to explicitly disable it if
-    // kV8ShortBuiltinCalls is disabled.
-    // On other configurations it's not supported, so we don't try to enable
-    // it if the feature flag is on.
-    SetV8Flags("--no-short-builtin-calls");
+  // Make sure aliases of kV8SlowHistograms only enable the feature to
+  // avoid contradicting settings between multiple finch experiments.
+  bool any_slow_histograms_alias =
+      base::FeatureList::IsEnabled(
+          features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
+      base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
+      base::FeatureList::IsEnabled(
+          features::kV8SlowHistogramsSparkplugAndroid) ||
+      base::FeatureList::IsEnabled(features::kV8SlowHistogramsScriptAblation);
+  if (any_slow_histograms_alias) {
+    SetV8Flags("--slow-histograms");
+  } else {
+    SetV8FlagsIfOverridden(features::kV8SlowHistograms, "--slow-histograms",
+                           "--no-slow-histograms");
   }
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
   }
+
+  if (js_command_line_flags.empty())
+    return;
+
+  // Allow the --js-flags switch to override existing flags:
+  std::vector<base::StringPiece> flag_list =
+      base::SplitStringPiece(js_command_line_flags, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  for (const auto& flag : flag_list) {
+    v8::V8::SetFlagsFromString(std::string(flag).c_str(), flag.size());
+  }
+}
+
+}  // namespace
+
+// static
+void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
+                               const std::string js_command_line_flags) {
+  static bool v8_is_initialized = false;
+  if (v8_is_initialized)
+    return;
+
+  v8::V8::InitializePlatform(V8Platform::Get());
+
+  // Set this early on as some initialization steps, such as the initialization
+  // of the virtual memory cage, already use V8's random number generator.
+  v8::V8::SetEntropySource(&GenerateEntropy);
+
+#if defined(V8_VIRTUAL_MEMORY_CAGE)
+  static_assert(ARCH_CPU_64_BITS,
+                "V8 virtual memory cage can only work in 64-bit builds");
+  // For now, creating the virtual memory cage is optional, and we only do it
+  // if the correpsonding feature is enabled. In the future, it will be
+  // mandatory when compiling with V8_VIRTUAL_MEMORY_CAGE.
+  bool v8_cage_is_initialized = false;
+  if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
+    v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
+
+    // Record the size of the virtual memory cage, in GB. The size will always
+    // be a power of two, so we use a sparse histogram to capture it.
+    // If the initialization failed, this API will return zero.
+    // The main reason for capturing this histogram here instead of having V8
+    // do it is that there are no Isolates available yet, which are required
+    // for recording histograms in V8.
+    size_t size = v8::V8::GetVirtualMemoryCageSizeInBytes();
+    int sizeInGB = size >> 30;
+    DCHECK(base::bits::IsPowerOfTwo(size));
+    DCHECK(size == 0 || sizeInGB > 0);
+    base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
+  }
+#endif
+
+  SetFlags(mode, js_command_line_flags);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   if (g_mapped_snapshot) {
@@ -394,10 +373,69 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   }
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
-  v8::V8::SetEntropySource(&GenerateEntropy);
   v8::V8::Initialize();
 
   v8_is_initialized = true;
+
+#if defined(V8_VIRTUAL_MEMORY_CAGE)
+  if (v8_cage_is_initialized) {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused. This should match enum
+    // V8VirtualMemoryCageMode in \tools\metrics\histograms\enums.xml
+    enum class VirtualMemoryCageMode {
+      kSecure = 0,
+      kInsecure = 1,
+      kMaxValue = kInsecure,
+    };
+    base::UmaHistogramEnumeration("V8.VirtualMemoryCageMode",
+                                  v8::V8::IsUsingSecureVirtualMemoryCage()
+                                      ? VirtualMemoryCageMode::kSecure
+                                      : VirtualMemoryCageMode::kInsecure);
+
+    // When the virtual memory cage is enabled, ArrayBuffers must be located
+    // inside the cage. To achieve that, PA's ConfigurablePool is created inside
+    // the cage and Blink will create the ArrayBuffer partition inside that
+    // Pool if it is enabled.
+    v8::PageAllocator* cage_page_allocator =
+        v8::V8::GetVirtualMemoryCagePageAllocator();
+    const size_t max_pool_size =
+        base::internal::PartitionAddressSpace::ConfigurablePoolMaxSize();
+    const size_t min_pool_size =
+        base::internal::PartitionAddressSpace::ConfigurablePoolMinSize();
+    size_t pool_size = max_pool_size;
+#if defined(OS_WIN)
+    // On Windows prior to 8.1 we allocate a smaller Pool since reserving
+    // virtual memory is expensive on these OSes.
+    if (base::win::GetVersion() < base::win::Version::WIN8_1) {
+      // The size chosen here should be synchronized with the size of the
+      // virtual memory reservation for the V8 cage on these platforms.
+      // Currently, that is 8GB, of which 4GB are used for V8's pointer
+      // compression region.
+      // TODO(saelo) give this constant a proper name and maybe move it
+      // somewhere else.
+      constexpr size_t kGB = 1ULL << 30;
+      pool_size = 4ULL * kGB;
+      DCHECK_LE(pool_size, max_pool_size);
+      DCHECK_GE(pool_size, min_pool_size);
+    }
+#endif
+    // Try to reserve the maximum size of the pool at first, then keep halving
+    // the size on failure until it succeeds.
+    void* pool_base = nullptr;
+    while (!pool_base && pool_size >= min_pool_size) {
+      pool_base = cage_page_allocator->AllocatePages(
+          nullptr, pool_size, pool_size, v8::PageAllocator::kNoAccess);
+      if (!pool_base) {
+        pool_size /= 2;
+      }
+    }
+    // The V8 cage is guaranteed to be large enough to host the pool.
+    CHECK(pool_base);
+    base::internal::PartitionAddressSpace::InitConfigurablePool(pool_base,
+                                                                pool_size);
+    // TODO(saelo) maybe record the size of the Pool into UMA.
+  }
+#endif
 }
 
 // static
@@ -443,6 +481,7 @@ void V8Initializer::LoadV8SnapshotFromFile(
     return;
   }
 
+  g_snapshot_file_type = snapshot_file_type;
   base::MemoryMappedFile::Region region =
       base::MemoryMappedFile::Region::kWholeFile;
   if (snapshot_file_region) {
@@ -463,10 +502,10 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   base::FilePath path;
   const char* filename = nullptr;
   switch (snapshot_file_type) {
-    case V8Initializer::V8SnapshotFileType::kDefault:
+    case V8SnapshotFileType::kDefault:
       filename = abi_32_bit ? kSnapshotFileName32 : kSnapshotFileName64;
       break;
-    case V8Initializer::V8SnapshotFileType::kWithAdditionalContext:
+    case V8SnapshotFileType::kWithAdditionalContext:
       filename = abi_32_bit ? kV8ContextSnapshotFileName32
                             : kV8ContextSnapshotFileName64;
       break;
@@ -477,6 +516,12 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   return path;
 }
 #endif  // defined(OS_ANDROID)
+
+V8SnapshotFileType GetLoadedSnapshotFileType() {
+  DCHECK(g_snapshot_file_type.has_value());
+  return *g_snapshot_file_type;
+}
+
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
 }  // namespace gin

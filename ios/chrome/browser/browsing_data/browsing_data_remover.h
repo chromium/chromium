@@ -21,6 +21,10 @@ class BrowsingDataRemoverObserver;
 class BrowsingDataRemover : public KeyedService {
  public:
   BrowsingDataRemover();
+
+  BrowsingDataRemover(const BrowsingDataRemover&) = delete;
+  BrowsingDataRemover& operator=(const BrowsingDataRemover&) = delete;
+
   ~BrowsingDataRemover() override;
 
   // Is the service currently in the process of removing data?
@@ -47,8 +51,6 @@ class BrowsingDataRemover : public KeyedService {
 
  private:
   base::ObserverList<BrowsingDataRemoverObserver, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemover);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_

@@ -37,6 +37,7 @@ namespace {
 const char kSessionId[] = "session_id";
 const double kExpirationMs = 123456789.0;
 const auto kExpirationTime = base::Time::FromJsTime(kExpirationMs);
+const char kTestUmaPrefix[] = "Media.EME.TestUmaPrefix.";
 
 std::vector<uint8_t> StringToVector(const std::string& str) {
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -61,9 +62,11 @@ class MediaFoundationCdmTest : public testing::Test {
       : mf_cdm_(MakeComPtr<MockMFCdm>()),
         mf_cdm_session_(MakeComPtr<MockMFCdmSession>()),
         cdm_(base::MakeRefCounted<MediaFoundationCdm>(
+            kTestUmaPrefix,
             base::BindRepeating(&MediaFoundationCdmTest::CreateMFCdm,
                                 base::Unretained(this)),
             is_type_supported_cb_.Get(),
+            store_client_token_cb_.Get(),
             base::BindRepeating(&MockCdmClient::OnSessionMessage,
                                 base::Unretained(&cdm_client_)),
             base::BindRepeating(&MockCdmClient::OnSessionClosed,
@@ -156,6 +159,8 @@ class MediaFoundationCdmTest : public testing::Test {
   StrictMock<MockCdmClient> cdm_client_;
   StrictMock<base::MockCallback<MediaFoundationCdm::IsTypeSupportedCB>>
       is_type_supported_cb_;
+  base::MockCallback<MediaFoundationCdm::StoreClientTokenCB>
+      store_client_token_cb_;
   ComPtr<MockMFCdm> mf_cdm_;
   ComPtr<MockMFCdmSession> mf_cdm_session_;
   ComPtr<IMFContentDecryptionModuleSessionCallbacks> mf_cdm_session_callbacks_;

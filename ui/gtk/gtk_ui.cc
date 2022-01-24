@@ -29,10 +29,14 @@
 #include "third_party/skia/include/core/SkShader.h"
 #include "ui/base/cursor/cursor_theme_manager_observer.h"
 #include "ui/base/glib/glib_cast.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/linux/fake_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/linux/linux_ui_delegate.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"
@@ -41,10 +45,10 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_platform.h"
@@ -56,7 +60,10 @@
 #include "ui/gtk/printing/printing_gtk_util.h"
 #include "ui/gtk/select_file_dialog_impl.h"
 #include "ui/gtk/settings_provider_gtk.h"
+#include "ui/gtk/window_frame_provider_gtk.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/ozone/buildflags.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -69,17 +76,11 @@
 #include "ui/gtk/settings_provider_gsettings.h"
 #endif
 
-#if defined(USE_OZONE)
-#include "ui/base/ime/input_method.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/ozone/buildflags.h"
-#include "ui/ozone/public/ozone_platform.h"
 #if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
 #define USE_WAYLAND
 #endif
 #if BUILDFLAG(OZONE_PLATFORM_X11) && !defined(USE_X11)
 #define USE_X11
-#endif
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -128,6 +129,9 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
         break;
     }
   }
+
+  GtkButtonImageSource(const GtkButtonImageSource&) = delete;
+  GtkButtonImageSource& operator=(const GtkButtonImageSource&) = delete;
 
   ~GtkButtonImageSource() override = default;
 
@@ -191,14 +195,16 @@ class GtkButtonImageSource : public gfx::ImageSkiaSource {
   ui::NativeTheme::State state_;
   int width_;
   int height_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkButtonImageSource);
 };
 
 class GtkButtonPainter : public views::Painter {
  public:
   GtkButtonPainter(bool focus, views::Button::ButtonState button_state)
       : focus_(focus), button_state_(button_state) {}
+
+  GtkButtonPainter(const GtkButtonPainter&) = delete;
+  GtkButtonPainter& operator=(const GtkButtonPainter&) = delete;
+
   ~GtkButtonPainter() override = default;
 
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -211,8 +217,6 @@ class GtkButtonPainter : public views::Painter {
  private:
   const bool focus_;
   const views::Button::ButtonState button_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(GtkButtonPainter);
 };
 
 // Number of app indicators used (used as part of app-indicator id).
@@ -325,12 +329,8 @@ GtkUi::GtkUi() {
   CHECK(LoadGtk());
 
   auto* delegate = ui::LinuxUiDelegate::GetInstance();
-  // TODO(thomasanderson): This should be replaced with DCHECK(delegate) once
-  // fully migrated to ozone.
-  auto backend = delegate ? delegate->GetBackend() : ui::LinuxUiBackend::kX11;
-  platform_ = CreateGtkUiPlatform(backend);
-
-  SelectFileDialogImpl::Initialize();
+  DCHECK(delegate);
+  platform_ = CreateGtkUiPlatform(delegate->GetBackend());
 
   // Avoid GTK initializing atk-bridge, and let AuraLinux implementation
   // do it once it is ready.
@@ -338,6 +338,10 @@ GtkUi::GtkUi() {
   env->SetVar("NO_AT_BRIDGE", "1");
   GtkInitFromCommandLine(*base::CommandLine::ForCurrentProcess());
   native_theme_ = NativeThemeGtk::instance();
+
+  // This creates an extra thread that may race against GtkInitFromCommandLine,
+  // so this must be done after to avoid the race condition.
+  SelectFileDialogImpl::Initialize();
 
   window_frame_actions_ = {
       {ActionSource::kDoubleClick, Action::kToggleMaximize},
@@ -359,18 +363,16 @@ GtkUiPlatform* GtkUi::GetPlatform() {
 }
 
 void GtkUi::Initialize() {
-#if defined(USE_OZONE)
   // Linux ozone platforms may want to set LinuxInputMethodContextFactory
   // instance instead of using GtkUi context factory. This step is made upon
   // CreateInputMethod call. If the factory is not set, use the GtkUi context
   // factory.
-  if (!features::IsUsingOzonePlatform() ||
+  if (GetPlatform()->PreferGtkIme() ||
       !ui::OzonePlatform::GetInstance()->CreateInputMethod(
           nullptr, gfx::kNullAcceleratedWidget)) {
     if (!ui::LinuxInputMethodContextFactory::instance())
       ui::LinuxInputMethodContextFactory::SetInstance(this);
   }
-#endif
 
   GtkSettings* settings = gtk_settings_get_default();
   g_signal_connect_after(settings, "notify::gtk-theme-name",
@@ -490,9 +492,9 @@ base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
   gboolean cursor_blink = TRUE;
   g_object_get(gtk_settings_get_default(), "gtk-cursor-blink-time",
                &cursor_blink_time, "gtk-cursor-blink", &cursor_blink, nullptr);
-  return cursor_blink ? base::TimeDelta::FromSecondsD(
-                            cursor_blink_time / kGtkCursorBlinkCycleFactor)
-                      : base::TimeDelta();
+  return cursor_blink
+             ? base::Seconds(cursor_blink_time / kGtkCursorBlinkCycleFactor)
+             : base::TimeDelta();
 }
 
 ui::NativeTheme* GtkUi::GetNativeTheme(aura::Window* window) const {
@@ -731,6 +733,16 @@ std::unique_ptr<views::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
   return nullptr;
 }
 
+views::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame) {
+  if (!GtkCheckVersion(3, 14))
+    return nullptr;
+  auto& provider =
+      solid_frame ? solid_frame_provider_ : transparent_frame_provider_;
+  if (!provider)
+    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame);
+  return provider.get();
+}
+
 // Mapping from GDK dead keys to corresponding printable character.
 static struct {
   guint gdk_key;
@@ -872,6 +884,25 @@ void GtkUi::LoadGtkValues() {
 }
 
 void GtkUi::UpdateColors() {
+  // TODO(tluk): The below code sets various ThemeProvider colors for GTK. Some
+  // of these definitions leverage colors that were previously defined by
+  // NativeThemeGtk and are now defined as GTK ColorMixers. These ThemeProvider
+  // color definitions should be added as recipes to a browser ColorMixer once
+  // the Color Pipeline project begins rollout into c/b/ui. In the meantime
+  // use the ColorProvider instance from the ColorProviderManager corresponding
+  // to the theme bits associated with the NativeThemeGtk instance to ensure
+  // we do not regress existing behavior during the transition.
+  const auto color_scheme = native_theme_->GetDefaultSystemColorScheme();
+  const auto* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(
+          {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+               ? ui::ColorProviderManager::ColorMode::kDark
+               : ui::ColorProviderManager::ColorMode::kLight,
+           (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+               ? ui::ColorProviderManager::ContrastMode::kHigh
+               : ui::ColorProviderManager::ContrastMode::kNormal,
+           ui::ColorProviderManager::SystemTheme::kCustom, nullptr});
+
   SkColor location_bar_border = GetBorderColor("GtkEntry#entry");
   if (SkColorGetA(location_bar_border))
     colors_[ThemeProperties::COLOR_LOCATION_BAR_BORDER] = location_bar_border;
@@ -892,10 +923,9 @@ void GtkUi::UpdateColors() {
   colors_[ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR] = tab_border;
 
   colors_[ThemeProperties::COLOR_NTP_BACKGROUND] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_TextfieldDefaultBackground);
-  colors_[ThemeProperties::COLOR_NTP_TEXT] = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldDefaultColor);
+      color_provider->GetColor(ui::kColorTextfieldBackground);
+  colors_[ThemeProperties::COLOR_NTP_TEXT] =
+      color_provider->GetColor(ui::kColorTextfieldForeground);
   colors_[ThemeProperties::COLOR_NTP_HEADER] =
       GetBorderColor("GtkButton#button");
 
@@ -909,26 +939,24 @@ void GtkUi::UpdateColors() {
       tab_text_color;
   colors_[ThemeProperties::COLOR_BOOKMARK_TEXT] = tab_text_color;
 
-  colors_[ThemeProperties::COLOR_NTP_LINK] = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionBackgroundFocused);
+  colors_[ThemeProperties::COLOR_NTP_LINK] =
+      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
 
   // Generate the colors that we pass to Blink.
-  focus_ring_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_FocusedBorderColor);
+  focus_ring_color_ =
+      color_provider->GetColor(ui::kColorFocusableBorderFocused);
 
   // Some GTK themes only define the text selection colors on the GtkEntry
   // class, so we need to use that for getting selection colors.
-  active_selection_bg_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionBackgroundFocused);
-  active_selection_fg_color_ = native_theme_->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldSelectionColor);
+  active_selection_bg_color_ =
+      color_provider->GetColor(ui::kColorTextfieldSelectionBackground);
+  active_selection_fg_color_ =
+      color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
 
   colors_[ThemeProperties::COLOR_TAB_THROBBER_SPINNING] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberSpinningColor);
+      color_provider->GetColor(ui::kColorThrobber);
   colors_[ThemeProperties::COLOR_TAB_THROBBER_WAITING] =
-      native_theme_->GetSystemColor(
-          ui::NativeTheme::kColorId_ThrobberWaitingColor);
+      color_provider->GetColor(ui::kColorThrobberPreconnect);
 
   // Generate colors that depend on whether or not a custom window frame is
   // used.  These colors belong in |color_map| below, not |colors_|.
@@ -980,11 +1008,9 @@ void GtkUi::UpdateColors() {
         background_tab_text_color_inactive;
 
     color_map[ThemeProperties::COLOR_OMNIBOX_TEXT] =
-        native_theme_->GetSystemColor(
-            ui::NativeTheme::kColorId_TextfieldDefaultColor);
+        color_provider->GetColor(ui::kColorTextfieldForeground);
     color_map[ThemeProperties::COLOR_OMNIBOX_BACKGROUND] =
-        native_theme_->GetSystemColor(
-            ui::NativeTheme::kColorId_TextfieldDefaultBackground);
+        color_provider->GetColor(ui::kColorTextfieldBackground);
 
     // These colors represent the border drawn around tabs and between
     // the tabstrip and toolbar.

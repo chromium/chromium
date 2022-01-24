@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/byte_queue.h"
 #include "media/base/media_export.h"
 
@@ -20,6 +19,10 @@ namespace media {
 class MEDIA_EXPORT OffsetByteQueue {
  public:
   OffsetByteQueue();
+
+  OffsetByteQueue(const OffsetByteQueue&) = delete;
+  OffsetByteQueue& operator=(const OffsetByteQueue&) = delete;
+
   ~OffsetByteQueue();
 
   // These work like their underlying ByteQueue counterparts.
@@ -59,8 +62,6 @@ class MEDIA_EXPORT OffsetByteQueue {
   const uint8_t* buf_;
   int size_;
   int64_t head_;
-
-  DISALLOW_COPY_AND_ASSIGN(OffsetByteQueue);
 };
 
 }  // namespace media

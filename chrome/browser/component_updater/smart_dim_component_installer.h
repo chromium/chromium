@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -27,6 +26,12 @@ class ComponentUpdateService;
 class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   explicit SmartDimComponentInstallerPolicy(std::string expected_version);
+
+  SmartDimComponentInstallerPolicy(const SmartDimComponentInstallerPolicy&) =
+      delete;
+  SmartDimComponentInstallerPolicy& operator=(
+      const SmartDimComponentInstallerPolicy&) = delete;
+
   ~SmartDimComponentInstallerPolicy() override;
 
  private:
@@ -34,14 +39,14 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -51,8 +56,6 @@ class SmartDimComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Only expected_version_ can pass VerifyInstallation and be fed to
   // SmartDimMlAgent.
   std::string expected_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmartDimComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

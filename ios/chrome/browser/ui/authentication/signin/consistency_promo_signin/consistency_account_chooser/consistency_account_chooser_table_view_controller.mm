@@ -6,11 +6,15 @@
 
 #import "base/check.h"
 #import "base/mac/foundation_util.h"
+#include "base/notreached.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_model_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -30,6 +34,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   // IdentitySectionIdentifier section.
   IdentityItemType = kItemTypeEnumZero,
+  // Indication that some restricted accounts were removed from the list.
+  ItemTypeRestrictedAccountsFooter,
   // AddAccountSectionIdentifier section.
   AddAccountItemType,
 };
@@ -40,7 +46,8 @@ CGFloat kSectionFooterHeight = 8.;
 
 }  // naemspace
 
-@interface ConsistencyAccountChooserTableViewController ()
+@interface ConsistencyAccountChooserTableViewController () <
+    TableViewLinkHeaderFooterItemDelegate>
 
 @end
 
@@ -81,6 +88,9 @@ CGFloat kSectionFooterHeight = 8.;
       [self.actionDelegate
           consistencyAccountChooserTableViewControllerDidTapOnAddAccount:self];
       break;
+    case ItemTypeRestrictedAccountsFooter:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -91,7 +101,20 @@ CGFloat kSectionFooterHeight = 8.;
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForFooterInSection:(NSInteger)section {
+  if ([self.tableViewModel footerForSection:section])
+    return UITableViewAutomaticDimension;
   return kSectionFooterHeight;
+}
+
+#pragma mark - Model Items
+
+- (TableViewLinkHeaderFooterItem*)restrictedIdentitiesFooterItem {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeRestrictedAccountsFooter];
+  footer.text =
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES);
+  footer.urls = std::vector<GURL>{GURL(kChromeUIManagementURL)};
+  return footer;
 }
 
 #pragma mark - Private
@@ -101,6 +124,11 @@ CGFloat kSectionFooterHeight = 8.;
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:IdentitySectionIdentifier];
   [self loadIdentityItems];
+
+  if (IsRestrictAccountsToPatternsEnabled()) {
+    [model setFooter:[self restrictedIdentitiesFooterItem]
+        forSectionWithIdentifier:IdentitySectionIdentifier];
+  }
 }
 
 // Creates all the identity items in the table view model.
@@ -125,6 +153,33 @@ CGFloat kSectionFooterHeight = 8.;
   item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
   item.textColor = [UIColor colorNamed:kBlueColor];
   [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  switch (sectionIdentifier) {
+    case IdentitySectionIdentifier: {
+      TableViewLinkHeaderFooterView* linkView =
+          base::mac::ObjCCast<TableViewLinkHeaderFooterView>(view);
+      linkView.delegate = self;
+    } break;
+    case AddAccountSectionIdentifier:
+      break;
+  }
+  return view;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL {
+  DCHECK(URL == GURL(kChromeUIManagementURL));
+  DCHECK(self.actionDelegate);
+  [self.actionDelegate showManagementHelpPage];
 }
 
 #pragma mark - ConsistencyAccountChooserConsumer

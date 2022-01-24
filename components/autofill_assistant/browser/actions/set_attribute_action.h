@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SET_ATTRIBUTE_ACTION_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_SET_ATTRIBUTE_ACTION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
@@ -19,6 +18,10 @@ class SetAttributeAction : public Action {
  public:
   explicit SetAttributeAction(ActionDelegate* delegate,
                               const ActionProto& proto);
+
+  SetAttributeAction(const SetAttributeAction&) = delete;
+  SetAttributeAction& operator=(const SetAttributeAction&) = delete;
+
   ~SetAttributeAction() override;
 
  private:
@@ -32,8 +35,6 @@ class SetAttributeAction : public Action {
                       const ClientStatus& status);
 
   base::WeakPtrFactory<SetAttributeAction> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SetAttributeAction);
 };
 
 }  // namespace autofill_assistant

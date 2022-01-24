@@ -9,8 +9,14 @@
 namespace content {
 
 MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
-    RenderFrameHost* render_frame_host)
-    : MediaSessionPlayerObserver(), render_frame_host_(render_frame_host) {}
+    RenderFrameHost* render_frame_host,
+    media::MediaContentType media_content_type)
+    : render_frame_host_(render_frame_host),
+      media_content_type_(media_content_type) {}
+
+MockMediaSessionPlayerObserver::MockMediaSessionPlayerObserver(
+    media::MediaContentType media_content_type)
+    : MockMediaSessionPlayerObserver(nullptr, media_content_type) {}
 
 MockMediaSessionPlayerObserver::~MockMediaSessionPlayerObserver() = default;
 
@@ -87,6 +93,11 @@ void MockMediaSessionPlayerObserver::OnSetAudioSinkId(
 
   ++received_set_audio_sink_id_calls_;
   players_[player_id].audio_sink_id_ = raw_device_id;
+}
+
+void MockMediaSessionPlayerObserver::OnSetMute(int player_id, bool mute) {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
 }
 
 absl::optional<media_session::MediaPosition>
@@ -199,6 +210,16 @@ bool MockMediaSessionPlayerObserver::SupportsAudioOutputDeviceSwitching(
   EXPECT_GE(player_id, 0);
   EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
   return players_.at(player_id).supports_device_switching_;
+}
+
+media::MediaContentType MockMediaSessionPlayerObserver::GetMediaContentType()
+    const {
+  return media_content_type_;
+}
+
+void MockMediaSessionPlayerObserver::SetMediaContentType(
+    media::MediaContentType media_content_type) {
+  media_content_type_ = media_content_type;
 }
 
 MockMediaSessionPlayerObserver::MockPlayer::MockPlayer(bool is_playing,

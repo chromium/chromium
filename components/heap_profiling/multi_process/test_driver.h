@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
@@ -56,6 +55,10 @@ class TestDriver {
   };
 
   TestDriver();
+
+  TestDriver(const TestDriver&) = delete;
+  TestDriver& operator=(const TestDriver&) = delete;
+
   ~TestDriver();
 
   // If this is called on the content::BrowserThread::UI thread, then the
@@ -147,8 +150,6 @@ class TestDriver {
   bool wait_for_profiling_to_start_ = false;
 
   base::WaitableEvent wait_for_ui_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDriver);
 };
 
 }  // namespace heap_profiling

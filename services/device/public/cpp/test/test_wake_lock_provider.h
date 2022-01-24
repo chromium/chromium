@@ -25,6 +25,10 @@ namespace device {
 class TestWakeLockProvider : public mojom::WakeLockProvider {
  public:
   TestWakeLockProvider();
+
+  TestWakeLockProvider(const TestWakeLockProvider&) = delete;
+  TestWakeLockProvider& operator=(const TestWakeLockProvider&) = delete;
+
   ~TestWakeLockProvider() override;
 
   // For internal use only.
@@ -67,8 +71,6 @@ class TestWakeLockProvider : public mojom::WakeLockProvider {
   // Stores wake lock count and observers associated with each wake lock type.
   std::map<mojom::WakeLockType, std::unique_ptr<WakeLockDataPerType>>
       wake_lock_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWakeLockProvider);
 };
 
 }  // namespace device

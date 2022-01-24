@@ -480,7 +480,7 @@ class MergeJSLibTest(unittest.TestCase):
         for file_name in files:
           actual_files.append(os.path.join(root, file_name))
 
-      self.assertItemsEqual(expected_files, actual_files)
+      self.assertCountEqual(expected_files, actual_files)
     finally:
       shutil.rmtree(scripts_dir)
 
@@ -514,7 +514,7 @@ class MergeJSLibTest(unittest.TestCase):
         for file_name in files:
           actual_files.append(os.path.join(root, file_name))
 
-      self.assertItemsEqual(expected_files, actual_files)
+      self.assertCountEqual(expected_files, actual_files)
     finally:
       shutil.rmtree(scripts_dir)
 

@@ -45,6 +45,10 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
     : public device::UdevWatcher::Observer {
  public:
   BlockingTaskRunnerHelper();
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper() override = default;
 
   void Initialize();
@@ -60,8 +64,6 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
   std::unique_ptr<device::UdevWatcher> udev_watcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 DeviceMonitorLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {

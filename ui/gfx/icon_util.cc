@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/notreached.h"
+#include "base/scoped_generic.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/resource_util.h"
 #include "base/win/scoped_gdi_object.h"
@@ -30,9 +31,12 @@ const int kResourceTypeIcon = 1;
 
 struct ScopedICONINFO : ICONINFO {
   ScopedICONINFO() {
-    hbmColor = NULL;
-    hbmMask = NULL;
+    hbmColor = nullptr;
+    hbmMask = nullptr;
   }
+
+  ScopedICONINFO(const ScopedICONINFO&) = delete;
+  ScopedICONINFO& operator=(const ScopedICONINFO&) = delete;
 
   ~ScopedICONINFO() {
     if (hbmColor)
@@ -95,14 +99,14 @@ bool BuildResizedImageFamily(const gfx::ImageFamily& image_family,
 // size order. If an image of exactly 256x256 is specified, it is converted into
 // PNG format and stored in |png_bytes|. Images with width or height larger than
 // 256 are ignored.
-// |bitmaps| must be an empty vector, and not NULL.
+// |bitmaps| must be an empty vector, and not nullptr.
 // Returns true on success, false on failure. This fails if any image in
 // |image_family| is not a 32-bit ARGB image, or is otherwise invalid.
 void ConvertImageFamilyToBitmaps(
     const gfx::ImageFamily& image_family,
     std::vector<SkBitmap>* bitmaps,
     scoped_refptr<base::RefCountedMemory>* png_bytes) {
-  DCHECK(bitmaps != NULL);
+  DCHECK(bitmaps);
   DCHECK(bitmaps->empty());
 
   for (gfx::ImageFamily::const_iterator it = image_family.begin();
@@ -159,9 +163,8 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
     const SkBitmap& bitmap) {
   // Only 32 bit ARGB bitmaps are supported. We also try to perform as many
   // validations as we can on the bitmap.
-  if ((bitmap.colorType() != kN32_SkColorType) ||
-      (bitmap.width() <= 0) || (bitmap.height() <= 0) ||
-      (bitmap.getPixels() == NULL))
+  if ((bitmap.colorType() != kN32_SkColorType) || (bitmap.width() <= 0) ||
+      (bitmap.height() <= 0) || (bitmap.getPixels() == nullptr))
     return base::win::ScopedHICON();
 
   // We start by creating a DIB which we'll use later on in order to create
@@ -171,15 +174,15 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
   BITMAPV5HEADER bitmap_header;
   InitializeBitmapHeader(&bitmap_header, bitmap.width(), bitmap.height());
 
-  void* bits = NULL;
-  HBITMAP dib;
-
+  void* bits = nullptr;
+  base::win::ScopedBitmap dib;
   {
-    base::win::ScopedGetDC hdc(NULL);
-    dib = ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&bitmap_header),
-                             DIB_RGB_COLORS, &bits, NULL, 0);
+    base::win::ScopedGetDC hdc(nullptr);
+    dib = base::win::ScopedBitmap(
+        ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&bitmap_header),
+                           DIB_RGB_COLORS, &bits, nullptr, 0));
   }
-  if (!dib || !bits)
+  if (!dib.is_valid() || !bits)
     return base::win::ScopedHICON();
 
   memcpy(bits, bitmap.getPixels(), bitmap.width() * bitmap.height() * 4);
@@ -209,19 +212,17 @@ base::win::ScopedHICON IconUtil::CreateHICONFromSkBitmap(
     memset(mask_bits.get(), 0xFF, mask_bits_size);
   }
 
-  HBITMAP mono_bitmap = ::CreateBitmap(bitmap.width(), bitmap.height(), 1, 1,
-      reinterpret_cast<LPVOID>(mask_bits.get()));
-  DCHECK(mono_bitmap);
+  base::win::ScopedBitmap mono_bitmap(
+      ::CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, mask_bits.get()));
+  DCHECK(mono_bitmap.is_valid());
 
   ICONINFO icon_info;
   icon_info.fIcon = TRUE;
   icon_info.xHotspot = 0;
   icon_info.yHotspot = 0;
-  icon_info.hbmMask = mono_bitmap;
-  icon_info.hbmColor = dib;
+  icon_info.hbmMask = mono_bitmap.get();
+  icon_info.hbmColor = dib.get();
   base::win::ScopedHICON icon(CreateIconIndirect(&icon_info));
-  ::DeleteObject(dib);
-  ::DeleteObject(mono_bitmap);
   return icon;
 }
 
@@ -243,7 +244,7 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
     int resource_id) {
   // Read the resource directly so we can get the icon image sizes. This data
   // will also be used to directly get the PNG bytes for large images.
-  void* icon_dir_data = NULL;
+  void* icon_dir_data = nullptr;
   size_t icon_dir_size = 0;
   if (!base::win::GetResourceFromModule(module, resource_id, RT_GROUP_ICON,
                                         &icon_dir_data, &icon_dir_size)) {
@@ -271,7 +272,7 @@ std::unique_ptr<gfx::ImageFamily> IconUtil::CreateImageFamilyFromIconResource(
     } else {
       // 256x256 icons are stored with width and height set to 0.
       // See: http://en.wikipedia.org/wiki/ICO_(file_format)
-      void* png_data = NULL;
+      void* png_data = nullptr;
       size_t png_size = 0;
       if (!base::win::GetResourceFromModule(module, entry->nID, RT_ICON,
                                             &png_data, &png_size)) {
@@ -325,15 +326,14 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
   skia::CreateBitmapHeaderForN32SkBitmap(
       bitmap, reinterpret_cast<BITMAPINFOHEADER*>(&icon_bitmap_info));
 
-  base::win::ScopedGetDC dc(NULL);
-  base::win::ScopedCreateDC working_dc(CreateCompatibleDC(dc));
-  base::win::ScopedGDIObject<HBITMAP> bitmap_handle(
-      CreateDIBSection(dc,
-                       &icon_bitmap_info,
-                       DIB_RGB_COLORS,
-                       0,
-                       0,
-                       0));
+  base::win::ScopedCreateDC working_dc;
+  base::win::ScopedBitmap bitmap_handle;
+  {
+    base::win::ScopedGetDC dc(nullptr);
+    working_dc = base::win::ScopedCreateDC(CreateCompatibleDC(dc));
+    bitmap_handle = base::win::ScopedBitmap(
+        CreateDIBSection(dc, &icon_bitmap_info, DIB_RGB_COLORS, 0, 0, 0));
+  }
   SetDIBits(0, bitmap_handle.get(), 0, bitmap.height(), bitmap.getPixels(),
             &icon_bitmap_info, DIB_RGB_COLORS);
 
@@ -342,8 +342,8 @@ base::win::ScopedHICON IconUtil::CreateCursorFromSkBitmap(
   SetBkMode(working_dc.Get(), TRANSPARENT);
   SelectObject(working_dc.Get(), old_bitmap);
 
-  base::win::ScopedGDIObject<HBITMAP> mask(
-      CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, NULL));
+  base::win::ScopedBitmap mask(
+      CreateBitmap(bitmap.width(), bitmap.height(), 1, 1, nullptr));
   ICONINFO ii = {0};
   ii.fIcon = FALSE;
   ii.xHotspot = hotspot.x();
@@ -379,15 +379,19 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   // obtain the icon's image.
   BITMAPV5HEADER h;
   InitializeBitmapHeader(&h, s.width(), s.height());
-  HDC hdc = ::GetDC(NULL);
-  uint32_t* bits;
-  HBITMAP dib = ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&h),
-      DIB_RGB_COLORS, reinterpret_cast<void**>(&bits), NULL, 0);
-  DCHECK(dib);
-  HDC dib_dc = CreateCompatibleDC(hdc);
-  ::ReleaseDC(NULL, hdc);
-  DCHECK(dib_dc);
-  HGDIOBJ old_obj = ::SelectObject(dib_dc, dib);
+  void* bits;
+  base::win::ScopedBitmap dib;
+  base::win::ScopedCreateDC dib_dc;
+  {
+    base::win::ScopedGetDC hdc(nullptr);
+    dib = base::win::ScopedBitmap(
+        ::CreateDIBSection(hdc, reinterpret_cast<BITMAPINFO*>(&h),
+                           DIB_RGB_COLORS, &bits, nullptr, 0));
+    dib_dc = base::win::ScopedCreateDC(CreateCompatibleDC(hdc));
+  }
+  DCHECK(dib.is_valid());
+  DCHECK(dib_dc.IsValid());
+  HGDIOBJ old_obj = ::SelectObject(dib_dc.Get(), dib.get());
 
   // Windows icons are defined using two different masks. The XOR mask, which
   // represents the icon image and an AND mask which is a monochrome bitmap
@@ -407,18 +411,20 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
   // We start by drawing the AND mask into our DIB.
   size_t num_pixels = s.GetArea();
   memset(bits, 0, num_pixels * 4);
-  ::DrawIconEx(dib_dc, 0, 0, icon, s.width(), s.height(), 0, NULL, DI_MASK);
+  ::DrawIconEx(dib_dc.Get(), 0, 0, icon, s.width(), s.height(), 0, nullptr,
+               DI_MASK);
 
   // Capture boolean opacity. We may not use it if we find out the bitmap has
   // an alpha channel.
   std::unique_ptr<bool[]> opaque(new bool[num_pixels]);
   for (size_t i = 0; i < num_pixels; ++i)
-    opaque[i] = !bits[i];
+    opaque[i] = !static_cast<uint32_t*>(bits)[i];
 
   // Then draw the image itself which is really the XOR mask.
   memset(bits, 0, num_pixels * 4);
-  ::DrawIconEx(dib_dc, 0, 0, icon, s.width(), s.height(), 0, NULL, DI_NORMAL);
-  memcpy(bitmap.getPixels(), static_cast<void*>(bits), num_pixels * 4);
+  ::DrawIconEx(dib_dc.Get(), 0, 0, icon, s.width(), s.height(), 0, nullptr,
+               DI_NORMAL);
+  memcpy(bitmap.getPixels(), bits, num_pixels * 4);
 
   // Finding out whether the bitmap has an alpha channel.
   bool bitmap_has_alpha_channel = PixelsHaveAlpha(
@@ -437,9 +443,7 @@ SkBitmap IconUtil::CreateSkBitmapFromHICONHelper(HICON icon,
     }
   }
 
-  ::SelectObject(dib_dc, old_obj);
-  ::DeleteObject(dib);
-  ::DeleteDC(dib_dc);
+  ::SelectObject(dib_dc.Get(), old_obj);
 
   return bitmap;
 }
@@ -573,10 +577,10 @@ void IconUtil::SetSingleIconImageInformation(const SkBitmap& bitmap,
                                              ICONIMAGE* icon_image,
                                              DWORD image_offset,
                                              size_t* image_byte_count) {
-  DCHECK(icon_dir != NULL);
-  DCHECK(icon_image != NULL);
+  DCHECK(icon_dir);
+  DCHECK(icon_image);
   DCHECK_GT(image_offset, 0U);
-  DCHECK(image_byte_count != NULL);
+  DCHECK(image_byte_count);
   DCHECK_LT(bitmap.width(), kLargeIconSize);
   DCHECK_LT(bitmap.height(), kLargeIconSize);
 

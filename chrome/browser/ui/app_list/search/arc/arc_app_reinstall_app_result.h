@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
@@ -34,6 +33,10 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
       const arc::mojom::AppReinstallCandidatePtr& mojom_data,
       const gfx::ImageSkia& skia_icon,
       ArcAppReinstallAppResult::Observer* observer);
+
+  ArcAppReinstallAppResult(const ArcAppReinstallAppResult&) = delete;
+  ArcAppReinstallAppResult& operator=(const ArcAppReinstallAppResult&) = delete;
+
   ~ArcAppReinstallAppResult() override;
 
   // ChromeSearchResult:
@@ -44,7 +47,6 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
   // Observer passed in constructor. not owned.
   Observer* const observer_;
   const std::string package_name_;
-  DISALLOW_COPY_AND_ASSIGN(ArcAppReinstallAppResult);
 };
 
 }  // namespace app_list

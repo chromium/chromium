@@ -106,9 +106,14 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   feature_list.InitAndEnableFeature(features::kLowLatencyCanvas2dImageChromium);
 
   auto context_provider = viz::TestContextProvider::Create();
+#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
+  constexpr auto buffer_format = gfx::BufferFormat::BGRA_8888;
+#elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+  constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
+#endif
+
   context_provider->UnboundTestContextGL()
-      ->set_supports_gpu_memory_buffer_format(
-          CanvasColorParams().GetAsResourceParams().GetBufferFormat(), true);
+      ->set_supports_gpu_memory_buffer_format(buffer_format, true);
   InitializeSharedGpuContext(context_provider.get());
 
   // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent

@@ -28,8 +28,8 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
 #include "extensions/common/extension_messages.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
@@ -248,8 +248,7 @@ GURL ChromeKeyboardControllerClient::GetVirtualKeyboardUrl() {
   if (!virtual_keyboard_url_for_test_.is_empty())
     return virtual_keyboard_url_for_test_;
 
-  chromeos::input_method::InputMethodManager* ime_manager =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* ime_manager = ash::input_method::InputMethodManager::Get();
   if (!ime_manager || !ime_manager->GetActiveIMEState())
     return GURL(keyboard::kKeyboardURL);
 
@@ -323,6 +322,10 @@ void ChromeKeyboardControllerClient::OnKeyboardVisibleBoundsChanged(
   DVLOG(1) << "OnKeyboardVisibleBoundsChanged: " << screen_bounds.ToString();
   if (keyboard_contents_)
     keyboard_contents_->SetInitialContentsSize(screen_bounds.size());
+
+  for (auto& observer : observers_) {
+    observer.OnKeyboardVisibleBoundsChanged(screen_bounds);
+  }
 
   if (!GetKeyboardWindow())
     return;

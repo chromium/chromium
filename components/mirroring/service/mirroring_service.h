@@ -6,7 +6,6 @@
 #define COMPONENTS_MIRRORING_SERVICE_MIRRORING_SERVICE_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
  public:
   MirroringService(mojo::PendingReceiver<mojom::MirroringService> receiver,
                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+  MirroringService(const MirroringService&) = delete;
+  MirroringService& operator=(const MirroringService&) = delete;
+
   ~MirroringService() override;
 
  private:
@@ -38,8 +41,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirroringService final
   mojo::Receiver<mojom::MirroringService> receiver_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::unique_ptr<Session> session_;  // Current mirroring session.
-
-  DISALLOW_COPY_AND_ASSIGN(MirroringService);
 };
 
 }  // namespace mirroring

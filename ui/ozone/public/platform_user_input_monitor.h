@@ -8,7 +8,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace ui {
 

@@ -66,7 +66,7 @@ ui::SimpleMenuModel* PersistentDesksBarContextMenu::BuildMenuModel() {
       ui::ImageModel::FromVectorIcon(kPersistentDesksBarFeedbackIcon));
 
   auto* bar_controller = Shell::Get()->persistent_desks_bar_controller();
-  const bool is_enabled = bar_controller->is_enabled();
+  const bool is_enabled = bar_controller->IsEnabled();
   context_menu_model_->AddItemWithIcon(
       static_cast<int>(CommandId::kShowOrHideBar),
       l10n_util::GetStringUTF16(

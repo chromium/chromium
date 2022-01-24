@@ -68,14 +68,6 @@ public interface BrowserPaymentRequest {
     default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
 
     /**
-     * Modifies queryForQuota if needed, called when queryForQuota is created.
-     * @param queryForQuota The created queryForQuota, which could be modified in place.
-     * @param paymentOptions The payment options specified by the merchant.
-     */
-    default void modifyQueryForQuotaCreatedIfNeeded(
-            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {}
-
-    /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
      * @param webContents The WebContents that represents the merchant page.
      * @param methodData A map of the method data specified for the request.
@@ -101,9 +93,6 @@ public interface BrowserPaymentRequest {
      * @param delegate The delegate of payment app factory.
      */
     void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
-
-    default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
-            WebContents webContents, PaymentMethodData[] rawMethodData) {}
 
     /**
      * @return Whether at least one payment app (including basic-card payment app) is available
@@ -178,11 +167,18 @@ public interface BrowserPaymentRequest {
     default void onInstrumentDetailsReady() {}
 
     /**
-     * Called if unable to retrieve payment details.
-     * @param errorMessage Developer-facing error message to be used when rejecting the promise
-     *                     returned from PaymentRequest.show().
+     * @return True if the app selector UI has been skipped. This method should not modify internal
+     *         states.
      */
-    void onInstrumentDetailsError(String errorMessage);
+    default boolean hasSkippedAppSelector() {
+        return true;
+    }
+
+    /**
+     * Shows the app selector UI after the payment app invocation fails. This should be called
+     * when the payment invocation fails and if the app selector was not skipped.
+     */
+    default void showAppSelectorAfterPaymentAppInvokeFailed() {}
 
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.

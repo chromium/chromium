@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,8 +34,35 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
+
+base::FilePath GetFilePathFromGurl(
+    const GURL& gurl,
+    const storage::FileSystemContext* fs_context) {
+  // For filesystem:// type URL. Path managed by file_manager (e.g. MyFiles).
+  if (gurl.SchemeIs(url::kFileSystemScheme)) {
+    if (!fs_context) {
+      return base::FilePath();
+    }
+
+    const storage::FileSystemURL fs_url =
+        fs_context->CrackURLInFirstPartyContext(gurl);
+    if (fs_url.is_valid()) {
+      return fs_url.path();
+    }
+  }
+
+  // For file:// type URL. Path is not managed by file_manager (used by ARC).
+  if (gurl.SchemeIs(url::kFileScheme)) {
+    base::FilePath file_path;
+    if (net::FileURLToFilePath(gurl, &file_path)) {
+      return file_path;
+    }
+  }
+  return base::FilePath();
+}
 
 std::vector<base::FilePath> ResolveFileUrls(
     Profile* profile,
@@ -42,8 +71,10 @@ std::vector<base::FilePath> ResolveFileUrls(
   storage::FileSystemContext* fs_context =
       file_manager::util::GetFileManagerFileSystemContext(profile);
   for (const auto& file : files) {
-    storage::FileSystemURL fs_url = fs_context->CrackURL(file->url);
-    file_paths.push_back(fs_url.path());
+    const base::FilePath file_path = GetFilePathFromGurl(file->url, fs_context);
+    if (!file_path.empty()) {
+      file_paths.push_back(file_path);
+    }
   }
   return file_paths;
 }
@@ -117,7 +148,7 @@ gfx::Size ComputeSize() {
 
 }  // namespace
 
-NearbyShareAction::NearbyShareAction() = default;
+NearbyShareAction::NearbyShareAction(Profile* profile) : profile_(profile) {}
 
 NearbyShareAction::~NearbyShareAction() = default;
 
@@ -136,8 +167,7 @@ void NearbyShareAction::LaunchAction(
   gfx::Size size = ComputeSize();
   controller->SetBubbleSize(size.width(), size.height());
 
-  auto* profile = controller->GetProfile();
-  auto view = std::make_unique<views::WebView>(profile);
+  auto view = std::make_unique<views::WebView>(profile_);
   // If this is not done, we don't see anything in our view.
   view->SetPreferredSize(size);
   web_view_ = root_view->AddChildView(std::move(view));
@@ -161,7 +191,7 @@ void NearbyShareAction::LaunchAction(
 
   nearby_ui->SetSharesheetController(controller);
   nearby_ui->SetAttachments(
-      CreateAttachmentsFromIntent(profile, std::move(intent)));
+      CreateAttachmentsFromIntent(profile_, std::move(intent)));
 }
 
 bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
@@ -195,17 +225,12 @@ bool NearbyShareAction::IsNearbyShareDisabledByPolicy() {
   if (nearby_share_disabled_by_policy_for_testing_.has_value()) {
     return *nearby_share_disabled_by_policy_for_testing_;
   }
-
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (!profile) {
+  NearbySharingService* nearby_sharing_service =
+      NearbySharingServiceFactory::GetForBrowserContext(profile_);
+  if (!nearby_sharing_service) {
     return false;
   }
-  NearbySharingService* nearby_share_service =
-      NearbySharingServiceFactory::GetForBrowserContext(profile);
-  if (!nearby_share_service) {
-    return false;
-  }
-  return nearby_share_service->GetSettings()->IsDisabledByPolicy();
+  return nearby_sharing_service->GetSettings()->IsDisabledByPolicy();
 }
 
 std::vector<std::unique_ptr<Attachment>>
@@ -230,6 +255,20 @@ bool NearbyShareAction::OnAcceleratorPressed(
   return true;
 }
 
+void NearbyShareAction::SetActionCleanupCallbackForArc(
+    base::OnceCallback<void()> callback) {
+  if (callback.is_null()) {
+    return;
+  }
+  NearbySharingService* nearby_sharing_service =
+      NearbySharingServiceFactory::GetForBrowserContext(profile_);
+  if (!nearby_sharing_service) {
+    std::move(callback).Run();
+    return;
+  }
+  nearby_sharing_service->SetArcTransferCleanupCallback(std::move(callback));
+}
+
 bool NearbyShareAction::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
@@ -244,8 +283,7 @@ void NearbyShareAction::WebContentsCreated(
     const std::string& frame_name,
     const GURL& target_url,
     content::WebContents* new_contents) {
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      Profile::FromBrowserContext(web_view_->GetBrowserContext()));
+  chrome::ScopedTabbedBrowserDisplayer displayer(profile_);
   NavigateParams nav_params(displayer.browser(), target_url,
                             ui::PageTransition::PAGE_TRANSITION_LINK);
   Navigate(&nav_params);

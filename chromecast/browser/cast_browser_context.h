@@ -22,19 +22,23 @@ namespace shell {
 class CastBrowserContext final : public content::BrowserContext {
  public:
   CastBrowserContext();
+
+  CastBrowserContext(const CastBrowserContext&) = delete;
+  CastBrowserContext& operator=(const CastBrowserContext&) = delete;
+
   ~CastBrowserContext() override;
 
   // BrowserContext implementation:
-#if !defined(OS_ANDROID)
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-#endif  // !defined(OS_ANDROID)
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
   content::ResourceContext* GetResourceContext() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  content::PlatformNotificationService* GetPlatformNotificationService()
+      override;
   content::PushMessagingService* GetPushMessagingService() override;
   content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -58,8 +62,6 @@ class CastBrowserContext final : public content::BrowserContext {
   std::unique_ptr<CastResourceContext> resource_context_;
   std::unique_ptr<content::PermissionControllerDelegate> permission_manager_;
   std::unique_ptr<SimpleFactoryKey> simple_factory_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserContext);
 };
 
 }  // namespace shell

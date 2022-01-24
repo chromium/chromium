@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_bus.h"
@@ -35,6 +34,10 @@ class AudioEncoder {
                int bitrate,
                Codec codec,
                FrameEncodedCallback frame_encoded_callback);
+
+  AudioEncoder(const AudioEncoder&) = delete;
+  AudioEncoder& operator=(const AudioEncoder&) = delete;
+
   virtual ~AudioEncoder();
 
   OperationalStatus InitializationResult() const;
@@ -56,8 +59,6 @@ class AudioEncoder {
 
   // Used to ensure only one thread invokes InsertAudio().
   base::ThreadChecker insert_thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioEncoder);
 };
 
 }  // namespace cast

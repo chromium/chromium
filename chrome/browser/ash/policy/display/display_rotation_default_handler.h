@@ -30,6 +30,10 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
  public:
   DisplayRotationDefaultHandler();
 
+  DisplayRotationDefaultHandler(const DisplayRotationDefaultHandler&) = delete;
+  DisplayRotationDefaultHandler& operator=(
+      const DisplayRotationDefaultHandler&) = delete;
+
   ~DisplayRotationDefaultHandler() override;
 
   // DisplaySettingsPolicyHandler
@@ -44,8 +48,6 @@ class DisplayRotationDefaultHandler : public DisplaySettingsPolicyHandler {
   display::Display::Rotation display_rotation_default_ =
       display::Display::ROTATE_0;
   std::set<std::string> rotated_display_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayRotationDefaultHandler);
 };
 
 }  // namespace policy

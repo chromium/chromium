@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) AssociatedReceiverBase {
   void set_disconnect_handler(base::OnceClosure error_handler);
   void set_disconnect_with_reason_handler(
       ConnectionErrorWithReasonCallback error_handler);
+  void reset_on_disconnect();
 
   bool is_bound() const { return !!endpoint_client_; }
   explicit operator bool() const { return !!endpoint_client_; }
@@ -148,6 +149,12 @@ class AssociatedReceiver : public internal::AssociatedReceiverBase {
   // Like above but when invoked |handler| will receive additional metadata
   // about why the remote endpoint was closed, if provided.
   using AssociatedReceiverBase::set_disconnect_with_reason_handler;
+
+  // Resets this AssociatedReceiver on disconnect. Note that this replaces any
+  // previously set disconnection handler. Must be called on a bound
+  // AssociatedReceiver object, and only remains set as long as the
+  // AssociatedReceiver is both bound and connected.
+  using AssociatedReceiverBase::reset_on_disconnect;
 
   // Resets this AssociatedReceiver to an unbound state. An unbound
   // AssociatedReceiver will NEVER schedule method calls or disconnection

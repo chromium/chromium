@@ -66,6 +66,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="133801305381959373">Det finnes ingen flere tekstområder som er redigerbare</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Tips</translation>
+<translation id="1354356357730355833">kopiér</translation>
 <translation id="135978014023467274">ChromeVox er oppdatert til versjon 63!</translation>
 <translation id="1360699455582016846">Klikk på elementet under navigeringstasten <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Dette er den siste overskriften. Trykk på Søk+H for å gå til den første overskriften eller på Søk+Shift+H for å gå til den andre overskriften på denne siden.</translation>
@@ -242,6 +243,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="267442004702508783">last inn på nytt</translation>
 <translation id="2675533876313964202">Irrgrønn</translation>
 <translation id="2684412629217766642">Lukk ChromeVox-veiledningen</translation>
+<translation id="2692503699962701720">Endre tonehøyde ved opplesing av elementtyper og formatert tekst</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Kandidat for tekstkonvertering</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{venstreparentes}other{# venstreparenteser}}</translation>
@@ -352,6 +354,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3286372614333682499">stående</translation>
 <translation id="3286390186030710347">Glidebryter</translation>
 <translation id="3300348286427369683">Støtte for rik tekst. Nå støtter ChromeVox felt med rik tekst, inkludert hoppekommandoer, markørstyring for punktskrift, merking med mer.</translation>
+<translation id="3300733168898541351">angre</translation>
 <translation id="3307886118343381874">Gå til slutten av tabellen</translation>
 <translation id="3312997241656799641">Neste besøkte link</translation>
 <translation id="3313245066383501820">Modifikatortasten for ChromeVox</translation>
@@ -372,6 +375,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3406283310380167331">Vis skjemalisten</translation>
 <translation id="3414400929511680526">Blåhvit</translation>
 <translation id="3418936350470374046">Det finnes ingen celler nedenfor</translation>
+<translation id="3419269701801640163">lim inn</translation>
 <translation id="3435494200763325275">Fanenavigering (fortsettelse)</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Delvis trykket på</translation>
@@ -425,6 +429,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3813387282697781382">Lys korallrød</translation>
 <translation id="3816633764618089385">Neste media</translation>
 <translation id="3840823741487267909">Forkortelse</translation>
+<translation id="3841319830220785495">Standard naturlig stemme</translation>
 <translation id="385383972552776628">Åpne siden med alternativer</translation>
 <translation id="3856075812838139784">Skrivebeskyttet</translation>
 <translation id="3857141338659865495">Mellomturkis</translation>
@@ -451,7 +456,9 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Rull ned</translation>
 <translation id="4035381225449278841">Vår</translation>
+<translation id="4038098586530338813">utfør likevel</translation>
 <translation id="4047216625641135770">Mark-tag</translation>
+<translation id="4047910800766704982">Du kan bruke en naturlig, menneskeaktig stemme når enheten er på nett. Teksten blir sendt til Google for behandling. Du kan når som helst slå av dette i innstillingene.</translation>
 <translation id="4053520724192563562">Limegrønn</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">En sideinnlasting pågår</translation>
@@ -605,6 +612,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5170206230005240598">Punktskrift-teksting er slått på</translation>
 <translation id="5183440668879371625">Punktskrift – forrige linje</translation>
 <translation id="5189244881767082992">Linje</translation>
+<translation id="5234747236692380506">skriv <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Lys maisgul</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Avslutt</translation>
@@ -687,6 +695,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5748623122140342504">Forrige overskrift på nivå 5</translation>
 <translation id="5760594853119905566">Vedlegg</translation>
 <translation id="5761219715606611783">Bra! Du har lært det grunnleggende som trengs for å bruke ChromeVox-berøring. Du kan gå gjennom veiledningen på nytt eller avslutte denne veiledningen med knappene under.</translation>
+<translation id="5776001898637896684">Google Enhanced Network-utvidelse for tekst til tale</translation>
 <translation id="5805940204952508776">Trykk med to fingre</translation>
 <translation id="5819072574982403430">Treelementet</translation>
 <translation id="5822819874379903994">Mørk turkis</translation>
@@ -787,6 +796,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6544923685317771506">Sjøskjell</translation>
 <translation id="6551185905438378412">Elfenben</translation>
 <translation id="6561818612645211875">Gå til begynnelsen av nåværende rad</translation>
+<translation id="6563126228219321999">Det finnes ikke noe ugyldig element</translation>
 <translation id="6579990219486187401">Lys rosa</translation>
 <translation id="6583174818554398774">Gå til neste detaljnivå</translation>
 <translation id="6584162722998608255">Nå skal du få lære hvordan du beveger deg rundt på skjermen. Du kan sveipe fra venstre til høyre med én finger for å gå til neste element. Prøv det nå for å gå til neste trinn.</translation>
@@ -817,6 +827,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6815255864998354418">Sitronfromasj</translation>
 <translation id="6816066673340002913">Blek gullris</translation>
 <translation id="6826226459053491773">Sveip to fingre ned</translation>
+<translation id="6826669432862053130">Neste ugyldige element</translation>
 <translation id="6833103209700200188">Bunntekst</translation>
 <translation id="6837853484260746864">Velg en stemme:</translation>
 <translation id="6858047746862060282">Prolog</translation>
@@ -830,6 +841,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6910211073230771657">Slettet</translation>
 <translation id="6910969481785184048">På, av og stopp</translation>
 <translation id="6919104639734799681">Vis tabellisten</translation>
+<translation id="692135145298539227">slett</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6949846980769640811">Middels havblå</translation>
 <translation id="6951482098621102657">Det finnes ingen flere overskrifter på nivå 5</translation>
@@ -909,7 +921,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="743783356331413498">Eksempel</translation>
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7484805699335881122">Endre tonehøyde ved opplesing av elementtyper, tekst i hermetegn, slettet tekst, fet tekst, tekst i parentes og tekst med store bokstaver.</translation>
+<translation id="7465123027577412805">Vil du bruke naturlig stemme?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Gå til neste del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
 <translation id="7505149250476994901">Si «stor» før bokstaven</translation>
@@ -979,6 +991,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7968340748835037139">Mørkegrønn</translation>
 <translation id="7972507042926081808">Sjokoladebrun</translation>
 <translation id="7974390230414479278">Menyelement</translation>
+<translation id="7990863024647916394"><ph name="DISPLAY_NAME" /> stemme <ph name="COUNT" /></translation>
 <translation id="8004507136466386272">Ord</translation>
 <translation id="8004512796067398576">Øk</translation>
 <translation id="8007540374018858731">h3</translation>
@@ -1004,8 +1017,10 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8126386426083591964">Det finnes ingen tidligere overskrifter på nivå 5</translation>
 <translation id="812886159861361726">Nedlastingen av <ph name="FILE_NAME" /> er stanset</translation>
 <translation id="8129445297241948503">Det finnes ingen celler ovenfor</translation>
+<translation id="8132248161074464367">Forrige ugyldige element</translation>
 <translation id="8138880386467279117">Berøring</translation>
 <translation id="8146613869421949343">Nå skal du få lære om søketasten. Søketasten brukes i kombinasjon med andre taster for å utføre ChromeVox-kommandoer. Søketasten er rett over den venstre Shift-tasten. For å fortsette, trykk på søketasten.</translation>
+<translation id="8158033275290782295">merk alt</translation>
 <translation id="816818801578874684">Dette er den første overskriften. Trykk på søketasten + H for å gå til neste overskrift.</translation>
 <translation id="8173092779156526980">Sveip fire fingre til venstre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understrek}other{# understreker}}</translation>
@@ -1121,6 +1136,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="9077305471618729969">Lys sjøgrønn</translation>
 <translation id="9080299285199342830">Hopp til slutten</translation>
 <translation id="9089864840575085222">Slå av eller på innskrivingsekko</translation>
+<translation id="9099429023611373837">klipp ut</translation>
 <translation id="9108370397979208512">math</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{prosent}other{# prosenttegn}}</translation>

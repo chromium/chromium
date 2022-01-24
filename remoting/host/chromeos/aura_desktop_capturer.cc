@@ -44,7 +44,8 @@ void AuraDesktopCapturer::Start(webrtc::DesktopCapturer::Callback* callback) {
 void AuraDesktopCapturer::CaptureFrame() {
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&AuraDesktopCapturer::OnFrameCaptured,
                          weak_factory_.GetWeakPtr()));
 

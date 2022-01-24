@@ -10,11 +10,14 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
+using ::testing::NiceMock;
+
 MockHatsService::MockHatsService(Profile* profile) : HatsService(profile) {}
 
 MockHatsService::~MockHatsService() = default;
 
 std::unique_ptr<KeyedService> BuildMockHatsService(
     content::BrowserContext* context) {
-  return std::make_unique<MockHatsService>(static_cast<Profile*>(context));
+  return std::make_unique<NiceMock<MockHatsService>>(
+      static_cast<Profile*>(context));
 }

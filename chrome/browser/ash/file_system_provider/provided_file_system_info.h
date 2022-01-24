@@ -24,6 +24,7 @@ struct MountOptions {
                const std::string& display_name);
 
   MountOptions(const MountOptions& source);
+  MountOptions& operator=(const MountOptions& source);
 
   std::string file_system_id;
   std::string display_name;

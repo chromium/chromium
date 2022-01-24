@@ -1,0 +1,10 @@
+{
+  "name": "Hello, WebAssembly!",
+  "description": "Verify usage of wasm in MV3",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "service_worker.js",
+    "type": "module"
+  }
+}

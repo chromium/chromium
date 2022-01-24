@@ -27,6 +27,12 @@ class PushVideoStreamSubscriptionImpl
       mojom::VideoSource::CreatePushSubscriptionCallback creation_callback,
       BroadcastingReceiver* broadcaster,
       mojo::Remote<mojom::Device>* device);
+
+  PushVideoStreamSubscriptionImpl(const PushVideoStreamSubscriptionImpl&) =
+      delete;
+  PushVideoStreamSubscriptionImpl& operator=(
+      const PushVideoStreamSubscriptionImpl&) = delete;
+
   ~PushVideoStreamSubscriptionImpl() override;
 
   void SetOnClosedHandler(
@@ -75,8 +81,6 @@ class PushVideoStreamSubscriptionImpl
   base::OnceCallback<void(base::OnceClosure done_cb)> on_closed_handler_;
 
   base::WeakPtrFactory<PushVideoStreamSubscriptionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PushVideoStreamSubscriptionImpl);
 };
 
 }  // namespace video_capture

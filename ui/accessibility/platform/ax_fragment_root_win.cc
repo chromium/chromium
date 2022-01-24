@@ -335,7 +335,7 @@ bool AXFragmentRootWin::IsControlElement() {
   return delegate_->IsAXFragmentRootAControlElement();
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::GetParent() {
+gfx::NativeViewAccessible AXFragmentRootWin::GetParent() const {
   return delegate_->GetParentOfAXFragmentRoot();
 }
 

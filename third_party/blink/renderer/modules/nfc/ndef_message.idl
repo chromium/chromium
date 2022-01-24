@@ -9,6 +9,6 @@
     SecureContext,
     Exposed=Window
 ] interface NDEFMessage {
-    [CallWith=ExecutionContext, RaisesException] constructor(NDEFMessageInit messageInit);
+    [CallWith=ScriptState, RaisesException] constructor(NDEFMessageInit messageInit);
     readonly attribute FrozenArray<NDEFRecord> records;
 };

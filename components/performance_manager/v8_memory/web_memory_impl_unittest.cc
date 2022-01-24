@@ -202,19 +202,19 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
 
     auto data = NewPerProcessV8MemoryUsage(1);
     AddIsolateMemoryUsage(frame_token, 1001u, data->isolates[0].get());
-    ExpectQueryAndDelayReply(&mock_reporter, base::TimeDelta::FromSeconds(10),
+    ExpectQueryAndDelayReply(&mock_reporter, base::Seconds(10),
                              std::move(data));
   }
 
   // Verify that requests are sent but reply is not yet received.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
   ::testing::Mock::VerifyAndClearExpectations(&mock_reporter);
 
   // Remove the child frame, which will destroy the child process.
   content::RenderFrameHostTester::For(child_frame())->Detach();
 
   // Advance until the reply is expected to make sure nothing explodes.
-  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  task_environment()->FastForwardBy(base::Seconds(5));
 }
 
 TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {

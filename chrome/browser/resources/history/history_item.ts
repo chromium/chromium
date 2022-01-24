@@ -7,7 +7,7 @@ import './shared_style.js';
 import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
-import 'chrome://resources/js/icon.m.js';
+import 'chrome://resources/js/icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
@@ -15,7 +15,7 @@ import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {getFaviconForPageURL} from 'chrome://resources/js/icon.m.js';
+import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

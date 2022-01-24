@@ -12,7 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillErrorDialogBridge_jni.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ui/android/view_android.h"

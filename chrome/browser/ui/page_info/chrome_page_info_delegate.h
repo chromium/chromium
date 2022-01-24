@@ -53,6 +53,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 
 #if !defined(OS_ANDROID)
   bool CreateInfoBarDelegate() override;
+  // In Chrome's case, this may show the site settings page or an app settings
+  // page, depending on context.
   void ShowSiteSettings(const GURL& site_url) override;
   void OpenCookiesDialog() override;
   void OpenCertificateDialog(net::X509Certificate* certificate) override;

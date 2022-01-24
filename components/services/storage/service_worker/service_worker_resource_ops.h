@@ -6,13 +6,12 @@
 #define COMPONENTS_SERVICES_STORAGE_SERVICE_WORKER_SERVICE_WORKER_RESOURCE_OPS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/big_io_buffer.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace storage {
-
-class BigIOBuffer;
 
 // Creates and owns a service worker disk cacke entry.
 class DiskEntryCreator {

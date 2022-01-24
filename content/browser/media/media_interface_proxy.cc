@@ -42,16 +42,10 @@
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "content/browser/media/cdm_storage_impl.h"
 #include "media/base/key_system_names.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_WIN) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -61,8 +55,9 @@
 #endif  // defined(OS_WIN) || BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_WIN)
-#include "base/threading/sequence_local_storage_slot.h"
-#include "base/time/time.h"
+#include "content/browser/media/dcomp_surface_registry_broker.h"
+#include "media/base/win/mf_feature_checks.h"
+#include "media/cdm/win/media_foundation_cdm.h"
 #endif  // defined(OS_WIN)
 
 #if defined(OS_ANDROID)
@@ -85,7 +80,9 @@ bool IsValidCdmDisplayName(const std::string& cdm_name) {
   return cdm_name.size() <= kMaxCdmNameSize && base::IsStringASCII(cdm_name);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if defined(OS_CHROMEOS)
 constexpr char kChromeOsCdmFileSystemId[] =
     "application_chromeos-cdm-factory-daemon";
 
@@ -100,15 +97,12 @@ enum class CrosCdmType {
 void ReportCdmTypeUMA(CrosCdmType cdm_type) {
   UMA_HISTOGRAM_ENUMERATION("Media.EME.CrosCdmType", cdm_type);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // defined(OS_CHROMEOS)
 
 // The amount of time to allow the secondary Media Service instance to idle
 // before tearing it down. Only used if the Content embedder defines how to
 // launch a secondary Media Service instance.
-constexpr base::TimeDelta kSecondaryInstanceIdleTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSecondaryInstanceIdleTimeout = base::Seconds(5);
 
 void MaybeLaunchSecondaryMediaService(
     mojo::Remote<media::mojom::MediaService>* remote) {
@@ -180,6 +174,19 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     site_mute_observers_.Get(remote_id)->OnMuteStateChange(
         WebContents::FromRenderFrameHost(render_frame_host_)->IsAudioMuted());
   }
+
+  void CreateDCOMPSurfaceRegistry(
+      mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver)
+      override {
+    if (media::SupportMediaFoundationClearPlayback() ||
+        (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
+         media::MediaFoundationCdm::IsAvailable())) {
+      // TODO(crbug.com/1233379): Pass IO task runner and remove the PostTask()
+      // in DCOMPSurfaceRegistryBroker after bug fixed.
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver));
+    }
+  }
 #endif  // defined(OS_WIN)
 
   void GetCdmOrigin(GetCdmOriginCallback callback) override {
@@ -212,12 +219,11 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 }  // namespace
 
 MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {
+    : DocumentUserData(render_frame_host) {
   DVLOG(1) << __func__;
-  DCHECK(render_frame_host_);
 
   std::string cdm_file_system_id;
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // The file system ID passed in here is only used by the CDM obtained through
   // the |media_interface_factory_ptr_|.
   cdm_file_system_id = kChromeOsCdmFileSystemId;
@@ -294,7 +300,7 @@ void MediaInterfaceProxy::CreateFlingingRenderer(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::unique_ptr<FlingingRenderer> flinging_renderer =
-      FlingingRenderer::Create(render_frame_host_, presentation_id,
+      FlingingRenderer::Create(&render_frame_host(), presentation_id,
                                std::move(client_extension));
 
   if (!flinging_renderer)
@@ -315,11 +321,9 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
   media::MojoRendererService::Create(
       nullptr,
       std::make_unique<MediaPlayerRenderer>(
-          render_frame_host_->GetProcess()->GetID(),
-          render_frame_host_->GetRoutingID(),
-          static_cast<RenderFrameHostImpl*>(render_frame_host_)
-              ->delegate()
-              ->GetAsWebContents(),
+          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetRoutingID(),
+          WebContents::FromRenderFrameHost(&render_frame_host()),
           std::move(renderer_extension_receiver),
           std::move(client_extension_remote)),
       std::move(receiver));
@@ -328,6 +332,7 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
 
 #if defined(OS_WIN)
 void MediaInterfaceProxy::CreateMediaFoundationRenderer(
+    mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {
@@ -339,7 +344,8 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
     factory->CreateMediaFoundationRenderer(
-        std::move(receiver), std::move(renderer_extension_receiver));
+        std::move(media_log_remote), std::move(receiver),
+        std::move(renderer_extension_receiver));
   }
 }
 #endif  // defined(OS_WIN)
@@ -358,9 +364,15 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       "CDM creation failed");
 
   // Handle `use_hw_secure_codecs` cases first.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (base::FeatureList::IsEnabled(chromeos::features::kCdmFactoryDaemon) &&
-      cdm_config.use_hw_secure_codecs &&
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool enable_cdm_factory_daemon =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kLacrosUseChromeosProtectedMedia);
+#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
+  const bool enable_cdm_factory_daemon = true;
+#endif  // else BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (enable_cdm_factory_daemon && cdm_config.use_hw_secure_codecs &&
       cdm_config.allow_distinctive_identifier) {
     auto* factory = media_interface_factory_ptr_->Get();
     if (factory) {
@@ -398,7 +410,7 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
     }
   }
   // Fallback to use library CDM below.
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+#endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Fallback to use CdmFactory even if `use_hw_secure_codecs` is true.
@@ -426,9 +438,11 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
 mojo::PendingRemote<media::mojom::FrameInterfaceFactory>
 MediaInterfaceProxy::GetFrameServices(const std::string& cdm_file_system_id) {
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> factory;
-  frame_factories_.Add(std::make_unique<FrameInterfaceFactoryImpl>(
-                           render_frame_host_, cdm_file_system_id),
-                       factory.InitWithNewPipeAndPassReceiver());
+  frame_factories_.Add(
+      std::make_unique<FrameInterfaceFactoryImpl>(
+          static_cast<RenderFrameHostImpl*>(&render_frame_host()),
+          cdm_file_system_id),
+      factory.InitWithNewPipeAndPassReceiver());
   return factory;
 }
 
@@ -440,8 +454,10 @@ MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // TODO(xhwang): Also check protected media identifier content setting.
-  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
-    DLOG(ERROR) << "Hardware secure decryption disabled!";
+  if (!media::SupportMediaFoundationClearPlayback() &&
+      !base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+    DLOG(ERROR) << "Both hardware secure decryption & media foundation for "
+                   "clear are disabled!";
     return nullptr;
   }
 
@@ -457,8 +473,8 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   DCHECK(!mf_interface_factory_remote_);
 
   auto& mf_service = GetMediaFoundationService(
-      render_frame_host_->GetBrowserContext(),
-      render_frame_host_->GetSiteInstance()->GetSiteURL(), cdm_path);
+      render_frame_host().GetBrowserContext(),
+      render_frame_host().GetSiteInstance()->GetSiteURL(), cdm_path);
 
   // Passing empty arguments to GetFrameServices() as MediaFoundation-based
   // CDMs don't use CdmStorage currently.
@@ -524,8 +540,8 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
 
   DCHECK(!cdm_factory_map_.count(cdm_guid));
 
-  auto* browser_context = render_frame_host_->GetBrowserContext();
-  auto& site = render_frame_host_->GetSiteInstance()->GetSiteURL();
+  auto* browser_context = render_frame_host().GetBrowserContext();
+  auto& site = render_frame_host().GetSiteInstance()->GetSiteURL();
   auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;
@@ -548,8 +564,9 @@ void MediaInterfaceProxy::OnCdmServiceConnectionError(
   DCHECK(cdm_factory_map_.count(cdm_guid));
   cdm_factory_map_.erase(cdm_guid);
 }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 void MediaInterfaceProxy::OnChromeOsCdmCreated(
     const std::string& key_system,
     const media::CdmConfig& cdm_config,
@@ -577,9 +594,8 @@ void MediaInterfaceProxy::OnChromeOsCdmCreated(
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
   factory->CreateCdm(key_system, cdm_config, std::move(callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // defined(OS_CHROMEOS)
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(MediaInterfaceProxy)
+DOCUMENT_USER_DATA_KEY_IMPL(MediaInterfaceProxy);
 
 }  // namespace content

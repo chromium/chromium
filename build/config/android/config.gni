@@ -8,6 +8,7 @@
 # toolchain, this GNI file may be read and processed from within Chrome OS
 # toolchains. Checking |is_android| here would therefore be too restrictive.
 if (is_android || is_chromeos) {
+  import("//build/config/android/channel.gni")
   import("//build/config/chromecast_build.gni")
   import("//build/config/dcheck_always_on.gni")
   import("//build_overrides/build.gni")
@@ -48,7 +49,7 @@ if (is_android || is_chromeos) {
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 21
+    default_min_sdk_version = 23
 
     # [WIP] Allows devs to achieve much faster edit-build-install cycles.
     # Currently only works for ChromeModern apks due to incremental install.
@@ -279,6 +280,12 @@ if (is_android || is_chromeos) {
     # Enables Java library desugaring.
     # This will cause an extra classes.dex file to appear in every apk.
     enable_jdk_library_desugaring = true
+
+    # Enables trace event injection on Android views with bytecode rewriting.
+    # This adds an additional step on android_app_bundle_module targets that
+    # adds trace events to some methods in android.view.View subclasses.
+    enable_trace_event_bytecode_rewriting =
+        !is_java_debug && android_channel != "stable"
   }
 
   # Host stuff -----------------------------------------------------------------
@@ -322,29 +329,24 @@ if (is_android || is_chromeos) {
   # like the toolchain roots.
   if (current_cpu == "x86") {
     android_prebuilt_arch = "android-x86"
-    _binary_prefix = "i686-linux-android"
   } else if (current_cpu == "arm") {
     android_prebuilt_arch = "android-arm"
-    _binary_prefix = "arm-linux-androideabi"
   } else if (current_cpu == "mipsel") {
     android_prebuilt_arch = "android-mips"
-    _binary_prefix = "mipsel-linux-android"
   } else if (current_cpu == "x64") {
     android_prebuilt_arch = "android-x86_64"
-    _binary_prefix = "x86_64-linux-android"
   } else if (current_cpu == "arm64") {
     android_prebuilt_arch = "android-arm64"
-    _binary_prefix = "aarch64-linux-android"
   } else if (current_cpu == "mips64el") {
     android_prebuilt_arch = "android-mips64"
-    _binary_prefix = "mips64el-linux-android"
   } else {
     assert(false, "Need android libgcc support for your target arch.")
   }
 
   android_toolchain_root = "$android_ndk_root/toolchains/llvm/prebuilt/${android_host_os}-${android_host_arch}"
-  android_tool_prefix = "$android_toolchain_root/bin/$_binary_prefix-"
-  android_readelf = "${android_tool_prefix}readelf"
+  android_ndk_library_path = "$android_toolchain_root/lib64"
+  android_tool_prefix = "$android_toolchain_root/bin/llvm-"
+  android_readelf = "${android_tool_prefix}readobj"
   android_objcopy = "${android_tool_prefix}objcopy"
   android_gdbserver =
       "$android_ndk_root/prebuilt/$android_prebuilt_arch/gdbserver/gdbserver"

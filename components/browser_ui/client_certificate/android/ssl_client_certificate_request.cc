@@ -11,9 +11,11 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -49,6 +51,9 @@ class ClientCertRequest {
         cert_request_info_(cert_request_info),
         delegate_(std::move(delegate)) {}
 
+  ClientCertRequest(const ClientCertRequest&) = delete;
+  ClientCertRequest& operator=(const ClientCertRequest&) = delete;
+
   base::OnceClosure GetCancellationCallback() {
     return base::BindOnce(&ClientCertRequest::OnCancel,
                           weak_factory_.GetWeakPtr());
@@ -68,8 +73,6 @@ class ClientCertRequest {
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_;
   std::unique_ptr<content::ClientCertificateDelegate> delegate_;
   base::WeakPtrFactory<ClientCertRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertRequest);
 };
 
 class SSLClientCertPendingRequests
@@ -81,6 +84,8 @@ class SSLClientCertPendingRequests
   ~SSLClientCertPendingRequests() override {}
 
   void AddRequest(std::unique_ptr<ClientCertRequest> request);
+
+  size_t GetDialogCount();
 
   void RequestComplete(net::SSLCertRequestInfo* info,
                        scoped_refptr<net::X509Certificate> cert,
@@ -107,6 +112,8 @@ class SSLClientCertPendingRequests
     void ResetCount() { count_ = 0; }
     // Increment the counter.
     void IncrementCount() { count_++; }
+    // Get the counter.
+    size_t GetCount() { return count_; }
 
    private:
     size_t count_ = 0;
@@ -138,7 +145,7 @@ ui::WindowAndroid* GetWindowFromWebContents(
   return view->GetWindowAndroid();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SSLClientCertPendingRequests);
 
 static void StartClientCertificateRequest(
     std::unique_ptr<ClientCertRequest> request,
@@ -211,6 +218,10 @@ void SSLClientCertPendingRequests::AddRequest(
   PumpRequests();
 }
 
+size_t SSLClientCertPendingRequests::GetDialogCount() {
+  return dialog_policy_.GetCount();
+}
+
 // Note that the default value for |on_drop| is a no-op.
 void SSLClientCertPendingRequests::FilterPendingRequests(
     std::function<bool(ClientCertRequest*)> should_keep,
@@ -272,9 +283,6 @@ void SSLClientCertPendingRequests::ReadyToCommitNavigation(
   // navigation is user-initiated. Note that |HasUserGesture| does not capture
   // browser-initiated navigations. The negation of |IsRendererInitiated| tells
   // us whether the navigation is browser-generated.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       (navigation_handle->HasUserGesture() ||
        !navigation_handle->IsRendererInitiated())) {
@@ -381,6 +389,7 @@ base::OnceClosure ShowSSLClientCertificateSelector(
     content::WebContents* contents,
     net::SSLCertRequestInfo* cert_request_info,
     std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+  DCHECK(delegate);
   SSLClientCertPendingRequests::CreateForWebContents(contents);
   SSLClientCertPendingRequests* active_requests =
       SSLClientCertPendingRequests::FromWebContents(contents);
@@ -391,6 +400,14 @@ base::OnceClosure ShowSSLClientCertificateSelector(
       client_cert_request->GetCancellationCallback();
   active_requests->AddRequest(std::move(client_cert_request));
   return cancellation_callback;
+}
+
+size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
+    content::WebContents* contents) {
+  SSLClientCertPendingRequests* active_requests =
+      SSLClientCertPendingRequests::FromWebContents(contents);
+  DCHECK(active_requests);
+  return active_requests->GetDialogCount();
 }
 
 }  // namespace browser_ui

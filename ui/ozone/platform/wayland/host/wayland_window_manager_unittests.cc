@@ -99,6 +99,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 
   auto* pointer = server_.seat()->pointer();
@@ -112,6 +113,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
 
   EXPECT_FALSE(manager_->GetCurrentKeyboardFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentFocusedWindow());
+  EXPECT_TRUE(window1.get() ==
+              manager_->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentPointerFocusedWindow());
 
   wl_pointer_send_leave(pointer->resource(), 2, surface->resource());
@@ -119,6 +122,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   Sync();
 
   EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_FALSE(manager_->GetCurrentPointerFocusedWindow());
 }
 
@@ -152,7 +156,8 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
 
   Sync();
 
-  EXPECT_FALSE(manager_->GetCurrentFocusedWindow());
+  EXPECT_FALSE(manager_->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_TRUE(window1.get() == manager_->GetCurrentFocusedWindow());
   EXPECT_TRUE(window1.get() == manager_->GetCurrentKeyboardFocusedWindow());
 
   wl_keyboard_send_leave(keyboard->resource(), 2, surface->resource());
@@ -193,7 +198,7 @@ TEST_P(WaylandWindowManagerTest, GetWindowsOnOutput) {
   auto entered_outputs_window1 = window1->root_surface()->entered_outputs();
   EXPECT_EQ(1u, entered_outputs_window1.size());
 
-  uint32_t output_id = (*entered_outputs_window1.begin())->output_id();
+  uint32_t output_id = (*entered_outputs_window1.begin());
 
   auto windows_on_output = manager_->GetWindowsOnOutput(output_id);
   EXPECT_EQ(1u, windows_on_output.size());

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/paint/block_painter.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -47,9 +48,9 @@ void MultiColumnSetPainter::PaintColumnRules(
                                                   DisplayItem::kColumnRules))
     return;
 
-  DrawingRecorder recorder(paint_info.context, layout_multi_column_set_,
-                           DisplayItem::kColumnRules,
-                           PixelSnappedIntRect(UnionRect(column_rule_bounds)));
+  DrawingRecorder recorder(
+      paint_info.context, layout_multi_column_set_, DisplayItem::kColumnRules,
+      ToGfxRect(PixelSnappedIntRect(UnionRect(column_rule_bounds))));
 
   const ComputedStyle& block_style =
       layout_multi_column_set_.MultiColumnBlockFlow()->StyleRef();
@@ -64,8 +65,11 @@ void MultiColumnSetPainter::PaintColumnRules(
 
   for (auto& bound : column_rule_bounds) {
     IntRect pixel_snapped_rule_rect = PixelSnappedIntRect(bound);
-    BoxBorderPainter::DrawBoxSide(paint_info.context, pixel_snapped_rule_rect,
-                                  box_side, rule_color, rule_style);
+    BoxBorderPainter::DrawBoxSide(
+        paint_info.context, pixel_snapped_rule_rect, box_side, rule_color,
+        rule_style,
+        PaintAutoDarkMode(block_style,
+                          DarkModeFilter::ElementRole::kBackground));
   }
 }
 

@@ -65,11 +65,11 @@ class BookmarkEditorView : public BookmarkEditor,
     explicit EditorTreeModel(std::unique_ptr<EditorNode> root)
         : ui::TreeNodeModel<EditorNode>(std::move(root)) {}
 
+    EditorTreeModel(const EditorTreeModel&) = delete;
+    EditorTreeModel& operator=(const EditorTreeModel&) = delete;
+
     void SetTitle(ui::TreeModelNode* node,
                   const std::u16string& title) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EditorTreeModel);
   };
 
   BookmarkEditorView(Profile* profile,

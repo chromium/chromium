@@ -17,7 +17,7 @@
   {{name | to_css_var_name}}: {{value | css_opacity}};
 {%  endfor -%}
 {%- endmacro %}
-import {css} from 'lit-element';
+import {css} from 'lit';
 {%- if include_style_sheet %}
 /* SAFETY_BOILERPLATE */
 
@@ -33,17 +33,38 @@ TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
 Chrome OS pages.
 -#}
 html:not(body) {
-{{- render_variables_as_css(Modes.DEFAULT) }}
+{{- render_variables_as_css(Modes.DEFAULT) -}}
+}
 
 {%- if untyped_css %}
+html {
 {%- for group_name, vars in untyped_css.items() %}
   /* {{group_name}} */
 {%-     for name, value in vars.items() %}
   {{name | to_css_var_name}}: {{value}};
 {%-     endfor %}
-{%   endfor %}
-{%- endif -%}
+{%-   endfor %}
 }
+{%- endif -%}
+
+{%- if typography.font_families or typography.typefaces %}
+html {
+  /* font families */
+{%-   for name, value in typography.font_families.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+
+  /* typefaces */
+{%-   for name, typeface in typography.typefaces.items() %}
+  {{name | to_css_var_name}}-font: {{typeface.font_weight}} {{typeface.font_size}}px/{{typeface.line_height}}px {{typeface.font_family | process_simple_ref}};
+  {{name | to_css_var_name}}-font-family: {{typeface.font_family | process_simple_ref}};
+  {{name | to_css_var_name}}-font-size: {{typeface.font_size}}px;
+  {{name | to_css_var_name}}-font-weight: {{typeface.font_weight}};
+  {{name | to_css_var_name}}-line-height: {{typeface.line_height}}px;
+
+{%-   endfor %}
+}
+{%- endif %}
 `;
 
 const DARK_MODE_OVERRIDES_CSS = `
@@ -92,3 +113,22 @@ export const {{model_name | to_ts_var_name}} = css`var({{model_name | to_css_var
 {%- for model_name, value in opacities[Modes.DEFAULT].items() -%}
 export const {{model_name | to_ts_var_name}} = css`var({{model_name | to_css_var_name}})`;
 {%  endfor -%}
+{%- if untyped_css %}
+{%- for group_name, vars in untyped_css.items() %}
+{%-     for name, value in vars.items() %}
+export const {{name | to_ts_var_name}} = css`var({{name | to_css_var_name}})`;
+{%-     endfor %}
+{%   endfor %}
+{%- endif -%}
+{%- if typography.font_families or typography.typefaces %}
+{%-   for name, value in typography.font_families.items() %}
+export const {{name | to_ts_var_name}} = css`var({{name | to_css_var_name}}-font)`;
+{%-     endfor %}
+{%-   for name, typeface in typography.typefaces.items() %}
+export const {{name | to_ts_var_name}}_FONT = css`var({{name | to_css_var_name}}-font)`;
+export const {{name | to_ts_var_name}}_FONT_FAMILY = css`var({{name | to_css_var_name}}-font-family)`;
+export const {{name | to_ts_var_name}}_FONT_SIZE = css`var({{name | to_css_var_name}}-font-size)`;
+export const {{name | to_ts_var_name}}_FONT_WEIGHT = css`var({{name | to_css_var_name}}-font-weight)`;
+export const {{name | to_ts_var_name}}_LINE_HEIGHT = css`var({{name | to_css_var_name}}-line-height)`;
+{%   endfor -%}
+{%- endif -%}

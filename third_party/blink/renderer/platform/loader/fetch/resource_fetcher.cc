@@ -44,7 +44,6 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -100,12 +99,10 @@ constexpr uint32_t ResourceFetcher::kKeepaliveInflightBytesQuota;
 
 namespace {
 
-constexpr base::TimeDelta kKeepaliveLoadersTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kKeepaliveLoadersTimeout = base::Seconds(30);
 
 // Timeout for link preloads to be used after window.onload
-static constexpr base::TimeDelta kUnusedPreloadTimeout =
-    base::TimeDelta::FromSeconds(3);
+static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
 
 #define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
 
@@ -210,30 +207,23 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
     case mojom::FetchImportanceMode::kImportanceAuto:
       break;
     case mojom::FetchImportanceMode::kImportanceHigh:
-      // Boost priority of
-      // - Late and async scripts
-      // - Images
-      // - Prefetch
-      if ((type == ResourceType::kScript &&
-           (FetchParameters::kLazyLoad == defer_option)) ||
-          type == ResourceType::kImage || type == ResourceType::kLinkPrefetch) {
+      // Boost priority of any request type that supports priority hints.
+      if (new_priority < ResourceLoadPriority::kHigh) {
         new_priority = ResourceLoadPriority::kHigh;
       }
-
       DCHECK_LE(priority_so_far, new_priority);
       break;
     case mojom::FetchImportanceMode::kImportanceLow:
-      // Demote priority of:
-      // - Images
-      //     Note: this will only have a real effect on in-viewport images since
-      //     out-of-viewport images already have priority set to kLow
-      // - Link preloads
-      //     For this initial implementation we do a blanket demotion regardless
-      //     of `as` value/type.
-      if (type == ResourceType::kImage ||
-          resource_request.GetRequestContext() ==
-              mojom::blink::RequestContextType::FETCH ||
-          is_link_preload) {
+      // Demote priority of any request type that supports priority hints.
+      // Most content types go to kLow. The one exception is early
+      // render-blocking CSS which defaults to the highest priority but
+      // can be lowered to match the "high" priority of everything else
+      // to allow for ordering if necessary without causing too much of a
+      // foot-gun.
+      if (type == ResourceType::kCSSStyleSheet &&
+          new_priority == ResourceLoadPriority::kVeryHigh) {
+        new_priority = ResourceLoadPriority::kHigh;
+      } else if (new_priority > ResourceLoadPriority::kLow) {
         new_priority = ResourceLoadPriority::kLow;
       }
 
@@ -538,14 +528,29 @@ Resource* ResourceFetcher::CachedResource(const KURL& resource_url) const {
   if (resource_url.IsEmpty())
     return nullptr;
   KURL url = MemoryCache::RemoveFragmentIdentifierIfNeeded(resource_url);
-  const WeakMember<Resource>& resource = cached_resources_map_.at(url);
-  return resource.Get();
+  const auto it = cached_resources_map_.find(url);
+  if (it == cached_resources_map_.end())
+    return nullptr;
+  return it->value.Get();
 }
 
 mojom::ControllerServiceWorkerMode
 ResourceFetcher::IsControlledByServiceWorker() const {
   return properties_->GetControllerServiceWorkerMode();
 }
+
+namespace {
+
+bool ShouldDeferFontLoad(const FetchParameters& params) {
+  if (params.IsLinkPreload())
+    return false;
+  if (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
+      params.Url().ProtocolIsData())
+    return false;
+  return true;
+}
+
+}  // namespace
 
 bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
                                         const FetchParameters& params,
@@ -556,8 +561,8 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
     return false;
 
   // Defer a font load until it is actually needed unless this is a link
-  // preload.
-  if (resource->GetType() == ResourceType::kFont && !params.IsLinkPreload())
+  // preload or a data url font (that doesn't consume network resources).
+  if (resource->GetType() == ResourceType::kFont && ShouldDeferFontLoad(params))
     return false;
 
   // Defer loading images either when:
@@ -776,18 +781,23 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   DCHECK(options.synchronous_policy == kRequestAsynchronously ||
          resource_type == ResourceType::kRaw ||
-         resource_type == ResourceType::kXSLStyleSheet);
+         resource_type == ResourceType::kXSLStyleSheet ||
+         (RuntimeEnabledFeatures::SyncLoadDataUrlFontsEnabled() &&
+          resource_type == ResourceType::kFont &&
+          params.Url().ProtocolIsData()));
 
-  KURL bundle_url_for_urn_resources;
+  KURL bundle_url_for_uuid_resources;
   if (resource_request.GetWebBundleTokenParams()) {
     DCHECK_EQ(resource_request.GetRequestDestination(),
               network::mojom::RequestDestination::kWebBundle);
   } else {
     AttachWebBundleTokenIfNeeded(resource_request);
-    if (resource_request.Url().Protocol() == "urn" &&
+    // TODO(https://crbug.com/1257045): Remove urn: scheme support.
+    if ((resource_request.Url().Protocol() == "urn" ||
+         resource_request.Url().Protocol() == "uuid-in-package") &&
         resource_request.GetWebBundleTokenParams()) {
       // We use the bundle URL for urn resources for security checks.
-      bundle_url_for_urn_resources =
+      bundle_url_for_uuid_resources =
           MemoryCache::RemoveFragmentIdentifierIfNeeded(
               resource_request.GetWebBundleTokenParams()->bundle_url);
     }
@@ -837,8 +847,9 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
       resource_request.GetRequestContext(),
       resource_request.GetRequestDestination(),
       MemoryCache::RemoveFragmentIdentifierIfNeeded(
-          bundle_url_for_urn_resources.IsValid() ? bundle_url_for_urn_resources
-                                                 : params.Url()),
+          bundle_url_for_uuid_resources.IsValid()
+              ? bundle_url_for_uuid_resources
+              : params.Url()),
       options, reporting_disposition,
       MemoryCache::RemoveFragmentIdentifierIfNeeded(url_before_redirects),
       redirect_status);
@@ -877,8 +888,13 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     resource_request.SetRequestDestination(
         DetermineRequestDestination(resource_type));
   }
-  if (resource_type == ResourceType::kLinkPrefetch)
+
+  // Add the "Purpose: prefetch" header to requests for prefetch or issued from
+  // prerendered pages.
+  if (resource_type == ResourceType::kLinkPrefetch ||
+      Context().IsPrerendering()) {
     resource_request.SetPurposeHeader("prefetch");
+  }
 
   // Indicate whether the network stack can return a stale resource. If a
   // stale resource is returned a StaleRevalidation request will be scheduled.
@@ -905,8 +921,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
   absl::optional<ResourceRequestBlockedReason> blocked_reason =
       Context().CanRequest(resource_type, resource_request,
                            MemoryCache::RemoveFragmentIdentifierIfNeeded(
-                               bundle_url_for_urn_resources.IsValid()
-                                   ? bundle_url_for_urn_resources
+                               bundle_url_for_uuid_resources.IsValid()
+                                   ? bundle_url_for_uuid_resources
                                    : params.Url()),
                            options, reporting_disposition,
                            resource_request.GetRedirectInfo());
@@ -948,6 +964,11 @@ void ResourceFetcher::AttachWebBundleTokenIfNeeded(
       ResourceRequestHead::WebBundleTokenParams(bundle->GetBundleUrl(),
                                                 bundle->WebBundleToken(),
                                                 mojo::NullRemote()));
+
+  // Skip the service worker for a short term solution.
+  // TODO(crbug.com/1240424): Figure out the ideal design of the service
+  // worker integration.
+  resource_request.SetSkipServiceWorker(true);
 }
 
 SubresourceWebBundleList*
@@ -989,7 +1010,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE(
       "Blink.Fetch.RequestResourceTime");
   TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
-               "url", params.Url().GetString().Utf8());
+               "url", params.Url().ElidedString().Utf8());
 
   // |resource_request|'s origin can be null here, corresponding to the "client"
   // value in the spec. In that case client's origin is used.
@@ -1124,7 +1145,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
         PriorityObservers()->Contains(resource_url)) {
       // Resolve the promise.
       std::move(PriorityObservers()->Take(resource_url))
-          .Run(static_cast<int>(resource->GetResourceRequest().Priority()));
+          .Run(static_cast<int>(
+              resource->GetResourceRequest().InitialPriority()));
     }
   }
 
@@ -1168,14 +1190,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   return resource;
-}
-
-void ResourceFetcher::MarkFirstPaint() {
-  scheduler_->MarkFirstPaint();
-}
-
-void ResourceFetcher::MarkFirstContentfulPaint() {
-  scheduler_->MarkFirstContentfulPaint();
 }
 
 void ResourceFetcher::ResourceTimingReportTimerFired(TimerBase* timer) {
@@ -1228,7 +1242,8 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceRequestHead& request,
     const ResourceLoaderOptions& options) {
   DCHECK(!GetProperties().IsDetached());
-  DCHECK(loader_factory_);
+  // TODO(http://crbug.com/1252983): Revert this to DCHECK.
+  CHECK(loader_factory_);
 
   // Set |unfreezable_task_runner| to the thread task-runner for keepalive
   // fetches because we want it to keep running even after the frame is
@@ -1244,7 +1259,8 @@ std::unique_ptr<WebURLLoader> ResourceFetcher::CreateURLLoader(
 
 std::unique_ptr<WebCodeCacheLoader> ResourceFetcher::CreateCodeCacheLoader() {
   DCHECK(!GetProperties().IsDetached());
-  DCHECK(loader_factory_);
+  // TODO(http://crbug.com/1252983): Revert this to DCHECK.
+  CHECK(loader_factory_);
   return loader_factory_->CreateCodeCacheLoader();
 }
 
@@ -2268,8 +2284,9 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   if (it != early_hints_preloaded_resources_.end()) {
     early_hints_preloaded_resources_.erase(it);
     const ResourceResponse& response = resource->GetResponse();
-    if (response.WasCached() && (!response.WasFetchedViaServiceWorker() ||
-                                 response.IsServiceWorkerPassThrough())) {
+    if (!response.NetworkAccessed() &&
+        (!response.WasFetchedViaServiceWorker() ||
+         response.IsServiceWorkerPassThrough())) {
       info->SetInitiatorType("early-hints");
     }
   }

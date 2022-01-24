@@ -27,16 +27,13 @@ class SchemePageLoadMetricsObserverTest
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
     timing->navigation_start = base::Time::FromDoubleT(1);
-    timing->parse_timing->parse_start = base::TimeDelta::FromMilliseconds(100);
-    timing->paint_timing->first_paint = base::TimeDelta::FromMilliseconds(200);
-    timing->paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing->paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(400);
+    timing->parse_timing->parse_start = base::Milliseconds(100);
+    timing->paint_timing->first_paint = base::Milliseconds(200);
+    timing->paint_timing->first_contentful_paint = base::Milliseconds(300);
+    timing->paint_timing->first_meaningful_paint = base::Milliseconds(400);
     timing->document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing->document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(600);
+    timing->document_timing->load_event_start = base::Milliseconds(1000);
     PopulateRequiredTimingFields(timing);
   }
 
@@ -133,13 +130,13 @@ class SchemePageLoadMetricsObserverTest
     static constexpr const int kUnderStatRecordingIntervalsSeconds[] = {1, 2, 5,
                                                                         8, 10};
 
-    base::TimeDelta recorded_fcp_value = base::TimeDelta::FromMilliseconds(
-        GetRecordedMetricValue(fcp_histogram_name));
+    base::TimeDelta recorded_fcp_value =
+        base::Milliseconds(GetRecordedMetricValue(fcp_histogram_name));
 
     for (size_t index = 0;
          index < base::size(kUnderStatRecordingIntervalsSeconds); ++index) {
-      base::TimeDelta threshold(base::TimeDelta::FromSeconds(
-          kUnderStatRecordingIntervalsSeconds[index]));
+      base::TimeDelta threshold(
+          base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
       if (recorded_fcp_value <= threshold) {
         tester()->histogram_tester().ExpectBucketCount(
             fcp_understat_histogram_name, index + 1, 1);

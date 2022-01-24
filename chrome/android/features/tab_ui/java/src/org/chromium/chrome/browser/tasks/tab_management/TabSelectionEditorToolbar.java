@@ -120,11 +120,11 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     /**
-     * Update the text appearance for {@link NumberRollView}.
-     * @param resId The new text appearance to use.
+     * Update the {@link ColorStateList} used for text in {@link NumberRollView}.
+     * @param colorStateList The new {@link ColorStateList} to use.
      */
-    public void setTextAppearance(int resId) {
-        mNumberRollView.setTextAppearance(resId);
+    public void setTextColorStateList(ColorStateList colorStateList) {
+        mNumberRollView.setTextColorStateList(colorStateList);
     }
 
     /**

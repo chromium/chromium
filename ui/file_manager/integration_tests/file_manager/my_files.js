@@ -317,7 +317,7 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await sendTestMessage({name: 'mountDownloads'});
 
   // Wait until Downloads is mounted.
-  await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
+  await remoteCall.waitForVolumesCount(1);
 
   // Open Files app on local Downloads.
   const appId =

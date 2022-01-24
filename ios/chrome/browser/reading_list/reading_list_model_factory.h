@@ -22,6 +22,10 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
   static ReadingListModel* GetForBrowserStateIfExists(
       ChromeBrowserState* browser_state);
   static ReadingListModelFactory* GetInstance();
+
+  ReadingListModelFactory(const ReadingListModelFactory&) = delete;
+  ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
+
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
@@ -36,8 +40,6 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_

@@ -39,7 +39,10 @@ enum class ProfileKeepAliveOrigin {
   // On macOS, Chrome doesn't exit when all windows are closed. Keep one Profile
   // alive so we can open windows for the last-used Profile when the user
   // "launches" Chrome again.
-  kAppControllerMac = 5,
+  //
+  // DEPRECATED: Not currently in use, but left here for consistency with
+  // enums.xml.
+  // kAppControllerMac = 5,
 
   // In the middle of clearing browsing data, e.g. when the user deletes it via
   // the Profile menu, or during ephemeral profile teardown.
@@ -77,8 +80,7 @@ enum class ProfileKeepAliveOrigin {
   // Data for Clear on Exit is being deleted.
   kSessionDataDeleter = 16,
 
-  // Waiting for the provider to be ready in protocol handler web app launch.
-  kWebAppProtocolHandlerLaunch = 17,
+  // DEPRECATED: kWebAppProtocolHandlerLaunch = 17,
 
   // An extension is being updated.
   kExtensionUpdater = 18,
@@ -90,7 +92,15 @@ enum class ProfileKeepAliveOrigin {
   // profile's NotificationDatabase, so wait for the event to finish processing.
   kPendingNotificationCloseEvent = 20,
 
-  kMaxValue = kPendingNotificationCloseEvent,
+  // The "Send Feedback" WebUI dialog is visible. Because it renders with WebUI,
+  // this dialog holds a RenderProcessHost. Closing the Profile before the RPH
+  // goes away would cause all sorts of problems...
+  kFeedbackDialog = 21,
+
+  // A web app is being updated.
+  kWebAppUpdate = 22,
+
+  kMaxValue = kWebAppUpdate,
 };
 
 std::ostream& operator<<(std::ostream& out,

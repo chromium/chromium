@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/model_type_controller.h"
 
@@ -26,6 +25,11 @@ class SessionModelTypeController : public syncer::ModelTypeController {
       syncer::SyncService* sync_service,
       PrefService* pref_service,
       std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate);
+
+  SessionModelTypeController(const SessionModelTypeController&) = delete;
+  SessionModelTypeController& operator=(const SessionModelTypeController&) =
+      delete;
+
   ~SessionModelTypeController() override;
 
   // DataTypeController overrides.
@@ -38,8 +42,6 @@ class SessionModelTypeController : public syncer::ModelTypeController {
   PrefService* const pref_service_;
 
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionModelTypeController);
 };
 
 }  // namespace sync_sessions

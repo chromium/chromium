@@ -27,12 +27,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.module_installer.engine.InstallListener;
 import org.chromium.url.JUnitTestGURLs;
@@ -42,7 +40,6 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for {@link ScreenshotCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_SCREENSHOT})
 public class ScreenshotCoordinatorTest {
     // clang-format on
     @Mock

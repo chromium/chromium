@@ -39,7 +39,9 @@ GLImageDCOMPSurface::BindOrCopy GLImageDCOMPSurface::ShouldBindOrCopy() {
 }
 
 bool GLImageDCOMPSurface::BindTexImage(unsigned target) {
-  NOTREACHED();
+  // This should not be called via compositor. It is possible other code paths
+  // such as canvas2d drawImage with video might use `BindTexImage` to import
+  // the video into GL.
   return false;
 }
 
@@ -52,17 +54,6 @@ bool GLImageDCOMPSurface::CopyTexImage(unsigned target) {
 bool GLImageDCOMPSurface::CopyTexSubImage(unsigned target,
                                           const gfx::Point& offset,
                                           const gfx::Rect& rect) {
-  return false;
-}
-
-bool GLImageDCOMPSurface::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
   return false;
 }
 

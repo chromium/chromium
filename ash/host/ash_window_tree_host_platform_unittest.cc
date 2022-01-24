@@ -6,6 +6,7 @@
 
 #include "ash/test/ash_test_base.h"
 
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -33,6 +34,7 @@ class TestInputController : public ui::InputController {
   bool HasMouse() override { return false; }
   bool HasPointingStick() override { return false; }
   bool HasTouchpad() override { return false; }
+  bool HasHapticTouchpad() override { return false; }
   bool IsCapsLockEnabled() override { return false; }
   void SetCapsLockEnabled(bool enabled) override {}
   void SetNumLockEnabled(bool enabled) override {}
@@ -48,6 +50,8 @@ class TestInputController : public ui::InputController {
   }
   void SetTouchpadSensitivity(int value) override {}
   void SetTouchpadScrollSensitivity(int value) override {}
+  void SetTouchpadHapticFeedback(bool enabled) override {}
+  void SetTouchpadHapticClickSensitivity(int value) override {}
   void SetTapToClick(bool enabled) override {}
   void SetThreeFingerClick(bool enabled) override {}
   void SetTapDragging(bool enabled) override {}
@@ -80,6 +84,12 @@ class TestInputController : public ui::InputController {
                            uint8_t amplitude,
                            uint16_t duration_millis) override {}
   void StopVibration(int id) override {}
+  void PlayHapticTouchpadEffect(
+      ui::HapticTouchpadEffect effect_type,
+      ui::HapticTouchpadEffectStrength strength) override {}
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      ui::HapticTouchpadEffect effect_type,
+      ui::HapticTouchpadEffectStrength strength) override {}
   void SetInternalTouchpadEnabled(bool enabled) override {}
   bool IsInternalTouchpadEnabled() const override { return false; }
   void SetTouchscreensEnabled(bool enabled) override {}

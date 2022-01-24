@@ -27,11 +27,9 @@ const char kSAMLUserEmail1[] = "alice@corp.example.com";
 
 const char kSyncToken[] = "sync-token-1";
 
-constexpr base::TimeDelta kSyncTokenCheckInterval =
-    base::TimeDelta::FromMinutes(6);
+constexpr base::TimeDelta kSyncTokenCheckInterval = base::Minutes(6);
 
-constexpr base::TimeDelta kSyncTokenCheckBelowInterval =
-    base::TimeDelta::FromMinutes(4);
+constexpr base::TimeDelta kSyncTokenCheckBelowInterval = base::Minutes(4);
 
 class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:

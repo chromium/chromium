@@ -47,7 +47,6 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "net/log/test_net_log.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
@@ -67,7 +66,7 @@ namespace net {
 
 namespace {
 
-base::TimeDelta kFallbackPeriod = base::TimeDelta::FromSeconds(1);
+base::TimeDelta kFallbackPeriod = base::Seconds(1);
 
 const char kMockHostname[] = "mock.http";
 
@@ -126,6 +125,10 @@ class DnsSocketData {
                                 query_->io_buffer()->size(),
                                 num_reads_and_writes()));
   }
+
+  DnsSocketData(const DnsSocketData&) = delete;
+  DnsSocketData& operator=(const DnsSocketData&) = delete;
+
   ~DnsSocketData() = default;
 
   // All responses must be added before GetProvider.
@@ -222,8 +225,6 @@ class DnsSocketData {
   std::vector<MockWrite> writes_;
   std::vector<MockRead> reads_;
   std::unique_ptr<SequencedSocketData> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsSocketData);
 };
 
 class TestSocketFactory;
@@ -233,13 +234,14 @@ class FailingUDPClientSocket : public MockUDPClientSocket {
  public:
   FailingUDPClientSocket(SocketDataProvider* data, net::NetLog* net_log)
       : MockUDPClientSocket(data, net_log) {}
+
+  FailingUDPClientSocket(const FailingUDPClientSocket&) = delete;
+  FailingUDPClientSocket& operator=(const FailingUDPClientSocket&) = delete;
+
   ~FailingUDPClientSocket() override = default;
   int Connect(const IPEndPoint& endpoint) override {
     return ERR_CONNECTION_REFUSED;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailingUDPClientSocket);
 };
 
 // A variant of MockUDPClientSocket which notifies the factory OnConnect.
@@ -249,13 +251,15 @@ class TestUDPClientSocket : public MockUDPClientSocket {
                       SocketDataProvider* data,
                       net::NetLog* net_log)
       : MockUDPClientSocket(data, net_log), factory_(factory) {}
+
+  TestUDPClientSocket(const TestUDPClientSocket&) = delete;
+  TestUDPClientSocket& operator=(const TestUDPClientSocket&) = delete;
+
   ~TestUDPClientSocket() override = default;
   int Connect(const IPEndPoint& endpoint) override;
 
  private:
   TestSocketFactory* factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUDPClientSocket);
 };
 
 // Creates TestUDPClientSockets and keeps endpoints reported via OnConnect.
@@ -333,8 +337,9 @@ class TransactionHelper {
                         ResolveContext* context) {
     std::unique_ptr<DnsTransaction> transaction = factory->CreateTransaction(
         hostname, qtype, CompletionCallback(),
-        NetLogWithSource::Make(&net_log_, net::NetLogSourceType::NONE), secure,
-        factory->GetSecureDnsModeForTest(), context, true /* fast_timeout */);
+        NetLogWithSource::Make(net::NetLog::Get(), net::NetLogSourceType::NONE),
+        secure, factory->GetSecureDnsModeForTest(), context,
+        true /* fast_timeout */);
     transaction->SetRequestPriority(DEFAULT_PRIORITY);
     EXPECT_EQ(qtype, transaction->GetType());
     StartTransaction(std::move(transaction));
@@ -396,7 +401,6 @@ class TransactionHelper {
 
   bool has_completed() const { return completed_; }
   const DnsResponse* response() const { return response_; }
-  NetLog* net_log() { return &net_log_; }
 
   // Runs until the completion callback is called. Transaction must have already
   // been started or this will never complete.
@@ -415,7 +419,6 @@ class TransactionHelper {
   bool cancel_in_callback_ = false;
   base::RunLoop transaction_complete_run_loop_;
   bool completed_ = false;
-  TestNetLog net_log_;
 };
 
 // Callback that allows a test to modify HttpResponseinfo
@@ -496,6 +499,9 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
         FROM_HERE, base::BindOnce(&URLRequestMockDohJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
   }
+
+  URLRequestMockDohJob(const URLRequestMockDohJob&) = delete;
+  URLRequestMockDohJob& operator=(const URLRequestMockDohJob&) = delete;
 
   ~URLRequestMockDohJob() override {
     if (data_provider_)
@@ -586,8 +592,6 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
   int pending_buf_size_;
 
   base::WeakPtrFactory<URLRequestMockDohJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestMockDohJob);
 };
 
 class DnsTransactionTestBase : public testing::Test {
@@ -861,6 +865,10 @@ class DnsTransactionTestBase : public testing::Test {
   class DohJobInterceptor : public URLRequestInterceptor {
    public:
     explicit DohJobInterceptor(DnsTransactionTestBase* test) : test_(test) {}
+
+    DohJobInterceptor(const DohJobInterceptor&) = delete;
+    DohJobInterceptor& operator=(const DohJobInterceptor&) = delete;
+
     ~DohJobInterceptor() override {}
 
     // URLRequestInterceptor implementation:
@@ -871,8 +879,6 @@ class DnsTransactionTestBase : public testing::Test {
 
    private:
     DnsTransactionTestBase* test_;
-
-    DISALLOW_COPY_AND_ASSIGN(DohJobInterceptor);
   };
 
   void SetResponseModifierCallback(ResponseModifierCallback response_modifier) {
@@ -2357,6 +2363,9 @@ class CookieCallback {
     loop_to_quit_->Quit();
   }
 
+  CookieCallback(const CookieCallback&) = delete;
+  CookieCallback& operator=(const CookieCallback&) = delete;
+
   void GetCookieListCallback(
       const net::CookieAccessResultList& list,
       const net::CookieAccessResultList& excluded_cookies) {
@@ -2374,7 +2383,6 @@ class CookieCallback {
   net::CookieList list_;
   bool result_;
   std::unique_ptr<base::RunLoop> loop_to_quit_;
-  DISALLOW_COPY_AND_ASSIGN(CookieCallback);
 };
 
 TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
@@ -2401,7 +2409,7 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
   request_context_->cookie_store()->GetCookieListWithOptionsAsync(
       GURL(GetURLFromTemplateWithoutParameters(
           config_.dns_over_https_servers[0].server_template)),
-      CookieOptions::MakeAllInclusive(),
+      CookieOptions::MakeAllInclusive(), CookiePartitionKeychain(),
       base::BindOnce(&CookieCallback::GetCookieListCallback,
                      base::Unretained(&callback)));
   callback.WaitUntilDone();
@@ -2411,7 +2419,8 @@ TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {
       config_.dns_over_https_servers[0].server_template));
   auto cookie = CanonicalCookie::Create(
       cookie_url, "test-cookie=you-still-fail", base::Time::Now(),
-      absl::nullopt /* server_time */);
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
   request_context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, CookieOptions(),
       base::BindOnce(&CookieCallback::SetCookieCallback,
@@ -2562,7 +2571,15 @@ class CountingObserver : public net::NetLog::ThreadSafeObserver {
   int dict_count_;
 };
 
-TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
+// Flaky on MSAN. https://crbug.com/1245953
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_HttpsPostLookupWithLog \
+  DISABLED_HttpsPostLookupWithLog
+#else
+#define MAYBE_HttpsPostLookupWithLog \
+  HttpsPostLookupWithLog
+#endif
+TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
   ConfigureDohServers(true /* use_post */);
   AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
                       base::size(kT0ResponseDatagram), SYNCHRONOUS,
@@ -2571,7 +2588,7 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
                       false /* enqueue_transaction_id */);
   TransactionHelper helper0(kT0RecordCount);
   CountingObserver observer;
-  helper0.net_log()->AddObserver(&observer, NetLogCaptureMode::kEverything);
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            true /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
@@ -2720,7 +2737,7 @@ TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout) {
   ASSERT_FALSE(helper.has_completed());
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   base::TimeDelta timeout = resolve_context_->SecureTransactionTimeout(
       SecureDnsMode::kSecure, session_.get());
   ASSERT_LT(kTimeHoldback, timeout);
@@ -2780,7 +2797,7 @@ TEST_F(DnsTransactionTestWithMockTime, HttpsTimeout2) {
   timeout_remainder -= fallback_period;
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   ASSERT_LT(kTimeHoldback, timeout_remainder);
   FastForwardBy(timeout_remainder - kTimeHoldback);
   EXPECT_FALSE(helper.has_completed());
@@ -2909,7 +2926,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_Timeout) {
   base::TimeDelta timeout_remainder = timeout - fallback_period;
 
   // Stop a tiny bit short to ensure transaction doesn't finish early.
-  const base::TimeDelta kTimeHoldback = base::TimeDelta::FromMilliseconds(5);
+  const base::TimeDelta kTimeHoldback = base::Milliseconds(5);
   ASSERT_LT(kTimeHoldback, timeout_remainder);
   FastForwardBy(timeout_remainder - kTimeHoldback);
   EXPECT_FALSE(helper.has_completed());

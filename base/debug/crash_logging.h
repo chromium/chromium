@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <iosfwd>
 #include <memory>
 #include <type_traits>
 
@@ -91,6 +92,9 @@ BASE_EXPORT void SetCrashKeyString(CrashKeyString* crash_key,
 // Clears any value that was stored in |crash_key|. The |crash_key| may be
 // null.
 BASE_EXPORT void ClearCrashKeyString(CrashKeyString* crash_key);
+
+// Outputs current (i.e. allocated and non-empty) crash keys to `out`.
+BASE_EXPORT void OutputCrashKeysToStream(std::ostream& out);
 
 // A scoper that sets the specified key to value for the lifetime of the
 // object, and clears it on destruction.
@@ -177,6 +181,7 @@ class CrashKeyImplementation {
   virtual CrashKeyString* Allocate(const char name[], CrashKeySize size) = 0;
   virtual void Set(CrashKeyString* crash_key, base::StringPiece value) = 0;
   virtual void Clear(CrashKeyString* crash_key) = 0;
+  virtual void OutputCrashKeysToStream(std::ostream& out) = 0;
 };
 
 // Initializes the crash key system in base by replacing the existing

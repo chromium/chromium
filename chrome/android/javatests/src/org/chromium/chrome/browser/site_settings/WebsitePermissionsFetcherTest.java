@@ -41,7 +41,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -330,18 +330,18 @@ public class WebsitePermissionsFetcherTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile profile = Profile.getLastUsedRegularProfile();
             for (String url : PERMISSION_URLS) {
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.GEOLOCATION, url, url, ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MIDI_SYSEX, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, url, url,
                         ContentSettingValues.BLOCK);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.NOTIFICATIONS, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MEDIASTREAM_MIC, url, url, ContentSettingValues.ALLOW);
-                WebsitePreferenceBridgeJni.get().setSettingForOrigin(profile,
+                WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(profile,
                         ContentSettingsType.MEDIASTREAM_CAMERA, url, url,
                         ContentSettingValues.BLOCK);
             }
@@ -493,7 +493,7 @@ public class WebsitePermissionsFetcherTest {
         // If the ContentSettingsType.NUM_TYPES value changes *and* a new value has been exposed on
         // Android, then please update this code block to include a test for your new type.
         // Otherwise, just update count in the assert.
-        Assert.assertEquals(71, ContentSettingsType.NUM_TYPES);
+        Assert.assertEquals(76, ContentSettingsType.NUM_TYPES);
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.COOKIES, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource));
@@ -520,6 +520,12 @@ public class WebsitePermissionsFetcherTest {
                         googleOrigin, ContentSettingValues.DEFAULT, preferenceSource));
         websitePreferenceBridge.addContentSettingException(
                 new ContentSettingException(ContentSettingsType.JAVASCRIPT_JIT, googleOrigin,
+                        ContentSettingValues.DEFAULT, preferenceSource));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(ContentSettingsType.AUTO_DARK_WEB_CONTENT, googleOrigin,
+                        ContentSettingValues.DEFAULT, preferenceSource));
+        websitePreferenceBridge.addContentSettingException(
+                new ContentSettingException(ContentSettingsType.REQUEST_DESKTOP_SITE, googleOrigin,
                         ContentSettingValues.DEFAULT, preferenceSource));
 
         // Add storage info.
@@ -581,6 +587,12 @@ public class WebsitePermissionsFetcherTest {
             Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
                     site.getContentSetting(
                             UNUSED_BROWSER_CONTEXT_HANDLE, ContentSettingsType.JAVASCRIPT_JIT));
+            Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
+                    site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
+                            ContentSettingsType.AUTO_DARK_WEB_CONTENT));
+            Assert.assertEquals(Integer.valueOf(ContentSettingValues.DEFAULT),
+                    site.getContentSetting(UNUSED_BROWSER_CONTEXT_HANDLE,
+                            ContentSettingsType.REQUEST_DESKTOP_SITE));
 
             // Check storage info.
             ArrayList<StorageInfo> storageInfos = new ArrayList<>(site.getStorageInfo());

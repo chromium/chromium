@@ -13,6 +13,7 @@ import org.objectweb.asm.commons.Remapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 /**
  * Java application that modifies Fragment.getActivity() to return an Activity instead of a
@@ -75,11 +76,29 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
      * the replaced method.
      */
     private static class InvocationReplacer extends ClassVisitor {
+        /**
+         * A ClassLoader that will resolve R classes to Object.
+         *
+         * R won't be in our classpath, and we don't access any information about them, so resolving
+         * it to a dummy value is fine.
+         */
+        private static class ResourceStubbingClassLoader extends ClassLoader {
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException {
+                if (name.matches(".*\\.R(\\$.+)?")) {
+                    return Object.class;
+                }
+                return super.findClass(name);
+            }
+        }
+
         private final boolean mSingleAndroidX;
+        private final ClassLoader mClassLoader;
 
         private InvocationReplacer(ClassVisitor baseVisitor, boolean singleAndroidX) {
             super(Opcodes.ASM7, baseVisitor);
             mSingleAndroidX = singleAndroidX;
+            mClassLoader = new ResourceStubbingClassLoader();
         }
 
         @Override
@@ -90,6 +109,28 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                 @Override
                 public void visitMethodInsn(int opcode, String owner, String name,
                         String descriptor, boolean isInterface) {
+                    // Change the return type of getActivity and replaceActivity.
+                    if (isActivityGetterInvocation(opcode, owner, name, descriptor)) {
+                        super.visitMethodInsn(
+                                opcode, owner, name, NEW_METHOD_DESCRIPTOR, isInterface);
+                        if (mSingleAndroidX) {
+                            super.visitTypeInsn(
+                                    Opcodes.CHECKCAST, "androidx/fragment/app/FragmentActivity");
+                        }
+                    } else if (isDowncastableFragmentActivityMethodInvocation(
+                                       opcode, owner, name, descriptor)) {
+                        // Replace FragmentActivity.foo() with Activity.foo() to fix cases where the
+                        // above code changed the getActivity return type. See the
+                        // isDowncastableFragmentActivityMethodInvocation documentation for details.
+                        super.visitMethodInsn(
+                                opcode, "android/app/Activity", name, descriptor, isInterface);
+                    } else {
+                        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+                    }
+                }
+
+                private boolean isActivityGetterInvocation(
+                        int opcode, String owner, String name, String descriptor) {
                     boolean isFragmentGetActivity = name.equals(GET_ACTIVITY_METHOD_NAME)
                             && descriptor.equals(OLD_METHOD_DESCRIPTOR)
                             && isFragmentSubclass(owner);
@@ -100,39 +141,63 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
                             name.equals(GET_LIFECYCLE_ACTIVITY_METHOD_NAME)
                             && descriptor.equals(OLD_METHOD_DESCRIPTOR)
                             && owner.equals(SUPPORT_LIFECYCLE_FRAGMENT_IMPL_BINARY_NAME);
-                    if ((opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
+                    return (opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
                             && (isFragmentGetActivity || isFragmentRequireActivity
-                                    || isSupportLifecycleFragmentImplGetLifecycleActivity)) {
-                        super.visitMethodInsn(
-                                opcode, owner, name, NEW_METHOD_DESCRIPTOR, isInterface);
-                        if (mSingleAndroidX) {
-                            super.visitTypeInsn(
-                                    Opcodes.CHECKCAST, "androidx/fragment/app/FragmentActivity");
+                                    || isSupportLifecycleFragmentImplGetLifecycleActivity);
+                }
+
+                /**
+                 * Returns true if the given method belongs to FragmentActivity, and also exists on
+                 * Activity.
+                 *
+                 * The Java code `requireActivity().getClassLoader()` will compile to the following
+                 * bytecode:
+                 *   aload_0
+                 *   // Method requireActivity:()Landroid/app/Activity;
+                 *   invokevirtual #n
+                 *   // Method androidx/fragment/app/FragmentActivity.getClassLoader:()LClassLoader;
+                 *   invokevirtual #m
+                 *
+                 * The second invokevirtual instruction doesn't typecheck because the
+                 * requireActivity() return type was changed from FragmentActivity to Activity. Note
+                 * that this is only an issue when validating the bytecode on the JVM, not in
+                 * Dalvik, so while the above code works on device, it fails in robolectric tests.
+                 *
+                 * To fix the example above, we'd replace the second invokevirtual call with a call
+                 * to android/app/Activity.getClassLoader:()Ljava/lang/ClassLoader. In general, any
+                 * call to FragmentActivity.foo, where foo also exists on Activity, will be replaced
+                 * with a call to Activity.foo. Activity.foo will still resolve to
+                 * FragmentActivity.foo at runtime, while typechecking in robolectric tests.
+                 */
+                private boolean isDowncastableFragmentActivityMethodInvocation(
+                        int opcode, String owner, String name, String descriptor) {
+                    // Return if this isn't an invoke instruction on a FragmentActivity.
+                    if (!(opcode == Opcodes.INVOKEVIRTUAL || opcode == Opcodes.INVOKESPECIAL)
+                            || !owner.equals("androidx/fragment/app/FragmentActivity")) {
+                        return false;
+                    }
+                    try {
+                        // Check if the method exists in Activity.
+                        Class<?> activity = mClassLoader.loadClass("android.app.Activity");
+                        for (Method activityMethod : activity.getMethods()) {
+                            if (activityMethod.getName().equals(name)
+                                    && Type.getMethodDescriptor(activityMethod)
+                                               .equals(descriptor)) {
+                                return true;
+                            }
                         }
-                    } else {
-                        super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+                        return false;
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
 
                 private boolean isFragmentSubclass(String internalType) {
-                    // Look up classes with a ClassLoader that will resolve any R classes to Object.
-                    // This is fine in this case as resource classes shouldn't be in the class
-                    // hierarchy of any Fragments.
-                    ClassLoader resourceStubbingClassLoader = new ClassLoader() {
-                        @Override
-                        protected Class<?> findClass(String name) throws ClassNotFoundException {
-                            if (name.matches(".*\\.R(\\$.+)?")) {
-                                return Object.class;
-                            }
-                            return super.findClass(name);
-                        }
-                    };
-
                     // This doesn't use Class#isAssignableFrom to avoid us needing to load
                     // AndroidX's Fragment class, which may not be on the classpath.
                     try {
                         String binaryName = Type.getObjectType(internalType).getClassName();
-                        Class<?> clazz = resourceStubbingClassLoader.loadClass(binaryName);
+                        Class<?> clazz = mClassLoader.loadClass(binaryName);
                         while (clazz != null) {
                             if (clazz.getName().equals("androidx.fragment.app.Fragment")) {
                                 return true;

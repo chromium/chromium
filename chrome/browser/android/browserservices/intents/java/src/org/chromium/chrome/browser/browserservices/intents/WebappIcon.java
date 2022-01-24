@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Base64;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +17,7 @@ import org.chromium.base.ContextUtils;
 
 /** Represents bitmap icon. Lazily converts icon format. */
 public class WebappIcon {
+    private byte[] mUnsafeData;
     private String mEncoded;
     private Bitmap mBitmap;
     private String mWebApkPackageName;
@@ -23,6 +25,10 @@ public class WebappIcon {
     private boolean mIsTrusted;
 
     public WebappIcon() {}
+
+    public WebappIcon(byte[] unsafeData) {
+        mUnsafeData = unsafeData;
+    }
 
     /**
      * @param encoded The encoded data of a bitmap.
@@ -41,6 +47,13 @@ public class WebappIcon {
     public WebappIcon(String webApkPackageName, int resourceId) {
         mWebApkPackageName = webApkPackageName;
         mResourceId = resourceId;
+    }
+
+    public byte[] data() {
+        if (mUnsafeData != null) {
+            return mUnsafeData;
+        }
+        return Base64.decode(encoded(), Base64.DEFAULT);
     }
 
     public String encoded() {

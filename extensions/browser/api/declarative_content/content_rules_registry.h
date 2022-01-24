@@ -42,6 +42,9 @@ class ContentRulesRegistry : public RulesRegistry {
                       cache_delegate,
                       rules_registry_id) {}
 
+  ContentRulesRegistry(const ContentRulesRegistry&) = delete;
+  ContentRulesRegistry& operator=(const ContentRulesRegistry&) = delete;
+
   // Notifies the registry that it should evaluate rules for |contents|.
   virtual void MonitorWebContentsForRuleEvaluation(
       content::WebContents* contents) = 0;
@@ -64,9 +67,6 @@ class ContentRulesRegistry : public RulesRegistry {
 
  protected:
   ~ContentRulesRegistry() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentRulesRegistry);
 };
 
 }  // namespace extensions

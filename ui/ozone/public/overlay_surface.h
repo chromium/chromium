@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -26,6 +25,10 @@ struct OverlayPlane;
 class COMPONENT_EXPORT(OZONE_BASE) OverlaySurface {
  public:
   OverlaySurface();
+
+  OverlaySurface(const OverlaySurface&) = delete;
+  OverlaySurface& operator=(const OverlaySurface&) = delete;
+
   virtual ~OverlaySurface();
 
   // Called with the swap result once the frame is submitted.
@@ -70,9 +73,6 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurface {
                            SubmissionCallback submission_callback,
                            PresentationCallback presentation_callback,
                            ReleaseCallback release_callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlaySurface);
 };
 
 }  // namespace ui

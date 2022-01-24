@@ -56,6 +56,10 @@ base::Value NetLogStringValue(base::StringPiece raw) {
   return base::Value("%ESCAPED:\xE2\x80\x8B " + EscapeNonASCIIAndPercent(raw));
 }
 
+base::Value NetLogBinaryValue(base::span<const uint8_t> bytes) {
+  return NetLogBinaryValue(bytes.data(), bytes.size());
+}
+
 base::Value NetLogBinaryValue(const void* bytes, size_t length) {
   std::string b64;
   base::Base64Encode(

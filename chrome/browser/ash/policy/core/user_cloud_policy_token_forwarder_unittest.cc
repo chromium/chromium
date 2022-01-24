@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +18,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -55,42 +54,49 @@ constexpr char kEmail[] = "email@gmail.com";
 constexpr char kGaiaId[] = "gaia_id";
 constexpr char kOAuthToken[] = "oauth_token";
 
-constexpr base::TimeDelta kTokenLifetime = base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kTokenLifetime = base::Minutes(30);
 
 }  // namespace
 
-// Mock of UserCloudPolicyManagerChromeOS used to verify calls from
+// Mock of UserCloudPolicyManagerAsh used to verify calls from
 // UserCloudPolicyTokenForwarder.
-class MockUserCloudPolicyManagerChromeOS
-    : public UserCloudPolicyManagerChromeOS {
+class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
  public:
-  MockUserCloudPolicyManagerChromeOS(
+  MockUserCloudPolicyManagerAsh(
       Profile* profile,
       const AccountId& account_id,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-      : UserCloudPolicyManagerChromeOS(
+      : UserCloudPolicyManagerAsh(
             profile,
             std::make_unique<MockCloudPolicyStore>(),
             std::make_unique<MockCloudExternalDataManager>(),
             base::FilePath() /* component_policy_cache_path */,
-            UserCloudPolicyManagerChromeOS::PolicyEnforcement::kPolicyRequired,
-            base::TimeDelta::FromMinutes(1) /* policy_refresh_timeout */,
-            base::BindOnce(&MockUserCloudPolicyManagerChromeOS::OnFatalError,
+            UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
+            base::Minutes(1) /* policy_refresh_timeout */,
+            base::BindOnce(&MockUserCloudPolicyManagerAsh::OnFatalError,
                            base::Unretained(this)),
             account_id,
             task_runner) {}
 
-  ~MockUserCloudPolicyManagerChromeOS() override = default;
+  MockUserCloudPolicyManagerAsh(const MockUserCloudPolicyManagerAsh&) = delete;
+  MockUserCloudPolicyManagerAsh& operator=(
+      const MockUserCloudPolicyManagerAsh&) = delete;
+
+  ~MockUserCloudPolicyManagerAsh() override = default;
 
   MOCK_METHOD1(OnAccessTokenAvailable, void(const std::string&));
 
  private:
   void OnFatalError() {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockUserCloudPolicyManagerChromeOS);
 };
 
 class UserCloudPolicyTokenForwarderTest : public testing::Test {
+ public:
+  UserCloudPolicyTokenForwarderTest(const UserCloudPolicyTokenForwarderTest&) =
+      delete;
+  UserCloudPolicyTokenForwarderTest& operator=(
+      const UserCloudPolicyTokenForwarderTest&) = delete;
+
  protected:
   static ash::FakeChromeUserManager* GetFakeUserManager() {
     return static_cast<ash::FakeChromeUserManager*>(
@@ -149,7 +155,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     user_manager->SwitchActiveUser(account_id);
     ASSERT_TRUE(user_manager->GetActiveUser());
 
-    user_policy_manager_ = std::make_unique<MockUserCloudPolicyManagerChromeOS>(
+    user_policy_manager_ = std::make_unique<MockUserCloudPolicyManagerAsh>(
         profile, account_id, mock_time_task_runner_);
     std::unique_ptr<MockCloudPolicyClient> client =
         std::make_unique<MockCloudPolicyClient>();
@@ -203,7 +209,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
 
-  std::unique_ptr<MockUserCloudPolicyManagerChromeOS> user_policy_manager_;
+  std::unique_ptr<MockUserCloudPolicyManagerAsh> user_policy_manager_;
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
  private:
@@ -215,8 +221,6 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   std::unique_ptr<MockCloudPolicyStore> store_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyTokenForwarderTest);
 };
 
 TEST_F(UserCloudPolicyTokenForwarderTest,

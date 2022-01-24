@@ -225,11 +225,6 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
 // Tests that when requesting desktop on another page and coming back to a page
 // that has been purged from memory, we still display the mobile page.
 - (void)testRequestDesktopSiteGoBackToMobilePurged {
-  if (@available(iOS 13, *)) {
-  } else {
-    EARL_GREY_TEST_DISABLED(@"On iOS 12, the User Agent can be wrong when "
-                            @"doing back/forward navigations");
-  }
 
   std::unique_ptr<web::DataResponseProvider> provider(
       new UserAgentResponseProvider());
@@ -353,11 +348,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   std::string nonDefaultPlatform;
   if ([ChromeEarlGrey isMobileModeByDefault]) {
     defaultPlatform = base::SysNSStringToUTF8([[UIDevice currentDevice] model]);
-    if (@available(iOS 13, *)) {
-      nonDefaultPlatform = kDesktopPlatformLabel;
-    } else {
-      nonDefaultPlatform = defaultPlatform;
-    }
+    nonDefaultPlatform = kDesktopPlatformLabel;
   } else {
     defaultPlatform = kDesktopPlatformLabel;
     nonDefaultPlatform =

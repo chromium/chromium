@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 
-#include "extensions/browser/api/automation_internal/automation_event_router.h"
-
 namespace crosapi {
 
 AutomationAsh::AutomationAsh() {
@@ -22,6 +20,11 @@ void AutomationAsh::BindReceiverDeprecated(
 void AutomationAsh::BindReceiver(
     mojo::PendingReceiver<mojom::AutomationFactory> pending_receiver) {
   automation_factory_receivers_.Add(this, std::move(pending_receiver));
+
+  if (!automation_event_router_observer_.IsObserving()) {
+    automation_event_router_observer_.Observe(
+        extensions::AutomationEventRouter::GetInstance());
+  }
 }
 
 void AutomationAsh::EnableDesktop() {
@@ -97,6 +100,16 @@ void AutomationAsh::BindAutomation(
 
   automation_client_remotes_.Add(std::move(remote));
   automation_receivers_.Add(this, std::move(automation));
+}
+
+void AutomationAsh::AllAutomationExtensionsGone() {
+  for (auto& client : automation_client_remotes_)
+    client->NotifyAllAutomationExtensionsGone();
+}
+
+void AutomationAsh::ExtensionListenerAdded() {
+  for (auto& client : automation_client_remotes_)
+    client->NotifyExtensionListenerAdded();
 }
 
 }  // namespace crosapi

@@ -10,6 +10,7 @@
 
 #include <utility>
 
+#include "base/macros.h"
 #include "base/pickle.h"
 
 namespace ui {

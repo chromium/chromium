@@ -331,11 +331,18 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         profileImpl.fireOnAccessTokenIdentifiedAsInvalidForTesting(scopes, token);
     }
 
+    @Override
+    public void grantLocationPermission(String url) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { TestWebLayerImplJni.get().grantLocationPermission(url); });
+    }
+
     @NativeMethods
     interface Natives {
         void waitForBrowserControlsMetadataState(
                 long tabImpl, int top, int bottom, Runnable runnable);
         void setIgnoreMissingKeyForTranslateManager(boolean ignore);
         void expediteDownloadService();
+        void grantLocationPermission(String url);
     }
 }

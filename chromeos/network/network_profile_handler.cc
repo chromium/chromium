@@ -26,7 +26,7 @@ namespace {
 
 bool ConvertListValueToStringVector(const base::ListValue& string_list,
                                     std::vector<std::string>* result) {
-  for (size_t i = 0; i < string_list.GetSize(); ++i) {
+  for (size_t i = 0; i < string_list.GetList().size(); ++i) {
     std::string str;
     if (!string_list.GetString(i, &str))
       return false;

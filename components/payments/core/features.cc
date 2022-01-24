@@ -13,9 +13,6 @@ namespace features {
 const base::Feature kWebPaymentsExperimentalFeatures{
     "WebPaymentsExperimentalFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kReturnGooglePayInBasicCard{
-    "ReturnGooglePayInBasicCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if defined(OS_IOS)
 const base::Feature kWebPaymentsNativeApps{"WebPaymentsNativeApps",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -37,9 +34,6 @@ const base::Feature kWebPaymentsSingleAppUiSkip{
 const base::Feature kWebPaymentsJustInTimePaymentApp{
     "WebPaymentsJustInTimePaymentApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kAlwaysAllowJustInTimePaymentApp{
-    "AlwaysAllowJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kWebPaymentsRedactShippingAddress{
     "WebPaymentsRedactShippingAddress", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -55,15 +49,6 @@ const base::Feature kAppStoreBilling {
 const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kStrictHasEnrolledAutofillInstrument{
-    "StrictHasEnrolledAutofillInstrument", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentRequestSkipToGPay{
-    "PaymentRequestSkipToGPay", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentRequestSkipToGPayIfNoCard{
-    "PaymentRequestSkipToGPayIfNoCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDownRankJustInTimePaymentApp{
     "DownRankJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -73,9 +58,6 @@ const base::Feature kPaymentHandlerPopUpSizeWindow{
 const base::Feature kAllowJITInstallationWhenAppIconIsMissing{
     "AllowJITInstallationWhenAppIconIsMissing",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentHandlerSecurityIcon{
-    "PaymentHandlerSecurityIcon", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

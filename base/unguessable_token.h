@@ -100,8 +100,14 @@ class BASE_EXPORT UnguessableToken {
   bool operator==(const UnguessableToken& other) const;
 
   bool operator!=(const UnguessableToken& other) const {
-    return !(token_ == other.token_);
+    return !(*this == other);
   }
+
+#if defined(UNIT_TEST)
+  static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
+    return Deserialize(high, low);
+  }
+#endif
 
  private:
   friend struct UnguessableTokenHash;

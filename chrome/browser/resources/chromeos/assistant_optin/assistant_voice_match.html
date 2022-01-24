@@ -37,7 +37,7 @@
       </div>
       <div slot="content" class="landscape-vertical-centered">
         <div inner-h-t-m-l=
-            "[[getSubtitleMessage_(locale, uiStep, childName_, deviceName_)]]">
+            "[[getSubtitleMessage_(locale, uiStep, childName_)]]">
         </div>
       </div>
       <div slot="bottom-buttons">
@@ -97,8 +97,9 @@
         </div>
       </div>
       <div slot="bottom-buttons">
-        <oobe-text-button id="later-button" on-click="onSkipTap_"
-            disabled="[[buttonsDisabled]]" text-key="assistantOptinSkipButton">
+        <oobe-text-button id="later-button" class="focus-on-show"
+            on-click="onSkipTap_" disabled="[[buttonsDisabled]]"
+            text-key="assistantOptinSkipButton">
         </oobe-text-button>
       </div>
     </oobe-adaptive-dialog>

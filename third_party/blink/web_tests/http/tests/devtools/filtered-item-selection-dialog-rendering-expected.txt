@@ -4,32 +4,32 @@ Verifies that SelectUISourceCodeDialog rendering works properly.
 Running: testRenderingInNameOnly
 filter query: 12
 are-shown.js
-[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/are-shown.js]
+[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/]
 --------------------
 helloWorld[1][2].js
-[test][/helloWorld12.js]
+[test][/]
 
 Running: testRenderingInPathAndName
 filter query: te12
 are-shown.js
-[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/are-shown.js]
+[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/]
 --------------------
 helloWorld12.js
-[test][/helloWorld12.js]
+[test][/]
 
 Running: testRenderingInNameInTruncatedPath
 filter query: shown.js
 are-[s][h][o][w][n][.][j][s]
-[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/are-shown.js]
+[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/]
 --------------------
 helloWorld12[.][j][s]
-[test][/helloWorld12.js]
+[test][/]
 
 Running: testRenderingInTruncatedPath
 filter query: usually-shown.js
 are-shown.js
-[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/are-shown.js]
+[test/some/very-long-url/which/usually/breaks-rendering/due-to/trancation/so/that/the-path-is-cut-][appropriately/and-no-horizontal-scrollbars/]
 --------------------
 helloWorld12[.][j][s]
-[test][/helloWorld12.js]
+[test][/]
 

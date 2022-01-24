@@ -17,7 +17,8 @@ static_library("common") {
     "//build:chromeos_buildflags",
     "//components/cloud_devices/common:common",
     "//printing",
-    "//printing/common:common",
+    "//printing/backend",
+    "//printing/common",
     "//printing/mojom",
   ]
 }

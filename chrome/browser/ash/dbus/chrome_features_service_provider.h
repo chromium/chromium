@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_DBUS_CHROME_FEATURES_SERVICE_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -48,6 +47,11 @@ class ChromeFeaturesServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   ChromeFeaturesServiceProvider();
+
+  ChromeFeaturesServiceProvider(const ChromeFeaturesServiceProvider&) = delete;
+  ChromeFeaturesServiceProvider& operator=(
+      const ChromeFeaturesServiceProvider&) = delete;
+
   ~ChromeFeaturesServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -88,8 +92,6 @@ class ChromeFeaturesServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<ChromeFeaturesServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFeaturesServiceProvider);
 };
 
 }  // namespace ash

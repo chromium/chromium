@@ -35,8 +35,8 @@ source_set("lib") {
       "//components/pwg_encoder",
       "//pdf",
       "//printing",
+      "//printing/backend",
       "//printing/mojom",
-      "//ui/gfx",
     ]
   }
 
@@ -69,10 +69,13 @@ source_set("lib") {
       "pdf_to_emf_converter_factory.h",
     ]
 
-    deps += [ "//skia" ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (enable_oop_printing) {
     sources += [
       "print_backend_service_impl.cc",
       "print_backend_service_impl.h",
@@ -87,6 +90,7 @@ source_set("lib") {
     deps += [
       "//chrome/common/printing",
       "//components/crash/core/common",
+      "//ui/gfx",
     ]
   }
 }

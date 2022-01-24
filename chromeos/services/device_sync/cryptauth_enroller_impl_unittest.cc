@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/services/device_sync/mock_cryptauth_client.h"
@@ -119,6 +118,11 @@ class DeviceSyncCryptAuthEnrollerTest
         base::BindOnce(&DeviceSyncCryptAuthEnrollerTest::OnKeyPairGenerated,
                        base::Unretained(this)));
   }
+
+  DeviceSyncCryptAuthEnrollerTest(const DeviceSyncCryptAuthEnrollerTest&) =
+      delete;
+  DeviceSyncCryptAuthEnrollerTest& operator=(
+      const DeviceSyncCryptAuthEnrollerTest&) = delete;
 
   // Starts the enroller.
   void StartEnroller(const cryptauth::GcmDeviceInfo& device_info) {
@@ -264,8 +268,6 @@ class DeviceSyncCryptAuthEnrollerTest
   CryptAuthClient::SetupEnrollmentCallback setup_callback_;
   CryptAuthClient::FinishEnrollmentCallback finish_callback_;
   CryptAuthClient::ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEnrollerTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEnrollerTest, EnrollmentSucceeds) {

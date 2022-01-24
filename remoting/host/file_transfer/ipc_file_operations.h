@@ -54,6 +54,9 @@ class IpcFileOperations : public FileOperations {
     virtual void OnDataResult(std::uint64_t file_id, DataResult result) = 0;
   };
 
+  IpcFileOperations(const IpcFileOperations&) = delete;
+  IpcFileOperations& operator=(const IpcFileOperations&) = delete;
+
   ~IpcFileOperations() override;
 
   // FileOperations implementation.
@@ -73,6 +76,10 @@ class IpcFileOperations : public FileOperations {
   struct SharedState {
    public:
     explicit SharedState(RequestHandler* request_handler);
+
+    SharedState(const SharedState&) = delete;
+    SharedState& operator=(const SharedState&) = delete;
+
     ~SharedState();
 
     // Send a Cancel request for |file_id| and provide an error response to any
@@ -93,9 +100,6 @@ class IpcFileOperations : public FileOperations {
     RequestHandler* request_handler;
 
     base::WeakPtrFactory<SharedState> weak_ptr_factory{this};
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SharedState);
   };
 
   explicit IpcFileOperations(base::WeakPtr<SharedState> shared_state);
@@ -107,7 +111,6 @@ class IpcFileOperations : public FileOperations {
   base::WeakPtr<SharedState> shared_state_;
 
   friend class IpcFileOperationsFactory;
-  DISALLOW_COPY_AND_ASSIGN(IpcFileOperations);
 };
 
 // Creates IpcFileOperations instances for a given RequestHandler. All
@@ -119,6 +122,10 @@ class IpcFileOperationsFactory : public IpcFileOperations::ResultHandler {
   // IpcFileOperationsFactory, and must only be used to construct a single
   // IpcFileOperationsFactory to avoid file ID conflicts.
   IpcFileOperationsFactory(IpcFileOperations::RequestHandler* request_handler);
+
+  IpcFileOperationsFactory(const IpcFileOperationsFactory&) = delete;
+  IpcFileOperationsFactory& operator=(const IpcFileOperationsFactory&) = delete;
+
   ~IpcFileOperationsFactory() override;
 
   std::unique_ptr<FileOperations> CreateFileOperations();
@@ -130,8 +137,6 @@ class IpcFileOperationsFactory : public IpcFileOperations::ResultHandler {
 
  private:
   IpcFileOperations::SharedState shared_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcFileOperationsFactory);
 };
 
 }  // namespace remoting

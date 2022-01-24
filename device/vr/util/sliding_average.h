@@ -15,6 +15,10 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingAverage {
  public:
   explicit SlidingAverage(size_t window_size);
+
+  SlidingAverage(const SlidingAverage&) = delete;
+  SlidingAverage& operator=(const SlidingAverage&) = delete;
+
   ~SlidingAverage();
 
   void AddSample(int64_t value);
@@ -24,12 +28,15 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingAverage {
 
  private:
   SampleQueue values_;
-  DISALLOW_COPY_AND_ASSIGN(SlidingAverage);
 };
 
 class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingTimeDeltaAverage {
  public:
   explicit SlidingTimeDeltaAverage(size_t window_size);
+
+  SlidingTimeDeltaAverage(const SlidingTimeDeltaAverage&) = delete;
+  SlidingTimeDeltaAverage& operator=(const SlidingTimeDeltaAverage&) = delete;
+
   virtual ~SlidingTimeDeltaAverage();
 
   virtual void AddSample(base::TimeDelta value);
@@ -41,7 +48,6 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingTimeDeltaAverage {
 
  private:
   SlidingAverage sample_microseconds_;
-  DISALLOW_COPY_AND_ASSIGN(SlidingTimeDeltaAverage);
 };
 
 }  // namespace device

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
@@ -35,6 +34,9 @@ class AudioSender final : public FrameSender {
               const FrameSenderConfig& audio_config,
               StatusChangeOnceCallback status_change_cb,
               CastTransport* const transport_sender);
+
+  AudioSender(const AudioSender&) = delete;
+  AudioSender& operator=(const AudioSender&) = delete;
 
   ~AudioSender() final;
 
@@ -64,8 +66,6 @@ class AudioSender final : public FrameSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioSender);
 };
 
 }  // namespace cast

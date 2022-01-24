@@ -14,8 +14,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
-import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
+import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
 import java.util.Locale;
@@ -50,7 +51,8 @@ public final class FeedServiceBridge {
     }
 
     public static ProcessScope xSurfaceProcessScope() {
-        return sDelegate.getProcessScope();
+        ProcessScope ps = sDelegate.getProcessScope();
+        return ps;
     }
     public static boolean isEnabled() {
         return FeedServiceBridgeJni.get().isEnabled();
@@ -86,9 +88,9 @@ public final class FeedServiceBridge {
     public static void prefetchImage(String url) {
         ProcessScope processScope = xSurfaceProcessScope();
         if (processScope != null) {
-            ImagePrefetcher imagePrefetcher = processScope.provideImagePrefetcher();
-            if (imagePrefetcher != null) {
-                imagePrefetcher.prefetchImage(url);
+            ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
+            if (imageCacheHelper != null) {
+                imageCacheHelper.prefetchImage(url);
             }
         }
     }
@@ -129,6 +131,15 @@ public final class FeedServiceBridge {
 
     public static boolean isAutoplayEnabled() {
         return FeedServiceBridgeJni.get().isAutoplayEnabled();
+    }
+
+    @ContentOrder
+    public static int getContentOrderForWebFeed() {
+        return FeedServiceBridgeJni.get().getContentOrderForWebFeed();
+    }
+
+    public static void setContentOrderForWebFeed(@ContentOrder int contentOrder) {
+        FeedServiceBridgeJni.get().setContentOrderForWebFeed(contentOrder);
     }
 
     /**
@@ -179,6 +190,9 @@ public final class FeedServiceBridge {
         long getReliabilityLoggingId();
         boolean isAutoplayEnabled();
         void reportOtherUserAction(@FeedUserActionType int userAction);
+        @ContentOrder
+        int getContentOrderForWebFeed();
+        void setContentOrderForWebFeed(@ContentOrder int contentOrder);
 
         long addUnreadContentObserver(Object object, boolean isWebFeed);
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")

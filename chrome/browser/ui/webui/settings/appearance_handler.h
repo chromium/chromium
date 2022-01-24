@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_APPEARANCE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_APPEARANCE_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -26,6 +26,10 @@ namespace settings {
 class AppearanceHandler : public SettingsPageUIHandler {
  public:
   explicit AppearanceHandler(content::WebUI* webui);
+
+  AppearanceHandler(const AppearanceHandler&) = delete;
+  AppearanceHandler& operator=(const AppearanceHandler&) = delete;
+
   ~AppearanceHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -47,8 +51,6 @@ class AppearanceHandler : public SettingsPageUIHandler {
   Profile* profile_;  // Weak pointer.
 
   base::WeakPtrFactory<AppearanceHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppearanceHandler);
 };
 
 }  // namespace settings

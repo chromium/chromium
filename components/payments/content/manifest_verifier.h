@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
@@ -77,6 +76,9 @@ class ManifestVerifier final : public WebDataServiceConsumer {
                    PaymentManifestDownloader* downloader,
                    PaymentManifestParser* parser,
                    PaymentManifestWebDataService* cache);
+
+  ManifestVerifier(const ManifestVerifier&) = delete;
+  ManifestVerifier& operator=(const ManifestVerifier&) = delete;
 
   ~ManifestVerifier() override;
 
@@ -168,8 +170,6 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   std::string first_error_message_;
 
   base::WeakPtrFactory<ManifestVerifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestVerifier);
 };
 
 }  // namespace payments

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -46,6 +45,10 @@ class UrlLanguageHistogram : public KeyedService {
   };
 
   explicit UrlLanguageHistogram(PrefService* pref_service);
+
+  UrlLanguageHistogram(const UrlLanguageHistogram&) = delete;
+  UrlLanguageHistogram& operator=(const UrlLanguageHistogram&) = delete;
+
   ~UrlLanguageHistogram() override;
 
   // Registers profile prefs for the histogram.
@@ -68,8 +71,6 @@ class UrlLanguageHistogram : public KeyedService {
 
  private:
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlLanguageHistogram);
 };
 
 }  // namespace language

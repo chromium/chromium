@@ -8,6 +8,7 @@
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser_jni_headers/AwDrawFnImpl_jni.h"
+#include "base/android/build_info.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -101,8 +102,17 @@ sk_sp<GrVkSecondaryCBDrawContext> CreateDrawContext(
       .fDrawBounds = &draw_bounds,
   };
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
-  return GrVkSecondaryCBDrawContext::Make(gr_context, info, drawable_info,
-                                          &props);
+  sk_sp<GrVkSecondaryCBDrawContext> context =
+      GrVkSecondaryCBDrawContext::Make(gr_context, info, drawable_info, &props);
+  LOG_IF(FATAL, !context)
+      << "Failed GrVkSecondaryCBDrawContext::Make"
+      << " fSecondaryCommandBuffer:" << params->secondary_command_buffer
+      << " fColorAttachmentIndex:" << params->color_attachment_index
+      << " fCompatibleRenderPass:" << params->compatible_render_pass
+      << " fFormat:" << params->format << " width:" << params->width
+      << " height:" << params->height
+      << " is_srgb:" << (color_space == SkColorSpace::MakeSRGB());
+  return context;
 }
 
 OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
@@ -279,6 +289,17 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
 
+  // Android HWUI has a bug that asks functor to draw into a 8-bit mask for
+  // functionality that is not related to and not needed by webview.
+  // GrVkSecondaryCBDrawContext currently does not expect or support R8 format
+  // so just skip these draw calls before Android side is fixed.
+  if (params->format == VK_FORMAT_R8_UNORM &&
+      base::android::BuildInfo::GetInstance()->sdk_int() ==
+          base::android::SDK_VERSION_S) {
+    skip_next_post_draw_vk_ = true;
+    return;
+  }
+
   auto color_space = CreateColorSpace(params);
   if (!color_space) {
     // If we weren't passed a valid colorspace, default to sRGB.
@@ -305,6 +326,11 @@ void AwDrawFnImpl::DrawVk(AwDrawFn_DrawVkParams* params) {
 void AwDrawFnImpl::PostDrawVk(AwDrawFn_PostDrawVkParams* params) {
   if (!vulkan_context_provider_)
     return;
+
+  if (skip_next_post_draw_vk_) {
+    skip_next_post_draw_vk_ = false;
+    return;
+  }
 
   if (is_interop_mode_) {
     DCHECK(interop_);

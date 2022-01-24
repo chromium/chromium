@@ -6,261 +6,14 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/values.h"
+#include "chromecast/bindings/shared/proto_serializer.h"
 
 namespace chromecast {
-
 namespace {
-
-// Keep synced with media_capabilities.js
-constexpr char kMaxWidthProperty[] = "maxWidth";
-constexpr char kMaxHeightProperty[] = "maxHeight";
-constexpr char kMaxFrameRateProperty[] = "maxFrameRate";
-constexpr char kSupportedCryptoBlockFormatProperty[] =
-    "supportedCryptoblockFormat";
-constexpr char kMaxChannelsProperty[] = "maxChannels";
-constexpr char kPcmSurroundSoundSupportedProperty[] =
-    "pcmSurroundSoundSupported";
-constexpr char kIsPlatformDolbyVisionEnabledProperty[] =
-    "isPlatformDolbyVisionEnabled";
-constexpr char kIsDolbyVisionSupportedProperty[] = "isDolbyVisionSupported";
-constexpr char kIsDolbyVision4kP60SupportedProperty[] =
-    "isDolbyVision4kP60Supported";
-constexpr char kIsDolbyVisionSupportedByCurrentHdmiModeProperty[] =
-    "isDolbyVisionSupportedByCurrentHdmiMode";
-constexpr char kIsHdmiVideoModeSwitchEnabledProperty[] =
-    "isHdmiVideoModeSwitchEnabled";
-constexpr char kIsPlatformHevcEnabledProperty[] = "isPlatformHevcEnabled";
-constexpr char kIsHdmiModeHdrCheckEnforcedProperty[] =
-    "isHdmiModeHdrCheckEnforced";
-constexpr char kIsHdrSupportedByCurrentHdmiModeProperty[] =
-    "isHdrSupportedByCurrentHdmiMode";
-constexpr char kIsSmpteSt2084SupportedProperty[] = "isSmpteSt2084Supported";
-constexpr char kIsHlgSupportedProperty[] = "isHlgSupported";
-constexpr char kIsHdrFeatureEnabledProperty[] = "isHdrFeatureEnabled";
-constexpr char kSupportedLegacyVp9LevelsProperty[] = "supportedLegacyVp9Levels";
-constexpr char kHdcpVersionProperty[] = "hdcpVersion";
-constexpr char kSpatialRenderingSupportMaskProperty[] =
-    "spatialRenderingSupportMask";
-constexpr char kMaxFillrateProperty[] = "maxFillrate";
-
-// Audio Codec information
-constexpr char kSupportedAudioCodecsProperty[] = "supportedAudioCodecs";
-constexpr char kAudioCodecInfoCodecKey[] = "codec";
-constexpr char kAudioCodecInfoSampleFormat[] = "sampleFormat";
-constexpr char kAudioCodecInfoSamplesPerSecond[] = "samplesPerSecond";
-constexpr char kAudioCodecInfoMaxAudioChannelsKey[] = "maxAudioChannels";
-
-// Video Codec information
-constexpr char kSupportedVideoCodecsProperty[] = "supportedVideoCodecs";
-constexpr char kVideoCodecInfoCodecKey[] = "codec";
-constexpr char kVideoCodecInfoProfileKey[] = "profile";
-
-// Attempts to parse |value| as the given type, returning absl::nullopt on
-// failure.
-template <typename T>
-struct Parser {
-  static absl::optional<T> Parse(const base::Value& value);
-};
-
-template <typename T>
-struct Parser<std::vector<T>> {
-  static absl::optional<std::vector<T>> Parse(const base::Value& value);
-};
-
-// Tries to populate values of the given type |T| from |value| into
-// |destination|, returning whether the operation succeeded.
-template <typename T>
-bool TryPopulateValue(const base::Value* value, T* destination) {
-  DCHECK(destination);
-
-  if (!value) {
-    return false;
-  }
-
-  auto parsed = Parser<T>::Parse(*value);
-  if (!parsed.has_value()) {
-    return false;
-  }
-
-  *destination = std::move(parsed.value());
-  return true;
+bool IsOutOfRange(int value, int min, int max) {
+  return min > value || max < value;
 }
-
-// Parses an enum value. To be used as a helper when implementing the above.
-template <typename T>
-absl::optional<T> ParseEnum(const base::Value& value) {
-  absl::optional<int> parsed_int = Parser<int>::Parse(value);
-  if (!parsed_int.has_value()) {
-    return absl::nullopt;
-  }
-  return static_cast<T>(parsed_int.value());
-}
-
-template <>
-inline absl::optional<media::AudioCodec> Parser<media::AudioCodec>::Parse(
-    const base::Value& value) {
-  return ParseEnum<media::AudioCodec>(value);
-}
-
-template <>
-inline absl::optional<media::SampleFormat> Parser<media::SampleFormat>::Parse(
-    const base::Value& value) {
-  return ParseEnum<media::SampleFormat>(value);
-}
-
-template <>
-inline absl::optional<media::VideoCodec> Parser<media::VideoCodec>::Parse(
-    const base::Value& value) {
-  return ParseEnum<media::VideoCodec>(value);
-}
-
-template <>
-inline absl::optional<media::VideoProfile> Parser<media::VideoProfile>::Parse(
-    const base::Value& value) {
-  return ParseEnum<media::VideoProfile>(value);
-}
-
-template <>
-absl::optional<bool> Parser<bool>::Parse(const base::Value& value) {
-  if (!value.is_bool()) {
-    return absl::nullopt;
-  }
-  return value.GetBool();
-}
-
-template <>
-absl::optional<int> Parser<int>::Parse(const base::Value& value) {
-  if (!value.is_int()) {
-    return absl::nullopt;
-  }
-  return value.GetInt();
-}
-
-template <>
-absl::optional<std::string> Parser<std::string>::Parse(
-    const base::Value& value) {
-  if (!value.is_string()) {
-    return absl::nullopt;
-  }
-  return value.GetString();
-}
-
-template <>
-absl::optional<PlatformInfoSerializer::AudioCodecInfo>
-Parser<PlatformInfoSerializer::AudioCodecInfo>::Parse(
-    const base::Value& value) {
-  if (!value.is_dict()) {
-    return absl::nullopt;
-  }
-
-  const base::Value* codec_value = value.FindKey(kAudioCodecInfoCodecKey);
-  const base::Value* sample_format_value =
-      value.FindKey(kAudioCodecInfoSampleFormat);
-  const base::Value* samples_per_second_value =
-      value.FindKey(kAudioCodecInfoSamplesPerSecond);
-  const base::Value* max_audio_channels_value =
-      value.FindKey(kAudioCodecInfoMaxAudioChannelsKey);
-
-  PlatformInfoSerializer::AudioCodecInfo audio_codec_info;
-  if (!TryPopulateValue(codec_value, &audio_codec_info.codec)) {
-    return absl::nullopt;
-  }
-
-  TryPopulateValue(sample_format_value, &audio_codec_info.sample_format);
-  TryPopulateValue(samples_per_second_value,
-                   &audio_codec_info.max_samples_per_second);
-  TryPopulateValue(max_audio_channels_value,
-                   &audio_codec_info.max_audio_channels);
-
-  return audio_codec_info;
-}
-
-template <>
-absl::optional<PlatformInfoSerializer::VideoCodecInfo>
-Parser<PlatformInfoSerializer::VideoCodecInfo>::Parse(
-    const base::Value& value) {
-  if (!value.is_dict()) {
-    return absl::nullopt;
-  }
-
-  const base::Value* codec_value = value.FindKey(kVideoCodecInfoCodecKey);
-  const base::Value* profiles_value = value.FindKey(kVideoCodecInfoProfileKey);
-
-  PlatformInfoSerializer::VideoCodecInfo video_codec_info;
-  if (!TryPopulateValue(codec_value, &video_codec_info.codec)) {
-    return absl::nullopt;
-  }
-
-  TryPopulateValue(profiles_value, &video_codec_info.profile);
-
-  return video_codec_info;
-}
-
-template <typename T>
-absl::optional<std::vector<T>> Parser<std::vector<T>>::Parse(
-    const base::Value& value) {
-  if (!value.is_list()) {
-    return absl::nullopt;
-  }
-  base::Value::ConstListView list = value.GetList();
-  std::vector<T> results;
-  results.reserve(list.size());
-  for (const auto& element : list) {
-    auto parsed_element = Parser<T>::Parse(element);
-    if (!parsed_element.has_value()) {
-      return absl::nullopt;
-    }
-    results.push_back(parsed_element.value());
-  }
-  return results;
-}
-
-template <typename T>
-absl::optional<T> ParseWithKey(const base::DictionaryValue& dictionary,
-                               base::StringPiece key) {
-  const base::Value* value = dictionary.FindKey(key);
-  if (!value) {
-    return absl::nullopt;
-  }
-
-  return Parser<T>::Parse(*value);
-}
-
-void SetWithKey(base::DictionaryValue* dictionary,
-                std::vector<PlatformInfoSerializer::AudioCodecInfo> elements) {
-  DCHECK(dictionary);
-  base::ListValue list;
-  for (const auto& element : elements) {
-    base::DictionaryValue audio_codec_value;
-    audio_codec_value.SetIntKey(kAudioCodecInfoCodecKey, element.codec);
-    audio_codec_value.SetIntKey(kAudioCodecInfoSampleFormat,
-                                element.sample_format);
-    audio_codec_value.SetIntKey(kAudioCodecInfoSamplesPerSecond,
-                                element.max_samples_per_second);
-    audio_codec_value.SetIntKey(kAudioCodecInfoMaxAudioChannelsKey,
-                                element.max_audio_channels);
-    list.Append(std::move(audio_codec_value));
-  }
-  dictionary->SetKey(kSupportedAudioCodecsProperty, std::move(list));
-}
-
-void SetWithKey(base::DictionaryValue* dictionary,
-                std::vector<PlatformInfoSerializer::VideoCodecInfo> elements) {
-  DCHECK(dictionary);
-  base::ListValue list;
-  for (auto& element : elements) {
-    base::DictionaryValue video_codec_value;
-    video_codec_value.SetIntKey(kVideoCodecInfoCodecKey, element.codec);
-    video_codec_value.SetIntKey(kVideoCodecInfoProfileKey, element.profile);
-    list.Append(std::move(video_codec_value));
-  }
-  dictionary->SetKey(kSupportedVideoCodecsProperty, std::move(list));
-}
-
 }  // namespace
 
 PlatformInfoSerializer::PlatformInfoSerializer() = default;
@@ -273,265 +26,323 @@ PlatformInfoSerializer::~PlatformInfoSerializer() = default;
 PlatformInfoSerializer& PlatformInfoSerializer::operator=(
     PlatformInfoSerializer&& other) = default;
 
-bool PlatformInfoSerializer::operator==(
-    const PlatformInfoSerializer& other) const {
-  return platform_info_ == other.platform_info_;
-}
-
-bool PlatformInfoSerializer::operator!=(
-    const PlatformInfoSerializer& other) const {
-  return !(*this == other);
-}
-
 // static
-absl::optional<PlatformInfoSerializer> PlatformInfoSerializer::TryParse(
-    base::StringPiece json) {
-  absl::optional<base::Value> value = base::JSONReader::Read(json);
-  if (!value || !value.value().is_dict()) {
+absl::optional<PlatformInfoSerializer> PlatformInfoSerializer::Deserialize(
+    base::StringPiece base64) {
+  absl::optional<cast::bindings::MediaCapabilitiesMessage> proto =
+      chromecast::bindings::ProtoSerializer<
+          cast::bindings::MediaCapabilitiesMessage>::Deserialize(base64);
+  if (!proto) {
     return absl::nullopt;
   }
 
   PlatformInfoSerializer parser;
-
-  // NOTE: values in value.value() take precedence in the case of intersecting
-  // keys. So because there is no way to remove keys from the underlying
-  // Dictionary, all values will be overwritten.
-  parser.platform_info_.MergeDictionary(&value.value());
+  parser.platform_info_ = std::move(*proto);
   return parser;
 }
 
+std::string PlatformInfoSerializer::Serialize() const {
+  return chromecast::bindings::ProtoSerializer<
+      cast::bindings::MediaCapabilitiesMessage>::Serialize(platform_info_);
+}
+
 void PlatformInfoSerializer::SetMaxWidth(int max_width) {
-  platform_info_.SetIntKey(kMaxWidthProperty, max_width);
+  platform_info_.set_max_width(max_width);
 }
 
 void PlatformInfoSerializer::SetMaxHeight(int max_height) {
-  platform_info_.SetIntKey(kMaxHeightProperty, max_height);
+  platform_info_.set_max_height(max_height);
 }
 
 void PlatformInfoSerializer::SetMaxFrameRate(int max_frame_rate) {
-  platform_info_.SetIntKey(kMaxFrameRateProperty, max_frame_rate);
+  platform_info_.set_max_frame_rate(max_frame_rate);
 }
 
-void PlatformInfoSerializer::SetSupportedCryptoBlockFormat(std::string format) {
-  platform_info_.SetStringKey(kSupportedCryptoBlockFormatProperty,
-                              std::move(format));
+void PlatformInfoSerializer::SetSupportedCryptoBlockFormat(
+    const std::string& format) {
+  platform_info_.set_supported_cryptoblock_format(format);
 }
 
 void PlatformInfoSerializer::SetMaxChannels(int max_channels) {
-  platform_info_.SetIntKey(kMaxChannelsProperty, max_channels);
+  platform_info_.set_max_channels(max_channels);
 }
 
 void PlatformInfoSerializer::SetPcmSurroundSoundSupported(bool is_supported) {
-  platform_info_.SetBoolKey(kPcmSurroundSoundSupportedProperty, is_supported);
+  platform_info_.set_is_pcm_surround_sound_supported(is_supported);
 }
 
-void PlatformInfoSerializer::SetPlatformDobleVisionEnabled(bool is_enabled) {
-  platform_info_.SetBoolKey(kIsPlatformDolbyVisionEnabledProperty, is_enabled);
+void PlatformInfoSerializer::SetPlatformDolbyVisionEnabled(bool is_enabled) {
+  platform_info_.set_is_platform_dolby_vision_enabled(is_enabled);
 }
 
 void PlatformInfoSerializer::SetDolbyVisionSupported(bool is_supported) {
-  platform_info_.SetBoolKey(kIsDolbyVisionSupportedProperty, is_supported);
+  platform_info_.set_is_dolby_vision_supported(is_supported);
 }
 
 void PlatformInfoSerializer::SetDolbyVision4kP60Supported(bool is_supported) {
-  platform_info_.SetBoolKey(kIsDolbyVision4kP60SupportedProperty, is_supported);
+  platform_info_.set_is_dolby_vision4k_p60_supported(is_supported);
 }
 
 void PlatformInfoSerializer::SetDolbyVisionSupportedByCurrentHdmiMode(
     bool is_supported) {
-  platform_info_.SetBoolKey(kIsDolbyVisionSupportedByCurrentHdmiModeProperty,
-                            is_supported);
+  platform_info_.set_is_dolby_vision_supported_by_current_hdmi_mode(
+      is_supported);
 }
 
 void PlatformInfoSerializer::SetHdmiVideoModeSwitchEnabled(bool is_enabled) {
-  platform_info_.SetBoolKey(kIsHdmiVideoModeSwitchEnabledProperty, is_enabled);
+  platform_info_.set_is_hdmi_video_mode_switch_enabled(is_enabled);
 }
 
 void PlatformInfoSerializer::SetPlatformHevcEnabled(bool is_enabled) {
-  platform_info_.SetBoolKey(kIsPlatformHevcEnabledProperty, is_enabled);
+  platform_info_.set_is_platform_hevc_enabled(is_enabled);
 }
 
 void PlatformInfoSerializer::SetHdmiModeHdrCheckEnforced(bool is_enforced) {
-  platform_info_.SetBoolKey(kIsHdmiModeHdrCheckEnforcedProperty, is_enforced);
+  platform_info_.set_is_hdmi_mode_hdr_check_enforced(is_enforced);
 }
 
 void PlatformInfoSerializer::SetHdrSupportedByCurrentHdmiMode(
     bool is_supported) {
-  platform_info_.SetBoolKey(kIsHdrSupportedByCurrentHdmiModeProperty,
-                            is_supported);
+  platform_info_.set_is_hdr_supported_by_current_hdmi_mode(is_supported);
 }
 
 void PlatformInfoSerializer::SetSmpteSt2084Supported(bool is_supported) {
-  platform_info_.SetBoolKey(kIsSmpteSt2084SupportedProperty, is_supported);
+  platform_info_.set_is_smpte_st2084_supported(is_supported);
 }
 
-void PlatformInfoSerializer::SetHglSupported(bool is_supported) {
-  platform_info_.SetBoolKey(kIsHlgSupportedProperty, is_supported);
+void PlatformInfoSerializer::SetHlgSupported(bool is_supported) {
+  platform_info_.set_is_hlg_supported(is_supported);
 }
 
 void PlatformInfoSerializer::SetHdrFeatureEnabled(bool is_enabled) {
-  platform_info_.SetBoolKey(kIsHdrFeatureEnabledProperty, is_enabled);
+  platform_info_.set_is_hdr_feature_enabled(is_enabled);
 }
 
 void PlatformInfoSerializer::SetSupportedLegacyVp9Levels(
     std::vector<int> levels) {
-  std::vector<base::Value> values;
-  values.reserve(levels.size());
+  platform_info_.clear_supported_legacy_vp9_levels();
   for (int level : levels) {
-    values.emplace_back(level);
+    platform_info_.add_supported_legacy_vp9_levels(level);
   }
-
-  platform_info_.SetKey(kSupportedLegacyVp9LevelsProperty,
-                        base::Value(std::move(values)));
 }
 
 void PlatformInfoSerializer::SetHdcpVersion(int hdcp_version) {
-  platform_info_.SetIntKey(kHdcpVersionProperty, hdcp_version);
+  platform_info_.set_hdcp_version(hdcp_version);
 }
 
 void PlatformInfoSerializer::SetSpatialRenderingSupportMask(int mask) {
-  platform_info_.SetIntKey(kSpatialRenderingSupportMaskProperty, mask);
+  platform_info_.set_spatial_rendering_support_mask(mask);
 }
 
 void PlatformInfoSerializer::SetMaxFillRate(int max_fill_rate) {
-  platform_info_.SetIntKey(kMaxFillrateProperty, max_fill_rate);
+  platform_info_.set_max_fill_rate(max_fill_rate);
 }
 
 void PlatformInfoSerializer::SetSupportedAudioCodecs(
     std::vector<AudioCodecInfo> codec_infos) {
-  SetWithKey(&platform_info_, std::move(codec_infos));
+  platform_info_.clear_supported_audio_codecs();
+  for (const auto& element : codec_infos) {
+    cast::bindings::AudioCodecInfo info;
+    DCHECK(cast::bindings::AudioCodecInfo::AudioCodec_IsValid(element.codec));
+    DCHECK(cast::bindings::AudioCodecInfo::SampleFormat_IsValid(
+        element.sample_format));
+    info.set_codec(
+        cast::bindings::AudioCodecInfo::AudioCodec_IsValid(element.codec)
+            ? static_cast<cast::bindings::AudioCodecInfo::AudioCodec>(
+                  element.codec)
+            : cast::bindings::AudioCodecInfo::AUDIO_CODEC_UNKNOWN);
+    info.set_sample_format(
+        cast::bindings::AudioCodecInfo::SampleFormat_IsValid(
+            element.sample_format)
+            ? static_cast<cast::bindings::AudioCodecInfo::SampleFormat>(
+                  element.sample_format)
+            : cast::bindings::AudioCodecInfo::SAMPLE_FORMAT_UNKNOWN);
+    info.set_max_samples_per_second(element.max_samples_per_second);
+    info.set_max_audio_channels(element.max_audio_channels);
+    *platform_info_.add_supported_audio_codecs() = std::move(info);
+  }
 }
 
 void PlatformInfoSerializer::SetSupportedVideoCodecs(
     std::vector<VideoCodecInfo> codec_infos) {
-  SetWithKey(&platform_info_, std::move(codec_infos));
+  for (auto& element : codec_infos) {
+    cast::bindings::VideoCodecInfo info;
+    DCHECK(cast::bindings::VideoCodecInfo::VideoCodec_IsValid(element.codec));
+    DCHECK(
+        cast::bindings::VideoCodecInfo::VideoProfile_IsValid(element.profile));
+    info.set_codec(
+        cast::bindings::VideoCodecInfo::VideoCodec_IsValid(element.codec)
+            ? static_cast<cast::bindings::VideoCodecInfo::VideoCodec>(
+                  element.codec)
+            : cast::bindings::VideoCodecInfo::VIDEO_CODEC_UNKNOWN);
+    info.set_profile(
+        cast::bindings::VideoCodecInfo::VideoProfile_IsValid(element.profile)
+            ? static_cast<cast::bindings::VideoCodecInfo::VideoProfile>(
+                  element.profile)
+            : cast::bindings::VideoCodecInfo::VIDEO_PROFILE_UNKNOWN);
+    *platform_info_.add_supported_video_codecs() = std::move(info);
+  }
 }
 
 absl::optional<int> PlatformInfoSerializer::MaxWidth() const {
-  return ParseWithKey<int>(platform_info_, kMaxWidthProperty);
+  return platform_info_.max_width();
 }
 
 absl::optional<int> PlatformInfoSerializer::MaxHeight() const {
-  return ParseWithKey<int>(platform_info_, kMaxHeightProperty);
+  return platform_info_.max_height();
 }
 
 absl::optional<int> PlatformInfoSerializer::MaxFrameRate() const {
-  return ParseWithKey<int>(platform_info_, kMaxFrameRateProperty);
+  return platform_info_.max_frame_rate();
 }
 
 absl::optional<std::string> PlatformInfoSerializer::SupportedCryptoBlockFormat()
     const {
-  return ParseWithKey<std::string>(platform_info_,
-                                   kSupportedCryptoBlockFormatProperty);
+  return platform_info_.supported_cryptoblock_format();
 }
 
 absl::optional<int> PlatformInfoSerializer::MaxChannels() const {
-  return ParseWithKey<int>(platform_info_, kMaxChannelsProperty);
+  return platform_info_.max_channels();
 }
 
 absl::optional<bool> PlatformInfoSerializer::PcmSurroundSoundSupported() const {
-  return ParseWithKey<bool>(platform_info_, kPcmSurroundSoundSupportedProperty);
+  return platform_info_.is_pcm_surround_sound_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsPlatformDobleVisionEnabled()
+absl::optional<bool> PlatformInfoSerializer::IsPlatformDolbyVisionEnabled()
     const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsPlatformDolbyVisionEnabledProperty);
+  return platform_info_.is_platform_dolby_vision_enabled();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsDolbyVisionSupported() const {
-  return ParseWithKey<bool>(platform_info_, kIsDolbyVisionSupportedProperty);
+  return platform_info_.is_dolby_vision_supported();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsDolbyVision4kP60Supported()
     const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsDolbyVision4kP60SupportedProperty);
+  return platform_info_.is_dolby_vision4k_p60_supported();
 }
 
 absl::optional<bool>
 PlatformInfoSerializer::IsDolbyVisionSupportedByCurrentHdmiMode() const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsDolbyVisionSupportedByCurrentHdmiModeProperty);
+  return platform_info_.is_dolby_vision_supported_by_current_hdmi_mode();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsHdmiVideoModeSwitchEnabled()
     const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsHdmiVideoModeSwitchEnabledProperty);
+  return platform_info_.is_hdmi_video_mode_switch_enabled();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsPlatformHevcEnabled() const {
-  return ParseWithKey<bool>(platform_info_, kIsPlatformHevcEnabledProperty);
+  return platform_info_.is_platform_hevc_enabled();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsHdmiModeHdrCheckEnforced()
     const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsHdmiModeHdrCheckEnforcedProperty);
+  return platform_info_.is_hdmi_mode_hdr_check_enforced();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsHdrSupportedByCurrentHdmiMode()
     const {
-  return ParseWithKey<bool>(platform_info_,
-                            kIsHdrSupportedByCurrentHdmiModeProperty);
+  return platform_info_.is_hdr_supported_by_current_hdmi_mode();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsSmpteSt2084Supported() const {
-  return ParseWithKey<bool>(platform_info_, kIsSmpteSt2084SupportedProperty);
+  return platform_info_.is_smpte_st2084_supported();
 }
 
-absl::optional<bool> PlatformInfoSerializer::IsHglSupported() const {
-  return ParseWithKey<bool>(platform_info_, kIsHlgSupportedProperty);
+absl::optional<bool> PlatformInfoSerializer::IsHlgSupported() const {
+  return platform_info_.is_hlg_supported();
 }
 
 absl::optional<bool> PlatformInfoSerializer::IsHdrFeatureEnabled() const {
-  return ParseWithKey<bool>(platform_info_, kIsHdrFeatureEnabledProperty);
+  return platform_info_.is_hdr_feature_enabled();
 }
 
 absl::optional<std::vector<int>>
 PlatformInfoSerializer::SupportedLegacyVp9Levels() const {
-  return ParseWithKey<std::vector<int>>(platform_info_,
-                                        kSupportedLegacyVp9LevelsProperty);
+  std::vector<int> levels;
+  levels.reserve(platform_info_.supported_legacy_vp9_levels_size());
+  for (const auto& level : platform_info_.supported_legacy_vp9_levels()) {
+    levels.push_back(level);
+  }
+
+  return levels;
 }
 
 absl::optional<int> PlatformInfoSerializer::HdcpVersion() const {
-  return ParseWithKey<int>(platform_info_, kHdcpVersionProperty);
+  return platform_info_.hdcp_version();
 }
 
 absl::optional<int> PlatformInfoSerializer::SpatialRenderingSupportMask()
     const {
-  return ParseWithKey<int>(platform_info_,
-                           kSpatialRenderingSupportMaskProperty);
+  return platform_info_.spatial_rendering_support_mask();
 }
 
 absl::optional<int> PlatformInfoSerializer::MaxFillRate() const {
-  return ParseWithKey<int>(platform_info_, kMaxFillrateProperty);
+  return platform_info_.max_fill_rate();
 }
 
 absl::optional<std::vector<PlatformInfoSerializer::AudioCodecInfo>>
 PlatformInfoSerializer::SupportedAudioCodecs() const {
-  return ParseWithKey<std::vector<AudioCodecInfo>>(
-      platform_info_, kSupportedAudioCodecsProperty);
+  std::vector<AudioCodecInfo> infos;
+  infos.reserve(platform_info_.supported_audio_codecs_size());
+  for (const auto& info : platform_info_.supported_audio_codecs()) {
+    if (IsOutOfRange(info.codec(), media::AudioCodec::kAudioCodecMin,
+                     media::AudioCodec::kAudioCodecMax)) {
+      LOG(WARNING) << "Unrecognized AudioCodec: " << info.codec();
+      continue;
+    }
+
+    if (IsOutOfRange(info.sample_format(),
+                     media::SampleFormat::kSampleFormatMin,
+                     media::SampleFormat::kSampleFormatMax)) {
+      LOG(WARNING) << "Unrecognized SampleFormat: " << info.sample_format();
+      continue;
+    }
+
+    AudioCodecInfo parsed;
+    parsed.codec = static_cast<media::AudioCodec>(info.codec());
+    parsed.sample_format =
+        static_cast<media::SampleFormat>(info.sample_format());
+    parsed.max_samples_per_second = info.max_samples_per_second();
+    parsed.max_audio_channels = info.max_audio_channels();
+    infos.push_back(std::move(parsed));
+  }
+
+  return infos.empty()
+             ? absl::nullopt
+             : absl::make_optional<
+                   std::vector<PlatformInfoSerializer::AudioCodecInfo>>(infos);
 }
 
 absl::optional<std::vector<PlatformInfoSerializer::VideoCodecInfo>>
 PlatformInfoSerializer::SupportedVideoCodecs() const {
-  return ParseWithKey<std::vector<VideoCodecInfo>>(
-      platform_info_, kSupportedVideoCodecsProperty);
-}
+  std::vector<VideoCodecInfo> infos;
+  infos.reserve(platform_info_.supported_video_codecs_size());
+  for (const auto& info : platform_info_.supported_video_codecs()) {
+    if (IsOutOfRange(info.codec(), media::VideoCodec::kVideoCodecMin,
+                     media::VideoCodec::kVideoCodecMax)) {
+      LOG(WARNING) << "Unrecognized VideoCodec: " << info.codec();
+      continue;
+    }
 
-std::string PlatformInfoSerializer::ToJson() const {
-  std::string json;
-  bool success = base::JSONWriter::Write(platform_info_, &json);
-  DCHECK(success);
-  return json;
-}
+    if (IsOutOfRange(info.profile(), media::VideoProfile::kVideoProfileMin,
+                     media::VideoProfile::kVideoProfileMax)) {
+      LOG(WARNING) << "Unrecognized VideoProfile: " << info.profile();
+      continue;
+    }
 
-bool PlatformInfoSerializer::IsValid() const {
-  return MaxWidth() && MaxHeight() && MaxFrameRate() &&
-         SupportedCryptoBlockFormat() && MaxChannels() &&
-         PcmSurroundSoundSupported();
+    VideoCodecInfo parsed;
+    parsed.codec = static_cast<media::VideoCodec>(info.codec());
+    parsed.profile = static_cast<media::VideoProfile>(info.profile());
+    infos.push_back(std::move(parsed));
+  }
+
+  return infos.empty()
+             ? absl::nullopt
+             : absl::make_optional<
+                   std::vector<PlatformInfoSerializer::VideoCodecInfo>>(infos);
 }
 
 bool operator==(const PlatformInfoSerializer::AudioCodecInfo& first,

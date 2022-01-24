@@ -20,6 +20,12 @@ namespace chromecast {
 class ActivityFilteringURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   explicit ActivityFilteringURLLoaderThrottle(ActivityUrlFilter* filter);
+
+  ActivityFilteringURLLoaderThrottle(
+      const ActivityFilteringURLLoaderThrottle&) = delete;
+  ActivityFilteringURLLoaderThrottle& operator=(
+      const ActivityFilteringURLLoaderThrottle&) = delete;
+
   ~ActivityFilteringURLLoaderThrottle() override;
 
   // content::URLLoaderThrottle implementation:
@@ -40,8 +46,6 @@ class ActivityFilteringURLLoaderThrottle : public blink::URLLoaderThrottle {
   void FilterURL(const GURL& url);
 
   ActivityUrlFilter* url_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActivityFilteringURLLoaderThrottle);
 };
 
 }  // namespace chromecast

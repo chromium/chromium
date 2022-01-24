@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_CAST_STREAMING_PUBLIC_CAST_STREAMING_URL_H_
 #define COMPONENTS_CAST_STREAMING_PUBLIC_CAST_STREAMING_URL_H_
 
-class GURL;
+#include "url/gurl.h"
 
 namespace cast_streaming {
+
+// Returns the Cast Streaming media source URL.
+GURL GetCastStreamingMediaSourceUrl();
 
 // Returns true if |url| is the Cast Streaming media source URL.
 bool IsCastStreamingMediaSourceUrl(const GURL& url);

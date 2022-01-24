@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 #define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
-#include "base/macros.h"
 #include "snapshot/memory_snapshot.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -27,6 +26,12 @@ namespace internal {
 class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
  public:
   MemorySnapshotIOSIntermediateDump() = default;
+
+  MemorySnapshotIOSIntermediateDump(const MemorySnapshotIOSIntermediateDump&) =
+      delete;
+  MemorySnapshotIOSIntermediateDump& operator=(
+      const MemorySnapshotIOSIntermediateDump&) = delete;
+
   ~MemorySnapshotIOSIntermediateDump() = default;
 
   //! \brief Initializes the object.
@@ -52,8 +57,6 @@ class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
   vm_address_t data_;
   vm_size_t size_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotIOSIntermediateDump);
 };
 
 }  // namespace internal

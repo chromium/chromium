@@ -14,8 +14,9 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
@@ -29,6 +30,10 @@ struct GpuFenceHandle;
 }  // namespace gfx
 
 namespace ui {
+
+// The maximum amount of time we will wait for a new modeset attempt before we
+// crash the GPU process.
+constexpr base::TimeDelta kWaitForModesetTimeout = base::Seconds(15);
 
 class CrtcController;
 class DrmFramebuffer;
@@ -93,6 +98,11 @@ class HardwareDisplayController {
  public:
   HardwareDisplayController(std::unique_ptr<CrtcController> controller,
                             const gfx::Point& origin);
+
+  HardwareDisplayController(const HardwareDisplayController&) = delete;
+  HardwareDisplayController& operator=(const HardwareDisplayController&) =
+      delete;
+
   ~HardwareDisplayController();
 
   // Gets the props required to modeset a CRTC with a |mode| onto
@@ -121,7 +131,7 @@ class HardwareDisplayController {
   // be modified as it could still be displayed.
   //
   // Note that this function does not block. Also, this function should not be
-  // called again before the page flip occurrs.
+  // called again before the page flip occurs.
   void SchedulePageFlip(DrmOverlayPlaneList plane_list,
                         SwapCompletionOnceCallback submission_callback,
                         PresentationOnceCallback presentation_callback);
@@ -172,6 +182,8 @@ class HardwareDisplayController {
       DrmOverlayPlaneList pending_planes,
       const gfx::PresentationFeedback& presentation_feedback);
 
+  void AsValueInto(base::trace_event::TracedValue* value) const;
+
  private:
   // Loops over |crtc_controllers_| and save their props into |commit_request|
   // to be enabled/modeset.
@@ -215,9 +227,12 @@ class HardwareDisplayController {
   base::flat_map<uint32_t /*fourcc_format*/, uint64_t /*preferred_modifier*/>
       preferred_format_modifier_;
 
-  base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
+  // Used to crash the GPU process if a page flip commit fails and no new
+  // modeset attempts come in.
+  base::OneShotTimer crash_gpu_timer_;
+  int16_t failed_page_flip_counter_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(HardwareDisplayController);
+  base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

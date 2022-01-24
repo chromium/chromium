@@ -12,10 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
@@ -37,6 +36,9 @@ class QuotaInternalsProxy
           content::BrowserThread::DeleteOnIOThread> {
  public:
   explicit QuotaInternalsProxy(QuotaInternalsHandler* handler);
+
+  QuotaInternalsProxy(const QuotaInternalsProxy&) = delete;
+  QuotaInternalsProxy& operator=(const QuotaInternalsProxy&) = delete;
 
   void RequestInfo(scoped_refptr<storage::QuotaManager> quota_manager);
   void TriggerStoragePressure(
@@ -87,8 +89,6 @@ class QuotaInternalsProxy
       hosts_pending_;
   std::vector<PerHostStorageInfo> report_pending_;
   base::WeakPtrFactory<QuotaInternalsProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaInternalsProxy);
 };
 }  // namespace quota_internals
 

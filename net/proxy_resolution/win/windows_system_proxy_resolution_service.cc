@@ -16,22 +16,16 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
-#include "net/proxy_resolution/win/winhttp_proxy_resolver_functions.h"
 
 namespace net {
 
 // static
 bool WindowsSystemProxyResolutionService::IsSupported() {
+  // The WinHttp functions used in the resolver are only supported on Windows 8
+  // and above.
   if (base::win::GetVersion() < base::win::Version::WIN8) {
     LOG(WARNING) << "WindowsSystemProxyResolutionService is only supported for "
                     "Windows 8 and later.";
-    return false;
-  }
-
-  if (!WinHttpProxyResolverFunctions::GetInstance()
-           .are_all_functions_loaded()) {
-    LOG(ERROR) << "Failed to load functions necessary for "
-                  "WindowsSystemProxyResolutionService!";
     return false;
   }
 
@@ -40,29 +34,33 @@ bool WindowsSystemProxyResolutionService::IsSupported() {
 
 // static
 std::unique_ptr<WindowsSystemProxyResolutionService>
-WindowsSystemProxyResolutionService::Create(NetLog* net_log) {
-  if (!IsSupported())
+WindowsSystemProxyResolutionService::Create(
+    std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver,
+    NetLog* net_log) {
+  if (!IsSupported() || !windows_system_proxy_resolver)
     return nullptr;
 
-  return base::WrapUnique(new WindowsSystemProxyResolutionService(net_log));
+  return base::WrapUnique(new WindowsSystemProxyResolutionService(
+      std::move(windows_system_proxy_resolver), net_log));
 }
 
 WindowsSystemProxyResolutionService::WindowsSystemProxyResolutionService(
+    std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver,
     NetLog* net_log)
-    : create_proxy_resolver_function_for_testing_(nullptr), net_log_(net_log) {}
+    : windows_system_proxy_resolver_(std::move(windows_system_proxy_resolver)),
+      net_log_(net_log) {}
 
 WindowsSystemProxyResolutionService::~WindowsSystemProxyResolutionService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Cancel any in-progress requests.
   // This cancels the internal requests, but leaves the responsibility of
-  // canceling the high-level Request (by deleting it) to the client.
-  // Since |pending_requests_| might be modified in one of the requests'
+  // canceling the high-level ProxyResolutionRequest (by deleting it) to the
+  // client. Since |pending_requests_| might be modified in one of the requests'
   // callbacks (if it deletes another request), iterating through the set in a
   // for-loop will not work.
   while (!pending_requests_.empty()) {
     WindowsSystemProxyResolutionRequest* req = *pending_requests_.begin();
-    ProxyList empty_list;
-    req->AsynchronousProxyResolutionComplete(empty_list, ERR_ABORTED, 0);
+    req->ProxyResolutionComplete(ProxyList(), WinHttpStatus::kAborted, 0);
     pending_requests_.erase(req);
   }
 }
@@ -81,17 +79,11 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
 
   net_log.BeginEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
 
-  // TODO(https://crbug.com/1032820): Use a more detailed error.
-  if (!CreateWindowsSystemProxyResolverIfNeeded())
-    return DidFinishResolvingProxy(url, method, results, ERR_FAILED, net_log);
-
+  // Once it's created, the WindowsSystemProxyResolutionRequest immediately
+  // kicks off proxy resolution in a separate process.
   auto req = std::make_unique<WindowsSystemProxyResolutionRequest>(
       this, url, method, results, std::move(callback), net_log,
-      windows_system_proxy_resolver_);
-
-  const int net_error = req->Start();
-  if (net_error != ERR_IO_PENDING)
-    return req->SynchronousProxyResolutionComplete(net_error);
+      windows_system_proxy_resolver_.get());
 
   DCHECK(!ContainsPendingRequest(req.get()));
   pending_requests_.insert(req.get());
@@ -99,7 +91,7 @@ int WindowsSystemProxyResolutionService::ResolveProxy(
   // Completion will be notified through |callback|, unless the caller cancels
   // the request using |request|.
   *request = std::move(req);
-  return net_error;
+  return ERR_IO_PENDING;
 }
 
 void WindowsSystemProxyResolutionService::ReportSuccess(
@@ -153,19 +145,6 @@ bool WindowsSystemProxyResolutionService::
   return false;
 }
 
-void WindowsSystemProxyResolutionService::
-    SetCreateWindowsSystemProxyResolverFunctionForTesting(
-        CreateWindowsSystemProxyResolverFunctionForTesting function) {
-  create_proxy_resolver_function_for_testing_ = function;
-}
-
-void WindowsSystemProxyResolutionService::
-    SetWindowsSystemProxyResolverForTesting(
-        scoped_refptr<WindowsSystemProxyResolver>
-            windows_system_proxy_resolver) {
-  windows_system_proxy_resolver_ = windows_system_proxy_resolver;
-}
-
 bool WindowsSystemProxyResolutionService::ContainsPendingRequest(
     WindowsSystemProxyResolutionRequest* req) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -179,28 +158,11 @@ void WindowsSystemProxyResolutionService::RemovePendingRequest(
   pending_requests_.erase(req);
 }
 
-bool WindowsSystemProxyResolutionService::
-    CreateWindowsSystemProxyResolverIfNeeded() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (windows_system_proxy_resolver_)
-    return true;
-
-  if (create_proxy_resolver_function_for_testing_) {
-    windows_system_proxy_resolver_ =
-        create_proxy_resolver_function_for_testing_();
-  } else {
-    windows_system_proxy_resolver_ =
-        WindowsSystemProxyResolver::CreateWindowsSystemProxyResolver();
-  }
-
-  return !!windows_system_proxy_resolver_;
-}
-
 int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
     const GURL& url,
     const std::string& method,
     ProxyInfo* result,
-    int result_code,
+    WinHttpStatus winhttp_status,
     const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -208,7 +170,7 @@ int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
   // TODO(https://crbug.com/1032820): Implement proxy delegate.
   // TODO(https://crbug.com/1032820): Implement proxy retry info.
 
-  if (result_code != OK)
+  if (winhttp_status != WinHttpStatus::kOk)
     result->UseDirect();
 
   net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);

@@ -64,6 +64,11 @@ WebviewBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+WebviewBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService*
 WebviewBrowserContext::GetPushMessagingService() {
   return nullptr;

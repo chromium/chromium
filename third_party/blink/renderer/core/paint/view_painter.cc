@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/paint/box_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -61,9 +62,11 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
           context, client, DisplayItem::kDocumentRootBackdrop)) {
     DrawingRecorder recorder(context, client,
                              DisplayItem::kDocumentRootBackdrop,
-                             pixel_snapped_background_rect);
+                             ToGfxRect(pixel_snapped_background_rect));
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
+        PaintAutoDarkMode(layout_view_.StyleRef(),
+                          DarkModeFilter::ElementRole::kBackground),
         should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
   }
 }
@@ -74,11 +77,14 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 
   bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
                            layout_view_.InsideBlockingWheelEventHandler();
-  bool painting_scrolling_background =
-      BoxDecorationData::IsPaintingScrollingBackground(paint_info,
-                                                       layout_view_);
+  bool painting_background_in_contents_space =
+      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
+                                                             layout_view_);
+
+  Element* element = DynamicTo<Element>(layout_view_.GetNode());
+  bool has_region_capture_data = element && element->GetRegionCaptureCropId();
   bool paints_scroll_hit_test =
-      !painting_scrolling_background &&
+      !painting_background_in_contents_space &&
       layout_view_.FirstFragment().PaintProperties()->Scroll();
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // Pre-CompositeAfterPaint, there is no need to emit scroll hit test
@@ -97,7 +103,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   }
 
   if (!layout_view_.HasBoxDecorationBackground() && !has_hit_test_data &&
-      !paints_scroll_hit_test)
+      !paints_scroll_hit_test && !has_region_capture_data)
     return;
 
   // The background rect always includes at least the visible content size.
@@ -114,7 +120,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
 
   const DisplayItemClient* background_client = &layout_view_;
 
-  if (painting_scrolling_background) {
+  if (painting_background_in_contents_space) {
     // Layout overflow, combined with the visible content size.
     auto document_rect = layout_view_.DocumentRect();
     // DocumentRect is relative to ScrollOrigin. Add ScrollOrigin to let it be
@@ -159,7 +165,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   //
   // [1] https://drafts.fxtf.org/compositing/#pagebackdrop
   // [2] https://drafts.fxtf.org/compositing/#rootgroup
-  if (should_paint_background && painting_scrolling_background &&
+  if (should_paint_background && painting_background_in_contents_space &&
       should_apply_root_background_behavior && root_object) {
     const auto& document_element_state =
         root_object->FirstFragment().LocalBorderBoxProperties();
@@ -181,7 +187,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
     }
   }
 
-  if (painting_scrolling_background) {
+  if (painting_background_in_contents_space) {
     scoped_properties.emplace(paint_info.context.GetPaintController(),
                               root_element_background_painting_state,
                               *background_client,
@@ -201,11 +207,18 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
                            *background_client);
   }
 
+  if (has_region_capture_data) {
+    BoxPainter(layout_view_)
+        .RecordRegionCaptureData(paint_info,
+                                 PhysicalRect(pixel_snapped_background_rect),
+                                 *background_client);
+  }
+
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
   if (paints_scroll_hit_test) {
-    DCHECK(!painting_scrolling_background);
+    DCHECK(!painting_background_in_contents_space);
     BoxPainter(layout_view_)
         .RecordScrollHitTestData(paint_info, *background_client);
   }
@@ -240,7 +253,7 @@ void ViewPainter::PaintRootElementGroup(
   }
   DrawingRecorder recorder(context, background_client,
                            DisplayItem::kDocumentBackground,
-                           pixel_snapped_background_rect);
+                           ToGfxRect(pixel_snapped_background_rect));
 
   const Document& document = layout_view_.GetDocument();
   const LocalFrameView& frame_view = *layout_view_.GetFrameView();
@@ -265,10 +278,13 @@ void ViewPainter::PaintRootElementGroup(
     if (paints_base_background || root_element_background_color.Alpha() ||
         layout_view_.StyleRef().BackgroundLayers().AnyLayerHasImage()) {
       context.FillRect(pixel_snapped_background_rect, Color::kWhite,
-                       SkBlendMode::kSrc);
+                       AutoDarkMode::Disabled(), SkBlendMode::kSrc);
     }
     return;
   }
+
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_view_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // Compute the enclosing rect of the view, in root element space.
   //
@@ -296,7 +312,7 @@ void ViewPainter::PaintRootElementGroup(
       // With transforms, paint offset is encoded in paint property nodes but we
       // can use the |paint_rect|'s adjusted location as the offset from the
       // view to the root element.
-      background_image_offset = PhysicalOffset(paint_rect.Location());
+      background_image_offset = PhysicalOffset(paint_rect.origin());
     } else {
       background_image_offset = -root_object->FirstFragment().PaintOffset();
     }
@@ -312,16 +328,17 @@ void ViewPainter::PaintRootElementGroup(
       if (base_background_color.Alpha()) {
         context.FillRect(
             pixel_snapped_background_rect, base_background_color,
+            auto_dark_mode,
             should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
       } else if (should_clear_canvas) {
-        context.FillRect(pixel_snapped_background_rect, Color(),
+        context.FillRect(pixel_snapped_background_rect, Color(), auto_dark_mode,
                          SkBlendMode::kClear);
       }
     }
     return;
   }
 
-  recorder.UniteVisualRect(paint_rect);
+  recorder.UniteVisualRect(ToGfxRect(paint_rect));
 
   BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
   bool should_draw_background_in_separate_buffer =
@@ -353,7 +370,7 @@ void ViewPainter::PaintRootElementGroup(
   if (should_draw_background_in_separate_buffer && !painted_separate_effect) {
     if (base_background_color.Alpha()) {
       context.FillRect(
-          paint_rect, base_background_color,
+          paint_rect, base_background_color, auto_dark_mode,
           should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
     }
     context.BeginLayer();
@@ -369,13 +386,13 @@ void ViewPainter::PaintRootElementGroup(
 
   if (combined_background_color.Alpha()) {
     context.FillRect(
-        paint_rect, combined_background_color,
+        paint_rect, combined_background_color, auto_dark_mode,
         (should_draw_background_in_separate_buffer || should_clear_canvas)
             ? SkBlendMode::kSrc
             : SkBlendMode::kSrcOver);
   } else if (should_clear_canvas &&
              !should_draw_background_in_separate_buffer) {
-    context.FillRect(paint_rect, Color(), SkBlendMode::kClear);
+    context.FillRect(paint_rect, Color(), auto_dark_mode, SkBlendMode::kClear);
   }
 
   BackgroundImageGeometry geometry(layout_view_, background_image_offset);

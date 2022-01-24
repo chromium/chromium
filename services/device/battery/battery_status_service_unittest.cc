@@ -23,6 +23,10 @@ class FakeBatteryManager : public BatteryStatusManager {
   explicit FakeBatteryManager(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : callback_(callback), start_invoked_count_(0), stop_invoked_count_(0) {}
+
+  FakeBatteryManager(const FakeBatteryManager&) = delete;
+  FakeBatteryManager& operator=(const FakeBatteryManager&) = delete;
+
   ~FakeBatteryManager() override {}
 
   // Methods from Battery Status Manager
@@ -44,8 +48,6 @@ class FakeBatteryManager : public BatteryStatusManager {
   BatteryStatusService::BatteryUpdateCallback callback_;
   int start_invoked_count_;
   int stop_invoked_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBatteryManager);
 };
 
 }  // namespace
@@ -56,6 +58,10 @@ class BatteryStatusServiceTest : public testing::Test {
       : battery_manager_(nullptr),
         callback1_invoked_count_(0),
         callback2_invoked_count_(0) {}
+
+  BatteryStatusServiceTest(const BatteryStatusServiceTest&) = delete;
+  BatteryStatusServiceTest& operator=(const BatteryStatusServiceTest&) = delete;
+
   ~BatteryStatusServiceTest() override {}
 
  protected:
@@ -116,8 +122,6 @@ class BatteryStatusServiceTest : public testing::Test {
   int callback1_invoked_count_;
   int callback2_invoked_count_;
   mojom::BatteryStatus battery_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusServiceTest);
 };
 
 TEST_F(BatteryStatusServiceTest, AddFirstCallback) {

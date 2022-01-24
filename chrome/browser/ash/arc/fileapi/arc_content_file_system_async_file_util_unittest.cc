@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -47,6 +47,12 @@ std::unique_ptr<KeyedService> CreateArcFileSystemOperationRunnerForTesting(
 class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
  public:
   ArcContentFileSystemAsyncFileUtilTest() = default;
+
+  ArcContentFileSystemAsyncFileUtilTest(
+      const ArcContentFileSystemAsyncFileUtilTest&) = delete;
+  ArcContentFileSystemAsyncFileUtilTest& operator=(
+      const ArcContentFileSystemAsyncFileUtilTest&) = delete;
+
   ~ArcContentFileSystemAsyncFileUtilTest() override = default;
 
   void SetUp() override {
@@ -75,7 +81,7 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
  protected:
   storage::FileSystemURL ExternalFileURLToFileSystemURL(const GURL& url) {
     base::FilePath mount_point_virtual_path =
-        base::FilePath::FromUTF8Unsafe(kContentFileSystemMountPointName);
+        base::FilePath::FromASCII(kContentFileSystemMountPointName);
     base::FilePath virtual_path = chromeos::ExternalFileURLToVirtualPath(url);
     base::FilePath path(kContentFileSystemMountPointPath);
     EXPECT_TRUE(
@@ -88,13 +94,10 @@ class ArcContentFileSystemAsyncFileUtilTest : public testing::Test {
   FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
-  // ChromeBrowserMainPartsChromeos.
+  // `ChromeBrowserMainPartsAsh`.
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcContentFileSystemAsyncFileUtil> async_file_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemAsyncFileUtilTest);
 };
 
 }  // namespace

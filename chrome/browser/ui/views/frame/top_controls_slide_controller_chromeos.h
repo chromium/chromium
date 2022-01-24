@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
@@ -45,6 +44,12 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                                            public views::ViewObserver {
  public:
   explicit TopControlsSlideControllerChromeOS(BrowserView* browser_view);
+
+  TopControlsSlideControllerChromeOS(
+      const TopControlsSlideControllerChromeOS&) = delete;
+  TopControlsSlideControllerChromeOS& operator=(
+      const TopControlsSlideControllerChromeOS&) = delete;
+
   ~TopControlsSlideControllerChromeOS() override;
 
   // TopControlsSlideController:
@@ -194,8 +199,6 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
 #endif
 
   display::ScopedDisplayObserver display_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TopControlsSlideControllerChromeOS);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTROLS_SLIDE_CONTROLLER_CHROMEOS_H_

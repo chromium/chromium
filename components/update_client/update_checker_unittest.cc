@@ -14,7 +14,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -61,6 +60,10 @@ const char kUpdateItemId[] = "jebgalgnebhfojomionfpkfelancnnkf";
 class UpdateCheckerTest : public testing::TestWithParam<bool> {
  public:
   UpdateCheckerTest();
+
+  UpdateCheckerTest(const UpdateCheckerTest&) = delete;
+  UpdateCheckerTest& operator=(const UpdateCheckerTest&) = delete;
+
   ~UpdateCheckerTest() override;
 
   // Overrides from testing::Test.
@@ -102,8 +105,6 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
 
   base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateCheckerTest);
 };
 
 // This test is parameterized for |is_foreground|.
@@ -230,7 +231,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request);
   EXPECT_TRUE(request->FindKey("@os"));
   EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-  EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
+  EXPECT_EQ("crx3", request->FindKey("acceptformat")->GetString());
   EXPECT_TRUE(request->FindKey("arch"));
   EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
   EXPECT_EQ("params", request->FindKey("extra")->GetString());

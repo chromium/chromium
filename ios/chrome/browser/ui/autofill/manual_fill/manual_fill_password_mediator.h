@@ -16,7 +16,7 @@
 @protocol PasswordListNavigator;
 
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }  // namespace password_manager
 
 namespace web {
@@ -64,7 +64,7 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 
 // The designated initializer. |passwordStore| must not be nil.
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                         faviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState

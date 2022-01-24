@@ -25,6 +25,10 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
                                 public HostStub {
  public:
   ClientControlDispatcher();
+
+  ClientControlDispatcher(const ClientControlDispatcher&) = delete;
+  ClientControlDispatcher& operator=(const ClientControlDispatcher&) = delete;
+
   ~ClientControlDispatcher() override;
 
   // ClipboardStub implementation.
@@ -57,8 +61,6 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
 
   ClientStub* client_stub_ = nullptr;
   ClipboardStub* clipboard_stub_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientControlDispatcher);
 };
 
 }  // namespace protocol

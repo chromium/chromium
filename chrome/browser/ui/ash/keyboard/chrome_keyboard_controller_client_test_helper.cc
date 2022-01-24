@@ -19,6 +19,10 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     : public ash::KeyboardController {
  public:
   FakeKeyboardController() = default;
+
+  FakeKeyboardController(const FakeKeyboardController&) = delete;
+  FakeKeyboardController& operator=(const FakeKeyboardController&) = delete;
+
   ~FakeKeyboardController() override = default;
 
   // ash::KeyboardController:
@@ -72,8 +76,8 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     observers_.RemoveObserver(observer);
   }
   ash::KeyRepeatSettings GetKeyRepeatSettings() override {
-    return ash::KeyRepeatSettings{true, base::TimeDelta::FromMilliseconds(1000),
-                                  base::TimeDelta::FromMilliseconds(1000)};
+    return ash::KeyRepeatSettings{true, base::Milliseconds(1000),
+                                  base::Milliseconds(1000)};
   }
 
  private:
@@ -82,8 +86,6 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
   bool enabled_ = false;
   bool visible_ = false;
   base::ObserverList<ash::KeyboardControllerObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKeyboardController);
 };
 
 // static

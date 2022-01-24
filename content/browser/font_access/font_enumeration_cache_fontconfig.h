@@ -5,11 +5,14 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ENUMERATION_CACHE_FONTCONFIG_H_
 
-#include "base/no_destructor.h"
+#include <string>
+
+#include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/common/content_export.h"
-
-using blink::mojom::FontEnumerationStatus;
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 
@@ -17,28 +20,27 @@ namespace content {
 class CONTENT_EXPORT FontEnumerationCacheFontconfig
     : public FontEnumerationCache {
  public:
-  FontEnumerationCacheFontconfig();
-  ~FontEnumerationCacheFontconfig();
+  // The constructor is public for internal use of base::SequenceBound.
+  //
+  // Production code should call FontEnumerationCache::Create(). Testing code
+  // should call FontEnumerationCache::CreateForTesting().
+  FontEnumerationCacheFontconfig(absl::optional<std::string> locale_override,
+                                 base::PassKey<FontEnumerationCache>);
 
-  // Disallow copy and assign.
   FontEnumerationCacheFontconfig(const FontEnumerationCacheFontconfig&) =
       delete;
-  FontEnumerationCacheFontconfig operator=(
+  FontEnumerationCacheFontconfig& operator=(
       const FontEnumerationCacheFontconfig&) = delete;
 
-  static FontEnumerationCacheFontconfig* GetInstance();
+  ~FontEnumerationCacheFontconfig() override;
 
  protected:
-  // FontEnumerationCache interface.
-  void SchedulePrepareFontEnumerationCache() override;
+  // FontEnumerationCache:
+  blink::FontEnumerationTable ComputeFontEnumerationData(
+      const std::string& locale) override;
 
  private:
-  friend class base::NoDestructor<FontEnumerationCacheFontconfig>;
-  // This gives FontEnumerationCache::GetInstance access to the class
-  // constructor.
-  friend class FontEnumerationCache;
-
-  void PrepareFontEnumerationCache();
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content

@@ -148,8 +148,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   wchar_t time_string[64];
   if (::GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, nullptr, nullptr,
                         time_string, base::size(time_string)) == 0) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "GetTimeFormatEx(start) hr=" << putHR(hr);
+    HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "GetTimeFormatEx(start) hr=" << putHR(last_error_hr);
     wcscpy_s(time_string, base::size(time_string), L"Unknown");
   }
 
@@ -205,8 +205,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 
       // Schedule the installer to be deleted on the next reboot.
       if (!base::DeleteFileAfterReboot(gcp_setup_exe_path)) {
-        HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-        LOGFN(ERROR) << "DeleteFileAfterReboot hr=" << putHR(hr);
+        HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
+        LOGFN(ERROR) << "DeleteFileAfterReboot hr=" << putHR(last_error_hr);
       }
     }
   } else {
@@ -219,8 +219,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   if (!(is_uninstall && path.empty())) {
     if (::GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, nullptr, nullptr,
                           time_string, base::size(time_string)) == 0) {
-      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-      LOGFN(ERROR) << "GetTimeFormatEx(end) hr=" << putHR(hr);
+      HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "GetTimeFormatEx(end) hr=" << putHR(last_error_hr);
       wcscpy_s(time_string, base::size(time_string), L"Unknown");
     }
 

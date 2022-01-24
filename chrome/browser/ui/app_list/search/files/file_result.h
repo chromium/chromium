@@ -7,12 +7,18 @@
 
 #include <iosfwd>
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+class SkBitmap;
+
+namespace ash {
+class ThumbnailLoader;
+}
 
 namespace app_list {
 
@@ -49,6 +55,11 @@ class FileResult : public ChromeSearchResult {
       const absl::optional<chromeos::string_matching::TokenizedString>& query,
       const base::FilePath& filepath);
 
+  // Depending on the file type and display type, request a thumbnail for this
+  // result. If the request is successful, the current icon will be replaced by
+  // the thumbnail.
+  void RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader);
+
  private:
   FileResult(const std::string& schema,
              const base::FilePath& filepath,
@@ -57,9 +68,15 @@ class FileResult : public ChromeSearchResult {
              Type type,
              Profile* profile);
 
+  // Callback for the result of MaybeRequestThumbnail's call to the
+  // ThumbnailLoader.
+  void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);
+
   const base::FilePath filepath_;
   const Type type_;
   Profile* const profile_;
+
+  base::WeakPtrFactory<FileResult> weak_factory_{this};
 };
 
 ::std::ostream& operator<<(::std::ostream& os, const FileResult& result);

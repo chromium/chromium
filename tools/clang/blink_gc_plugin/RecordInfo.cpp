@@ -84,7 +84,7 @@ bool RecordInfo::HasOptionalFinalizer() {
     return false;
   // Heap collections may have a finalizer but it is optional (i.e. may be
   // delayed until FinalizeGarbageCollectedObject() gets called), unless there
-  // is an inline buffer. Vector, Deque, and ListHashSet can have an inline
+  // is an inline buffer. Vector and Deque can have an inline
   // buffer.
   if (name_ != "Vector" && name_ != "Deque" && name_ != "HeapVector" &&
       name_ != "HeapDeque")
@@ -665,15 +665,12 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
       cache_->Lookup(elaboratedType->getQualifier()->getAsType());
 
   bool on_heap = false;
-  bool is_unsafe = false;
   // Silently handle unknown types; the on-heap collection types will
   // have to be in scope for the declaration to compile, though.
   if (info) {
-    is_unsafe = Config::IsGCCollectionWithUnsafeIterator(info->name());
-    // Don't mark iterator as being on the heap if it is not supported.
-    on_heap = !is_unsafe && Config::IsGCCollection(info->name());
+    on_heap = Config::IsGCCollection(info->name());
   }
-  return new Iterator(info, on_heap, is_unsafe);
+  return new Iterator(info, on_heap);
 }
 
 Edge* RecordInfo::CreateEdge(const Type* type) {

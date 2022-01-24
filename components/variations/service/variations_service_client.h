@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 
 namespace network {
@@ -29,11 +29,8 @@ class VariationsServiceClient {
  public:
   virtual ~VariationsServiceClient() {}
 
-  // Returns a callback that when run returns the base::Version to use for
-  // variations seed simulation. VariationsService guarantees that the callback
-  // will be run on a background thread that permits blocking.
-  using VersionCallback = base::OnceCallback<base::Version(void)>;
-  virtual VersionCallback GetVersionForSimulationCallback() = 0;
+  // Returns the version to use for variations seed simulation.
+  virtual base::Version GetVersionForSimulation() = 0;
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;

@@ -10,6 +10,10 @@
 #include "base/component_export.h"
 #include "chromeos/network/device_state.h"
 
+namespace dbus {
+class ObjectPath;
+}  // namespace dbus
+
 namespace chromeos {
 
 class CellularESimProfile;
@@ -40,6 +44,11 @@ std::string GenerateStubCellularServicePath(const std::string& iccid);
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool IsStubCellularServicePath(const std::string& service_path);
+
+// Returns the path to the Euicc that is currently used for all eSIM operations
+// in OS Settings and System UI.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+absl::optional<dbus::ObjectPath> GetCurrentEuiccPath();
 
 }  // namespace chromeos
 

@@ -20,6 +20,10 @@ namespace sandbox {
 class FilesystemDispatcher : public Dispatcher {
  public:
   explicit FilesystemDispatcher(PolicyBase* policy_base);
+
+  FilesystemDispatcher(const FilesystemDispatcher&) = delete;
+  FilesystemDispatcher& operator=(const FilesystemDispatcher&) = delete;
+
   ~FilesystemDispatcher() override {}
 
   // Dispatcher interface.
@@ -68,7 +72,6 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t info_class);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(FilesystemDispatcher);
 };
 
 }  // namespace sandbox

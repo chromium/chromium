@@ -36,13 +36,7 @@
             class="org.chromium.components.browser_ui.bottomsheet.TouchRestrictingFrameLayout"
             android:id="@+id/bottom_sheet_toolbar_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <View
-                android:id="@+id/bottom_sheet_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_sheet_peek_height" />
-        </view>
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 

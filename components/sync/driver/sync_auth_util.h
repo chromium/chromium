@@ -17,10 +17,10 @@ namespace syncer {
 
 struct SyncAccountInfo {
   SyncAccountInfo();
-  SyncAccountInfo(const CoreAccountInfo& account_info, bool is_primary);
+  SyncAccountInfo(const CoreAccountInfo& account_info, bool is_sync_consented);
 
   CoreAccountInfo account_info;
-  bool is_primary = false;
+  bool is_sync_consented = false;
 };
 
 // Determines which account should be used for Sync and returns the

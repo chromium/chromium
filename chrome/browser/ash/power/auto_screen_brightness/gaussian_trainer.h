@@ -77,6 +77,10 @@ class GaussianTrainer : public Trainer {
   };
 
   GaussianTrainer();
+
+  GaussianTrainer(const GaussianTrainer&) = delete;
+  GaussianTrainer& operator=(const GaussianTrainer&) = delete;
+
   ~GaussianTrainer() override;
 
   // Trainer overrides:
@@ -130,8 +134,6 @@ class GaussianTrainer : public Trainer {
   // calculated from the global curve's brightness values.
   std::vector<double> min_ratios_;
   std::vector<double> max_ratios_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaussianTrainer);
 };
 
 }  // namespace auto_screen_brightness

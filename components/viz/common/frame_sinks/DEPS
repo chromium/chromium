@@ -3,6 +3,7 @@
 include_rules = [
   "+gpu/command_buffer/common",
   "+mojo/public/cpp/bindings",
+  "+third_party/khronos/GLES2",
   "+third_party/libyuv",
   "+third_party/skia",
 ]

@@ -1,0 +1,946 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Security histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram
+    name="Security.CertificateTransparency.MainFrameNavigationCompliance"
+    enum="CTComplianceStatus" expires_after="M78">
+  <obsolete>
+    Expired after M78. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    The compliance of each main frame navigation's connection with the
+    Certificate Transparency policy. Recorded whenever a main-frame,
+    non-same-page navigation is committed. Connections can be compliant, or they
+    can be non-compliant for one of several reasons (not enough Signed
+    Certificate Timestamps [SCTs], not diverse enough SCTs, or the build was old
+    so CT compliance wasn't checked).
+  </summary>
+</histogram>
+
+<histogram name="Security.ClientAuth.CertificateSelectionSource"
+    enum="ClientCertSelectionResult" expires_after="2020-08-16">
+  <owner>jdeblasio@chromium.org</owner>
+  <summary>
+    When TLS client authentication is requested by the server, Chrome must
+    choose whether to return a certificate or to abort the handshake. This
+    histogram records how this determination was made, either as a result of
+    user action, or as chosen automatically due to content settings. It only
+    records when a fresh certificate selection would be attempted (and thus
+    ignores cache hits). This histogram is recorded in SSLClientAuthObserver for
+    user-selected outcomes and in ChromeContentBrowserClient for policy
+    outcomes. This histogram does not cover mobile, as certificate handling is
+    not handled by Chrome on Android nor iOS.
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage` and/or
+    `data_decoder::DecodeImageIsolated`. Logs the time that has elapsed while
+    decoding the image (typically this happens in the Utility process). The time
+    is recorded in all the cases (including empty input which don't require
+    actual image decoding).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImageIsolated`.
+    Logs the time that has elapsed between 1) invocation of DecodeImageIsolated
+    and 2) calling the completion callback (both of these events happen in the
+    Browser process). The elapsed time covers A) spawning the utility process,
+    B) decoding the image, C) IPC overhead.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
+    units="ms" expires_after="2022-04-10">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImageIsolated`.
+    Logs the overhead of using a separate process for decoding the images by
+    calculating the difference between ...Image.Isolated.EndToEndTime and the
+    ...Image.DecodingTime metrics.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage`. Logs the
+    time that has elapsed between 1) invocation of DecodeImage and 2) calling
+    the completion callback (both of these events happen in the Browser
+    process). The elapsed time covers A) spawning the utility process (if
+    needed), B) decoding the image, C) IPC overhead.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
+    units="ms" expires_after="2022-04-10">
+  <owner>lukasza@chromium.org</owner>
+  <owner>rsesek@chromium.org</owner>
+  <summary>
+    Logged once for every invocation of `data_decoder::DecodeImage`. Logs the
+    overhead of using a separate process for decoding the images by calculating
+    the difference between ...Image.Reusable.EndToEndTime and the
+    ...Image.DecodingTime metrics.
+
+    Note that there are 2 sets of similar metrics:
+    Security.DataDecoder.Image.Isolated. and
+    Security.DataDecoder.Image.Reusable. In the Isolated case a Utility process
+    is spawned for each image decoding operation and the ...End2End and
+    ...ProcessOverhead metrics always include process spawning overhead. In the
+    Reusable case a Utility process may get reused when decoding a batch of
+    images, and the ...End2End and ...ProcessOverhead metrics may or may not
+    include process spawning overhead (the process will only need to be spawned
+    for the first image in a batch + after the process has been shut down due to
+    inactivity).
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstMode.NavigationEvent"
+    enum="HttpsFirstModeNavigationEvent" expires_after="2022-01-31">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Events for navigations that are upgraded from HTTP to HTTPS by HTTPS-First
+    Mode. Recorded for eligible navigations (HTTP main frame navigations that
+    are not allowlisted), if the profile is opted in to HTTPS-First Mode.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
+    expires_after="2022-04-24">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the HTTPS-First Mode preference state when it changes for a profile.
+    Recorded for regular profiles only (not for Incognito, Guest, or Sign-in
+    profiles).
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup"
+    enum="BooleanEnabled" expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records whether the HTTPS-First Mode preference is enabled at profile
+    startup. Recorded for regular profiles only (not for Incognito, Guest, or
+    Sign-in profiles).
+  </summary>
+</histogram>
+
+<histogram name="Security.LegacyTLS.DownloadStarted" enum="Boolean"
+    expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether the page would have a legacy TLS warning (if the user were
+    in the appropriate field trial) when a download is initiated from the page
+    (*not* the legacy TLS status of the download URL itself). This is recorded
+    regardless of whether the warning is actually displayed. This histogram is
+    not recorded for downloads that are initiated in a new tab or window, as the
+    legacy TLS status of the initiating page cannot be tracked.
+  </summary>
+</histogram>
+
+<histogram name="Security.LegacyTLS.FormSubmission" enum="Boolean"
+    expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether the page would have a legacy TLS warning (if the user were
+    in the appropriate field trial) when submitting a form. This is recorded
+    whenever a form submission navigation begins. The recorded status is of the
+    page the form was submitted from, not the one that the form targets.
+  </summary>
+</histogram>
+
+<histogram name="Security.LegacyTLS.OnCommit" enum="Boolean"
+    expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
+  <owner>cthomp@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether the page would have a legacy TLS warning (if the user were
+    in the appropriate field trial) when the navigation to the page commits.
+  </summary>
+</histogram>
+
+<histogram name="Security.LegacyTLS.PageInfo.Action"
+    enum="WebsiteSettingsAction" expires_after="M92">
+  <obsolete>
+    Expired after M92. No longer in use.
+  </obsolete>
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions along with whether the page would have a
+    legacy TLS warning (if the user were in the appropriate field trial).
+  </summary>
+</histogram>
+
+<histogram name="Security.MixedForm.InterstitialTriggerState"
+    enum="MixedFormInterstitialTriggeredState" expires_after="2022-04-24">
+  <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Logs when an interstitial was triggered (or would have been triggered but
+    was not due to the currently enabled experiment mode) and whether it was a
+    direct submission to an insecure URL, or a redirect through one.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
+    expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the reason the page visit ended (e.g., reload, tab closed, new
+    navigation, etc.) for page loads that committed.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.AboutThisSiteStatus"
+    enum="AboutThisSiteStatus" expires_after="M101">
+  <owner>dullweber@chromium.org</owner>
+  <owner>olesiamarukhno@chromium.org</owner>
+  <summary>
+    Tracks status of AboutThisSite queries. Recorded every time PageInfo is
+    opened and information about a site is requested.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpsUrl.Dangerous"
+    enum="WebsiteSettingsAction" expires_after="M77">
+  <obsolete>
+    Expired after M77. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on an HTTPS URL that has
+    been marked dangerous or not secure (such as for malware or broken HTTPS).
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpsUrl.Downgraded"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on a valid HTTPS URL that
+    has a security issue (e.g. mixed content).
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpsUrl.ValidEV"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on a valid HTTPS URL with no
+    security issues (e.g. no mixed content) and an Extended Validation
+    Certificate.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpsUrl.ValidNonEV"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on a valid HTTPS URL with no
+    security issues (e.g. no mixed content), but no Extended Validation
+    Certificate.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpUrl.Dangerous"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on an HTTP URL that has been
+    marked dangerous (such as for malware).
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpUrl.Neutral"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on an HTTP URL that does not
+    have an omnibox security indicator warning associated with it.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.Action.HttpUrl.Warning"
+    enum="WebsiteSettingsAction" expires_after="M81">
+  <obsolete>
+    Expired after M81. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions that take place on an HTTP URL that has been
+    given a &quot;Not secure&quot; warning in the omnibox.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.TimeOpen" units="units"
+    expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it or takes an action which closes it.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.TimeOpen.AboutThisSite{WasShown}" units="ms"
+    expires_after="M101">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it, for cases where the &quot;About this site&quot; feature is
+    enabled and the data {WasShown} available, and therefore {WasShown} shown.
+  </summary>
+  <token key="WasShown">
+    <variant name="NotShown" summary="is not"/>
+    <variant name="Shown" summary="is"/>
+  </token>
+</histogram>
+
+<histogram name="Security.PageInfo.TimeOpen.Action" units="units"
+    expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it, for cases where the user has performed an action inside it.
+  </summary>
+</histogram>
+
+<histogram name="Security.PageInfo.TimeOpen.NoAction" units="units"
+    expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it, for cases where the user performed no action inside it.
+  </summary>
+</histogram>
+
+<histogram name="Security.PasswordEntry.SiteEngagementLevel"
+    enum="SiteEngagementLevel" expires_after="2021-10-31">
+  <obsolete>
+    Expired after 2021-10. No longer in use.
+  </obsolete>
+  <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Site engagement level of the URL of the top frame of the navigation when the
+    user modifies a password field on the page. Only recorded once per
+    navigation for the top frame.
+  </summary>
+</histogram>
+
+<histogram name="Security.PasswordFocus.SiteEngagementLevel"
+    enum="SiteEngagementLevel" expires_after="2021-01-31">
+  <obsolete>
+    Expired after 2021-01. No longer in use.
+  </obsolete>
+  <owner>meacer@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Site engagement level of the URL of the top frame of the navigation when the
+    user focuses on a password field on the page. Only recorded once per
+    navigation for the top frame.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.CheckResult"
+    enum="PrivateNetworkAccessCheckResult" expires_after="M107">
+  <owner>titouan@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>mkwst@chromium.org</owner>
+  <summary>
+    Result of the Private Network Access Check on a new connection. Recorded
+    once per call to network::URLLoader::OnConnected(), which may be more than
+    once per URL request.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
+    expires_after="2022-04-24">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the Safety Tip status on a page that initiated a download (*not* the
+    Safety Tip status of the download URL itself). This is recorded regardless
+    of whether the Safety Tip UI is enabled or disabled. This histogram is not
+    recorded for downloads that are initiated in a new tab or window, as the
+    Safety Tip status of the initiating page cannot be tracked.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.FormSubmission" enum="SafetyTipStatus"
+    expires_after="2022-04-24">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the Safety Tip status of a page when submitting a form. This
+    histogram is recorded whenever a form submission navigation begins. The
+    recorded safety tip status is the status of the page the form was submitted
+    from, not the one that the form targets. Recorded regardless of whether the
+    Safety Tip UI is enabled or disabled.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.Interaction" enum="SafetyTipInteraction"
+    expires_after="2022-04-03">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records a user's interaction with a Safety Tip. Recorded every time a user
+    uses one of the Safety Tip's buttons or dismisses it explicitly. Can be
+    normalized against Security.SafetyTips.SafetyTipShown, filtered to users
+    with the feature enabled to show the UI.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.ChangePrimaryPage" units="ms"
+    expires_after="2022-04-24">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    document changes in the page the user sees.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.CloseTab" units="ms"
+    expires_after="2022-04-17">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user closed the tab.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.Dismiss" units="ms"
+    expires_after="2022-04-17">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user explicitly closed the bubble. This is recorded in addition to the more
+    specifc metric that indicates how the user dismissed the Safety Tip.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.DismissWithClose" units="ms"
+    expires_after="2021-12-26">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user explicitly closed the bubble with the close button. This is recorded in
+    addition to the base dismiss metric.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.DismissWithEsc" units="ms"
+    expires_after="2021-12-26">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user explicitly closed the bubble with the esc key. This is recorded in
+    addition to the base dismiss metric.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.DismissWithIgnore" units="ms"
+    expires_after="2021-10-25">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user explicitly closed the bubble with the ignore button. This is recorded
+    in addition to the base dismiss metric.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.LeaveSite" units="ms"
+    expires_after="2022-04-17">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user closed the bubble by heeding the call-to-action to leave the site.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.NoAction" units="ms"
+    expires_after="2021-10-25">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user did not dismiss or take action in the bubble.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.StartNewNavigation" units="ms"
+    expires_after="2021-10-15">
+  <obsolete>
+    Expired after 2021-10. It is deprecated in favor of
+    Security.SafetyTips.OpenTime.ChangePrimaryPage. The safety tip is no longer
+    listenening directly with navigation start as of http://crrev.com/c/3198098.
+  </obsolete>
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user started a new navigation in the same tab.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.OpenTime.SwitchTab" units="ms"
+    expires_after="2022-04-24">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>
+    Records the amount of time a Safety Tip bubble is open, for cases where the
+    user switched tabs.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.PageInfo.Action"
+    enum="WebsiteSettingsAction" expires_after="2021-10-25">
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
+  <summary>
+    Tracks Page Info bubble actions along with the Safety Tip status of the
+    page.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Security.SafetyTips.ReputationCheckComplete"
+    enum="SafetyTipStatus" expires_after="2022-05-01">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <summary>
+    Records the Safety Tip status of a page after navigation commit or page
+    visibility change. This is the same as SafetyTipShown, but with additional
+    suffixes for clarity.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.SafetyTipIgnoredPageLoad"
+    enum="SafetyTipStatus" expires_after="2021-12-26">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the Safety Tip status of a page after navigation commit for a page
+    where the Safety Tip has previously been ignored.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.SafetyTipShown" enum="SafetyTipStatus"
+    expires_after="2022-04-10">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the Safety Tip status of a page after navigation commit or page
+    visibility change.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.SafetyTipShown_AfterFlag"
+    enum="SafetyTipStatus" expires_after="2021-12-25">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>src/chrome/browser/reputation/OWNERS</owner>
+  <summary>
+    Records the Safety Tip status of a page after navigation commit or page
+    visibility change. This is the same as SafetyTipShown, but records *after*
+    the flag is checked to evaluate the impact of starts_active.
+  </summary>
+</histogram>
+
+<histogram name="Security.SafetyTips.StatusWithInitiator.{SafetyTipInitiator}"
+    enum="SafetyTipStatus" expires_after="2021-10-25">
+  <owner>jdeblasio@chromium.org</owner>
+  <owner>meacer@chromium.org</owner>
+  <summary>
+    Records the Safety Tip status of a page after navigation commit, alongside
+    how the corresponding navigation was initiated. Only recorded on navigations
+    that were visible at commit time.
+  </summary>
+  <token key="SafetyTipInitiator">
+    <variant name="CrossOrigin" summary="Initiated by an unrelated origin"/>
+    <variant name="SameOrigin" summary="Initiated by the same origin"/>
+    <variant name="SameRegDomain"
+        summary="Initiated by the same registered domain"/>
+    <variant name="UnexpectedUrl" summary="Metrics failure"/>
+    <variant name="Unknown" summary="Initiator unknown"/>
+  </token>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.CacheHWM" units="reports"
+    expires_after="2021-10-10">
+  <obsolete>
+    Removed in April 2021 due to issues with collecting network service metrics
+    at shutdown. Replaced by Security.SCTAuditing.OptIn.DedupeCacheHWM.
+  </obsolete>
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the high-water-mark of the number of reports in the SCT auditing
+    cache size over each browser session. Recorded when the SCT auditing cache
+    is destroyed (normally during browser shutdown, and potentially if the
+    network service crashes).
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.DedupeCacheHWM" units="reports"
+    expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the high-water-mark of the number of entries in the SCT auditing
+    dedupe cache. Recorded on a timer hourly, if SCT auditing is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportCompletionStatus"
+    enum="SCTAuditingReportCompletionStatus" expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the final status of an SCT auditing report, when it has been
+    successfully received or it has run out of retries.
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportDeduplicated" enum="Boolean"
+    expires_after="2022-04-17">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether a report was deduplicated (i.e., the SCTs were already in
+    the cache) or not. Recorded on each new report seen by the SCT auditing
+    cache (i.e., on each connection using certificate transparency).
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportersHWM" units="reporters"
+    expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the high-water-mark of the number of pending reporters in the SCT
+    auditing cache. Recorded on a timer hourly, if SCT auditing is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportSampled" enum="Boolean"
+    expires_after="2021-12-12">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether a report was sampled to be sent to Safe Browsing. Recorded
+    for each new report seen by the SCT auditing cache that was not
+    deduplicated.
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportSize" units="bytes"
+    expires_after="2021-12-12">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the size of an SCT auditing report that will be sent to Safe
+    Browsing (i.e., was not deduplicated and was sampled).
+  </summary>
+</histogram>
+
+<histogram name="Security.SCTAuditing.OptIn.ReportSucceeded" enum="Boolean"
+    expires_after="2021-12-12">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records whether sending an SCT auditing report succeeded or not. This is
+    recorded after we receive the headers from the server (or we stop due to a
+    connection error).
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.CryptographicScheme"
+    enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the security level of a page with a cryptographic scheme (e.g.
+    https). This histogram is recorded once at navigation commit time, and can
+    be called again for the same document if the security level changes
+    dynamically. Note that the security level can change very quickly after
+    commit time, for example if the page includes mixed content on load (which
+    can downgrade the security level). This histogram should be analyzed with
+    care because each recorded security level is not necessarily user-visible:
+    in particular, a page may commit as a secure level (SECURE, EV_SECURE,
+    SECURE_WITH_POLICY_INSTALLED_CERT) but get quickly downgraded to NONE if it
+    shows mixed content on load. Therefore the histogram values should be
+    regarded as an upper-bound on what the user actually sees for these security
+    levels.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.DownloadStarted" enum="SecurityLevel"
+    expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the security level of the page that initiated a download (rather
+    than the security state of the connection to the download URL itself). The
+    recorded security level is the level of the page the download was initiated
+    from, not that of the download URL. This histogram is not recorded for
+    downloads that are initiated in a new tab or window, as the security level
+    of the initiating page cannot be tracked.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.FormSubmission" enum="SecurityLevel"
+    expires_after="2022-02-01">
+  <owner>carlosil@chromium.org</owner>
+  <owner>cthomp@chromium.org</owner>
+  <summary>
+    Records the security level of a page when submitting a form. This histogram
+    is recorded whenever a form submission navigation begins. The recorded
+    security level is the level of the page the form was submitted from, not the
+    one that the form targets.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.InsecureMainFrameFormSubmission"
+    enum="SecurityLevel" expires_after="2022-04-10">
+  <owner>estark@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the security level of a page when submitting a form on a top-frame
+    navigation with a non-cryptographic scheme. This histogram is recorded
+    whenever a form submission navigation begins. The recorded security level is
+    the level of the page the form was submitted from, not the one that the form
+    targets.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.InsecureMainFrameNonFormNavigation"
+    enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <owner>livvielin@chromium.org</owner>
+  <summary>
+    Records the security level of a page on top-frame navigations with a
+    non-cryptographic scheme that are not form submissions. This histogram is
+    compared against Security.SecurityLevel.InsecureMainFrameFormSubmission.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.NoncryptographicScheme"
+    enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
+  <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the security level of a page with a non-cryptographic scheme (e.g.
+    http). This histogram is recorded once at navigation commit time, and can be
+    called again for the same document if the security level changes
+    dynamically. Note that the security level can change very quickly after
+    commit time, for example if the page includes a password field on load
+    (which can downgrade the security level). This histogram should be analyzed
+    with care because each recorded security level is not necessarily
+    user-visible: in particular, a page may commit as NONE or WARNING but get
+    quickly downgraded to WARNING or DANGEROUS, depending on field trial
+    configuration, if it shows a password field on load. Therefore the histogram
+    values should be regarded as an upper-bound on what the user actually sees
+    for the NONE and WARNING levels.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.OnCommit" enum="SecurityLevel"
+    expires_after="2022-04-24">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the security level of a page at the time the navigation commits.
+    Note that the security level of a page can change after commit time, so this
+    histogram should often be compared against
+    Security.SecurityLevel.OnComplete.
+  </summary>
+</histogram>
+
+<histogram name="Security.SecurityLevel.OnComplete" enum="SecurityLevel"
+    expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the security level of a page at the end of the page visit (i.e.,
+    navigating away from the page, reloading the page, clicking a link, closing
+    the tab, etc.). Note that this security level can be different than the
+    initial security level of the page, so this histogram should often be
+    compared against Security.SecuritLevel.OnCommit.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Security.SiteEngagement" units="units"
+    expires_after="2022-02-01">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    The final Site Engagement score (0 to 100) of a URL during a visit to a
+    page. Recorded when the user closes the page or initiates a new navigation.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Security.SiteEngagementDelta" units="units"
+    expires_after="2021-10-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    The change in Site Engagement score for a site between the page navigation
+    committing and the user closing the page or navigating away. Recorded when
+    the user closes the page or initiates a new navigation.
+
+    The delta is logged as a linear count in [0, 100]. To use, convert back to
+    the original difference (in the range [-100,100]) by multiplying by 2 and
+    subtracting 100.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Security.TimeOnPage2" units="units"
+    expires_after="2022-04-10">
+  <owner>cthomp@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the time spent on the page (the time that the page was in the
+    foreground from the start of the navigation to the page visit completing due
+    to a new navigation or the tab being closed). This aggregates all foreground
+    time over the entire visit (multiple times in the foreground are added
+    together).
+  </summary>
+</histogram>
+
+<histogram name="Security.XFrameOptions" enum="XFrameOptions"
+    expires_after="M85">
+  <obsolete>
+    Expired after M85. No longer in use.
+  </obsolete>
+  <owner>mkwst@chromium.org</owner>
+  <owner>arthursonzogni@chromium.org</owner>
+  <summary>
+    Record uses of the X-Frame-Options header when a page is loaded as an
+    iframe.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -75,7 +75,8 @@ MatchResult GetMatchResult(const PasswordForm& form,
   const bool allow_federated_match = !form.federation_origin.opaque();
   if (allow_federated_match &&
       IsFederatedRealm(form.signon_realm, form_digest.url) &&
-      form.url.GetOrigin() == form_digest.url.GetOrigin()) {
+      form.url.DeprecatedGetOriginAsURL() ==
+          form_digest.url.DeprecatedGetOriginAsURL()) {
     return MatchResult::FEDERATED_MATCH;
   }
 

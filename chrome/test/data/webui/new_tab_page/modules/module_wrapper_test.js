@@ -2,40 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, ModuleDescriptor, ModuleWrapperElement, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {createElement, initNullModule, installMock} from 'chrome://test/new_tab_page/test_support.js';
+import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
 
 suite('NewTabPageModulesModuleWrapperTest', () => {
   /** @type {!ModuleWrapperElement} */
   let moduleWrapper;
 
-  /** @type {MetricsTracker} */
+  /** @type {!MetricsTracker} */
   let metrics;
 
-  /**
-   * @implements {WindowProxy}
-   * @extends {TestBrowserProxy}
-   */
+  /** @type {!TestBrowserProxy} */
   let windowProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     loadTimeData.overrideValues({
       navigationStartTime: 0.0,
     });
     metrics = fakeMetricsPrivate();
-    windowProxy = TestBrowserProxy.fromClass(WindowProxy);
-    WindowProxy.setInstance(windowProxy);
-    moduleWrapper = document.createElement('ntp-module-wrapper');
+    windowProxy = installMock(WindowProxy);
+    moduleWrapper = new ModuleWrapperElement();
     document.body.appendChild(moduleWrapper);
   });
 
   test('renders module descriptor', async () => {
     // Arrange.
-    const moduleElement = document.createElement('div');
+    const moduleElement = createElement();
     moduleElement.style.height = '100px';
     const detectedImpression =
         eventToPromise('detect-impression', moduleWrapper);
@@ -43,7 +41,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
 
     // Act.
     moduleWrapper.module = {
-      descriptor: {id: 'foo'},
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
     await detectedImpression;
@@ -59,14 +57,14 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
   });
 
   test('descriptor can only be set once', () => {
-    const moduleElement = document.createElement('div');
+    const moduleElement = createElement();
     moduleWrapper.module = {
-      descriptor: {id: 'foo'},
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
     assertThrows(() => {
       moduleWrapper.module = {
-        descriptor: {id: 'foo'},
+        descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
         element: moduleElement,
       };
     });
@@ -74,9 +72,9 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
 
   test('receiving usage events records usage', () => {
     // Arrange.
-    const moduleElement = document.createElement('div');
+    const moduleElement = createElement();
     moduleWrapper.module = {
-      descriptor: {id: 'foo'},
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
       element: moduleElement,
     };
 

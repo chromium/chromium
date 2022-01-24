@@ -5,16 +5,19 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -22,12 +25,17 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/google/core/common/google_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/mock_account_manager_facade.h"
+#endif
 
 namespace signin_ui_util {
 
@@ -68,6 +76,11 @@ const char kSecondaryGaiaID[] = "secondary_gaia_id";
 class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
  public:
   SigninUiUtilTestBrowserWindow() = default;
+
+  SigninUiUtilTestBrowserWindow(const SigninUiUtilTestBrowserWindow&) = delete;
+  SigninUiUtilTestBrowserWindow& operator=(
+      const SigninUiUtilTestBrowserWindow&) = delete;
+
   ~SigninUiUtilTestBrowserWindow() override = default;
   void set_browser(Browser* browser) { browser_ = browser; }
 
@@ -83,15 +96,17 @@ class SigninUiUtilTestBrowserWindow : public TestBrowserWindow {
 
  private:
   Browser* browser_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninUiUtilTestBrowserWindow);
 };
 
 }  // namespace
 
 class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
  public:
-  DiceSigninUiUtilTest() : BrowserWithTestWindowTest() {}
+  DiceSigninUiUtilTest() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    scoped_feature_list_.InitAndDisableFeature(kMultiProfileAccountConsistency);
+#endif
+  }
   ~DiceSigninUiUtilTest() override = default;
 
   struct CreateDiceTurnSyncOnHelperParams {
@@ -136,6 +151,11 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     static_cast<SigninUiUtilTestBrowserWindow*>(browser()->window())
         ->set_browser(browser());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+      GTEST_SKIP();
+#endif
   }
 
   // BrowserWithTestWindowTest:
@@ -243,6 +263,9 @@ class DiceSigninUiUtilTest : public BrowserWithTestWindowTest {
 
   bool create_dice_turn_sync_on_helper_called_ = false;
   CreateDiceTurnSyncOnHelperParams create_dice_turn_sync_on_helper_params_;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 TEST_F(DiceSigninUiUtilTest, EnableSyncWithExistingAccount) {
@@ -476,7 +499,30 @@ TEST_F(DiceSigninUiUtilTest, MergeDiceSigninTab) {
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
   EXPECT_EQ(1, tab_strip->active_index());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(DiceSigninUiUtilTest, ShowReauthTab) {
+  AddTab(browser(), GURL("http://example.com"));
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      GetIdentityManager(), "foo@example.com", signin::ConsentLevel::kSync);
+
+  // Add an account and then put its refresh token into an error state to
+  // require a reauth before enabling sync.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      GetIdentityManager(), account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+      browser(),
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+
+  // Verify that the active tab has the correct DICE sign-in URL.
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  content::WebContents* active_contents = tab_strip->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  EXPECT_EQ(signin::GetChromeSyncURLForDice(account_info.email,
+                                            google_util::kGoogleHomepageURL),
+            active_contents->GetVisibleURL());
+}
 
 TEST_F(DiceSigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiProfiles) {
@@ -523,6 +569,52 @@ TEST_F(
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
       *profile_manager()->profile_attributes_storage(), profile()));
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class MirrorSigninUiUtilTest : public BrowserWithTestWindowTest {
+ public:
+  MirrorSigninUiUtilTest()
+      : scoped_feature_list_(kMultiProfileAccountConsistency) {}
+  ~MirrorSigninUiUtilTest() override = default;
+
+  // BrowserWithTestWindowTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MirrorSigninUiUtilTest, ShowReauthDialog) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  const std::string kEmail = "foo@example.com";
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, kEmail, signin::ConsentLevel::kSync);
+
+  // Add an account and then put its refresh token into an error state to
+  // require a reauth before enabling sync.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager, account_info.account_id,
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  account_manager::MockAccountManagerFacade mock_facade;
+
+  EXPECT_CALL(mock_facade,
+              ShowReauthAccountDialog(
+                  account_manager::AccountManagerFacade::AccountAdditionSource::
+                      kAvatarBubbleReauthAccountButton,
+                  kEmail));
+  signin_ui_util::internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
+      browser(),
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+      &mock_facade);
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // This test does not use the DiceSigninUiUtilTest test fixture, because it
 // needs a mock time environment, and BrowserWithTestWindowTest may be flaky
@@ -558,7 +650,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   RecordAnimatedIdentityTriggered(profile);
 
   // Wait a few seconds.
-  task_environment.FastForwardBy(base::TimeDelta::FromSeconds(6));
+  task_environment.FastForwardBy(base::Seconds(6));
 
   // Animation is not shown again in a new window.
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(

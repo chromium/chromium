@@ -76,6 +76,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
       },
 
       guestSession_: Boolean,
+      signInAllowed_: Boolean,
       fetchingSyncedTabs_: Boolean,
       hasSeenForeignData_: Boolean,
 
@@ -92,6 +93,7 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   private fetchingSyncedTabs_: boolean = false;
   private actionMenuModel_: string|null = null;
   private guestSession_: boolean = loadTimeData.getBoolean('isGuestSession');
+  private signInAllowed_: boolean = loadTimeData.getBoolean('isSignInAllowed');
   private debouncer_: Debouncer|null = null;
   private signInState: boolean;
 
@@ -248,11 +250,13 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   /**
-   * Shows the signin guide when the user is not signed in and not in a guest
-   * session.
+   * Shows the signin guide when the user is not signed in, signin is allowed
+   * and not in a guest session.
    */
-  showSignInGuide(signInState: boolean, guestSession: boolean): boolean {
-    const show = !signInState && !guestSession;
+  showSignInGuide(
+      signInState: boolean, guestSession: boolean,
+      signInAllowed: boolean): boolean {
+    const show = !signInState && !guestSession && signInAllowed;
     if (show) {
       BrowserService.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');

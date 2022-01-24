@@ -12,7 +12,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -190,6 +190,24 @@ std::unique_ptr<TracedValue> GetChromeDumpAndGlobalAndEdgesTracedValue(
   }
   traced_value->EndArray();
   return traced_value;
+}
+
+mojom::AllocatorMemDumpPtr CreateAllocatorDumpForNode(const Node* node,
+                                                      bool recursive) {
+  base::flat_map<std::string, uint64_t> numeric_entries;
+  for (const auto& entry : node->const_entries()) {
+    if (entry.second.type == Node::Entry::Type::kUInt64)
+      numeric_entries.emplace(entry.first, entry.second.value_uint64);
+  }
+  base::flat_map<std::string, mojom::AllocatorMemDumpPtr> children;
+  if (recursive) {
+    for (const auto& child : node->const_children()) {
+      children.emplace(child.first,
+                       CreateAllocatorDumpForNode(child.second, true));
+    }
+  }
+  return mojom::AllocatorMemDump::New(std::move(numeric_entries),
+                                      std::move(children));
 }
 
 }  // namespace
@@ -576,17 +594,17 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
       const auto& process_graph =
           global_graph->process_node_graphs().find(pid)->second;
       for (const std::string& name : request->args.allocator_dump_names) {
-        auto* node = process_graph->FindNode(name);
+        bool is_recursive = base::EndsWith(name, "/*");
+        std::string node_name =
+            (is_recursive ? name.substr(0, name.length() - 2) : name);
+        Node* node = process_graph->FindNode(node_name);
+
         // Silently ignore any missing node in the process graph.
         if (!node)
           continue;
-        base::flat_map<std::string, uint64_t> numeric_entries;
-        for (const auto& entry : *node->entries()) {
-          if (entry.second.type == Node::Entry::Type::kUInt64)
-            numeric_entries.emplace(entry.first, entry.second.value_uint64);
-        }
+
         pmd->chrome_allocator_dumps.emplace(
-            name, mojom::AllocatorMemDump::New(std::move(numeric_entries)));
+            node_name, CreateAllocatorDumpForNode(node, is_recursive));
       }
     }
 

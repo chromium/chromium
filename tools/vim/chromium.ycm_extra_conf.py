@@ -238,7 +238,7 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
 
   # Parse flags that are important for YCM's purposes.
   clang_tokens = shlex.split(clang_commandline)
-  include_pattern = re.compile(r'^(-I|-isystem)(.+)$')
+  include_pattern = re.compile(r'^(-I|-isystem|-F)(.+)$')
   for flag_index, flag in enumerate(clang_tokens):
     include_match = include_pattern.match(flag)
     if include_match:
@@ -252,7 +252,7 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
       # Value armv7-a of this flag causes a parsing error with a message
       # "ClangParseError: Failed to parse the translation unit."
       continue
-    elif flag.startswith('-') and flag[1] in 'DWFfmO':
+    elif flag.startswith('-') and flag[1] in 'DWfmO':
       if flag == '-Wno-deprecated-register' or flag == '-Wno-header-guard':
         # These flags causes libclang (3.3) to crash. Remove it until things
         # are fixed.

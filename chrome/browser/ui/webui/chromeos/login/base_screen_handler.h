@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_BASE_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
@@ -19,6 +18,10 @@ class BaseScreenHandler : public BaseWebUIHandler {
  public:
   BaseScreenHandler(OobeScreenId oobe_screen,
                     JSCallsContainer* js_calls_container);
+
+  BaseScreenHandler(const BaseScreenHandler&) = delete;
+  BaseScreenHandler& operator=(const BaseScreenHandler&) = delete;
+
   ~BaseScreenHandler() override;
 
   OobeScreenId oobe_screen() const { return oobe_screen_; }
@@ -51,8 +54,6 @@ class BaseScreenHandler : public BaseWebUIHandler {
   OobeScreenId oobe_screen_ = OobeScreen::SCREEN_UNKNOWN;
 
   BaseScreen* base_screen_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseScreenHandler);
 };
 
 }  // namespace chromeos

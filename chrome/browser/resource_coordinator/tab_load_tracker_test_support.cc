@@ -48,6 +48,10 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
         wait_successful_(false) {}
 #endif  // !defined(OS_ANDROID)
 
+  WaitForLoadingStateHelper(const WaitForLoadingStateHelper&) = delete;
+  WaitForLoadingStateHelper& operator=(const WaitForLoadingStateHelper&) =
+      delete;
+
   ~WaitForLoadingStateHelper() override = default;
 
   bool Wait() {
@@ -139,8 +143,6 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
   bool wait_successful_;
 
   base::OnceClosure run_loop_quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForLoadingStateHelper);
 };
 
 }  // namespace

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "url/gurl.h"
 
@@ -16,6 +15,11 @@ class Profile;
 class PermissionRequestCreatorMock : public PermissionRequestCreator {
  public:
   explicit PermissionRequestCreatorMock(Profile* profile);
+
+  PermissionRequestCreatorMock(const PermissionRequestCreatorMock&) = delete;
+  PermissionRequestCreatorMock& operator=(const PermissionRequestCreatorMock&) =
+      delete;
+
   ~PermissionRequestCreatorMock() override;
 
   // PermissionRequestCreator:
@@ -46,8 +50,6 @@ class PermissionRequestCreatorMock : public PermissionRequestCreator {
   Profile* profile_ = nullptr;
 
   std::vector<GURL> url_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestCreatorMock);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_

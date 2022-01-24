@@ -17,6 +17,10 @@ class FaceDetectionProviderMac
     : public shape_detection::mojom::FaceDetectionProvider {
  public:
   FaceDetectionProviderMac();
+
+  FaceDetectionProviderMac(const FaceDetectionProviderMac&) = delete;
+  FaceDetectionProviderMac& operator=(const FaceDetectionProviderMac&) = delete;
+
   ~FaceDetectionProviderMac() override;
 
   // Binds FaceDetection provider receiver to the implementation of
@@ -26,9 +30,6 @@ class FaceDetectionProviderMac
 
   void CreateFaceDetection(mojo::PendingReceiver<mojom::FaceDetection> receiver,
                            mojom::FaceDetectorOptionsPtr options) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionProviderMac);
 };
 
 }  // namespace shape_detection

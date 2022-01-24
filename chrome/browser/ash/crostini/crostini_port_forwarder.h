@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -113,6 +114,10 @@ class CrostiniPortForwarder : public KeyedService {
   static CrostiniPortForwarder* GetForProfile(Profile* profile);
 
   explicit CrostiniPortForwarder(Profile* profile);
+
+  CrostiniPortForwarder(const CrostiniPortForwarder&) = delete;
+  CrostiniPortForwarder& operator=(const CrostiniPortForwarder&) = delete;
+
   ~CrostiniPortForwarder() override;
 
  private:
@@ -155,8 +160,6 @@ class CrostiniPortForwarder : public KeyedService {
   Profile* profile_;
 
   base::WeakPtrFactory<CrostiniPortForwarder> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrostiniPortForwarder);
 
 };  // class
 

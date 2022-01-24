@@ -33,8 +33,8 @@ namespace {
 
 constexpr char kUmaPrefix[] = "Arc";
 
-constexpr base::TimeDelta kUmaMinTime = base::TimeDelta::FromMilliseconds(1);
-constexpr base::TimeDelta kUmaMaxTime = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kUmaMinTime = base::Milliseconds(1);
+constexpr base::TimeDelta kUmaMaxTime = base::Seconds(60);
 constexpr int kUmaNumBuckets = 50;
 constexpr int kUmaPriAbiMigMaxFailedAttempts = 10;
 constexpr int kUmaFixupDirectoriesCountMin = 0;
@@ -42,8 +42,7 @@ constexpr int kUmaFixupDirectoriesCountMax = 5000000;
 constexpr int kUmaFixupAppsCountMin = 0;
 constexpr int kUmaFixupAppsCountMax = 10000;
 
-constexpr base::TimeDelta kRequestProcessListPeriod =
-    base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kRequestProcessListPeriod = base::Minutes(5);
 constexpr char kArcProcessNamePrefix[] = "org.chromium.arc.";
 constexpr char kGmsProcessNamePrefix[] = "com.google.android.gms";
 constexpr char kBootProgressEnableScreen[] = "boot_progress_enable_screen";
@@ -114,6 +113,17 @@ const char* LowLatencyStylusLibraryTypeToString(
       return ".CPU";
     case mojom::LowLatencyStylusLibraryType::kGPU:
       return ".GPU";
+  }
+  NOTREACHED();
+  return "";
+}
+
+const char* DnsQueryToString(mojom::ArcDnsQuery query) {
+  switch (query) {
+    case mojom::ArcDnsQuery::OTHER_HOST_NAME:
+      return "Other";
+    case mojom::ArcDnsQuery::ANDROID_API_HOST_NAME:
+      return "AndroidApi";
   }
   NOTREACHED();
   return "";
@@ -277,8 +287,7 @@ void ArcMetricsService::OnArcStartTimeRetrieved(
             << event->uptimeMillis;
     const std::string name = "Arc." + event->event + suffix;
     const base::TimeTicks uptime =
-        base::TimeDelta::FromMilliseconds(event->uptimeMillis) +
-        base::TimeTicks();
+        base::Milliseconds(event->uptimeMillis) + base::TimeTicks();
     const base::TimeDelta elapsed_time = uptime - arc_start_time.value();
     base::UmaHistogramCustomTimes(name, elapsed_time, kUmaMinTime, kUmaMaxTime,
                                   kUmaNumBuckets);
@@ -356,6 +365,21 @@ void ArcMetricsService::ReportAppKill(mojom::AppKillPtr app_kill) {
   }
 }
 
+void ArcMetricsService::ReportDnsQueryResult(mojom::ArcDnsQuery query,
+                                             bool success) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::string metric_name =
+      base::StrCat({"Arc.Net.DnsQuery.", DnsQueryToString(query)});
+  VLOG(3) << metric_name << ": " << success;
+  base::UmaHistogramBoolean(metric_name, success);
+}
+
+void ArcMetricsService::ReportImageCopyPasteCompatAction(
+    mojom::ArcImageCopyPasteCompatAction action_type) {
+  base::UmaHistogramEnumeration("Arc.ImageCopyPasteCompatOperationType",
+                                action_type);
+}
+
 void ArcMetricsService::NotifyLowMemoryKill() {
   for (auto& obs : app_kill_observers_)
     obs.OnArcLowMemoryKill();
@@ -364,6 +388,11 @@ void ArcMetricsService::NotifyLowMemoryKill() {
 void ArcMetricsService::NotifyOOMKillCount(unsigned long count) {
   for (auto& obs : app_kill_observers_)
     obs.OnArcOOMKillCount(count);
+}
+
+void ArcMetricsService::ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.App.PrimaryAbi", abi);
 }
 
 void ArcMetricsService::ReportArcCorePriAbiMigEvent(
@@ -485,6 +514,11 @@ void ArcMetricsService::ReportPerAppFixupMetrics(
                                  kUmaFixupDirectoriesCountMin,
                                  kUmaFixupDirectoriesCountMax, kUmaNumBuckets);
 }
+void ArcMetricsService::ReportMainAccountHashMigrationMetrics(
+    mojom::MainAccountHashMigrationStatus status) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  UMA_HISTOGRAM_ENUMERATION("Arc.Auth.MainAccountHashMigration.Status", status);
+}
 
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
@@ -554,13 +588,29 @@ absl::optional<base::TimeTicks> ArcMetricsService::GetArcStartTimeFromEvents(
     if (!(*it)->event.compare(kBootProgressArcUpgraded)) {
       arc_upgraded_event = std::move(*it);
       events.erase(it);
-      return base::TimeDelta::FromMilliseconds(
-                 arc_upgraded_event->uptimeMillis) +
+      return base::Milliseconds(arc_upgraded_event->uptimeMillis) +
              base::TimeTicks();
     }
   }
   return absl::nullopt;
 }
+
+void ArcMetricsService::ReportMemoryPressureArcVmKills(int count,
+                                                       int estimated_freed_kb) {
+  for (auto& obs : app_kill_observers_)
+    obs.OnArcMemoryPressureKill(count, estimated_freed_kb);
+}
+
+void ArcMetricsService::ReportArcNetworkEvent(mojom::ArcNetworkEvent event) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Net.ArcNetworkEvent", event);
+}
+
+void ArcMetricsService::ReportArcNetworkError(mojom::ArcNetworkError error) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::UmaHistogramEnumeration("Arc.Net.ArcNetworkError", error);
+}
+
 ArcMetricsService::ProcessObserver::ProcessObserver(
     ArcMetricsService* arc_metrics_service)
     : arc_metrics_service_(arc_metrics_service) {}

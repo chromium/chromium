@@ -57,7 +57,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  GURL requesting_frame_origin = requesting_frame.GetOrigin();
+  GURL requesting_frame_origin = requesting_frame.DeprecatedGetOriginAsURL();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =
       extensions::WebViewPermissionHelper::FromWebContents(web_contents);

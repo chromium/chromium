@@ -79,11 +79,11 @@ std::unique_ptr<KeyframeModel> CreateColorAnimation(
 
 base::TimeTicks MicrosecondsToTicks(uint64_t us) {
   base::TimeTicks to_return;
-  return base::TimeDelta::FromMicroseconds(us) + to_return;
+  return base::Microseconds(us) + to_return;
 }
 
 base::TimeDelta MicrosecondsToDelta(uint64_t us) {
-  return base::TimeDelta::FromMicroseconds(us);
+  return base::Microseconds(us);
 }
 
 base::TimeTicks MsToTicks(uint64_t ms) {

@@ -22,7 +22,7 @@ namespace mixer_service {
 
 namespace {
 
-constexpr base::TimeDelta kInactivityTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInactivityTimeout = base::Seconds(5);
 
 enum MessageTypes : int {
   kPushResult = 1,
@@ -40,6 +40,9 @@ class ReceiverCma::UnusedSocket : public MixerSocket::Delegate {
     socket_->SetDelegate(this);
   }
 
+  UnusedSocket(const UnusedSocket&) = delete;
+  UnusedSocket& operator=(const UnusedSocket&) = delete;
+
   ~UnusedSocket() override = default;
 
  private:
@@ -48,8 +51,6 @@ class ReceiverCma::UnusedSocket : public MixerSocket::Delegate {
 
   ReceiverCma* const receiver_;
   const std::unique_ptr<MixerSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnusedSocket);
 };
 
 class ReceiverCma::Stream : public MixerSocket::Delegate,
@@ -65,6 +66,9 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
     inactivity_timer_.Start(FROM_HERE, kInactivityTimeout, this,
                             &Stream::OnInactivityTimeout);
   }
+
+  Stream(const Stream&) = delete;
+  Stream& operator=(const Stream&) = delete;
 
   ~Stream() override = default;
 
@@ -177,8 +181,6 @@ class ReceiverCma::Stream : public MixerSocket::Delegate,
   base::TimeTicks last_receive_time_;
 
   base::WeakPtrFactory<Stream> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(Stream);
 };
 
 ReceiverCma::ReceiverCma(MediaPipelineBackendManager* backend_manager)

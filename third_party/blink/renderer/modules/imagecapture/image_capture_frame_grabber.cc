@@ -9,12 +9,11 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "media/renderers/paint_canvas_video_renderer.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -66,6 +65,9 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
     DCHECK(deliver_cb_);
   }
 
+  SingleShotFrameHandler(const SingleShotFrameHandler&) = delete;
+  SingleShotFrameHandler& operator=(const SingleShotFrameHandler&) = delete;
+
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
   void OnVideoFrameOnIOThread(
@@ -83,8 +85,6 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
 
   // Null once the initial frame has been queued for delivery.
   SkImageDeliverCB deliver_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleShotFrameHandler);
 };
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
@@ -106,11 +106,22 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
     SkImageDeliverCB callback,
     scoped_refptr<media::VideoFrame> frame) {
+  media::VideoRotation rotation = media::VIDEO_ROTATION_0;
+  if (frame->metadata().transformation) {
+    rotation = frame->metadata().transformation->rotation;
+  }
+
+  const gfx::Size& original_size = frame->visible_rect().size();
+  gfx::Size display_size = original_size;
+  if (rotation == media::VIDEO_ROTATION_90 ||
+      rotation == media::VIDEO_ROTATION_270) {
+    display_size.SetSize(display_size.height(), display_size.width());
+  }
   const SkAlphaType alpha = media::IsOpaque(frame->format())
                                 ? kOpaque_SkAlphaType
                                 : kPremul_SkAlphaType;
-  const SkImageInfo info = SkImageInfo::MakeN32(
-      frame->visible_rect().width(), frame->visible_rect().height(), alpha);
+  const SkImageInfo info =
+      SkImageInfo::MakeN32(display_size.width(), display_size.height(), alpha);
 
   SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
   sk_sp<SkSurface> surface = SkSurface::MakeRaster(info, &props);
@@ -123,18 +134,10 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
                            (frame->format() == media::PIXEL_FORMAT_NV12 &&
                             frame->HasGpuMemoryBuffer());
   if (!is_readable) {
-    // |context_provider| is null if the GPU process has crashed or isn't there
-    auto context_provider =
-        Platform::Current()->CreateSharedOffscreenGraphicsContext3DProvider();
-    if (!context_provider) {
-      DLOG(ERROR) << "Failed to create GPU context for GPU backed frame.";
-      std::move(callback).Run(sk_sp<SkImage>());
-      return;
-    }
-
     cc::SkiaPaintCanvas canvas(surface->getCanvas());
-    media::PaintCanvasVideoRenderer pcvr;
-    context_provider->CopyVideoFrame(&pcvr, frame.get(), &canvas);
+    cc::PaintFlags paint_flags;
+    DrawVideoFrameIntoCanvas(std::move(frame), &canvas, paint_flags,
+                             /*ignore_video_transformation=*/false);
     std::move(callback).Run(surface->makeImageSnapshot());
     return;
   }
@@ -155,6 +158,11 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
   int destination_stride = pixmap.width() * 4;
   int destination_width = pixmap.width();
   int destination_height = pixmap.height();
+
+  // The frame rotating code path based on libyuv will convert any format to
+  // I420, rotate under I420 and transform I420 to destination format.
+  bool need_rotate = rotation != media::VIDEO_ROTATION_0;
+  scoped_refptr<media::VideoFrame> i420_frame;
 
   if (frame->storage_type() == media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     DCHECK_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
@@ -178,41 +186,98 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame(
                                ((frame->visible_rect().x() * 2) / 2) +
                                ((frame->visible_rect().y() / 2) * uv_stride));
 
-    switch (destination_pixel_format) {
-      case libyuv::FOURCC_ABGR:
-        libyuv::NV12ToABGR(y_plane, y_stride, uv_plane, uv_stride,
-                           destination_plane, destination_stride,
-                           destination_width, destination_height);
-        break;
-      case libyuv::FOURCC_ARGB:
-        libyuv::NV12ToARGB(y_plane, y_stride, uv_plane, uv_stride,
-                           destination_plane, destination_stride,
-                           destination_width, destination_height);
-        break;
-      default:
-        NOTREACHED();
+    if (need_rotate) {
+      // Transform to I420 first to be later on rotated.
+      i420_frame = media::VideoFrame::CreateFrame(
+          media::PIXEL_FORMAT_I420, original_size, gfx::Rect(original_size),
+          original_size, base::TimeDelta());
+
+      libyuv::NV12ToI420(y_plane, y_stride, uv_plane, uv_stride,
+                         i420_frame->visible_data(media::VideoFrame::kYPlane),
+                         i420_frame->stride(media::VideoFrame::kYPlane),
+                         i420_frame->visible_data(media::VideoFrame::kUPlane),
+                         i420_frame->stride(media::VideoFrame::kUPlane),
+                         i420_frame->visible_data(media::VideoFrame::kVPlane),
+                         i420_frame->stride(media::VideoFrame::kVPlane),
+                         original_size.width(), original_size.height());
+    } else {
+      switch (destination_pixel_format) {
+        case libyuv::FOURCC_ABGR:
+          libyuv::NV12ToABGR(y_plane, y_stride, uv_plane, uv_stride,
+                             destination_plane, destination_stride,
+                             destination_width, destination_height);
+          break;
+        case libyuv::FOURCC_ARGB:
+          libyuv::NV12ToARGB(y_plane, y_stride, uv_plane, uv_stride,
+                             destination_plane, destination_stride,
+                             destination_width, destination_height);
+          break;
+        default:
+          NOTREACHED();
+      }
     }
+
     gmb->Unmap();
   } else {
     DCHECK(frame->format() == media::PIXEL_FORMAT_I420 ||
            frame->format() == media::PIXEL_FORMAT_I420A);
-    libyuv::ConvertFromI420(frame->visible_data(media::VideoFrame::kYPlane),
-                            frame->stride(media::VideoFrame::kYPlane),
-                            frame->visible_data(media::VideoFrame::kUPlane),
-                            frame->stride(media::VideoFrame::kUPlane),
-                            frame->visible_data(media::VideoFrame::kVPlane),
-                            frame->stride(media::VideoFrame::kVPlane),
-                            destination_plane, destination_stride,
-                            destination_width, destination_height,
-                            destination_pixel_format);
+    i420_frame = std::move(frame);
+  }
 
-    if (frame->format() == media::PIXEL_FORMAT_I420A) {
+  if (i420_frame) {
+    if (need_rotate) {
+      scoped_refptr<media::VideoFrame> rotated_frame =
+          media::VideoFrame::CreateFrame(media::PIXEL_FORMAT_I420, display_size,
+                                         gfx::Rect(display_size), display_size,
+                                         base::TimeDelta());
+
+      libyuv::RotationMode libyuv_rotate = [rotation]() {
+        switch (rotation) {
+          case media::VIDEO_ROTATION_0:
+            return libyuv::kRotate0;
+          case media::VIDEO_ROTATION_90:
+            return libyuv::kRotate90;
+          case media::VIDEO_ROTATION_180:
+            return libyuv::kRotate180;
+          case media::VIDEO_ROTATION_270:
+            return libyuv::kRotate270;
+        }
+      }();
+
+      libyuv::I420Rotate(
+          i420_frame->visible_data(media::VideoFrame::kYPlane),
+          i420_frame->stride(media::VideoFrame::kYPlane),
+          i420_frame->visible_data(media::VideoFrame::kUPlane),
+          i420_frame->stride(media::VideoFrame::kUPlane),
+          i420_frame->visible_data(media::VideoFrame::kVPlane),
+          i420_frame->stride(media::VideoFrame::kVPlane),
+          rotated_frame->visible_data(media::VideoFrame::kYPlane),
+          rotated_frame->stride(media::VideoFrame::kYPlane),
+          rotated_frame->visible_data(media::VideoFrame::kUPlane),
+          rotated_frame->stride(media::VideoFrame::kUPlane),
+          rotated_frame->visible_data(media::VideoFrame::kVPlane),
+          rotated_frame->stride(media::VideoFrame::kVPlane),
+          original_size.width(), original_size.height(), libyuv_rotate);
+      i420_frame = std::move(rotated_frame);
+    }
+
+    libyuv::ConvertFromI420(
+        i420_frame->visible_data(media::VideoFrame::kYPlane),
+        i420_frame->stride(media::VideoFrame::kYPlane),
+        i420_frame->visible_data(media::VideoFrame::kUPlane),
+        i420_frame->stride(media::VideoFrame::kUPlane),
+        i420_frame->visible_data(media::VideoFrame::kVPlane),
+        i420_frame->stride(media::VideoFrame::kVPlane), destination_plane,
+        destination_stride, destination_width, destination_height,
+        destination_pixel_format);
+
+    if (i420_frame->format() == media::PIXEL_FORMAT_I420A) {
       DCHECK(!info.isOpaque());
       // This function copies any plane into the alpha channel of an ARGB image.
-      libyuv::ARGBCopyYToAlpha(frame->visible_data(media::VideoFrame::kAPlane),
-                               frame->stride(media::VideoFrame::kAPlane),
-                               destination_plane, destination_stride,
-                               destination_width, destination_height);
+      libyuv::ARGBCopyYToAlpha(
+          i420_frame->visible_data(media::VideoFrame::kAPlane),
+          i420_frame->stride(media::VideoFrame::kAPlane), destination_plane,
+          destination_stride, destination_width, destination_height);
     }
   }
 

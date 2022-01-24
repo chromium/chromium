@@ -8,7 +8,7 @@
   // This loads the animations view on the existing page, which is
   // somewhere below http://127.0.0.1:8000/. By loading the animations view,
   // we'll start the InspectorAnimationAgent.
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await UI.viewManager.showView('animations');
 
@@ -28,7 +28,7 @@
   TestRunner.addSniffer(Animation.AnimationModel.prototype, 'animationStarted',
       () => {
         TestRunner.addResult('SUCCESS (size = ' +
-                             timeline._previewMap.size + ', expecting 1)');
+                             timeline.previewMap.size + ', expecting 1)');
         TestRunner.completeTest();
       });
   TestRunner.evaluateInPage(`

@@ -66,10 +66,6 @@ void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
   SetCursor(cursor_manager->GetCursor(), cursor_manager);
 }
 
-float NativeCursorManagerAsh::GetScale() const {
-  return cursor_loader_.scale();
-}
-
 display::Display::Rotation NativeCursorManagerAsh::GetRotation() const {
   return cursor_loader_.rotation();
 }

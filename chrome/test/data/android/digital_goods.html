@@ -19,15 +19,15 @@ async function populateItemDetails(ids) {
     itemDetails = await digitalGoodsService.getDetails(ids);
 }
 
-let acknowledgeFlag = null;
-let acknowledgeError = null;
+let consumeFlag = null;
+let consumeError = null;
 
-async function callAcknowledge(id, makeAvailableAgain) {
+async function callConsume(id) {
     try {
-        await digitalGoodsService.acknowledge(id, makeAvailableAgain);
-        acknowledgeFlag = "done";
+        await digitalGoodsService.consume(id);
+        consumeFlag = "done";
     } catch (error) {
-        acknowledgeError = error;
+        consumeError = error;
     }
 }
 

@@ -1,0 +1,4 @@
+monorail: {
+  component: "Platform>Apps>Foundation>Intents"
+}
+os: CHROME_OS

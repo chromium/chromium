@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
@@ -24,6 +23,11 @@ class ChromeUserSelectionScreen
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
   explicit ChromeUserSelectionScreen(DisplayedScreen display_type);
+
+  ChromeUserSelectionScreen(const ChromeUserSelectionScreen&) = delete;
+  ChromeUserSelectionScreen& operator=(const ChromeUserSelectionScreen&) =
+      delete;
+
   ~ChromeUserSelectionScreen() override;
 
   // UserSelectionScreen:
@@ -71,8 +75,6 @@ class ChromeUserSelectionScreen
   DisplayNamesMap public_session_display_names_;
 
   base::WeakPtrFactory<ChromeUserSelectionScreen> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUserSelectionScreen);
 };
 
 }  // namespace ash

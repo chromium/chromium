@@ -16,8 +16,17 @@ namespace ui {
 class WaylandConnection;
 
 // Wraps the zwp_relative_pointer_manager_v1 object.
-class WaylandZwpRelativePointerManager {
+class WaylandZwpRelativePointerManager
+    : public wl::GlobalObjectRegistrar<WaylandZwpRelativePointerManager> {
  public:
+  static constexpr char kInterfaceName[] = "zwp_relative_pointer_manager_v1";
+
+  static void Instantiate(WaylandConnection* connection,
+                          wl_registry* registry,
+                          uint32_t name,
+                          const std::string& interface,
+                          uint32_t version);
+
   class Delegate;
 
   WaylandZwpRelativePointerManager(

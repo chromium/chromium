@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -19,7 +19,7 @@ monitoring for the deletion of the aforementioned file.
 """
 # pylint: disable=W0702
 
-import cStringIO
+import io
 import logging
 import optparse
 import os
@@ -108,7 +108,7 @@ def GetDeviceLogs(log_filenames, logger):
   """
   device_logs = []
 
-  for device, device_files in log_filenames.iteritems():
+  for device, device_files in log_filenames.items():
     logger.debug('%s: %s', device, str(device_files))
     device_file_lines = []
     for cur_file in device_files:
@@ -160,7 +160,7 @@ def main(argv):
     parser.error('Wrong number of unparsed args')
   base_dir = args[0]
 
-  log_stringio = cStringIO.StringIO()
+  log_stringio = io.StringIO()
   logger = logging.getLogger('LogcatPrinter')
   logger.setLevel(LOG_LEVEL)
   sh = logging.StreamHandler(log_stringio)

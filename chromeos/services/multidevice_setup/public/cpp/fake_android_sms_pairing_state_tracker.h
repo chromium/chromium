@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_ANDROID_SMS_PAIRING_STATE_TRACKER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_PUBLIC_CPP_FAKE_ANDROID_SMS_PAIRING_STATE_TRACKER_H_
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/public/cpp/android_sms_pairing_state_tracker.h"
 
 namespace chromeos {
@@ -14,6 +13,12 @@ namespace multidevice_setup {
 class FakeAndroidSmsPairingStateTracker : public AndroidSmsPairingStateTracker {
  public:
   FakeAndroidSmsPairingStateTracker();
+
+  FakeAndroidSmsPairingStateTracker(const FakeAndroidSmsPairingStateTracker&) =
+      delete;
+  FakeAndroidSmsPairingStateTracker& operator=(
+      const FakeAndroidSmsPairingStateTracker&) = delete;
+
   ~FakeAndroidSmsPairingStateTracker() override;
   void SetPairingComplete(bool is_pairing_complete);
 
@@ -22,8 +27,6 @@ class FakeAndroidSmsPairingStateTracker : public AndroidSmsPairingStateTracker {
 
  private:
   bool is_pairing_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAndroidSmsPairingStateTracker);
 };
 
 }  // namespace multidevice_setup

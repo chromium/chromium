@@ -35,8 +35,7 @@ class QuicChromeAlarm : public quic::QuicAlarm, public base::TickClock {
   void SetImpl() override {
     DCHECK(deadline().IsInitialized());
     const int64_t delay_us = (deadline() - clock_->Now()).ToMicroseconds();
-    timer_->Start(FROM_HERE, base::TimeDelta::FromMicroseconds(delay_us),
-                  on_alarm_callback_);
+    timer_->Start(FROM_HERE, base::Microseconds(delay_us), on_alarm_callback_);
   }
 
   void CancelImpl() override {

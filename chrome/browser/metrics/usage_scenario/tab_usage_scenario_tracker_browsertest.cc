@@ -39,7 +39,7 @@ namespace metrics {
 
 namespace {
 
-constexpr base::TimeDelta kInterval = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kInterval = base::Minutes(2);
 
 void DiscardTab(content::WebContents* contents) {
   resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(

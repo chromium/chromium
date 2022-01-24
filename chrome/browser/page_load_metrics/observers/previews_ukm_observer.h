@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEWS_UKM_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEWS_UKM_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/page_load_metrics/browser/page_load_metrics_event.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace content {
@@ -22,6 +20,10 @@ namespace previews {
 class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
  public:
   PreviewsUKMObserver();
+
+  PreviewsUKMObserver(const PreviewsUKMObserver&) = delete;
+  PreviewsUKMObserver& operator=(const PreviewsUKMObserver&) = delete;
+
   ~PreviewsUKMObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -36,7 +38,6 @@ class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnEventOccurred(page_load_metrics::PageLoadMetricsEvent event) override;
 
  protected:
   // Returns true if data saver feature is enabled in Chrome. Virtualized for
@@ -50,8 +51,6 @@ class PreviewsUKMObserver : public page_load_metrics::PageLoadMetricsObserver {
   bool save_data_enabled_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewsUKMObserver);
 };
 
 }  // namespace previews

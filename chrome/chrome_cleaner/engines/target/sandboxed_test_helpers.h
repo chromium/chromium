@@ -70,7 +70,7 @@ class MaybeSandboxedParentProcess : public BaseClass {
           std::make_unique<chrome_cleaner::FileRemover>(
               verifier, /*archiver=*/nullptr,
               chrome_cleaner::LayeredServiceProviderWrapper(),
-              base::DoNothing::Repeatedly());
+              base::DoNothing());
       cleaner_impl_ = std::make_unique<CleanerEngineRequestsImpl>(
           this->mojo_task_runner(), metadata_observer, std::move(file_remover));
       cleanup_results_impl_ =
@@ -94,19 +94,16 @@ class MaybeSandboxedParentProcess : public BaseClass {
     if (requests_to_setup_ == CallbacksToSetup::kScanAndCleanupRequests ||
         requests_to_setup_ == CallbacksToSetup::kCleanupRequests) {
       scanner_impl_->Bind(&scanner);
-      scan_results_impl_->BindToCallbacks(
-          &scanner_results,
-          base::BindRepeating(
-              base::DoNothing::Repeatedly<UwSId, const PUPData::PUP&>()),
-          base::BindOnce(base::DoNothing::Once<uint32_t>()));
+      scan_results_impl_->BindToCallbacks(&scanner_results, base::DoNothing(),
+                                          base::DoNothing());
     }
 
     mojo::PendingAssociatedRemote<mojom::CleanerEngineRequests> cleaner;
     mojo::PendingAssociatedRemote<mojom::EngineCleanupResults> cleanup_results;
     if (requests_to_setup_ == CallbacksToSetup::kCleanupRequests) {
       cleaner_impl_->Bind(&cleaner);
-      cleanup_results_impl_->BindToCallbacks(
-          &cleanup_results, base::BindOnce(base::DoNothing::Once<uint32_t>()));
+      cleanup_results_impl_->BindToCallbacks(&cleanup_results,
+                                             base::DoNothing());
     }
 
     // Now call the target process to signal that setup is finished.

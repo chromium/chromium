@@ -15,6 +15,10 @@ class ChromeBrowserState;
 class CacheCounter : public browsing_data::BrowsingDataCounter {
  public:
   explicit CacheCounter(ChromeBrowserState* browser_state);
+
+  CacheCounter(const CacheCounter&) = delete;
+  CacheCounter& operator=(const CacheCounter&) = delete;
+
   ~CacheCounter() override;
 
   // browsing_data::BrowsingDataCounter implementation.
@@ -28,8 +32,6 @@ class CacheCounter : public browsing_data::BrowsingDataCounter {
   ChromeBrowserState* browser_state_;
 
   base::WeakPtrFactory<CacheCounter> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheCounter);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_CACHE_COUNTER_H_

@@ -94,9 +94,12 @@ void WebGPUSwapBufferProvider::Neuter() {
   if (current_swap_buffer_) {
     // Ensure we wait for previous WebGPU commands before destroying the shared
     // image.
-    gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
-    webgpu->GenUnverifiedSyncTokenCHROMIUM(
-        current_swap_buffer_->access_finished_token.GetData());
+    if (auto context_provider = GetContextProviderWeakPtr()) {
+      gpu::webgpu::WebGPUInterface* webgpu =
+          context_provider->ContextProvider()->WebGPUInterface();
+      webgpu->GenUnverifiedSyncTokenCHROMIUM(
+          current_swap_buffer_->access_finished_token.GetData());
+    }
     current_swap_buffer_ = nullptr;
   }
 
@@ -105,7 +108,10 @@ void WebGPUSwapBufferProvider::Neuter() {
 }
 
 std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer>
-WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(const gfx::Size& size) {
+WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
+    gpu::SharedImageInterface* sii,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
+    const gfx::Size& size) {
   // Recycled SwapBuffers must be the same size.
   if (!unused_swap_buffers_.IsEmpty() &&
       unused_swap_buffers_.back()->size != size) {
@@ -113,20 +119,17 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(const gfx::Size& size) {
   }
 
   if (unused_swap_buffers_.IsEmpty()) {
-    gpu::SharedImageInterface* sii =
-        dawn_control_client_->GetContextProvider()->SharedImageInterface();
-
     gpu::Mailbox mailbox = sii->CreateSharedImage(
-        format_, static_cast<gfx::Size>(size), gfx::ColorSpace::CreateSRGB(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        format_, size, gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_WEBGPU |
             gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
             gpu::SHARED_IMAGE_USAGE_DISPLAY,
         gpu::kNullSurfaceHandle);
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 
-    unused_swap_buffers_.push_back(
-        std::make_unique<SwapBuffer>(this, mailbox, creation_token, size));
+    unused_swap_buffers_.push_back(std::make_unique<SwapBuffer>(
+        std::move(context_provider), mailbox, creation_token, size));
     DCHECK_EQ(unused_swap_buffers_.back()->size, size);
   }
 
@@ -134,6 +137,7 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(const gfx::Size& size) {
       std::move(unused_swap_buffers_.back());
   unused_swap_buffers_.pop_back();
 
+  DCHECK_EQ(swap_buffer->size, size);
   return swap_buffer;
 }
 
@@ -149,11 +153,18 @@ void WebGPUSwapBufferProvider::RecycleSwapBuffer(
 
 WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   DCHECK(!current_swap_buffer_);
+  auto context_provider = GetContextProviderWeakPtr();
+  if (!context_provider) {
+    return nullptr;
+  }
 
-  gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
+  gpu::webgpu::WebGPUInterface* webgpu =
+      context_provider->ContextProvider()->WebGPUInterface();
 
   // Create a new swap buffer.
-  current_swap_buffer_ = NewOrRecycledSwapBuffer(gfx::Size(size));
+  current_swap_buffer_ = NewOrRecycledSwapBuffer(
+      context_provider->ContextProvider()->SharedImageInterface(),
+      context_provider, ToGfxSize(size));
 
   // Ensure the shared image is allocated and not in use service-side before
   // working with it
@@ -163,12 +174,14 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   // Associate the mailbox to a dawn_wire client DawnTexture object
   gpu::webgpu::ReservedTexture reservation = webgpu->ReserveTexture(device_);
   DCHECK(reservation.texture);
+  wire_device_id_ = reservation.deviceId;
+  wire_device_generation_ = reservation.deviceGeneration;
   wire_texture_id_ = reservation.id;
   wire_texture_generation_ = reservation.generation;
 
   webgpu->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, usage_,
+      wire_device_id_, wire_device_generation_, wire_texture_id_,
+      wire_texture_generation_, usage_, gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
       reinterpret_cast<GLbyte*>(&current_swap_buffer_->mailbox));
 
   // When the page request a texture it means we'll need to present it on the
@@ -176,6 +189,20 @@ WGPUTexture WebGPUSwapBufferProvider::GetNewTexture(const IntSize& size) {
   layer_->SetNeedsDisplay();
 
   return reservation.texture;
+}
+
+WebGPUSwapBufferProvider::WebGPUMailboxTextureAndSize
+WebGPUSwapBufferProvider::GetLastWebGPUMailboxTextureAndSize() const {
+  auto context_provider = GetContextProviderWeakPtr();
+  if (!last_swap_buffer_ || !context_provider)
+    return WebGPUMailboxTextureAndSize(nullptr, gfx::Size());
+
+  return WebGPUMailboxTextureAndSize(
+      WebGPUMailboxTexture::FromExistingMailbox(
+          dawn_control_client_, device_, usage_, last_swap_buffer_->mailbox,
+          last_swap_buffer_->access_finished_token,
+          gpu::webgpu::WEBGPU_MAILBOX_NONE),
+      last_swap_buffer_->size);
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -188,7 +215,7 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
     viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);
-  if (!current_swap_buffer_ || neutered_) {
+  if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
     return false;
   }
 
@@ -198,9 +225,13 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   // Make Dawn relinquish access to the texture so it can be used by the
   // compositor. This will call wgpu::Texture::Destroy so that further accesses
   // to the texture are errors.
-  gpu::webgpu::WebGPUInterface* webgpu = dawn_control_client_->GetInterface();
+  gpu::webgpu::WebGPUInterface* webgpu =
+      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
+  DCHECK_NE(wire_device_id_, 0u);
   DCHECK_NE(wire_texture_id_, 0u);
-  webgpu->DissociateMailbox(wire_texture_id_, wire_texture_generation_);
+  webgpu->DissociateMailboxForPresent(wire_device_id_, wire_device_generation_,
+                                      wire_texture_id_,
+                                      wire_texture_generation_);
 
   // Make the compositor wait on previous Dawn commands.
   webgpu->GenUnverifiedSyncTokenCHROMIUM(
@@ -233,6 +264,8 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
                 scoped_refptr<WebGPUSwapBufferProvider>(this),
                 std::move(current_swap_buffer_));
 
+  wire_device_id_ = 0;
+  wire_device_generation_ = 0;
   wire_texture_id_ = 0;
   wire_texture_generation_ = 0;
 
@@ -247,25 +280,32 @@ void WebGPUSwapBufferProvider::MailboxReleased(
   // immediately destroy this buffer.
   swap_buffer->access_finished_token = sync_token;
 
-  if (!lost_resource)
-    RecycleSwapBuffer(std::move(swap_buffer));
+  if (lost_resource)
+    return;
+
+  if (last_swap_buffer_) {
+    RecycleSwapBuffer(std::move(last_swap_buffer_));
+  }
+
+  last_swap_buffer_ = std::move(swap_buffer);
 }
 
 WebGPUSwapBufferProvider::SwapBuffer::SwapBuffer(
-    WebGPUSwapBufferProvider* swap_buffers,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
     gpu::Mailbox mailbox,
     gpu::SyncToken creation_token,
     gfx::Size size)
     : size(size),
       mailbox(mailbox),
-      swap_buffers(swap_buffers),
+      context_provider(context_provider),
       access_finished_token(creation_token) {}
 
 WebGPUSwapBufferProvider::SwapBuffer::~SwapBuffer() {
-  gpu::SharedImageInterface* sii =
-      swap_buffers->dawn_control_client_->GetContextProvider()
-          ->SharedImageInterface();
-  sii->DestroySharedImage(access_finished_token, mailbox);
+  if (context_provider) {
+    gpu::SharedImageInterface* sii =
+        context_provider->ContextProvider()->SharedImageInterface();
+    sii->DestroySharedImage(access_finished_token, mailbox);
+  }
 }
 
 gpu::Mailbox WebGPUSwapBufferProvider::GetCurrentMailboxForTesting() const {

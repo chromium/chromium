@@ -26,6 +26,10 @@ class DownloadControllerImpl : public DownloadController,
                                public DownloadTaskImpl::Delegate {
  public:
   DownloadControllerImpl();
+
+  DownloadControllerImpl(const DownloadControllerImpl&) = delete;
+  DownloadControllerImpl& operator=(const DownloadControllerImpl&) = delete;
+
   ~DownloadControllerImpl() override;
 
   // DownloadController overrides:
@@ -51,8 +55,6 @@ class DownloadControllerImpl : public DownloadController,
   std::set<DownloadTaskImpl*> alive_tasks_;
   DownloadControllerDelegate* delegate_ = nullptr;
   SEQUENCE_CHECKER(my_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadControllerImpl);
 };
 
 }  // namespace web

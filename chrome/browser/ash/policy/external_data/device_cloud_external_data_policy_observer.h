@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -53,6 +52,12 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
   DeviceCloudExternalDataPolicyObserver(PolicyService* policy_service,
                                         const std::string& policy,
                                         Delegate* delegate);
+
+  DeviceCloudExternalDataPolicyObserver(
+      const DeviceCloudExternalDataPolicyObserver&) = delete;
+  DeviceCloudExternalDataPolicyObserver& operator=(
+      const DeviceCloudExternalDataPolicyObserver&) = delete;
+
   ~DeviceCloudExternalDataPolicyObserver() override;
 
   // PolicyService::Observer:
@@ -80,8 +85,6 @@ class DeviceCloudExternalDataPolicyObserver : public PolicyService::Observer {
 
   base::WeakPtrFactory<DeviceCloudExternalDataPolicyObserver> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceCloudExternalDataPolicyObserver);
 };
 
 }  // namespace policy

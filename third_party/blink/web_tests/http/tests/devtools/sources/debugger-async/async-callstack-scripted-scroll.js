@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests asynchronous call stacks for scripted scroll events.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="outer" style="width: 100px; height: 100px; overflow:auto">

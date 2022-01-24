@@ -3,19 +3,44 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
+#include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, InputImeApiBasic) {
+namespace {
+
+class InputImeApiTest : public ExtensionApiTest {
+ public:
+  InputImeApiTest() = default;
+  InputImeApiTest(const InputImeApiTest&) = delete;
+  InputImeApiTest& operator=(const InputImeApiTest&) = delete;
+  ~InputImeApiTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionApiTest::SetUpCommandLine(command_line);
+    // The test extension needs chrome.inputMethodPrivate to set up
+    // the test.
+    command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
+                                    "ilanclmaeigfpnmdlgelmhkpkegdioip");
+  }
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(InputImeApiTest, Basic) {
+  // Enable the test IME from the test extension.
+  std::vector<std::string> extension_ime_ids{
+      "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest"};
+  ash::input_method::InputMethodManager::Get()
+      ->GetActiveIMEState()
+      ->SetEnabledExtensionImes(&extension_ime_ids);
   ASSERT_TRUE(RunExtensionTest("input_ime")) << message_;
 }
-#endif
 
 }  // namespace extensions

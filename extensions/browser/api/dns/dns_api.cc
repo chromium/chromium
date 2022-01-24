@@ -29,7 +29,7 @@ DnsResolveFunction::~DnsResolveFunction() {}
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(*args_));
+  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Yes, we are passing zero as the port. There are some interesting but not

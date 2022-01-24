@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -78,6 +77,10 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   using PopupNotifications = std::set<Notification*, CompareTimestampSerial>;
 
   explicit NotificationList(MessageCenter* message_center);
+
+  NotificationList(const NotificationList&) = delete;
+  NotificationList& operator=(const NotificationList&) = delete;
+
   virtual ~NotificationList();
 
   // Makes a message "read". Collects the set of ids whose state have changed
@@ -102,6 +105,9 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Returns all notifications that have a matching |app_id|.
   Notifications GetNotificationsByAppId(const std::string& app_id) const;
+
+  // Returns all notifications that have a matching `origin_url`.
+  Notifications GetNotificationsByOriginUrl(const GURL& origin_url) const;
 
   // Returns true if the notification exists and was updated.
   bool SetNotificationIcon(const std::string& notification_id,
@@ -181,8 +187,6 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   MessageCenter* message_center_;  // owner
   OwnedNotifications notifications_;
   bool quiet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationList);
 };
 
 }  // namespace message_center

@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
@@ -43,6 +43,9 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
         emit_frame_drop_events_(true) {
     DETACH_FROM_THREAD(io_thread_checker_);
   }
+
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
 
   ~FrameDeliverer() {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
@@ -132,8 +135,6 @@ class MediaStreamVideoRendererSink::FrameDeliverer {
 
   // Used for DCHECKs to ensure method calls are executed on the correct thread.
   THREAD_CHECKER(io_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 MediaStreamVideoRendererSink::MediaStreamVideoRendererSink(

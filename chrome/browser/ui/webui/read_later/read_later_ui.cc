@@ -9,6 +9,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
@@ -18,7 +19,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/read_later_resources.h"
 #include "chrome/grit/read_later_resources_map.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/prefs/pref_service.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -47,10 +51,13 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
+      {"emptyStateAddFromDialogSubheader",
+       IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
+      {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
       {"tooltipClose", IDS_CLOSE},
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMarkAsRead", IDS_READ_LATER_MENU_TOOLTIP_MARK_AS_READ},
@@ -64,12 +71,25 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kSidePanel);
 
   source->AddBoolean(
-      "addButtonEnabled",
+      "currentPageActionButtonEnabled",
       base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
           show_side_panel);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  PrefService* prefs = profile->GetPrefs();
+  source->AddBoolean(
+      "bookmarksDragAndDropEnabled",
+      show_side_panel &&
+          base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop) &&
+          prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
+
+  ReadingListModel* const reading_list_model =
+      ReadingListModelFactory::GetForBrowserContext(profile);
+  source->AddBoolean(
+      "hasUnseenReadingListEntries",
+      reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
+
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
@@ -110,4 +130,9 @@ void ReadLaterUI::CreateBookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ =
       std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
+}
+
+void ReadLaterUI::SetActiveTabURL(const GURL& url) {
+  if (page_handler_)
+    page_handler_->SetActiveTabURL(url);
 }

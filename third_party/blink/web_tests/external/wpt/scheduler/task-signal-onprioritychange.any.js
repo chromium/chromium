@@ -3,7 +3,7 @@
 'use strict';
 
 async_test(t => {
-  const controller = new TaskController('user-visible');
+  const controller = new TaskController({priority: 'user-visible'});
   controller.signal.onprioritychange = t.step_func_done((event) => {
     assert_equals(controller.signal.priority, 'background');
     assert_equals(event.type, 'prioritychange');

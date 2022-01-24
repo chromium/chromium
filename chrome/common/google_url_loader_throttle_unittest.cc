@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)

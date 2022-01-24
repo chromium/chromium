@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -31,6 +30,10 @@ class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AccountFetcherService* service,
       const CoreAccountId& account_id);
+
+  AccountInfoFetcher(const AccountInfoFetcher&) = delete;
+  AccountInfoFetcher& operator=(const AccountInfoFetcher&) = delete;
+
   ~AccountInfoFetcher() override;
 
   // Start fetching the account information.
@@ -57,8 +60,6 @@ class AccountInfoFetcher : public OAuth2AccessTokenManager::Consumer,
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountInfoFetcher);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_INFO_FETCHER_H_

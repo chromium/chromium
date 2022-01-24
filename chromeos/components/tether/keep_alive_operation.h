@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 #define CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/tether/message_transfer_operation.h"
@@ -54,6 +55,9 @@ class KeepAliveOperation : public MessageTransferOperation {
         std::unique_ptr<DeviceStatus> device_status) = 0;
   };
 
+  KeepAliveOperation(const KeepAliveOperation&) = delete;
+  KeepAliveOperation& operator=(const KeepAliveOperation&) = delete;
+
   ~KeepAliveOperation() override;
 
   void AddObserver(Observer* observer);
@@ -89,8 +93,6 @@ class KeepAliveOperation : public MessageTransferOperation {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperation);
 };
 
 }  // namespace tether

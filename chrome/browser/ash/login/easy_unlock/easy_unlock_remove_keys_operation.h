@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/user_context.h"
@@ -25,6 +24,11 @@ class EasyUnlockRemoveKeysOperation {
   EasyUnlockRemoveKeysOperation(const UserContext& user_context,
                                 size_t start_index,
                                 RemoveKeysCallback callback);
+
+  EasyUnlockRemoveKeysOperation(const EasyUnlockRemoveKeysOperation&) = delete;
+  EasyUnlockRemoveKeysOperation& operator=(
+      const EasyUnlockRemoveKeysOperation&) = delete;
+
   ~EasyUnlockRemoveKeysOperation();
 
   void Start();
@@ -39,8 +43,6 @@ class EasyUnlockRemoveKeysOperation {
   RemoveKeysCallback callback_;
   size_t key_index_;
   base::WeakPtrFactory<EasyUnlockRemoveKeysOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockRemoveKeysOperation);
 };
 
 }  // namespace ash

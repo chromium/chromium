@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom.h"
@@ -20,7 +19,7 @@ class AudioSystem;
 namespace content {
 
 class MediaStreamManager;
-class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // This class is related to ForwardingAudioStreamFactory as follows:
 //
@@ -39,28 +38,46 @@ class RenderFrameHost;
 // This class takes care of stream requests from a render frame. It verifies
 // that the stream creation is allowed and then forwards the request to the
 // appropriate ForwardingAudioStreamFactory. It should be constructed and
-// destructed on the UI thread, but will process mojo messages on the IO thread.
+// destructed on the UI thread, but will process Mojo messages on the IO thread
+// unless it is running in the restricted mode.
 class CONTENT_EXPORT RenderFrameAudioOutputStreamFactory final {
  public:
+  // Initializing it with a non-null `restricted_callback` indicates that
+  // `this` should run in the restricted mode until `ReleaseRestriction` is
+  // called. In this mode, frames requests for output devices are not granted.
+  // The given `restricted_callback` will be invoked if the frame requests an
+  // output device.
   RenderFrameAudioOutputStreamFactory(
-      RenderFrameHost* frame,
+      RenderFrameHostImpl* frame,
       media::AudioSystem* audio_system,
       MediaStreamManager* media_stream_manager,
       mojo::PendingReceiver<blink::mojom::RendererAudioOutputStreamFactory>
-          receiver);
+          receiver,
+      absl::optional<base::OnceClosure> restricted_callback);
+
+  RenderFrameAudioOutputStreamFactory(
+      const RenderFrameAudioOutputStreamFactory&) = delete;
+  RenderFrameAudioOutputStreamFactory& operator=(
+      const RenderFrameAudioOutputStreamFactory&) = delete;
 
   ~RenderFrameAudioOutputStreamFactory();
 
   void SetAuthorizedDeviceIdForGlobalMediaControls(
       std::string hashed_device_id);
 
+  // Called when the frame is allowed to request output devices, e.g., when the
+  // prerendering frame is about to be activated.
+  void ReleaseRestriction();
+
   size_t CurrentNumberOfProvidersForTesting();
 
  private:
   class Core;
+  class RestrictedModeCore;
   std::unique_ptr<Core> core_;
 
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameAudioOutputStreamFactory);
+  // Used while the frame is disallowed to request output devices.
+  std::unique_ptr<RestrictedModeCore> restricted_mode_core_;
 };
 
 }  // namespace content

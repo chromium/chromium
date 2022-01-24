@@ -17,6 +17,9 @@ source_set("libfuzzer_main") {
   sources = []
   if (use_libfuzzer) {
     deps += [ "//third_party/libFuzzer:libfuzzer" ]
+    if (is_ios) {
+      deps += [ "//testing/libfuzzer/fuzzer_support_ios:libfuzzer_main_ios" ]
+    }
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
   } else {

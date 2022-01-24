@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/firebase/firebase-iid/21.0.1/firebase-iid-21.0.1.aar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-iid/21.0.1/firebase-iid-21.0.1.aar'
 _FILE_NAME = 'firebase-iid-21.0.1.aar'
 _FILE_VERSION = '21.0.1'
 

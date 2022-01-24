@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/autofill/core/browser/address_normalizer.h"
@@ -80,6 +79,11 @@ class FakePaymentRequestDelegate : public PaymentRequestDelegate {
         full_card_request_(&autofill_client_,
                            &payments_client_,
                            &personal_data_) {}
+
+  FakePaymentRequestDelegate(const FakePaymentRequestDelegate&) = delete;
+  FakePaymentRequestDelegate& operator=(const FakePaymentRequestDelegate&) =
+      delete;
+
   void ShowDialog(base::WeakPtr<PaymentRequest> request) override {}
 
   void CloseDialog() override {}
@@ -132,7 +136,6 @@ class FakePaymentRequestDelegate : public PaymentRequestDelegate {
   autofill::CreditCard full_card_request_card_;
   base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
       full_card_result_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(FakePaymentRequestDelegate);
 };
 
 }  // namespace
@@ -146,6 +149,9 @@ class AutofillPaymentAppTest : public testing::Test {
     local_card_.set_billing_address_id(address_.guid());
   }
 
+  AutofillPaymentAppTest(const AutofillPaymentAppTest&) = delete;
+  AutofillPaymentAppTest& operator=(const AutofillPaymentAppTest&) = delete;
+
   autofill::CreditCard& local_credit_card() { return local_card_; }
   std::vector<autofill::AutofillProfile*>& billing_profiles() {
     return billing_profiles_;
@@ -155,8 +161,6 @@ class AutofillPaymentAppTest : public testing::Test {
   autofill::AutofillProfile address_;
   autofill::CreditCard local_card_;
   std::vector<autofill::AutofillProfile*> billing_profiles_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillPaymentAppTest);
 };
 
 // A valid local credit card is a valid app for payment.
@@ -322,7 +326,8 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_NormalizationBeforeUnmask) {
 
   autofill::CreditCard& card = local_credit_card();
   card.SetNumber(u"");
-  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
+  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US",
+                         delegate.GetWeakPtr());
 
   FakePaymentAppDelegate app_delegate;
 
@@ -352,7 +357,8 @@ TEST_F(AutofillPaymentAppTest, InvokePaymentApp_UnmaskBeforeNormalization) {
 
   autofill::CreditCard& card = local_credit_card();
   card.SetNumber(u"");
-  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US", &delegate);
+  AutofillPaymentApp app("visa", card, billing_profiles(), "en-US",
+                         delegate.GetWeakPtr());
 
   FakePaymentAppDelegate app_delegate;
 

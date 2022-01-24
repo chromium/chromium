@@ -6,7 +6,6 @@
 #define COMPONENTS_PERMISSIONS_ANDROID_NFC_NFC_SYSTEM_LEVEL_SETTING_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace content {
 class WebContents;

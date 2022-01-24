@@ -240,11 +240,6 @@ public class VoiceRecognitionHandlerTest {
             mVoiceConfidenceValue = value;
         }
 
-        @Override
-        protected boolean isRecognitionIntentPresent(boolean useCachedValue) {
-            return true;
-        }
-
         @VoiceInteractionSource
         public int getVoiceSearchStartEventSource() {
             return mStartSource;
@@ -478,6 +473,9 @@ public class VoiceRecognitionHandlerTest {
         public String getUrl() {
             return mUrl;
         }
+
+        @Override
+        public void notifyVoiceRecognitionCanceled() {}
     }
 
     /**
@@ -531,7 +529,7 @@ public class VoiceRecognitionHandlerTest {
             mCancelableIntent = intent;
             mCallback = callback;
             if (mCancelableIntentSuccess) {
-                callback.onIntentCompleted(mWindowAndroid, mResultCode, mResults);
+                callback.onIntentCompleted(mResultCode, mResults);
                 return 0;
             }
             return WindowAndroid.START_INTENT_FAILURE;
@@ -617,6 +615,7 @@ public class VoiceRecognitionHandlerTest {
         doReturn(new GURL("https://www.google.com/search?q=abc")).when(mMatch).getUrl();
         doReturn(true).when(mMatch).isSearchSuggestion();
         mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mWindowAndroid = new TestWindowAndroid(mActivityTestRule.getActivity());
@@ -626,6 +625,7 @@ public class VoiceRecognitionHandlerTest {
         mDataProvider = new TestDataProvider();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mDelegate = new TestDelegate();
+            VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(true);
             mHandler = new TestVoiceRecognitionHandler(mDelegate, mProfileSupplier);
             mHandler.addObserver(mObserver);
         });
@@ -655,6 +655,7 @@ public class VoiceRecognitionHandlerTest {
         SysUtils.resetForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mHandler.removeObserver(mObserver);
+            VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
             mWindowAndroid.destroy();
         });
     }
@@ -1431,6 +1432,10 @@ public class VoiceRecognitionHandlerTest {
     public void testParseResults_VoiceResponseURLConversion() {
         doReturn(false).when(mMatch).isSearchSuggestion();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Needed to interact with classifier.
+            // AutocompleteCoordinator#classify() requires a valid profile.
+            mProfileSupplier.set(Profile.getLastUsedRegularProfile());
+
             String[] texts =
                     new String[] {"a", "www. b .co .uk", "engadget .com", "www.google.com"};
             float[] confidences = new float[] {1.0f, 1.0f, 1.0f, 1.0f};
@@ -1549,7 +1554,7 @@ public class VoiceRecognitionHandlerTest {
         Assert.assertEquals(-1, mHandler.getVoiceSearchUnexpectedResultSource());
 
         IntentCallback callback = mWindowAndroid.getIntentCallback();
-        callback.onIntentCompleted(mWindowAndroid, Activity.RESULT_CANCELED, null);
+        callback.onIntentCompleted(Activity.RESULT_CANCELED, null);
         Assert.assertEquals(
                 VoiceInteractionSource.NTP, mHandler.getVoiceSearchUnexpectedResultSource());
     }

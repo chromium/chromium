@@ -31,6 +31,9 @@ class Target : public service_manager::Service,
         base::BindRepeating(&Target::Create, base::Unretained(this)));
   }
 
+  Target(const Target&) = delete;
+  Target& operator=(const Target&) = delete;
+
   ~Target() override = default;
 
  private:
@@ -57,8 +60,6 @@ class Target : public service_manager::Service,
   service_manager::ServiceReceiver service_receiver_;
   service_manager::BinderRegistry registry_;
   mojo::ReceiverSet<ConnectTestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(Target);
 };
 
 }  // namespace

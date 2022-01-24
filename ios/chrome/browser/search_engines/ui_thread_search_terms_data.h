@@ -15,6 +15,10 @@ namespace ios {
 class UIThreadSearchTermsData : public SearchTermsData {
  public:
   UIThreadSearchTermsData();
+
+  UIThreadSearchTermsData(const UIThreadSearchTermsData&) = delete;
+  UIThreadSearchTermsData& operator=(const UIThreadSearchTermsData&) = delete;
+
   ~UIThreadSearchTermsData() override;
 
   // SearchTermsData implementation.
@@ -28,8 +32,6 @@ class UIThreadSearchTermsData : public SearchTermsData {
 
  private:
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIThreadSearchTermsData);
 };
 
 }  // namespace ios

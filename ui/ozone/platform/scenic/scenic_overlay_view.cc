@@ -38,9 +38,8 @@ ScenicOverlayView::ScenicOverlayView(
             CreateViewToken(&view_holder_token_),
             kSessionDebugName) {
   scenic_session_.SetDebugName(kSessionDebugName);
-  scenic_session_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "Lost connection to scenic session.";
-  });
+  scenic_session_.set_error_handler(
+      base::LogFidlErrorAndExitProcess(FROM_HERE, "ScenicSession"));
 }
 
 ScenicOverlayView::~ScenicOverlayView() {
@@ -64,9 +63,8 @@ void ScenicOverlayView::Initialize(
   uint32_t image_pipe_id = scenic_session_.AllocResourceId();
   scenic_session_.Enqueue(
       scenic::NewCreateImagePipe2Cmd(image_pipe_id, image_pipe_.NewRequest()));
-  image_pipe_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(FATAL, status) << "ImagePipe disconnected";
-  });
+  image_pipe_.set_error_handler(
+      base::LogFidlErrorAndExitProcess(FROM_HERE, "ImagePipe"));
 
   image_material_ = std::make_unique<scenic::Material>(&scenic_session_);
   image_material_->SetTexture(image_pipe_id);

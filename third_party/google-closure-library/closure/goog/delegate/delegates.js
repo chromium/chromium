@@ -1,16 +1,8 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides some utility methods for calling delegate lists with
@@ -26,11 +18,15 @@ goog.module('goog.delegate.delegates');
  * Calls the first delegate, or returns undefined if none are given.
  * @param {!Array<T>} delegates
  * @param {function(T): R} mapper
+ * @param {function(): (R|undefined)=} defaultImpl
  * @return {R|undefined}
  * @template T, R
  */
-exports.callFirst = (delegates, mapper) => {
-  return delegates.length > 0 ? mapper(delegates[0]) : undefined;
+exports.callFirst = (delegates, mapper, defaultImpl = undefined) => {
+  if (delegates.length === 0) {
+    return defaultImpl ? defaultImpl() : undefined;
+  }
+  return mapper(delegates[0]);
 };
 
 
@@ -39,16 +35,21 @@ exports.callFirst = (delegates, mapper) => {
  * undefined if no such element is found.
  * @param {!Array<T>} delegates
  * @param {function(T): R|undefined} mapper
+ * @param {function(): (R|undefined)=} defaultImpl
  * @return {R|undefined}
  * @template T, R
  */
-exports.callUntilDefinedAndNotNull = (delegates, mapper) => {
-  for (const delegate of delegates) {
-    const result = mapper(delegate);
-    if (result != null) return result;
-  }
-  return undefined;
-};
+exports.callUntilDefinedAndNotNull =
+    (delegates, mapper, defaultImpl = undefined) => {
+      if (delegates.length === 0) {
+        return defaultImpl ? defaultImpl() : undefined;
+      }
+      for (const delegate of delegates) {
+        const result = mapper(delegate);
+        if (result != null) return result;
+      }
+      return undefined;
+    };
 
 
 /**
@@ -56,10 +57,14 @@ exports.callUntilDefinedAndNotNull = (delegates, mapper) => {
  * element is found.
  * @param {!Array<T>} delegates
  * @param {function(T): R} mapper
+ * @param {function(): (R|boolean)=} defaultImpl
  * @return {boolean|R}
  * @template T, R
  */
-exports.callUntilTruthy = (delegates, mapper) => {
+exports.callUntilTruthy = (delegates, mapper, defaultImpl = undefined) => {
+  if (delegates.length === 0) {
+    return defaultImpl ? defaultImpl() : false;
+  }
   for (const delegate of delegates) {
     const result = mapper(delegate);
     if (result) return result;

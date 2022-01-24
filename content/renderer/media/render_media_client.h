@@ -15,6 +15,9 @@ namespace content {
 // visible to the lower media layer.
 class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
  public:
+  RenderMediaClient(const RenderMediaClient&) = delete;
+  RenderMediaClient& operator=(const RenderMediaClient&) = delete;
+
   // Initialize RenderMediaClient and SetMediaClient(). Note that the instance
   // is not exposed because no content code needs to directly access it.
   static void Initialize();
@@ -34,8 +37,6 @@ class CONTENT_EXPORT RenderMediaClient : public media::MediaClient {
  private:
   RenderMediaClient();
   ~RenderMediaClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderMediaClient);
 };
 
 }  // namespace content

@@ -94,12 +94,11 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
-  uint32_t result;
   std::string input_pipe_name(kChromePipeNamePrefix);
   input_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_write_handle;
-  result = CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
-                           &temp_write_handle);
+  CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
+                  &temp_write_handle);
   if (!temp_write_handle.IsValid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
@@ -107,8 +106,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   std::string output_pipe_name(kChromePipeNamePrefix);
   output_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_read_handle;
-  result = CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND,
-                           &temp_read_handle);
+  CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND, &temp_read_handle);
   if (!temp_read_handle.IsValid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }

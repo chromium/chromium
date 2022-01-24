@@ -10,9 +10,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
-
 namespace {
 
 constexpr char kGaiaAuthenticator[] = "$('gaia-signin').authenticator_";
@@ -59,7 +58,7 @@ void OobeAuthPageWaiter::WaitForEvent(const std::string& event) {
   // the call might hang or won't execute properly.
   MaybeWaitForOobeToInitialize();
 
-  test::OobeJS().Evaluate(js);
+  OobeJS().Evaluate(js);
 
   std::string message;
   do {
@@ -87,4 +86,4 @@ OobeAuthPageWaiter OobeEnrollmentPageWaiter() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

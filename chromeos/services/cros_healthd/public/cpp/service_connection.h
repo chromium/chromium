@@ -10,12 +10,12 @@
 #include <cstdint>
 #include <string>
 
+#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,12 +29,11 @@ class ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
 
-  using BindNetworkHealthServiceCallback =
-      base::RepeatingCallback<mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkHealthService>()>;
+  using BindNetworkHealthServiceCallback = base::RepeatingCallback<
+      mojo::PendingRemote<ash::network_health::mojom::NetworkHealthService>()>;
   using BindNetworkDiagnosticsRoutinesCallback =
       base::RepeatingCallback<mojo::PendingRemote<
-          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
+          ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
   // Retrieve a list of available diagnostic routines. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
@@ -252,6 +251,27 @@ class ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::RunHttpsLatencyRoutineCallback
           callback) = 0;
 
+  // Requests that cros_healthd runs the ARC HTTP routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunArcHttpRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunArcHttpRoutineCallback
+          callback) = 0;
+
+  // Requests that cros_healthd runs the ARC PING routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunArcPingRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunArcPingRoutineCallback
+          callback) = 0;
+
+  // Requests that cros_healthd runs the ARC DNS resolution routine. See
+  // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void RunArcDnsResolutionRoutine(
+      mojom::CrosHealthdDiagnosticsService::RunArcDnsResolutionRoutineCallback
+          callback) = 0;
+
   // Requests that cros_healthd runs the video conferencing routine. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
@@ -284,8 +304,7 @@ class ServiceConnection {
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void AddNetworkObserver(
-      mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
           pending_observer) = 0;
 
   // Subscribes to cros_healthd's audio-related events. See
@@ -293,6 +312,13 @@ class ServiceConnection {
   // details.
   virtual void AddAudioObserver(
       mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
+          pending_observer) = 0;
+
+  // Subscribes to cros_healthd's Thunderbolt-related events. See
+  // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void AddThunderboltObserver(
+      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
           pending_observer) = 0;
 
   // Gathers pieces of information about the platform. See
@@ -334,6 +360,9 @@ class ServiceConnection {
   // is set, and anytime the mojo connection to CrosHealthd is disconnected.
   virtual void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) = 0;
+
+  // Fetch touchpad stack driver library name.
+  virtual std::string FetchTouchpadLibraryName() = 0;
 
   // Calls FlushForTesting method on all mojo::Remote objects owned by
   // ServiceConnection. This method can be used for example to gracefully

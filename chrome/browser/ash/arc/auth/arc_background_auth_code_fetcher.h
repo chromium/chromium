@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/auth/arc_auth_code_fetcher.h"
@@ -43,6 +42,11 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
       const CoreAccountId& account_id,
       bool initial_signin,
       bool is_primary_account);
+
+  ArcBackgroundAuthCodeFetcher(const ArcBackgroundAuthCodeFetcher&) = delete;
+  ArcBackgroundAuthCodeFetcher& operator=(const ArcBackgroundAuthCodeFetcher&) =
+      delete;
+
   ~ArcBackgroundAuthCodeFetcher() override;
 
   // ArcAuthCodeFetcher:
@@ -91,8 +95,6 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   bool bypass_proxy_ = false;
 
   base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBackgroundAuthCodeFetcher);
 };
 
 }  // namespace arc

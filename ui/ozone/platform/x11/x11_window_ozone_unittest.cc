@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/platform_window/x11/x11_window.h"
 
 #include <memory>
@@ -46,7 +47,9 @@ ACTION_P(CloneEvent, event_ptr) {
 // is more than enough.
 class TestScreen : public display::ScreenBase {
  public:
-  TestScreen() { ProcessDisplayChanged({}, true); }
+  TestScreen() {
+    ProcessDisplayChanged(display::Display(display::kDefaultDisplayId), true);
+  }
   ~TestScreen() override = default;
   TestScreen(const TestScreen& screen) = delete;
   TestScreen& operator=(const TestScreen& screen) = delete;
@@ -67,6 +70,9 @@ class X11WindowOzoneTest : public testing::Test {
       : task_env_(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI)) {}
 
+  X11WindowOzoneTest(const X11WindowOzoneTest&) = delete;
+  X11WindowOzoneTest& operator=(const X11WindowOzoneTest&) = delete;
+
   ~X11WindowOzoneTest() override = default;
 
   void SetUp() override {
@@ -82,10 +88,12 @@ class X11WindowOzoneTest : public testing::Test {
   std::unique_ptr<PlatformWindow> CreatePlatformWindow(
       MockPlatformWindowDelegate* delegate,
       const gfx::Rect& bounds,
-      gfx::AcceleratedWidget* widget) {
+      gfx::AcceleratedWidget* widget,
+      X11ExtensionDelegate* x11_extension_delegate) {
     EXPECT_CALL(*delegate, OnAcceleratedWidgetAvailable(_))
         .WillOnce(StoreWidget(widget));
     PlatformWindowInitProperties init_params(bounds);
+    init_params.x11_extension_delegate = x11_extension_delegate;
     auto window = std::make_unique<X11Window>(delegate);
     window->Initialize(std::move(init_params));
     return std::move(window);
@@ -109,8 +117,6 @@ class X11WindowOzoneTest : public testing::Test {
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
   std::unique_ptr<X11EventSource> event_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(X11WindowOzoneTest);
 };
 
 // This test ensures that events are handled by a right target(widget).
@@ -118,7 +124,7 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToRightTarget) {
   MockPlatformWindowDelegate delegate;
   gfx::AcceleratedWidget widget;
   constexpr gfx::Rect bounds(30, 80, 800, 600);
-  auto window = CreatePlatformWindow(&delegate, bounds, &widget);
+  auto window = CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
 
   ScopedXI2Event xi_event;
   xi_event.InitGenericButtonEvent(kPointerDeviceId, ET_MOUSE_PRESSED,
@@ -136,7 +142,8 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToRightTarget) {
   gfx::AcceleratedWidget widget_2;
   gfx::Rect bounds_2(525, 155, 296, 407);
 
-  auto window_2 = CreatePlatformWindow(&delegate_2, bounds_2, &widget_2);
+  auto window_2 =
+      CreatePlatformWindow(&delegate_2, bounds_2, &widget_2, nullptr);
 
   // Check event goes to right target without capture being set.
   event.reset();
@@ -157,13 +164,14 @@ TEST_F(X11WindowOzoneTest, SendPlatformEventToCapturedWindow) {
   gfx::AcceleratedWidget widget;
   constexpr gfx::Rect bounds(30, 80, 800, 600);
   EXPECT_CALL(delegate, OnClosed()).Times(1);
-  auto window = CreatePlatformWindow(&delegate, bounds, &widget);
+  auto window = CreatePlatformWindow(&delegate, bounds, &widget, nullptr);
 
   MockPlatformWindowDelegate delegate_2;
   gfx::AcceleratedWidget widget_2;
   gfx::Rect bounds_2(525, 155, 296, 407);
   EXPECT_CALL(delegate_2, OnClosed()).Times(1);
-  auto window_2 = CreatePlatformWindow(&delegate_2, bounds_2, &widget_2);
+  auto window_2 =
+      CreatePlatformWindow(&delegate_2, bounds_2, &widget_2, nullptr);
 
   ScopedXI2Event xi_event;
   xi_event.InitGenericButtonEvent(kPointerDeviceId, ET_MOUSE_PRESSED,
@@ -189,11 +197,11 @@ TEST_F(X11WindowOzoneTest, GetWindowFromAcceleratedWigets) {
   MockPlatformWindowDelegate delegate;
   gfx::Rect bounds(0, 0, 100, 100);
   gfx::AcceleratedWidget widget_1;
-  auto window_1 = CreatePlatformWindow(&delegate, bounds, &widget_1);
+  auto window_1 = CreatePlatformWindow(&delegate, bounds, &widget_1, nullptr);
   EXPECT_EQ(window_1.get(), window_manager()->GetWindow(widget_1));
 
   gfx::AcceleratedWidget widget_2;
-  auto window_2 = CreatePlatformWindow(&delegate, bounds, &widget_2);
+  auto window_2 = CreatePlatformWindow(&delegate, bounds, &widget_2, nullptr);
   EXPECT_EQ(window_2.get(), window_manager()->GetWindow(widget_2));
   EXPECT_EQ(window_1.get(), window_manager()->GetWindow(widget_1));
 
@@ -214,12 +222,14 @@ TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
   gfx::Rect bounds_1(0, 0, 100, 100);
   MockPlatformWindowDelegate delegate_1;
   gfx::AcceleratedWidget widget_1;
-  auto window_1 = CreatePlatformWindow(&delegate_1, bounds_1, &widget_1);
+  auto window_1 =
+      CreatePlatformWindow(&delegate_1, bounds_1, &widget_1, nullptr);
 
   MockPlatformWindowDelegate delegate_2;
   gfx::AcceleratedWidget widget_2;
   gfx::Rect bounds_2(0, 100, 100, 100);
-  auto window_2 = CreatePlatformWindow(&delegate_2, bounds_2, &widget_2);
+  auto window_2 =
+      CreatePlatformWindow(&delegate_2, bounds_2, &widget_2, nullptr);
 
   EXPECT_CALL(delegate_1, OnMouseEnter()).Times(1);
   window_manager()->MouseOnWindow(static_cast<X11Window*>(window_1.get()));
@@ -248,6 +258,28 @@ TEST_F(X11WindowOzoneTest, MouseEnterAndDelete) {
   EXPECT_FALSE(window_manager()->window_mouse_currently_on_for_test());
 }
 
+class FakeX11ExtensionDelegateForSize : public X11ExtensionDelegate {
+ public:
+  explicit FakeX11ExtensionDelegateForSize(const gfx::Rect& guessed_size_px)
+      : guessed_size_px_(guessed_size_px) {}
+  ~FakeX11ExtensionDelegateForSize() override = default;
+
+  void OnLostMouseGrab() override {}
+#if BUILDFLAG(USE_ATK)
+  bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event,
+                     bool transient) override {
+    return false;
+  }
+#endif
+  bool IsOverrideRedirect() const override { return false; }
+  gfx::Rect GetGuessedFullScreenSizeInPx() const override {
+    return guessed_size_px_;
+  }
+
+ private:
+  gfx::Rect guessed_size_px_;
+};
+
 // Verifies X11Window sets fullscreen bounds in pixels when going to fullscreen.
 TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
   constexpr gfx::Rect screen_bounds_in_px(640, 480, 1280, 720);
@@ -256,7 +288,9 @@ TEST_F(X11WindowOzoneTest, ToggleFullscreen) {
   MockPlatformWindowDelegate delegate;
   gfx::AcceleratedWidget widget;
   constexpr gfx::Rect bounds(30, 80, 800, 600);
-  auto window = CreatePlatformWindow(&delegate, bounds, &widget);
+  FakeX11ExtensionDelegateForSize x11_extension_delegate(screen_bounds_in_px);
+  auto window =
+      CreatePlatformWindow(&delegate, bounds, &widget, &x11_extension_delegate);
 
   EXPECT_CALL(delegate, OnBoundsChanged(testing::Eq(screen_bounds_in_px)));
   window->ToggleFullscreen();

@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
@@ -22,6 +21,9 @@ namespace chromeos {
 // initialization.
 class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcMidisClient : public DBusClient {
  public:
+  ArcMidisClient(const ArcMidisClient&) = delete;
+  ArcMidisClient& operator=(const ArcMidisClient&) = delete;
+
   ~ArcMidisClient() override = default;
 
   // Factory function.
@@ -35,9 +37,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcMidisClient : public DBusClient {
  protected:
   // Create() should be used instead.
   ArcMidisClient() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcMidisClient);
 };
 
 }  // namespace chromeos

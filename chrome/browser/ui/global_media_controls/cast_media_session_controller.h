@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_SESSION_CONTROLLER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,6 +33,10 @@ class CastMediaSessionController {
       media_router::mojom::MediaStatusPtr media_status);
 
   virtual void SeekTo(base::TimeDelta time);
+
+  virtual void SetMute(bool mute);
+
+  virtual void SetVolume(float volume);
 
   void FlushForTesting();
 

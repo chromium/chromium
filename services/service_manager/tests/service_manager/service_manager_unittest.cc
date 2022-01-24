@@ -78,6 +78,10 @@ class TestService : public Service, public test::mojom::CreateInstanceTest {
     registry_.AddInterface<test::mojom::CreateInstanceTest>(
         base::BindRepeating(&TestService::Create, base::Unretained(this)));
   }
+
+  TestService(const TestService&) = delete;
+  TestService& operator=(const TestService&) = delete;
+
   ~TestService() override = default;
 
   const Identity& target_identity() const { return target_identity_; }
@@ -116,14 +120,16 @@ class TestService : public Service, public test::mojom::CreateInstanceTest {
 
   BinderRegistry registry_;
   mojo::Receiver<test::mojom::CreateInstanceTest> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestService);
 };
 
 class SimpleService : public Service {
  public:
   explicit SimpleService(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  SimpleService(const SimpleService&) = delete;
+  SimpleService& operator=(const SimpleService&) = delete;
+
   ~SimpleService() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
@@ -144,8 +150,6 @@ class SimpleService : public Service {
 
   ServiceReceiver receiver_;
   base::OnceClosure connection_lost_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleService);
 };
 
 }  // namespace
@@ -157,6 +161,10 @@ class ServiceManagerTest : public testing::Test,
       : test_service_manager_(GetTestManifests()),
         test_service_(
             test_service_manager_.RegisterTestInstance(kTestServiceName)) {}
+
+  ServiceManagerTest(const ServiceManagerTest&) = delete;
+  ServiceManagerTest& operator=(const ServiceManagerTest&) = delete;
+
   ~ServiceManagerTest() override = default;
 
  protected:
@@ -243,14 +251,13 @@ class ServiceManagerTest : public testing::Test,
   }
 
   void StartTarget() {
+    // The test executable is a data_deps and thus generated test data.
     base::FilePath target_path;
-    CHECK(base::PathService::Get(base::DIR_ASSETS, &target_path));
+    CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &target_path));
 
+    target_path = target_path.AppendASCII(kTestTargetName);
 #if defined(OS_WIN)
-    target_path =
-        target_path.AppendASCII(kTestTargetName).AddExtensionASCII("exe");
-#else
-    target_path = target_path.Append(FILE_PATH_LITERAL(kTestTargetName));
+    target_path = target_path.AddExtensionASCII("exe");
 #endif
 
     base::CommandLine child_command_line(target_path);
@@ -318,7 +325,7 @@ class ServiceManagerTest : public testing::Test,
     if (!expect_service_started) {
       // Wait briefly and test no new service was created.
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
+          FROM_HERE, loop.QuitClosure(), base::Seconds(1));
     }
 
     loop.Run();
@@ -394,8 +401,6 @@ class ServiceManagerTest : public testing::Test,
   ServiceFailedToStartCallback service_failed_to_start_callback_;
   ServicePIDReceivedCallback service_pid_received_callback_;
   base::Process target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceManagerTest);
 };
 
 TEST_F(ServiceManagerTest, CreateInstance) {

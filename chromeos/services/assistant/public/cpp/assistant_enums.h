@@ -65,7 +65,8 @@ enum class AssistantEntryPoint {
   kDeepLink = 1,
   kHotkey = 2,
   kHotword = 3,
-  // kLauncherSearchBoxDeprecated = 4,
+  // Deprecated, please do not reuse
+  // kLauncherSearchBox = 4,
   kLongPressLauncher = 5,
   kSetup = 6,
   kStylus = 7,
@@ -73,10 +74,11 @@ enum class AssistantEntryPoint {
   kLauncherSearchBoxIcon = 9,
   // Deprecated, please do not reuse
   // kProactiveSuggestions = 10,
-  kLauncherChip = 11,
+  // Deprecated, please do not reuse
+  // kLauncherChip = 11,
   // Deprecated, please do not reuse
   // kBloom = 12,
-  kMaxValue = kLauncherChip,
+  kMaxValue = kLauncherSearchBoxIcon,
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.

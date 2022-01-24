@@ -5,8 +5,11 @@
 #include "cc/test/skia_common.h"
 
 #include <stddef.h>
+
+#include <cstdint>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,7 +23,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
@@ -239,8 +242,13 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                  base::NumberToString(duration_secs * kFps));
   }
 
-  return SkottieWrapper::CreateNonSerializable(
-      base::as_bytes(base::make_span(json)));
+  return CreateSkottieFromString(json);
+}
+
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json) {
+  base::span<const uint8_t> json_span = base::as_bytes(base::make_span(json));
+  return SkottieWrapper::CreateSerializable(
+      std::vector<uint8_t>(json_span.begin(), json_span.end()));
 }
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {

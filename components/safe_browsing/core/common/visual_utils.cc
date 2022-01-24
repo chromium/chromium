@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -28,8 +29,13 @@ namespace {
 
 // WARNING: The following parameters are highly privacy and performance
 // sensitive. These should not be changed without thorough review.
+#if defined(OS_ANDROID)
+const int kPHashDownsampleWidth = 108;
+const int kPHashDownsampleHeight = 192;
+#else
 const int kPHashDownsampleWidth = 288;
 const int kPHashDownsampleHeight = 288;
+#endif
 const int kPHashBlockSize = 6;
 
 // Constants for computing Earth Movers Distance (EMD) between ColorHistograms.
@@ -279,9 +285,9 @@ bool GetBlurredImage(const SkBitmap& image,
   const int data_size = blurred->width() * blurred->height();
   blurred_image->mutable_data()->reserve(data_size);
 
-  for (int x = 0; x < blurred->width(); ++x) {
-    for (int y = 0; y < blurred->height(); ++y) {
-      SkColor color = blurred->getColor(y, x);
+  for (int y = 0; y < blurred->height(); ++y) {
+    for (int x = 0; x < blurred->width(); ++x) {
+      SkColor color = blurred->getColor(x, y);
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetR(color));
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetG(color));
       *blurred_image->mutable_data() += static_cast<char>(SkColorGetB(color));

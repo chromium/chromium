@@ -14,7 +14,7 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace cc {
 
@@ -55,8 +55,9 @@ bool PaintedScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return is_overlay_;
 }
 
-void PaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerBase::PushPropertiesTo(layer);
+void PaintedScrollbarLayer::PushPropertiesTo(LayerImpl* layer,
+                                             const CommitState& commit_state) {
+  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state);
 
   PaintedScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedScrollbarLayerImpl*>(layer);
@@ -113,6 +114,7 @@ gfx::Size PaintedScrollbarLayer::LayerSizeToContentSize(
 
 bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
   // These properties should never change.
+  DCHECK(IsMutationAllowed());
   DCHECK_EQ(supports_drag_snap_back_, scrollbar_->SupportsDragSnapBack());
   DCHECK_EQ(is_left_side_vertical_scrollbar(),
             scrollbar_->IsLeftSideVerticalScrollbar());
@@ -138,6 +140,7 @@ bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
 }
 
 bool PaintedScrollbarLayer::UpdateInternalContentScale() {
+  DCHECK(IsMutationAllowed());
   gfx::Transform transform;
   transform = draw_property_utils::ScreenSpaceTransform(
       this, layer_tree_host()->property_trees()->transform_tree);

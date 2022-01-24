@@ -35,6 +35,7 @@ enum SdkVersion {
   SDK_VERSION_P = 28,
   SDK_VERSION_Q = 29,
   SDK_VERSION_R = 30,
+  SDK_VERSION_S = 31,
 };
 
 // BuildInfo is a singleton class that stores android build and device
@@ -42,6 +43,8 @@ enum SdkVersion {
 // primarily in crash reporting.
 class BASE_EXPORT BuildInfo {
  public:
+  BuildInfo(const BuildInfo&) = delete;
+  BuildInfo& operator=(const BuildInfo&) = delete;
 
   ~BuildInfo() {}
 
@@ -50,10 +53,6 @@ class BASE_EXPORT BuildInfo {
   // question isn't actually freed until shutdown. This is ok because there
   // should only be one instance of BuildInfo ever created.
   static BuildInfo* GetInstance();
-
-  // Checks if the device is running on a pre-release version of Android S or a
-  // release version of Android S or newer.
-  bool IsAtLeastS();
 
   // Const char* is used instead of std::strings because these values must be
   // available even if the process is in a crash state. Sadly
@@ -175,8 +174,6 @@ class BASE_EXPORT BuildInfo {
   const bool is_debug_android_;
   const bool is_tv_;
   const char* const version_incremental_;
-
-  DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };
 
 }  // namespace android

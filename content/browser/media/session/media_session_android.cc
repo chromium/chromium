@@ -201,7 +201,7 @@ void MediaSessionAndroid::Seek(
   DCHECK(media_session_);
   DCHECK_NE(millis, 0)
       << "Attempted to seek by a missing number of milliseconds";
-  media_session_->Seek(base::TimeDelta::FromMilliseconds(millis));
+  media_session_->Seek(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::SeekTo(
@@ -210,7 +210,7 @@ void MediaSessionAndroid::SeekTo(
     const jlong millis) {
   DCHECK(media_session_);
   DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
-  media_session_->SeekTo(base::TimeDelta::FromMilliseconds(millis));
+  media_session_->SeekTo(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::DidReceiveAction(JNIEnv* env,

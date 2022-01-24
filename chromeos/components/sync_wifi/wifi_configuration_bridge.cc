@@ -54,8 +54,7 @@ std::unique_ptr<syncer::EntityData> GenerateWifiEntityData(
 // Delay before attempting to save a newly configured network to sync.  This
 // is to give time for an initial connection attempt to fail in case of a bad
 // password, which will prevent syncing.
-constexpr base::TimeDelta kSyncAfterCreatedTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kSyncAfterCreatedTimeout = base::Seconds(20);
 
 }  // namespace
 
@@ -442,7 +441,7 @@ void WifiConfigurationBridge::OnFirstConnectionToNetwork(
 
 void WifiConfigurationBridge::OnNetworkUpdate(
     const std::string& guid,
-    base::DictionaryValue* set_properties) {
+    const base::Value* set_properties) {
   if (!set_properties)
     return;
 
@@ -455,10 +454,10 @@ void WifiConfigurationBridge::OnNetworkUpdate(
     return;
   }
 
-  if (!set_properties->HasKey(shill::kAutoConnectProperty) &&
-      !set_properties->HasKey(shill::kPriorityProperty) &&
-      !set_properties->HasKey(shill::kProxyConfigProperty) &&
-      !set_properties->HasKey(shill::kMeteredProperty) &&
+  if (!set_properties->FindKey(shill::kAutoConnectProperty) &&
+      !set_properties->FindKey(shill::kPriorityProperty) &&
+      !set_properties->FindKey(shill::kProxyConfigProperty) &&
+      !set_properties->FindKey(shill::kMeteredProperty) &&
       !set_properties->FindPath(
           base::StringPrintf("%s.%s", shill::kStaticIPConfigProperty,
                              shill::kNameServersProperty))) {

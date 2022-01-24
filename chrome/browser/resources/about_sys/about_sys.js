@@ -128,7 +128,7 @@ function createNodeForLogEntry(log) {
   // Add an anchor link that links to the log entry.
   const anchor = document.createElement('a');
   anchor.href = `#${log.statName}`;
-  anchor.text = '🔗';
+  anchor.className = 'anchor';
   nameDiv.appendChild(anchor);
 
   const a = document.createElement('a');

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SelectOption} from 'chrome://print/print_preview.js';
+import 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertDeepEquals, assertEquals, assertFalse} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.m.js';
+import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
@@ -35,7 +35,8 @@ suite('MediaSizeSettingsTest', function() {
   });
 
   test('settings select', function() {
-    const settingsSelect = mediaSizeSection.$$('print-preview-settings-select');
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
+        'print-preview-settings-select');
     assertFalse(settingsSelect.disabled);
     assertEquals(mediaSizeCapability, settingsSelect.capability);
     assertEquals('mediaSize', settingsSelect.settingName);
@@ -46,7 +47,8 @@ suite('MediaSizeSettingsTest', function() {
     const squareOption = mediaSizeCapability.option[1];
 
     // Default is letter
-    const settingsSelect = mediaSizeSection.$$('print-preview-settings-select');
+    const settingsSelect = mediaSizeSection.shadowRoot.querySelector(
+        'print-preview-settings-select');
     assertDeepEquals(letterOption, JSON.parse(settingsSelect.selectedValue));
     assertDeepEquals(
         letterOption, mediaSizeSection.getSettingValue('mediaSize'));

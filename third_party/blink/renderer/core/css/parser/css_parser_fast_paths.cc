@@ -13,8 +13,10 @@
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
+#include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
@@ -106,7 +108,7 @@ static inline bool ParseSimpleLength(const CharacterType* characters,
   number = CharactersToDouble(characters, length, &ok);
   if (!ok)
     return false;
-  number = clampTo<double>(number, -std::numeric_limits<float>::max(),
+  number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
                            std::numeric_limits<float>::max());
   return true;
 }
@@ -366,7 +368,8 @@ static bool ParseColorNumberOrPercentage(const CharacterType*& string,
 }
 
 template <typename CharacterType>
-static inline bool IsTenthAlpha(const CharacterType* string, const int length) {
+static inline bool IsTenthAlpha(const CharacterType* string,
+                                const wtf_size_t length) {
   // "0.X"
   if (length == 3 && string[0] == '0' && string[1] == '.' &&
       IsASCIIDigit(string[2]))
@@ -396,7 +399,7 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
 
   value = 0;
 
-  size_t length = end - string;
+  wtf_size_t length = static_cast<wtf_size_t>(end - string);
   if (length < 2)
     return false;
 
@@ -641,7 +644,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
                value_id == CSSValueID::kInlineEnd)) ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kForcedColorAdjust:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
+             (value_id == CSSValueID::kPreserveParentColor &&
+              RuntimeEnabledFeatures::ForcedColorsPreserveParentColorEnabled());
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
@@ -811,7 +816,7 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kVisible ||
              value_id == CSSValueID::kHidden ||
              value_id == CSSValueID::kCollapse;
-    case CSSPropertyID::kWebkitAppRegion:
+    case CSSPropertyID::kAppRegion:
       return (value_id >= CSSValueID::kDrag &&
               value_id <= CSSValueID::kNoDrag) ||
              value_id == CSSValueID::kNone;
@@ -915,6 +920,15 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kFontOpticalSizing:
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kFontSynthesisWeight:
+      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kFontSynthesisStyle:
+      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
+      return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
+    case CSSPropertyID::kFontSynthesisSmallCaps:
+      DCHECK(RuntimeEnabledFeatures::FontSynthesisEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone;
     case CSSPropertyID::kWebkitFontSmoothing:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kNone ||
@@ -1075,7 +1089,7 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kUnicodeBidi:
     case CSSPropertyID::kVectorEffect:
     case CSSPropertyID::kVisibility:
-    case CSSPropertyID::kWebkitAppRegion:
+    case CSSPropertyID::kAppRegion:
     case CSSPropertyID::kBackfaceVisibility:
     case CSSPropertyID::kBorderBlockEndStyle:
     case CSSPropertyID::kBorderBlockStartStyle:
@@ -1092,6 +1106,9 @@ bool CSSParserFastPaths::IsKeywordPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kFlexWrap:
     case CSSPropertyID::kFontKerning:
     case CSSPropertyID::kFontOpticalSizing:
+    case CSSPropertyID::kFontSynthesisWeight:
+    case CSSPropertyID::kFontSynthesisStyle:
+    case CSSPropertyID::kFontSynthesisSmallCaps:
     case CSSPropertyID::kWebkitFontSmoothing:
     case CSSPropertyID::kLineBreak:
     case CSSPropertyID::kWebkitLineBreak:
@@ -1132,7 +1149,9 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     if (!EqualIgnoringASCIICase(string, "initial") &&
         !EqualIgnoringASCIICase(string, "inherit") &&
         !EqualIgnoringASCIICase(string, "unset") &&
-        !EqualIgnoringASCIICase(string, "revert"))
+        !EqualIgnoringASCIICase(string, "revert") &&
+        (!RuntimeEnabledFeatures::CSSCascadeLayersEnabled() ||
+         !EqualIgnoringASCIICase(string, "revert-layer")))
       return nullptr;
 
     // Parse CSS-wide keyword shorthands using the CSSPropertyParser.
@@ -1157,6 +1176,9 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
     return cssvalue::CSSUnsetValue::Create();
   if (value_id == CSSValueID::kRevert)
     return cssvalue::CSSRevertValue::Create();
+  if (RuntimeEnabledFeatures::CSSCascadeLayersEnabled() &&
+      value_id == CSSValueID::kRevertLayer)
+    return cssvalue::CSSRevertLayerValue::Create();
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
                                                          parser_mode))
     return CSSIdentifierValue::Create(value_id);
@@ -1202,7 +1224,8 @@ static bool ParseTransformNumberArguments(CharType*& pos,
       return false;
     unsigned argument_length = static_cast<unsigned>(delimiter);
     bool ok;
-    double number = CharactersToDouble(pos, argument_length, &ok);
+    double number = CSSValueClampingUtils::ClampDouble(
+        CharactersToDouble(pos, argument_length, &ok));
     if (!ok)
       return false;
     transform_value->Append(*CSSNumericLiteralValue::Create(

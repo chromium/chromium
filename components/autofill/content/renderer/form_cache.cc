@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -88,44 +87,171 @@ void LogDeprecationMessages(const WebFormControlElement& element) {
 }
 
 // Determines whether the form is interesting enough to be sent to the browser
-// for further operations.
+// for further operations. This is the case if any of the below holds:
+// (1) At least one field is editable.
+// (2) At least one field has a non-empty autocomplete attribute.
+// (3) There is at least one iframe.
 bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
-  if (form.fields.empty() && form.child_frames.empty())
-    return false;
-
-  // If the form has at least one field with an autocomplete attribute, it is a
-  // candidate for autofill.
-  bool all_fields_are_passwords = true;
-  for (const FormFieldData& field : form.fields) {
-    if (!field.autocomplete_attribute.empty())
-      return true;
-    if (field.form_control_type != "password")
-      all_fields_are_passwords = false;
-  }
-
-  // If there are no autocomplete attributes, the form needs to have at least
-  // the required number of editable fields for the prediction routines to be a
-  // candidate for autofill.
-  return num_editable_elements >= kMinRequiredFieldsForHeuristics ||
-         num_editable_elements >= kMinRequiredFieldsForQuery ||
-         num_editable_elements >= kMinRequiredFieldsForUpload ||
-         (all_fields_are_passwords &&
-          num_editable_elements >=
-              kRequiredFieldsForFormsWithOnlyPasswordFields) ||
-         form.child_frames.size() > 0;
+  DCHECK_GE(form.fields.size(), num_editable_elements);
+  return num_editable_elements >= 1 || !form.child_frames.empty() ||
+         base::ranges::any_of(form.fields, base::not_fn(&std::string::empty),
+                              &FormFieldData::autocomplete_attribute);
 }
 
 }  // namespace
 
+FormCache::UpdateFormCacheResult::UpdateFormCacheResult() = default;
+FormCache::UpdateFormCacheResult::UpdateFormCacheResult(
+    UpdateFormCacheResult&&) = default;
+FormCache::UpdateFormCacheResult& FormCache::UpdateFormCacheResult::operator=(
+    UpdateFormCacheResult&&) = default;
+FormCache::UpdateFormCacheResult::~UpdateFormCacheResult() = default;
+
 FormCache::FormCache(WebLocalFrame* frame) : frame_(frame) {}
 FormCache::~FormCache() = default;
 
-std::vector<FormData> FormCache::ExtractNewForms(
+void FormCache::MaybeUpdateParsedFormsPeak() {
+  peak_size_of_parsed_forms_ = std::max(
+      peak_size_of_parsed_forms_,
+      std::max(parsed_forms_by_renderer_id_.size(), parsed_forms_.size()));
+}
+
+FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager* field_data_manager) {
-  std::vector<FormData> forms;
+  DCHECK(base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms));
+
+  initial_checked_state_.clear();
+  initial_select_values_.clear();
+
+  std::set<FieldRendererId> observed_unique_renderer_ids;
+
+  // Log an error message for deprecated attributes, but only the first time
+  // the form is parsed.
+  bool log_deprecation_messages = parsed_forms_by_renderer_id_.empty();
+
+  // |parsed_forms_by_renderer_id_| is re-populated below in ProcessForm().
+  std::map<FormRendererId, FormData> old_parsed_forms =
+      std::move(parsed_forms_by_renderer_id_);
+  parsed_forms_by_renderer_id_.clear();
+
+  UpdateFormCacheResult r;
+  r.removed_forms = base::MakeFlatSet<FormRendererId>(
+      old_parsed_forms, {}, &std::pair<const FormRendererId, FormData>::first);
+
+  size_t num_fields_seen = 0;
+  size_t num_frames_seen = 0;
+
+  // Helper function that stores new autofillable forms in |forms|. Returns
+  // false iff the total number of fields exceeds |kMaxParseableFields|. Clears
+  // |form|'s FormData::child_frames if the total number of frames exceeds
+  // kMaxParseableChildFrames.
+  auto ProcessForm =
+      [&](FormData form,
+          const std::vector<WebFormControlElement>& control_elements) {
+        for (const auto& field : form.fields)
+          observed_unique_renderer_ids.insert(field.unique_renderer_id);
+
+        num_fields_seen += form.fields.size();
+        num_frames_seen += form.child_frames.size();
+
+        // Enforce the kMaxParseableFields limit: ignore all forms after this
+        // limit has been reached (i.e., abort parsing).
+        if (num_fields_seen > kMaxParseableFields)
+          return false;
+
+        // Enforce the kMaxParseableChildFrames limit: ignore the iframes, but
+        // do not ignore the fields (i.e., continue parsing).
+        if (num_frames_seen > kMaxParseableChildFrames)
+          form.child_frames.clear();
+
+        size_t num_editable_elements =
+            ScanFormControlElements(control_elements, log_deprecation_messages);
+
+        // Store only forms that contain iframes or fields.
+        if (IsFormInteresting(form, num_editable_elements)) {
+          FormRendererId form_id = form.unique_renderer_id;
+          DCHECK(parsed_forms_by_renderer_id_.find(form_id) ==
+                 parsed_forms_by_renderer_id_.end());
+          auto it = old_parsed_forms.find(form_id);
+          if (it == old_parsed_forms.end() ||
+              !FormData::DeepEqual(std::move(it->second), form)) {
+            SaveInitialValues(control_elements);
+            r.updated_forms.push_back(form);
+          }
+          r.removed_forms.erase(form_id);
+          parsed_forms_by_renderer_id_[form_id] = std::move(form);
+        }
+        return true;
+      };
+
+  constexpr form_util::ExtractMask extract_mask =
+      static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
+                                          form_util::EXTRACT_OPTIONS);
+
   WebDocument document = frame_->GetDocument();
-  if (document.IsNull())
-    return forms;
+  if (document.IsNull()) {
+    MaybeUpdateParsedFormsPeak();
+    return r;
+  }
+
+  for (const WebFormElement& form_element : document.Forms()) {
+    FormData form;
+    if (!WebFormElementToFormData(form_element, WebFormControlElement(),
+                                  field_data_manager, extract_mask, &form,
+                                  nullptr)) {
+      continue;
+    }
+    if (!ProcessForm(
+            std::move(form),
+            form_util::ExtractAutofillableElementsInForm(form_element))) {
+      PruneInitialValueCaches(observed_unique_renderer_ids);
+      MaybeUpdateParsedFormsPeak();
+      return r;
+    }
+  }
+
+  // Look for more parseable fields outside of forms. Create a synthetic form
+  // from them.
+  std::vector<WebElement> fieldsets;
+  std::vector<WebFormControlElement> control_elements =
+      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
+  std::vector<WebElement> iframe_elements =
+      form_util::GetUnownedIframeElements(document);
+
+  FormData synthetic_form;
+  if (!UnownedFormElementsAndFieldSetsToFormData(
+          fieldsets, control_elements, iframe_elements, nullptr, document,
+          field_data_manager, extract_mask, &synthetic_form, nullptr)) {
+    PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
+    return r;
+  }
+  if (!ProcessForm(std::move(synthetic_form), control_elements)) {
+    PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
+    return r;
+  }
+
+  PruneInitialValueCaches(observed_unique_renderer_ids);
+  MaybeUpdateParsedFormsPeak();
+  return r;
+}
+
+FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
+    const FieldDataManager* field_data_manager) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
+    return UpdateFormCache(field_data_manager);
+  }
+
+  UpdateFormCacheResult r;
+  r.removed_forms = base::MakeFlatSet<FormRendererId>(
+      parsed_forms_, {}, &FormData::unique_renderer_id);
+
+  WebDocument document = frame_->GetDocument();
+  if (document.IsNull()) {
+    MaybeUpdateParsedFormsPeak();
+    return r;
+  }
 
   initial_checked_state_.clear();
   initial_select_values_.clear();
@@ -158,37 +284,35 @@ std::vector<FormData> FormCache::ExtractNewForms(
 
     num_fields_seen += form.fields.size();
     num_frames_seen += form.child_frames.size();
-    if (num_fields_seen > kMaxParseableFields ||
-        num_frames_seen > kMaxParseableFrames) {
+
+    if (num_fields_seen > kMaxParseableFields) {
       PruneInitialValueCaches(observed_unique_renderer_ids);
-      return forms;
+      MaybeUpdateParsedFormsPeak();
+      return r;
     }
+
+    if (num_frames_seen > kMaxParseableChildFrames)
+      form.child_frames.clear();
 
     size_t num_editable_elements =
         ScanFormControlElements(control_elements, log_deprecation_messages);
 
-    if (!base::Contains(parsed_forms_, form) &&
-        IsFormInteresting(form, num_editable_elements)) {
+    if (!IsFormInteresting(form, num_editable_elements))
+      continue;
+
+    // The form is in the DOM and is interesting, so has not been removed.
+    r.removed_forms.erase(form.unique_renderer_id);
+
+    if (!base::Contains(parsed_forms_, form)) {
       for (auto it = parsed_forms_.begin(); it != parsed_forms_.end(); ++it) {
-        // We don't want to store twice forms that have the same rendererID or
-        // the same attributes/fields.
-        if (base::FeatureList::IsEnabled(
-                features::
-                    kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval)) {
-          if (it->unique_renderer_id == form.unique_renderer_id) {
-            parsed_forms_.erase(it);
-            break;
-          }
-        } else {
-          if (it->SameFormAs(form)) {
-            parsed_forms_.erase(it);
-            break;
-          }
+        if (it->SameFormAs(form)) {
+          parsed_forms_.erase(it);
+          break;
         }
       }
 
       SaveInitialValues(control_elements);
-      forms.push_back(form);
+      r.updated_forms.push_back(form);
       parsed_forms_.insert(form);
     }
   }
@@ -196,8 +320,7 @@ std::vector<FormData> FormCache::ExtractNewForms(
   // Look for more parseable fields outside of forms.
   std::vector<WebElement> fieldsets;
   std::vector<WebFormControlElement> control_elements =
-      form_util::GetUnownedAutofillableFormFieldElements(document.All(),
-                                                         &fieldsets);
+      form_util::GetUnownedAutofillableFormFieldElements(document, &fieldsets);
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
 
@@ -206,7 +329,8 @@ std::vector<FormData> FormCache::ExtractNewForms(
           fieldsets, control_elements, iframe_elements, nullptr, document,
           field_data_manager, extract_mask, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
-    return forms;
+    MaybeUpdateParsedFormsPeak();
+    return r;
   }
 
   for (const auto& field : synthetic_form.fields)
@@ -214,35 +338,51 @@ std::vector<FormData> FormCache::ExtractNewForms(
 
   num_fields_seen += synthetic_form.fields.size();
   num_frames_seen += synthetic_form.child_frames.size();
-  if (num_fields_seen > kMaxParseableFields ||
-      num_frames_seen > kMaxParseableFrames) {
+  if (num_fields_seen > kMaxParseableFields) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
-    return forms;
+    MaybeUpdateParsedFormsPeak();
+    return r;
   }
+
+  if (num_frames_seen > kMaxParseableChildFrames)
+    synthetic_form.child_frames.clear();
 
   size_t num_editable_elements =
       ScanFormControlElements(control_elements, log_deprecation_messages);
 
-  if (!base::Contains(parsed_forms_, synthetic_form) &&
-      IsFormInteresting(synthetic_form, num_editable_elements)) {
+  if (!IsFormInteresting(synthetic_form, num_editable_elements)) {
+    PruneInitialValueCaches(observed_unique_renderer_ids);
+    MaybeUpdateParsedFormsPeak();
+    return r;
+  }
+
+  // The form is in the DOM and is interesting, so has not been removed.
+  r.removed_forms.erase(synthetic_form.unique_renderer_id);
+
+  if (!base::Contains(parsed_forms_, synthetic_form)) {
     SaveInitialValues(control_elements);
-    forms.push_back(synthetic_form);
+    r.updated_forms.push_back(synthetic_form);
     parsed_forms_.insert(synthetic_form);
     parsed_forms_.erase(synthetic_form_);
     synthetic_form_ = synthetic_form;
   }
 
   PruneInitialValueCaches(observed_unique_renderer_ids);
-  return forms;
+  MaybeUpdateParsedFormsPeak();
+  return r;
 }
 
 void FormCache::Reset() {
-  // Record the size of |parsed_forms_| every time it reaches its peak size. The
-  // peak size is reached right before the cache is cleared.
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize", parsed_forms_.size());
+  // Record the size of the cached parsed forms every time it reaches its peak
+  // size. The peak size is reached right before the cache is cleared.
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize",
+                            peak_size_of_parsed_forms_);
 
   synthetic_form_ = FormData();
   parsed_forms_.clear();
+  // TODO(crbug/1215333): Remove after the `AutofillUseNewFormExtraction`
+  // feature is deleted.
+  parsed_forms_by_renderer_id_.clear();
   initial_select_values_.clear();
   initial_checked_state_.clear();
   fields_eligible_for_manual_filling_.clear();
@@ -263,16 +403,16 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
 
   control_element.SetAutofillState(WebAutofillState::kNotFilled);
 
-  WebInputElement* input_element = ToWebInputElement(&control_element);
-  if (form_util::IsTextInput(input_element) ||
-      form_util::IsMonthInput(input_element)) {
-    input_element->SetAutofillValue(blink::WebString());
+  WebInputElement* web_input_element = ToWebInputElement(&control_element);
+  if (form_util::IsTextInput(web_input_element) ||
+      form_util::IsMonthInput(web_input_element)) {
+    web_input_element->SetAutofillValue(blink::WebString());
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
-    if (element == *input_element) {
-      size_t length = input_element->Value().length();
-      input_element->SetSelectionRange(length, length);
+    if (element == *web_input_element) {
+      size_t length = web_input_element->Value().length();
+      web_input_element->SetSelectionRange(length, length);
     }
   } else if (form_util::IsTextAreaElement(control_element)) {
     control_element.SetAutofillValue(blink::WebString());
@@ -308,7 +448,7 @@ bool FormCache::ClearSectionWithElement(const WebFormControlElement& element) {
   std::vector<WebFormControlElement> control_elements =
       form_element.IsNull()
           ? form_util::GetUnownedAutofillableFormFieldElements(
-                element.GetDocument().All(), nullptr)
+                element.GetDocument(), nullptr)
           : form_util::ExtractAutofillableElementsInForm(form_element);
 
   if (control_elements.empty())
@@ -355,8 +495,8 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
   if (form.data.unique_renderer_id.is_null()) {  // Form is synthetic.
     WebDocument document = frame_->GetDocument();
-    control_elements = form_util::GetUnownedAutofillableFormFieldElements(
-        document.All(), nullptr);
+    control_elements =
+        form_util::GetUnownedAutofillableFormFieldElements(document, nullptr);
   } else {
     for (const WebFormElement& form_element : frame_->GetDocument().Forms()) {
       FormRendererId form_id(form_element.UniqueRendererFormId());
@@ -395,7 +535,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
 
       std::string form_id =
           base::NumberToString(form.data.unique_renderer_id.value());
-      std::string field_id =
+      std::string field_id_str =
           base::NumberToString(field_data.unique_renderer_id.value());
 
       blink::LocalFrameToken frame_token;
@@ -425,7 +565,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
                                         "\nform renderer id: ",
                                         form_id,
                                         "\nfield renderer id: ",
-                                        field_id});
+                                        field_id_str});
 
       // Set this debug string to the title so that a developer can easily debug
       // by hovering the mouse over the input field.
@@ -443,13 +583,6 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   logger.Flush();
 
   return true;
-}
-
-bool FormCache::IsFormElementEligibleForManualFilling(
-    const blink::WebFormControlElement& control_element) {
-  return fields_eligible_for_manual_filling_.find(
-             FieldRendererId(control_element.UniqueRendererFormControlId())) !=
-         fields_eligible_for_manual_filling_.end();
 }
 
 void FormCache::SetFieldsEligibleForManualFilling(

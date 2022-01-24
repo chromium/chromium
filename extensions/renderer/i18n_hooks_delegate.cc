@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
@@ -22,6 +23,12 @@
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -54,6 +61,8 @@ struct DetectedLanguage {
 // array of DetectedLanguage
 struct LanguageDetectionResult {
   LanguageDetectionResult() {}
+  LanguageDetectionResult(const LanguageDetectionResult&) = delete;
+  LanguageDetectionResult& operator=(const LanguageDetectionResult&) = delete;
   ~LanguageDetectionResult() {}
 
   // Returns a new v8::Local<v8::Value> representing the serialized form of
@@ -66,9 +75,6 @@ struct LanguageDetectionResult {
   // Array of detectedLanguage of size 1-3. The null is returned if
   // there were no languages detected
   std::vector<DetectedLanguage> languages;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionResult);
 };
 
 v8::Local<v8::Value> DetectedLanguage::ToV8(v8::Isolate* isolate) const {
@@ -259,7 +265,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (I18nHooksDelegate::*)(
       ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
-  static const struct {
+  static constexpr struct {
     Handler handler;
     base::StringPiece method;
   } kHandlers[] = {
@@ -312,8 +318,10 @@ RequestResult I18nHooksDelegate::HandleGetUILanguage(
     ScriptContext* script_context,
     const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = gin::StringToSymbol(
-      script_context->isolate(), content::RenderThread::Get()->GetLocale());
+  const std::string lang = base::i18n::GetConfiguredLocale();
+  DCHECK(!lang.empty());
+
+  result.return_value = gin::StringToSymbol(script_context->isolate(), lang);
   return result;
 }
 

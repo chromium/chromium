@@ -26,7 +26,7 @@
         android:includeFontPadding="false"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline" />
 
     <ImageView
         android:id="@+id/dropdown_icon"

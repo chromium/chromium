@@ -1,4 +1,4 @@
-<style>
+  <style include="cr-hidden-style">
   #img-linux-illustration {
     align-self: center;
     height: 180px;
@@ -93,6 +93,10 @@
     --iron-icon-fill-color: var(--google-yellow-500);
     display: flex;
   }
+
+  .cancel-button {
+    margin-inline-end: 8px;
+  }
 </style>
 
 <div id="main">
@@ -173,28 +177,28 @@
   <img id="img-linux-illustration" src="images/linux_illustration.png" alt=""
       hidden="[[eq_(state_, State.CONFIGURE)]]">
   <div id="button-container">
-    <cr-button class="cancel-button" on-click="onCancelButtonClick_"
+    <cros-button class="cancel-button" on-click="onCancelButtonClick_"
         disabled="[[eq_(state_, State.CANCELING)]]">
       [[getCancelButtonLabel_(state_)]]
-    </cr-button>
-    <cr-button id="next" class="action-button" on-click="onNextButtonClick_"
+    </cros-button>
+    <cros-button id="next" primary on-click="onNextButtonClick_"
         aria-describedby="title" aria-details="prompt-message"
         hidden="[[!showNextButton_(state_)]]">
       $i18n{next}
-    </cr-button>
-    <cr-button
-      id="install" class="action-button"
+    </cros-button>
+    <cros-button
+      id="install" primary
       on-click="onInstallButtonClick_" aria-describedby="title"
       aria-details="prompt-message"
       hidden="[[!showInstallButton_(state_, error_)]]"
       disabled="[[disableInstallButton_(state_, username_, usernameError_)]]">
       [[getInstallButtonLabel_(state_)]]
-    </cr-button>
-    <cr-button id="settings" class="action-button"
+    </cros-button>
+    <cros-button id="settings" primary
                on-click="onSettingsButtonClick_" aria-describedby="title"
                aria-details="prompt-message"
                hidden="[[!showSettingsButton_(state_, error_)]]">
       $i18n{settings}
-    </cr-button>
+    </cros-button>
   </div>
 </div>

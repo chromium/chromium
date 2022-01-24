@@ -142,6 +142,13 @@ ShellSurfaceBuilder& ShellSurfaceBuilder::SetCanMinimize(bool can_minimize) {
   return *this;
 }
 
+ShellSurfaceBuilder& ShellSurfaceBuilder::SetMaximumSize(
+    const gfx::Size& size) {
+  DCHECK(!built_);
+  max_size_ = size;
+  return *this;
+}
+
 ShellSurfaceBuilder& ShellSurfaceBuilder::SetDisableMovement() {
   DCHECK(!built_);
   disable_movement_ = true;
@@ -189,6 +196,9 @@ std::unique_ptr<ShellSurface> ShellSurfaceBuilder::BuildShellSurface() {
 
   if (disable_movement_)
     shell_surface->DisableMovement();
+
+  if (!max_size_.IsEmpty())
+    shell_surface->SetMaximumSize(max_size_);
 
   if (commit_on_build_) {
     holder->root_surface->Commit();

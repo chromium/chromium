@@ -8,8 +8,9 @@
     android:id="@+id/tab_grid_message_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="@dimen/tab_list_selected_margin"
     android:orientation="horizontal"
-    android:background="@drawable/message_card_background_with_inset">
+    android:background="@drawable/card_with_corners_background">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/icon"
         android:layout_width="0dp"
@@ -41,5 +42,5 @@
         android:layout_height="match_parent"
         style="@style/BottomToolbarButton"
         android:contentDescription="@string/close"
-        android:tint="@color/default_icon_color" />
+        android:tint="?attr/default_icon_color" />
 </org.chromium.chrome.browser.tasks.tab_management.MessageCardView>

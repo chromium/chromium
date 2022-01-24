@@ -22,7 +22,7 @@ static base::TimeDelta CalculateInterval(int frame_rate) {
   int timer_interval = 1000000 / frame_rate;
   if (timer_interval < 10000)
     timer_interval = 10000;
-  return base::TimeDelta::FromMicroseconds(timer_interval);
+  return base::Microseconds(timer_interval);
 }
 
 const int LinearAnimation::kDefaultFrameRate = 60;

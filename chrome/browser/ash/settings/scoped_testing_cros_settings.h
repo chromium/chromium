@@ -7,15 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
-// TODO(https://crbug.com/1164001): forward declare SystemSettingsProvider when
-// moved to ash.
-#include "chromeos/settings/system_settings_provider.h"
-
 namespace ash {
 
 class CrosSettings;
 class StubCrosSettingsProvider;
+class SystemSettingsProvider;
 
 // Helper class which calls CrosSettings::SetForTesting when it is constructed,
 // and calls CrosSettings::ShutdownForTesting when it goes out of scope,
@@ -37,6 +33,10 @@ class ScopedTestingCrosSettings {
   // for testing.
   ScopedTestingCrosSettings();
 
+  ScopedTestingCrosSettings(const ScopedTestingCrosSettings&) = delete;
+  ScopedTestingCrosSettings& operator=(const ScopedTestingCrosSettings&) =
+      delete;
+
   ~ScopedTestingCrosSettings();
 
   StubCrosSettingsProvider* device_settings() { return device_settings_ptr_; }
@@ -49,8 +49,6 @@ class ScopedTestingCrosSettings {
   // These are raw pointers since these objects are owned by |test_instance_|.
   StubCrosSettingsProvider* device_settings_ptr_;
   SystemSettingsProvider* system_settings_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestingCrosSettings);
 };
 
 }  // namespace ash

@@ -17,6 +17,10 @@ namespace android_webview {
 class JsReplyProxy {
  public:
   explicit JsReplyProxy(js_injection::WebMessageReplyProxy* reply_proxy);
+
+  JsReplyProxy(const JsReplyProxy&) = delete;
+  JsReplyProxy& operator=(const JsReplyProxy&) = delete;
+
   ~JsReplyProxy();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPeer();
@@ -27,8 +31,6 @@ class JsReplyProxy {
  private:
   js_injection::WebMessageReplyProxy* reply_proxy_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsReplyProxy);
 };
 
 }  // namespace android_webview

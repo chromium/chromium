@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 
-_FILE_URL = 'https://maven.google.com/com/google/firebase/firebase-annotations/16.0.0/firebase-annotations-16.0.0.jar'
+_FILE_URL = 'https://dl.google.com/dl/android/maven2/com/google/firebase/firebase-annotations/16.0.0/firebase-annotations-16.0.0.jar'
 _FILE_NAME = 'firebase-annotations-16.0.0.jar'
 _FILE_VERSION = '16.0.0'
 

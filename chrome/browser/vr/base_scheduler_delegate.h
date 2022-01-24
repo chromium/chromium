@@ -24,6 +24,10 @@ class VR_EXPORT BaseSchedulerDelegate : public SchedulerDelegate {
                         bool start_in_webxr_mode,
                         int webxr_spinner_timeout,
                         int webxr_initial_frame_timeout);
+
+  BaseSchedulerDelegate(const BaseSchedulerDelegate&) = delete;
+  BaseSchedulerDelegate& operator=(const BaseSchedulerDelegate&) = delete;
+
   ~BaseSchedulerDelegate() override;
 
   // SchedulerDelegate implementations.
@@ -57,8 +61,6 @@ class VR_EXPORT BaseSchedulerDelegate : public SchedulerDelegate {
   base::CancelableOnceClosure webxr_spinner_timeout_closure_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseSchedulerDelegate);
 };
 
 }  // namespace vr

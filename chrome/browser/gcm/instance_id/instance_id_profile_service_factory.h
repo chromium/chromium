@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_GCM_INSTANCE_ID_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_GCM_INSTANCE_ID_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -22,6 +21,11 @@ class InstanceIDProfileServiceFactory :
       content::BrowserContext* profile);
   static InstanceIDProfileServiceFactory* GetInstance();
 
+  InstanceIDProfileServiceFactory(const InstanceIDProfileServiceFactory&) =
+      delete;
+  InstanceIDProfileServiceFactory& operator=(
+      const InstanceIDProfileServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<InstanceIDProfileServiceFactory>;
 
@@ -33,8 +37,6 @@ class InstanceIDProfileServiceFactory :
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceIDProfileServiceFactory);
 };
 
 }  // namespace instance_id

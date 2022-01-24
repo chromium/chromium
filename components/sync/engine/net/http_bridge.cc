@@ -25,6 +25,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -36,7 +37,7 @@ namespace {
 // It's possible for an http request to be silently stalled. We set a time
 // limit for all http requests, beyond which the request is cancelled and
 // treated as a transient failure.
-constexpr base::TimeDelta kMaxHttpRequestTime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMaxHttpRequestTime = base::Minutes(5);
 
 // Helper method for logging timeouts via UMA.
 void LogTimeout(bool timed_out) {
@@ -76,7 +77,7 @@ HttpBridge::URLFetchState::URLFetchState()
       request_succeeded(false),
       http_status_code(-1),
       net_error_code(-1) {}
-HttpBridge::URLFetchState::~URLFetchState() {}
+HttpBridge::URLFetchState::~URLFetchState() = default;
 
 HttpBridge::HttpBridge(const std::string& user_agent,
                        std::unique_ptr<network::PendingSharedURLLoaderFactory>

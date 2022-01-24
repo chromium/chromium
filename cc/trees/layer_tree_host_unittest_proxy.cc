@@ -276,7 +276,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void BeginCommitOnThread(LayerTreeHostImpl* impl) override {
-    if (impl->sync_tree()->source_frame_number() < 0)
+    if (impl->sync_tree()->source_frame_number() == 0)
       return;  // The initial commit, don't do anything here.
 
     // The main thread will request a commit, and may request that it does
@@ -288,7 +288,7 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
       activate_blocked_ = true;
     }
     switch (impl->sync_tree()->source_frame_number()) {
-      case 0: {
+      case 1: {
         // This is for case 1 in DidCommit.
         auto unblock = base::BindOnce(
             &LayerTreeHostProxyTestCommitWaitsForActivation::UnblockActivation,
@@ -298,10 +298,10 @@ class LayerTreeHostProxyTestCommitWaitsForActivation
             // Use a delay to allow the main frame to start if it would. This
             // should cause failures (or flakiness) if we fail to wait for the
             // activation before starting the main frame.
-            base::TimeDelta::FromMilliseconds(16 * 4));
+            base::Milliseconds(16 * 4));
         break;
       }
-      case 1:
+      case 2:
         // This is for case 2 in DidCommit.
         // Here we don't ever unblock activation. Since the commit hasn't
         // requested to wait, we can verify that activation is blocked when the
@@ -415,9 +415,8 @@ class LayerTreeHostProxyTestCommitWaitsForActivationMFBA
           base::BindOnce(&LayerTreeHostProxyTestCommitWaitsForActivationMFBA::
                              UnblockActivation,
                          base::Unretained(this), impl);
-      ImplThreadTaskRunner()->PostDelayedTask(
-          FROM_HERE, std::move(unblock),
-          base::TimeDelta::FromMilliseconds(16 * 4));
+      ImplThreadTaskRunner()->PostDelayedTask(FROM_HERE, std::move(unblock),
+                                              base::Milliseconds(16 * 4));
     }
   }
 
@@ -559,8 +558,10 @@ class LayerTreeHostProxyTestDelayedCommitDueToVisibility
     }
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl*,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl*,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(CommitEarlyOutReason::ABORTED_NOT_VISIBLE, reason);
     PostSetVisibleToMainThread(true);
   }

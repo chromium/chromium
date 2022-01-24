@@ -22,7 +22,7 @@
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
@@ -168,14 +168,10 @@ void ArcPlayStoreEnabledPreferenceHandler::UpdateArcSessionManager() {
         IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_));
   }
 
-  if (ShouldArcAlwaysStart() || IsArcPlayStoreEnabledForProfile(profile_)) {
+  if (ShouldArcAlwaysStart() || IsArcPlayStoreEnabledForProfile(profile_))
     arc_session_manager_->RequestEnable();
-  } else {
-    const bool enable_requested = arc_session_manager_->enable_requested();
-    arc_session_manager_->RequestDisable();
-    if (enable_requested)
-      arc_session_manager_->RequestArcDataRemoval();
-  }
+  else
+    arc_session_manager_->RequestDisableWithArcDataRemoval();
 }
 
 }  // namespace arc

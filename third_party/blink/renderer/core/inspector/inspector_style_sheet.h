@@ -30,7 +30,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
-#include "third_party/blink/renderer/core/inspector/protocol/CSS.h"
+#include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

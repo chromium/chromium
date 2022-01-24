@@ -20,6 +20,10 @@ int kPageCount = 10;
 class PageIndicatorViewTest : public NoSessionAshTestBase {
  public:
   PageIndicatorViewTest() = default;
+
+  PageIndicatorViewTest(const PageIndicatorViewTest&) = delete;
+  PageIndicatorViewTest& operator=(const PageIndicatorViewTest&) = delete;
+
   ~PageIndicatorViewTest() override = default;
 
   void SetUp() override {
@@ -60,8 +64,6 @@ class PageIndicatorViewTest : public NoSessionAshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemTrayView> unified_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageIndicatorViewTest);
 };
 
 // Number of buttons is equal to total pages in PaginationModel.

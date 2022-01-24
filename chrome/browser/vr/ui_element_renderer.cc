@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <string>
 
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "chrome/browser/vr/renderers/base_renderer.h"

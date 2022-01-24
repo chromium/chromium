@@ -4,6 +4,7 @@
 
 #include "content/renderer/media/win/dcomp_texture_host.h"
 
+#include "base/task/bind_post_task.h"
 #include "base/unguessable_token.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -27,8 +28,10 @@ DCOMPTextureHost::DCOMPTextureHost(
   DCHECK(route_id_);
   DCHECK(listener_);
 
-  texture_remote_.Bind(std::move(texture));
+  // `allow_binding` is needed to make sure `texture_remote_` and `receiver_`
+  // are both bound on `media_task_runner`. See crbug.com/1229833.
   IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
+  texture_remote_.Bind(std::move(texture), media_task_runner);
   texture_remote_->StartListening(
       receiver_.BindNewEndpointAndPassRemote(media_task_runner));
   texture_remote_.set_disconnect_handler(base::BindOnce(
@@ -55,11 +58,14 @@ void DCOMPTextureHost::SetTextureSize(const gfx::Size& size) {
     texture_remote_->SetTextureSize(size);
 }
 
-void DCOMPTextureHost::SetDCOMPSurface(
-    const base::UnguessableToken& surface_token) {
+void DCOMPTextureHost::SetDCOMPSurfaceHandle(
+    const base::UnguessableToken& token,
+    SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) {
   DVLOG_FUNC(1);
-  if (texture_remote_)
-    texture_remote_->SetSurfaceHandle(surface_token);
+  if (texture_remote_) {
+    texture_remote_->SetDCOMPSurfaceHandle(
+        token, std::move(set_dcomp_surface_handle_cb));
+  }
 }
 
 void DCOMPTextureHost::OnDisconnectedFromGpuProcess() {
@@ -74,15 +80,9 @@ void DCOMPTextureHost::OnSharedImageMailboxBound(const gpu::Mailbox& mailbox) {
   listener_->OnSharedImageMailboxBound(mailbox);
 }
 
-void DCOMPTextureHost::OnDCOMPSurfaceHandleBound(bool success) {
-  DVLOG_FUNC(1) << "success=" << success;
-  listener_->OnDCOMPSurfaceHandleBound(success);
-}
-
-void DCOMPTextureHost::OnCompositionParamsChanged(
-    const gfx::Rect& output_rect) {
+void DCOMPTextureHost::OnOutputRectChange(const gfx::Rect& output_rect) {
   DVLOG_FUNC(3);
-  listener_->OnCompositionParamsReceived(output_rect);
+  listener_->OnOutputRectChange(output_rect);
 }
 
 }  // namespace content

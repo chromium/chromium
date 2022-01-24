@@ -189,8 +189,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
 
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Shorter than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(InitialBubbleDelayMs() / 2));
+  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() / 2));
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -208,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, SlowKeyboardLockUnlockRelock) {
 
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Longer than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(InitialBubbleDelayMs() + 20));
+  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() + 20));
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -231,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
       [](bool* triggered) { *triggered = true; }, &esc_threshold_reached));
 
   // Set the window to a known value for testing.
-  SetEscRepeatWindowLength(base::TimeDelta::FromSeconds(1));
+  SetEscRepeatWindowLength(base::Seconds(1));
 
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -255,15 +253,15 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_FALSE(esc_threshold_reached);
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock.Advance(base::Milliseconds(100));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_down_event);
-  clock.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock.Advance(base::Milliseconds(100));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_FALSE(esc_threshold_reached);
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock.Advance(base::Milliseconds(100));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_down_event);
-  clock.Advance(base::TimeDelta::FromMilliseconds(100));
+  clock.Advance(base::Milliseconds(100));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_TRUE(esc_threshold_reached);
 }
@@ -280,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
       [](bool* triggered) { *triggered = true; }, &esc_threshold_reached));
 
   // Set the window to a known value for testing.
-  SetEscRepeatWindowLength(base::TimeDelta::FromSeconds(1));
+  SetEscRepeatWindowLength(base::Seconds(1));
 
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -304,15 +302,15 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_FALSE(esc_threshold_reached);
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(400));
+  clock.Advance(base::Milliseconds(400));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_down_event);
-  clock.Advance(base::TimeDelta::FromMilliseconds(200));
+  clock.Advance(base::Milliseconds(200));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_FALSE(esc_threshold_reached);
 
-  clock.Advance(base::TimeDelta::FromMilliseconds(400));
+  clock.Advance(base::Milliseconds(400));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_down_event);
-  clock.Advance(base::TimeDelta::FromMilliseconds(200));
+  clock.Advance(base::Milliseconds(200));
   GetExclusiveAccessManager()->HandleUserKeyEvent(key_up_event);
   ASSERT_FALSE(esc_threshold_reached);
 }

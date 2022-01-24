@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_REBOOT_DIALOG_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_CHROME_CLEANER_REBOOT_DIALOG_WIN_H_
 
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"

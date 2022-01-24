@@ -32,6 +32,12 @@ source_set("fuzzer_support") {
   testonly = true
 }
 
+fuzzer_test("color_parser_fuzzer") {
+  sources = [ "color_parser_fuzzer.cc" ]
+  deps = [ ":fuzzer_support" ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/color_parser_data/"
+}
+
 fuzzer_test("origin_trial_token_fuzzer") {
   sources = [ "origin_trial_token_fuzzer.cc" ]
   deps = [ "//content/test:test_support" ]
@@ -108,16 +114,6 @@ fuzzer_test("signed_exchange_certificate_chain_fuzzer") {
   seed_corpus = "//content/test/data/fuzzer_corpus/signed_exchange_certificate_chain_data/"
 }
 
-fuzzer_test("appcache_manifest_parser_fuzzer") {
-  sources = [ "appcache_manifest_parser_fuzzer.cc" ]
-  deps = [
-    "//base:i18n",
-    "//content/test:test_support",
-  ]
-  dict = "//content/test/data/fuzzer_dictionaries/appcache_manifest_parser_fuzzer.dict"
-  seed_corpus = "//third_party/blink/web_tests/http/tests/appcache/resources/"
-}
-
 fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   sources = [ "merkle_integrity_source_stream_fuzzer.cc" ]
 
@@ -136,32 +132,6 @@ fuzzer_test("merkle_integrity_source_stream_fuzzer") {
   ]
   dict = "//content/test/data/fuzzer_dictionaries/merkle_integrity_source_stream_fuzzer.dict"
   environment_variables = [ "AFL_DRIVER_DONT_DEFER=1" ]
-}
-
-proto_library("appcache_fuzzer_proto") {
-  sources = [ "../../browser/appcache/appcache_fuzzer.proto" ]
-  testonly = true
-}
-
-fuzzer_test("appcache_fuzzer") {
-  sources = [
-    "../../browser/appcache/appcache_fuzzer.cc",
-    "../../browser/appcache/mock_appcache_storage.cc",
-    "../../browser/appcache/mock_appcache_storage.h",
-  ]
-
-  deps = [
-    ":appcache_fuzzer_proto",
-    "//base/test:test_support",
-    "//content/app:for_content_tests",
-    "//content/browser:browser",
-    "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//mojo/core/embedder",
-    "//services/network:test_support",
-    "//storage/browser:test_support",
-    "//third_party/libprotobuf-mutator",
-  ]
 }
 
 mojolpm_fuzzer_test("code_cache_host_mojolpm_fuzzer") {
@@ -201,6 +171,23 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
     "//services/network:test_support",
     "//storage/browser:test_support",
     "//third_party/icu:icudata",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+}
+
+mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
+  sources = [ "audio_context_manager_mojolpm_fuzzer.cc" ]
+
+  proto_source = "audio_context_manager_mojolpm_fuzzer.proto"
+
+  deps = [
+    "//base/test:test_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]

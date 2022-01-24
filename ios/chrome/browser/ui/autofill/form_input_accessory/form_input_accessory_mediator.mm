@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #include "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -46,6 +47,14 @@
 #endif
 
 using base::UmaHistogramEnumeration;
+
+namespace {
+
+// Kill switch guarding a workaround for keyboard flicker, see crbug.com/1253561
+const base::Feature kFormInputKeyboardReloadInputViews{
+    "FormInputKeyboardReloadInputViews", base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 @interface FormInputAccessoryMediator () <FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
@@ -135,7 +144,8 @@ using base::UmaHistogramEnumeration;
               webStateList:(WebStateList*)webStateList
        personalDataManager:(autofill::PersonalDataManager*)personalDataManager
              passwordStore:
-                 (scoped_refptr<password_manager::PasswordStore>)passwordStore
+                 (scoped_refptr<password_manager::PasswordStoreInterface>)
+                     passwordStore
       securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
     reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super init];
@@ -205,6 +215,10 @@ using base::UmaHistogramEnumeration;
     }
     _reauthenticationModule = reauthenticationModule;
     _securityAlertHandler = securityAlertHandler;
+
+    // Prevent a flicker from happening by starting with valid activity. This
+    // will get updated as soon as a form is interacted.
+    _validActivityForAccessoryView = YES;
   }
   return self;
 }
@@ -293,7 +307,11 @@ using base::UmaHistogramEnumeration;
   }
 
   self.validActivityForAccessoryView = YES;
-  [GetFirstResponder() reloadInputViews];
+  static bool form_input_keyboard_reload_input_views_workaround =
+      base::FeatureList::IsEnabled(kFormInputKeyboardReloadInputViews);
+  if (!form_input_keyboard_reload_input_views_workaround) {
+    [GetFirstResponder() reloadInputViews];
+  }
 
   NSString* frameID;
   if (frame) {
@@ -308,6 +326,11 @@ using base::UmaHistogramEnumeration;
   if (params.type == "blur" || params.type == "change" ||
       params.type == "form_changed") {
     return;
+  }
+
+  if (form_input_keyboard_reload_input_views_workaround &&
+      _lastSeenParams.field_type != params.field_type) {
+    [GetFirstResponder() reloadInputViews];
   }
   _lastSeenParams = params;
   _hasLastSeenParams = YES;
@@ -330,6 +353,11 @@ using base::UmaHistogramEnumeration;
   [self.formNavigationHandler closeKeyboardWithButtonPress];
 }
 
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
+}
+
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateWasShown:(web::WebState*)webState {
@@ -342,7 +370,8 @@ using base::UmaHistogramEnumeration;
   [self reset];
 }
 
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
   [self reset];
 }
@@ -375,6 +404,23 @@ using base::UmaHistogramEnumeration;
 }
 
 - (BOOL)isInputAccessoryViewActive {
+  // Return early if there is no WebState.
+  if (!_webState) {
+    return NO;
+  }
+
+  // Return early if the URL can't be verified.
+  web::URLVerificationTrustLevel trustLevel;
+  const GURL pageURL(_webState->GetCurrentURL(&trustLevel));
+  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+    return NO;
+  }
+
+  // Return early if the url is not HTML.
+  if (!web::UrlHasWebScheme(pageURL) || !_webState->ContentIsHTML()) {
+    return NO;
+  }
+
   return self.validActivityForAccessoryView;
 }
 

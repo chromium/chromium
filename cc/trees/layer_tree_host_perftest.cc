@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "build/build_config.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/texture_layer.h"
@@ -39,13 +40,12 @@ class LayerTreeHostPerfTest : public LayerTreeTest {
  public:
   LayerTreeHostPerfTest()
       : draw_timer_(kWarmupRuns,
-                    base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+                    base::Milliseconds(kTimeLimitMillis),
                     kTimeCheckInterval),
         commit_timer_(0, base::TimeDelta(), 1),
         full_damage_each_frame_(false),
         begin_frame_driven_drawing_(false),
-        measure_commit_cost_(false) {
-  }
+        measure_commit_cost_(false) {}
 
   std::unique_ptr<TestLayerTreeFrameSink> CreateLayerTreeFrameSink(
       const viz::RendererSettings& renderer_settings,
@@ -264,8 +264,7 @@ class ScrollingLayerTreePerfTest : public LayerTreeHostPerfTestJsonReader {
       return;
     static const gfx::Vector2d delta = gfx::Vector2d(0, 10);
     SetScrollOffset(scrollable_.get(),
-                    gfx::ScrollOffsetWithDelta(
-                        CurrentScrollOffset(scrollable_.get()), delta));
+                    CurrentScrollOffset(scrollable_.get()) + delta);
   }
 
  private:
@@ -315,7 +314,7 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     ASSERT_TRUE(tab_contents_.get());
   }
 
-  void WillCommit() override {
+  void WillCommit(CommitState*) override {
     if (CleanUpStarted())
       return;
     gpu::Mailbox gpu_mailbox;

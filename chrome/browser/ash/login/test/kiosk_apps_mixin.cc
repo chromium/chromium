@@ -10,7 +10,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
@@ -25,9 +25,9 @@ constexpr char KioskAppsMixin::kEnterpriseWebKioskAccountId[] = "web_kiosk_id";
 
 // static
 void KioskAppsMixin::WaitForAppsButton() {
-  while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
-    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+  while (!LoginScreenTestApi::IsAppsButtonShown()) {
+    int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
   }
 }
 
@@ -59,6 +59,22 @@ void KioskAppsMixin::AppendWebKioskAccount(
   account->mutable_web_kiosk_app()->set_url("https://example.com");
 }
 
+// static
+void KioskAppsMixin::AppendAutoLaunchKioskAccount(
+    enterprise_management::ChromeDeviceSettingsProto* policy_payload) {
+  enterprise_management::DeviceLocalAccountsProto* const device_local_accounts =
+      policy_payload->mutable_device_local_accounts();
+
+  enterprise_management::DeviceLocalAccountInfoProto* const account =
+      device_local_accounts->add_account();
+  account->set_account_id(KioskAppsMixin::kEnterpriseKioskAccountId);
+  account->set_type(enterprise_management::DeviceLocalAccountInfoProto::
+                        ACCOUNT_TYPE_KIOSK_APP);
+  account->mutable_kiosk_app()->set_app_id(KioskAppsMixin::kKioskAppId);
+  device_local_accounts->set_auto_login_id(
+      KioskAppsMixin::kEnterpriseKioskAccountId);
+}
+
 KioskAppsMixin::KioskAppsMixin(InProcessBrowserTestMixinHost* host,
                                net::EmbeddedTestServer* embedded_test_server)
     : InProcessBrowserTestMixin(host),
@@ -72,4 +88,4 @@ void KioskAppsMixin::SetUpInProcessBrowserTestFixture() {
                          "1.0.0");
 }
 
-}  // namespace chromeos
+}  // namespace ash

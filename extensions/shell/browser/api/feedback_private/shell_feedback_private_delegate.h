@@ -16,6 +16,11 @@ namespace extensions {
 class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
  public:
   ShellFeedbackPrivateDelegate();
+
+  ShellFeedbackPrivateDelegate(const ShellFeedbackPrivateDelegate&) = delete;
+  ShellFeedbackPrivateDelegate& operator=(const ShellFeedbackPrivateDelegate&) =
+      delete;
+
   ~ShellFeedbackPrivateDelegate() override;
 
   // FeedbackPrivateDelegate:
@@ -40,9 +45,6 @@ class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   void NotifyFeedbackDelayed() const override;
   feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellFeedbackPrivateDelegate);
 };
 
 }  // namespace extensions

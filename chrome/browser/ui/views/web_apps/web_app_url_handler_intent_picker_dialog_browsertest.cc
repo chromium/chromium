@@ -19,13 +19,13 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/url_handler_launch_params.h"
-#include "chrome/browser/web_applications/components/url_handler_manager.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/url_handler_launch_params.h"
+#include "chrome/browser/web_applications/url_handler_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -62,7 +62,7 @@ web_app::AppId InstallTestWebApp(Profile* profile) {
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->start_url = GURL(kStartUrl);
   app_info->title = kAppName;
-  app_info->open_as_window = true;
+  app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
   return web_app::test::InstallWebApp(profile, std::move(app_info));
 }
 
@@ -280,12 +280,23 @@ class WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest
         CreateUrlHandlerLaunchParams(browser()->profile()->GetPath(),
                                      test_app_id),
         std::move(keep_alive), base::DoNothing());
-    waiter.WaitIfNeededAndGet()->CloseWithReason(
-        views::Widget::ClosedReason::kEscKeyPressed);
+    if (should_close_) {
+      waiter.WaitIfNeededAndGet()->CloseWithReason(
+          views::Widget::ClosedReason::kEscKeyPressed);
+    }
   }
+
+ protected:
+  bool should_close_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest,
                        InvokeUi_CloseDialog) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest,
+                       InvokeUi_default) {
+  should_close_ = false;
   ShowAndVerifyUi();
 }

@@ -8,8 +8,6 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
-
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace gfx {
@@ -21,6 +19,10 @@ namespace views {
 class FullscreenHandler {
  public:
   FullscreenHandler();
+
+  FullscreenHandler(const FullscreenHandler&) = delete;
+  FullscreenHandler& operator=(const FullscreenHandler&) = delete;
+
   ~FullscreenHandler();
 
   void set_hwnd(HWND hwnd) { hwnd_ = hwnd; }
@@ -55,8 +57,6 @@ class FullscreenHandler {
   Microsoft::WRL::ComPtr<ITaskbarList2> task_bar_list_;
 
   base::WeakPtrFactory<FullscreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenHandler);
 };
 
 }  // namespace views

@@ -15,6 +15,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "url/gurl.h"
 
 namespace {
 using password_manager::metrics_util::IsPasswordChanged;
@@ -76,7 +78,7 @@ void SavedPasswordsPresenter::Init() {
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
   std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
 
   std::for_each(range.first, range.second, [&](const auto& pair) {
     const auto& current_form = pair.second;
@@ -90,6 +92,31 @@ void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
   });
 }
 
+bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
+  if (!password_manager_util::IsValidPasswordURL(form.url))
+    return false;
+  if (form.password_value.empty())
+    return false;
+
+  auto have_equal_username_and_realm = [&form](const PasswordForm& entry) {
+    return form.signon_realm == entry.signon_realm &&
+           form.username_value == entry.username_value;
+  };
+  if (base::ranges::any_of(passwords_, have_equal_username_and_realm))
+    return false;
+
+  // Try to unblocklist in both stores anyway because if credentials don't
+  // exist, the unblocklist operation is no-op.
+  auto form_digest = PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                        form.signon_realm, form.url);
+  profile_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+  if (account_store_)
+    account_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+
+  GetStoreFor(form).AddLogin(form);
+  return true;
+}
+
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
                                            std::u16string new_password) {
   auto is_equal = [&form](const PasswordForm& form_to_check) {
@@ -100,7 +127,8 @@ bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
     return false;
 
   found->password_value = std::move(new_password);
-  found->password_issues->clear();
+  found->date_password_modified = base::Time::Now();
+  found->password_issues.clear();
   PasswordStoreInterface& store =
       form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
   store.UpdateLogin(*found);
@@ -117,7 +145,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
   std::vector<PasswordForm> forms_to_change;
 
   std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
-  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+  const auto range = sort_key_to_password_forms_.equal_range(current_form_key);
 
   base::ranges::transform(range.first, range.second,
                           std::back_inserter(forms_to_change),
@@ -129,6 +157,8 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     const SavedPasswordsView forms,
     const std::u16string& new_username,
     const std::u16string& new_password) {
+  if (forms.empty())
+    return false;
   IsUsernameChanged username_changed(new_username != forms[0].username_value);
   IsPasswordChanged password_changed(new_password != forms[0].password_value);
 
@@ -147,7 +177,10 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
       PasswordForm new_form = old_form;
       new_form.username_value = new_username;
       new_form.password_value = new_password;
-      new_form.password_issues->clear();
+      new_form.password_issues.clear();
+
+      if (password_changed)
+        new_form.date_password_modified = base::Time::Now();
 
       if (username_changed) {
         // Changing username requires deleting old form and adding new one. So
@@ -174,10 +207,10 @@ std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
     const {
   std::vector<PasswordForm> forms;
 
-  auto it = sort_key_to_password_forms.begin();
+  auto it = sort_key_to_password_forms_.begin();
   std::string current_key;
 
-  while (it != sort_key_to_password_forms.end()) {
+  while (it != sort_key_to_password_forms_.end()) {
     if (current_key != it->first) {
       current_key = it->first;
       forms.push_back(it->second);
@@ -270,9 +303,9 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
                             [](auto& result) { return std::move(*result); });
   }
 
-  sort_key_to_password_forms.clear();
+  sort_key_to_password_forms_.clear();
   base::ranges::for_each(passwords_, [&](const auto& result) {
-    sort_key_to_password_forms.insert(
+    sort_key_to_password_forms_.insert(
         std::make_pair(CreateSortKey(result, IgnoreStore(true)), result));
   });
 

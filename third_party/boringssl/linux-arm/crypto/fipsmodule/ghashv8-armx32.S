@@ -15,6 +15,7 @@
 #endif
 #include <openssl/arm_arch.h>
 
+#if __ARM_MAX_ARCH__>=7
 .text
 .fpu	neon
 .code	32
@@ -67,8 +68,7 @@ gcm_init_v8:
 	vext.8	q9,q14,q14,#8		@ Karatsuba pre-processing
 	veor	q9,q9,q14
 	vext.8	q13,q8,q9,#8		@ pack Karatsuba pre-processed
-	vst1.64	{q13,q14},[r0]		@ store Htable[1..2]
-
+	vst1.64	{q13,q14},[r0]!	@ store Htable[1..2]
 	bx	lr
 .size	gcm_init_v8,.-gcm_init_v8
 .globl	gcm_gmult_v8
@@ -251,6 +251,7 @@ gcm_ghash_v8:
 .byte	71,72,65,83,72,32,102,111,114,32,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	2
+#endif
 #endif
 #endif  // !OPENSSL_NO_ASM
 .section	.note.GNU-stack,"",%progbits

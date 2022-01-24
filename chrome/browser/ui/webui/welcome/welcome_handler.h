@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -17,6 +16,10 @@ class GURL;
 class WelcomeHandler : public content::WebUIMessageHandler {
  public:
   explicit WelcomeHandler(content::WebUI* web_ui);
+
+  WelcomeHandler(const WelcomeHandler&) = delete;
+  WelcomeHandler& operator=(const WelcomeHandler&) = delete;
+
   ~WelcomeHandler() override;
 
   // content::WebUIMessageHandler:
@@ -55,8 +58,6 @@ class WelcomeHandler : public content::WebUIMessageHandler {
   // Indicates whether this WelcomeHandler instance is spawned due to users
   // being redirected back to welcome page as part of the onboarding flow.
   bool is_redirected_welcome_impression_;
-
-  DISALLOW_COPY_AND_ASSIGN(WelcomeHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_

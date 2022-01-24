@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -128,7 +127,7 @@ class InfoBarDelegate {
     // Removed: READER_MODE_INFOBAR_DELEGATE_IOS = 57,
     SYNC_ERROR_INFOBAR_DELEGATE_IOS = 58,
     UPGRADE_INFOBAR_DELEGATE_IOS = 59,
-    WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID = 60,
+    // Removed: WINDOW_ERROR_INFOBAR_DELEGATE_ANDROID = 60,
     DANGEROUS_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 61,
     // Removed: DESKTOP_SEARCH_REDIRECTION_INFOBAR_DELEGATE = 62,
     UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE = 63,
@@ -156,9 +155,9 @@ class InfoBarDelegate {
     // Removed: SUPERVISED_USERS_DEPRECATED_INFOBAR_DELEGATE = 85,
     NEAR_OOM_REDUCTION_INFOBAR_ANDROID = 86,
     // Removed: LITE_PAGE_PREVIEWS_INFOBAR = 87,
-    MODULE_INSTALL_FAILURE_INFOBAR_ANDROID = 88,
-    INLINE_UPDATE_READY_INFOBAR_ANDROID = 89,
-    INLINE_UPDATE_FAILED_INFOBAR_ANDROID = 90,
+    // Removed: MODULE_INSTALL_FAILURE_INFOBAR_ANDROID = 88,
+    // Removed: INLINE_UPDATE_READY_INFOBAR_ANDROID = 89,
+    // Removed: INLINE_UPDATE_FAILED_INFOBAR_ANDROID = 90,
     // Removed: FLASH_DEPRECATION_INFOBAR_DELEGATE = 91,
     SEND_TAB_TO_SELF_INFOBAR_DELEGATE = 92,
     TAB_SHARING_INFOBAR_DELEGATE = 93,
@@ -195,6 +194,9 @@ class InfoBarDelegate {
 
   // Value to use when the InfoBar has no icon to show.
   static const int kNoIconID;
+
+  InfoBarDelegate(const InfoBarDelegate&) = delete;
+  InfoBarDelegate& operator=(const InfoBarDelegate&) = delete;
 
   // Called when the InfoBar that owns this delegate is being destroyed.  At
   // this point nothing is visible onscreen.
@@ -291,8 +293,6 @@ class InfoBarDelegate {
 
   // The ID of the active navigation entry at the time we became owned.
   int nav_entry_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarDelegate);
 };
 
 }  // namespace infobars

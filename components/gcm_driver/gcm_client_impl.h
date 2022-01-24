@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -109,6 +108,10 @@ class GCMClientImpl
 
   explicit GCMClientImpl(
       std::unique_ptr<GCMInternalsBuilder> internals_builder);
+
+  GCMClientImpl(const GCMClientImpl&) = delete;
+  GCMClientImpl& operator=(const GCMClientImpl&) = delete;
+
   ~GCMClientImpl() override;
 
   // GCMClient implementation.
@@ -419,8 +422,6 @@ class GCMClientImpl
 
   // Factory for creating references in callbacks.
   base::WeakPtrFactory<GCMClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GCMClientImpl);
 };
 
 }  // namespace gcm

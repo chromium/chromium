@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -13,7 +14,7 @@ namespace base {
 namespace {
 
 constexpr int kWarmupRuns = 1;
-constexpr TimeDelta kTimeLimit = TimeDelta::FromSeconds(1);
+constexpr TimeDelta kTimeLimit = Seconds(1);
 constexpr int kTimeCheckInterval = 100000;
 
 constexpr char kMetricPrefixLock[] = "Lock.";
@@ -72,6 +73,7 @@ TEST(LockPerfTest, Simple) {
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
 
+  ALLOW_UNUSED_LOCAL(data);
   auto reporter = SetUpReporter(kStoryBaseline);
   reporter.AddResult(kMetricLockUnlockThroughput, timer.LapsPerSecond());
 }

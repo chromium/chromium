@@ -8,10 +8,10 @@
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 // #import {TimeZoneAutoDetectMethod, TimeZoneBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender, flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 /** @implements {settings.TimeZoneBrowserProxy} */
@@ -256,7 +256,7 @@ suite('settings-date-time-page', function() {
   });
 
   function getTimeZoneSelector(id) {
-    return dateTime.$$('timezone-selector').$$(id);
+    return dateTime.$$('timezone-selector').shadowRoot.querySelector(id);
   }
 
   function verifyAutoDetectSetting(autoDetect, managed) {
@@ -338,9 +338,6 @@ suite('settings-date-time-page', function() {
   });
 
   test('Deep link to auto set time zone on main page', async () => {
-    loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
-    });
     const prefs = getFakePrefs();
     // Set fine grained time zone off so that toggle appears on this page.
     prefs.cros.flags.fine_grained_time_zone_detection_enabled.value = false;
@@ -352,7 +349,8 @@ suite('settings-date-time-page', function() {
 
     Polymer.dom.flush();
 
-    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect').$$('cr-toggle');
+    const deepLinkElement = dateTime.$$('#timeZoneAutoDetect')
+                                .shadowRoot.querySelector('cr-toggle');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),

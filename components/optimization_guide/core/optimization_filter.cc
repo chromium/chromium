@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 
 namespace optimization_guide {
@@ -78,7 +79,8 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
   std::string full_host(url.host());
   int suffix_count = 1;
   auto left_pos = full_host.find_last_of('.');  // root domain position
-  while ((left_pos = full_host.find_last_of('.', left_pos - 1)) !=
+  while ((left_pos - 1) != std::string::npos &&
+         (left_pos = full_host.find_last_of('.', left_pos - 1)) !=
              std::string::npos &&
          suffix_count < kMaxSuffixCount) {
     if (full_host.length() - left_pos > kMinHostSuffix) {

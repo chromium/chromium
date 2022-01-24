@@ -34,10 +34,10 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/crypto_result.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -165,7 +165,10 @@ ScriptValue CryptoKey::usages(ScriptState* script_state) {
       result.push_back(KeyUsageToString(usage));
   }
 
-  return ScriptValue(script_state->GetIsolate(), ToV8(result, script_state));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<IDLSequence<IDLString>>::ToV8(script_state, result)
+          .ToLocalChecked());
 }
 
 bool CryptoKey::CanBeUsedForAlgorithm(const WebCryptoAlgorithm& algorithm,

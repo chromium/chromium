@@ -19,6 +19,10 @@ class CocoaWindowMoveLoop {
  public:
   CocoaWindowMoveLoop(NativeWidgetNSWindowBridge* owner,
                       const NSPoint& initial_mouse_in_screen);
+
+  CocoaWindowMoveLoop(const CocoaWindowMoveLoop&) = delete;
+  CocoaWindowMoveLoop& operator=(const CocoaWindowMoveLoop&) = delete;
+
   ~CocoaWindowMoveLoop();
 
   // Initiates the drag until a mouse up event is observed, or End() is called.
@@ -47,8 +51,6 @@ class CocoaWindowMoveLoop {
 
   // WeakPtrFactory for event monitor safety.
   base::WeakPtrFactory<CocoaWindowMoveLoop> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CocoaWindowMoveLoop);
 };
 
 }  // namespace remote_cocoa

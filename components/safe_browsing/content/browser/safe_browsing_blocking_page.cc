@@ -12,10 +12,10 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -24,6 +24,7 @@
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
@@ -91,17 +92,19 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       navigation_observer_manager_(navigation_observer_manager),
       metrics_collector_(metrics_collector),
       trigger_manager_(trigger_manager) {
-  if (!trigger_manager_)
-    return;
-
   if (unsafe_resources.size() == 1) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SafeBrowsing.BlockingPage.ResourceType",
-        safe_browsing::GetResourceTypeFromRequestDestination(
-            unsafe_resources[0].request_destination));
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                               unsafe_resources[0].request_destination);
   }
+
+  if (metrics_collector_) {
+    metrics_collector_->AddSafeBrowsingEventToPref(
+        SafeBrowsingMetricsCollector::EventType::
+            SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+  }
+
+  if (!trigger_manager_)
+    return;
 
   // Start computing threat details. Trigger Manager will decide if it's safe to
   // begin collecting data at this time. The report will be sent only if the
@@ -136,10 +139,10 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   // With committed interstitials OnProceed and OnDontProceed don't get
   // called, so call FinishThreatDetails from here.
-  FinishThreatDetails((proceeded() ? base::TimeDelta::FromMilliseconds(
-                                         threat_details_proceed_delay())
-                                   : base::TimeDelta()),
-                      proceeded(), controller()->metrics_helper()->NumVisits());
+  FinishThreatDetails(
+      (proceeded() ? base::Milliseconds(threat_details_proceed_delay())
+                   : base::TimeDelta()),
+      proceeded(), controller()->metrics_helper()->NumVisits());
   if (!proceeded()) {
     OnDontProceedDone();
   } else {

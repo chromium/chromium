@@ -17,10 +17,9 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.signin.ui.SigninPromoController;
+import org.chromium.chrome.browser.ui.signin.SigninPromoController;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -63,7 +62,7 @@ public abstract class SignInPromo {
 
         // TODO(bsazonov): Signin manager should check for native status in isSignInAllowed
         mCanSignIn = signinManager.isSignInAllowed()
-                && !signinManager.getIdentityManager().hasPrimaryAccount();
+                && !signinManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC);
         updateVisibility();
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
@@ -99,10 +98,6 @@ public abstract class SignInPromo {
 
     /**
      * @return Whether the {@link SignInPromo} should be created.
-     *
-     * Note: This checks the pref SIGNIN_PROMO_NTP_PROMO_DISMISSED. This is written if the
-     * promo has been dismissed before. Due to changes in NTP architecture, it is no longer
-     * possible to dismiss the promo, but we still honor the previous setting if it exists.
      */
     public static boolean shouldCreatePromo() {
         return !sDisablePromoForTests
@@ -127,8 +122,8 @@ public abstract class SignInPromo {
     public boolean isUserSignedInButNotSyncing() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        return identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
-                && identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) == null;
+        return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
+                && !identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
     }
 
     /** Notify that the content for this {@link SignInPromo} has changed. */
@@ -148,12 +143,20 @@ public abstract class SignInPromo {
      * Updates visibility status. Overridden by subclasses that want to track visibility changes.
      */
     protected void setVisibilityInternal(boolean visibility) {
+        if (!mIsVisible && visibility) mSigninPromoController.increasePromoShowCount();
         mIsVisible = visibility;
     }
 
     /** Returns current visibility status of the underlying promo view. */
     public boolean isVisible() {
         return mIsVisible;
+    }
+
+    public void onDismissPromo() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.SIGNIN_PROMO_NTP_PROMO_DISMISSED, true);
+        mSigninPromoController.detach();
+        setVisibilityInternal(false);
     }
 
     @VisibleForTesting
@@ -170,8 +173,8 @@ public abstract class SignInPromo {
      * Observer to get notifications about various sign-in events.
      */
     @VisibleForTesting
-    public class SigninObserver implements SignInStateObserver, SignInAllowedObserver,
-                                           ProfileDataCache.Observer, AccountsChangeObserver {
+    public class SigninObserver
+            implements SignInStateObserver, ProfileDataCache.Observer, AccountsChangeObserver {
         private final SigninManager mSigninManager;
         private final AccountManagerFacade mAccountManagerFacade;
 
@@ -182,9 +185,7 @@ public abstract class SignInPromo {
             mSigninManager = signinManager;
             mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-            mSigninManager.addSignInAllowedObserver(this);
             mSigninManager.addSignInStateObserver(this);
-
             mProfileDataCache.addObserver(this);
             mAccountManagerFacade.addObserver(this);
         }
@@ -193,7 +194,6 @@ public abstract class SignInPromo {
             if (mUnregistered) return;
             mUnregistered = true;
 
-            mSigninManager.removeSignInAllowedObserver(this);
             mSigninManager.removeSignInStateObserver(this);
             mProfileDataCache.removeObserver(this);
             mAccountManagerFacade.removeObserver(this);

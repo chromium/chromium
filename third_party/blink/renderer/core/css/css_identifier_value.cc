@@ -49,6 +49,9 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
     case Length::kFitContent:
       value_id_ = CSSValueID::kFitContent;
       break;
+    case Length::kContent:
+      value_id_ = CSSValueID::kContent;
+      break;
     case Length::kExtendToZoom:
       value_id_ = CSSValueID::kInternalExtendToZoom;
       break;

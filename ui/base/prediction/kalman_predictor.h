@@ -32,6 +32,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) KalmanPredictor
   };
 
   explicit KalmanPredictor(unsigned int prediction_options);
+
+  KalmanPredictor(const KalmanPredictor&) = delete;
+  KalmanPredictor& operator=(const KalmanPredictor&) = delete;
+
   ~KalmanPredictor() override;
 
   const char* GetName() const override;
@@ -71,13 +75,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) KalmanPredictor
   std::deque<InputData> last_points_;
 
   // Maximum time interval between first and last events in last points queue.
-  static constexpr base::TimeDelta kMaxTimeInQueue =
-      base::TimeDelta::FromMilliseconds(40);
+  static constexpr base::TimeDelta kMaxTimeInQueue = base::Milliseconds(40);
 
   // Flags to determine the enabled prediction options.
   const unsigned int prediction_options_;
-
-  DISALLOW_COPY_AND_ASSIGN(KalmanPredictor);
 };
 
 }  // namespace ui

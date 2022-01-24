@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,6 +29,9 @@ class ThirdPartyNTPUiTest : public InProcessBrowserTest,
  public:
   ThirdPartyNTPUiTest() = default;
 
+  ThirdPartyNTPUiTest(const ThirdPartyNTPUiTest&) = delete;
+  ThirdPartyNTPUiTest& operator=(const ThirdPartyNTPUiTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
@@ -39,9 +41,6 @@ class ThirdPartyNTPUiTest : public InProcessBrowserTest,
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(https_test_server().Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyNTPUiTest);
 };
 
 // Verifies that Chrome won't steal focus from the Omnibox and focus the tab

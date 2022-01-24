@@ -13,7 +13,6 @@ if (enable_media_drm_storage) {
 
     public_deps = [
       "//base",
-      "//base/util/values:values_util",
       "//content/public/browser",
       "//media/mojo/mojom",
       "//url",

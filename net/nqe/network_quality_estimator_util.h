@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "net/base/net_export.h"
+#include "net/log/net_log_with_source.h"
 
 namespace net {
 
@@ -32,7 +33,8 @@ typedef uint64_t IPHash;
 // To make this determination, this method makes the best effort estimate
 // including trying to resolve the host from the HostResolver's cache. This
 // method is synchronous.
-NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request);
+NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request,
+                                                NetLogWithSource net_log);
 
 // Provides access to the method used internally by IsRequestForPrivateHost(),
 // for testing.

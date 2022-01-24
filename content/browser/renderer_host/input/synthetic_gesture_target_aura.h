@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_AURA_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_AURA_H_
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/common/input/synthetic_gesture_params.h"
@@ -21,6 +20,10 @@ namespace content {
 class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
  public:
   explicit SyntheticGestureTargetAura(RenderWidgetHostImpl* host);
+
+  SyntheticGestureTargetAura(const SyntheticGestureTargetAura&) = delete;
+  SyntheticGestureTargetAura& operator=(const SyntheticGestureTargetAura&) =
+      delete;
 
   // SyntheticGestureTargetBase:
   void DispatchWebTouchEventToPlatform(
@@ -61,8 +64,6 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
   float wheel_precision_y_ = 0.f;
 
   aura::EventInjector event_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetAura);
 };
 
 }  // namespace content

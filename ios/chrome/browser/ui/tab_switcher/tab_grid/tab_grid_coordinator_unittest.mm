@@ -10,6 +10,9 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_clock_override.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
@@ -23,6 +26,7 @@
 #include "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
+#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
@@ -94,6 +98,11 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         base::BindRepeating(
             &AuthenticationServiceFake::CreateAuthenticationService));
     chrome_browser_state_ = test_cbs_builder.Build();
+    chrome_browser_state_->CreateBookmarkModel(true);
+
+    bookmark_model_ = ios::BookmarkModelFactory::GetForBrowserState(
+        chrome_browser_state_.get());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
 
@@ -138,7 +147,12 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+
+  // Model for bookmarks.
+  bookmarks::BookmarkModel* bookmark_model_;
+
   // Browser for the coordinator.
   std::unique_ptr<Browser> browser_;
 
@@ -295,15 +309,15 @@ TEST_F(TabGridCoordinatorTest, SizeTabGridCoordinatorViewController) {
 // Tests that the time spent in the tab grid is correctly logged.
 TEST_F(TabGridCoordinatorTest, TimeSpentInTabGrid) {
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
-  scoped_clock_.Advance(base::TimeDelta::FromMinutes(1));
+  scoped_clock_.Advance(base::Minutes(1));
   [coordinator_ showTabGrid];
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 0);
-  scoped_clock_.Advance(base::TimeDelta::FromSeconds(20));
+  scoped_clock_.Advance(base::Seconds(20));
   [coordinator_ showTabViewController:normal_tab_view_controller_
                    shouldCloseTabGrid:YES
                            completion:nil];
   histogram_tester_.ExpectUniqueTimeSample("IOS.TabSwitcher.TimeSpent",
-                                           base::TimeDelta::FromSeconds(20), 1);
+                                           base::Seconds(20), 1);
   histogram_tester_.ExpectTotalCount("IOS.TabSwitcher.TimeSpent", 1);
 }
 

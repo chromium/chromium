@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
@@ -12,7 +13,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/window.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
@@ -59,6 +60,20 @@ ChromeKeyboardBoundsObserver::~ChromeKeyboardBoundsObserver() {
 
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
+}
+
+void ChromeKeyboardBoundsObserver::OnKeyboardVisibleBoundsChanged(
+    const gfx::Rect& screen_bounds) {
+  if (base::FeatureList::IsEnabled(chromeos::features::kVirtualKeyboardApi)) {
+    std::unique_ptr<content::RenderWidgetHostIterator> hosts(
+        content::RenderWidgetHost::GetRenderWidgetHosts());
+
+    while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
+      content::RenderWidgetHostView* view = host->GetView();
+      if (view)
+        view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
+    }
+  }
 }
 
 void ChromeKeyboardBoundsObserver::OnKeyboardOccludedBoundsChanged(

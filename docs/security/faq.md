@@ -571,7 +571,7 @@ users to have unique and more complex passwords for websites. As it was
 originally implemented, autocomplete='off' for password fields took control away
 from the user and gave control to the web site developer, which was also a
 violation of the [priority of
-constituencies](http://www.schemehostport.com/2011/10/priority-of-constituencies.html).
+constituencies](https://www.schemehostport.com/2011/10/priority-of-constituencies.html).
 For a longer discussion on this, see the [mailing list
 announcement](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/zhhj7hCip5c).
 
@@ -715,6 +715,18 @@ security bugs. A read or write to the NULL page results in a non-exploitable cra
 If the offset is larger than a page, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
 
+<a name="TOC-Are-stack-overflows-considered-security-bugs-"></a>
+## Are stack overflows considered security bugs?
+
+No. Guard pages mean that stack overflows are considered unexploitable, and
+are regarded as [denial of service bugs](#TOC-Are-denial-of-service-issues-considered-security-bugs-).
+The only exception is if an attacker can jump over the guard pages allocated by
+the operating system and avoid accessing them, e.g.:
+
+*    A frame with a very large stack allocation.
+*    C variable length array with an attacker-controlled size.
+*    A call to `alloca()` with an attacker-controlled size.
+
 <a name="TOC-Are-enterprise-admins-considered-privileged-"></a>
 ## Are enterprise admins considered privileged?
 
@@ -749,3 +761,8 @@ recognize that there may exist policies or policy combinations that can provide
 capabilities outside of the guidance provided here. In cases of clear violation
 of user expectations, we will attempt to remedy these policies and we will apply
 the guidance laid out in this document to any newly added policies.
+
+<a name="TOC-Which-bugs-are-valid-for-rewards-under-the-Chrome-Vulnerability-Rewards-program-"></a>
+## Which bugs are valid for rewards under the Chrome Vulnerability Rewards program?
+
+Please see [the VRP FAQ page](vrp-faq.md).

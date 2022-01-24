@@ -10,13 +10,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="114dp"
+    android:clickable="true"
+    android:focusable="true"
     style="@style/MaterialCardStyle">
 
     <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
         app:columnCount="4"
         app:rowCount="4">
 
@@ -32,8 +32,8 @@
             app:layout_column="0"
             app:layout_row="0"
             app:layout_rowSpan="4"
-            app:cornerRadiusTopStart="@dimen/download_manager_thumbnail_corner_radius"
-            app:cornerRadiusBottomStart="@dimen/download_manager_thumbnail_corner_radius"
+            app:cornerRadiusTopStart="@dimen/card_rounded_corner_radius"
+            app:cornerRadiusBottomStart="@dimen/card_rounded_corner_radius"
             style="@style/AsyncImageView"
             tools:ignore="ContentDescription" />
 

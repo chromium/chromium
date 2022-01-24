@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
@@ -58,7 +57,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 using content::Referrer;
 
@@ -102,6 +100,11 @@ class TestNetworkBytesChangedObserver
  public:
   TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
 
+  TestNetworkBytesChangedObserver(const TestNetworkBytesChangedObserver&) =
+      delete;
+  TestNetworkBytesChangedObserver& operator=(
+      const TestNetworkBytesChangedObserver&) = delete;
+
   // prerender::NoStatePrefetchHandle::Observer
   void OnPrefetchStop(
       NoStatePrefetchHandle* no_state_prefetch_handle) override {}
@@ -114,8 +117,6 @@ class TestNetworkBytesChangedObserver
 
  private:
   bool network_bytes_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkBytesChangedObserver);
 };
 
 int DummyNoStatePrefetchContents::g_next_route_id_ = 0;
@@ -585,9 +586,10 @@ TEST_F(PrerendererNavigationPredictorPrefetchHoldbackTest,
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
       FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_EQ(nullptr,
-            no_state_prefetch_manager()->AddPrerenderFromNavigationPredictor(
-                url, nullptr, gfx::Size()));
+  EXPECT_EQ(
+      nullptr,
+      no_state_prefetch_manager()->StartPrefetchingFromNavigationPredictor(
+          url, nullptr, gfx::Size()));
 }
 
 // Verify that link-rel:next URLs are not prefetched.
@@ -596,11 +598,10 @@ TEST_F(PrerenderTest, LinkRelNextWithNSPDisabled) {
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       url, url::Origin::Create(GURL("www.notgoogle.com")), ORIGIN_LINK_REL_NEXT,
       FINAL_STATUS_PROFILE_DESTROYED);
-  EXPECT_EQ(
-      nullptr,
-      no_state_prefetch_manager()->AddPrerenderWithPreconnectFallbackForTesting(
-          ORIGIN_LINK_REL_NEXT, url,
-          url::Origin::Create(GURL("www.notgoogle.com"))));
+  EXPECT_EQ(nullptr, no_state_prefetch_manager()
+                         ->StartPrefetchingWithPreconnectFallbackForTesting(
+                             ORIGIN_LINK_REL_NEXT, url,
+                             url::Origin::Create(GURL("www.notgoogle.com"))));
   histogram_tester().ExpectUniqueSample(
       "Prerender.FinalStatus", FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED, 1);
 }
@@ -630,9 +631,10 @@ TEST_F(PrerendererNavigationPredictorPrefetchHoldbackDisabledTest,
       url, absl::nullopt, ORIGIN_NAVIGATION_PREDICTOR,
       FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_NE(nullptr,
-            no_state_prefetch_manager()->AddPrerenderFromNavigationPredictor(
-                url, nullptr, gfx::Size()));
+  EXPECT_NE(
+      nullptr,
+      no_state_prefetch_manager()->StartPrefetchingFromNavigationPredictor(
+          url, nullptr, gfx::Size()));
 }
 
 // Flaky on Android and Mac, crbug.com/1087876.
@@ -666,7 +668,7 @@ TEST_F(PrerenderTest, FoundTest) {
   EXPECT_EQ(prerender::FINAL_STATUS_UNKNOWN, final_status);
   EXPECT_EQ(prerender::ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, origin);
 
-  const base::TimeDelta advance_duration = TimeDelta::FromSeconds(1);
+  const base::TimeDelta advance_duration = base::Seconds(1);
   tick_clock()->Advance(advance_duration);
   EXPECT_TRUE(no_state_prefetch_manager()->GetPrefetchInformation(
       url, &prefetch_age, &final_status, &origin));
@@ -718,7 +720,7 @@ TEST_F(PrerenderTest, ExpireTest) {
   EXPECT_FALSE(no_state_prefetch_manager()->next_no_state_prefetch_contents());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   tick_clock()->Advance(no_state_prefetch_manager()->config().time_to_live +
-                        TimeDelta::FromSeconds(1));
+                        base::Seconds(1));
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
 }
 
@@ -739,9 +741,9 @@ TEST_F(PrerenderTest, BadURLTest) {
 // have their time to expiry shortened from the default time to live.
 TEST_F(PrerenderTest, LinkManagerNavigateAwayExpire) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
-  const TimeDelta time_to_live = TimeDelta::FromSeconds(300);
-  const TimeDelta abandon_time_to_live = TimeDelta::FromSeconds(20);
-  const TimeDelta test_advance = TimeDelta::FromSeconds(22);
+  const base::TimeDelta time_to_live = base::Seconds(300);
+  const base::TimeDelta abandon_time_to_live = base::Seconds(20);
+  const base::TimeDelta test_advance = base::Seconds(22);
   ASSERT_LT(test_advance, time_to_live);
   ASSERT_LT(abandon_time_to_live, test_advance);
 
@@ -771,15 +773,15 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayExpire) {
 // we shouldn't expect it to be extended.
 TEST_F(PrerenderTest, LinkManagerNavigateAwayNearExpiry) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
-  const TimeDelta time_to_live = TimeDelta::FromSeconds(300);
-  const TimeDelta abandon_time_to_live = TimeDelta::FromSeconds(20);
+  const base::TimeDelta time_to_live = base::Seconds(300);
+  const base::TimeDelta abandon_time_to_live = base::Seconds(20);
 
   // We will expect the prerender to still be alive after advancing the clock
   // by first_advance. But, after second_advance, we expect it to have timed
   // out, demonstrating that you can't extend a prerender by navigating away
   // from its launcher.
-  const TimeDelta first_advance = TimeDelta::FromSeconds(298);
-  const TimeDelta second_advance = TimeDelta::FromSeconds(4);
+  const base::TimeDelta first_advance = base::Seconds(298);
+  const base::TimeDelta second_advance = base::Seconds(4);
   ASSERT_LT(first_advance, time_to_live);
   ASSERT_LT(time_to_live - first_advance, abandon_time_to_live);
   ASSERT_LT(time_to_live, first_advance + second_advance);
@@ -817,9 +819,9 @@ TEST_F(PrerenderTest, LinkManagerNavigateAwayNearExpiry) {
 // abandoned prerender hasn't expired.
 TEST_F(PrerenderTest, LinkManagerNavigateAwayLaunchAnother) {
   no_state_prefetch_manager()->SetTickClockForTesting(tick_clock());
-  const TimeDelta time_to_live = TimeDelta::FromSeconds(300);
-  const TimeDelta abandon_time_to_live = TimeDelta::FromSeconds(20);
-  const TimeDelta test_advance = TimeDelta::FromSeconds(5);
+  const base::TimeDelta time_to_live = base::Seconds(300);
+  const base::TimeDelta abandon_time_to_live = base::Seconds(20);
+  const base::TimeDelta test_advance = base::Seconds(5);
   ASSERT_LT(test_advance, time_to_live);
   ASSERT_GT(abandon_time_to_live, test_advance);
 
@@ -861,25 +863,24 @@ TEST_F(PrerenderTest, NoStatePrefetchDuplicate) {
   // Prefetch the url once.
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_CANCELLED);
-  EXPECT_TRUE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kUrl, nullptr, gfx::Size()));
-  // Cancel the prerender so that it is not reused.
+  // Cancel the prefetch so that it is not reused.
   no_state_prefetch_manager()->CancelAllPrerenders();
 
   no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
       kUrl, absl::nullopt, ORIGIN_OMNIBOX, FINAL_STATUS_PROFILE_DESTROYED);
 
-  // Prefetching again before time_to_live aborts, because it is a duplicate.
-  tick_clock()->Advance(base::TimeDelta::FromSeconds(1));
-  EXPECT_FALSE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  // Prefetch again before time_to_live aborts, because it is a duplicate.
+  tick_clock()->Advance(base::Seconds(1));
+  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kUrl, nullptr, gfx::Size()));
   histogram_tester().ExpectBucketCount("Prerender.FinalStatus",
                                        FINAL_STATUS_DUPLICATE, 1);
 
-  // Prefetching after time_to_live succeeds.
-  tick_clock()->Advance(
-      base::TimeDelta::FromMinutes(net::HttpCache::kPrefetchReuseMins));
-  EXPECT_TRUE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  // Prefetch after time_to_live succeeds.
+  tick_clock()->Advance(base::Minutes(net::HttpCache::kPrefetchReuseMins));
+  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kUrl, nullptr, gfx::Size()));
 }
 
@@ -1056,7 +1057,7 @@ TEST_F(PrerenderTest, NotSoRecentlyVisited) {
   GURL url("http://www.google.com/");
 
   no_state_prefetch_manager()->RecordNavigation(url);
-  tick_clock()->Advance(TimeDelta::FromMilliseconds(
+  tick_clock()->Advance(base::Milliseconds(
       UnitTestNoStatePrefetchManager::kNavigationRecordWindowMs + 500));
 
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
@@ -1127,7 +1128,7 @@ TEST_F(PrerenderTest, CancelAllTest) {
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(url));
 }
 
-// Test that when prerender is enabled, a prerender initiated by omnibox is
+// Test that when prefetch is enabled, a prefetch initiated by omnibox is
 // successful.
 TEST_F(PrerenderTest, OmniboxAllowedWhenNotDisabled) {
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
@@ -1135,7 +1136,7 @@ TEST_F(PrerenderTest, OmniboxAllowedWhenNotDisabled) {
           GURL("http://www.example.com"), absl::nullopt, ORIGIN_OMNIBOX,
           FINAL_STATUS_PROFILE_DESTROYED);
 
-  EXPECT_TRUE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  EXPECT_TRUE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       GURL("http://www.example.com"), nullptr, gfx::Size()));
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
 }
@@ -1148,9 +1149,9 @@ class PrerenderFallbackToPreconnectDisabledTest : public PrerenderTest {
   }
 };
 
-// Test that when prerender fails and the
-// kPrerenderFallbackToPreconnect experiment is not enabled,
-// a prerender initiated by omnibox does not result in a preconnect.
+// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
+// experiment is not enabled, a prefetch initiated by omnibox does not result in
+// a preconnect.
 TEST_F(PrerenderFallbackToPreconnectDisabledTest,
        OmniboxAllowedWhenNotDisabled_LowMemory_FeatureDisabled) {
   const GURL kURL(GURL("http://www.example.com"));
@@ -1162,9 +1163,9 @@ TEST_F(PrerenderFallbackToPreconnectDisabledTest,
   loading_predictor->StartInitialization();
   content::RunAllTasksUntilIdle();
 
-  // Prerender should be disabled on low memory devices.
+  // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kURL, nullptr, gfx::Size()));
 
   EXPECT_EQ(0u, loading_predictor->GetActiveHintsSizeForTesting());
@@ -1178,9 +1179,9 @@ class PrerenderFallbackToPreconnectEnabledTest : public PrerenderTest {
   }
 };
 
-// Test that when prerender fails and the
-// kPrerenderFallbackToPreconnect experiment is enabled, a
-// prerender initiated by omnibox actually results in preconnect.
+// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
+// experiment is enabled, a prefetch initiated by omnibox actually results in
+// preconnect.
 TEST_F(PrerenderFallbackToPreconnectEnabledTest,
        Omnibox_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
   const GURL kURL(GURL("http://www.example.com"));
@@ -1193,12 +1194,12 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   loading_predictor->StartInitialization();
   content::RunAllTasksUntilIdle();
 
-  // Prerender should be disabled on low memory devices.
+  // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->AddPrerenderFromOmnibox(
+  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromOmnibox(
       kURL, nullptr, gfx::Size()));
 
-  // Verify that the prerender request falls back to a preconnect request.
+  // Verify that the prefetch request falls back to a preconnect request.
   EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
 
   auto& active_hints = loading_predictor->active_hints_for_testing();
@@ -1206,9 +1207,9 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   EXPECT_NE(it, active_hints.end());
 }
 
-// Test that when prerender fails and the
-// kPrerenderFallbackToPreconnect experiment is enabled, a
-// prerender initiated by an external request actually results in preconnect.
+// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
+// experiment is enabled, a prefetch initiated by an external request actually
+// results in preconnect.
 TEST_F(PrerenderFallbackToPreconnectEnabledTest,
        ExternalRequest_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
   const GURL kURL(GURL("http://www.example.com"));
@@ -1221,12 +1222,12 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   loading_predictor->StartInitialization();
   content::RunAllTasksUntilIdle();
 
-  // Prerender should be disabled on low memory devices.
+  // Prefetch should be disabled on low memory devices.
   no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
+  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
       kURL, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
 
-  // Verify that the prerender request falls back to a preconnect request.
+  // Verify that the prefetch request falls back to a preconnect request.
   EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
 
   auto& active_hints = loading_predictor->active_hints_for_testing();
@@ -1292,7 +1293,7 @@ TEST_F(PrerenderTest, LinkRelAllowedOnCellular) {
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
 }
 
-// Verify that the external prerender requests are not allowed on cellular
+// Verify that the external prefetch requests are not allowed on cellular
 // connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
 // not enabled.
 TEST_F(PrerenderTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
@@ -1309,14 +1310,14 @@ TEST_F(PrerenderTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
+      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
   EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
 
-// Verify that the external prerender requests are allowed on unmetered cellular
+// Verify that the external prefetch requests are allowed on unmetered cellular
 // connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
 // not enabled.
 TEST_F(PrerenderTest, PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
@@ -1333,14 +1334,14 @@ TEST_F(PrerenderTest, PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
+      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
   EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
 
-// Verify that the external prerender requests are not allowed on metered wifi
+// Verify that the external prefetch requests are not allowed on metered wifi
 // connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
 // not enabled.
 TEST_F(PrerenderTest, PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
@@ -1357,7 +1358,7 @@ TEST_F(PrerenderTest, PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
+      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
   EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
@@ -1388,7 +1389,7 @@ TEST_F(
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, absl::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
+      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
   EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
@@ -1591,7 +1592,7 @@ TEST_F(PrerenderTest, LinkManagerExpireThenCancel) {
   ASSERT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   tick_clock()->Advance(no_state_prefetch_manager()->config().time_to_live +
-                        TimeDelta::FromSeconds(1));
+                        base::Seconds(1));
 
   EXPECT_FALSE(IsEmptyNoStatePrefetchLinkManager());
 
@@ -1616,7 +1617,7 @@ TEST_F(PrerenderTest, LinkManagerExpireThenAddAgain) {
   ASSERT_EQ(first_no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(url));
   tick_clock()->Advance(no_state_prefetch_manager()->config().time_to_live +
-                        TimeDelta::FromSeconds(1));
+                        base::Seconds(1));
 
   ASSERT_FALSE(no_state_prefetch_manager()->FindEntry(url));
   DummyNoStatePrefetchContents* second_no_state_prefetch_contents =
@@ -1684,7 +1685,7 @@ TEST_F(PrerenderTest, DISABLED_LinkManagerAbandonInactivePrerender) {
 
   tick_clock()->Advance(
       no_state_prefetch_manager()->config().abandon_time_to_live +
-      TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(first_url));
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(second_url));
   EXPECT_TRUE(IsEmptyNoStatePrefetchLinkManager());
@@ -1715,7 +1716,7 @@ TEST_F(PrerenderTest, LinkManagerWaitToLaunchNotLaunched) {
 
   tick_clock()->Advance(
       no_state_prefetch_manager()->config().max_wait_to_launch +
-      TimeDelta::FromSeconds(1));
+      base::Seconds(1));
   EXPECT_EQ(no_state_prefetch_contents,
             no_state_prefetch_manager()->FindEntry(first_url));
   EXPECT_FALSE(no_state_prefetch_manager()->FindEntry(second_url));
@@ -1746,13 +1747,13 @@ TEST_F(PrerenderTest, LinkManagerExpireRevealingLaunch) {
 
   // Insert the second prerender so it will be still be launchable when the
   // first expires.
-  const TimeDelta wait_to_launch_second_prerender =
+  const base::TimeDelta wait_to_launch_second_prerender =
       no_state_prefetch_manager()->config().time_to_live -
       no_state_prefetch_manager()->config().max_wait_to_launch +
-      TimeDelta::FromSeconds(2);
-  const TimeDelta wait_for_first_prerender_to_expire =
+      base::Seconds(2);
+  const base::TimeDelta wait_for_first_prerender_to_expire =
       no_state_prefetch_manager()->config().time_to_live -
-      wait_to_launch_second_prerender + TimeDelta::FromSeconds(1);
+      wait_to_launch_second_prerender + base::Seconds(1);
   ASSERT_LT(
       no_state_prefetch_manager()->config().time_to_live,
       wait_to_launch_second_prerender + wait_for_first_prerender_to_expire);

@@ -31,9 +31,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_buffer_queue.h"
@@ -76,6 +75,9 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   static std::unique_ptr<FFmpegDemuxerStream> Create(FFmpegDemuxer* demuxer,
                                                      AVStream* stream,
                                                      MediaLog* media_log);
+
+  FFmpegDemuxerStream(const FFmpegDemuxerStream&) = delete;
+  FFmpegDemuxerStream& operator=(const FFmpegDemuxerStream&) = delete;
 
   ~FFmpegDemuxerStream() override;
 
@@ -207,8 +209,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   int num_discarded_packet_warnings_;
   int64_t last_packet_pos_;
   int64_t last_packet_dts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxerStream);
 };
 
 class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
@@ -219,6 +219,10 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
                 MediaTracksUpdatedCB media_tracks_updated_cb,
                 MediaLog* media_log,
                 bool is_local_file);
+
+  FFmpegDemuxer(const FFmpegDemuxer&) = delete;
+  FFmpegDemuxer& operator=(const FFmpegDemuxer&) = delete;
+
   ~FFmpegDemuxer() override;
 
   // Demuxer implementation.
@@ -417,8 +421,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   base::WeakPtr<FFmpegDemuxer> weak_this_;
   base::WeakPtrFactory<FFmpegDemuxer> cancel_pending_seek_factory_{this};
   base::WeakPtrFactory<FFmpegDemuxer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxer);
 };
 
 }  // namespace media

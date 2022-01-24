@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -305,6 +306,52 @@ TEST_F(FontPreloadManagerTest, OptionalFontMissingFirstFrame) {
   EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
 
   main_resource.Finish();
+}
+
+TEST_F(FontPreloadManagerTest, OptionalFontForcedLayoutNoLayoutShift) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimSubresourceRequest font_resource("https://example.com/Ahem.woff2",
+                                      "font/woff2");
+
+  LoadURL("https://example.com");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <style>
+      @font-face {
+        font-family: custom-font;
+        src: url(https://example.com/Ahem.woff2) format("woff2");
+        font-display: optional;
+      }
+      #target {
+        font: 25px/1 custom-font, monospace;
+      }
+    </style>
+    <span id=target>0123456789</span>
+    <span>Element to track layout shift when font changes</span>
+  )HTML");
+
+  // Now rendering has started, as there's no blocking resources.
+  EXPECT_FALSE(Compositor().DeferMainFrameUpdate());
+  EXPECT_EQ(State::kUnblocked, GetState());
+
+  // Force layout update, which lays out target but doesn't paint anything.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  test::RunPendingTasks();
+
+  EXPECT_GT(250, GetTarget()->OffsetWidth());
+
+  // Can't check ShouldSkipDrawing(), as it calls PaintRequested() on the font.
+
+  font_resource.Complete(ReadAhemWoff2());
+
+  // Even though target has been laid out with a fallback font, we can still
+  // relayout with the web font since it hasn't been painted yet, which means
+  // relayout and repaint do not cause layout shifting.
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  EXPECT_EQ(250, GetTarget()->OffsetWidth());
+  EXPECT_FALSE(GetTargetFont().ShouldSkipDrawing());
+  EXPECT_EQ(0.0, GetDocument().View()->GetLayoutShiftTracker().Score());
 }
 
 TEST_F(FontPreloadManagerTest, OptionalFontRemoveAndReadd) {

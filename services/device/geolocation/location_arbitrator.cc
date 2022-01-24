@@ -22,7 +22,7 @@ namespace device {
 // To avoid oscillations, set this to twice the expected update interval of a
 // a GPS-type location provider (in case it misses a beat) plus a little.
 const base::TimeDelta LocationArbitrator::kFixStaleTimeoutTimeDelta =
-    base::TimeDelta::FromSeconds(11);
+    base::Seconds(11);
 
 LocationArbitrator::LocationArbitrator(
     const CustomLocationProviderCallback& custom_location_provider_getter,

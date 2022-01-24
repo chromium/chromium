@@ -856,7 +856,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
           base::ListValue inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            size_t index = inline_text_nodes.GetSize();
+            size_t index = inline_text_nodes.GetList().size();
             inline_text_nodes.Set(index, inline_text_box->Serialize());
           }
           node_dict->SetKey("inlineTextNodes", std::move(inline_text_nodes));
@@ -1029,31 +1029,6 @@ class BlockedByClient_NetworkObserver_Test
 };
 
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(BlockedByClient_NetworkObserver_Test);
-
-class DevToolsSetCookieTest : public HeadlessAsyncDevTooledBrowserTest,
-                              public network::Observer {
- public:
-  void RunDevTooledTest() override {
-    EXPECT_TRUE(embedded_test_server()->Start());
-    devtools_client_->GetNetwork()->AddObserver(this);
-
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    devtools_client_->GetNetwork()->Enable(run_loop.QuitClosure());
-    run_loop.Run();
-
-    devtools_client_->GetPage()->Navigate(
-        embedded_test_server()->GetURL("/set-cookie?cookie1").spec());
-  }
-
-  void OnResponseReceived(
-      const network::ResponseReceivedParams& params) override {
-    EXPECT_NE(std::string::npos, params.GetResponse()->GetHeadersText().find(
-                                     "Set-Cookie: cookie1"));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevToolsSetCookieTest);
 
 class DevtoolsInterceptionWithAuthProxyTest
     : public HeadlessAsyncDevTooledBrowserTest,

@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
+import android.os.Build;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.View;
@@ -24,7 +25,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -73,6 +73,10 @@ public class BluetoothChooserDialog
     // Always equal to mWindowAndroid.getActivity().get(), but stored separately to make sure it's
     // not GC'ed.
     final Activity mActivity;
+
+    // Always equal to mWindowAndroid.getContext().get(), but stored separately to make sure it's
+    // not GC'ed.
+    final Context mContext;
 
     // The dialog to show to let the user pick a device.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -147,6 +151,8 @@ public class BluetoothChooserDialog
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         assert mActivity != null;
+        mContext = windowAndroid.getContext().get();
+        assert mContext != null;
         mOrigin = origin;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -155,7 +161,7 @@ public class BluetoothChooserDialog
 
         // Initialize icons.
         mConnectedIcon = getIconWithRowIconColorStateList(R.drawable.ic_bluetooth_connected);
-        mConnectedIconDescription = mActivity.getString(R.string.bluetooth_device_connected);
+        mConnectedIconDescription = mContext.getString(R.string.bluetooth_device_connected);
 
         mSignalStrengthLevelIcon = new Drawable[] {
                 getIconWithRowIconColorStateList(R.drawable.ic_signal_cellular_0_bar),
@@ -168,17 +174,17 @@ public class BluetoothChooserDialog
             Log.i(TAG, "BluetoothChooserDialog: Default Bluetooth adapter not found.");
         }
         mAdapterOffStatus = SpanApplier.applySpans(
-                mActivity.getString(R.string.bluetooth_adapter_off_help),
+                mContext.getString(R.string.bluetooth_adapter_off_help),
                 new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF_HELP)));
     }
 
     private Drawable getIconWithRowIconColorStateList(int icon) {
-        Resources res = mActivity.getResources();
+        Resources res = mContext.getResources();
 
-        Drawable drawable = VectorDrawableCompat.create(res, icon, mActivity.getTheme());
+        Drawable drawable = VectorDrawableCompat.create(res, icon, mContext.getTheme());
         DrawableCompat.setTintList(drawable,
                 AppCompatResources.getColorStateList(
-                        mActivity, R.color.item_chooser_row_icon_color));
+                        mContext, R.color.item_chooser_row_icon_color));
         return drawable;
     }
 
@@ -189,29 +195,29 @@ public class BluetoothChooserDialog
     public void show() {
         SpannableString origin = new SpannableString(mOrigin);
 
-        final boolean useDarkColors = !ColorUtils.inNightMode(mActivity);
+        final boolean useDarkColors = !ColorUtils.inNightMode(mContext);
         AutocompleteSchemeClassifier autocompleteSchemeClassifier =
                 mDelegate.createAutocompleteSchemeClassifier();
 
-        OmniboxUrlEmphasizer.emphasizeUrl(origin, mActivity.getResources(),
+        OmniboxUrlEmphasizer.emphasizeUrl(origin, mContext.getResources(),
                 autocompleteSchemeClassifier, mSecurityLevel, false, useDarkColors, true);
         autocompleteSchemeClassifier.destroy();
         // Construct a full string and replace the origin text with emphasized version.
         SpannableString title =
-                new SpannableString(mActivity.getString(R.string.bluetooth_dialog_title, mOrigin));
+                new SpannableString(mContext.getString(R.string.bluetooth_dialog_title, mOrigin));
         int start = title.toString().indexOf(mOrigin);
         TextUtils.copySpansFrom(origin, 0, origin.length(), Object.class, title, start);
 
-        String noneFound = mActivity.getString(R.string.bluetooth_not_found);
+        String noneFound = mContext.getString(R.string.bluetooth_not_found);
 
         SpannableString searching = SpanApplier.applySpans(
-                mActivity.getString(R.string.bluetooth_searching),
+                mContext.getString(R.string.bluetooth_searching),
                 new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.EXPLAIN_BLUETOOTH)));
 
-        String positiveButton = mActivity.getString(R.string.bluetooth_confirm_button);
+        String positiveButton = mContext.getString(R.string.bluetooth_confirm_button);
 
         SpannableString statusIdleNoneFound = SpanApplier.applySpans(
-                mActivity.getString(R.string.bluetooth_not_seeing_it_idle),
+                mContext.getString(R.string.bluetooth_not_seeing_it_idle),
                 new SpanInfo("<link1>", "</link1>", createLinkSpan(LinkType.EXPLAIN_BLUETOOTH)),
                 new SpanInfo("<link2>", "</link2>", createLinkSpan(LinkType.RESTART_SEARCH)));
 
@@ -222,7 +228,7 @@ public class BluetoothChooserDialog
         ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(title, searching, noneFound, statusActive,
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
-        mItemChooserDialog = new ItemChooserDialog(mActivity, this, labels);
+        mItemChooserDialog = new ItemChooserDialog(mContext, mActivity.getWindow(), this, labels);
 
         mActivity.registerReceiver(mLocationModeBroadcastReceiver,
                 new IntentFilter(LocationManager.MODE_CHANGED_ACTION));
@@ -271,9 +277,7 @@ public class BluetoothChooserDialog
         // Nearby Devices permission and has set the neverForLocation flag on the BLUETOOTH_SCAN
         // permission in its manifest.
         boolean needsLocationServices = false;
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (!BuildInfo.targetsAtLeastS() || !BuildInfo.isAtLeastS()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             needsLocationServices = !LocationUtils.getInstance().isSystemLocationSettingEnabled();
         }
 
@@ -293,7 +297,7 @@ public class BluetoothChooserDialog
         if (havePermission) {
             if (needsLocationServices) {
                 needPermissionMessage = SpanApplier.applySpans(
-                        mActivity.getString(R.string.bluetooth_need_location_services_on),
+                        mContext.getString(R.string.bluetooth_need_location_services_on),
                         servicesSpan);
             } else {
                 // We don't need to request anything.
@@ -302,26 +306,24 @@ public class BluetoothChooserDialog
         } else {
             if (needsLocationServices) {
                 needPermissionMessage = SpanApplier.applySpans(
-                        mActivity.getString(
+                        mContext.getString(
                                 R.string.bluetooth_need_location_permission_and_services_on),
                         permissionSpan, servicesSpan);
             } else {
-                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
-                // compiling against the S SDK.
-                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     needPermissionMessage = SpanApplier.applySpans(
-                            mActivity.getString(R.string.bluetooth_need_nearby_devices_permission),
+                            mContext.getString(R.string.bluetooth_need_nearby_devices_permission),
                             permissionSpan);
                 } else {
                     needPermissionMessage = SpanApplier.applySpans(
-                            mActivity.getString(R.string.bluetooth_need_location_permission),
+                            mContext.getString(R.string.bluetooth_need_location_permission),
                             permissionSpan);
                 }
             }
         }
 
         SpannableString needPermissionStatus = SpanApplier.applySpans(
-                mActivity.getString(R.string.bluetooth_need_location_permission_help),
+                mContext.getString(R.string.bluetooth_need_location_permission_help),
                 new SpanInfo("<link>", "</link>",
                         createLinkSpan(LinkType.NEED_LOCATION_PERMISSION_HELP)));
 
@@ -331,7 +333,7 @@ public class BluetoothChooserDialog
 
     private NoUnderlineClickableSpan createLinkSpan(@LinkType int linkType) {
         return new NoUnderlineClickableSpan(
-                mActivity.getResources(), (view) -> onBluetoothLinkClick(view, linkType));
+                mContext.getResources(), (view) -> onBluetoothLinkClick(view, linkType));
     }
 
     private void onBluetoothLinkClick(View view, @LinkType int linkType) {
@@ -350,7 +352,7 @@ public class BluetoothChooserDialog
                     mItemChooserDialog.signalInitializingAdapter();
                 } else {
                     String unableToTurnOnAdapter =
-                            mActivity.getString(R.string.bluetooth_unable_to_turn_on_adapter);
+                            mContext.getString(R.string.bluetooth_unable_to_turn_on_adapter);
                     mItemChooserDialog.setErrorState(unableToTurnOnAdapter, mAdapterOffStatus);
                 }
                 break;
@@ -359,14 +361,10 @@ public class BluetoothChooserDialog
                 break;
             case LinkType.REQUEST_PERMISSIONS:
                 mItemChooserDialog.setIgnorePendingWindowFocusChangeForClose(true);
-                // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts
-                // compiling against the S SDK.
-                if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-                    // TODO(b/183501112): Replace these permission strings with the actual Manifest
-                    // constants once Chrome starts compiling against the S SDK.
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     mWindowAndroid.requestPermissions(
-                            new String[] {"android.permission.BLUETOOTH_SCAN",
-                                    "android.permission.BLUETOOTH_CONNECT"},
+                            new String[] {Manifest.permission.BLUETOOTH_SCAN,
+                                    Manifest.permission.BLUETOOTH_CONNECT},
                             BluetoothChooserDialog.this);
                 } else {
                     mWindowAndroid.requestPermissions(
@@ -395,26 +393,18 @@ public class BluetoothChooserDialog
     }
 
     private static boolean hasSystemPermissions(WindowAndroid windowAndroid) {
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-            // TODO(b/183501112): Replace these permission strings with the actual Manifest
-            // constants once Chrome starts compiling against the S SDK.
-            return windowAndroid.hasPermission("android.permission.BLUETOOTH_SCAN")
-                    && windowAndroid.hasPermission("android.permission.BLUETOOTH_CONNECT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    && windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT);
         }
 
         return windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private static boolean canRequestSystemPermissions(WindowAndroid windowAndroid) {
-        // TODO(b/183501112): Remove the targetsAtLeastS() check once Chrome starts compiling
-        // against the S SDK.
-        if (BuildInfo.targetsAtLeastS() && BuildInfo.isAtLeastS()) {
-            // TODO(b/183501112): Replace these permission strings with the actual Manifest
-            // constants once Chrome starts compiling against the S SDK.
-            return windowAndroid.canRequestPermission("android.permission.BLUETOOTH_SCAN")
-                    && windowAndroid.canRequestPermission("android.permission.BLUETOOTH_CONNECT");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_SCAN)
+                    && windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_CONNECT);
         }
 
         return windowAndroid.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -446,7 +436,7 @@ public class BluetoothChooserDialog
             iconDescription = mConnectedIconDescription;
         } else if (signalStrengthLevel != -1) {
             icon = mSignalStrengthLevelIcon[signalStrengthLevel].getConstantState().newDrawable();
-            iconDescription = mActivity.getResources().getQuantityString(
+            iconDescription = mContext.getResources().getQuantityString(
                     R.plurals.signal_strength_level_n_bars, signalStrengthLevel,
                     signalStrengthLevel);
         }
@@ -465,7 +455,7 @@ public class BluetoothChooserDialog
     @CalledByNative
     public void notifyAdapterTurnedOff() {
         SpannableString adapterOffMessage =
-                SpanApplier.applySpans(mActivity.getString(R.string.bluetooth_adapter_off),
+                SpanApplier.applySpans(mContext.getString(R.string.bluetooth_adapter_off),
                         new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
 
         mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);

@@ -17,6 +17,9 @@ namespace ash {
 // trail of lines to help users track.
 class LaserPointerView : public fast_ink::FastInkView {
  public:
+  LaserPointerView(const LaserPointerView&) = delete;
+  LaserPointerView& operator=(const LaserPointerView&) = delete;
+
   ~LaserPointerView() override;
 
   // Function to create a container Widget, initialize |cursor_view| and
@@ -58,8 +61,6 @@ class LaserPointerView : public fast_ink::FastInkView {
   gfx::Rect laser_content_rect_;
   bool pending_update_buffer_ = false;
   base::WeakPtrFactory<LaserPointerView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LaserPointerView);
 };
 
 }  // namespace ash

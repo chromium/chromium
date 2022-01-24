@@ -4,8 +4,8 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="@dimen/default_disabled_alpha" android:color="?attr/colorSwitchTrackNormal"
-        android:state_enabled="false"/>
-    <item android:color="?attr/colorPrimaryContainer" android:state_checked="true"/>
-    <item android:color="?attr/colorSwitchTrackNormal"/>
+    <item android:alpha="@dimen/default_disabled_alpha"
+        android:color="?attr/colorSwitchTrackNormalNonDynamic" android:state_enabled="false"/>
+    <item android:color="?attr/colorPrimaryContainerNonDynamic" android:state_checked="true"/>
+    <item android:color="?attr/colorSwitchTrackNormalNonDynamic"/>
 </selector>

@@ -129,6 +129,7 @@ class MemoryMap {
 
  private:
   std::vector<Mapping> mappings_;
+  PtraceConnection* connection_;
   InitializationStateDcheck initialized_;
 };
 

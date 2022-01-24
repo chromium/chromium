@@ -30,6 +30,7 @@ using NotificationType = ash::VmCameraMicManager::NotificationType;
 
 constexpr VmType kCrostiniVm = VmType::kCrostiniVm;
 constexpr VmType kPluginVm = VmType::kPluginVm;
+constexpr VmType kBorealis = VmType::kBorealis;
 
 constexpr DeviceType kCamera = DeviceType::kCamera;
 constexpr DeviceType kMic = DeviceType::kMic;
@@ -140,6 +141,9 @@ class VmCameraMicManagerTest : public testing::Test {
     vm_camera_mic_manager_->OnPrimaryUserSessionStarted(&testing_profile_);
   }
 
+  VmCameraMicManagerTest(const VmCameraMicManagerTest&) = delete;
+  VmCameraMicManagerTest& operator=(const VmCameraMicManagerTest&) = delete;
+
   void SetCameraAccessing(VmType vm, bool value) {
     vm_camera_mic_manager_->SetCameraAccessing(vm, value);
   }
@@ -188,8 +192,6 @@ class VmCameraMicManagerTest : public testing::Test {
 
   FakeNotificationDisplayService* fake_display_service_;
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(VmCameraMicManagerTest);
 };
 
 TEST_F(VmCameraMicManagerTest, CameraPrivacy) {
@@ -250,42 +252,56 @@ INSTANTIATE_TEST_SUITE_P(
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{},
-            /*notificatoin_expectations=*/{},
+            /*notification_expectations=*/{},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera},
-            /*notificatoin_expectations=*/{kCameraNotification},
+            /*notification_expectations=*/{kCameraNotification},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera},
-            /*notificatoin_expectations=*/{kCameraNotification},
+            /*notification_expectations=*/{kCameraNotification},
         },
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kMic},
-            /*notificatoin_expectations=*/{kMicNotification},
+            /*notification_expectations=*/{kMicNotification},
+        },
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*device_expectations=*/{kMic},
+            /*notification_expectations=*/{kMicNotification},
         },
         // Only a crostini "camera icon" notification is displayed.
         IsActiveTestParam{
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera, kMic},
-            /*notificatoin_expectations=*/{kCameraAndMicNotification},
+            /*notification_expectations=*/{kCameraAndMicNotification},
         },
         // Crostini "camera icon" notification and pluginvm mic notification are
         // displayed.
@@ -293,9 +309,10 @@ INSTANTIATE_TEST_SUITE_P(
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera, kMic},
-            /*notificatoin_expectations=*/
+            /*notification_expectations=*/
             {kCameraAndMicNotification, kMicNotification},
         },
         // Crostini "camera icon" notification and pluginvm camera notification
@@ -304,9 +321,10 @@ INSTANTIATE_TEST_SUITE_P(
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera, kMic},
-            /*notificatoin_expectations=*/
+            /*notification_expectations=*/
             {kCameraAndMicNotification, kCameraNotification},
         },
         // Crostini camera notification and pluginvm mic notification are
@@ -315,9 +333,22 @@ INSTANTIATE_TEST_SUITE_P(
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*device_expectations=*/{kCamera, kMic},
-            /*notificatoin_expectations=*/
+            /*notification_expectations=*/
+            {kCameraNotification, kMicNotification},
+        },
+        // Crostini camera notification and borealis mic notification are
+        // displayed.
+        IsActiveTestParam{
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
+                {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*device_expectations=*/{kCamera, kMic},
+            /*notification_expectations=*/
             {kCameraNotification, kMicNotification},
         },
         // Crostini and pluginvm "camera icon" notifications are displayed.
@@ -325,9 +356,11 @@ INSTANTIATE_TEST_SUITE_P(
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 1}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 1}}},
             },
             /*device_expectations=*/{kCamera, kMic},
-            /*notificatoin_expectations=*/{kCameraAndMicNotification},
+            /*notification_expectations=*/
+            {kCameraAndMicNotification, kMicNotification},
         }));
 
 class VmCameraMicManagerNotificationTest
@@ -341,6 +374,7 @@ class VmCameraMicManagerNotificationTest
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 0}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*expected_notifications=*/{},
         },
@@ -348,6 +382,7 @@ class VmCameraMicManagerNotificationTest
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*expected_notifications=*/{{kCrostiniVm, kCameraNotification}},
         },
@@ -355,6 +390,7 @@ class VmCameraMicManagerNotificationTest
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 0}, {kMic, 1}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*expected_notifications=*/
             {
@@ -366,11 +402,25 @@ class VmCameraMicManagerNotificationTest
             /*active_map=*/{
                 {kCrostiniVm, {{kCamera, 1}, {kMic, 0}}},
                 {kPluginVm, {{kCamera, 1}, {kMic, 1}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 0}}},
             },
             /*expected_notifications=*/
             {
                 {kCrostiniVm, kCameraNotification},
                 {kPluginVm, kCameraAndMicNotification},
+            },
+        },
+        {
+            /*active_map=*/{
+                {kCrostiniVm, {{kCamera, 1}, {kMic, 1}}},
+                {kPluginVm, {{kCamera, 1}, {kMic, 0}}},
+                {kBorealis, {{kCamera, 0}, {kMic, 1}}},
+            },
+            /*expected_notifications=*/
+            {
+                {kCrostiniVm, kCameraAndMicNotification},
+                {kPluginVm, kCameraNotification},
+                {kBorealis, kMicNotification},
             },
         },
     };

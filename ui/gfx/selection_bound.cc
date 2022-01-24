@@ -4,7 +4,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"

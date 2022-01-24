@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -26,25 +27,35 @@ PasswordAccessAuthenticator::~PasswordAccessAuthenticator() = default;
 
 // TODO(crbug.com/327331): Trigger Re-Auth after closing and opening the
 // settings tab.
-bool PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
-    ReauthPurpose purpose) {
+void PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
+    ReauthPurpose purpose,
+    AuthResultCallback callback) {
   if (base::Time::Now() <= last_authentication_time_ + kAuthValidityPeriod) {
     LogPasswordSettingsReauthResult(ReauthResult::kSkipped);
-    return true;
+    std::move(callback).Run(true);
+  } else {
+    ForceUserReauthentication(purpose, std::move(callback));
   }
-
-  return ForceUserReauthentication(purpose);
 }
 
-bool PasswordAccessAuthenticator::ForceUserReauthentication(
-    ReauthPurpose purpose) {
-  const bool authenticated = os_reauth_call_.Run(purpose);
+void PasswordAccessAuthenticator::ForceUserReauthentication(
+    ReauthPurpose purpose,
+    AuthResultCallback callback) {
+  os_reauth_call_.Run(
+      purpose,
+      base::BindOnce(&PasswordAccessAuthenticator::OnUserReauthenticationResult,
+                     base::Unretained(this), std::move(callback)));
+}
+
+void PasswordAccessAuthenticator::OnUserReauthenticationResult(
+    AuthResultCallback callback,
+    bool authenticated) {
   if (authenticated)
     last_authentication_time_ = base::Time::Now();
 
   LogPasswordSettingsReauthResult(authenticated ? ReauthResult::kSuccess
                                                 : ReauthResult::kFailure);
-  return authenticated;
+  std::move(callback).Run(authenticated);
 }
 
 }  // namespace password_manager

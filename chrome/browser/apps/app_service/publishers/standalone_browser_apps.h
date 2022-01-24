@@ -6,7 +6,12 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -17,15 +22,21 @@ class Profile;
 
 namespace apps {
 
+class BrowserAppInstanceRegistry;
+
 // An app publisher (in the App Service sense) for the "LaCrOS" app icon,
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
-class StandaloneBrowserApps : public apps::PublisherBase {
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
+class StandaloneBrowserApps : public apps::PublisherBase,
+                              public AppPublisher,
+                              public crosapi::BrowserManagerObserver {
  public:
-  StandaloneBrowserApps(
-      const mojo::Remote<apps::mojom::AppService>& app_service,
-      Profile* profile);
+  explicit StandaloneBrowserApps(AppServiceProxy* proxy);
   ~StandaloneBrowserApps() override;
 
   StandaloneBrowserApps(const StandaloneBrowserApps&) = delete;
@@ -33,14 +44,21 @@ class StandaloneBrowserApps : public apps::PublisherBase {
 
  private:
   // Returns the single lacros app.
+  std::unique_ptr<App> CreateStandaloneBrowserApp();
+
+  // Returns the single lacros app.
   apps::mojom::AppPtr GetStandaloneBrowserApp();
 
-  // Returns an IconKey with appropriate effects for the binary ready state.
-  enum class State { kError, kReady };
-  apps::mojom::IconKeyPtr NewIconKey(State state);
+  // Returns an IconKey with appropriate effects.
+  apps::mojom::IconKeyPtr NewIconKey();
 
-  // Callback when the binary download completes.
-  void OnLoadComplete(bool success);
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -59,10 +77,22 @@ class StandaloneBrowserApps : public apps::PublisherBase {
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void StopApp(const std::string& app_id) override;
+
+  // crosapi::BrowserManagerObserver
+  void OnLoadComplete(bool success) override;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
+  bool is_browser_load_success_ = true;
+  BrowserAppInstanceRegistry* browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  // Used to observe the browser manager for image load changes.
+  base::ScopedObservation<crosapi::BrowserManager,
+                          crosapi::BrowserManagerObserver>
+      observation_{this};
+
   base::WeakPtrFactory<StandaloneBrowserApps> weak_factory_{this};
 };
 

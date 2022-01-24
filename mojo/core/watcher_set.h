@@ -24,6 +24,10 @@ class WatcherSet {
  public:
   // |owner| is the Dispatcher who owns this WatcherSet.
   explicit WatcherSet(Dispatcher* owner);
+
+  WatcherSet(const WatcherSet&) = delete;
+  WatcherSet& operator=(const WatcherSet&) = delete;
+
   ~WatcherSet();
 
   // Notifies all watchers of the handle's current signals state.
@@ -45,23 +49,23 @@ class WatcherSet {
 
   struct Entry {
     Entry(const scoped_refptr<WatcherDispatcher>& dispatcher);
+
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+
     Entry(Entry&& other);
+
     ~Entry();
 
     Entry& operator=(Entry&& other);
 
     scoped_refptr<WatcherDispatcher> dispatcher;
     ContextSet contexts;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   Dispatcher* const owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
   absl::optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
 };
 
 }  // namespace core

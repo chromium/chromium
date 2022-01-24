@@ -25,6 +25,7 @@ BASE_PROFILER_TEST_SUPPORT_LIBRARY_EXPORT void InvokeCallbackFunction(
   // Prevent tail call.
   volatile int i = 0;
   i = 1;
+  (void)i;
 }
 
 }  // extern "C"

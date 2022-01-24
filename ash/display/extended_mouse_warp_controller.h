@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -34,6 +33,11 @@ class SharedDisplayEdgeIndicator;
 class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
  public:
   explicit ExtendedMouseWarpController(aura::Window* drag_source);
+
+  ExtendedMouseWarpController(const ExtendedMouseWarpController&) = delete;
+  ExtendedMouseWarpController& operator=(const ExtendedMouseWarpController&) =
+      delete;
+
   ~ExtendedMouseWarpController() override;
 
   // MouseWarpController:
@@ -57,6 +61,10 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
                int64_t b_display_id,
                const gfx::Rect& a_indicator_bounds,
                const gfx::Rect& b_indicator_bounds);
+
+    WarpRegion(const WarpRegion&) = delete;
+    WarpRegion& operator=(const WarpRegion&) = delete;
+
     ~WarpRegion();
 
     const gfx::Rect& a_indicator_bounds() { return a_indicator_bounds_; }
@@ -87,8 +95,6 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
     // Shows the area where a window can be dragged in to/out from another
     // display.
     std::unique_ptr<SharedDisplayEdgeIndicator> shared_display_edge_indicator_;
-
-    DISALLOW_COPY_AND_ASSIGN(WarpRegion);
   };
 
   // Registers the WarpRegion; also displays a drag indicator on the screen if
@@ -123,8 +129,6 @@ class ASH_EXPORT ExtendedMouseWarpController : public MouseWarpController {
   bool allow_non_native_event_;
 
   std::vector<std::unique_ptr<WarpRegion>> warp_regions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtendedMouseWarpController);
 };
 
 }  // namespace ash

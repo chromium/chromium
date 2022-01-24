@@ -169,8 +169,8 @@ int main(int argc, char* argv[]) {
       std::cerr << "unsupported pixel format\n";
       return 1;
     }
-    const int frame_width = decoder->Size().Width();
-    const int frame_height = decoder->Size().Height();
+    const int frame_width = decoder->Size().width();
+    const int frame_height = decoder->Size().height();
     if ((frame_width < 0) || (frame_height < 0)) {
       std::cerr << "negative dimension\n";
       return 1;

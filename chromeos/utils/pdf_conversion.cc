@@ -6,9 +6,11 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "printing/units.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
@@ -26,14 +28,28 @@ constexpr int kRotationDegrees = 180;
 // Returns whether the page was successfully created.
 bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
                 const sk_sp<SkData>& image_data,
-                bool rotate) {
+                bool rotate,
+                absl::optional<int> dpi) {
   const sk_sp<SkImage> image = SkImage::MakeFromEncoded(image_data);
   if (!image) {
     LOG(ERROR) << "Unable to generate image from encoded image data.";
     return false;
   }
 
-  SkCanvas* page_canvas = pdf_doc->beginPage(image->width(), image->height());
+  // Convert from JPG dimensions in pixels (DPI) to PDF dimensions in points
+  // (1/72 in).
+  int page_width;
+  int page_height;
+  if (dpi.has_value() && dpi.value() > 0) {
+    page_width = printing::ConvertUnit(image->width(), dpi.value(),
+                                       printing::kPointsPerInch);
+    page_height = printing::ConvertUnit(image->height(), dpi.value(),
+                                        printing::kPointsPerInch);
+  } else {
+    page_width = image->width();
+    page_height = image->height();
+  }
+  SkCanvas* page_canvas = pdf_doc->beginPage(page_width, page_height);
   if (!page_canvas) {
     LOG(ERROR) << "Unable to access PDF page canvas.";
     return false;
@@ -45,7 +61,8 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
     page_canvas->translate(-image->width(), -image->height());
   }
 
-  page_canvas->drawImage(image, /*left=*/0, /*top=*/0);
+  SkRect image_bounds = SkRect::MakeIWH(page_width, page_height);
+  page_canvas->drawImageRect(image, image_bounds, SkSamplingOptions());
   pdf_doc->endPage();
   return true;
 }
@@ -54,7 +71,8 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
 
 bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
                            const base::FilePath& file_path,
-                           bool rotate_alternate_pages) {
+                           bool rotate_alternate_pages,
+                           absl::optional<int> dpi) {
   DCHECK(!file_path.empty());
 
   SkFILEWStream pdf_outfile(file_path.value().c_str());
@@ -81,7 +99,7 @@ bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
       return false;
     }
 
-    if (!AddPdfPage(pdf_doc, img_data, rotate_current_page)) {
+    if (!AddPdfPage(pdf_doc, img_data, rotate_current_page, dpi)) {
       LOG(ERROR) << "Unable to add new PDF page.";
       return false;
     }
@@ -113,7 +131,7 @@ bool ConvertJpgImageToPdf(const std::vector<uint8_t>& jpg_image,
     return false;
   }
 
-  if (!AddPdfPage(pdf_doc, img_data, false)) {
+  if (!AddPdfPage(pdf_doc, img_data, false, absl::nullopt)) {
     LOG(ERROR) << "Unable to add new PDF page.";
     return false;
   }

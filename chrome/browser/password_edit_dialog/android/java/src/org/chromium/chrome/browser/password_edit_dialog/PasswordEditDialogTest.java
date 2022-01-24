@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_edit_dialog;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 
@@ -63,8 +62,6 @@ public class PasswordEditDialogTest {
         createAndShowDialog(true);
         Mockito.verify(mModalDialogManagerMock)
                 .showDialog(mModalDialogModel, ModalDialogManager.ModalDialogType.TAB);
-        Assert.assertThat(
-                mModalDialogModel.get(ModalDialogProperties.TITLE), containsString(ORIGIN));
         Assert.assertThat("Usernames don't match",
                 mDialogProperties.get(PasswordEditDialogProperties.USERNAMES), contains(USERNAMES));
         Assert.assertEquals("Selected username doesn't match", INITIAL_USERNAME_INDEX,

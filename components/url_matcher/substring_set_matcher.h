@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/url_matcher/string_pattern.h"
 #include "components/url_matcher/url_matcher_export.h"
 
@@ -34,6 +33,10 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   // log(k) comes from our usage of std::map to store edges.
   SubstringSetMatcher(const std::vector<StringPattern>& patterns);
   SubstringSetMatcher(std::vector<const StringPattern*> patterns);
+
+  SubstringSetMatcher(const SubstringSetMatcher&) = delete;
+  SubstringSetMatcher& operator=(const SubstringSetMatcher&) = delete;
+
   ~SubstringSetMatcher();
 
   // Matches |text| against all registered StringPatterns. Stores the IDs
@@ -180,8 +183,6 @@ class URL_MATCHER_EXPORT SubstringSetMatcher {
   std::vector<AhoCorasickNode> tree_;
 
   bool is_empty_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SubstringSetMatcher);
 };
 
 }  // namespace url_matcher

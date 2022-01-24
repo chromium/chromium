@@ -44,7 +44,7 @@ public class DownloadFilter {
         Integer type = filterForSpecialMimeTypes(mimeType);
         if (type != null) return type;
 
-        String[] pieces = mimeType.toLowerCase(Locale.getDefault()).split("/");
+        String[] pieces = mimeType.toLowerCase(Locale.ROOT).split("/");
         if (pieces.length != 2) return Type.OTHER;
 
         if (MIMETYPE_VIDEO.equals(pieces[0])) {

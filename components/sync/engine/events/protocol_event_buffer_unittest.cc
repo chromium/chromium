@@ -26,23 +26,20 @@ class ProtocolEventBufferTest : public ::testing::Test {
   ProtocolEventBuffer buffer_;
 };
 
-ProtocolEventBufferTest::ProtocolEventBufferTest() {}
+ProtocolEventBufferTest::ProtocolEventBufferTest() = default;
 
-ProtocolEventBufferTest::~ProtocolEventBufferTest() {}
+ProtocolEventBufferTest::~ProtocolEventBufferTest() = default;
 
 std::unique_ptr<ProtocolEvent> ProtocolEventBufferTest::MakeTestEvent(
     int64_t id) {
   sync_pb::ClientToServerMessage message;
   return std::make_unique<PollGetUpdatesRequestEvent>(
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMicroseconds(id)),
-      message);
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(id)), message);
 }
 
 bool ProtocolEventBufferTest::HasId(const ProtocolEvent& event, int64_t id) {
   return event.GetTimestampForTesting() ==
-         base::Time::FromDeltaSinceWindowsEpoch(
-             base::TimeDelta::FromMicroseconds(id));
+         base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(id));
 }
 
 TEST_F(ProtocolEventBufferTest, AddThenReturnEvents) {

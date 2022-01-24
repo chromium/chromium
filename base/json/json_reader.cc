@@ -5,7 +5,6 @@
 #include "base/json/json_reader.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/json/json_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

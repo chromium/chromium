@@ -28,6 +28,9 @@ class IOBufferPool : public base::RefCountedThreadSafe<IOBufferPool> {
   // If |max_buffers| is not specified, the maximum value of size_t is used.
   explicit IOBufferPool(size_t buffer_size);
 
+  IOBufferPool(const IOBufferPool&) = delete;
+  IOBufferPool& operator=(const IOBufferPool&) = delete;
+
   size_t buffer_size() const { return buffer_size_; }
   size_t max_buffers() const { return max_buffers_; }
   bool threadsafe() const { return threadsafe_; }
@@ -59,8 +62,6 @@ class IOBufferPool : public base::RefCountedThreadSafe<IOBufferPool> {
   const size_t max_buffers_;
   const bool threadsafe_;
   Internal* internal_;  // Manages its own lifetime.
-
-  DISALLOW_COPY_AND_ASSIGN(IOBufferPool);
 };
 
 }  // namespace chromecast

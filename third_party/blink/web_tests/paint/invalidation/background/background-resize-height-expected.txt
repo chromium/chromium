@@ -1,108 +1,60 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image'",
-      "bounds": [60, 44],
+      "position": [8, 8],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 40, 60, 4]
-      ],
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test image size-cover'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 2
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image size-contain'",
-      "bounds": [60, 44],
+      "position": [108, 8],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test image fixed-height'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 40, 60, 4]
-      ],
-      "transform": 4
+        [0, 0, 60, 44],
+        [50, 40, 60, 4]
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image percent-height'",
-      "bounds": [60, 44],
+      "position": [208, 8],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 5
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test image top'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 40, 60, 4]
-      ],
-      "transform": 6
+        [0, 0, 60, 44],
+        [50, 40, 60, 4]
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image bottom'",
-      "bounds": [60, 44],
+      "position": [308, 8],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 7
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test image center'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 8
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image no-repeat'",
-      "bounds": [60, 44],
-      "backfaceVisibility": "hidden",
+      "position": [408, 8],
+      "bounds": [110, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 40, 60, 4]
-      ],
-      "transform": 9
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test image repeat-space'",
-      "bounds": [60, 44],
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 10
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test image repeat-round'",
@@ -112,105 +64,57 @@
       "invalidations": [
         [0, 0, 60, 44]
       ],
-      "transform": 11
+      "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated'",
-      "bounds": [60, 44],
+      "position": [8, 108],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 12
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test generated size-cover'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 13
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated size-contain'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
+      "position": [108, 108],
+      "bounds": [160, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
+        [100, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 14
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test generated percent-height'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 15
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated top'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
+      "position": [258, 108],
+      "bounds": [110, 44],
+      "contentsOpaqueForText": true,
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 16
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test generated bottom'",
-      "bounds": [60, 44],
-      "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 17
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated center'",
-      "bounds": [60, 44],
+      "position": [358, 108],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 18
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test generated no-repeat'",
-      "bounds": [60, 44],
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 19
+      ]
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='test generated repeat-space'",
-      "bounds": [60, 44],
-      "backfaceVisibility": "hidden",
-      "invalidations": [
-        [0, 0, 60, 44]
-      ],
-      "transform": 20
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='test generated repeat-round'",
-      "bounds": [60, 44],
+      "position": [458, 108],
+      "bounds": [110, 44],
       "contentsOpaque": true,
-      "backfaceVisibility": "hidden",
       "invalidations": [
+        [50, 0, 60, 44],
         [0, 0, 60, 44]
-      ],
-      "transform": 21
+      ]
     }
   ],
   "transforms": [
@@ -220,187 +124,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [58, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [108, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 4,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [158, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 5,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [208, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 6,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [258, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 7,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [308, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 8,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [358, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 9,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [408, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 10,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [458, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 11,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [508, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 12,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 13,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [58, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 14,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [108, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 15,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [208, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 16,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [258, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 17,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [308, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 18,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [358, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 19,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [408, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 20,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [458, 108, 0, 1]
-      ]
-    },
-    {
-      "id": 21,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [508, 108, 0, 1]
       ]
     }
   ]

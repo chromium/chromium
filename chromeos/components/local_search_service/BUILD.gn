@@ -49,12 +49,12 @@ source_set("local_search_service_provider") {
     "local_search_service_provider_for_testing.h",
     "oop_local_search_service_provider.cc",
     "oop_local_search_service_provider.h",
-    "service_sandbox_type.h",
   ]
 
   deps = [
     "//chromeos/components/local_search_service:local_search_service",
     "//chromeos/components/local_search_service/public/cpp:local_search_service_provider",
+    "//chromeos/components/local_search_service/public/mojom",
     "//content/public/browser:browser",
   ]
 }

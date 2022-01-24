@@ -35,15 +35,6 @@ void OnGetDetailsResponse(
   resolver->Resolve(std::move(blink_item_details_list));
 }
 
-void OnAcknowledgeResponse(ScriptPromiseResolver* resolver,
-                           BillingResponseCode code) {
-  if (code != BillingResponseCode::kOk) {
-    resolver->Reject(mojo::ConvertTo<String>(code));
-    return;
-  }
-  resolver->Resolve();
-}
-
 void OnListPurchasesResponse(
     ScriptPromiseResolver* resolver,
     BillingResponseCode code,
@@ -57,6 +48,15 @@ void OnListPurchasesResponse(
     blink_purchase_details_list.push_back(detail.To<blink::PurchaseDetails*>());
 
   resolver->Resolve(std::move(blink_purchase_details_list));
+}
+
+void OnConsumeResponse(ScriptPromiseResolver* resolver,
+                       BillingResponseCode code) {
+  if (code != BillingResponseCode::kOk) {
+    resolver->Reject(mojo::ConvertTo<String>(code));
+    return;
+  }
+  resolver->Resolve();
 }
 
 }  // namespace
@@ -86,9 +86,17 @@ ScriptPromise DigitalGoodsService::getDetails(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise DigitalGoodsService::acknowledge(ScriptState* script_state,
-                                               const String& purchase_token,
-                                               const String& purchase_type) {
+ScriptPromise DigitalGoodsService::listPurchases(ScriptState* script_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  mojo_service_->ListPurchases(
+      WTF::Bind(&OnListPurchasesResponse, WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise DigitalGoodsService::consume(ScriptState* script_state,
+                                           const String& purchase_token) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -98,31 +106,14 @@ ScriptPromise DigitalGoodsService::acknowledge(ScriptState* script_state,
     return promise;
   }
 
-  bool make_available_again = false;
-  if (purchase_type == "repeatable") {
-    make_available_again = true;
-  } else if (purchase_type == "onetime") {
-    make_available_again = false;
-  } else {
-    // Note: don't expect this error to be thrown in practice. IDL code should
-    // enforce that purchase type is valid.
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "Invalid purchase type."));
-    return promise;
-  }
-
+  // Implement `consume` functionality using existing `acknowledge` mojo call
+  // with `make_available_again` always true. This is defined to use up an item
+  // in the same way as `consume`.
+  // TODO(crbug.com/1250604): Replace with `consume` mojo call when available.
+  bool make_available_again = true;
   mojo_service_->Acknowledge(
       purchase_token, make_available_again,
-      WTF::Bind(&OnAcknowledgeResponse, WrapPersistent(resolver)));
-  return promise;
-}
-
-ScriptPromise DigitalGoodsService::listPurchases(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-
-  mojo_service_->ListPurchases(
-      WTF::Bind(&OnListPurchasesResponse, WrapPersistent(resolver)));
+      WTF::Bind(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

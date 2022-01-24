@@ -1,4 +1,0 @@
--Wno-comment
--Wno-tautological-unsigned-enum-zero-compare
--Wno-tautological-constant-compare
--Wno-error=unknown-warning-option

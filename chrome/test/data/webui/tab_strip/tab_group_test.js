@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://tab-strip/tab.js';
-import {TabGroupElement} from 'chrome://tab-strip/tab_group.js';
+import 'chrome://tab-strip.top-chrome/tab.js';
+import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 
-import {TabStripEmbedderProxyImpl} from 'chrome://tab-strip/tab_strip_embedder_proxy.js';
+import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 
 import {assertEquals} from '../chai_assert.js';
 
-import {TestTabStripEmbedderProxy} from './test_tab_strip_embedder_proxy.js';
+import {TestTabsApiProxy} from './test_tabs_api_proxy.js';
 
 suite('TabGroup', () => {
   const groupId = 'my-group-id';
@@ -17,12 +17,12 @@ suite('TabGroup', () => {
   /** @type {!TabGroupElement} */
   let tabGroupElement;
 
-  /** @type {!TestTabStripEmbedderProxy} */
-  let testTabStripEmbedderProxy;
+  /** @type {!TestTabsApiProxy} */
+  let testTabsApiProxy;
 
   setup(() => {
-    testTabStripEmbedderProxy = new TestTabStripEmbedderProxy();
-    TabStripEmbedderProxyImpl.instance_ = testTabStripEmbedderProxy;
+    testTabsApiProxy = new TestTabsApiProxy();
+    TabsApiProxyImpl.instance_ = testTabsApiProxy;
 
     document.body.innerHTML = '';
     tabGroupElement = /** @type {!TabGroupElement} */ (
@@ -78,7 +78,7 @@ suite('TabGroup', () => {
     const chipRect = chip.getBoundingClientRect();
     chip.click();
     const [calledGroupId, locationX, locationY, width, height] =
-        await testTabStripEmbedderProxy.whenCalled('showEditDialogForGroup');
+        await testTabsApiProxy.whenCalled('showEditDialogForGroup');
     assertEquals(groupId, calledGroupId);
     assertEquals(chipRect.left, locationX);
     assertEquals(chipRect.top, locationY);

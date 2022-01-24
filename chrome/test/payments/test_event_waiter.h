@@ -27,7 +27,6 @@ enum class TestEvent : int32_t {
   kAppListReady,
   kErrorDisplayed,
   kPaymentCompleted,
-  kMinimalUIReady,
   kUIDisplayed,
 };
 
@@ -42,6 +41,9 @@ class EventWaiter {
  public:
   EventWaiter(std::list<TestEvent> expected_event_sequence,
               bool wait_for_single_event);
+
+  EventWaiter(const EventWaiter&) = delete;
+  EventWaiter& operator=(const EventWaiter&) = delete;
 
   ~EventWaiter();
 
@@ -60,8 +62,6 @@ class EventWaiter {
   // When set to true, the event waiter ignores arrival of any other events
   // while waiting for the expected event to arrive.
   bool wait_for_single_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventWaiter);
 };
 
 }  // namespace payments

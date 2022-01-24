@@ -30,6 +30,10 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
  public:
   static int64_t GetIdFrom(content::RenderFrameHost* rfh);
   explicit ContentCaptureReceiver(content::RenderFrameHost* rfh);
+
+  ContentCaptureReceiver(const ContentCaptureReceiver&) = delete;
+  ContentCaptureReceiver& operator=(const ContentCaptureReceiver&) = delete;
+
   ~ContentCaptureReceiver() override;
 
   // Binds to mojom.
@@ -110,7 +114,6 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   static bool disable_get_favicon_from_web_contents_for_testing_;
 
   mojo::AssociatedRemote<mojom::ContentCaptureSender> content_capture_sender_;
-  DISALLOW_COPY_AND_ASSIGN(ContentCaptureReceiver);
 };
 
 }  // namespace content_capture

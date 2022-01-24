@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "ui/gfx/buffer_types.h"
@@ -65,6 +64,10 @@ class ClientControlledShellSurfaceDelegate
 class ExoTestHelper {
  public:
   ExoTestHelper();
+
+  ExoTestHelper(const ExoTestHelper&) = delete;
+  ExoTestHelper& operator=(const ExoTestHelper&) = delete;
+
   ~ExoTestHelper();
 
   // Creates a GpuMemoryBuffer instance that can be used for tests.
@@ -84,9 +87,6 @@ class ExoTestHelper {
       Surface* surface,
       ToastSurfaceManager* surface_manager,
       bool default_scale_cancellation = true);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExoTestHelper);
 };
 
 }  // namespace test

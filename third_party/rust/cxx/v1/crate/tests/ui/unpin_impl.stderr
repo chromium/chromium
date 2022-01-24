@@ -1,0 +1,8 @@
+error[E0282]: type annotations needed for `fn()`
+ --> $DIR/unpin_impl.rs:4:14
+  |
+1 | #[cxx::bridge]
+  | -------------- consider giving this pattern the explicit type `fn()`, with the type parameters specified
+...
+4 |         type Opaque;
+  |              ^^^^^^ cannot infer type

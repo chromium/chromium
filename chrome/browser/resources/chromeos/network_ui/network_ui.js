@@ -245,8 +245,7 @@ Polymer({
    * @private
    */
   onSendFeedbackReportClick_(event) {
-    const results = this.getNetworkDiagnosticsElement_().getResults();
-    chrome.send('OpenFeedbackDialog', [results]);
+    chrome.send('OpenFeedbackDialog');
   },
 
   /**

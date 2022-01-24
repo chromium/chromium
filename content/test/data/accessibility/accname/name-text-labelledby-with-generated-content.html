@@ -1,0 +1,15 @@
+<!--
+@BLINK-DENY:description
+-->
+<!doctype html>
+<html>
+<body>
+<style type="text/css">
+  p::before { content: "one"; }
+  p::after { content: "three"; }
+</style>
+<input id="test" type="text" aria-labelledby="ID1 ID2">
+<p id="ID1">two</p>
+<p id="ID2" hidden>four</p>
+</body>
+</html>

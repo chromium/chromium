@@ -45,7 +45,6 @@ public class IncognitoCookieControlsManager
     private CookieControlsServiceBridge mServiceBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private boolean mIsInitialized;
-    private boolean mShowCard;
     private boolean mChecked;
     private @CookieControlsEnforcement int mEnforcement = CookieControlsEnforcement.NO_ENFORCEMENT;
 
@@ -61,7 +60,6 @@ public class IncognitoCookieControlsManager
         if (mIsInitialized) return;
 
         mServiceBridge = new CookieControlsServiceBridge(this);
-        mShowCard = true;
         mIsInitialized = true;
     }
 
@@ -80,19 +78,10 @@ public class IncognitoCookieControlsManager
     }
 
     /**
-     * @return a boolean indicating if the card should be visible or not.
-     */
-    public boolean shouldShowCookieControlsCard() {
-        // TODO(crbug.com/1104836): This is always true. Remove this method and everything that
-        // depends on it.
-        return mShowCard;
-    }
-
-    /**
      * Tells the bridge to update itself if necessary.
      */
     public void updateIfNecessary() {
-        if (mShowCard) mServiceBridge.updateServiceIfNecessary();
+        if (mIsInitialized) mServiceBridge.updateServiceIfNecessary();
     }
 
     /**

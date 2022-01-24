@@ -9,6 +9,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -57,13 +58,27 @@ NSString* const kUserHasInteractedWithFullscreenPromo =
 NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
     @"userHasInteractedWithTailoredFullscreenPromo";
 
+// Key for NSUserDefaults containing a bool indicating if the user has
+// previously interacted with first run promo.
+NSString* const kUserHasInteractedWithFirstRunPromo =
+    @"userHasInteractedWithFirstRunPromo";
+
 // Key for NSUserDefaults containing an int indicating the number of times the
 // user has interacted with a non-modal promo.
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
 
+// Key for NSUserDefaults containing an int indicating the number of times a
+// promo has been displayed.
+NSString* const kDisplayedPromoCount = @"displayedPromoCount";
+
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
+
+// Key for NSUserDefaults containing a bool indicating if the user tapped on
+// button to open settings.
+NSString* const kOpenSettingsActionInteraction =
+    @"openSettingsActionInteraction";
 
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
@@ -80,6 +95,9 @@ const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
 
 // Cool down between fullscreen promos. Currently set to 14 days.
 const NSTimeInterval kFullscreenPromoCoolDown = 14 * 24 * 60 * 60;
+
+// Short cool down between promos. Currently set to 3 days.
+const NSTimeInterval kPromosShortCoolDown = 3 * 24 * 60 * 60;
 
 // Helper function to clear all timestamps that occur later than 21 days ago and
 // keep it only to 10 timestamps.
@@ -127,21 +145,50 @@ NSDate* MostRecentDateForType(DefaultPromoType type) {
       [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
   return pastUserEvents.lastObject;
 }
+}  // namespace
+
+#pragma mark - Private
+
+// |YES| if user interacted with the first run default browser screen.
+BOOL HasUserInteractedWithFirstRunPromoBefore() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kUserHasInteractedWithFirstRunPromo];
+}
+
+// Returns the number of time a default browser promo has been displayed.
+NSInteger DisplayedPromoCount() {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  return [standardDefaults integerForKey:kDisplayedPromoCount];
+}
+
+// Adds one to displayed default browser promo count.
+void AddOneToDisplayedPromoCount() {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  NSInteger currentDisplayedPromoCount =
+      [standardDefaults integerForKey:kDisplayedPromoCount];
+  [standardDefaults setInteger:currentDisplayedPromoCount + 1
+                        forKey:kDisplayedPromoCount];
+}
+
+// Computes cool down between promos.
+NSTimeInterval ComputeCooldown() {
+  // |true| if the user is in the short delay group experiment and tap on the
+  // "No thanks" button in first run default browser screen. Short cool down
+  // should be set only one time, so after the first run promo there is a short
+  // cool down before the next promo and after it goes back to normal.
+  if (DisplayedPromoCount() < 2 &&
+      fre_field_trial::
+          IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() &&
+      HasUserInteractedWithFirstRunPromoBefore() &&
+      !HasUserOpenedSettingsFromFirstRunPromo()) {
+    return kPromosShortCoolDown;
+  }
+  return kFullscreenPromoCoolDown;
 }
 
 #pragma mark - Public
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
-
-const char kDefaultPromoNonModalTimeoutParam[] = "timeout";
-
-const char kDefaultPromoNonModalInstructionsParam[] = "instructions_enabled";
-
-const char kDefaultPromoTailoredVariantIOSParam[] = "variant_ios_enabled";
-
-const char kDefaultPromoTailoredVariantSafeParam[] = "variant_safe_enabled";
-
-const char kDefaultPromoTailoredVariantTabsParam[] = "variant_tabs_enabled";
 
 const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
     "show_remind_me_later";
@@ -198,33 +245,7 @@ bool IsInModifiedStringsGroup() {
 
 bool NonModalPromosEnabled() {
   // Default browser isn't enabled until iOS 14.0.1, regardless of flag state.
-  return base::ios::IsRunningOnOrLater(14, 0, 1) &&
-         base::FeatureList::IsEnabled(kDefaultPromoNonModal);
-}
-
-double NonModalPromosTimeout() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kDefaultPromoNonModal, kDefaultPromoNonModalTimeoutParam, 15);
-}
-
-bool NonModalPromosInstructionsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoNonModal, kDefaultPromoNonModalInstructionsParam, false);
-}
-
-bool IOSTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantIOSParam, false);
-}
-
-bool SafeTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantSafeParam, false);
-}
-
-bool TabsTailoredPromoEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kDefaultPromoTailored, kDefaultPromoTailoredVariantTabsParam, false);
+  return base::ios::IsRunningOnOrLater(14, 0, 1);
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
@@ -235,6 +256,11 @@ bool HasUserInteractedWithFullscreenPromoBefore() {
 bool HasUserInteractedWithTailoredFullscreenPromoBefore() {
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:kUserHasInteractedWithTailoredFullscreenPromo];
+}
+
+BOOL HasUserOpenedSettingsFromFirstRunPromo() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kOpenSettingsActionInteraction];
 }
 
 int UserInteractionWithNonModalPromoCount() {
@@ -252,6 +278,7 @@ void LogUserInteractionWithFullscreenPromo() {
     // Clear any possible Remind Me Later timestamp saved.
     [standardDefaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
   }
+  AddOneToDisplayedPromoCount();
 }
 
 void LogUserInteractionWithTailoredFullscreenPromo() {
@@ -260,6 +287,7 @@ void LogUserInteractionWithTailoredFullscreenPromo() {
                      forKey:kUserHasInteractedWithTailoredFullscreenPromo];
   [standardDefaults setObject:[NSDate date]
                        forKey:kLastTimeUserInteractedWithPromo];
+  AddOneToDisplayedPromoCount();
 }
 
 void LogUserInteractionWithNonModalPromo() {
@@ -270,6 +298,17 @@ void LogUserInteractionWithNonModalPromo() {
                         forKey:kUserInteractedWithNonModalPromoCount];
   [standardDefaults setObject:[NSDate date]
                        forKey:kLastTimeUserInteractedWithPromo];
+  AddOneToDisplayedPromoCount();
+}
+
+void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+  [standardDefaults setBool:YES forKey:kUserHasInteractedWithFirstRunPromo];
+  [standardDefaults setObject:[NSDate date]
+                       forKey:kLastTimeUserInteractedWithPromo];
+  [standardDefaults setBool:openedSettings
+                     forKey:kOpenSettingsActionInteraction];
+  AddOneToDisplayedPromoCount();
 }
 
 bool IsChromeLikelyDefaultBrowser7Days() {
@@ -302,20 +341,11 @@ bool IsChromeLikelyDefaultBrowser() {
 }
 
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type) {
-  if (type == DefaultPromoTypeAllTabs && !TabsTailoredPromoEnabled()) {
-    return NO;
-  }
-  if (type == DefaultPromoTypeStaySafe && !SafeTailoredPromoEnabled()) {
-    return NO;
-  }
-  if (type == DefaultPromoTypeMadeForIOS && !IOSTailoredPromoEnabled()) {
-    return NO;
-  }
   NSString* key = NSUserDefaultKeyForType(type);
   NSMutableArray<NSDate*>* pastUserEvents =
       [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
   pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-  return [pastUserEvents count] > 0 && base::ios::IsRunningOnIOS14OrLater();
+  return [pastUserEvents count] > 0;
 }
 
 DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromoType) {
@@ -353,7 +383,7 @@ BOOL UserInPromoCooldown() {
       [standardDefaults objectForKey:kLastTimeUserInteractedWithPromo]);
   if (lastFullscreenInteraction) {
     NSDate* coolDownDate =
-        [NSDate dateWithTimeIntervalSinceNow:-kFullscreenPromoCoolDown];
+        [NSDate dateWithTimeIntervalSinceNow:-ComputeCooldown()];
     if ([coolDownDate laterDate:lastFullscreenInteraction] ==
         lastFullscreenInteraction) {
       return YES;

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -87,8 +87,14 @@ void ParkableImageManager::ResetForTesting() {
   total_disk_write_time_ = base::TimeDelta();
 }
 
-void ParkableImageManager::Add(ParkableImage* image) {
+void ParkableImageManager::Add(ParkableImageImpl* impl) {
   DCHECK(IsMainThread());
+#if DCHECK_IS_ON()
+  {
+    MutexLocker lock(impl->lock_);
+    DCHECK(!IsRegistered(impl));
+  }
+#endif  // DCHECK_IS_ON()
 
   MutexLocker lock(lock_);
 
@@ -103,11 +109,11 @@ void ParkableImageManager::Add(ParkableImage* image) {
         FROM_HERE,
         base::BindOnce(&ParkableImageManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
     has_posted_accounting_task_ = true;
   }
 
-  unparked_images_.insert(image);
+  unparked_images_.insert(impl);
 }
 
 void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
@@ -117,12 +123,13 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
 
   Statistics stats = ComputeStatistics();
 
+  // In KiB
   base::UmaHistogramCounts100000("Memory.ParkableImage.TotalSize.5min",
-                                 stats.total_size / 1024);  // in KiB
+                                 static_cast<int>(stats.total_size / 1024));
   base::UmaHistogramCounts100000("Memory.ParkableImage.OnDiskSize.5min",
-                                 stats.on_disk_size / 1024);  // in KiB
+                                 static_cast<int>(stats.on_disk_size / 1024));
   base::UmaHistogramCounts100000("Memory.ParkableImage.UnparkedSize.5min",
-                                 stats.unparked_size / 1024);  // in KiB
+                                 static_cast<int>(stats.unparked_size / 1024));
 
   // Metrics related to parking only should be recorded if the feature is
   // enabled.
@@ -139,7 +146,35 @@ void ParkableImageManager::RecordStatisticsAfter5Minutes() const {
   }
 }
 
-void ParkableImageManager::Remove(ParkableImage* image) {
+scoped_refptr<ParkableImageImpl> ParkableImageManager::CreateParkableImage(
+    size_t offset) {
+  MutexLocker lock(lock_);
+  scoped_refptr<ParkableImageImpl> impl = ParkableImageImpl::Create(offset);
+  return impl;
+}
+
+void ParkableImageManager::DestroyParkableImageOnMainThread(
+    scoped_refptr<ParkableImageImpl> image) {
+  DCHECK(IsMainThread());
+}
+
+void ParkableImageManager::DestroyParkableImage(
+    scoped_refptr<ParkableImageImpl> image) {
+  if (IsMainThread()) {
+    DestroyParkableImageOnMainThread(std::move(image));
+  } else {
+    auto* thread = Thread::MainThread();
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+        thread->GetTaskRunner();
+    DCHECK(task_runner);
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ParkableImageManager::DestroyParkableImageOnMainThread,
+                       base::Unretained(this), std::move(image)));
+  }
+}
+
+void ParkableImageManager::Remove(ParkableImageImpl* image) {
   MutexLocker lock(lock_);
 
   // Image could be on disk or unparked. Remove it in either case.
@@ -149,9 +184,9 @@ void ParkableImageManager::Remove(ParkableImage* image) {
   map->erase(it);
 }
 
-void ParkableImageManager::MoveImage(ParkableImage* image,
-                                     WTF::HashSet<ParkableImage*>* from,
-                                     WTF::HashSet<ParkableImage*>* to) {
+void ParkableImageManager::MoveImage(ParkableImageImpl* image,
+                                     WTF::HashSet<ParkableImageImpl*>* from,
+                                     WTF::HashSet<ParkableImageImpl*>* to) {
   auto it = from->find(image);
   CHECK(it != from->end());
   CHECK(!to->Contains(image));
@@ -159,7 +194,7 @@ void ParkableImageManager::MoveImage(ParkableImage* image,
   to->insert(image);
 }
 
-bool ParkableImageManager::IsRegistered(ParkableImage* image) {
+bool ParkableImageManager::IsRegistered(ParkableImageImpl* image) {
   MutexLocker lock(lock_);
 
   auto* map = image->is_on_disk() ? &on_disk_images_ : &unparked_images_;
@@ -168,12 +203,12 @@ bool ParkableImageManager::IsRegistered(ParkableImage* image) {
   return it != map->end();
 }
 
-void ParkableImageManager::OnWrittenToDisk(ParkableImage* image) {
+void ParkableImageManager::OnWrittenToDisk(ParkableImageImpl* image) {
   MutexLocker lock(lock_);
   MoveImage(image, &unparked_images_, &on_disk_images_);
 }
 
-void ParkableImageManager::OnReadFromDisk(ParkableImage* image) {
+void ParkableImageManager::OnReadFromDisk(ParkableImageImpl* image) {
   MutexLocker lock(lock_);
   MoveImage(image, &on_disk_images_, &unparked_images_);
   ScheduleDelayedParkingTaskIfNeeded();
@@ -198,31 +233,32 @@ void ParkableImageManager::ScheduleDelayedParkingTaskIfNeeded() {
 }
 
 void ParkableImageManager::MaybeParkImages() {
+  // Because we only have a raw pointer to the ParkableImageImpl, we need to be
+  // very careful here to avoid a UAF.
+  // To avoid this, we make sure that ParkableImageImpl is always destroyed on
+  // the main thread, using |ParkableImageManager::DestroyParkableImage|.
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
+  DCHECK(IsMainThread());
 
   MutexLocker lock(lock_);
 
   // This makes a copy of the pointers stored in |unparked_images_|. We iterate
   // over this copy in |MaybeParkImages|, instead of |unparked_images_|
-  // directly, for two reasons:
-  // (1) Avoiding a deadlock when we need to park synchronously (i.e. if we have
-  // already written to disk and don't need to post a background task), as
+  // directly, to avoid deadlock when we need to park synchronously (i.e. if we
+  // have already written to disk and don't need to post a background task), as
   // synchronous parking calls |ParkableImageManager::OnWrittenToDisk()|;
-  // (2) Keeping the images alive until we are done iterating, without locking
-  // (through use of scoped_refptr instead of a raw pointer).
-  WTF::Vector<scoped_refptr<ParkableImage>> unparked_images;
-  for (auto* image : unparked_images_)
-    unparked_images.push_back(scoped_refptr<ParkableImage>(image));
+  WTF::Vector<ParkableImageImpl*> unparked_images;
+  CopyToVector(unparked_images_, unparked_images);
 
   // We unlock here so that we can avoid a deadlock, since if the data for the
   // image is already written to disk, we can discard our copy of the data
   // synchronously, which calls back into the manager.
   lock_.unlock();
 
-  bool unfrozen_images = false;
-  for (auto image : unparked_images) {
-    if (!image->is_frozen())
-      unfrozen_images = true;
+  bool should_reschedule = false;
+  for (auto* image : unparked_images) {
+    if (image->ShouldReschedule())
+      should_reschedule = true;
     image->MaybePark();
   }
 
@@ -230,7 +266,7 @@ void ParkableImageManager::MaybeParkImages() {
 
   has_pending_parking_task_ = false;
 
-  if (unfrozen_images)
+  if (should_reschedule)
     ScheduleDelayedParkingTaskIfNeeded();
 }
 

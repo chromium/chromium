@@ -3,3 +3,4 @@ scottmg@chromium.org
 
 per-file ozone.gni=file://ui/ozone/OWNERS
 per-file ozone_extra.gni=file://ui/ozone/OWNERS
+per-file rust.gni=file://build/rust/OWNERS

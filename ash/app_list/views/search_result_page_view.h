@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
@@ -16,19 +17,19 @@
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 
 namespace views {
 class DialogDelegateView;
-class Textfield;
 }
 
 namespace ash {
 
 class AppListMainView;
+class ProductivityLauncherSearchView;
 class PrivacyContainerView;
+class SearchBoxView;
 class SearchResultBaseView;
 class SearchResultListView;
 class SearchResultTileItemListView;
@@ -38,15 +39,20 @@ class ViewShadow;
 // The search results page for the app list.
 class ASH_EXPORT SearchResultPageView
     : public AppListPage,
+      public AppListModelProvider::Observer,
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {
  public:
-  explicit SearchResultPageView(SearchModel* search_model);
+  SearchResultPageView();
+
+  SearchResultPageView(const SearchResultPageView&) = delete;
+  SearchResultPageView& operator=(const SearchResultPageView&) = delete;
+
   ~SearchResultPageView() override;
 
   void InitializeContainers(AppListViewDelegate* view_delegate,
                             AppListMainView* app_list_main_view,
-                            views::Textfield* search_box);
+                            SearchBoxView* search_box_view);
 
   const std::vector<SearchResultContainerView*>& result_container_views() {
     return result_container_views_;
@@ -60,6 +66,7 @@ class ASH_EXPORT SearchResultPageView
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
 
   // AppListPage overrides:
   void OnWillBeHidden() override;
@@ -84,10 +91,10 @@ class ASH_EXPORT SearchResultPageView
                           AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
-  absl::optional<int> GetSearchBoxTop(
-      AppListViewState view_state) const override;
-  views::View* GetFirstFocusableView() override;
-  views::View* GetLastFocusableView() override;
+
+  // Overridden from AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // Overridden from SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;
@@ -119,6 +126,13 @@ class ASH_EXPORT SearchResultPageView
   // Returns background color for the given state.
   SkColor GetBackgroundColorForState(AppListState state) const;
 
+  // Hide zero state search result view when ProductivityLauncher is enabled.
+  bool ShouldShowSearchResultView() const;
+
+  // Sets visibility of result container and separator views so only containers
+  // that contain some results are shown.
+  void UpdateResultContainersVisibility();
+
   PrivacyContainerView* GetPrivacyContainerViewForTest();
   SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
@@ -126,10 +140,6 @@ class ASH_EXPORT SearchResultPageView
  private:
   // Separator between SearchResultContainerView.
   class HorizontalSeparator;
-
-  // Sets visibility of result container and separator views so only containers
-  // that contain some results are shown.
-  void UpdateResultContainersVisibility();
 
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
@@ -176,9 +186,6 @@ class ASH_EXPORT SearchResultPageView
   void AddSearchResultContainerViewInternal(
       std::unique_ptr<SearchResultContainerView> result_container);
 
-  // The search model for which the results are displayed.
-  SearchModel* const search_model_;
-
   // The SearchResultContainerViews that compose the search page. All owned by
   // the views hierarchy.
   std::vector<SearchResultContainerView*> result_container_views_;
@@ -192,6 +199,8 @@ class ASH_EXPORT SearchResultPageView
   PrivacyContainerView* privacy_container_view_ = nullptr;
   SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
   SearchResultListView* search_result_list_view_ = nullptr;
+  // Search result container used for productivity launcher.
+  ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
 
   // Separator view shown between search result tile item list and search
   // results list.
@@ -221,8 +230,6 @@ class ASH_EXPORT SearchResultPageView
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
       search_box_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageView);
 };
 
 }  // namespace ash

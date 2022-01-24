@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 namespace blink {
 using protocol::Response;
@@ -176,10 +176,10 @@ Response InspectorDOMStorageAgent::removeDOMStorageItem(
 }
 
 std::unique_ptr<protocol::DOMStorage::StorageId>
-InspectorDOMStorageAgent::GetStorageId(const SecurityOrigin* security_origin,
+InspectorDOMStorageAgent::GetStorageId(const BlinkStorageKey& storage_key,
                                        bool is_local_storage) {
   return protocol::DOMStorage::StorageId::create()
-      .setSecurityOrigin(security_origin->ToRawString())
+      .setSecurityOrigin(storage_key.GetSecurityOrigin()->ToRawString())
       .setIsLocalStorage(is_local_storage)
       .build();
 }
@@ -189,12 +189,12 @@ void InspectorDOMStorageAgent::DidDispatchDOMStorageEvent(
     const String& old_value,
     const String& new_value,
     StorageArea::StorageType storage_type,
-    const SecurityOrigin* security_origin) {
+    const BlinkStorageKey& storage_key) {
   if (!GetFrontend())
     return;
 
   std::unique_ptr<protocol::DOMStorage::StorageId> id = GetStorageId(
-      security_origin, storage_type == StorageArea::StorageType::kLocalStorage);
+      storage_key, storage_type == StorageArea::StorageType::kLocalStorage);
 
   if (key.IsNull())
     GetFrontend()->domStorageItemsCleared(std::move(id));
@@ -226,7 +226,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
     storage_area = StorageArea::CreateForInspectorAgent(
         frame->DomWindow(),
         StorageController::GetInstance()->GetLocalStorageArea(
-            frame->DomWindow()->GetSecurityOrigin()),
+            frame->DomWindow()),
         StorageArea::StorageType::kLocalStorage);
     return Response::Success();
   }
@@ -242,8 +242,7 @@ Response InspectorDOMStorageAgent::FindStorageArea(
   DCHECK(session_namespace->IsSessionStorage());
 
   storage_area = StorageArea::CreateForInspectorAgent(
-      frame->DomWindow(),
-      session_namespace->GetCachedArea(frame->DomWindow()->GetSecurityOrigin()),
+      frame->DomWindow(), session_namespace->GetCachedArea(frame->DomWindow()),
       StorageArea::StorageType::kSessionStorage);
   return Response::Success();
 }

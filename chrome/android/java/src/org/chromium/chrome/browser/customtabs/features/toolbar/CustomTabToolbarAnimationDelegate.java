@@ -132,6 +132,7 @@ class CustomTabToolbarAnimationDelegate {
      * When this is null, the icon is animated to the left and faded out.
      */
     void updateSecurityButton(int securityIconResource) {
-        mSecurityButtonAnimationDelegate.updateSecurityButton(securityIconResource);
+        mSecurityButtonAnimationDelegate.updateSecurityButton(
+                securityIconResource, /*animate=*/true);
     }
 }

@@ -10,9 +10,8 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace os_crypt {
 
@@ -20,6 +19,10 @@ namespace os_crypt {
 struct COMPONENT_EXPORT(OS_CRYPT) Config {
  public:
   Config();
+
+  Config(const Config&) = delete;
+  Config& operator=(const Config&) = delete;
+
   ~Config();
 
   // Force OSCrypt to use a specific linux password store.
@@ -40,9 +43,6 @@ struct COMPONENT_EXPORT(OS_CRYPT) Config {
   bool should_use_preference;
   // Preferences are stored in a separate file in the user data directory.
   base::FilePath user_data_path;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Config);
 };
 
 }  // namespace os_crypt

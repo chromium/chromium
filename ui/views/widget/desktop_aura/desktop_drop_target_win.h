@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/dragdrop/drop_target_win.h"
 
@@ -31,6 +30,10 @@ class DesktopDropTargetWin : public ui::DropTargetWin,
                              public aura::WindowObserver {
  public:
   explicit DesktopDropTargetWin(aura::Window* root_window);
+
+  DesktopDropTargetWin(const DesktopDropTargetWin&) = delete;
+  DesktopDropTargetWin& operator=(const DesktopDropTargetWin&) = delete;
+
   ~DesktopDropTargetWin() override;
 
  private:
@@ -73,8 +76,6 @@ class DesktopDropTargetWin : public ui::DropTargetWin,
   // could be multiple aura windows, so we need to generate drag enter events
   // for them.
   aura::Window* target_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopDropTargetWin);
 };
 
 }  // namespace views

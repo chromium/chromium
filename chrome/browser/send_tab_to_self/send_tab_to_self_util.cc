@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -51,13 +50,17 @@ bool ShouldOfferFeature(content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
+  GURL page_url = web_contents->GetURL();
   content::NavigationEntry* navigation_entry =
       web_contents->GetController().GetLastCommittedEntry();
   bool has_last_entry = (navigation_entry != nullptr);
 
+  return ShouldOfferFeatureForPage(profile, page_url) && has_last_entry;
+}
+
+bool ShouldOfferFeatureForPage(Profile* profile, const GURL& page_url) {
   return IsUserSyncTypeActive(profile) && HasValidTargetDevice(profile) &&
-         AreContentRequirementsMet(web_contents->GetURL(), profile) &&
-         has_last_entry;
+         AreContentRequirementsMet(page_url, profile);
 }
 
 bool ShouldOfferFeatureForLink(content::WebContents* web_contents,

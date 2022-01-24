@@ -25,6 +25,12 @@ namespace tracing {
 class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
  public:
   BackgroundTracingMetricsProvider();
+
+  BackgroundTracingMetricsProvider(const BackgroundTracingMetricsProvider&) =
+      delete;
+  BackgroundTracingMetricsProvider& operator=(
+      const BackgroundTracingMetricsProvider&) = delete;
+
   ~BackgroundTracingMetricsProvider() override;
 
   // metrics::MetricsProvider:
@@ -45,8 +51,6 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
   // owned by |system_profile_providers_|.
   MetricsProvider* av_metrics_provider_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingMetricsProvider);
 };
 
 }  // namespace tracing

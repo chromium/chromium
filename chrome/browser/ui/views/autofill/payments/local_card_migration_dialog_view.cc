@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -36,6 +35,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -102,8 +103,8 @@ class TipTextContainer : public views::View {
     constexpr int kTipImageSize = 16;
     auto* lightbulb_outline_image = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            vector_icons::kLightbulbOutlineIcon,
-            ui::NativeTheme::kColorId_AlertSeverityMedium, kTipImageSize)));
+            vector_icons::kLightbulbOutlineIcon, ui::kColorAlertMediumSeverity,
+            kTipImageSize)));
     lightbulb_outline_image->SetVerticalAlignment(
         views::ImageView::Alignment::kLeading);
 
@@ -125,7 +126,7 @@ class TipTextContainer : public views::View {
 
     // TODO(tluk): We should not be using hard coded color constants and
     // switching colors based on the dark mode flag. We should instead
-    // systematize these into color ids simply call GetSystemColor() for these
+    // systematize these into color ids and simply call GetColor() for these
     // ids.
     SetBackground(views::CreateSolidBackground(
         should_use_dark_colors ? gfx::kGoogleGrey800 : gfx::kGoogleGrey050));
@@ -142,8 +143,7 @@ class TipTextContainer : public views::View {
     tip_->SetEnabledColor(
         should_use_dark_colors
             ? gfx::kGoogleGrey200
-            : GetNativeTheme()->GetSystemColor(
-                  ui::NativeTheme::kColorId_LabelSecondaryColor));
+            : GetColorProvider()->GetColor(ui::kColorLabelForegroundSecondary));
   }
 
  private:
@@ -489,7 +489,7 @@ void LocalCardMigrationDialogView::ConstructView() {
              LocalCardMigrationDialogState::kOffered ||
          children().empty());
 
-  RemoveAllChildViews(/*delete_children=*/true);
+  RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),

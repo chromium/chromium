@@ -58,7 +58,7 @@ mojom::blink::FullscreenOptionsPtr ToMojoOptions(
     FullscreenRequestType request_type) {
   auto fullscreen_options = mojom::blink::FullscreenOptions::New();
   fullscreen_options->prefers_navigation_bar =
-      options->navigationUI() != "hide";
+      options->navigationUI() == "show";
   if (options->hasScreen()) {
     DCHECK(RuntimeEnabledFeatures::WindowPlacementEnabled(frame->DomWindow()));
     if (options->screen()->DisplayId() != Screen::kInvalidDisplayId)
@@ -96,7 +96,7 @@ void FullscreenController::DidEnterFullscreen() {
   // Only reset the scale for the local main frame.
   if (web_view_base_->MainFrameImpl()) {
     web_view_base_->SetPageScaleFactor(1.0f);
-    web_view_base_->SetVisualViewportOffset(FloatPoint());
+    web_view_base_->SetVisualViewportOffset(gfx::PointF());
   }
 
   state_ = State::kFullscreen;

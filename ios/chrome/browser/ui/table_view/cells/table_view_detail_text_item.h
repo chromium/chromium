@@ -18,14 +18,15 @@
 @property(nonatomic, assign) NSTextAlignment textAlignment;
 
 // UIColor for the cell's textLabel. Default is
-// UIColor.cr_labelColor. ChromeTableViewStyler's |cellTitleColor|
-// takes precedence over the default color, but not over |textColor|.
+// [UIColor colorNamed:kTextPrimaryColor]. ChromeTableViewStyler's
+// |cellTitleColor| takes precedence over the default color, but not over
+// |textColor|.
 @property(nonatomic, strong) UIColor* textColor;
 // Main text to be displayed.
 @property(nonatomic, strong) NSString* text;
 
 // UIColor for the cell's detailTextLabel. Default is
-// UIColor.cr_secondaryLabelColor.
+// [UIColor colorNamed:kTextSecondaryColor].
 @property(nonatomic, strong) UIColor* detailTextColor;
 // Detail text to be displayed.
 @property(nonatomic, strong) NSString* detailText;

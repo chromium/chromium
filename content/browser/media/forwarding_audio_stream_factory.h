@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/audio_muting_session.h"
@@ -58,6 +57,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     Core(base::WeakPtr<ForwardingAudioStreamFactory> owner,
          media::UserInputMonitorBase* user_input_monitor,
          std::unique_ptr<AudioStreamBrokerFactory> factory);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() final;
 
     const base::UnguessableToken& group_id() const { return group_id_; }
@@ -158,8 +161,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
     base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_{
         this};
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Returns the ForwardingAudioStreamFactory which takes care of stream
@@ -179,6 +180,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
       WebContents* web_contents,
       media::UserInputMonitorBase* user_input_monitor,
       std::unique_ptr<AudioStreamBrokerFactory> factory);
+
+  ForwardingAudioStreamFactory(const ForwardingAudioStreamFactory&) = delete;
+  ForwardingAudioStreamFactory& operator=(const ForwardingAudioStreamFactory&) =
+      delete;
 
   ~ForwardingAudioStreamFactory() final;
 
@@ -217,8 +222,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   base::ScopedClosureRunner capture_handle_;
 
   base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingAudioStreamFactory);
 };
 
 }  // namespace content

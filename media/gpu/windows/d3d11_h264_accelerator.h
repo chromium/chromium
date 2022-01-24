@@ -13,12 +13,12 @@
 #include <vector>
 
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "media/base/status_codes.h"
 #include "media/base/video_frame.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/video/picture.h"
@@ -39,6 +39,10 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
                        MediaLog* media_log,
                        ComD3D11VideoDevice video_device,
                        std::unique_ptr<VideoContextWrapper> video_context);
+
+  D3D11H264Accelerator(const D3D11H264Accelerator&) = delete;
+  D3D11H264Accelerator& operator=(const D3D11H264Accelerator&) = delete;
+
   ~D3D11H264Accelerator() override;
 
   // H264Decoder::H264Accelerator implementation.
@@ -87,8 +91,9 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
 
   // Record a failure to DVLOG and |media_log_|.
   void RecordFailure(const std::string& reason,
-                     StatusCode code,
+                     D3D11Status::Codes code,
                      HRESULT hr = S_OK) const;
+  void RecordFailure(D3D11Status error) const;
 
   D3D11VideoDecoderClient* client_;
   MediaLog* media_log_ = nullptr;
@@ -117,8 +122,6 @@ class D3D11H264Accelerator : public H264Decoder::H264Accelerator {
   std::vector<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK> subsamples_;
   // IV for the current frame.
   std::vector<uint8_t> frame_iv_;
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11H264Accelerator);
 };
 
 }  // namespace media

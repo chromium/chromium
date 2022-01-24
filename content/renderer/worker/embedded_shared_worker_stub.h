@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -60,6 +59,7 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
       const blink::SharedWorkerToken& token,
       const url::Origin& constructor_origin,
       const std::string& user_agent,
+      const std::string& reduced_user_agent,
       const blink::UserAgentMetadata& ua_metadata,
       bool pause_on_start,
       const base::UnguessableToken& devtools_worker_token,
@@ -70,7 +70,6 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           content_settings,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr
           service_worker_container_info,
-      const base::UnguessableToken& appcache_host_id,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           pending_subresource_loader_factory_bundle,
@@ -81,6 +80,10 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           browser_interface_broker,
       ukm::SourceId ukm_source_id,
       const std::vector<std::string>& cors_exempt_header_list);
+
+  EmbeddedSharedWorkerStub(const EmbeddedSharedWorkerStub&) = delete;
+  EmbeddedSharedWorkerStub& operator=(const EmbeddedSharedWorkerStub&) = delete;
+
   ~EmbeddedSharedWorkerStub() override;
 
   // blink::WebSharedWorkerClient implementation.
@@ -114,8 +117,6 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
   // used by this worker (typically the network service).
   mojo::Remote<network::mojom::URLLoaderFactory>
       default_factory_disconnect_handler_holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedSharedWorkerStub);
 };
 
 }  // namespace content

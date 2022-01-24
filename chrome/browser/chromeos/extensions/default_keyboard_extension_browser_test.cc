@@ -5,8 +5,6 @@
  */
 #include "chrome/browser/chromeos/extensions/default_keyboard_extension_browser_test.h"
 
-#include <vector>
-
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
@@ -29,16 +27,17 @@
 #include "ui/base/ime/input_method.h"
 
 namespace {
-const base::FilePath::CharType kWebuiTestDir[] = FILE_PATH_LITERAL("webui");
+const base::FilePath::CharType kWebuiTestDir[] =
+    FILE_PATH_LITERAL("webui/chromeos");
 
 const base::FilePath::CharType kMockController[] =
     FILE_PATH_LITERAL("mock_controller.js");
 
-const base::FilePath::CharType kMockTimer[] =
-    FILE_PATH_LITERAL("mock_timer.js");
-
 const char kVirtualKeyboardExtensionTestDir[] =
     "chromeos/virtual_keyboard/default_extension";
+
+const base::FilePath::CharType kMockTimer[] =
+    FILE_PATH_LITERAL("mock_timer.js");
 
 const char kBaseKeyboardExtensionTestFramework[] =
     "virtual_keyboard_test_base.js";
@@ -70,7 +69,7 @@ void DefaultKeyboardExtensionBrowserTest::SetUpCommandLine(
 void DefaultKeyboardExtensionBrowserTest::RunTest(
     const base::FilePath& file,
     const DefaultKeyboardExtensionBrowserTestConfig& config) {
-  ui_test_utils::NavigateToURL(browser(), GURL(config.url_));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(config.url_)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -79,7 +78,8 @@ void DefaultKeyboardExtensionBrowserTest::RunTest(
   // Inject testing scripts.
   InjectJavascript(base::FilePath(kWebuiTestDir),
                    base::FilePath(kMockController));
-  InjectJavascript(base::FilePath(kWebuiTestDir), base::FilePath(kMockTimer));
+  InjectJavascript(base::FilePath(config.test_dir_),
+                   base::FilePath(kMockTimer));
   InjectJavascript(base::FilePath(config.test_dir_),
                    base::FilePath(config.base_framework_));
   InjectJavascript(base::FilePath(config.test_dir_), file);
@@ -87,8 +87,7 @@ void DefaultKeyboardExtensionBrowserTest::RunTest(
   ASSERT_TRUE(content::ExecuteScript(web_contents, utf8_content_));
 
   // Inject DOM-automation test harness and run tests.
-  std::vector<int> resource_ids;
-  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents, resource_ids));
+  EXPECT_TRUE(ExecuteWebUIResourceTest(web_contents));
 }
 
 content::WebContents*
@@ -178,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL(
           "chromeos/virtual_keyboard/default_extension/end_to_end_test.html")));
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Press 'a' on keyboard.
   base::FilePath path = ui_test_utils::GetTestFilePath(

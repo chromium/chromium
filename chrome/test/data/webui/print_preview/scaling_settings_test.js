@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ScalingType} from 'chrome://print/print_preview.js';
+import {PrintPreviewModelElement, PrintPreviewScalingSettingsElement, ScalingType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {selectOption, triggerInputEvent} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {fakeDataBind} from 'chrome://test/test_util.m.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
 window.scaling_settings_test = {};
 scaling_settings_test.suiteName = 'ScalingSettingsTest';
@@ -41,13 +41,13 @@ suite(scaling_settings_test.suiteName, function() {
       assert(scaling_settings_test.TestNames.ShowCorrectDropdownOptions),
       function() {
         // Not a PDF document -> No fit to page or fit to paper options.
-        const fitToPageOption = scalingSection.$$(
+        const fitToPageOption = scalingSection.shadowRoot.querySelector(
             `[value="${scalingSection.ScalingValue.FIT_TO_PAGE}"]`);
-        const fitToPaperOption = scalingSection.$$(
+        const fitToPaperOption = scalingSection.shadowRoot.querySelector(
             `[value="${scalingSection.ScalingValue.FIT_TO_PAPER}"]`);
-        const defaultOption = scalingSection.$$(
+        const defaultOption = scalingSection.shadowRoot.querySelector(
             `[value="${scalingSection.ScalingValue.DEFAULT}"]`);
-        const customOption = scalingSection.$$(
+        const customOption = scalingSection.shadowRoot.querySelector(
             `[value="${scalingSection.ScalingValue.CUSTOM}"]`);
         assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
         assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
@@ -84,13 +84,15 @@ suite(scaling_settings_test.suiteName, function() {
 
     // Validate UI values that are set by JS.
     const scalingInput =
-        scalingSection.$$('print-preview-number-settings-section').getInput();
+        scalingSection.shadowRoot
+            .querySelector('print-preview-number-settings-section')
+            .getInput();
     const expectedCollapseOpened =
         (scalingSection.getSettingValue('scalingType') ===
          ScalingType.CUSTOM) ||
         (scalingSection.getSettingValue('scalingTypePdf') ===
          ScalingType.CUSTOM);
-    const collapse = scalingSection.$$('iron-collapse');
+    const collapse = scalingSection.shadowRoot.querySelector('iron-collapse');
     assertEquals(!valid, scalingInput.invalid);
     assertEquals(scalingDisplayValue, scalingInput.value);
     assertEquals(expectedCollapseOpened, collapse.opened);
@@ -110,9 +112,11 @@ suite(scaling_settings_test.suiteName, function() {
   test(assert(scaling_settings_test.TestNames.SetScaling), async () => {
     // Default is 100
     const scalingInput =
-        scalingSection.$$('print-preview-number-settings-section')
+        scalingSection.shadowRoot
+            .querySelector('print-preview-number-settings-section')
             .$.userValue.inputElement;
-    const scalingDropdown = scalingSection.$$('.md-select');
+    const scalingDropdown =
+        scalingSection.shadowRoot.querySelector('.md-select');
 
     // Make fit to page and fit to paper available.
     setDocumentPdf(true);
@@ -195,8 +199,8 @@ suite(scaling_settings_test.suiteName, function() {
   test(
       assert(scaling_settings_test.TestNames.InputNotDisabledOnValidityChange),
       async () => {
-        const numberSection =
-            scalingSection.$$('print-preview-number-settings-section');
+        const numberSection = scalingSection.shadowRoot.querySelector(
+            'print-preview-number-settings-section');
         const input = numberSection.getInput();
 
         // In the real UI, the print preview app listens for this event from

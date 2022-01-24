@@ -43,8 +43,6 @@ public class UrlConstants {
 
     public static final String ABOUT_URL = "chrome://about/";
 
-    public static final String CHROME_BLANK_URL = "chrome://blank/";
-
     public static final String NTP_HOST = "newtab";
     public static final String NTP_URL = "chrome-native://newtab/";
     public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
@@ -74,8 +72,14 @@ public class UrlConstants {
     public static final String INTERESTS_HOST = "interests";
     public static final String INTERESTS_URL = "chrome-native://interests/";
 
+    public static final String GPU_URL = "chrome://gpu/";
+    public static final String VERSION_URL = "chrome://version/";
+
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_URL =
             "https://myaccount.google.com/activitycontrols/search";
+
+    public static final String GOOGLE_ACCOUNT_DEVICE_ACTIVITY_URL =
+            "https://myaccount.google.com/device-activity?utm_source=chrome";
 
     public static final String GOOGLE_SEARCH_HISTORY_URL_IN_CBD =
             "https://myactivity.google.com/product/search?utm_source=chrome_cbd";
@@ -92,4 +96,7 @@ public class UrlConstants {
     public static final String EXPLORE_HOST = "explore";
     public static final String EXPLORE_URL = "chrome-native://explore/";
     public static final String CHROME_DINO_URL = "chrome://dino";
+
+    public static final String MANAGEMENT_HOST = "management";
+    public static final String MANAGEMENT_URL = "chrome://management/";
 }

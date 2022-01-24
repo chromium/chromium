@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/host_resource.h"
@@ -23,6 +22,9 @@ class HostArrayBufferVar : public ppapi::ArrayBufferVar {
   explicit HostArrayBufferVar(const blink::WebArrayBuffer& buffer);
   explicit HostArrayBufferVar(uint32_t size_in_bytes,
                               const base::UnsafeSharedMemoryRegion& Region);
+
+  HostArrayBufferVar(const HostArrayBufferVar&) = delete;
+  HostArrayBufferVar& operator=(const HostArrayBufferVar&) = delete;
 
   // ArrayBufferVar implementation.
   void* Map() override;
@@ -41,8 +43,6 @@ class HostArrayBufferVar : public ppapi::ArrayBufferVar {
   blink::WebArrayBuffer buffer_;
   // Tracks whether the data in the buffer is valid.
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostArrayBufferVar);
 };
 
 }  // namespace content

@@ -19,8 +19,7 @@ namespace chromecast {
 
 namespace {
 
-constexpr base::TimeDelta kManualAnimationDuration =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kManualAnimationDuration = base::Seconds(1);
 
 const int kAnimationFrameRate = 30;
 

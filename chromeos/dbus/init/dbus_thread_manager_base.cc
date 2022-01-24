@@ -23,9 +23,11 @@ bool GetUseRealClients() {
 #else
   // TODO(crbug.com/952745): Always use fakes after adding
   // use_real_dbus_clients=true to where needed.
-  return base::SysInfo::IsRunningOnChromeOS() &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             chromeos::switches::kDbusStub);
+  return (base::SysInfo::IsRunningOnChromeOS() &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              chromeos::switches::kDbusStub)) ||
+         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             chromeos::switches::kDbusStub) == "never";
 #endif
 }
 

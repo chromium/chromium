@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "chrome/browser/printing/print_job_worker.h"

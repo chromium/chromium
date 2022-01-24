@@ -255,6 +255,26 @@ void WorkerWatcher::OnBeforeWorkerDestroyed(
   // First disconnect the ancestor's frame node from this worker node.
   RemoveFrameClientConnection(worker_node.get(), ancestor_render_frame_host_id);
 
+  // Disconnect all child workers before destroying the node.
+  auto child_it = dedicated_worker_child_workers_.find(dedicated_worker_token);
+  if (child_it != dedicated_worker_child_workers_.end()) {
+    const WorkerNodeSet& child_workers = child_it->second;
+    DisconnectClientsOnGraph(child_workers, worker_node.get());
+
+#if DCHECK_IS_ON()
+    for (WorkerNodeImpl* worker : child_workers) {
+      // If this is a service worker client, mark it as a missing client.
+      if (IsServiceWorkerNode(worker)) {
+        DCHECK(missing_service_worker_clients_[worker]
+                   .insert(ServiceWorkerClient(dedicated_worker_token))
+                   .second);
+      }
+    }
+#endif
+
+    dedicated_worker_child_workers_.erase(child_it);
+  }
+
 #if DCHECK_IS_ON()
   DCHECK(!base::Contains(detached_frame_count_per_worker_, worker_node.get()));
 #endif  // DCHECK_IS_ON()

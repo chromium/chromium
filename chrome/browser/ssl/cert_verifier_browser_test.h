@@ -16,6 +16,10 @@
 class CertVerifierBrowserTest : public InProcessBrowserTest {
  public:
   CertVerifierBrowserTest();
+
+  CertVerifierBrowserTest(const CertVerifierBrowserTest&) = delete;
+  CertVerifierBrowserTest& operator=(const CertVerifierBrowserTest&) = delete;
+
   ~CertVerifierBrowserTest() override;
 
   // InProcessBrowserTest:
@@ -29,8 +33,6 @@ class CertVerifierBrowserTest : public InProcessBrowserTest {
 
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertVerifierBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_SSL_CERT_VERIFIER_BROWSER_TEST_H_

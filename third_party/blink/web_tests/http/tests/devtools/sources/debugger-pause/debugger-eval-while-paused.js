@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that evaluation in console works fine when script is paused. It also checks that stack and global variables are accessible from the console.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalVar = { b: 1 };
@@ -29,7 +29,7 @@
   function step1() {
     SourcesTestRunner.runTestFunctionAndWaitUntilPaused();
     TestRunner.addSniffer(
-              Sources.CallStackSidebarPane.prototype, '_updatedForTest', step2);
+              Sources.CallStackSidebarPane.prototype, 'updatedForTest', step2);
   }
 
   function step2(callFrames) {
@@ -39,7 +39,7 @@
   function step3(callFrames, result) {
     TestRunner.addResult('Evaluated script on the top frame: ' + result);
     var pane = Sources.CallStackSidebarPane.instance();
-    pane._selectNextCallFrameOnStack();
+    pane.selectNextCallFrameOnStack();
     TestRunner.deprecatedRunAfterPendingDispatches(step4);
   }
 

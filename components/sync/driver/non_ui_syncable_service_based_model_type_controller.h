@@ -6,10 +6,9 @@
 #define COMPONENTS_SYNC_DRIVER_NON_UI_SYNCABLE_SERVICE_BASED_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/model/model_type_store.h"
@@ -42,10 +41,13 @@ class NonUiSyncableServiceBasedModelTypeController
       const base::RepeatingClosure& dump_stack,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       bool allow_transport_mode = false);
-  ~NonUiSyncableServiceBasedModelTypeController() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NonUiSyncableServiceBasedModelTypeController);
+  NonUiSyncableServiceBasedModelTypeController(
+      const NonUiSyncableServiceBasedModelTypeController&) = delete;
+  NonUiSyncableServiceBasedModelTypeController& operator=(
+      const NonUiSyncableServiceBasedModelTypeController&) = delete;
+
+  ~NonUiSyncableServiceBasedModelTypeController() override;
 };
 
 }  // namespace syncer

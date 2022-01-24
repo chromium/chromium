@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 #define COMPONENTS_FAVICON_CORE_FAVICON_SERVICE_H_
 
-#include <vector>
 
 #include "base/callback.h"
 #include "base/task/cancelable_task_tracker.h"

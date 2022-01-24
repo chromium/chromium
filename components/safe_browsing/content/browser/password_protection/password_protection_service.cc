@@ -73,14 +73,6 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       GetPasswordProtectionReusedPasswordAccountType(password_type, username);
 
   if (IsSupportedPasswordTypeForPinging(password_type)) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-    // Collect metrics about typical page-zoom on login pages.
-    double zoom_level =
-        zoom::ZoomController::GetZoomLevelForWebContents(web_contents);
-    UMA_HISTOGRAM_COUNTS_1000(
-        "PasswordProtection.PageZoomFactor",
-        static_cast<int>(100 * blink::PageZoomLevelToZoomFactor(zoom_level)));
-#endif  // defined(FULL_SAFE_BROWSING)
     if (CanSendPing(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                     main_frame_url, reused_password_account_type)) {
       saved_passwords_matching_reused_credentials_ =
@@ -129,6 +121,37 @@ void PasswordProtectionService::StartRequest(
           username, password_type, matching_reused_credentials, trigger_type,
           password_field_exists, this, GetRequestTimeoutInMS()));
   request->Start();
+
+  // PasswordProtectionService defers all navigations in the WebContents while
+  // there is a pending request triggered by a password reuse. However it does
+  // this via NavigationThrottles, which are not able to throttle navigations
+  // that activate a prerendered page or a back/forward cached page. As a
+  // temporary workaround, disable activations within this WebContents whenever
+  // this event occurs.
+  //
+  // This code only disallows for PASSWORD_REUSE_EVENT because of the following
+  // observations:
+  // 1) A |warning_request| has to start out as a |pending_request|.
+  // 2) Only trigger type PASSWORD_REUSE_EVENT requests can become
+  // |warning_request|.
+  //
+  // This holds because |warning_requests_| insertion only happens at code that
+  // moves a request from |pending_requests_| to |warning_requests_|, which only
+  // does so if is_modal_warning_showing() is true. is_modal_warning_showing()
+  // can only be set to true if ShouldShowModalWarning() is true, which is
+  // always false if trigger_type != PASSWORD_REUSE_EVENT.
+  //
+  // If we were to disallow for other trigger types, we may disable prerendering
+  // more than required.
+  //
+  // TODO(https://crbug.com/1234857): Change the throttle to a
+  // CommitDeferringCondition, so the activation navigation can be deferred like
+  // other navigations.
+  if (request->trigger_type() ==
+      safe_browsing::LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
+    web_contents->DisallowActivationNavigationsForBug1234857();
+  }
+
   pending_requests_.insert(std::move(request));
 }
 

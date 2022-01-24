@@ -13,8 +13,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
@@ -98,12 +98,12 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
 
   CoreAccountInfo SetPrimaryAccount() {
     return identity_test_env_.SetPrimaryAccount(kAccountEmail,
-                                                signin::ConsentLevel::kSignin);
+                                                signin::ConsentLevel::kSync);
   }
 
   void IssueRefreshTokenForPrimaryAccount() {
-    identity_test_env_.MakePrimaryAccountAvailable(
-        kAccountEmail, signin::ConsentLevel::kSignin);
+    identity_test_env_.MakePrimaryAccountAvailable(kAccountEmail,
+                                                   signin::ConsentLevel::kSync);
   }
 
   void SendResponse(int net_error, int response_code) {
@@ -113,8 +113,8 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
   void WaitForAccessTokenRequestAndIssueToken() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
-            signin::ConsentLevel::kSignin),
-        "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+            signin::ConsentLevel::kSync),
+        "access_token", base::Time::Now() + base::Hours(1));
   }
 
   base::DictionaryValue CreateRequestBody() {
@@ -167,7 +167,7 @@ TEST_F(SecondaryAccountConsentLoggerTest, TokenError) {
                          SecondaryAccountConsentLogger::Result::kTokenError));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       identity_test_env_.identity_manager()->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin),
+          signin::ConsentLevel::kSync),
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 }
 

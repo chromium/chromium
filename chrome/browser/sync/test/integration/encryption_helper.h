@@ -92,16 +92,4 @@ class TrustedVaultKeysChangedStateChecker
   bool keys_changed_;
 };
 
-// Helper for setting scrypt-related feature flags.
-// NOTE: DO NOT INSTANTIATE THIS CLASS IN THE TEST BODY FOR INTEGRATION TESTS!
-// That causes data races, see crbug.com/915219. Instead, instantiate it in the
-// test fixture class.
-class ScopedScryptFeatureToggler {
- public:
-  ScopedScryptFeatureToggler(bool force_disabled, bool use_for_new_passphrases);
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_ENCRYPTION_HELPER_H_

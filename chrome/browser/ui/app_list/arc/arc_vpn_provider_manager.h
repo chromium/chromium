@@ -53,6 +53,9 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
   static ArcVpnProviderManager* Create(content::BrowserContext* context);
 
+  ArcVpnProviderManager(const ArcVpnProviderManager&) = delete;
+  ArcVpnProviderManager& operator=(const ArcVpnProviderManager&) = delete;
+
   ~ArcVpnProviderManager() override;
 
   // ArcAppListPrefs Observer:
@@ -79,8 +82,6 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcVpnProviderManager);
 };
 
 }  // namespace app_list

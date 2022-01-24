@@ -396,7 +396,7 @@ TEST_F(SnapshotCacheTest, Purge) {
   [liveSnapshotIDs addObject:[snapshotIDs_ objectAtIndex:0]];
 
   // Purge the cache.
-  [cache purgeCacheOlderThan:(base::Time::Now() - base::TimeDelta::FromHours(1))
+  [cache purgeCacheOlderThan:(base::Time::Now() - base::Hours(1))
                      keeping:liveSnapshotIDs];
   FlushRunLoops();
 

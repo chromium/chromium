@@ -115,7 +115,15 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
   // given frame ID, so we must use an unsafe API here that could return a
   // different RenderFrameHost than the caller may have expected (e.g., one that
   // changed after a cross-process navigation).
-  return web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
+  content::RenderFrameHost* rfh =
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_id);
+
+  // Fail if the frame is not active (e.g. in prerendering or in the
+  // back/forward cache).
+  if (!rfh || !rfh->IsActive())
+    return nullptr;
+
+  return rfh;
 }
 
 ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::KeyToValue(

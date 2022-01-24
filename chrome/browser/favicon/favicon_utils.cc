@@ -95,7 +95,7 @@ SkColor ComputeBackgroundColorForUrl(const GURL& icon_url) {
     return SK_ColorGRAY;
 
   unsigned char hash[20];
-  const std::string origin = icon_url.GetOrigin().spec();
+  const std::string origin = icon_url.DeprecatedGetOriginAsURL().spec();
   base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(origin.c_str()),
                       origin.size(), hash);
   return SkColorSetRGB(hash[0], hash[1], hash[2]);

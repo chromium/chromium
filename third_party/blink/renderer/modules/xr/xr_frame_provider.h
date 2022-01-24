@@ -122,7 +122,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       immersive_data_provider_;
   HeapMojoRemote<device::mojom::blink::XRPresentationProvider>
       immersive_presentation_provider_;
-  device::mojom::blink::VRPosePtr immersive_frame_pose_;
+  device::mojom::blink::VRPosePtr immersive_frame_viewer_pose_;
   bool is_immersive_frame_position_emulated_ = false;
 
   // Note: Oilpan automatically removes destroyed observers from

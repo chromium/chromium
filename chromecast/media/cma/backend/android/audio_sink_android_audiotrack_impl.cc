@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
@@ -254,8 +254,7 @@ void AudioSinkAndroidAudioTrackImpl::ScheduleWaitForEosTask() {
             << playout_time_left_us << "us";
   wait_for_eos_task_.Reset(base::BindOnce(
       &AudioSinkAndroidAudioTrackImpl::OnPlayoutDone, base::Unretained(this)));
-  base::TimeDelta delay =
-      base::TimeDelta::FromMicroseconds(playout_time_left_us);
+  base::TimeDelta delay = base::Microseconds(playout_time_left_us);
   feeder_task_runner_->PostDelayedTask(FROM_HERE, wait_for_eos_task_.callback(),
                                        delay);
 }

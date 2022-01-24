@@ -113,4 +113,4 @@ SharingFeatureName SharedClipboardUiController::GetFeatureMetricsPrefix()
   return SharingFeatureName::kSharedClipboard;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SharedClipboardUiController)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SharedClipboardUiController);

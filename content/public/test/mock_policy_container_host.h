@@ -13,7 +13,7 @@
 
 namespace content {
 
-class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
+class MockPolicyContainerHost final : public blink::mojom::PolicyContainerHost {
  public:
   MOCK_METHOD(void,
               SetReferrerPolicy,
@@ -29,7 +29,7 @@ class MockPolicyContainerHost : public blink::mojom::PolicyContainerHost {
       (mojo::PendingReceiver<blink::mojom::PolicyContainerHostKeepAliveHandle>),
       (override));
   MockPolicyContainerHost();
-  ~MockPolicyContainerHost() final;
+  ~MockPolicyContainerHost() override;
 
   blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 

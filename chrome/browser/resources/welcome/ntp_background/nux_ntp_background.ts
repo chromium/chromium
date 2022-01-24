@@ -12,12 +12,12 @@ import '../shared/chooser_shared_css.js';
 import '../shared/step_indicator.js';
 import '../strings.m.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateToNextStep, NavigationMixin, NavigationMixinInterface} from '../navigation_mixin.js';
+import {navigateToNextStep, NavigationMixin} from '../navigation_mixin.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {stepIndicatorModel} from '../shared/nux_types.js';
 
@@ -29,12 +29,11 @@ const KEYBOARD_FOCUSED_CLASS = 'keyboard-focused';
 export interface NuxNtpBackgroundElement {
   $: {
     backgroundPreview: HTMLElement,
+    skipButton: HTMLElement,
   };
 }
 
-const NuxNtpBackgroundElementBase =
-    mixinBehaviors([I18nBehavior], NavigationMixin(PolymerElement)) as
-    {new (): PolymerElement & NavigationMixinInterface & I18nBehavior};
+const NuxNtpBackgroundElementBase = I18nMixin(NavigationMixin(PolymerElement));
 
 /** @polymer */
 export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
@@ -238,4 +237,11 @@ export class NuxNtpBackgroundElement extends NuxNtpBackgroundElementBase {
     return html`{__html_template__}`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'nux-ntp-background': NuxNtpBackgroundElement;
+  }
+}
+
 customElements.define(NuxNtpBackgroundElement.is, NuxNtpBackgroundElement);

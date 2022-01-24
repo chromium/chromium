@@ -96,7 +96,7 @@ std::pair<int64_t, int64_t> WriteReadData(int size,
     // Sleeping, as posix_fadvise() is asynchronous. On the other hand, we
     // don't need to sleep for too long, as all the pages are already clean
     // after the fsync() above, so no writeback is required here.
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+    base::PlatformThread::Sleep(base::Seconds(1));
   }
 
   // Read.
@@ -198,7 +198,7 @@ int main(int argc, char** argv) {
     std::string path = base::StringPrintf("%s-noisy_neighbor-%d", filename, i);
     noisy_neighbors.emplace_back(
         [=]() { RandomlyReadWrite(should_stop_ptr, path, i); });
-    base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(2));
+    base::PlatformThread::Sleep(base::Seconds(2));
   }
 
   for (int i = 0; i < 12; i++) {  // Max 1 << 11 pages = 8MiB.

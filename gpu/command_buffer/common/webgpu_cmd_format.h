@@ -68,6 +68,12 @@ struct DawnReturnRequestDeviceInfo {
       DawnReturnDataType::kRequestedDeviceReturnInfo};
   DawnRequestDeviceSerial request_device_serial;
   bool is_request_device_success;
+  uint32_t limits_size;
+
+  // |deserialized_buffer| contains the serialized limits if
+  // |limits_size > 0|. Following it is an optional null-terminated
+  // error message.
+  alignas(GPU_DAWN_RETURN_DATA_ALIGNMENT) char deserialized_buffer[];
 };
 
 static_assert(offsetof(DawnReturnRequestDeviceInfo, return_data_header) == 0,

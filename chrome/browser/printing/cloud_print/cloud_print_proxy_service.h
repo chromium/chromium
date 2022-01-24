@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -32,6 +31,10 @@ class ServiceProcessControl;
 class CloudPrintProxyService : public KeyedService {
  public:
   explicit CloudPrintProxyService(Profile* profile);
+
+  CloudPrintProxyService(const CloudPrintProxyService&) = delete;
+  CloudPrintProxyService& operator=(const CloudPrintProxyService&) = delete;
+
   ~CloudPrintProxyService() override;
 
   using PrintersCallback =
@@ -102,8 +105,6 @@ class CloudPrintProxyService : public KeyedService {
   mojo::Remote<cloud_print::mojom::CloudPrint> cloud_print_proxy_;
 
   base::WeakPtrFactory<CloudPrintProxyService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintProxyService);
 };
 
 #endif  // CHROME_BROWSER_PRINTING_CLOUD_PRINT_CLOUD_PRINT_PROXY_SERVICE_H_

@@ -7,7 +7,6 @@ import json
 import multiprocessing
 import os
 import platform
-import subprocess
 import sys
 
 import common
@@ -97,7 +96,7 @@ def get_device_info(args, failures):
     'build_types': unique_build_details(2),
   }
 
-  for k, v in parsed_details.iteritems():
+  for k, v in parsed_details.items():
     if len(v) == 1:
       results[k] = v[0]
     else:

@@ -58,8 +58,8 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
     [ui_scroll_view_.delegate scrollViewWillBeginDragging:ui_scroll_view_];
     // Wait until scroll action is allowed. There is no condition to wait, just
     // a time period.
-    base::test::ios::SpinRunLoopWithMinDelay(base::TimeDelta::FromSecondsD(
-        kMinimumPullDurationToTransitionToReadyInSeconds));
+    base::test::ios::SpinRunLoopWithMinDelay(
+        base::Seconds(kMinimumPullDurationToTransitionToReadyInSeconds));
     [ui_scroll_view_.delegate scrollViewDidScroll:ui_scroll_view_];
     // Scroll to content offset below action threshold to cancel bounce
     // animation.

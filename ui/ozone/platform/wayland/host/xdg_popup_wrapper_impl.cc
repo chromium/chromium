@@ -4,23 +4,29 @@
 
 #include "ui/ozone/platform/wayland/host/xdg_popup_wrapper_impl.h"
 
+#include <aura-shell-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
 #include <memory>
 
 #include "base/environment.h"
+#include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
@@ -28,72 +34,78 @@ namespace ui {
 
 namespace {
 
-uint32_t TranslateAnchor(WlAnchor anchor) {
+uint32_t TranslateAnchor(OwnedWindowAnchorPosition anchor) {
   switch (anchor) {
-    case WlAnchor::None:
+    case OwnedWindowAnchorPosition::kNone:
       return XDG_POSITIONER_ANCHOR_NONE;
-    case WlAnchor::Top:
+    case OwnedWindowAnchorPosition::kTop:
       return XDG_POSITIONER_ANCHOR_TOP;
-    case WlAnchor::Bottom:
+    case OwnedWindowAnchorPosition::kBottom:
       return XDG_POSITIONER_ANCHOR_BOTTOM;
-    case WlAnchor::Left:
+    case OwnedWindowAnchorPosition::kLeft:
       return XDG_POSITIONER_ANCHOR_LEFT;
-    case WlAnchor::Right:
+    case OwnedWindowAnchorPosition::kRight:
       return XDG_POSITIONER_ANCHOR_RIGHT;
-    case WlAnchor::TopLeft:
+    case OwnedWindowAnchorPosition::kTopLeft:
       return XDG_POSITIONER_ANCHOR_TOP_LEFT;
-    case WlAnchor::BottomLeft:
+    case OwnedWindowAnchorPosition::kBottomLeft:
       return XDG_POSITIONER_ANCHOR_BOTTOM_LEFT;
-    case WlAnchor::TopRight:
+    case OwnedWindowAnchorPosition::kTopRight:
       return XDG_POSITIONER_ANCHOR_TOP_RIGHT;
-    case WlAnchor::BottomRight:
+    case OwnedWindowAnchorPosition::kBottomRight:
       return XDG_POSITIONER_ANCHOR_BOTTOM_RIGHT;
   }
 }
 
-uint32_t TranslateGravity(WlGravity gravity) {
+uint32_t TranslateGravity(OwnedWindowAnchorGravity gravity) {
   switch (gravity) {
-    case WlGravity::None:
+    case OwnedWindowAnchorGravity::kNone:
       return XDG_POSITIONER_GRAVITY_NONE;
-    case WlGravity::Top:
+    case OwnedWindowAnchorGravity::kTop:
       return XDG_POSITIONER_GRAVITY_TOP;
-    case WlGravity::Bottom:
+    case OwnedWindowAnchorGravity::kBottom:
       return XDG_POSITIONER_GRAVITY_BOTTOM;
-    case WlGravity::Left:
+    case OwnedWindowAnchorGravity::kLeft:
       return XDG_POSITIONER_GRAVITY_LEFT;
-    case WlGravity::Right:
+    case OwnedWindowAnchorGravity::kRight:
       return XDG_POSITIONER_GRAVITY_RIGHT;
-    case WlGravity::TopLeft:
+    case OwnedWindowAnchorGravity::kTopLeft:
       return XDG_POSITIONER_GRAVITY_TOP_LEFT;
-    case WlGravity::BottomLeft:
+    case OwnedWindowAnchorGravity::kBottomLeft:
       return XDG_POSITIONER_GRAVITY_BOTTOM_LEFT;
-    case WlGravity::TopRight:
+    case OwnedWindowAnchorGravity::kTopRight:
       return XDG_POSITIONER_GRAVITY_TOP_RIGHT;
-    case WlGravity::BottomRight:
+    case OwnedWindowAnchorGravity::kBottomRight:
       return XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT;
   }
 }
 
-uint32_t TranslateContraintAdjustment(
-    WlConstraintAdjustment constraint_adjustment) {
+uint32_t TranslateConstraintAdjustment(
+    OwnedWindowConstraintAdjustment constraint_adjustment) {
   uint32_t res = 0;
-  if ((constraint_adjustment & WlConstraintAdjustment::SlideX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentSlideX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::SlideY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentSlideY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_SLIDE_Y;
-  if ((constraint_adjustment & WlConstraintAdjustment::FlipX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentFlipX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::FlipY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentFlipY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y;
-  if ((constraint_adjustment & WlConstraintAdjustment::ResizeX) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentResizeX) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_X;
-  if ((constraint_adjustment & WlConstraintAdjustment::ResizeY) !=
-      WlConstraintAdjustment::None)
+  if ((constraint_adjustment &
+       OwnedWindowConstraintAdjustment::kAdjustmentRezizeY) !=
+      OwnedWindowConstraintAdjustment::kAdjustmentNone)
     res |= XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_RESIZE_Y;
   return res;
 }
@@ -102,8 +114,10 @@ uint32_t TranslateContraintAdjustment(
 
 XDGPopupWrapperImpl::XDGPopupWrapperImpl(
     std::unique_ptr<XDGSurfaceWrapperImpl> surface,
-    WaylandWindow* wayland_window)
+    WaylandWindow* wayland_window,
+    WaylandConnection* connection)
     : wayland_window_(wayland_window),
+      connection_(connection),
       xdg_surface_wrapper_(std::move(surface)) {
   DCHECK(xdg_surface_wrapper_);
   DCHECK(wayland_window_ && wayland_window_->parent_window());
@@ -111,9 +125,8 @@ XDGPopupWrapperImpl::XDGPopupWrapperImpl(
 
 XDGPopupWrapperImpl::~XDGPopupWrapperImpl() = default;
 
-bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
-                                     const ShellPopupParams& params) {
-  if (!connection->shell() && !connection->shell_v6()) {
+bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
+  if (!connection_->shell()) {
     NOTREACHED() << "Wrong shell protocol";
     return false;
   }
@@ -136,29 +149,21 @@ bool XDGPopupWrapperImpl::Initialize(WaylandConnection* connection,
   if (!xdg_surface_wrapper_ || !parent_xdg_surface)
     return false;
 
-  auto new_params = params;
+  params_ = params;
   // Wayland doesn't allow empty bounds. If a zero or negative size is set, the
   // invalid_input error is raised. Thus, use the least possible one.
   // WaylandPopup will update its bounds upon the following configure event.
-  if (params.bounds.IsEmpty())
-    new_params.bounds.set_size({1, 1});
+  if (params_.bounds.IsEmpty())
+    params_.bounds.set_size({1, 1});
 
-  if (connection->shell())
-    return InitializeStable(connection, new_params, parent_xdg_surface);
-  return false;
-}
-
-bool XDGPopupWrapperImpl::InitializeStable(
-    WaylandConnection* connection,
-    const ShellPopupParams& params,
-    XDGSurfaceWrapperImpl* parent_xdg_surface) {
-  static const struct xdg_popup_listener xdg_popup_listener = {
+  static constexpr struct xdg_popup_listener xdg_popup_listener = {
       &XDGPopupWrapperImpl::Configure,
       &XDGPopupWrapperImpl::PopupDone,
+      &XDGPopupWrapperImpl::Repositioned,
   };
 
   struct xdg_positioner* positioner =
-      CreatePositioner(connection, wayland_window_->parent_window(), params);
+      CreatePositioner(wayland_window_->parent_window());
   if (!positioner)
     return false;
 
@@ -168,11 +173,24 @@ bool XDGPopupWrapperImpl::InitializeStable(
   if (!xdg_popup_)
     return false;
 
+  if (connection_->zaura_shell()) {
+    uint32_t version =
+        zaura_shell_get_version(connection_->zaura_shell()->wl_object());
+    if (version >= ZAURA_SHELL_GET_AURA_POPUP_FOR_XDG_POPUP_SINCE_VERSION) {
+      aura_popup_.reset(zaura_shell_get_aura_popup_for_xdg_popup(
+          connection_->zaura_shell()->wl_object(), xdg_popup_.get()));
+      if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
+          version >=
+              ZAURA_POPUP_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
+        zaura_popup_surface_submission_in_pixel_coordinates(aura_popup_.get());
+      }
+    }
+  }
+
   xdg_positioner_destroy(positioner);
 
-  if (CanGrabPopup(connection)) {
-    xdg_popup_grab(xdg_popup_.get(), connection->seat(), connection->serial());
-  }
+  GrabIfPossible(connection_, wayland_window_->parent_window());
+
   xdg_popup_add_listener(xdg_popup_.get(), &xdg_popup_listener, this);
 
   wayland_window_->root_surface()->Commit();
@@ -189,36 +207,60 @@ bool XDGPopupWrapperImpl::IsConfigured() {
   return xdg_surface_wrapper_->IsConfigured();
 }
 
+bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
+  if (xdg_popup_get_version(xdg_popup_.get()) <
+      XDG_POPUP_REPOSITIONED_SINCE_VERSION) {
+    return false;
+  }
+
+  params_.bounds = new_bounds;
+
+  // Create a new positioner with new bounds.
+  auto* positioner = CreatePositioner(wayland_window_->parent_window());
+  DCHECK(positioner);
+  // TODO(msisov): figure out how we can make use of the reposition token.
+  // The protocol says the token itself is opaque, and has no other special
+  // meaning.
+  xdg_popup_reposition(xdg_popup_.get(), positioner, ++next_reposition_token_);
+  connection_->ScheduleFlush();
+
+  // We can safely destroy the object now.
+  xdg_positioner_destroy(positioner);
+  return true;
+}
+
+void XDGPopupWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
+  xdg_surface_set_window_geometry(xdg_surface_wrapper_->xdg_surface(),
+                                  bounds.x(), bounds.y(), bounds.width(),
+                                  bounds.height());
+}
+
+void XDGPopupWrapperImpl::Grab(uint32_t serial) {
+  xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial);
+}
+
 struct xdg_positioner* XDGPopupWrapperImpl::CreatePositioner(
-    WaylandConnection* connection,
-    WaylandWindow* parent_window,
-    const ShellPopupParams& params) {
+    WaylandWindow* parent_window) {
   struct xdg_positioner* positioner;
-  positioner = xdg_wm_base_create_positioner(connection->shell());
+  positioner = xdg_wm_base_create_positioner(connection_->shell());
   if (!positioner)
     return nullptr;
 
-  // The parent we got must be the topmost in the stack of the same family
-  // windows.
-  DCHECK_EQ(parent_window->GetTopMostChildWindow(), parent_window);
-
-  // Place anchor to the end of the possible position.
-  gfx::Rect anchor_rect = GetAnchorRect(
-      params.menu_type, params.bounds,
-      gfx::ScaleToRoundedRect(parent_window->GetBounds(),
-                              1.0 / parent_window->window_scale()));
+  gfx::Rect anchor_rect;
+  OwnedWindowAnchorPosition anchor_position;
+  OwnedWindowAnchorGravity anchor_gravity;
+  OwnedWindowConstraintAdjustment constraint_adjustment;
+  FillAnchorData(params_, &anchor_rect, &anchor_position, &anchor_gravity,
+                 &constraint_adjustment);
 
   xdg_positioner_set_anchor_rect(positioner, anchor_rect.x(), anchor_rect.y(),
                                  anchor_rect.width(), anchor_rect.height());
-  xdg_positioner_set_size(positioner, params.bounds.width(),
-                          params.bounds.height());
-  xdg_positioner_set_anchor(
-      positioner, TranslateAnchor(GetAnchor(params.menu_type, params.bounds)));
-  xdg_positioner_set_gravity(positioner, TranslateGravity(GetGravity(
-                                             params.menu_type, params.bounds)));
+  xdg_positioner_set_size(positioner, params_.bounds.width(),
+                          params_.bounds.height());
+  xdg_positioner_set_anchor(positioner, TranslateAnchor(anchor_position));
+  xdg_positioner_set_gravity(positioner, TranslateGravity(anchor_gravity));
   xdg_positioner_set_constraint_adjustment(
-      positioner,
-      TranslateContraintAdjustment(GetConstraintAdjustment(params.menu_type)));
+      positioner, TranslateConstraintAdjustment(constraint_adjustment));
   return positioner;
 }
 
@@ -248,6 +290,13 @@ void XDGPopupWrapperImpl::PopupDone(void* data, struct xdg_popup* xdg_popup) {
   DCHECK(window);
   window->Hide();
   window->OnCloseRequest();
+}
+
+// static
+void XDGPopupWrapperImpl::Repositioned(void* data,
+                                       struct xdg_popup* xdg_popup,
+                                       uint32_t token) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 XDGSurfaceWrapperImpl* XDGPopupWrapperImpl::xdg_surface_wrapper() const {

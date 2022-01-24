@@ -10,14 +10,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
-#include "base/util/values/values_util.h"
-#include "chrome/browser/permissions/permission_actions_history.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/permissions/features.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
@@ -34,8 +35,7 @@ constexpr auto VeryUnlikely = permissions::
 
 // The data we consider can only be at most 28 days old to match the data that
 // the ML model is built on.
-constexpr base::TimeDelta kPermissionActionCutoffAge =
-    base::TimeDelta::FromDays(28);
+constexpr base::TimeDelta kPermissionActionCutoffAge = base::Days(28);
 
 // Only send requests if there are at least 4 action in the user's history for
 // the particular permission type.
@@ -145,7 +145,8 @@ void PredictionBasedPermissionUiSelector::Cancel() {
 
 bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
     permissions::RequestType request_type) {
-  return request_type == permissions::RequestType::kNotifications;
+  return request_type == permissions::RequestType::kNotifications ||
+         request_type == permissions::RequestType::kGeolocation;
 }
 
 absl::optional<permissions::PermissionUmaUtil::PredictionGrantLikelihood>
@@ -162,14 +163,20 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
 
-  auto* action_history = PermissionActionsHistory::GetForProfile(profile_);
+  permissions::PermissionActionsHistory* action_history =
+      PermissionActionsHistoryFactory::GetForProfile(profile_);
 
   auto actions = action_history->GetHistory(
-      cutoff, permissions::RequestType::kNotifications);
-  FillInActionCounts(&features.requested_permission_counts, actions);
+      cutoff, request->request_type(),
+      permissions::PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+  permissions::PermissionActionsHistory::FillInActionCounts(
+      &features.requested_permission_counts, actions);
 
-  actions = action_history->GetHistory(cutoff);
-  FillInActionCounts(&features.all_permission_counts, actions);
+  actions = action_history->GetHistory(
+      cutoff,
+      permissions::PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
+  permissions::PermissionActionsHistory::FillInActionCounts(
+      &features.all_permission_counts, actions);
 
   return features;
 }
@@ -217,6 +224,16 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
           base::FeatureList::IsEnabled(features::kPermissionPredictions);
       hold_back_chance = features::kPermissionPredictionsHoldbackChance.Get();
       break;
+    case permissions::RequestType::kGeolocation:
+      // Only quiet chip ui is supported for Geolocation
+      is_permissions_predictions_enabled =
+          base::FeatureList::IsEnabled(
+              features::kPermissionGeolocationPredictions) &&
+          base::FeatureList::IsEnabled(
+              permissions::features::kPermissionQuietChip);
+      hold_back_chance =
+          features::kPermissionGeolocationPredictionsHoldbackChance.Get();
+      break;
     default:
       NOTREACHED();
   }
@@ -227,32 +244,18 @@ bool PredictionBasedPermissionUiSelector::IsAllowedToUseAssistedPrompts(
       hold_back_chance && base::RandDouble() < hold_back_chance;
   // Only recording the hold back UMA histogram if the request was actually
   // eligible for an assisted prompt
-  base::UmaHistogramBoolean("Permissions.PredictionService.Request",
-                            !should_hold_back);
-  return !should_hold_back;
-}
-
-// static
-void PredictionBasedPermissionUiSelector::FillInActionCounts(
-    permissions::PredictionRequestFeatures::ActionCounts* counts,
-    const std::vector<PermissionActionsHistory::Entry>& actions) {
-  for (const auto& entry : actions) {
-    switch (entry.action) {
-      case permissions::PermissionAction::DENIED:
-        counts->denies++;
-        break;
-      case permissions::PermissionAction::GRANTED:
-        counts->grants++;
-        break;
-      case permissions::PermissionAction::DISMISSED:
-        counts->dismissals++;
-        break;
-      case permissions::PermissionAction::IGNORED:
-        counts->ignores++;
-        break;
-      default:
-        // Anything else is ignored.
-        break;
-    }
+  switch (request_type) {
+    case permissions::RequestType::kNotifications:
+      base::UmaHistogramBoolean("Permissions.PredictionService.Request",
+                                !should_hold_back);
+      break;
+    case permissions::RequestType::kGeolocation:
+      base::UmaHistogramBoolean(
+          "Permissions.PredictionService.GeolocationRequest",
+          !should_hold_back);
+      break;
+    default:
+      NOTREACHED();
   }
+  return !should_hold_back;
 }

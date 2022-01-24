@@ -29,6 +29,12 @@ class NetworkServiceAsyncPacketSender : public AsyncPacketSender {
   explicit NetworkServiceAsyncPacketSender(
       network::mojom::NetworkContext* network_context);
   explicit NetworkServiceAsyncPacketSender(NetworkServiceAsyncPacketSender&&);
+
+  NetworkServiceAsyncPacketSender(const NetworkServiceAsyncPacketSender&) =
+      delete;
+  NetworkServiceAsyncPacketSender& operator=(
+      const NetworkServiceAsyncPacketSender&) = delete;
+
   ~NetworkServiceAsyncPacketSender() override;
 
   // network::mojom::UDPSocket forwards.
@@ -38,8 +44,6 @@ class NetworkServiceAsyncPacketSender : public AsyncPacketSender {
 
  private:
   mojo::Remote<network::mojom::UDPSocket> socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceAsyncPacketSender);
 };
 
 }  // namespace media_router

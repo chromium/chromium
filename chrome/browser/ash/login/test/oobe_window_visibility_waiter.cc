@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeWindowVisibilityWaiter::OobeWindowVisibilityWaiter(bool target_visibilty)
     : target_visibility_(target_visibilty) {}
@@ -52,4 +52,4 @@ aura::Window* OobeWindowVisibilityWaiter::GetWindow() {
   return host->GetOobeWebContents()->GetTopLevelNativeWindow();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -18,6 +18,10 @@ extern const base::Feature kLensStandalone;
 // Enables Lens Region Search from the context menu.
 extern const base::Feature kLensRegionSearch;
 
+// Enables a fix for cursor pointer/crosshair state over overlay on Mac.
+// TODO(crbug/1266514): make default and remove feature once launched.
+extern const base::FeatureParam<bool> kRegionSearchMacCursorFix;
+
 // Enables alternate option 1 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1;
 
@@ -26,6 +30,27 @@ extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
 
 // Enables alternate option 3 for the Region Search context menu item text.
 extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
+
+// Enables alternate option 4 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4;
+
+// Enables UKM logging for the Lens Region Search feature.
+extern const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch;
+
+// Enables UKM logging for the LensStandalone feature.
+extern const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch;
+
+// Enables the side panel for Lens Region Search.
+extern const base::FeatureParam<bool> kEnableSidePanelForLensRegionSearch;
+
+// Enables the side panel for Lens Image Search.
+extern const base::FeatureParam<bool> kEnableSidePanelForLensImageSearch;
+
+// Returns whether to enable UKM logging for Lens Region Search feature.
+extern bool GetEnableUKMLoggingForRegionSearch();
+
+// Returns whether to enable UKM logging for LensStandalone feature.
+extern bool GetEnableUKMLoggingForImageSearch();
 
 // Returns the max pixel width/height for the image to be sent to Lens via
 // region search. The images are sent at 1x as PNGs.

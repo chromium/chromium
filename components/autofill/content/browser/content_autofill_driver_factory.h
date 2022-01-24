@@ -10,7 +10,6 @@
 #include "base/supports_user_data.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
-#include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,34 +25,19 @@ class ContentAutofillDriver;
 
 // Manages lifetime of ContentAutofillDriver. One Factory per WebContents
 // creates one Driver per RenderFrame.
-class ContentAutofillDriverFactory : public AutofillDriverFactory,
-                                     public content::WebContentsObserver,
+class ContentAutofillDriverFactory : public content::WebContentsObserver,
                                      public base::SupportsUserData::Data {
  public:
   static const char kContentAutofillDriverFactoryWebContentsUserDataKey[];
 
-  ContentAutofillDriverFactory(
-      content::WebContents* web_contents,
-      AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager,
-      AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
-
-  ContentAutofillDriverFactory(const ContentAutofillDriver&) = delete;
-  ContentAutofillDriverFactory& operator=(const ContentAutofillDriver&) =
-      delete;
-
-  ~ContentAutofillDriverFactory() override;
-
-  static void CreateForWebContentsAndDelegate(
-      content::WebContents* contents,
-      AutofillClient* client,
-      const std::string& app_locale,
-      BrowserAutofillManager::AutofillDownloadManagerState
-          enable_download_manager);
-
+  // Creates a factory for a WebContents object.
+  //
+  // The |autofill_manager_factory_callback| is eventually called by
+  // ContentAutofillDriver's constructor. Chrome passes a null callback and
+  // ContentAutofillDriver calls SetBrowserAutofillManager() in this case.
+  //
+  // TODO(crbug.com/1200511): Remove default parameter and pass proper callback
+  // and remove ContentAutofillDriver::SetBrowserAutofillManager().
   static void CreateForWebContentsAndDelegate(
       content::WebContents* contents,
       AutofillClient* client,
@@ -61,15 +45,19 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       BrowserAutofillManager::AutofillDownloadManagerState
           enable_download_manager,
       AutofillManager::AutofillManagerFactoryCallback
-          autofill_manager_factory_callback);
+          autofill_manager_factory_callback = {});
 
   static ContentAutofillDriverFactory* FromWebContents(
       content::WebContents* contents);
+
   static void BindAutofillDriver(
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
       content::RenderFrameHost* render_frame_host);
 
+  ~ContentAutofillDriverFactory() override;
+
   // Gets the |ContentAutofillDriver| associated with |render_frame_host|.
+  // If |render_frame_host| is currently being deleted, this may be nullptr.
   // |render_frame_host| must be owned by |web_contents()|.
   ContentAutofillDriver* DriverForFrame(
       content::RenderFrameHost* render_frame_host);
@@ -84,12 +72,37 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  AutofillClient* client() { return client_; }
+
  private:
+  friend class ContentAutofillDriverFactoryTestApi;
+
+  ContentAutofillDriverFactory(
+      content::WebContents* web_contents,
+      AutofillClient* client,
+      const std::string& app_locale,
+      BrowserAutofillManager::AutofillDownloadManagerState
+          enable_download_manager,
+      AutofillManager::AutofillManagerFactoryCallback
+          autofill_manager_factory_callback);
+
+  AutofillClient* const client_;
   std::string app_locale_;
   BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   AutofillManager::AutofillManagerFactoryCallback
       autofill_manager_factory_callback_;
+
+  // Routes events between different drivers.
+  // Must be destroyed after |driver_map_|'s elements.
   ContentAutofillRouter router_;
+
+  // The list of drivers, one for each frame in the WebContents.
+  // Should be empty at destruction time because its elements are erased in
+  // RenderFrameDeleted(). In case it is not empty, is must be destroyed before
+  // |router_| because ~ContentAutofillDriver() may access |router_|.
+  std::unordered_map<content::RenderFrameHost*,
+                     std::unique_ptr<ContentAutofillDriver>>
+      driver_map_;
 };
 
 }  // namespace autofill

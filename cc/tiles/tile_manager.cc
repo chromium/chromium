@@ -896,8 +896,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     }
   }
 
-  UMA_HISTOGRAM_BOOLEAN("TileManager.ExceededMemoryBudget",
-                        !had_enough_memory_to_schedule_tiles_needed_now);
   did_oom_on_last_assign_ = !had_enough_memory_to_schedule_tiles_needed_now;
 
   memory_stats_from_last_assign_.total_budget_in_bytes =
@@ -1483,7 +1481,7 @@ void TileManager::ScheduleCheckRasterFinishedQueries() {
       &TileManager::CheckRasterFinishedQueries, base::Unretained(this)));
   task_runner_->PostDelayedTask(FROM_HERE,
                                 check_pending_tile_queries_callback_.callback(),
-                                base::TimeDelta::FromMilliseconds(100));
+                                base::Milliseconds(100));
 }
 
 void TileManager::CheckRasterFinishedQueries() {

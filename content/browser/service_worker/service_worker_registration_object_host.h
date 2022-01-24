@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -40,6 +39,12 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
       base::WeakPtr<ServiceWorkerContextCore> context,
       ServiceWorkerContainerHost* container_host,
       scoped_refptr<ServiceWorkerRegistration> registration);
+
+  ServiceWorkerRegistrationObjectHost(
+      const ServiceWorkerRegistrationObjectHost&) = delete;
+  ServiceWorkerRegistrationObjectHost& operator=(
+      const ServiceWorkerRegistrationObjectHost&) = delete;
+
   ~ServiceWorkerRegistrationObjectHost() override;
 
   // Establishes a new mojo connection into |receivers_|.
@@ -153,8 +158,6 @@ class CONTENT_EXPORT ServiceWorkerRegistrationObjectHost
 
   base::WeakPtrFactory<ServiceWorkerRegistrationObjectHost> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationObjectHost);
 };
 
 }  // namespace content

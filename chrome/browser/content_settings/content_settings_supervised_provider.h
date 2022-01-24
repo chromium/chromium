@@ -8,7 +8,6 @@
 // A content setting provider that is set by the custodian of a supervised user.
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_global_value_map.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
@@ -23,6 +22,10 @@ class SupervisedProvider : public ObservableProvider {
  public:
   explicit SupervisedProvider(
       SupervisedUserSettingsService* supervised_user_settings_service);
+
+  SupervisedProvider(const SupervisedProvider&) = delete;
+  SupervisedProvider& operator=(const SupervisedProvider&) = delete;
+
   ~SupervisedProvider() override;
 
   // ProviderInterface implementations.
@@ -52,8 +55,6 @@ class SupervisedProvider : public ObservableProvider {
   mutable base::Lock lock_;
 
   base::CallbackListSubscription user_settings_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedProvider);
 };
 
 }  // namespace content_settings

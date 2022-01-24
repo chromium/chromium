@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LifecycleObserver;
 
+import org.chromium.chrome.browser.device_reauth.BiometricAuthRequester;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
@@ -30,6 +32,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     private final PasswordCheckFragmentView mFragmentView;
     private final SettingsLauncher mSettingsLauncher;
     private final PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    private final ReauthenticatorBridge mReauthenticatorBridge;
     private final PasswordCheckMediator mMediator;
     private PropertyModel mModel;
 
@@ -86,6 +89,8 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
 
         mReauthenticationHelper = new PasswordAccessReauthenticationHelper(
                 mFragmentView.getActivity(), mFragmentView.getParentFragmentManager());
+        mReauthenticatorBridge =
+                new ReauthenticatorBridge(BiometricAuthRequester.PASSWORD_CHECK_AUTO_PWD_CHANGE);
 
         PasswordCheckChangePasswordHelper changePasswordHelper =
                 new PasswordCheckChangePasswordHelper(mFragmentView.getActivity(),
@@ -94,8 +99,8 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                 mFragmentView.getResources().getDimensionPixelSize(
                         org.chromium.chrome.browser.ui.favicon.R.dimen.default_favicon_size));
-        mMediator = new PasswordCheckMediator(
-                changePasswordHelper, mReauthenticationHelper, mSettingsLauncher, iconHelper);
+        mMediator = new PasswordCheckMediator(changePasswordHelper, mReauthenticationHelper,
+                mReauthenticatorBridge, mSettingsLauncher, iconHelper);
     }
 
     private void launchCheckupInAccount() {

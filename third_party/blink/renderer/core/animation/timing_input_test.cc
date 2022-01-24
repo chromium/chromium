@@ -62,10 +62,10 @@ Timing AnimationTimingInputTest::ApplyTimingInputNumber(
       return Timing();
     }
 
-    auto* timing_input =
+    auto* options =
         MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
             timing_input_dictionary);
-    result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
+    result = TimingInput::Convert(options, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
   } else {
@@ -75,10 +75,10 @@ Timing AnimationTimingInputTest::ApplyTimingInputNumber(
     if (exception_state.HadException())
       return Timing();
 
-    auto* timing_input = MakeGarbageCollected<
+    auto* options = MakeGarbageCollected<
         V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble>(
         timing_input_dictionary);
-    result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
+    result = TimingInput::Convert(options, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
   }
@@ -106,10 +106,10 @@ Timing AnimationTimingInputTest::ApplyTimingInputString(
     if (exception_state.HadException())
       return Timing();
 
-    auto* timing_input =
+    auto* options =
         MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
             timing_input_dictionary);
-    result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
+    result = TimingInput::Convert(options, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
   } else {
@@ -119,10 +119,10 @@ Timing AnimationTimingInputTest::ApplyTimingInputString(
     if (exception_state.HadException())
       return Timing();
 
-    auto* timing_input = MakeGarbageCollected<
+    auto* options = MakeGarbageCollected<
         V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble>(
         timing_input_dictionary);
-    result = TimingInput::Convert(timing_input, GetDocument(), exception_state);
+    result = TimingInput::Convert(options, GetDocument(), exception_state);
     if (exception_state.HadException())
       return Timing();
   }
@@ -306,7 +306,7 @@ TEST_F(AnimationTimingInputTest, TimingInputIterationDuration) {
   V8TestingScope scope;
   bool success;
   EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(1.1),
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.1),
       ApplyTimingInputNumber(scope.GetIsolate(), "duration", 1100, success)
           .iteration_duration);
   EXPECT_TRUE(success);

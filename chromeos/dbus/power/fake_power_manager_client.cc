@@ -31,8 +31,7 @@ FakePowerManagerClient* g_instance = nullptr;
 constexpr double kUsbMinAcWatts = 24;
 
 // The time power manager will wait before resuspending from a dark resume.
-constexpr base::TimeDelta kDarkSuspendDelayTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kDarkSuspendDelayTimeout = base::Seconds(20);
 
 // Callback fired when timer started through |StartArcTimer| expires. In
 // non-test environments this does a potentially blocking call on the UI

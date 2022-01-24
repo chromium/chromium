@@ -226,6 +226,7 @@ class LambdaNormalizer:
         'No valid match for new lambda name format: ' + class_path + '\n'
         'Please update https://crbug.com/1208385 with this error so we can '
         'update the lambda normalization code.')
+    return None
 
 
 # Visible for testing.

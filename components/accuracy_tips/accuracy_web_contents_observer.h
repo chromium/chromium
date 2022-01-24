@@ -20,7 +20,7 @@ class NavigationHandle;
 namespace accuracy_tips {
 
 // Observes navigations and triggers a warning if a visited site is determined
-// to be low-accuracy.
+// if a visited site is determined to be news-related.
 class AccuracyWebContentsObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AccuracyWebContentsObserver> {

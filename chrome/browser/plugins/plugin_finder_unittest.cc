@@ -57,9 +57,9 @@ TEST(PluginFinderTest, JsonSyntax) {
     if (!plugin->GetList("versions", &versions))
       continue;
 
-    for (const auto& version : versions->GetList()) {
+    for (const auto& version_value : versions->GetList()) {
       const base::DictionaryValue* version_dict = nullptr;
-      ASSERT_TRUE(version.GetAsDictionary(&version_dict));
+      ASSERT_TRUE(version_value.GetAsDictionary(&version_dict));
       EXPECT_TRUE(version_dict->GetString("version", &dummy_str));
       std::string status_str;
       EXPECT_TRUE(version_dict->GetString("status", &status_str));

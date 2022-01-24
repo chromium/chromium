@@ -13,14 +13,16 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -30,7 +32,7 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_adding_screen_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -42,20 +44,15 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/gfx/geometry/test/rect_test_util.h"
 
-using ::gfx::test::RectContains;
-using ::testing::_;
-using ::testing::AnyNumber;
-using ::testing::Return;
-
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kDomainAllowlist[] = "*@example.com";
@@ -88,18 +85,7 @@ class LoginOfflineTest : public LoginManagerTest {
     login_manager_.AppendRegularUsers(1);
     test_account_id_ = login_manager_.users()[0].account_id;
   }
-  ~LoginOfflineTest() override {}
-
-  void SetUpOnMainThread() override {
-    // Wait for OOBE to load.
-    base::RunLoop run_loop;
-    if (!LoginDisplayHost::default_host()->GetOobeUI()->IsJSReady(
-            run_loop.QuitClosure())) {
-      run_loop.Run();
-    }
-
-    LoginManagerTest::SetUpOnMainThread();
-  }
+  ~LoginOfflineTest() override = default;
 
  protected:
   AccountId test_account_id_;
@@ -107,7 +93,7 @@ class LoginOfflineTest : public LoginManagerTest {
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
   NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
 };
 
@@ -123,16 +109,16 @@ class LoginOnlineCryptohomeError : public LoginManagerTest {
       /* invalid token status to force online signin */
       user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
   LoginManagerMixin login_manager_{&mixin_host_, {reauth_user_}};
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
   const auto& account_id = reauth_user_.account_id;
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id));
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id));
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id));
+  EXPECT_TRUE(LoginScreenTestApi::FocusUser(account_id));
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
       user_data_auth::CRYPTOHOME_ERROR_MOUNT_FATAL);
 
@@ -143,19 +129,31 @@ IN_PROC_BROWSER_TEST_F(LoginOnlineCryptohomeError, FatalScreenShown) {
                                 FakeGaiaMixin::kFakeUserPassword,
                                 FakeGaiaMixin::kEmptyUserServices);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   test::ClickSignInFatalScreenActionButton();
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenShown) {
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
   chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
       user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED);
-  ash::LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
-                                          /*check_if_submittable=*/false);
+  LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                     /*check_if_submittable=*/false);
   OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineTest, FatalScreenNotShown) {
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
+  chromeos::FakeUserDataAuthClient::Get()->set_cryptohome_error(
+      user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+  LoginScreenTestApi::SubmitPassword(test_account_id_, "password",
+                                     /*check_if_submittable=*/false);
+  // Inserted RunUntilIdle here to give maximum chances for the dialog to show
+  // up in case of a bug.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 class LoginOfflineManagedTest : public LoginManagerTest {
@@ -165,12 +163,11 @@ class LoginOfflineManagedTest : public LoginManagerTest {
     managed_user_id_ = login_manager_.users()[0].account_id;
   }
 
-  ~LoginOfflineManagedTest() override {}
+  ~LoginOfflineManagedTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     LoginManagerTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        chromeos::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void ConfigurePolicy(const std::string& autocomplete_domain) {
@@ -208,30 +205,28 @@ class LoginOfflineManagedTest : public LoginManagerTest {
   OfflineLoginTestMixin offline_login_test_mixin_{&mixin_host_};
   // We need Fake gaia to avoid network errors that can be caused by
   // attempts to load real GAIA.
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 };
 
 // Used to make sure that the system tray is visible and within the screen
 // bounds after login.
 void TestSystemTrayIsVisible() {
-  aura::Window* primary_win = ash::Shell::GetPrimaryRootWindow();
-  ash::Shelf* shelf = ash::Shelf::ForWindow(primary_win);
-  ash::TrayBackgroundView* tray =
+  aura::Window* primary_win = Shell::GetPrimaryRootWindow();
+  Shelf* shelf = Shelf::ForWindow(primary_win);
+  TrayBackgroundView* tray =
       shelf->GetStatusAreaWidget()->unified_system_tray();
   SCOPED_TRACE(testing::Message()
                << "ShelfVisibilityState=" << shelf->GetVisibilityState()
                << " ShelfAutoHideBehavior="
                << static_cast<int>(shelf->auto_hide_behavior()));
-  ash::StatusAreaWidgetTestHelper::WaitForAnimationEnd(
-      shelf->GetStatusAreaWidget());
+  StatusAreaWidgetTestHelper::WaitForAnimationEnd(shelf->GetStatusAreaWidget());
   EXPECT_TRUE(tray->GetVisible());
 
   // Wait for the system tray be inside primary bounds.
-  chromeos::test::TestPredicateWaiter(
+  test::TestPredicateWaiter(
       base::BindRepeating(
-          [](const aura::Window* primary_win,
-             const ash::TrayBackgroundView* tray) {
-            if (RectContains(primary_win->bounds(), tray->GetBoundsInScreen()))
+          [](const aura::Window* primary_win, const TrayBackgroundView* tray) {
+            if (primary_win->bounds().Contains(tray->GetBoundsInScreen()))
               return true;
             LOG(WARNING) << primary_win->bounds().ToString()
                          << " does not contain "
@@ -271,21 +266,18 @@ IN_PROC_BROWSER_TEST_F(LoginGuestTest, GuestIsOTR) {
 IN_PROC_BROWSER_TEST_F(LoginCursorTest, CursorHidden) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   // Cursor should be hidden at startup
-  EXPECT_FALSE(ash::Shell::Get()->cursor_manager()->IsCursorVisible());
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   // Cursor should be shown after cursor is moved.
   EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(gfx::Point()));
-  EXPECT_TRUE(ash::Shell::Get()->cursor_manager()->IsCursorVisible());
+  EXPECT_TRUE(Shell::Get()->cursor_manager()->IsCursorVisible());
 
   TestSystemTrayIsVisible();
 }
 
 // Verifies that the webui for login comes up successfully.
 IN_PROC_BROWSER_TEST_F(LoginSigninTest, WebUIVisible) {
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources())
-      .Wait();
+  LoginOrLockScreenVisibleWaiter().Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineTest, PRE_AuthOffline) {
@@ -357,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   // Send network state update once again.
   offline_login_test_mixin_.GoOffline();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, LoginAllowlistedUser) {
@@ -378,9 +370,7 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, LoginAllowlistedUser) {
 
 class UserAddingScreenTrayTest : public LoginManagerTest {
  public:
-  UserAddingScreenTrayTest() : LoginManagerTest() {
-    login_mixin_.AppendRegularUsers(3);
-  }
+  UserAddingScreenTrayTest() { login_mixin_.AppendRegularUsers(3); }
 
  protected:
   LoginManagerMixin login_mixin_{&mixin_host_};
@@ -392,4 +382,9 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTrayTest, TrayVisible) {
   TestSystemTrayIsVisible();
 }
 
-}  // namespace chromeos
+IN_PROC_BROWSER_TEST_F(LoginManagerTest, SafeBrowsingDisabledForSigninProfile) {
+  ASSERT_FALSE(ProfileHelper::GetSigninProfile()->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingEnabled));
+}
+
+}  // namespace ash

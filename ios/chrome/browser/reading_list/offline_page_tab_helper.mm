@@ -373,7 +373,7 @@ void OfflinePageTabHelper::StartCheckingLoadingProgress(const GURL& url) {
 
   try_number_ = 0;
   timer_.reset(new base::RepeatingTimer());
-  timer_->Start(FROM_HERE, base::TimeDelta::FromMilliseconds(1500),
+  timer_->Start(FROM_HERE, base::Milliseconds(1500),
                 base::BindRepeating(&OfflinePageTabHelper::CheckLoadingProgress,
                                     base::Unretained(this), url));
 }

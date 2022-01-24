@@ -6,7 +6,6 @@
 #define CHROMEOS_LOGIN_AUTH_FAKE_EXTENDED_AUTHENTICATOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 
@@ -19,6 +18,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
  public:
   FakeExtendedAuthenticator(AuthStatusConsumer* consumer,
                             const UserContext& expected_user_context);
+
+  FakeExtendedAuthenticator(const FakeExtendedAuthenticator&) = delete;
+  FakeExtendedAuthenticator& operator=(const FakeExtendedAuthenticator&) =
+      delete;
 
   // ExtendedAuthenticator:
   void SetConsumer(AuthStatusConsumer* consumer) override;
@@ -51,8 +54,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
   AuthStatusConsumer* consumer_;
 
   UserContext expected_user_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtendedAuthenticator);
 };
 
 }  // namespace chromeos

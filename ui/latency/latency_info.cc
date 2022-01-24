@@ -13,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -56,43 +55,6 @@ bool IsInputLatencyBeginComponent(ui::LatencyComponentType type) {
   return type == ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT;
 }
 
-// This class is for converting latency info to trace buffer friendly format.
-class LatencyInfoTracedValue
-    : public base::trace_event::ConvertableToTraceFormat {
- public:
-  static std::unique_ptr<ConvertableToTraceFormat> FromValue(
-      std::unique_ptr<base::Value> value);
-
-  void AppendAsTraceFormat(std::string* out) const override;
-
- private:
-  explicit LatencyInfoTracedValue(base::Value* value);
-  ~LatencyInfoTracedValue() override;
-
-  std::unique_ptr<base::Value> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(LatencyInfoTracedValue);
-};
-
-std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-LatencyInfoTracedValue::FromValue(std::unique_ptr<base::Value> value) {
-  return std::unique_ptr<base::trace_event::ConvertableToTraceFormat>(
-      new LatencyInfoTracedValue(value.release()));
-}
-
-LatencyInfoTracedValue::~LatencyInfoTracedValue() {
-}
-
-void LatencyInfoTracedValue::AppendAsTraceFormat(std::string* out) const {
-  std::string tmp;
-  base::JSONWriter::Write(*value_, &tmp);
-  *out += tmp;
-}
-
-LatencyInfoTracedValue::LatencyInfoTracedValue(base::Value* value)
-    : value_(value) {
-}
-
 constexpr const char kTraceCategoriesForAsyncEvents[] =
     "benchmark,latencyInfo,rail";
 
@@ -123,7 +85,8 @@ LatencyInfo::LatencyInfo(SourceEventType type)
       source_event_type_(type),
       scroll_update_delta_(0),
       predicted_scroll_update_delta_(0),
-      gesture_scroll_id_(0) {}
+      gesture_scroll_id_(0),
+      touch_trace_id_(0) {}
 
 LatencyInfo::LatencyInfo(const LatencyInfo& other) = default;
 LatencyInfo::LatencyInfo(LatencyInfo&& other) = default;
@@ -139,7 +102,8 @@ LatencyInfo::LatencyInfo(int64_t trace_id, bool terminated)
       source_event_type_(SourceEventType::UNKNOWN),
       scroll_update_delta_(0),
       predicted_scroll_update_delta_(0),
-      gesture_scroll_id_(0) {}
+      gesture_scroll_id_(0),
+      touch_trace_id_(0) {}
 
 LatencyInfo& LatencyInfo::operator=(const LatencyInfo& other) = default;
 
@@ -195,6 +159,7 @@ void LatencyInfo::CopyLatencyFrom(const LatencyInfo& other,
 
   coalesced_ = other.coalesced();
   gesture_scroll_id_ = other.gesture_scroll_id();
+  touch_trace_id_ = other.touch_trace_id();
   scroll_update_delta_ = other.scroll_update_delta();
   // TODO(tdresser): Ideally we'd copy |began_| here as well, but |began_|
   // isn't very intuitive, and we can actually begin multiple times across
@@ -220,6 +185,7 @@ void LatencyInfo::AddNewLatencyFrom(const LatencyInfo& other) {
 
   coalesced_ = other.coalesced();
   gesture_scroll_id_ = other.gesture_scroll_id();
+  touch_trace_id_ = other.touch_trace_id();
   scroll_update_delta_ = other.scroll_update_delta();
   // TODO(tdresser): Ideally we'd copy |began_| here as well, but |began_| isn't
   // very intuitive, and we can actually begin multiple times across copied
@@ -324,6 +290,9 @@ void LatencyInfo::Terminate() {
 
           if (gesture_scroll_id_ > 0) {
             info->set_gesture_scroll_id(gesture_scroll_id_);
+          }
+          if (touch_trace_id_ > 0) {
+            info->set_touch_id(touch_trace_id_);
           }
 
           info->set_trace_id(trace_id_);

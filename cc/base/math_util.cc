@@ -19,26 +19,29 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 
 namespace cc {
 
 static HomogeneousCoordinate ProjectHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
-  SkScalar z =
-      -(transform.matrix().get(2, 0) * p.x() +
-        transform.matrix().get(2, 1) * p.y() + transform.matrix().get(2, 3)) /
-      transform.matrix().get(2, 2);
-
+  SkScalar m22 = transform.matrix().get(2, 2);
   // In this case, the layer we are trying to project onto is perpendicular to
   // ray (point p and z-axis direction) that we are trying to project. This
   // happens when the layer is rotated so that it is infinitesimally thin, or
   // when it is co-planar with the camera origin -- i.e. when the layer is
   // invisible anyway.
+  if (!std::isnormal(m22))
+    return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
+  SkScalar z =
+      -(transform.matrix().get(2, 0) * p.x() +
+        transform.matrix().get(2, 1) * p.y() + transform.matrix().get(2, 3)) /
+      m22;
+  // Same underlying condition as the previous early return.
   if (!std::isfinite(z))
     return HomogeneousCoordinate(0.0, 0.0, 0.0, 1.0);
 
@@ -370,6 +373,8 @@ gfx::Rect MathUtil::MapEnclosedRectWith2dAxisAlignedTransform(
     const gfx::Transform& transform,
     const gfx::Rect& rect) {
   DCHECK(transform.Preserves2dAxisAlignment());
+  DCHECK_GT(transform.matrix().get(3, 3), 0);
+  DCHECK(std::isnormal(transform.matrix().get(3, 3)));
 
   if (transform.IsIdentityOrIntegerTranslation()) {
     gfx::Vector2d offset(static_cast<int>(transform.matrix().getFloat(0, 3)),
@@ -911,15 +916,6 @@ void MathUtil::AddToTracedValue(const char* name,
 
 void MathUtil::AddToTracedValue(const char* name,
                                 const gfx::Vector2dF& v,
-                                base::trace_event::TracedValue* res) {
-  res->BeginArray(name);
-  res->AppendDouble(v.x());
-  res->AppendDouble(v.y());
-  res->EndArray();
-}
-
-void MathUtil::AddToTracedValue(const char* name,
-                                const gfx::ScrollOffset& v,
                                 base::trace_event::TracedValue* res) {
   res->BeginArray(name);
   res->AppendDouble(v.x());

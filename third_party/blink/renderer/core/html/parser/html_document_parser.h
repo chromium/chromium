@@ -29,7 +29,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner_host.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -150,10 +151,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void Flush() final;
   void SetDecoder(std::unique_ptr<TextResourceDecoder>) final;
 
-  void SetMaxTokenizationBudgetForTesting(int budget) {
-    max_tokenization_budget_ = budget;
-  }
-
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
@@ -202,7 +199,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       std::unique_ptr<TokenizedChunk> last_chunk,
       std::unique_ptr<HTMLToken>,
       std::unique_ptr<HTMLTokenizer>);
-  size_t ProcessTokenizedChunkFromBackgroundParser(
+  wtf_size_t ProcessTokenizedChunkFromBackgroundParser(
       std::unique_ptr<TokenizedChunk>,
       bool*);
   void PumpPendingSpeculations();
@@ -292,7 +289,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // would require keeping track of token positions of preload requests.
   CompactHTMLToken* pending_csp_meta_token_;
 
-  int max_tokenization_budget_;
   bool can_parse_asynchronously_;
   bool end_was_delayed_;
   bool have_background_parser_;

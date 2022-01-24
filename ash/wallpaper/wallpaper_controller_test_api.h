@@ -6,7 +6,6 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
@@ -16,6 +15,11 @@ class WallpaperControllerImpl;
 class ASH_EXPORT WallpaperControllerTestApi {
  public:
   explicit WallpaperControllerTestApi(WallpaperControllerImpl* controller);
+
+  WallpaperControllerTestApi(const WallpaperControllerTestApi&) = delete;
+  WallpaperControllerTestApi& operator=(const WallpaperControllerTestApi&) =
+      delete;
+
   virtual ~WallpaperControllerTestApi();
 
   // Creates and sets a new wallpaper that causes the prominent color of the
@@ -36,8 +40,6 @@ class ASH_EXPORT WallpaperControllerTestApi {
 
  private:
   WallpaperControllerImpl* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperControllerTestApi);
 };
 
 }  // namespace ash

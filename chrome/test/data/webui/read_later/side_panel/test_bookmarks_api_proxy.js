@@ -4,7 +4,7 @@
 
 import {BookmarksApiProxy} from 'chrome://read-later.top-chrome/side_panel/bookmarks_api_proxy.js';
 
-import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
 class EventDispatcher {
   constructor() {
@@ -33,6 +33,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
     super([
       'getFolders',
       'openBookmark',
+      'cutBookmark',
+      'copyBookmark',
+      'pasteToBookmark',
     ]);
 
     this.callbackRouter = {
@@ -55,13 +58,32 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
   /**
    * @param {string} url
    * @param {number} depth
+   * @param {!ui.mojom.ClickModifiers} click_modifiers
    */
-  openBookmark(url, depth) {
-    this.methodCalled('openBookmark', url, depth);
+  openBookmark(url, depth, click_modifiers) {
+    this.methodCalled('openBookmark', url, depth, click_modifiers);
   }
 
   /** @param {!Array<!chrome.bookmarks.BookmarkTreeNode>} folders */
   setFolders(folders) {
     this.folders_ = folders;
+  }
+
+  /** @param {string} id */
+  copyBookmark(id) {
+    this.methodCalled('copyBookmark', id);
+  }
+
+  /** @param {string} id */
+  cutBookmark(id) {
+    this.methodCalled('cutBookmark', id);
+  }
+
+  /**
+   * @param {string} id
+   * @param {string=} destinationId
+   */
+  pasteToBookmark(id, destinationId) {
+    this.methodCalled('pasteToBookmark', id, destinationId);
   }
 }

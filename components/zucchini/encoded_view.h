@@ -11,7 +11,6 @@
 #include <iterator>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/zucchini/image_index.h"
 #include "components/zucchini/image_utils.h"
 
@@ -53,6 +52,10 @@ class EncodedView {
     Iterator(const EncodedView* encoded_view, difference_type pos)
         : encoded_view_(encoded_view), pos_(pos) {}
 
+    Iterator(const Iterator&) = default;
+
+    Iterator& operator=(const Iterator&) = default;
+
     value_type operator*() const {
       return encoded_view_->Projection(static_cast<offset_t>(pos_));
     }
@@ -90,12 +93,6 @@ class EncodedView {
 
     Iterator& operator-=(difference_type n) {
       pos_ -= n;
-      return *this;
-    }
-
-    Iterator& operator=(const Iterator& it) {
-      encoded_view_ = it.encoded_view_;
-      pos_ = it.pos_;
       return *this;
     }
 
@@ -138,6 +135,8 @@ class EncodedView {
   // |image_index| is the annotated image being adapted, and is required to
   // remain valid for the lifetime of the object.
   explicit EncodedView(const ImageIndex& image_index);
+  EncodedView(const EncodedView&) = delete;
+  const EncodedView& operator=(const EncodedView&) = delete;
   ~EncodedView();
 
   // Projects |location| to a scalar value that describes the content at a
@@ -179,8 +178,6 @@ class EncodedView {
 
   const ImageIndex& image_index_;
   std::vector<PoolInfo> pool_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodedView);
 };
 
 }  // namespace zucchini

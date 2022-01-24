@@ -10,11 +10,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/sync/model/sync_change.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/managed_user_setting_specifics.pb.h"
 #include "components/sync/test/model/fake_sync_change_processor.h"
 #include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
 #include "components/sync/test/model/sync_error_factory_mock.h"
@@ -26,6 +28,10 @@ namespace {
 class MockSyncErrorFactory : public syncer::SyncErrorFactory {
  public:
   explicit MockSyncErrorFactory(syncer::ModelType type);
+
+  MockSyncErrorFactory(const MockSyncErrorFactory&) = delete;
+  MockSyncErrorFactory& operator=(const MockSyncErrorFactory&) = delete;
+
   ~MockSyncErrorFactory() override;
 
   // SyncErrorFactory implementation:
@@ -34,8 +40,6 @@ class MockSyncErrorFactory : public syncer::SyncErrorFactory {
 
  private:
   syncer::ModelType type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSyncErrorFactory);
 };
 
 MockSyncErrorFactory::MockSyncErrorFactory(syncer::ModelType type)
@@ -46,9 +50,7 @@ MockSyncErrorFactory::~MockSyncErrorFactory() {}
 syncer::SyncError MockSyncErrorFactory::CreateAndUploadError(
     const base::Location& location,
     const std::string& message) {
-  return syncer::SyncError(location,
-                           syncer::SyncError::DATATYPE_ERROR,
-                           message,
+  return syncer::SyncError(location, syncer::SyncError::DATATYPE_ERROR, message,
                            type_);
 }
 
@@ -204,6 +206,50 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   const base::DictionaryValue* dict_value = nullptr;
   ASSERT_TRUE(value->GetAsDictionary(&dict_value));
   EXPECT_TRUE(dict_value->Equals(&dict));
+}
+
+TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
+  base::MockCallback<SupervisedUserSettingsService::WebsiteApprovalCallback>
+      mock_callback;
+  auto subscription =
+      settings_service_.SubscribeForNewWebsiteApproval(mock_callback.Get());
+
+  StartSyncing(syncer::SyncDataList());
+  ASSERT_TRUE(settings_);
+  settings_.reset();
+
+  syncer::SyncData dataForAllowedHost =
+      SupervisedUserSettingsService::CreateSyncDataForSetting(
+          SupervisedUserSettingsService::MakeSplitSettingKey(
+              supervised_users::kContentPackManualBehaviorHosts, "allowedhost"),
+          base::Value(true));
+  syncer::SyncData dataForBlockedHost =
+      SupervisedUserSettingsService::CreateSyncDataForSetting(
+          SupervisedUserSettingsService::MakeSplitSettingKey(
+              supervised_users::kContentPackManualBehaviorHosts, "blockedhost"),
+          base::Value(false));
+
+  syncer::SyncChangeList change_list;
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_ADD, dataForAllowedHost));
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_ADD, dataForBlockedHost));
+  // Expect subscribers to be notified for the newly allowed host and NOT the
+  // newly blocked host.
+  EXPECT_CALL(mock_callback, Run("allowedhost")).Times(1);
+  EXPECT_CALL(mock_callback, Run("blockedhost")).Times(0);
+  settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
+
+  change_list.clear();
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_DELETE, dataForAllowedHost));
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_DELETE, dataForBlockedHost));
+  // Expect subscribers to be notified for the previously blocked host and NOT
+  // the previously allowed host.
+  EXPECT_CALL(mock_callback, Run("allowedhost")).Times(0);
+  EXPECT_CALL(mock_callback, Run("blockedhost")).Times(1);
+  settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
 }
 
 TEST_F(SupervisedUserSettingsServiceTest, Merge) {

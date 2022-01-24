@@ -52,6 +52,10 @@ UIControlsAura* GetUIControlsAt(const gfx::Point& point_in_screen) {
 class UIControlsAsh : public UIControlsAura {
  public:
   UIControlsAsh() = default;
+
+  UIControlsAsh(const UIControlsAsh&) = delete;
+  UIControlsAsh& operator=(const UIControlsAsh&) = delete;
+
   ~UIControlsAsh() override = default;
 
   // UIControslAura overrides:
@@ -135,9 +139,6 @@ class UIControlsAsh : public UIControlsAura {
     return ui_controls && ui_controls->SendTouchEventsNotifyWhenDone(
                               action, id, x, y, std::move(task));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIControlsAsh);
 };
 
 ui_controls::UIControlsAura* CreateAshUIControls() {

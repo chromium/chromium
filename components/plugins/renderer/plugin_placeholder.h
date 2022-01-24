@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 #define COMPONENTS_PLUGINS_RENDERER_PLUGIN_PLACEHOLDER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/plugins/renderer/webview_plugin.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -25,6 +24,10 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   PluginPlaceholderBase(content::RenderFrame* render_frame,
                         const blink::WebPluginParams& params,
                         const std::string& html_data);
+
+  PluginPlaceholderBase(const PluginPlaceholderBase&) = delete;
+  PluginPlaceholderBase& operator=(const PluginPlaceholderBase&) = delete;
+
   ~PluginPlaceholderBase() override;
 
   WebViewPlugin* plugin() { return plugin_; }
@@ -55,8 +58,6 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   WebViewPlugin* plugin_;
 
   bool hidden_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginPlaceholderBase);
 };
 
 // A basic placeholder that supports only hiding.

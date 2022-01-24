@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_features.h"
@@ -37,7 +37,7 @@ absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
   int timeout_int = 0;
   if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
     return absl::nullopt;
-  return base::TimeDelta::FromSeconds(timeout_int);
+  return base::Seconds(timeout_int);
 }
 
 HangAction GetAudioThreadHangAction() {
@@ -58,6 +58,10 @@ HangAction GetAudioThreadHangAction() {
 class MainThread final : public media::AudioThread {
  public:
   MainThread();
+
+  MainThread(const MainThread&) = delete;
+  MainThread& operator=(const MainThread&) = delete;
+
   ~MainThread() final;
 
   // AudioThread implementation.
@@ -74,8 +78,6 @@ class MainThread final : public media::AudioThread {
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 
   media::AudioThreadHangMonitor::Ptr hang_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(MainThread);
 };
 
 MainThread::MainThread()

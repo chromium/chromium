@@ -763,11 +763,15 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
             if (((xmlDocPtr) cur)->intSubset != NULL) {
                 htmlDtdDumpOutput(buf, (xmlDocPtr) cur, NULL);
             }
-            /* Always validate cur->parent when descending. */
-            if ((cur->parent == parent) && (cur->children != NULL)) {
-                parent = cur;
-                cur = cur->children;
-                continue;
+            if (cur->children != NULL) {
+                /* Always validate cur->parent when descending. */
+                if (cur->parent == parent) {
+                    parent = cur;
+                    cur = cur->children;
+                    continue;
+                }
+            } else {
+                xmlOutputBufferWriteString(buf, "\n");
             }
             break;
 

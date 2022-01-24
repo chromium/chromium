@@ -21,8 +21,7 @@ class CORE_EXPORT NGReplacedLayoutAlgorithm
  public:
   explicit NGReplacedLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
-  MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const override;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
   scoped_refptr<const NGLayoutResult> Layout() override;
 };
 

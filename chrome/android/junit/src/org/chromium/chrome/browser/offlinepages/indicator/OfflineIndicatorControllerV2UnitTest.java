@@ -78,7 +78,7 @@ public class OfflineIndicatorControllerV2UnitTest {
         when(mContext.getString(R.string.offline_indicator_v2_offline_text)).thenReturn("Offline");
         when(mContext.getString(R.string.offline_indicator_v2_back_online_text))
                 .thenReturn("Online");
-        when(mResources.getDrawable(anyInt(), any())).thenReturn(null);
+        when(mContext.getDrawable(anyInt())).thenReturn(null);
         when(mResources.getColor(anyInt(), any())).thenReturn(0);
         when(mCanAnimateNativeBrowserControls.get()).thenReturn(true);
         TimeUtilsJni.TEST_HOOKS.setInstanceForTesting(mTimeUtils);

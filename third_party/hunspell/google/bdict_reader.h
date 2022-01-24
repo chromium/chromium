@@ -102,6 +102,9 @@ class BDictReader {
   // You must call Init and it must succeed before calling any other functions.
   BDictReader();
 
+  BDictReader(const BDictReader&) = delete;
+  BDictReader& operator=(const BDictReader&) = delete;
+
   // Initializes the reader with the given data. The data does not transfer
   // ownership, and the caller must keep it valid until the reader is destroyed.
   // Returns true on success.
@@ -146,8 +149,6 @@ class BDictReader {
   const BDict::Header* header_;
 
   const BDict::AffHeader* aff_header_;
-
-  DISALLOW_COPY_AND_ASSIGN(BDictReader);
 };
 
 }  // namespace hunspell

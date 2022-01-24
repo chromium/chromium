@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -36,11 +35,13 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
  public:
   explicit HostDrmDevice(DrmCursor* cursor);
 
+  HostDrmDevice(const HostDrmDevice&) = delete;
+  HostDrmDevice& operator=(const HostDrmDevice&) = delete;
+
   void SetDisplayManager(DrmDisplayHostManager* display_manager);
 
-  void OnGpuServiceLaunchedOnProcessThread(
-      mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_runner);
+  void OnGpuServiceLaunched(
+      mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device);
 
   // Invoked by DrmDeviceConnector on loss of GPU service.
   void OnGpuServiceLost();
@@ -58,10 +59,8 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
   bool GpuTakeDisplayControl() override;
   bool GpuRefreshNativeDisplays() override;
   bool GpuRelinquishDisplayControl() override;
-  bool GpuAddGraphicsDeviceOnUIThread(const base::FilePath& path,
-                                      base::ScopedFD fd) override;
-  void GpuAddGraphicsDeviceOnIOThread(const base::FilePath& path,
-                                      base::ScopedFD fd) override;
+  void GpuAddGraphicsDevice(const base::FilePath& path,
+                            base::ScopedFD fd) override;
   bool GpuRemoveGraphicsDevice(const base::FilePath& path) override;
 
   // Services needed by DrmDisplayHost
@@ -106,26 +105,18 @@ class HostDrmDevice : public base::RefCountedThreadSafe<HostDrmDevice>,
       display::ContentProtectionMethod protection_method) const;
   void GpuSetHDCPStateCallback(int64_t display_id, bool success) const;
 
-  void OnGpuServiceLaunchedOnUIThread(
-      mojo::PendingRemote<ui::ozone::mojom::DrmDevice> drm_device);
-
   // Mojo implementation of the DrmDevice. Will be bound on the "main" thread.
   mojo::Remote<ui::ozone::mojom::DrmDevice> drm_device_;
-  mojo::Remote<ui::ozone::mojom::DrmDevice> drm_device_on_io_thread_;
 
   DrmDisplayHostManager* display_manager_;  // Not owned.
   DrmCursor* const cursor_;                 // Not owned.
 
   std::unique_ptr<HostCursorProxy> cursor_proxy_;
 
-  THREAD_CHECKER(on_io_thread_);  // Needs to be rebound as is allocated on the
-                                  // UI thread.
   THREAD_CHECKER(on_ui_thread_);
 
   bool connected_ = false;
   base::ObserverList<GpuThreadObserver>::Unchecked gpu_thread_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostDrmDevice);
 };
 
 }  // namespace ui

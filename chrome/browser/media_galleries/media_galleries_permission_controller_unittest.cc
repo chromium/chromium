@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,6 +50,11 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
         dialog_update_count_at_destruction_(0),
         controller_(nullptr),
         profile_(new TestingProfile()) {}
+
+  MediaGalleriesPermissionControllerTest(
+      const MediaGalleriesPermissionControllerTest&) = delete;
+  MediaGalleriesPermissionControllerTest& operator=(
+      const MediaGalleriesPermissionControllerTest&) = delete;
 
   ~MediaGalleriesPermissionControllerTest() override {
     EXPECT_FALSE(controller_);
@@ -164,8 +168,6 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   base::WeakPtrFactory<MediaGalleriesPermissionControllerTest> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesPermissionControllerTest);
 };
 
 GalleryDialogId

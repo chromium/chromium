@@ -100,11 +100,11 @@ void RlzPingHandler::Ping(
             trigger:
             "Critical signals like first install, a promotion dialog being"
             "shown, a user selection for a promotion may trigger a ping"
+            data: "TODO(crbug.com/1231780): Add this field."
             destination: WEBSITE
           }
           policy {
             cookies_allowed: NO
-            cookies_store: "user"
             setting: "Not user controlled. But it uses a trusted web end point"
                      "that doesn't use user data"
             policy_exception_justification:

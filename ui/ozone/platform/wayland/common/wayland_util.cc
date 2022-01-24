@@ -10,8 +10,8 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -272,7 +272,7 @@ gfx::Rect TranslateWindowBoundsToParentDIP(ui::WaylandWindow* window,
   return gfx::ScaleToRoundedRect(
       wl::TranslateBoundsToParentCoordinates(window->GetBounds(),
                                              parent_window->GetBounds()),
-      1.0 / window->window_scale());
+      1.0f / window->window_scale());
 }
 
 std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
@@ -288,7 +288,7 @@ std::vector<gfx::Rect> CreateRectsFromSkPath(const SkPath& path) {
   return rects;
 }
 
-SkPath ConvertPathToDIP(const SkPath& path_in_pixels, const int32_t scale) {
+SkPath ConvertPathToDIP(const SkPath& path_in_pixels, float scale) {
   SkScalar sk_scale = SkFloatToScalar(1.0f / scale);
   gfx::Transform transform;
   transform.Scale(sk_scale, sk_scale);

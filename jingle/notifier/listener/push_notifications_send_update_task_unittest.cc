@@ -25,11 +25,13 @@ class PushNotificationsSendUpdateTaskTest : public testing::Test {
     EXPECT_EQ(to_jid_bare_.Str(), to_jid_bare_.BareJid().Str());
   }
 
+  PushNotificationsSendUpdateTaskTest(
+      const PushNotificationsSendUpdateTaskTest&) = delete;
+  PushNotificationsSendUpdateTaskTest& operator=(
+      const PushNotificationsSendUpdateTaskTest&) = delete;
+
  protected:
   const jingle_xmpp::Jid to_jid_bare_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PushNotificationsSendUpdateTaskTest);
 };
 
 TEST_F(PushNotificationsSendUpdateTaskTest, MakeUpdateMessage) {

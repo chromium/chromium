@@ -13,7 +13,7 @@
 #if defined(OS_WIN)
 #include <windows.h>  // Must be in front of other Windows header files.
 
-#include <VersionHelpers.h>
+#include <versionhelpers.h>
 #endif
 
 namespace base {

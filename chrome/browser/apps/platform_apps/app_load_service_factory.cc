@@ -8,6 +8,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
@@ -33,6 +34,7 @@ AppLoadServiceFactory::AppLoadServiceFactory()
   DependsOn(extensions::AppWindowRegistry::Factory::GetInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
+  DependsOn(extensions::ExtensionHostRegistry::GetFactory());
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }

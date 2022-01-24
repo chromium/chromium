@@ -15,6 +15,8 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
+#include "ui/accessibility/platform/ax_platform_node_mac.h"
 
 namespace content {
 
@@ -34,6 +36,9 @@ struct CONTENT_EXPORT AXTextEdit {
   std::u16string deleted_text;
   base::scoped_nsprotocol<id> edit_text_marker;
 };
+
+// Returns true if the given object is an NSRange instance.
+bool IsNSRange(id value);
 
 // Uses a system API to verify that the given object is an AXTextMarker object.
 bool IsAXTextMarker(id text_marker);
@@ -63,7 +68,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // object. The renderer converts webkit's accessibility tree into a
 // WebAccessibility tree and passes it to the browser process over IPC.
 // This class converts it into a format Cocoa can query.
-@interface BrowserAccessibilityCocoa : NSAccessibilityElement {
+@interface BrowserAccessibilityCocoa : AXPlatformNodeCocoa {
  @private
   content::BrowserAccessibility* _owner;
   // An array of children of this object. Cached to avoid re-computing.
@@ -78,7 +83,8 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 
 // This creates a cocoa browser accessibility object around
 // the cross platform BrowserAccessibility object, which can't be nullptr.
-- (instancetype)initWithObject:(content::BrowserAccessibility*)accessibility;
+- (instancetype)initWithObject:(content::BrowserAccessibility*)accessibility
+              withPlatformNode:(ui::AXPlatformNodeMac*)platform_node;
 
 // Clear this object's pointer to the wrapped BrowserAccessibility object
 // because the wrapped object has been deleted, but this object may
@@ -102,9 +108,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Computes the text that was added or deleted in a text field after an edit.
 - (content::AXTextEdit)computeTextEdit;
 
-// Determines if this object is alive, i.e. it hasn't been detached.
-- (BOOL)instanceActive;
-
 // Convert from the view's local coordinate system (with the origin in the upper
 // left) to the primary NSScreen coordinate system (with the origin in the lower
 // left).
@@ -114,9 +117,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 
 // Return the method name for the given attribute. For testing only.
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
-
-// Swap the children array with the given scoped_nsobject.
-- (void)swapChildren:(base::scoped_nsobject<NSMutableArray>*)other;
 
 - (NSString*)valueForRange:(NSRange)range;
 - (NSAttributedString*)attributedValueForRange:(NSRange)range;
@@ -134,16 +134,10 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // Internally-used property.
 @property(nonatomic, readonly) NSPoint origin;
 
-@property(nonatomic, readonly) NSString* accessKey;
-@property(nonatomic, readonly) NSNumber* ariaAtomic;
-@property(nonatomic, readonly) NSNumber* ariaBusy;
-@property(nonatomic, readonly) NSString* ariaLive;
 @property(nonatomic, readonly) NSNumber* ariaPosInSet;
-@property(nonatomic, readonly) NSString* ariaRelevant;
 @property(nonatomic, readonly) NSNumber* ariaSetSize;
 @property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
-@property(nonatomic, readonly) NSArray* columnHeaders;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
 @property(nonatomic, readonly) NSString* descriptionForAccessibility;
 @property(nonatomic, readonly) NSNumber* disclosing;
@@ -169,9 +163,7 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;
 @property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
-@property(nonatomic, readonly) NSString* invalid;
 @property(nonatomic, readonly) NSNumber* isMultiSelectable;
-@property(nonatomic, readonly) NSString* placeholderValue;
 @property(nonatomic, readonly) NSNumber* loaded;
 @property(nonatomic, readonly) NSNumber* loadingProgress;
 @property(nonatomic, readonly) NSNumber* maxValue;

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -128,6 +127,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
+  CrasAudioClientImpl& operator=(const CrasAudioClientImpl&) = delete;
 
   ~CrasAudioClientImpl() override = default;
 
@@ -340,6 +342,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
   void SetFixA2dpPacketSize(bool enabled) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetFixA2dpPacketSize);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(enabled);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void SetFlossEnabled(bool enabled) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetFlossEnabled);
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(enabled);
     cras_proxy_->CallMethod(&method_call,
@@ -1007,8 +1019,6 @@ class CrasAudioClientImpl : public CrasAudioClient {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<CrasAudioClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClientImpl);
 };
 
 }  // namespace

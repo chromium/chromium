@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -52,6 +51,11 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
                             bool require_native_initiated_connections,
                             const std::string& connect_id,
                             const std::string& error_arg);
+
+  NativeProcessLauncherImpl(const NativeProcessLauncherImpl&) = delete;
+  NativeProcessLauncherImpl& operator=(const NativeProcessLauncherImpl&) =
+      delete;
+
   ~NativeProcessLauncherImpl() override;
 
   void Launch(const GURL& origin,
@@ -67,6 +71,10 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
          bool require_native_initiated_connections,
          const std::string& connect_id,
          const std::string& error_arg);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Launch(const GURL& origin,
                 const std::string& native_host_name,
                 LaunchedCallback callback);
@@ -105,13 +113,9 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
     // Handle of the native window corresponding to the extension.
     intptr_t window_handle_;
 #endif // OS_WIN
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeProcessLauncherImpl);
 };
 
 NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,

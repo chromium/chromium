@@ -11,7 +11,6 @@
 
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace sync_pb {
 class CommitMessage;

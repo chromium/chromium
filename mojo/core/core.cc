@@ -87,6 +87,9 @@ class ProcessDisconnectHandler {
   ProcessDisconnectHandler(MojoProcessErrorHandler handler, uintptr_t context)
       : handler_(handler), context_(context) {}
 
+  ProcessDisconnectHandler(const ProcessDisconnectHandler&) = delete;
+  ProcessDisconnectHandler& operator=(const ProcessDisconnectHandler&) = delete;
+
   ~ProcessDisconnectHandler() {
     InvokeProcessErrorCallback(handler_, context_, std::string(),
                                MOJO_PROCESS_ERROR_FLAG_DISCONNECTED);
@@ -95,8 +98,6 @@ class ProcessDisconnectHandler {
  private:
   const MojoProcessErrorHandler handler_;
   const uintptr_t context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessDisconnectHandler);
 };
 
 void RunMojoProcessErrorHandler(
@@ -449,8 +450,11 @@ MojoResult Core::GetMessageData(MojoMessageHandle message_handle,
   }
 
   RequestContext request_context;
-  return message->ExtractSerializedHandles(
+  Dispatcher::SetExtractingHandlesFromMessage(true);
+  MojoResult result = message->ExtractSerializedHandles(
       UserMessageImpl::ExtractBadHandlePolicy::kAbort, handles);
+  Dispatcher::SetExtractingHandlesFromMessage(false);
+  return result;
 }
 
 MojoResult Core::SetMessageContext(

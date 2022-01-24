@@ -10,6 +10,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,113 +26,83 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 
 class BookmarkContextMenu : public ui::SimpleMenuModel,
-                            public ui::SimpleMenuModel::Delegate {
+                            public ui::SimpleMenuModel::Delegate,
+                            public BookmarkContextMenuControllerDelegate {
  public:
-  explicit BookmarkContextMenu(Browser* browser,
-                               bookmarks::BookmarkModel* bookmark_model,
-                               const bookmarks::BookmarkNode* bookmark)
+  explicit BookmarkContextMenu(
+      Browser* browser,
+      base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder,
+      const bookmarks::BookmarkNode* bookmark)
       : ui::SimpleMenuModel(this),
-        browser_(browser),
-        bookmark_model_(bookmark_model),
-        bookmark_(bookmark) {
-    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-                        IDS_BOOKMARK_BAR_OPEN_IN_NEW_TAB);
-    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                        IDS_BOOKMARK_BAR_OPEN_IN_NEW_WINDOW);
-    AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
-                        IDS_BOOKMARK_BAR_OPEN_INCOGNITO);
+        embedder_(embedder),
+        controller_(base::WrapUnique(new BookmarkContextMenuController(
+            browser->window()->GetNativeWindow(),
+            this,
+            browser,
+            browser->profile(),
+            base::BindRepeating(
+                [](content::PageNavigator* navigator) { return navigator; },
+                browser),
+            BOOKMARK_LAUNCH_LOCATION_SIDE_PANEL_CONTEXT_MENU,
+            bookmark->parent(),
+            {bookmark}))) {
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL);
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_WINDOW);
+    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-    AddItemWithStringId(IDC_BOOKMARK_BAR_EDIT, IDS_BOOKMARK_BAR_EDIT);
-    AddItemWithStringId(IDC_BOOKMARK_BAR_REMOVE, IDS_BOOKMARK_BAR_REMOVE);
+    AddItem(bookmark->is_folder() ? IDC_BOOKMARK_BAR_RENAME_FOLDER
+                                  : IDC_BOOKMARK_BAR_EDIT);
     AddSeparator(ui::NORMAL_SEPARATOR);
 
-    AddItemWithStringId(IDC_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
+    AddItem(IDC_CUT);
+    AddItem(IDC_COPY);
+    AddItem(IDC_PASTE);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItem(IDC_BOOKMARK_BAR_REMOVE);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItem(IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK);
+    AddItem(IDC_BOOKMARK_BAR_NEW_FOLDER);
+    AddSeparator(ui::NORMAL_SEPARATOR);
+
+    AddItem(IDC_BOOKMARK_MANAGER);
   }
   ~BookmarkContextMenu() override = default;
 
   void ExecuteCommand(int command_id, int event_flags) override {
-    switch (command_id) {
-      case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
-        content::OpenURLParams params(bookmark_->url(), content::Referrer(),
-                                      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
-        break;
-      }
-
-      case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW: {
-        content::OpenURLParams params(bookmark_->url(), content::Referrer(),
-                                      WindowOpenDisposition::NEW_WINDOW,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
-        break;
-      }
-
-      case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
-        content::OpenURLParams params(bookmark_->url(), content::Referrer(),
-                                      WindowOpenDisposition::OFF_THE_RECORD,
-                                      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-        browser_->OpenURL(params);
-        break;
-      }
-
-      case IDC_BOOKMARK_BAR_EDIT:
-        BookmarkEditor::Show(browser_->window()->GetNativeWindow(),
-                             browser_->profile(),
-                             BookmarkEditor::EditDetails::EditNode(bookmark_),
-                             BookmarkEditor::SHOW_TREE);
-        break;
-
-      case IDC_BOOKMARK_BAR_REMOVE:
-        bookmark_model_->Remove(bookmark_);
-        break;
-
-      case IDC_BOOKMARK_MANAGER:
-        if (bookmark_->parent()) {
-          chrome::ShowBookmarkManagerForNode(browser_,
-                                             bookmark_->parent()->id());
-        } else {
-          chrome::ShowBookmarkManager(browser_);
-        }
-        break;
-
-      default:
-        NOTREACHED();
-        break;
-    }
+    controller_->ExecuteCommand(command_id, event_flags);
   }
 
   bool IsCommandIdEnabled(int command_id) const override {
-    PrefService* prefs = browser_->profile()->GetPrefs();
-    switch (command_id) {
-      case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD: {
-        IncognitoModePrefs::Availability incognito_pref =
-            IncognitoModePrefs::GetAvailability(prefs);
-        return !browser_->profile()->IsOffTheRecord() &&
-               incognito_pref != IncognitoModePrefs::DISABLED &&
-               IsURLAllowedInIncognito(bookmark_->url(), browser_->profile());
-      }
-
-      case IDC_BOOKMARK_BAR_EDIT:
-      case IDC_BOOKMARK_BAR_REMOVE: {
-        return prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
-               bookmark_model_->client()->CanBeEditedByUser(bookmark_);
-      }
-    }
-
-    return true;
+    return controller_->IsCommandIdEnabled(command_id);
   }
 
+  bool IsCommandIdVisible(int command_id) const override {
+    return controller_->IsCommandIdVisible(command_id);
+  }
+
+  // BookmarkContextMenuControllerDelegate:
+  void CloseMenu() override { embedder_->HideContextMenu(); }
+
  private:
-  Browser* const browser_;
-  bookmarks::BookmarkModel* bookmark_model_;
-  const bookmarks::BookmarkNode* bookmark_;
+  void AddItem(int command_id) {
+    ui::SimpleMenuModel::AddItem(
+        command_id,
+        controller_->menu_model()->GetLabelAt(
+            controller_->menu_model()->GetIndexOfCommandId(command_id)));
+  }
+  base::WeakPtr<ui::MojoBubbleWebUIController::Embedder> embedder_;
+  std::unique_ptr<BookmarkContextMenuController> controller_;
 };
 
 }  // namespace
@@ -143,14 +114,19 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
-void BookmarksPageHandler::OpenBookmark(const GURL& url,
-                                        int32_t parent_folder_depth) {
+void BookmarksPageHandler::OpenBookmark(
+    const GURL& url,
+    int32_t parent_folder_depth,
+    ui::mojom::ClickModifiersPtr click_modifiers) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
 
-  content::OpenURLParams params(url, content::Referrer(),
-                                WindowOpenDisposition::CURRENT_TAB,
+  WindowOpenDisposition open_location = ui::DispositionFromClick(
+      click_modifiers->middle_button, click_modifiers->alt_key,
+      click_modifiers->ctrl_key, click_modifiers->meta_key,
+      click_modifiers->shift_key);
+  content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
   base::RecordAction(base::UserMetricsAction("SidePanel.Bookmarks.Navigation"));
@@ -176,9 +152,10 @@ void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
       bookmarks::GetBookmarkNodeByID(bookmark_model, id);
   if (!bookmark)
     return;
+
   auto embedder = read_later_ui_->embedder();
   if (embedder) {
     embedder->ShowContextMenu(point, std::make_unique<BookmarkContextMenu>(
-                                         browser, bookmark_model, bookmark));
+                                         browser, embedder, bookmark));
   }
 }

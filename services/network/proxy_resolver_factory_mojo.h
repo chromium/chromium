@@ -39,6 +39,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolverFactoryMojo
           std::unique_ptr<net::ProxyResolverErrorObserver>()>&
           error_observer_factory,
       net::NetLog* net_log);
+
+  ProxyResolverFactoryMojo(const ProxyResolverFactoryMojo&) = delete;
+  ProxyResolverFactoryMojo& operator=(const ProxyResolverFactoryMojo&) = delete;
+
   ~ProxyResolverFactoryMojo() override;
 
   // ProxyResolverFactory override.
@@ -58,8 +62,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolverFactoryMojo
   net::NetLog* const net_log_;
 
   base::WeakPtrFactory<ProxyResolverFactoryMojo> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryMojo);
 };
 
 }  // namespace network

@@ -41,6 +41,9 @@ class NGSvgTextLayoutAlgorithm {
   void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void PositionOnPath(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
+  void WriteBackToFragmentItems(
+      NGFragmentItemsBuilder::ItemWithOffsetList& items);
+
   float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
                         wtf_size_t addressable_index) const;
   bool IsFirstCharacterInTextPath(wtf_size_t index) const;

@@ -19,6 +19,12 @@ class TextFragment;
 // to highlight a given snippet of text and the page and scroll it into view.
 // See also: https://wicg.github.io/scroll-to-text-fragment/
 
+// Splits the |url| into its |webpage_url| and |highlight_directive| parts.
+// Returns true if a text fragment was present and it was extracted properly.
+bool SplitUrlTextFragmentDirective(const std::string& full_url,
+                                   GURL* webpage_url,
+                                   std::string* highlight_directive);
+
 // Checks the fragment portion of the URL for Text Fragments. Returns zero or
 // more dictionaries containing the parsed parameters used by the fragment-
 // finding algorithm, as defined in the spec.J

@@ -19,7 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
 #include "net/base/features.h"
@@ -140,6 +140,9 @@ class SQLitePersistentReportingAndNelStore::Backend
             background_task_runner,
             client_task_runner),
         num_pending_(0) {}
+
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
 
   void LoadNelPolicies(NelPoliciesLoadedCallback loaded_callback);
   void AddNelPolicy(const NetworkErrorLoggingService::NelPolicy& policy);
@@ -311,8 +314,6 @@ class SQLitePersistentReportingAndNelStore::Backend
 
   // Protects |num_pending_|, and all the pending operations queues.
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 namespace {
@@ -1283,7 +1284,7 @@ void SQLitePersistentReportingAndNelStore::Backend::OnOperationBatched(
     // We've gotten our first entry for this batch, fire off the timer.
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
-            base::TimeDelta::FromMilliseconds(kCommitIntervalMs))) {
+            base::Milliseconds(kCommitIntervalMs))) {
       NOTREACHED() << "background_task_runner_ is not running.";
     }
   } else if (num_pending >= kCommitAfterBatchSize) {
@@ -1341,12 +1342,12 @@ void SQLitePersistentReportingAndNelStore::Backend::
       policy.received_ip_address = IPAddress();
     policy.report_to = smt.ColumnString(5);
     policy.expires = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(smt.ColumnInt64(6)));
+        base::Microseconds(smt.ColumnInt64(6)));
     policy.success_fraction = smt.ColumnDouble(7);
     policy.failure_fraction = smt.ColumnDouble(8);
     policy.include_subdomains = smt.ColumnBool(9);
     policy.last_used = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(smt.ColumnInt64(10)));
+        base::Microseconds(smt.ColumnInt64(10)));
 
     loaded_policies.push_back(std::move(policy));
   }
@@ -1453,11 +1454,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
         endpoint_groups_statement.ColumnBool(5) ? OriginSubdomains::INCLUDE
                                                 : OriginSubdomains::EXCLUDE;
     base::Time expires = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(
-            endpoint_groups_statement.ColumnInt64(6)));
+        base::Microseconds(endpoint_groups_statement.ColumnInt64(6)));
     base::Time last_used = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(
-            endpoint_groups_statement.ColumnInt64(7)));
+        base::Microseconds(endpoint_groups_statement.ColumnInt64(7)));
 
     loaded_endpoint_groups.emplace_back(std::move(group_key),
                                         include_subdomains, expires, last_used);

@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -76,6 +75,9 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   explicit AttestationFlow(std::unique_ptr<ServerProxy> server_proxy);
   AttestationFlow(std::unique_ptr<ServerProxy> server_proxy,
                   ::attestation::KeyType crypto_key_type);
+
+  AttestationFlow(const AttestationFlow&) = delete;
+  AttestationFlow& operator=(const AttestationFlow&) = delete;
 
   virtual ~AttestationFlow();
 
@@ -285,8 +287,6 @@ class COMPONENT_EXPORT(CHROMEOS_ATTESTATION) AttestationFlow {
   base::TimeDelta retry_delay_;
 
   base::WeakPtrFactory<AttestationFlow> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationFlow);
 };
 
 }  // namespace attestation

@@ -23,6 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -69,6 +71,10 @@ class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
 class CastToolbarButtonTest : public ChromeViewsTestBase {
  public:
   CastToolbarButtonTest() = default;
+
+  CastToolbarButtonTest(const CastToolbarButtonTest&) = delete;
+  CastToolbarButtonTest& operator=(const CastToolbarButtonTest&) = delete;
+
   ~CastToolbarButtonTest() override = default;
 
   void SetUp() override {
@@ -99,19 +105,17 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
     button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
         browser_.get(), media_router, std::move(context_menu)));
 
-    ui::NativeTheme* native_theme = button_->GetNativeTheme();
+    const ui::ColorProvider* color_provider = button_->GetColorProvider();
     idle_icon_ = gfx::Image(
         gfx::CreateVectorIcon(vector_icons::kMediaRouterIdleIcon,
                               button_->GetThemeProvider()->GetColor(
                                   ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)));
     warning_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterWarningIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityMedium)));
+        color_provider->GetColor(ui::kColorAlertMediumSeverity)));
     error_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterErrorIcon,
-        native_theme->GetSystemColor(
-            ui::NativeTheme::kColorId_AlertSeverityHigh)));
+        color_provider->GetColor(ui::kColorAlertHighSeverity)));
     active_icon_ = gfx::Image(gfx::CreateVectorIcon(
         vector_icons::kMediaRouterActiveIcon, gfx::kGoogleBlue500));
   }
@@ -146,9 +150,6 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
       CreateLocalDisplayRoute()};
   const std::vector<MediaRoute> non_local_display_route_list_ = {
       CreateNonLocalDisplayRoute(), CreateLocalNonDisplayRoute()};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastToolbarButtonTest);
 };
 
 TEST_F(CastToolbarButtonTest, ShowAndHideButton) {

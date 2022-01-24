@@ -47,12 +47,6 @@ TEST_F(SearchIPCRouterPolicyTest, DoNotProcessFocusOmnibox) {
   EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessFocusOmnibox(true));
 }
 
-TEST_F(SearchIPCRouterPolicyTest, DoNotProcessLogEvent) {
-  // Process message only if the underlying page is an InstantNTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessLogEvent());
-}
-
 TEST_F(SearchIPCRouterPolicyTest, DoNotSendMostVisitedInfo) {
   // Send most visited items only if the current tab is an Instant NTP.
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));

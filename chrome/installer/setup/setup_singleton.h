@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/win/scoped_handle.h"
 
@@ -41,6 +40,9 @@ class SetupSingleton {
       InstallationState* original_state,
       InstallerState* installer_state);
 
+  SetupSingleton(const SetupSingleton&) = delete;
+  SetupSingleton& operator=(const SetupSingleton&) = delete;
+
   // Releases the exclusive right to modify the Chrome installation.
   ~SetupSingleton();
 
@@ -54,6 +56,10 @@ class SetupSingleton {
   class ScopedHoldMutex {
    public:
     ScopedHoldMutex();
+
+    ScopedHoldMutex(const ScopedHoldMutex&) = delete;
+    ScopedHoldMutex& operator=(const ScopedHoldMutex&) = delete;
+
     ~ScopedHoldMutex();
 
     // Waits up to a certain amount of time to acquire |mutex|. Returns true on
@@ -62,8 +68,6 @@ class SetupSingleton {
 
    private:
     HANDLE mutex_ = INVALID_HANDLE_VALUE;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedHoldMutex);
   };
 
   SetupSingleton(base::win::ScopedHandle setup_mutex,
@@ -78,8 +82,6 @@ class SetupSingleton {
   // An event signaled to ask the owner of |setup_mutex_| to release it as soon
   // as possible.
   mutable base::WaitableEvent exit_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetupSingleton);
 };
 
 }  // namespace installer

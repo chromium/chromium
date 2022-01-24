@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +36,10 @@ class TestOverrideStringCallback {
       : callback_(base::BindRepeating(&TestOverrideStringCallback::Override,
                                       base::Unretained(this))) {}
 
+  TestOverrideStringCallback(const TestOverrideStringCallback&) = delete;
+  TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
+      delete;
+
   virtual ~TestOverrideStringCallback() {}
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
@@ -52,8 +55,6 @@ class TestOverrideStringCallback {
 
   VariationsSeedProcessor::UIStringOverrideCallback callback_;
   OverrideMap overrides_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverrideStringCallback);
 };
 
 // TODO(crbug.com/1167566): Remove when fake VariationsServiceClient created.
@@ -66,9 +67,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
   ~TestVariationsServiceClient() override = default;
 
   // VariationsServiceClient:
-  VersionCallback GetVersionForSimulationCallback() override {
-    return base::BindOnce([] { return base::Version(); });
-  }
+  base::Version GetVersionForSimulation() override { return base::Version(); }
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
     return nullptr;
@@ -92,6 +91,9 @@ class FieldTrialUtilTest : public ::testing::Test {
  public:
   FieldTrialUtilTest() {}
 
+  FieldTrialUtilTest(const FieldTrialUtilTest&) = delete;
+  FieldTrialUtilTest& operator=(const FieldTrialUtilTest&) = delete;
+
   ~FieldTrialUtilTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
@@ -102,8 +104,6 @@ class FieldTrialUtilTest : public ::testing::Test {
  protected:
   TestOverrideStringCallback override_callback_;
   TestVariationsServiceClient variation_service_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialUtilTest);
 };
 
 }  // namespace

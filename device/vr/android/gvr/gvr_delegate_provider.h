@@ -18,6 +18,10 @@ namespace device {
 class DEVICE_VR_EXPORT GvrDelegateProvider {
  public:
   GvrDelegateProvider() = default;
+
+  GvrDelegateProvider(const GvrDelegateProvider&) = delete;
+  GvrDelegateProvider& operator=(const GvrDelegateProvider&) = delete;
+
   virtual bool ShouldDisableGvrDevice() = 0;
   virtual void StartWebXRPresentation(
       mojom::VRDisplayInfoPtr display_info,
@@ -27,9 +31,6 @@ class DEVICE_VR_EXPORT GvrDelegateProvider {
 
  protected:
   virtual ~GvrDelegateProvider() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GvrDelegateProvider);
 };
 
 }  // namespace device

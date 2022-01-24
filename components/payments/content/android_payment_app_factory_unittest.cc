@@ -68,7 +68,7 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   MOCK_CONST_METHOD0(GetMethodData,
                      const std::vector<mojom::PaymentMethodDataPtr>&());
   MOCK_CONST_METHOD0(CreateInternalAuthenticator,
-                     std::unique_ptr<autofill::InternalAuthenticator>());
+                     std::unique_ptr<webauthn::InternalAuthenticator>());
   MOCK_CONST_METHOD0(GetPaymentManifestWebDataService,
                      scoped_refptr<PaymentManifestWebDataService>());
   MOCK_METHOD0(MayCrawlForInstallablePaymentApps, bool());
@@ -82,10 +82,11 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
                const std::vector<autofill::AutofillProfile*>&());
   MOCK_METHOD0(IsRequestedAutofillDataAvailable, bool());
   MOCK_CONST_METHOD0(GetPaymentRequestDelegate,
-                     ContentPaymentRequestDelegate*());
+                     base::WeakPtr<ContentPaymentRequestDelegate>());
   MOCK_METHOD1(OnPaymentAppCreated, void(std::unique_ptr<PaymentApp> app));
-  MOCK_METHOD1(OnPaymentAppCreationError,
-               void(const std::string& error_message));
+  MOCK_METHOD2(OnPaymentAppCreationError,
+               void(const std::string& error_message,
+                    AppCreationFailureReason reason));
   MOCK_CONST_METHOD0(SkipCreatingNativePaymentApps, bool());
   MOCK_METHOD0(OnDoneCreatingPaymentApps, void());
   MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void());
@@ -136,7 +137,8 @@ TEST_F(AndroidPaymentAppFactoryTest, FactoryReturnsErrorWithoutArc) {
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
   EXPECT_CALL(delegate_,
-              OnPaymentAppCreationError("Unable to invoke Android apps."))
+              OnPaymentAppCreationError("Unable to invoke Android apps.",
+                                        AppCreationFailureReason::UNKNOWN))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectNoListOfPaymentAppsQuery();
@@ -155,7 +157,8 @@ TEST_F(AndroidPaymentAppFactoryTest, NoErrorsWhenNoApps) {
       .WillRepeatedly(testing::Return("com.example.app"));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectQueryListOfPaymentAppsAndRespond({});
   support_->ExpectNoIsReadyToPayQuery();
@@ -182,7 +185,8 @@ TEST_F(AndroidPaymentAppFactoryTest, FindAppsThatDoNotHaveReadyToPayService) {
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
 
   EXPECT_CALL(delegate_,
               OnPaymentAppCreated(PaymentAppMatches(
@@ -224,7 +228,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
 
   EXPECT_CALL(delegate_,
               OnPaymentAppCreated(PaymentAppMatches(
@@ -263,7 +268,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
 
   EXPECT_CALL(delegate_, OnPaymentAppCreated(PaymentAppMatches(
                              PaymentApp::Type::NATIVE_MOBILE_APP, "com.twa.app",
@@ -297,7 +303,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreAppsThatAreNotReadyToPay) {
       .WillRepeatedly(
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
@@ -328,7 +335,8 @@ TEST_F(AndroidPaymentAppFactoryTest, FindTheCorrectTwaAppInTwaMode) {
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
 
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
 
   EXPECT_CALL(delegate_,
               OnPaymentAppCreated(PaymentAppMatches(
@@ -375,7 +383,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreNonTwaAppsInTwaMode) {
   EXPECT_CALL(delegate_, GetTwaPackageName())
       .WillRepeatedly(testing::Return("com.twa.app"));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
@@ -402,7 +411,8 @@ TEST_F(AndroidPaymentAppFactoryTest, DoNotLookForAppsWhenOutsideOfTwaMode) {
   EXPECT_CALL(delegate_, GetTwaPackageName())
       .WillRepeatedly(testing::Return(""));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectNoListOfPaymentAppsQuery();
 
@@ -420,7 +430,8 @@ TEST_F(AndroidPaymentAppFactoryTest, DoNotLookForAppsForNonTwaMethod) {
   EXPECT_CALL(delegate_, GetTwaPackageName())
       .WillRepeatedly(testing::Return("com.example.app"));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
   support_->ExpectNoListOfPaymentAppsQuery();
   support_->ExpectNoIsReadyToPayQuery();
@@ -437,7 +448,8 @@ TEST_F(AndroidPaymentAppFactoryTest, IgnoreNonTwaMethodInTheTwa) {
   EXPECT_CALL(delegate_, GetTwaPackageName())
       .WillRepeatedly(testing::Return("com.twa.app"));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);
 
   std::vector<std::unique_ptr<AndroidAppDescription>> apps;
@@ -469,7 +481,8 @@ TEST_F(AndroidPaymentAppFactoryTest,
       .WillRepeatedly(
           testing::Return(delegate_.GetWebContents()->GetMainFrame()));
   EXPECT_CALL(delegate_, OnDoneCreatingPaymentApps());
-  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_)).Times(0);
+  EXPECT_CALL(delegate_, OnPaymentAppCreationError(testing::_, testing::_))
+      .Times(0);
   EXPECT_CALL(delegate_, OnPaymentAppCreated(PaymentAppMatches(
                              PaymentApp::Type::NATIVE_MOBILE_APP, "com.twa.app",
                              "https://play.google.com/billing")))
@@ -513,7 +526,8 @@ TEST_F(AndroidPaymentAppFactoryTest, ReturnErrorWhenMoreThanOneServiceInApp) {
 
   EXPECT_CALL(delegate_, OnPaymentAppCreationError(
                              "Found more than one IS_READY_TO_PAY service, but "
-                             "at most one service is supported."))
+                             "at most one service is supported.",
+                             AppCreationFailureReason::UNKNOWN))
       .Times(support_->AreAndroidAppsSupportedOnThisPlatform() ? 1 : 0);
 
   EXPECT_CALL(delegate_, OnPaymentAppCreated(testing::_)).Times(0);

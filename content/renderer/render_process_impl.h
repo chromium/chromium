@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/renderer/render_process.h"
 
 namespace content {
@@ -18,6 +17,9 @@ namespace content {
 // running under certain unit tests.
 class RenderProcessImpl : public RenderProcess {
  public:
+  RenderProcessImpl(const RenderProcessImpl&) = delete;
+  RenderProcessImpl& operator=(const RenderProcessImpl&) = delete;
+
   ~RenderProcessImpl() override;
 
   // Creates and returns a RenderProcessImpl instance.
@@ -37,8 +39,6 @@ class RenderProcessImpl : public RenderProcess {
 
  private:
   RenderProcessImpl();
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessImpl);
 };
 
 }  // namespace content

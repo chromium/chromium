@@ -13,6 +13,7 @@ import tempfile
 import unittest
 
 import common_merge_script_tests
+import six
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -381,7 +382,7 @@ class LoadShardJsonTest(_StandardGtestMergeTest):
 
   def test_double_digit_jsons(self):
     jsons_to_merge = []
-    for i in xrange(15):
+    for i in range(15):
       json_dir = os.path.join(self.temp_dir, str(i))
       json_path = os.path.join(json_dir, 'output.json')
       if not os.path.exists(json_dir):
@@ -402,7 +403,7 @@ class LoadShardJsonTest(_StandardGtestMergeTest):
 
   def test_double_task_id_jsons(self):
     jsons_to_merge = []
-    for i in xrange(15):
+    for i in range(15):
       json_dir = os.path.join(self.temp_dir, 'deadbeef%d' % i)
       json_path = os.path.join(json_dir, 'output.json')
       if not os.path.exists(json_dir):
@@ -434,7 +435,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
 
   def stage(self, summary, files):
     self.summary = self._write_temp_file('summary.json', summary)
-    for path, content in files.iteritems():
+    for path, content in files.items():
       abs_path = self._write_temp_file(path, content)
       self.test_files.append(abs_path)
 
@@ -448,7 +449,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
   def assertUnicodeEquals(self, expectation, result):
     def convert_to_unicode(key_or_value):
       if isinstance(key_or_value, str):
-        return unicode(key_or_value)
+        return six.text_type(key_or_value)
       if isinstance(key_or_value, dict):
         return {convert_to_unicode(k): convert_to_unicode(v)
                 for k, v in key_or_value.items()}

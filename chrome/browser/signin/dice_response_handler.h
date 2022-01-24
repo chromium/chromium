@@ -11,9 +11,8 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -73,6 +72,10 @@ class DiceResponseHandler : public KeyedService {
                       AccountReconcilor* account_reconcilor,
                       AboutSigninInternals* about_signin_internals,
                       const base::FilePath& profile_path_);
+
+  DiceResponseHandler(const DiceResponseHandler&) = delete;
+  DiceResponseHandler& operator=(const DiceResponseHandler&) = delete;
+
   ~DiceResponseHandler() override;
 
   // Must be called when receiving a Dice response header.
@@ -96,6 +99,10 @@ class DiceResponseHandler : public KeyedService {
                      AccountReconcilor* account_reconcilor,
                      std::unique_ptr<ProcessDiceHeaderDelegate> delegate,
                      DiceResponseHandler* dice_response_handler);
+
+    DiceTokenFetcher(const DiceTokenFetcher&) = delete;
+    DiceTokenFetcher& operator=(const DiceTokenFetcher&) = delete;
+
     ~DiceTokenFetcher() override;
 
     const std::string& gaia_id() const { return gaia_id_; }
@@ -129,8 +136,6 @@ class DiceResponseHandler : public KeyedService {
     base::CancelableOnceClosure timeout_closure_;
     bool should_enable_sync_;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
-
-    DISALLOW_COPY_AND_ASSIGN(DiceTokenFetcher);
   };
 
   // Deletes the token fetcher.
@@ -176,7 +181,6 @@ class DiceResponseHandler : public KeyedService {
   std::unique_ptr<AccountReconcilor::Lock> lock_;
   std::unique_ptr<base::OneShotTimer> timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(DiceResponseHandler);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_RESPONSE_HANDLER_H_

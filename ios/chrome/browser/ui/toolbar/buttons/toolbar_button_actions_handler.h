@@ -52,9 +52,6 @@ class WebNavigationBrowserAgent;
 // Action when the stop button is tapped.
 - (void)stopAction;
 
-// Action when the bookmark button is tapped.
-- (void)bookmarkAction;
-
 // Action when the search button is tapped.
 - (void)searchAction:(id)sender;
 

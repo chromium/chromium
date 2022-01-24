@@ -349,8 +349,7 @@ bool HintCache::ProcessAndCacheHints(
 
     base::Time expiry_time =
         hint.has_max_cache_duration()
-            ? clock_->Now() + base::TimeDelta().FromSeconds(
-                                  hint.max_cache_duration().seconds())
+            ? clock_->Now() + base::Seconds(hint.max_cache_duration().seconds())
             : clock_->Now() + features::URLKeyedHintValidCacheDuration();
 
     switch (hint.key_representation()) {
@@ -388,9 +387,8 @@ void HintCache::AddHintForTesting(const GURL& url,
                                   std::unique_ptr<proto::Hint> hint) {
   if (IsValidURLForURLKeyedHint(url)) {
     url_keyed_hint_cache_.Put(
-        url.spec(),
-        std::make_unique<MemoryHint>(
-            base::Time::Now() + base::TimeDelta::FromDays(7), std::move(hint)));
+        url.spec(), std::make_unique<MemoryHint>(
+                        base::Time::Now() + base::Days(7), std::move(hint)));
   }
 }
 

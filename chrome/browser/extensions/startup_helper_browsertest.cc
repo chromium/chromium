@@ -18,6 +18,10 @@
 class StartupHelperBrowserTest : public InProcessBrowserTest {
  public:
   StartupHelperBrowserTest() {}
+
+  StartupHelperBrowserTest(const StartupHelperBrowserTest&) = delete;
+  StartupHelperBrowserTest& operator=(const StartupHelperBrowserTest&) = delete;
+
   ~StartupHelperBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -29,8 +33,6 @@ class StartupHelperBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::FilePath test_data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartupHelperBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(StartupHelperBrowserTest, ValidateCrx) {

@@ -18,3 +18,25 @@ void PhotosHandler::GetMemories(GetMemoriesCallback callback) {
   PhotosServiceFactory::GetForProfile(profile_)->GetMemories(
       std::move(callback));
 }
+
+void PhotosHandler::DismissModule() {
+  PhotosServiceFactory::GetForProfile(profile_)->DismissModule();
+}
+
+void PhotosHandler::RestoreModule() {
+  PhotosServiceFactory::GetForProfile(profile_)->RestoreModule();
+}
+
+void PhotosHandler::ShouldShowOptInScreen(
+    ShouldShowOptInScreenCallback callback) {
+  std::move(callback).Run(
+      PhotosServiceFactory::GetForProfile(profile_)->ShouldShowOptInScreen());
+}
+
+void PhotosHandler::OnUserOptIn(bool accept) {
+  PhotosServiceFactory::GetForProfile(profile_)->OnUserOptIn(accept);
+}
+
+void PhotosHandler::OnMemoryOpen() {
+  PhotosServiceFactory::GetForProfile(profile_)->OnMemoryOpen();
+}

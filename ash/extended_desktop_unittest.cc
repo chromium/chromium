@@ -54,6 +54,11 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
  public:
   explicit MoveWindowByClickEventHandler(aura::Window* target)
       : target_(target) {}
+
+  MoveWindowByClickEventHandler(const MoveWindowByClickEventHandler&) = delete;
+  MoveWindowByClickEventHandler& operator=(
+      const MoveWindowByClickEventHandler&) = delete;
+
   ~MoveWindowByClickEventHandler() override = default;
 
  private:
@@ -67,13 +72,18 @@ class MoveWindowByClickEventHandler : public ui::EventHandler {
   }
 
   aura::Window* target_;
-  DISALLOW_COPY_AND_ASSIGN(MoveWindowByClickEventHandler);
 };
 
 // An event handler which records the event's locations.
 class EventLocationRecordingEventHandler : public ui::EventHandler {
  public:
   EventLocationRecordingEventHandler() { Reset(); }
+
+  EventLocationRecordingEventHandler(
+      const EventLocationRecordingEventHandler&) = delete;
+  EventLocationRecordingEventHandler& operator=(
+      const EventLocationRecordingEventHandler&) = delete;
+
   ~EventLocationRecordingEventHandler() override = default;
 
   // |location_| is relative to the target window.
@@ -99,13 +109,15 @@ class EventLocationRecordingEventHandler : public ui::EventHandler {
 
   gfx::Point root_location_;
   gfx::Point location_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLocationRecordingEventHandler);
 };
 
 class EventLocationHandler : public ui::EventHandler {
  public:
   EventLocationHandler() = default;
+
+  EventLocationHandler(const EventLocationHandler&) = delete;
+  EventLocationHandler& operator=(const EventLocationHandler&) = delete;
+
   ~EventLocationHandler() override = default;
 
   const gfx::Point& press_location() const { return press_location_; }
@@ -122,8 +134,6 @@ class EventLocationHandler : public ui::EventHandler {
 
   gfx::Point press_location_;
   gfx::Point release_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventLocationHandler);
 };
 
 }  // namespace
@@ -131,6 +141,10 @@ class EventLocationHandler : public ui::EventHandler {
 class ExtendedDesktopTest : public AshTestBase {
  public:
   ExtendedDesktopTest() = default;
+
+  ExtendedDesktopTest(const ExtendedDesktopTest&) = delete;
+  ExtendedDesktopTest& operator=(const ExtendedDesktopTest&) = delete;
+
   ~ExtendedDesktopTest() override = default;
 
   void SetUp() override {
@@ -155,9 +169,6 @@ class ExtendedDesktopTest : public AshTestBase {
   gfx::Rect GetSystemTrayBoundsInScreen() {
     return GetPrimaryUnifiedSystemTray()->GetBoundsInScreen();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtendedDesktopTest);
 };
 
 // Test conditions that root windows in extended desktop mode must satisfy.
@@ -280,7 +291,7 @@ TEST_F(ExtendedDesktopTest, TestCursorLocation) {
 }
 
 TEST_F(ExtendedDesktopTest, GetRootWindowAt) {
-  UpdateDisplay("700x500,500x500");
+  UpdateDisplay("700x500,600x500");
   SetSecondaryDisplayLayout(display::DisplayPlacement::LEFT);
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
@@ -299,7 +310,7 @@ TEST_F(ExtendedDesktopTest, GetRootWindowAt) {
 }
 
 TEST_F(ExtendedDesktopTest, GetRootWindowMatching) {
-  UpdateDisplay("700x500,500x500");
+  UpdateDisplay("700x500,600x500");
   SetSecondaryDisplayLayout(display::DisplayPlacement::LEFT);
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -553,7 +564,7 @@ TEST_F(ExtendedDesktopTest, MoveWindowByMouseClick) {
 }
 
 TEST_F(ExtendedDesktopTest, MoveWindowToDisplay) {
-  UpdateDisplay("1000x1000,1000x1000");
+  UpdateDisplay("1000x900,1000x900");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   display::Display display0 = display::Screen::GetScreen()->GetDisplayMatching(
@@ -764,11 +775,11 @@ TEST_F(ExtendedDesktopTest, OpenSystemTray) {
 }
 
 TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("200x100,300x200");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   views::Widget* w1 = CreateTestWidget(gfx::Rect(10, 10, 50, 50));
   EXPECT_EQ(root_windows[0], w1->GetNativeView()->GetRootWindow());
-  w1->SetBounds(gfx::Rect(150, 10, 50, 50));
+  w1->SetBounds(gfx::Rect(250, 10, 50, 50));
   EXPECT_EQ(root_windows[1], w1->GetNativeView()->GetRootWindow());
 
   // The widget stays in the same root if kLockedToRootKey is set to true.
@@ -789,19 +800,19 @@ TEST_F(ExtendedDesktopTest, StayInSameRootWindow) {
           kShellWindowId_SettingBubbleContainer);
   aura::Window* window =
       aura::test::CreateTestWindowWithId(100, settings_bubble_container);
-  window->SetBoundsInScreen(gfx::Rect(150, 10, 50, 50), GetSecondaryDisplay());
+  window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
 
   aura::Window* status_container =
       Shell::GetPrimaryRootWindowController()->GetContainer(
           kShellWindowId_ShelfContainer);
   window = aura::test::CreateTestWindowWithId(100, status_container);
-  window->SetBoundsInScreen(gfx::Rect(150, 10, 50, 50), GetSecondaryDisplay());
+  window->SetBoundsInScreen(gfx::Rect(250, 10, 50, 50), GetSecondaryDisplay());
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
 }
 
 TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("200x100,300x200");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   // Create normal windows on both displays.
@@ -843,7 +854,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   EXPECT_EQ("ab", base::UTF16ToASCII(textfield->GetText()));
 
   // Deleting 2nd display. The lock window still should get the events.
-  UpdateDisplay("100x100");
+  UpdateDisplay("200x100");
   event_generator->set_current_target(root_windows[0]);
   event_generator->PressAndReleaseKey(ui::VKEY_C);
   EXPECT_EQ(lock_widget->GetNativeView(), focus_client->GetFocusedWindow());
@@ -851,7 +862,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
 
   // Creating 2nd display again, and lock window still should get events
   // on both root windows.
-  UpdateDisplay("100x100,200x200");
+  UpdateDisplay("200x100,300x200");
   root_windows = Shell::GetAllRootWindows();
   event_generator->set_current_target(root_windows[0]);
   event_generator->PressAndReleaseKey(ui::VKEY_D);
@@ -876,7 +887,7 @@ TEST_F(ExtendedDesktopTest, PassiveGrab) {
 
   // Create large displays so the widget won't be moved after creation.
   // https://crbug.com/890633
-  UpdateDisplay("1000x1000,1000x1000");
+  UpdateDisplay("1000x900,1000x900");
 
   views::Widget* widget = CreateTestWidget(gfx::Rect(50, 50, 200, 200));
   widget->Show();

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 
@@ -25,6 +24,10 @@ class WaylandDataOffer : public WaylandDataOfferBase {
  public:
   // Takes ownership of data_offer.
   explicit WaylandDataOffer(wl_data_offer* data_offer);
+
+  WaylandDataOffer(const WaylandDataOffer&) = delete;
+  WaylandDataOffer& operator=(const WaylandDataOffer&) = delete;
+
   ~WaylandDataOffer() override;
 
   void Accept(uint32_t serial, const std::string& mime_type);
@@ -36,7 +39,7 @@ class WaylandDataOffer : public WaylandDataOfferBase {
 
   uint32_t source_actions() const { return source_actions_; }
   uint32_t dnd_action() const { return dnd_action_; }
-  void SetActions(uint32_t dnd_actions);
+  void SetDndActions(uint32_t dnd_actions);
 
  private:
   // wl_data_offer_listener callbacks.
@@ -55,8 +58,6 @@ class WaylandDataOffer : public WaylandDataOfferBase {
   uint32_t source_actions_;
   // Action selected by the compositor
   uint32_t dnd_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandDataOffer);
 };
 
 }  // namespace ui

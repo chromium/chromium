@@ -27,6 +27,9 @@ class PPAPI_PROXY_EXPORT AudioBufferResource
                      int32_t index,
                      MediaStreamBuffer* buffer);
 
+  AudioBufferResource(const AudioBufferResource&) = delete;
+  AudioBufferResource& operator=(const AudioBufferResource&) = delete;
+
   ~AudioBufferResource() override;
 
   // PluginResource overrides:
@@ -49,8 +52,6 @@ class PPAPI_PROXY_EXPORT AudioBufferResource
   int32_t index_;
 
   MediaStreamBuffer* buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBufferResource);
 };
 
 }  // namespace proxy

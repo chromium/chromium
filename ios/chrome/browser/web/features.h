@@ -10,9 +10,6 @@
 
 namespace web {
 
-// Used to control the state of the WebPageTextAccessibility feature.
-extern const base::Feature kWebPageTextAccessibility;
-
 // Feature flag to tie the default zoom level for webpages to the current
 // dynamic type setting.
 extern const base::Feature kWebPageDefaultZoomFromDynamicType;
@@ -20,12 +17,14 @@ extern const base::Feature kWebPageDefaultZoomFromDynamicType;
 // Used to enable a different method of zooming web pages.
 extern const base::Feature kWebPageAlternativeTextZoom;
 
-// Feature flag to keep the mobile version for Google SRP. Should be used when
-// the desktop version is requested by default.
-extern const base::Feature kMobileGoogleSRP;
-
 // Feature flag for to use native session restoration.
 extern const base::Feature kRestoreSessionFromCache;
+
+// When enabled, the major version number returned by Chrome will be forced to
+// 100.  This feature is only applicable for M96-M99 and will be removed after
+// M99.  The purpose of this feature is to allow users to test and proactively
+// fix any issues as Chrome approaches a 3-digit major version number.
+extern const base::Feature kForceMajorVersion100InUserAgent;
 
 }  // namespace web
 

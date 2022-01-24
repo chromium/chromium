@@ -7,7 +7,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/infobars/android/infobar_android.h"
 
 namespace content {
@@ -21,6 +20,9 @@ class InterventionDelegate;
 // NearOomMessageDelegate for behavior specifics.
 class NearOomInfoBar : public infobars::InfoBarAndroid {
  public:
+  NearOomInfoBar(const NearOomInfoBar&) = delete;
+  NearOomInfoBar& operator=(const NearOomInfoBar&) = delete;
+
   ~NearOomInfoBar() override;
 
   // |delegate| must remain alive while showing this info bar.
@@ -39,7 +41,6 @@ class NearOomInfoBar : public infobars::InfoBarAndroid {
   void ProcessButton(int action) override;
 
   InterventionDelegate* delegate_;
-  DISALLOW_COPY_AND_ASSIGN(NearOomInfoBar);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_NEAR_OOM_INFOBAR_H_

@@ -6,6 +6,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/graphics",
 
     # Dependencies.
+    "+base/no_destructor.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
     "+base/strings/string_util.h",
@@ -34,6 +35,7 @@ include_rules = [
     "+gpu/ipc/common/mailbox.mojom-blink.h",
     "+media/base/media_switches.h",
     "+media/base/video_frame.h",
+    "+media/base/video_frame_pool.h",
     "+media/base/video_transformation.h",
     "+media/base/video_types.h",
     "+media/base/video_util.h",
@@ -73,12 +75,13 @@ include_rules = [
     "+third_party/blink/renderer/platform/testing",
     "+third_party/blink/renderer/platform/text",
     "+third_party/blink/renderer/platform/timer.h",
+    "+third_party/blink/renderer/platform/region_capture_crop_id.h",
     "+third_party/blink/renderer/platform/transforms",
     "+third_party/blink/renderer/platform/waitable_event.h",
     "+third_party/blink/renderer/platform/weborigin/kurl.h",
     "+third_party/blink/renderer/platform/web_task_runner.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+ui/base/resource/scale_factor.h",
+    "+ui/base/resource/resource_scale_factor.h",
     "+ui/gfx/geometry",
 ]
 

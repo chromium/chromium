@@ -116,8 +116,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       network::mojom::ReferrerPolicy response_referrer_policy,
       network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      const Vector<String>* response_origin_trial_tokens,
-      int64_t appcache_id) override;
+      const Vector<String>* response_origin_trial_tokens) override;
   // Fetches and runs the top-level classic worker script.
   void FetchAndRunClassicScript(
       const KURL& script_url,
@@ -137,13 +136,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       RejectCoepUnsafeNone reject_coep_unsafe_none) override;
   void Dispose() override;
   InstalledScriptsManager* GetInstalledScriptsManager() override;
-
-  // Counts an evaluated script and its size. Called for the main worker script.
-  void CountWorkerScript(size_t script_size, size_t cached_metadata_size);
-
-  // Counts an evaluated script and its size. Called for each of imported
-  // scripts.
-  void CountImportedScript(size_t script_size, size_t cached_metadata_size);
 
   // Called when the main worker script is evaluated.
   void DidEvaluateScript();
@@ -225,11 +217,13 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void RespondToFetchEventWithNoResponse(
       int fetch_event_id,
       const KURL& request_url,
+      bool range_request,
       base::TimeTicks event_dispatch_time,
       base::TimeTicks respond_with_settled_time);
   // Responds to the fetch event with |response|.
   void RespondToFetchEvent(int fetch_event_id,
                            const KURL& request_url,
+                           bool range_request,
                            mojom::blink::FetchAPIResponsePtr,
                            base::TimeTicks event_dispatch_time,
                            base::TimeTicks respond_with_settled_time);
@@ -238,6 +232,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void RespondToFetchEventWithResponseStream(
       int fetch_event_id,
       const KURL& request_url,
+      bool range_request,
       mojom::blink::FetchAPIResponsePtr,
       mojom::blink::ServiceWorkerStreamHandlePtr,
       base::TimeTicks event_dispatch_time,
@@ -302,6 +297,10 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // Returns true if a FetchEvent exists with the given request URL and
   // is still waiting for a Response.
   bool HasRelatedFetchEvent(const KURL& request_url) const;
+
+  // Returns true if a FetchEvent exists with the given request URL and
+  // a range request header.
+  bool HasRangeFetchEvent(const KURL& request_url) const;
 
   int GetOutstandingThrottledLimit() const override;
 
@@ -489,8 +488,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel,
                            const String& message) override;
 
-  void NoteNewFetchEvent(const KURL& request_url);
-  void NoteRespondedToFetchEvent(const KURL& request_url);
+  void NoteNewFetchEvent(const mojom::blink::FetchAPIRequest& request);
+  void NoteRespondedToFetchEvent(const KURL& request_url, bool range_request);
 
   void AbortCallbackForFetchEvent(
       int event_id,
@@ -579,9 +578,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
               WTF::UnsignedWithZeroKeyHashTraits<int64_t>>
       service_worker_objects_;
   bool did_evaluate_script_ = false;
-  size_t script_count_ = 0;
-  size_t script_total_size_ = 0;
-  size_t script_cached_metadata_total_size_ = 0;
   bool is_installing_ = false;
   size_t cache_storage_installed_script_count_ = 0;
   uint64_t cache_storage_installed_script_total_size_ = 0;
@@ -665,8 +661,16 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // request URL.  This information can be used as a hint that cache_storage
   // or fetch requests to the same URL is likely to be used to satisfy a
   // FetchEvent.  This in turn can allow us to use more aggressive
-  // optimizations in these cases.
-  HashMap<KURL, int> unresponded_fetch_event_counts_;
+  // optimizations in these cases.  We track separate counts for total
+  // outstanding FetchEvents and outstanding FetchEvents with range requests.
+  struct FetchEventCounts {
+    FetchEventCounts() = default;
+    explicit FetchEventCounts(int tc, int rc)
+        : total_count(tc), range_count(rc) {}
+    int total_count = 0;
+    int range_count = 0;
+  };
+  HashMap<KURL, FetchEventCounts> unresponded_fetch_event_counts_;
 
   // ServiceWorker event queue where all events are queued before
   // they are dispatched.

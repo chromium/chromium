@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
@@ -25,6 +24,12 @@ class ChromeMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory {
  public:
   ChromeMojoProxyResolverFactory();
+
+  ChromeMojoProxyResolverFactory(const ChromeMojoProxyResolverFactory&) =
+      delete;
+  ChromeMojoProxyResolverFactory& operator=(
+      const ChromeMojoProxyResolverFactory&) = delete;
+
   ~ChromeMojoProxyResolverFactory() override;
 
   // Convenience method that creates a self-owned ProxyResolverFactory and
@@ -43,8 +48,6 @@ class ChromeMojoProxyResolverFactory
  private:
   std::unique_ptr<service_manager::Connector> service_manager_connector_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMojoProxyResolverFactory);
 };
 
 #endif  // CHROME_BROWSER_NET_CHROME_MOJO_PROXY_RESOLVER_FACTORY_H_

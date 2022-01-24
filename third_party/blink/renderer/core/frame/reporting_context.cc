@@ -155,7 +155,7 @@ void ReportingContext::NotifyInternal(Report* report) {
   if (!report_buffer_.Contains(report->type())) {
     report_buffer_.insert(
         report->type(),
-        MakeGarbageCollected<HeapListHashSet<Member<Report>>>());
+        MakeGarbageCollected<HeapLinkedHashSet<Member<Report>>>());
   }
   report_buffer_.find(report->type())->value->insert(report);
 

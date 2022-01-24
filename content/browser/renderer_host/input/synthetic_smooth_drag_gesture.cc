@@ -57,6 +57,7 @@ bool SyntheticSmoothDragGesture::InitializeMoveGesture(
     move_params.prevent_fling = true;
     move_params.input_type = GetInputSourceType(gesture_type);
     move_params.add_slop = false;
+    move_params.from_devtools_debugger = params_.from_devtools_debugger;
     move_gesture_ = std::make_unique<SyntheticSmoothMoveGesture>(move_params);
     return true;
   }

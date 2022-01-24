@@ -8,9 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.os.Build;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,7 +22,7 @@ import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -424,7 +422,7 @@ public class ArImmersiveOverlay
         // transport even if the currently-visible part in the surface view is smaller than this. We
         // shouldn't get resize events since we're using FLAG_LAYOUT_STABLE and are locking screen
         // orientation.
-        Display display = DisplayAndroidManager.getDefaultDisplayForContext(mActivity);
+        DisplayAndroid display = mWebContents.getTopLevelNativeWindow().getDisplay();
         if (mSurfaceReportedReady) {
             int rotation = display.getRotation();
             if (DEBUG_LOGS) {
@@ -446,30 +444,24 @@ public class ArImmersiveOverlay
         }
         mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
-        // Display.getRealSize "gets the real size of the display without subtracting any window
-        // decor or applying any compatibility scale factors", and "the size is adjusted based on
-        // the current rotation of the display". This is what we want since the surface and WebXR
-        // frame sizes also use the same current rotation which is now locked, so there's no need to
-        // separately adjust for portrait vs landscape modes.
-        //
         // While it would be preferable to wait until the surface is at the desired fullscreen
         // resolution, i.e. via mActivity.getFullscreenManager().getPersistentFullscreenMode(), that
         // causes a chicken-and-egg problem for ArSurfaceView mode as used for DOM overlay.
         // Chrome's fullscreen mode is triggered by the Blink side setting an element fullscreen
         // after the session starts, but the session doesn't start until we report the drawing
-        // surface being ready (including a configured size), so we use this reported size assuming
-        // that's what the fullscreen mode will use.
-        Point size = new Point();
-        display.getRealSize(size);
+        // surface being ready (including a configured size), so we use the reported size of the
+        // display assuming that's what the fullscreen mode will use.
+        int screenWidth = display.getDisplayWidth();
+        int screenHeight = display.getDisplayHeight();
 
-        if (width < size.x || height < size.y) {
+        if (width < screenWidth || height < screenHeight) {
             if (DEBUG_LOGS) {
                 Log.i(TAG,
                         "surfaceChanged adjusting size from " + width + "x" + height + " to "
-                                + size.x + "x" + size.y);
+                                + screenWidth + "x" + screenHeight);
             }
-            width = size.x;
-            height = size.y;
+            width = screenWidth;
+            height = screenHeight;
         }
 
         int rotation = display.getRotation();

@@ -18,7 +18,6 @@
 #include "remoting/host/screen_resolution.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
-#include "remoting/proto/process_stats.pb.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
@@ -46,15 +45,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the daemon to the network process.
-
-// Delivers the host configuration (and updates) to the network process.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_Configuration, std::string)
-
-// Initializes the pairing registry on Windows. The passed key handles are
-// already duplicated by the sender.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_InitializePairingRegistry,
-                    IPC::PlatformFileForTransit /* privileged_key */,
-                    IPC::PlatformFileForTransit /* unprivileged_key */)
 
 // Notifies the network process that the terminal |terminal_id| has been
 // disconnected from the desktop session.
@@ -127,19 +117,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostStarted,
 IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostShutdown)
 
 //-----------------------------------------------------------------------------
-// Chromoting messages sent from the desktop to the daemon process.
-
-// Notifies the daemon that a desktop integration process has been initialized.
-// |desktop_pipe| specifies the client end of the desktop pipe. It is to be
-// forwarded to the desktop environment stub.
-IPC_MESSAGE_CONTROL(ChromotingDesktopDaemonMsg_DesktopAttached,
-                    IPC::ChannelHandle /* desktop_pipe */)
-
-// Asks the daemon to inject Secure Attention Sequence (SAS) in the session
-// where the desktop process is running.
-IPC_MESSAGE_CONTROL(ChromotingDesktopDaemonMsg_InjectSas)
-
-//-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the network process.
 
 // Notifies the network process that a shared buffer has been created.
@@ -195,11 +172,6 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_DisplayChanged,
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_MouseCursor,
                     webrtc::MouseCursor /* cursor */)
 
-// Carries a clipboard event from the desktop session agent to the client.
-// |serialized_event| is a serialized protocol::ClipboardEvent.
-IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_InjectClipboardEvent,
-                    std::string /* serialized_event */)
-
 // Notifies the network process that the active keyboard layout has changed.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_KeyboardChanged,
                     remoting::protocol::KeyboardLayout /* layout */)
@@ -254,11 +226,6 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CaptureFrame)
 
 IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SelectSource,
                     int /* desktop_display_id */)
-
-// Carries a clipboard event from the client to the desktop session agent.
-// |serialized_event| is a serialized protocol::ClipboardEvent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_InjectClipboardEvent,
-                    std::string /* serialized_event */)
 
 // Carries a keyboard event from the client to the desktop session agent.
 // |serialized_event| is a serialized protocol::KeyEvent.
@@ -350,14 +317,3 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_ConnectionReady)
 // Error indicating the request originated from outside the remoted session.
 // The IPC channel will be disconnected after this message has been sent.
 IPC_MESSAGE_CONTROL(ChromotingNetworkToRemoteSecurityKeyMsg_InvalidSession)
-
-// Starts to report process resource usage.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToAnyMsg_StartProcessStatsReport,
-                    base::TimeDelta /* interval */)
-
-// Stops to report process resource usage.
-IPC_MESSAGE_CONTROL(ChromotingNetworkToAnyMsg_StopProcessStatsReport)
-
-// Reports process resource usage to network process.
-IPC_MESSAGE_CONTROL(ChromotingAnyToNetworkMsg_ReportProcessStats,
-                    remoting::protocol::AggregatedProcessResourceUsage)

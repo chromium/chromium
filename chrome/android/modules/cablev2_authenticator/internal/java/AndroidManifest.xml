@@ -7,7 +7,7 @@
          dist:onDemand="false" would always install the module alongside the
          rest of Chrome. -->
     <dist:module
-        dist:onDemand="true"
+        dist:onDemand="false"
         dist:title="@string/cablev2_authenticator_module_title">
         <!-- This will fuse the module into the base APK if a system image
              APK is built from this bundle. -->

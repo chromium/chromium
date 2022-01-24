@@ -10,7 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -40,6 +40,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
   static scoped_refptr<BluetoothSocketBlueZ> CreateBluetoothSocket(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<device::BluetoothSocketThread> socket_thread);
+
+  BluetoothSocketBlueZ(const BluetoothSocketBlueZ&) = delete;
+  BluetoothSocketBlueZ& operator=(const BluetoothSocketBlueZ&) = delete;
 
   // Connects this socket to the service on |device| published as UUID |uuid|,
   // the underlying protocol and PSM or Channel is obtained through service
@@ -178,8 +181,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
     bool cancelled;
   };
   base::queue<std::unique_ptr<ConnectionRequest>> connection_request_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketBlueZ);
 };
 
 }  // namespace bluez

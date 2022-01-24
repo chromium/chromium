@@ -66,6 +66,10 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   };
 
   AXTreeSourceArc(Delegate* delegate, aura::Window* window);
+
+  AXTreeSourceArc(const AXTreeSourceArc&) = delete;
+  AXTreeSourceArc& operator=(const AXTreeSourceArc&) = delete;
+
   ~AXTreeSourceArc() override;
 
   // Notify automation of an accessibility event.
@@ -115,6 +119,12 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // The window id of this tree.
   absl::optional<int32_t> window_id() const { return window_id_; }
 
+  void set_automation_event_router_for_test(
+      extensions::AutomationEventRouterInterface* router) {
+    automation_event_router_for_test_ = router;
+  }
+  void set_window_id_for_test(int32_t window_id) { window_id_ = window_id; }
+
  private:
   friend class arc::AXTreeSourceArcTest;
 
@@ -122,9 +132,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   void NotifyAccessibilityEventInternal(
       const mojom::AccessibilityEventData& event_data);
 
-  // virtual for testing.
-  virtual extensions::AutomationEventRouterInterface* GetAutomationEventRouter()
-      const;
+  // Returns AutomationEventRouter.
+  extensions::AutomationEventRouterInterface* GetAutomationEventRouter() const;
 
   // Computes the smallest rect that encloses all of the descendants of
   // |info_data|.
@@ -209,7 +218,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   // delegate is valid during the lifetime of this tree.
   const Delegate* const delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceArc);
+  extensions::AutomationEventRouterInterface*
+      automation_event_router_for_test_ = nullptr;
 };
 
 }  // namespace arc

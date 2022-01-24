@@ -20,4 +20,9 @@ password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store);
 
+// Query the password stores and reports multiple metrics. The actual reporting
+// is delayed by 30 seconds, to ensure it doesn't happen during the "hot phase"
+// of Chrome startup.
+void DelayReportingPasswordStoreMetrics(Profile* profile);
+
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_

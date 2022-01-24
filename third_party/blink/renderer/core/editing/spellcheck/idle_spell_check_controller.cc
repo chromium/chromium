@@ -29,15 +29,13 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kColdModeTimerInterval =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta kColdModeTimerInterval = base::Milliseconds(1000);
 constexpr base::TimeDelta kConsecutiveColdModeTimerInterval =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 const int kHotModeRequestTimeoutMS = 200;
 const int kInvalidHandle = -1;
 const int kDummyHandleForForcedInvocation = -2;
-constexpr base::TimeDelta kIdleSpellcheckTestTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kIdleSpellcheckTestTimeout = base::Seconds(10);
 
 }  // namespace
 

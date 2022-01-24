@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
@@ -24,6 +23,11 @@ class ChromeDuplicateDownloadInfoBarDelegate
     : public DuplicateDownloadInfoBarDelegate,
       public download::DownloadItem::Observer {
  public:
+  ChromeDuplicateDownloadInfoBarDelegate(
+      const ChromeDuplicateDownloadInfoBarDelegate&) = delete;
+  ChromeDuplicateDownloadInfoBarDelegate& operator=(
+      const ChromeDuplicateDownloadInfoBarDelegate&) = delete;
+
   ~ChromeDuplicateDownloadInfoBarDelegate() override;
 
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
@@ -61,8 +65,6 @@ class ChromeDuplicateDownloadInfoBarDelegate
   // is made (or cancelled).
   DownloadTargetDeterminerDelegate::ConfirmationCallback
       file_selected_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeDuplicateDownloadInfoBarDelegate);
 };
 
 }  // namespace android

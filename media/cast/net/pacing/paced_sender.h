@@ -13,9 +13,8 @@
 #include <tuple>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -108,6 +107,9 @@ class PacedSender final : public PacedPacketSender {
       std::vector<PacketEvent>* recent_packet_events,
       PacketTransport* external_transport,
       const scoped_refptr<base::SingleThreadTaskRunner>& transport_task_runner);
+
+  PacedSender(const PacedSender&) = delete;
+  PacedSender& operator=(const PacedSender&) = delete;
 
   ~PacedSender() final;
 
@@ -241,8 +243,6 @@ class PacedSender final : public PacedPacketSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<PacedSender> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacedSender);
 };
 
 }  // namespace cast

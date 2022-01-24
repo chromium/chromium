@@ -195,27 +195,23 @@ void SignedExchangePageLoadMetricsObserver::OnFirstInputInPage(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramSignedExchangeFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
   if (was_cached_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   } else {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramNotCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
   if (had_prefetched_alt_sxg_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramAltSubSxgSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
 }
 

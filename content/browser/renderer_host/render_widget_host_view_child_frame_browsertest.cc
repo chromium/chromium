@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -41,6 +40,11 @@ namespace content {
 class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewChildFrameBrowserTest() = default;
+
+  RenderWidgetHostViewChildFrameBrowserTest(
+      const RenderWidgetHostViewChildFrameBrowserTest&) = delete;
+  RenderWidgetHostViewChildFrameBrowserTest& operator=(
+      const RenderWidgetHostViewChildFrameBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -83,7 +87,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
 
   Portal* CreatePortalToUrl(WebContentsImpl* host_contents,
                             GURL portal_url,
-                            int number_of_navigations = 1) {
+                            int number_of_navigations) {
     EXPECT_GE(number_of_navigations, 1);
     RenderFrameHostImpl* main_frame = host_contents->GetMainFrame();
 
@@ -127,8 +131,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   viz::FrameSinkId expected_frame_sink_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrameBrowserTest);
 };
 
 // Tests that the screen is properly reflected for RWHVChildFrame.
@@ -137,8 +139,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Load cross-site page into iframe.
   GURL cross_site_url(
@@ -156,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
         ExecuteScriptAndGetValue(frame_host, "window.screen.width").GetInt();
     EXPECT_EQ(width, main_frame_screen_width);
   };
-  shell()->web_contents()->ForEachFrame(
+  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
       base::BindLambdaForTesting(check_screen_width));
 }
 
@@ -189,13 +191,16 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostView* root_view =
       root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
-  Portal* portal = CreatePortalToUrl(web_contents, main_url);
+  // We wait for the main frame and the two subframes.
+  int number_of_navigations = 3;
+  Portal* portal =
+      CreatePortalToUrl(web_contents, main_url, number_of_navigations);
   WebContentsImpl* nested_contents = portal->GetPortalContents();
-  FrameTreeNode* nested_root = nested_contents->GetFrameTree()->root();
+  FrameTreeNode* nested_root = nested_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostView* nested_root_view =
       nested_root->current_frame_host()->GetRenderWidgetHost()->GetView();
 
@@ -380,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   // Load cross-site page into iframe.
   GURL cross_site_url(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
@@ -439,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   shell()->web_contents()->SetDelegate(&display_mode_delegate);
 
   // Main frame.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   // Out-of-process frame.
@@ -528,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Main frame/root view.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   RenderWidgetHostViewBase* root_view = root_widget->GetView();
@@ -579,10 +584,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     root_widget->SynchronizeVisualProperties();
 
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopchild->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopchild->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopchild_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -591,10 +595,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopdescendant->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopdescendant->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       if (properties && properties->local_surface_id &&
           oopdescendant_initial_lsid < properties->local_surface_id) {
         EXPECT_EQ(properties->root_widget_window_segments, expected_segments);
@@ -613,10 +616,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), new_frame_url));
 
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
-          oopdescendant->current_frame_host()
-              ->GetRenderWidgetHost()
-              ->LastComputedVisualProperties();
+      properties = oopdescendant->current_frame_host()
+                       ->GetRenderWidgetHost()
+                       ->LastComputedVisualProperties();
       // This check is needed, since we'll get an IPC originating from
       // RenderWidgetHostImpl immediately after the frame is added with the
       // incorrect value (the segments are cascaded from the parent renderer
@@ -641,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
 
   // Main frame.
-  FrameTreeNode* root = web_contents->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
   RenderWidgetHostImpl* root_widget =
       root->current_frame_host()->GetRenderWidgetHost();
   ASSERT_TRUE(ExecJs(root->current_frame_host(),

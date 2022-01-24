@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -33,6 +32,9 @@ class UpdateClientImpl : public UpdateClient {
                    scoped_refptr<PingManager> ping_manager,
                    UpdateChecker::Factory update_checker_factory);
 
+  UpdateClientImpl(const UpdateClientImpl&) = delete;
+  UpdateClientImpl& operator=(const UpdateClientImpl&) = delete;
+
   // Overrides for UpdateClient.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -49,12 +51,10 @@ class UpdateClientImpl : public UpdateClient {
                          CrxUpdateItem* update_item) const override;
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
                          Callback callback) override;
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
+  void SendRegistrationPing(const CrxComponent& crx_component,
                             Callback callback) override;
 
  private:
@@ -87,8 +87,6 @@ class UpdateClientImpl : public UpdateClient {
   scoped_refptr<PingManager> ping_manager_;
   scoped_refptr<UpdateEngine> update_engine_;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientImpl);
 };
 
 }  // namespace update_client

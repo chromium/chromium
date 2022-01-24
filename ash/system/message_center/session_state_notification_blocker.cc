@@ -20,8 +20,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kLoginNotificationDelay =
-    base::TimeDelta::FromSeconds(6);
+constexpr base::TimeDelta kLoginNotificationDelay = base::Seconds(6);
 
 // Set to false for tests so notifications can be generated without a delay.
 bool g_use_login_delay_for_test = true;

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -30,6 +31,7 @@
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
@@ -150,6 +152,11 @@ std::string CastMetricsServiceClient::GetApplicationLocale() {
   return base::i18n::GetConfiguredLocale();
 }
 
+const network_time::NetworkTimeTracker*
+CastMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
   return false;
 }
@@ -241,7 +248,7 @@ CastMetricsServiceClient::CreateUploader(
 }
 
 base::TimeDelta CastMetricsServiceClient::GetStandardUploadInterval() {
-  return base::TimeDelta::FromMinutes(kStandardUploadIntervalMinutes);
+  return base::Minutes(kStandardUploadIntervalMinutes);
 }
 
 ::metrics::MetricsLogStore::StorageLimits
@@ -301,22 +308,36 @@ void CastMetricsServiceClient::InitializeMetricsService() {
   DCHECK(!metrics_state_manager_);
   metrics_state_manager_ = ::metrics::MetricsStateManager::Create(
       pref_service_, this, std::wstring(),
+      // Pass an empty file path since Chromecast does not use the Variations
+      // framework.
+      /*user_data_dir=*/base::FilePath(),
+      ::metrics::StartupVisibility::kUnknown, version_info::Channel::UNKNOWN,
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,
                           base::Unretained(this)));
+
+  // Check that the FieldTrialList already exists. This happens in
+  // CastMainDelegate::PostEarlyInitialization().
+  DCHECK(base::FieldTrialList::GetInstance());
+  // Perform additional setup that should be done after the FieldTrialList, the
+  // MetricsStateManager, and its CleanExitBeacon exist. Since the list already
+  // exists, the entropy provider type is unused.
+  // TODO(crbug/1249485): Make Chromecast consistent with other platforms. I.e.
+  // create the FieldTrialList and the MetricsStateManager around the same time.
+  metrics_state_manager_->InstantiateFieldTrialList();
+
   metrics_service_.reset(new ::metrics::MetricsService(
       metrics_state_manager_.get(), this, pref_service_));
 
   // Always create a client id as it may also be used by crash reporting,
-  // (indirectly) included in feedback, and can be queried during setup.
-  // For UMA and crash reporting, associated opt-in settings will control
-  // sending reports as directed by the user.
-  // For Setup (which also communicates the user's opt-in preferences),
-  // report the client-id and expect that setup will handle the current opt-in
-  // value.
+  // (indirectly) included in feedback, and can be queried during setup. For UMA
+  // and crash reporting, associated opt-in settings control sending reports as
+  // directed by the user. For setup (which also communicates the user's opt-in
+  // preferences), report the client id and expect setup to handle the current
+  // opt-in value.
   metrics_state_manager_->ForceClientIdCreation();
-  // Populate |client_id| to other component parts.
+  // Populate |client_id| in other component parts.
   SetMetricsClientId(metrics_state_manager_->client_id());
 }
 

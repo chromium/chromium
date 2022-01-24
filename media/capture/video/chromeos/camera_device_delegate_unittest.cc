@@ -46,6 +46,9 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
  public:
   MockCameraDevice() = default;
 
+  MockCameraDevice(const MockCameraDevice&) = delete;
+  MockCameraDevice& operator=(const MockCameraDevice&) = delete;
+
   ~MockCameraDevice() = default;
 
   void Initialize(
@@ -111,9 +114,6 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
   MOCK_METHOD2(DoConfigureStreamsAndGetAllocatedBuffers,
                void(cros::mojom::Camera3StreamConfigurationPtr& config,
                     ConfigureStreamsAndGetAllocatedBuffersCallback& callback));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCameraDevice);
 };
 
 constexpr int32_t kJpegMaxBufferSize = 1024;
@@ -137,6 +137,9 @@ class CameraDeviceDelegateTest : public ::testing::Test {
       : mock_camera_device_receiver_(&mock_camera_device_),
         device_delegate_thread_("DeviceDelegateThread"),
         hal_delegate_thread_("HalDelegateThread") {}
+
+  CameraDeviceDelegateTest(const CameraDeviceDelegateTest&) = delete;
+  CameraDeviceDelegateTest& operator=(const CameraDeviceDelegateTest&) = delete;
 
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
@@ -465,7 +468,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
                                         device_closed->Signal();
                                       },
                                       base::Unretained(&device_closed))));
-    base::TimeDelta kWaitTimeoutSecs = base::TimeDelta::FromSeconds(3);
+    base::TimeDelta kWaitTimeoutSecs = base::Seconds(3);
     EXPECT_TRUE(device_closed.TimedWait(kWaitTimeoutSecs));
     EXPECT_EQ(CameraDeviceContext::State::kStopped, GetState());
   }
@@ -532,7 +535,6 @@ class CameraDeviceDelegateTest : public ::testing::Test {
  private:
   base::Thread hal_delegate_thread_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  DISALLOW_COPY_AND_ASSIGN(CameraDeviceDelegateTest);
 };
 
 // Test the complete capture flow: initialize, configure stream, capture one
@@ -616,7 +618,7 @@ TEST_F(CameraDeviceDelegateTest, StopBeforeOpened) {
                      base::BindOnce(&base::WaitableEvent::Signal,
                                     base::Unretained(&device_closed))));
   stop_posted.Signal();
-  EXPECT_TRUE(device_closed.TimedWait(base::TimeDelta::FromSeconds(3)));
+  EXPECT_TRUE(device_closed.TimedWait(base::Seconds(3)));
   EXPECT_EQ(CameraDeviceContext::State::kStopped, GetState());
 
   ResetDevice();

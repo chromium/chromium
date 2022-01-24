@@ -13,7 +13,15 @@
 #include "base/strings/stringprintf.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-array-buffer.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-locker.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-persistent-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
+#include "v8/include/v8-template.h"
 
 namespace content {
 
@@ -25,6 +33,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    v8::Locker locked(isolate_);
     v8::HandleScope handle_scope(isolate_);
     v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(isolate_);
     context_.Reset(isolate_, v8::Context::New(isolate_, NULL, global));
@@ -39,6 +48,7 @@ class GinJavaBridgeValueConverterTest : public testing::Test {
 };
 
 TEST_F(GinJavaBridgeValueConverterTest, BasicValues) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -75,6 +85,7 @@ TEST_F(GinJavaBridgeValueConverterTest, BasicValues) {
 }
 
 TEST_F(GinJavaBridgeValueConverterTest, ArrayBuffer) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -96,6 +107,7 @@ TEST_F(GinJavaBridgeValueConverterTest, ArrayBuffer) {
 }
 
 TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
+  v8::Locker locked(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       v8::Local<v8::Context>::New(isolate_, context_);
@@ -136,7 +148,7 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
     EXPECT_TRUE(list_value->is_list()) << typed_array_type;
     base::ListValue* list;
     ASSERT_TRUE(list_value->GetAsList(&list)) << typed_array_type;
-    EXPECT_EQ(1u, list->GetSize()) << typed_array_type;
+    EXPECT_EQ(1u, list->GetList().size()) << typed_array_type;
 
     const base::Value* value;
     list->Get(0, &value);

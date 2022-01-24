@@ -217,7 +217,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
                 kPrefKeyWatcherPersistentOrigins, &persistent_origins) ||
             it.key() != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
-             (!last_tag->empty() || persistent_origins->GetSize()))) {
+             (!last_tag->empty() || persistent_origins->GetList().size()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }

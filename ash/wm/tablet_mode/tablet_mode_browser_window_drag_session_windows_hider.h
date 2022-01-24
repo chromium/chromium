@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -24,6 +23,12 @@ class TabletModeBrowserWindowDragSessionWindowsHider
  public:
   TabletModeBrowserWindowDragSessionWindowsHider(aura::Window* source_window,
                                                  aura::Window* dragged_window);
+
+  TabletModeBrowserWindowDragSessionWindowsHider(
+      const TabletModeBrowserWindowDragSessionWindowsHider&) = delete;
+  TabletModeBrowserWindowDragSessionWindowsHider& operator=(
+      const TabletModeBrowserWindowDragSessionWindowsHider&) = delete;
+
   ~TabletModeBrowserWindowDragSessionWindowsHider() override;
 
   // aura::WindowObserver:
@@ -45,8 +50,6 @@ class TabletModeBrowserWindowDragSessionWindowsHider
   // except the dragged window and the source window should stay hidden during
   // dragging.
   std::map<aura::Window*, bool> window_visibility_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeBrowserWindowDragSessionWindowsHider);
 };
 
 }  // namespace ash

@@ -16,10 +16,11 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -551,9 +552,8 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
 }
 
 void StyledLabel::UpdateLabelBackgroundColor() {
-  SkColor new_color =
-      displayed_on_background_color_.value_or(GetNativeTheme()->GetSystemColor(
-          ui::NativeTheme::kColorId_DialogBackground));
+  SkColor new_color = displayed_on_background_color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorDialogBackground));
   for (View* child : children()) {
     if (!child->GetProperty(kStyledLabelCustomViewKey)) {
       // TODO(kylixrd): Should updating the label background color even be

@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_BASE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -29,6 +28,11 @@ class RenderWidgetHostImpl;
 class SyntheticGestureTargetBase : public SyntheticGestureTarget {
  public:
   explicit SyntheticGestureTargetBase(RenderWidgetHostImpl* host);
+
+  SyntheticGestureTargetBase(const SyntheticGestureTargetBase&) = delete;
+  SyntheticGestureTargetBase& operator=(const SyntheticGestureTargetBase&) =
+      delete;
+
   ~SyntheticGestureTargetBase() override;
 
   virtual void DispatchWebTouchEventToPlatform(
@@ -67,8 +71,6 @@ class SyntheticGestureTargetBase : public SyntheticGestureTarget {
   bool PointIsWithinContents(gfx::PointF point) const;
 
   RenderWidgetHostImpl* host_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetBase);
 };
 
 }  // namespace content

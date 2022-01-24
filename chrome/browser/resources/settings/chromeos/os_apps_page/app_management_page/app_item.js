@@ -1,11 +1,24 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './shared_style.js';
+import './shared_vars.js';
+import '//resources/cr_elements/cr_icons_css.m.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {updateSelectedAppId} from './actions.js';
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {getAppIcon, openAppDetailPage} from './util.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'app-management-app-item',
 
   behaviors: [
-    app_management.AppManagementStoreClient,
+    AppManagementStoreClient,
   ],
 
   properties: {
@@ -23,7 +36,7 @@ Polymer({
    * @private
    */
   onClick_() {
-    app_management.util.openAppDetailPage(this.app.id);
+    openAppDetailPage(this.app.id);
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
         this.getAppManagementEntryPoint_(this.app.type),
@@ -36,7 +49,7 @@ Polymer({
    * @private
    */
   iconUrlFromId_(app) {
-    return app_management.util.getAppIcon(app);
+    return getAppIcon(app);
   },
 
   /**

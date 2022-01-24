@@ -136,6 +136,61 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
   ASSERT_TRUE(tester.IsRejected());
 }
 
+TEST_F(VideoEncoderTest, CodecReclamation) {
+  V8TestingScope v8_scope;
+  auto& es = v8_scope.GetExceptionState();
+  auto* script_state = v8_scope.GetScriptState();
+
+  // Create a video encoder.
+  auto* output_callback = MockFunction::Create(script_state);
+  auto* error_callback = MockFunction::Create(script_state);
+
+  auto* init = CreateInit(output_callback, error_callback);
+  auto* encoder = CreateEncoder(script_state, init, es);
+  ASSERT_FALSE(es.HadException());
+
+  auto* config = CreateConfig();
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+  {
+    // We need this to make sure that configuration has completed.
+    auto promise = encoder->flush(es);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  // The encoder should be active, for reclamation purposes.
+  ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
+
+  // Resetting the encoder should prevent codec reclamation, silently.
+  EXPECT_CALL(*error_callback, Call(testing::_)).Times(0);
+  encoder->reset(es);
+  ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
+
+  testing::Mock::VerifyAndClearExpectations(error_callback);
+
+  // Reconfiguring the encoder should restart the reclamation timer.
+  encoder->configure(config, es);
+  ASSERT_FALSE(es.HadException());
+  {
+    // We need this to make sure that configuration has completed.
+    auto promise = encoder->flush(es);
+    ScriptPromiseTester tester(script_state, promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
+
+  // Reclaiming a configured encoder should call the error callback.
+  EXPECT_CALL(*error_callback, Call(testing::_)).Times(1);
+  encoder->SimulateCodecReclaimedForTesting();
+  ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
+
+  testing::Mock::VerifyAndClearExpectations(error_callback);
+}
+
 }  // namespace
 
 }  // namespace blink

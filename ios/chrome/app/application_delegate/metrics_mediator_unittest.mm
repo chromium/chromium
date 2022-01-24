@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/test/ocmock/OCMockObject+BreakpadControllerTesting.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -125,6 +127,43 @@ TEST_F(MetricsMediatorTest, connectionTypeChanged) {
   // Checks that no new ConnectionType has been added.
   EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_5G,
             net::NetworkChangeNotifier::CONNECTION_LAST);
+}
+
+// Tests that histograms logged in a widget are correctly re-emitted by Chrome.
+TEST_F(MetricsMediatorTest, WidgetHistogramMetricsRecorded) {
+  using app_group::HistogramCountKey;
+
+  base::HistogramTester tester;
+  NSString* histogram = @"MyHistogram";
+
+  // Simulate 1 event fired in bucket 0, and 2 events fired in bucket 2.
+  NSString* keyBucket0 = HistogramCountKey(histogram, 0);
+  NSString* keyBucket1 = HistogramCountKey(histogram, 1);
+  NSString* keyBucket2 = HistogramCountKey(histogram, 2);
+
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  [sharedDefaults setInteger:1 forKey:keyBucket0];
+  [sharedDefaults setInteger:2 forKey:keyBucket2];
+
+  const metrics_mediator::HistogramNameCountPair histograms[] = {
+      {
+          histogram,
+          // 3 buckets, to make sure that the first and last buckets are logged.
+          3,
+      },
+  };
+
+  metrics_mediator::RecordWidgetUsage(histograms);
+
+  // Verify that the correct events were emitted.
+  tester.ExpectBucketCount("MyHistogram", 0, 1);
+  tester.ExpectBucketCount("MyHistogram", 1, 0);
+  tester.ExpectBucketCount("MyHistogram", 2, 2);
+
+  // Verify that all entries in NSUserDefaults have been removed.
+  EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket0]);
+  EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket1]);
+  EXPECT_EQ(0, [sharedDefaults integerForKey:keyBucket2]);
 }
 
 #pragma mark - logLaunchMetrics tests.

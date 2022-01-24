@@ -144,6 +144,10 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kExternalProtocolDialogShowAlwaysOpenCheckbox, true);
   registry->RegisterBooleanPref(prefs::kScreenCaptureAllowed, true);
+  registry->RegisterListPref(prefs::kScreenCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kWindowCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kTabCaptureAllowedByOrigins);
+  registry->RegisterListPref(prefs::kSameOriginTabCaptureAllowedByOrigins);
 
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCaretBrowsingEnabled, false);

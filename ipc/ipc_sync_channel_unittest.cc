@@ -18,9 +18,9 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
@@ -77,6 +77,9 @@ class Worker : public Listener, public Sender {
         shutdown_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
         is_shutdown_(false) {}
+
+  Worker(const Worker&) = delete;
+  Worker& operator=(const Worker&) = delete;
 
   ~Worker() override {
     // Shutdown() must be called before destruction.
@@ -252,8 +255,6 @@ class Worker : public Listener, public Sender {
   base::WaitableEvent shutdown_event_;
 
   bool is_shutdown_;
-
-  DISALLOW_COPY_AND_ASSIGN(Worker);
 };
 
 

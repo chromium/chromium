@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Renderer for {@link goog.ui.menuBar}.
@@ -32,6 +24,7 @@ goog.require('goog.ui.ContainerRenderer');
  * @final
  */
 goog.ui.MenuBarRenderer = function() {
+  'use strict';
   goog.ui.MenuBarRenderer.base(
       this, 'constructor', goog.a11y.aria.Role.MENUBAR);
 };
@@ -51,6 +44,7 @@ goog.ui.MenuBarRenderer.CSS_CLASS = goog.getCssName('goog-menubar');
  * @override
  */
 goog.ui.MenuBarRenderer.prototype.getCssClass = function() {
+  'use strict';
   return goog.ui.MenuBarRenderer.CSS_CLASS;
 };
 
@@ -63,5 +57,6 @@ goog.ui.MenuBarRenderer.prototype.getCssClass = function() {
  * @override
  */
 goog.ui.MenuBarRenderer.prototype.getDefaultOrientation = function() {
+  'use strict';
   return goog.ui.Container.Orientation.HORIZONTAL;
 };

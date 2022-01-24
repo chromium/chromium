@@ -20,6 +20,11 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
  public:
   explicit TestBluetoothAdapterObserver(
       scoped_refptr<BluetoothAdapter> adapter);
+
+  TestBluetoothAdapterObserver(const TestBluetoothAdapterObserver&) = delete;
+  TestBluetoothAdapterObserver& operator=(const TestBluetoothAdapterObserver&) =
+      delete;
+
   ~TestBluetoothAdapterObserver() override;
 
   // Reset counters and cached values.
@@ -287,8 +292,6 @@ class TestBluetoothAdapterObserver : public BluetoothAdapter::Observer {
   std::string last_gatt_descriptor_id_;
   BluetoothUUID last_gatt_descriptor_uuid_;
   std::vector<uint8_t> last_changed_descriptor_value_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBluetoothAdapterObserver);
 };
 
 }  // namespace device

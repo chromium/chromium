@@ -34,6 +34,10 @@ class BluetoothUUID;
 class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattService
     : public virtual BluetoothGattService {
  public:
+  BluetoothRemoteGattService(const BluetoothRemoteGattService&) = delete;
+  BluetoothRemoteGattService& operator=(const BluetoothRemoteGattService&) =
+      delete;
+
   ~BluetoothRemoteGattService() override;
 
   // Returns the BluetoothDevice that this GATT service was received from, which
@@ -79,8 +83,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattService
  private:
   // Is true if all the characteristics have been discovered.
   bool discovery_complete_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattService);
 };
 
 }  // namespace device

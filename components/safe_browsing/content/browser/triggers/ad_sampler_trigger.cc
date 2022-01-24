@@ -12,8 +12,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_util.h"
@@ -23,6 +23,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -124,19 +125,20 @@ void AdSamplerTrigger::DidFinishLoad(
       FROM_HERE,
       base::BindOnce(&AdSamplerTrigger::CreateAdSampleReport,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(start_report_delay_ms_));
+      base::Milliseconds(start_report_delay_ms_));
 }
 
 void AdSamplerTrigger::CreateAdSampleReport() {
   SBErrorOptions error_options =
       TriggerManager::GetSBErrorDisplayOptions(*prefs_, web_contents());
 
+  const content::GlobalRenderFrameHostId primary_main_frame_id =
+      web_contents()->GetMainFrame()->GetGlobalId();
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_AD_SAMPLE;
   resource.url = web_contents()->GetURL();
-  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID());
+  resource.render_process_id = primary_main_frame_id.child_id;
+  resource.render_frame_id = primary_main_frame_id.frame_routing_id;
 
   if (!trigger_manager_->StartCollectingThreatDetails(
           TriggerType::AD_SAMPLE, web_contents(), resource, url_loader_factory_,
@@ -157,7 +159,7 @@ void AdSamplerTrigger::CreateAdSampleReport() {
           base::Unretained(trigger_manager_), TriggerType::AD_SAMPLE,
           base::Unretained(web_contents()), base::TimeDelta(),
           /*did_proceed=*/false, /*num_visits=*/0, error_options),
-      base::TimeDelta::FromMilliseconds(finish_report_delay_ms_));
+      base::Milliseconds(finish_report_delay_ms_));
 
   UMA_HISTOGRAM_ENUMERATION(kAdSamplerTriggerActionMetricName, AD_SAMPLED,
                             MAX_ACTIONS);
@@ -172,6 +174,6 @@ void AdSamplerTrigger::SetTaskRunnerForTest(
   task_runner_ = task_runner;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AdSamplerTrigger)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AdSamplerTrigger);
 
 }  // namespace safe_browsing

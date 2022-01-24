@@ -29,9 +29,14 @@ class RankerDelegate : public Ranker {
   void AddRanker(std::unique_ptr<Ranker> ranker);
 
   // Ranker:
-  void Start(const std::u16string& query) override;
-  void Rank(ResultsMap& results, ProviderType provider) override;
+  void Start(const std::u16string& query,
+             ResultsMap& results,
+             CategoriesMap& categories) override;
+  void Rank(ResultsMap& results,
+            CategoriesMap& categories,
+            ProviderType provider) override;
   void Train(const LaunchData& launch) override;
+  void Remove(ChromeSearchResult* result) override;
 
  private:
   std::vector<std::unique_ptr<Ranker>> rankers_;

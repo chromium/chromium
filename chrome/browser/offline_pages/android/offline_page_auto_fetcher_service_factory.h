@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_OFFLINE_PAGE_AUTO_FETCHER_SERVICE_FACTORY_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
@@ -26,6 +25,11 @@ class OfflinePageAutoFetcherServiceFactory
   static OfflinePageAutoFetcherService* GetForBrowserContext(
       content::BrowserContext* context);
 
+  OfflinePageAutoFetcherServiceFactory(
+      const OfflinePageAutoFetcherServiceFactory&) = delete;
+  OfflinePageAutoFetcherServiceFactory& operator=(
+      const OfflinePageAutoFetcherServiceFactory&) = delete;
+
  private:
   class ServiceDelegate;
   friend struct base::DefaultSingletonTraits<
@@ -38,7 +42,6 @@ class OfflinePageAutoFetcherServiceFactory
       content::BrowserContext* context) const override;
 
   std::unique_ptr<ServiceDelegate> service_delegate_;
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageAutoFetcherServiceFactory);
 };
 
 }  // namespace offline_pages

@@ -25,6 +25,9 @@ struct PPAPI_SHARED_EXPORT PPP_Instance_Combined {
   static PPP_Instance_Combined* Create(
       base::RepeatingCallback<const void*(const char*)> get_plugin_if);
 
+  PPP_Instance_Combined(const PPP_Instance_Combined&) = delete;
+  PPP_Instance_Combined& operator=(const PPP_Instance_Combined&) = delete;
+
   PP_Bool DidCreate(PP_Instance instance,
                     uint32_t argc,
                     const char* argn[],
@@ -55,8 +58,6 @@ struct PPAPI_SHARED_EXPORT PPP_Instance_Combined {
   void (*did_change_view_1_0_)(PP_Instance instance,
                                const struct PP_Rect* position,
                                const struct PP_Rect* clip);
-
-  DISALLOW_COPY_AND_ASSIGN(PPP_Instance_Combined);
 };
 
 }  // namespace ppapi

@@ -8,7 +8,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace content {
@@ -24,7 +23,7 @@ TimeoutMonitor::~TimeoutMonitor() {
   Stop();
 }
 
-void TimeoutMonitor::Start(TimeDelta delay) {
+void TimeoutMonitor::Start(base::TimeDelta delay) {
   if (!IsRunning()) {
     TRACE_EVENT_ASYNC_BEGIN0("renderer_host", "TimeoutMonitor", this);
     TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Start",
@@ -34,7 +33,7 @@ void TimeoutMonitor::Start(TimeDelta delay) {
   StartImpl(delay);
 }
 
-void TimeoutMonitor::Restart(TimeDelta delay) {
+void TimeoutMonitor::Restart(base::TimeDelta delay) {
   if (!IsRunning()) {
     Start(delay);
     return;

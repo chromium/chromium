@@ -47,6 +47,10 @@ class LoadingPredictor : public KeyedService,
                          public PrefetchManager::Delegate {
  public:
   LoadingPredictor(const LoadingPredictorConfig& config, Profile* profile);
+
+  LoadingPredictor(const LoadingPredictor&) = delete;
+  LoadingPredictor& operator=(const LoadingPredictor&) = delete;
+
   ~LoadingPredictor() override;
 
   // Hints that a page load is expected for |url|, with the hint coming from a
@@ -202,8 +206,6 @@ class LoadingPredictor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(LoadingPredictorTest, TestDontPredictOmniboxHints);
 
   base::WeakPtrFactory<LoadingPredictor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoadingPredictor);
 };
 
 }  // namespace predictors

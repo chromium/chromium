@@ -6,13 +6,18 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Tests ContextualSearchFieldTrial class.
 class ContextualSearchFieldTrialTest : public testing::Test {
  public:
   ContextualSearchFieldTrialTest() {}
+
+  ContextualSearchFieldTrialTest(const ContextualSearchFieldTrialTest&) =
+      delete;
+  ContextualSearchFieldTrialTest& operator=(
+      const ContextualSearchFieldTrialTest&) = delete;
+
   ~ContextualSearchFieldTrialTest() override {}
 
   // Inner class that stubs out access to Variations and command-line switches.
@@ -43,9 +48,6 @@ class ContextualSearchFieldTrialTest : public testing::Test {
   }
 
   void TearDown() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchFieldTrialTest);
 };
 
 bool ContextualSearchFieldTrialTest::ContextualSearchFieldTrialStubbed::

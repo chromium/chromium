@@ -17,7 +17,10 @@ config("libjingle_xmpp_common_config") {
 }
 
 static_library("rtc_task_runner") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//jingle:*",
+  ]
   sources = [
     "task_runner/task.cc",
     "task_runner/task.h",
@@ -33,7 +36,10 @@ static_library("rtc_task_runner") {
 }
 
 static_library("rtc_xmllite") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//remoting/*",
+  ]
   sources = [
     "xmllite/qname.cc",
     "xmllite/qname.h",
@@ -57,7 +63,11 @@ static_library("rtc_xmllite") {
 }
 
 static_library("rtc_xmpp") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//jingle:jingle_glue",
+    "//remoting/*",
+  ]
   cflags = []
   sources = [
     "xmpp/asyncsocket.h",

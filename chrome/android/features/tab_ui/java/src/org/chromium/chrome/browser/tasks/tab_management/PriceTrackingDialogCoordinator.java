@@ -27,7 +27,8 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
 
     PriceTrackingDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
             TabSwitcherMediator.ResetHandler resetHandler, TabModelSelector tabModelSelector,
-            PriceDropNotificationManager notificationManager) {
+            PriceDropNotificationManager notificationManager,
+            @TabListCoordinator.TabListMode int mode) {
         mDialogView = (PriceTrackingDialogView) LayoutInflater.from(context).inflate(
                 R.layout.price_tracking_dialog_layout, null, false);
         mDialogView.setupTrackPricesSwitchOnCheckedChangeListener(this);
@@ -43,9 +44,13 @@ class PriceTrackingDialogCoordinator implements OnCheckedChangeListener {
             public void onDismiss(PropertyModel model, int dismissalCause) {
                 if (dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED) return;
 
-                resetHandler.resetWithTabList(
-                        tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
-                        false, TabSwitcherMediator.isShowingTabsInMRUOrder());
+                // We only need to call resetWithTabList under GRID tab switcher. For now it's used
+                // to show/hide price drop cards on tabs timely.
+                if (mode == TabListCoordinator.TabListMode.GRID) {
+                    resetHandler.resetWithTabList(
+                            tabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(),
+                            false, TabSwitcherCoordinator.isShowingTabsInMRUOrder(mode));
+                }
             }
         };
 

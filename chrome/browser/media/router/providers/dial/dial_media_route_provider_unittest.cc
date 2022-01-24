@@ -97,7 +97,6 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     router_receiver_ = std::make_unique<mojo::Receiver<mojom::MediaRouter>>(
         &mock_router_, router_remote.InitWithNewPipeAndPassReceiver());
 
-    EXPECT_CALL(mock_router_, OnSinkAvailabilityUpdated(_, _));
     provider_ = std::make_unique<DialMediaRouteProvider>(
         provider_remote_.BindNewPipeAndPassReceiver(), std::move(router_remote),
         &mock_sink_service_, "hash-token",
@@ -432,6 +431,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
 
 TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   std::vector<url::Origin> youtube_origins = {
+      url::Origin::Create(GURL("https://music.youtube.com/")),
+      url::Origin::Create(GURL("https://music-green-qa.youtube.com/")),
+      url::Origin::Create(GURL("https://music-release-qa.youtube.com/")),
       url::Origin::Create(GURL("https://tv.youtube.com")),
       url::Origin::Create(GURL("https://tv-green-qa.youtube.com")),
       url::Origin::Create(GURL("https://tv-release-qa.youtube.com")),

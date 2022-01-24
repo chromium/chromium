@@ -13,6 +13,8 @@ enum FileSystemAccessStatus {
   kPermissionDenied,
   // The website wasn't allowed to ask for permission in the current context.
   kSecurityError,
+  // Modifications to the underlying file system were not allowed.
+  kNoModificationAllowedError,
   // The object being operated on was in an invalid state for the operation.
   kInvalidState,
   // An invalid argument was passed to a method.
@@ -29,7 +31,7 @@ enum FileSystemAccessStatus {
 // Errors reported by File System Access API methods.
 struct FileSystemAccessError {
   FileSystemAccessStatus status;
-  // Only meaningful when |status| is kFileError.
+  // Only meaningful when `status` is kFileError.
   // Conceptually, this should be an optional member, but mojo does not
   // currently support optionals.
   mojo_base.mojom.FileError file_error;

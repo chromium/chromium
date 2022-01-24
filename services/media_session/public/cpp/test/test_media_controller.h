@@ -132,6 +132,10 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
     : public mojom::MediaController {
  public:
   TestMediaController();
+
+  TestMediaController(const TestMediaController&) = delete;
+  TestMediaController& operator=(const TestMediaController&) = delete;
+
   ~TestMediaController() override;
 
   mojo::Remote<mojom::MediaController> CreateMediaControllerRemote();
@@ -160,6 +164,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   void ToggleCamera() override {}
   void HangUp() override {}
   void Raise() override {}
+  void SetMute(bool mute) override {}
 
   int toggle_suspend_resume_count() const {
     return toggle_suspend_resume_count_;
@@ -199,8 +204,6 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) TestMediaController
   mojo::RemoteSet<mojom::MediaControllerObserver> observers_;
 
   mojo::Receiver<mojom::MediaController> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaController);
 };
 
 }  // namespace test

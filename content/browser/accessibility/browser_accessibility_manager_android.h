@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 
+#include <unordered_set>
 #include <utility>
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -45,15 +46,20 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
       BrowserAccessibilityDelegate* delegate);
 
+  BrowserAccessibilityManagerAndroid(
+      const BrowserAccessibilityManagerAndroid&) = delete;
+  BrowserAccessibilityManagerAndroid& operator=(
+      const BrowserAccessibilityManagerAndroid&) = delete;
+
   ~BrowserAccessibilityManagerAndroid() override;
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
-  // Helper methods to set/check if this is running as part of a WebView.
-  void set_is_running_as_webview(bool is_webview) {
-    is_running_as_webview_ = is_webview;
+  // Helper methods to set/check if image descriptions are allowed.
+  void set_allow_image_descriptions(bool allow_image_descriptions) {
+    allow_image_descriptions_ = allow_image_descriptions;
   }
-  bool IsRunningAsWebView() { return is_running_as_webview_; }
+  bool AllowImageDescriptions() { return allow_image_descriptions_; }
 
   // By default, the tree is pruned for a better screen reading experience,
   // including:
@@ -90,7 +96,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
                       BrowserAccessibility* node) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           BrowserAccessibility* node) override;
-  gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
   void FireLocationChanged(BrowserAccessibility* node);
 
@@ -154,15 +159,18 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // See docs for set_prune_tree_for_screen_reader, above.
   bool prune_tree_for_screen_reader_;
 
-  // Whether this manager is running as part of a WebView.
-  bool is_running_as_webview_ = false;
+  // Whether this manager allows image descriptions.
+  bool allow_image_descriptions_ = false;
 
   // Only set on the root BrowserAccessibilityManager. Keeps track of if
   // any node uses touch passthrough in any frame. See comment next to
   // any_node_uses_touch_passthrough(), above, for details.
   bool touch_passthrough_enabled_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAndroid);
+  // An unordered_set of |unique_id| values for nodes cleared from the cache
+  // with each atomic update to prevent superfluous cache clear calls.
+  std::unordered_set<int32_t> nodes_already_cleared_ =
+      std::unordered_set<int32_t>();
 };
 
 }  // namespace content

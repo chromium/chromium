@@ -38,12 +38,12 @@ class Size;
 namespace content {
 
 class BrowserAccessibilityManager;
-class FrameTree;
+class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
-class WebContents;
+class VisibleTimeRequestTrigger;
 enum class KeyboardEventProcessingResult;
 struct NativeWebKeyboardEvent;
 
@@ -52,6 +52,12 @@ struct NativeWebKeyboardEvent;
 //
 //  An interface implemented by an object interested in knowing about the state
 //  of the RenderWidgetHost.
+//
+// Layering note: Generally, WebContentsImpl should be the only implementation
+// of this interface. In particular, WebContentsImpl::FromRenderWidgetHostImpl()
+// assumes this. This delegate interface is useful for renderer_host/ to make
+// requests to WebContentsImpl, as renderer_host/ is not permitted to know the
+// WebContents type (see //renderer_host/DEPS).
 class CONTENT_EXPORT RenderWidgetHostDelegate {
  public:
   // Functions for controlling the browser top controls slide behavior with page
@@ -154,10 +160,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
 
   virtual RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
-  // Send page-level focus state to all SiteInstances involved in rendering the
-  // current FrameTree, not including the main frame's SiteInstance.
-  virtual void ReplicatePageFocus(bool is_focused) {}
-
   // Get the focused RenderWidgetHost associated with |receiving_widget|. A
   // RenderWidgetHostView, upon receiving a keyboard event, will pass its
   // RenderWidgetHost to this function to determine who should ultimately
@@ -181,12 +183,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // responsive again. The delegate can use this notification to end the
   // warning shown to the user.
   virtual void RendererResponsive(RenderWidgetHostImpl* render_widget_host) {}
-
-  // Notification that a cross-process subframe on this page has crashed, and a
-  // sad frame is shown if the subframe was visible.  |frame_visibility|
-  // specifies whether the subframe is visible, scrolled out of view, or hidden
-  // (e.g., with "display: none").
-  virtual void SubframeCrashed(blink::mojom::FrameVisibility visibility) {}
 
   // Requests to lock the mouse. Once the request is approved or rejected,
   // GotResponseToLockMouseRequest() will be called on the requesting render
@@ -237,12 +233,15 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the widget that holds the keyboard lock or nullptr if not locked.
   virtual RenderWidgetHostImpl* GetKeyboardLockWidget();
 
-  // Called when the visibility of the RenderFrameProxyHost in outer
-  // WebContents changes. This method is only called on an inner WebContents and
+  // Called when the visibility of the RenderFrameProxyHost changes.
+  // This method should only handle visibility for inner WebContents and
   // will eventually notify all the RenderWidgetHostViews belonging to that
-  // WebContents.
-  virtual void OnRenderFrameProxyVisibilityChanged(
-      blink::mojom::FrameVisibility visibility) {}
+  // WebContents. If this is not an inner WebContents or the inner WebContents
+  // FrameTree root does not match `render_frame_proxy_host` FrameTreeNode it
+  // should return false.
+  virtual bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
+      blink::mojom::FrameVisibility visibility);
 
   // Update the renderer's cache of the screen rect of the view and window.
   virtual void SendScreenRects() {}
@@ -254,12 +253,16 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual RenderViewHostDelegateView* GetDelegateView();
 
   // Returns true if the provided RenderWidgetHostImpl matches the current
-  // RenderWidgetHost on the main frame, and false otherwise.
-  virtual bool IsWidgetForMainFrame(RenderWidgetHostImpl*);
+  // RenderWidgetHost on the primary main frame, and false otherwise.
+  virtual bool IsWidgetForPrimaryMainFrame(RenderWidgetHostImpl*);
+
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May return nullptr if there is no RenderWidgetHostView.
+  virtual VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
 
   // Inner WebContents Helpers -------------------------------------------------
   //
-  // These functions are helpers in managing a hierharchy of WebContents
+  // These functions are helpers in managing a hierarchy of WebContents
   // involved in rendering inner WebContents.
 
   // Get the RenderWidgetHost that should receive page level focus events. This
@@ -273,10 +276,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // the focused WebContents.
   virtual void FocusOwningWebContents(
       RenderWidgetHostImpl* render_widget_host) {}
-
-  // Return this object cast to a WebContents, if it is one. If the object is
-  // not a WebContents, returns nullptr.
-  virtual WebContents* GetAsWebContents();
 
   // Get the UKM source ID for current content. This is used for providing
   // data about the content to the URL-keyed metrics service.
@@ -306,7 +305,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // The widget is identified by the route_id passed to CreateNewWidget.
   virtual void ShowCreatedWidget(int process_id,
                                  int widget_route_id,
-                                 const gfx::Rect& initial_rect_in_dips) {}
+                                 const gfx::Rect& initial_rect_in_dips,
+                                 const gfx::Rect& initial_anchor_rect_in_dips) {
+  }
 
  protected:
   virtual ~RenderWidgetHostDelegate() {}

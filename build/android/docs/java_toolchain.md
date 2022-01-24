@@ -223,7 +223,7 @@ We use several tools for static analysis.
 * Runs as part of normal compilation. Controlled by GN arg: `use_errorprone_java_compiler`.
 * Most useful check:
   * Enforcement of `@GuardedBy` annotations.
-* List of enabled / disabled checks exists [within javac.py](https://cs.chromium.org/chromium/src/build/android/gyp/javac.py?l=30)
+* List of enabled / disabled checks exists [within compile_java.py](https://cs.chromium.org/chromium/src/build/android/gyp/compile_java.py?l=30)
   * Many checks are currently disabled because there is work involved in fixing
     violations they introduce. Please help!
 * Custom checks for Chrome:

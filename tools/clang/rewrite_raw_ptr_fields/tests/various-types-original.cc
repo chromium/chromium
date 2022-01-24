@@ -22,27 +22,27 @@ struct SomeTemplate {
 };
 
 struct MyStruct {
-  // Expected rewrite: CheckedPtr<CheckedPtr<SomeClass>> double_ptr;
+  // Expected rewrite: raw_ptr<raw_ptr<SomeClass>> double_ptr;
   // TODO(lukasza): Handle recursion/nesting.
   SomeClass** double_ptr;
 
-  // Expected rewrite: CheckedPtr<void> void_ptr;
+  // Expected rewrite: raw_ptr<void> void_ptr;
   void* void_ptr;
 
-  // |bool*| used to be rewritten as |CheckedPtr<_Bool>| which doesn't compile:
+  // |bool*| used to be rewritten as |raw_ptr<_Bool>| which doesn't compile:
   // use of undeclared identifier '_Bool'.
   //
-  // Expected rewrite: CheckedPtr<bool> bool_ptr;
+  // Expected rewrite: raw_ptr<bool> bool_ptr;
   bool* bool_ptr;
-  // Expected rewrite: CheckedPtr<const bool> bool_ptr;
+  // Expected rewrite: raw_ptr<const bool> bool_ptr;
   const bool* const_bool_ptr;
 
   // Pointers to templates.
-  // Expected rewrite: CheckedPtr<std::string> string_ptr;
+  // Expected rewrite: raw_ptr<std::string> string_ptr;
   std::string* string_ptr;
-  // Expected rewrite: CheckedPtr<std::vector<char>> vector_ptr;
+  // Expected rewrite: raw_ptr<std::vector<char>> vector_ptr;
   std::vector<char>* vector_ptr;
-  // Expected rewrite: CheckedPtr<SomeTemplate<char>> template_ptr;
+  // Expected rewrite: raw_ptr<SomeTemplate<char>> template_ptr;
   SomeTemplate<char>* template_ptr;
 
   // Some types may be spelled in various, alternative ways.  If possible, the
@@ -50,37 +50,37 @@ struct MyStruct {
   //
   // Spelling of integer types.
   //
-  // Expected rewrite: CheckedPtr<int> ...
+  // Expected rewrite: raw_ptr<int> ...
   int* int_spelling1;
-  // Expected rewrite: CheckedPtr<signed int> ...
-  // TODO(lukasza): Fix?  Today this is rewritten into: CheckedPtr<int> ...
+  // Expected rewrite: raw_ptr<signed int> ...
+  // TODO(lukasza): Fix?  Today this is rewritten into: raw_ptr<int> ...
   signed int* int_spelling2;
-  // Expected rewrite: CheckedPtr<long int> ...
-  // TODO(lukasza): Fix?  Today this is rewritten into: CheckedPtr<long> ...
+  // Expected rewrite: raw_ptr<long int> ...
+  // TODO(lukasza): Fix?  Today this is rewritten into: raw_ptr<long> ...
   long int* int_spelling3;
-  // Expected rewrite: CheckedPtr<unsigned> ...
-  // TODO(lukasza): Fix?  Today this is rewritten into: CheckedPtr<unsigned int>
+  // Expected rewrite: raw_ptr<unsigned> ...
+  // TODO(lukasza): Fix?  Today this is rewritten into: raw_ptr<unsigned int>
   unsigned* int_spelling4;
-  // Expected rewrite: CheckedPtr<int32_t> ...
+  // Expected rewrite: raw_ptr<int32_t> ...
   int32_t* int_spelling5;
-  // Expected rewrite: CheckedPtr<int64_t> ...
+  // Expected rewrite: raw_ptr<int64_t> ...
   int64_t* int_spelling6;
-  // Expected rewrite: CheckedPtr<int_fast32_t> ...
+  // Expected rewrite: raw_ptr<int_fast32_t> ...
   int_fast32_t* int_spelling7;
   //
   // Spelling of structs and classes.
   //
-  // Expected rewrite: CheckedPtr<SomeClass> ...
+  // Expected rewrite: raw_ptr<SomeClass> ...
   SomeClass* class_spelling1;
-  // Expected rewrite: CheckedPtr<class SomeClass> ...
+  // Expected rewrite: raw_ptr<class SomeClass> ...
   class SomeClass* class_spelling2;
-  // Expected rewrite: CheckedPtr<my_namespace::SomeClass> ...
+  // Expected rewrite: raw_ptr<my_namespace::SomeClass> ...
   my_namespace::SomeClass* class_spelling3;
 
   // No rewrite of function pointers expected, because they won't ever be either
-  // A) allocated by PartitionAlloc or B) derived from CheckedPtrSupport.  In
+  // A) allocated by PartitionAlloc or B) derived from RawPtrSupport.  In
   // theory |member_data_ptr| below can be A or B, but it can't be expressed as
-  // non-pointer T used as a template argument of CheckedPtr.
+  // non-pointer T used as a template argument of raw_ptr<>.
   int (*func_ptr)();
   void (SomeClass::*member_func_ptr)(char);  // ~ pointer to SomeClass::Method
   int SomeClass::*member_data_ptr;  // ~ pointer to SomeClass::data_member
@@ -92,11 +92,11 @@ struct MyStruct {
   typedef SomeClass SomeClassTypedef;
   using SomeClassAlias = SomeClass;
   typedef void (*func_ptr_typedef2)(char);
-  // Expected rewrite: CheckedPtr<SomeClassTypedef> ...
+  // Expected rewrite: raw_ptr<SomeClassTypedef> ...
   SomeClassTypedef* typedef_ptr;
-  // Expected rewrite: CheckedPtr<SomeClassAlias> ...
+  // Expected rewrite: raw_ptr<SomeClassAlias> ...
   SomeClassAlias* alias_ptr;
-  // Expected rewrite: CheckedPtr<func_ptr_typedef2> ...
+  // Expected rewrite: raw_ptr<func_ptr_typedef2> ...
   func_ptr_typedef2* ptr_to_function_ptr;
 
   // Typedefs and type alias definitions should not be rewritten.
@@ -110,7 +110,7 @@ struct MyStruct {
   // --field-filter-file blocklist.  See also gen-char-test.cc for tests
   // covering generating the blocklist.
   //
-  // Expected rewrite: CheckedPtr<char>, etc.
+  // Expected rewrite: raw_ptr<char>, etc.
   char* char_ptr;
   const char* const_char_ptr;
   wchar_t* wide_char_ptr;

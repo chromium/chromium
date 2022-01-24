@@ -90,6 +90,8 @@ public class ComponentsProviderServiceTest {
         public void tearDown() {
             mConnection.close();
             cleanupFiles();
+            SafeModeService.clearSharedPrefsForTesting();
+            ComponentsProviderService.clearSharedPrefsForTesting();
         }
 
         @Test
@@ -264,6 +266,7 @@ public class ComponentsProviderServiceTest {
         public void tearDown() {
             cleanupFiles();
             SafeModeService.clearSharedPrefsForTesting();
+            ComponentsProviderService.clearSharedPrefsForTesting();
         }
 
         @Test
@@ -287,8 +290,45 @@ public class ComponentsProviderServiceTest {
             jobScheduler.cancelAll();
 
             mService.onCreate();
-
             Assert.assertTrue("Service should schedule updater job",
+                    ComponentsProviderService.isJobScheduled(
+                            jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
+        }
+
+        @Test
+        @SmallTest
+        public void testScheduleUpdateJob() throws Exception {
+            JobScheduler jobScheduler =
+                    (JobScheduler) ContextUtils.getApplicationContext().getSystemService(
+                            Context.JOB_SCHEDULER_SERVICE);
+            jobScheduler.cancelAll();
+
+            long currentTime = System.currentTimeMillis();
+
+            ComponentsProviderService.setClockForTesting(() -> currentTime);
+
+            ComponentsProviderService.maybeScheduleComponentUpdateService();
+            Assert.assertTrue("Service should schedule updater job",
+                    ComponentsProviderService.isJobScheduled(
+                            jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
+
+            jobScheduler.cancelAll();
+            Assert.assertFalse("Updater job should be cancelled",
+                    ComponentsProviderService.isJobScheduled(
+                            jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
+
+            ComponentsProviderService.setClockForTesting(() -> currentTime + 1000L);
+            ComponentsProviderService.maybeScheduleComponentUpdateService();
+            Assert.assertFalse("Updater job shouldn't be scheduled before "
+                            + ComponentsProviderService.UPDATE_INTERVAL_MS + " milliseconds pass",
+                    ComponentsProviderService.isJobScheduled(
+                            jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
+
+            ComponentsProviderService.setClockForTesting(
+                    () -> currentTime + ComponentsProviderService.UPDATE_INTERVAL_MS + 1000L);
+            ComponentsProviderService.maybeScheduleComponentUpdateService();
+            Assert.assertTrue("Updater job should be scheduled because "
+                            + ComponentsProviderService.UPDATE_INTERVAL_MS + " milliseconds passed",
                     ComponentsProviderService.isJobScheduled(
                             jobScheduler, TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
         }

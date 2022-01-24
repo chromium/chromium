@@ -600,27 +600,27 @@ void AutocompleteController::ResetSession() {
   provider_client_->GetOmniboxTriggeredFeatureService()->ResetSession();
 }
 
-void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
-    base::TimeDelta query_formulation_time,
-    AutocompleteMatch* match) const {
+void AutocompleteController::
+    UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
+        base::TimeDelta query_formulation_time,
+        AutocompleteMatch* match) const {
   if (!match->search_terms_args ||
       match->search_terms_args->assisted_query_stats.empty())
     return;
 
   // Append the query formulation time (time from when the user first typed a
-  // character into the omnibox to when the user selected a query) and whether
-  // a field trial has triggered to the AQS parameter.
-  TemplateURLRef::SearchTermsArgs search_terms_args(*match->search_terms_args);
-  search_terms_args.assisted_query_stats += base::StringPrintf(
-      ".%" PRId64 "j%dj%d",
-      query_formulation_time.InMilliseconds(),
+  // character into the omnibox to when the user selected a query), whether
+  // a field trial has triggered, and the current page classification to the AQS
+  // parameter.
+  match->search_terms_args->assisted_query_stats += base::StringPrintf(
+      ".%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       (search_provider_ &&
        search_provider_->field_trial_triggered_in_session()) ||
-      (zero_suggest_provider_ &&
-       zero_suggest_provider_->field_trial_triggered_in_session()),
+          (zero_suggest_provider_ &&
+           zero_suggest_provider_->field_trial_triggered_in_session()),
       input_.current_page_classification());
 
-  // Append the experiment stats to the AQS parameter to be logged in
+  // Append the ExperimentStatsV2 to the AQS parameter to be logged in
   // searchbox_stats.proto's experiment_stats_v2 field.
   if (zero_suggest_provider_) {
     // The field number for the experiment stat type specified as an int
@@ -649,16 +649,15 @@ void AutocompleteController::UpdateMatchDestinationURLWithQueryFormulationTime(
     }
     if (!experiment_stats_v2.empty()) {
       // 'j' is used as a delimiter between individual experiment stat entries.
-      search_terms_args.assisted_query_stats +=
+      match->search_terms_args->assisted_query_stats +=
           "." + base::JoinString(experiment_stats_v2, "j");
     }
   }
 
-  UpdateMatchDestinationURL(search_terms_args, match);
+  SetMatchDestinationURL(match);
 }
 
-void AutocompleteController::UpdateMatchDestinationURL(
-    const TemplateURLRef::SearchTermsArgs& search_terms_args,
+void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
   const TemplateURL* template_url = match->GetTemplateURL(
       template_url_service_, false);
@@ -666,7 +665,7 @@ void AutocompleteController::UpdateMatchDestinationURL(
     return;
 
   match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-      search_terms_args, template_url_service_->search_terms_data()));
+      *match->search_terms_args, template_url_service_->search_terms_data()));
 #if defined(OS_ANDROID)
   match->UpdateJavaDestinationUrl();
 #endif
@@ -703,7 +702,15 @@ void AutocompleteController::UpdateResult(
        i != providers_.end(); ++i)
     result_.AppendMatches(input_, (*i)->matches());
 
-  if (OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
+  bool perform_tab_match = OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled();
+#if defined(OS_ANDROID)
+  // Do not look for matching tabs on Android unless we collected all the
+  // suggestions. Tab matching is an expensive process with multiple JNI calls
+  // involved. Run it only when all the suggestions are collected.
+  perform_tab_match &= done_;
+#endif
+
+  if (perform_tab_match)
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
   UpdateHeaderInfoFromZeroSuggestProvider(&result_);
@@ -740,7 +747,7 @@ void AutocompleteController::UpdateResult(
 
   // Below are all annotations after the match list is ready.
   AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
-                               result_);
+                               provider_client_->GetPrefs(), result_);
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);
@@ -901,22 +908,12 @@ void AutocompleteController::UpdateAssistedQueryStats(
   // Build the impressions string (the AQS part after ".").
   std::string autocompletions;
   int count = 0;
-  int num_zero_prefix_shown = 0;
   size_t last_type = std::u16string::npos;
   base::flat_set<int> last_subtypes = {};
   for (const auto& match : *result) {
     auto subtypes = match.subtypes;
     size_t type = std::u16string::npos;
     GetMatchTypeAndExtendSubtypes(match, &type, &subtypes);
-
-    // Count any suggestions that constitute zero-prefix suggestions.
-    if (match.subtypes.contains(/*SUBTYPE_ZERO_PREFIX_LOCAL_HISTORY=*/450) ||
-        match.subtypes.contains(
-            /*SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS=*/451) ||
-        match.subtypes.contains(/*SUBTYPE_ZERO_PREFIX=*/362)) {
-      ++num_zero_prefix_shown;
-    }
-
     if (last_type != std::u16string::npos &&
         (type != last_type || subtypes != last_subtypes)) {
       AppendAvailableAutocompletion(last_type, last_subtypes, count,
@@ -945,16 +942,6 @@ void AutocompleteController::UpdateAssistedQueryStats(
         base::StringPrintf("chrome.%s.%s",
                            selected_index.c_str(),
                            autocompletions.c_str());
-
-    if (num_zero_prefix_shown > 0) {
-      // Note: 1st skipped parameter: EXPERIMENT_STATS.
-      // Note: 2nd skipped parameter: SINGLE_SEARCHBOX_CONTENT.
-      match->search_terms_args->assisted_query_stats +=
-          base::StringPrintf("...%d", num_zero_prefix_shown);
-    }
-
-    match->destination_url = GURL(template_url->url_ref().ReplaceSearchTerms(
-        *match->search_terms_args, template_url_service_->search_terms_data()));
   }
 }
 
@@ -984,9 +971,8 @@ void AutocompleteController::StartExpireTimer() {
   const int kExpireTimeMS = 500;
 
   if (result_.HasCopiedMatches())
-    expire_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(kExpireTimeMS),
-                        this, &AutocompleteController::ExpireCopiedEntries);
+    expire_timer_.Start(FROM_HERE, base::Milliseconds(kExpireTimeMS), this,
+                        &AutocompleteController::ExpireCopiedEntries);
 }
 
 void AutocompleteController::StartStopTimer() {

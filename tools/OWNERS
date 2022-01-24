@@ -41,4 +41,3 @@ per-file roll_webrtc.py=mbonadei@chromium.org
 per-file download_optimization_profile.py=gbiv@chromium.org
 
 per-file update_pgo_profiles.py=liaoyuke@chromium.org
-per-file update_pgo_profiles.py=sebmarchand@chromium.org

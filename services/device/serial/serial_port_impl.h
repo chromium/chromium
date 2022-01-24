@@ -48,6 +48,9 @@ class SerialPortImpl : public mojom::SerialPort {
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
       OpenCallback callback);
 
+  SerialPortImpl(const SerialPortImpl&) = delete;
+  SerialPortImpl& operator=(const SerialPortImpl&) = delete;
+
  private:
   SerialPortImpl(
       scoped_refptr<SerialIoHandler> io_handler,
@@ -102,7 +105,6 @@ class SerialPortImpl : public mojom::SerialPort {
   DrainCallback drain_callback_;
 
   base::WeakPtrFactory<SerialPortImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SerialPortImpl);
 };
 
 }  // namespace device

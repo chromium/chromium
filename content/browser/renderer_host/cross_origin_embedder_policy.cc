@@ -6,7 +6,6 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -19,17 +18,6 @@ network::CrossOriginEmbedderPolicy CoepFromMainResponse(
 
   if (base::FeatureList::IsEnabled(
           network::features::kCrossOriginEmbedderPolicyCredentialless)) {
-    return coep;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          network::features::
-              kCrossOriginEmbedderPolicyCredentiallessOriginTrial) &&
-      context_main_response->headers &&
-      blink::TrialTokenValidator().RequestEnablesFeature(
-          context_url, context_main_response->headers.get(),
-          "CrossOriginEmbedderPolicyCredentiallessOriginTrial",
-          base::Time::Now())) {
     return coep;
   }
 

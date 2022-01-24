@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_FONT_PPAPI_FONTCONFIG_MATCHING_H_
 
 #include <stdint.h>
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ppapi/buildflags/buildflags.h"
 

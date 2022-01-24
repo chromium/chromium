@@ -47,6 +47,10 @@ class UploadDataSource {
 class BytesUploadDataSource : public UploadDataSource {
  public:
   BytesUploadDataSource(const base::StringPiece& bytes) : bytes_(bytes) {}
+
+  BytesUploadDataSource(const BytesUploadDataSource&) = delete;
+  BytesUploadDataSource& operator=(const BytesUploadDataSource&) = delete;
+
   ~BytesUploadDataSource() override = default;
 
   // UploadDataSource:
@@ -56,13 +60,15 @@ class BytesUploadDataSource : public UploadDataSource {
 
  private:
   base::StringPiece bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BytesUploadDataSource);
 };
 
 class FileUploadDataSource : public UploadDataSource {
  public:
   FileUploadDataSource(const base::FilePath& path) : path_(path) {}
+
+  FileUploadDataSource(const FileUploadDataSource&) = delete;
+  FileUploadDataSource& operator=(const FileUploadDataSource&) = delete;
+
   ~FileUploadDataSource() override = default;
 
   // UploadDataSource:
@@ -72,8 +78,6 @@ class FileUploadDataSource : public UploadDataSource {
 
  private:
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileUploadDataSource);
 };
 
 bool CreateUploadDataSourcesFromResourceRequest(
@@ -149,10 +153,6 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
 }  // namespace
 
 WebRequestInfoInitParams::WebRequestInfoInitParams() = default;
-WebRequestInfoInitParams::WebRequestInfoInitParams(
-    WebRequestInfoInitParams&& other) = default;
-WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
-    WebRequestInfoInitParams&& other) = default;
 
 WebRequestInfoInitParams::WebRequestInfoInitParams(
     uint64_t request_id,
@@ -191,6 +191,12 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
         CreateRequestBodyData(method, extra_request_headers, data_sources);
   }
 }
+
+WebRequestInfoInitParams::WebRequestInfoInitParams(
+    WebRequestInfoInitParams&& other) = default;
+
+WebRequestInfoInitParams& WebRequestInfoInitParams::operator=(
+    WebRequestInfoInitParams&& other) = default;
 
 WebRequestInfoInitParams::~WebRequestInfoInitParams() = default;
 

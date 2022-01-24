@@ -17,8 +17,6 @@ source_set("gfx") {
     "aw_gl_surface_external_stencil.h",
     "aw_picture.cc",
     "aw_picture.h",
-    "aw_render_thread_context_provider.cc",
-    "aw_render_thread_context_provider.h",
     "aw_vulkan_context_provider.cc",
     "aw_vulkan_context_provider.h",
     "begin_frame_source_webview.cc",

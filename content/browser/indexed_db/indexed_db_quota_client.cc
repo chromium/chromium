@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/database/database_util.h"

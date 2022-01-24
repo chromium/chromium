@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -19,6 +18,10 @@ namespace extensions {
 class SystemIndicatorHandler : public ManifestHandler {
  public:
   SystemIndicatorHandler();
+
+  SystemIndicatorHandler(const SystemIndicatorHandler&) = delete;
+  SystemIndicatorHandler& operator=(const SystemIndicatorHandler&) = delete;
+
   ~SystemIndicatorHandler() override;
 
   // Returns the default system indicator icon for the given |extension|, if
@@ -33,8 +36,6 @@ class SystemIndicatorHandler : public ManifestHandler {
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemIndicatorHandler);
 };
 
 }  // namespace extensions

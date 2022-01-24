@@ -33,15 +33,16 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   ASSERT_FALSE([decider_ shouldAllowRequestInfo]);
   NSURL* url = [NSURL URLWithString:@"http://test.url"];
   NSURLRequest* request = [NSURLRequest requestWithURL:url];
-  ui::PageTransition transition_type = ui::PageTransition::PAGE_TRANSITION_LINK;
-  bool target_frame_is_main = true;
-  bool target_frame_is_cross_origin = false;
-  bool has_user_gesture = false;
-  WebStatePolicyDecider::RequestInfo request_info(
+  const ui::PageTransition transition_type =
+      ui::PageTransition::PAGE_TRANSITION_LINK;
+  const bool target_frame_is_main = true;
+  const bool target_frame_is_cross_origin = false;
+  const bool has_user_gesture = false;
+  const WebStatePolicyDecider::RequestInfo request_info(
       transition_type, target_frame_is_main, target_frame_is_cross_origin,
       has_user_gesture);
   decider_bridge_.ShouldAllowRequest(request, request_info, base::DoNothing());
-  FakeShouldAllowRequestInfo* should_allow_request_info =
+  const FakeShouldAllowRequestInfo* should_allow_request_info =
       [decider_ shouldAllowRequestInfo];
   ASSERT_TRUE(should_allow_request_info);
   EXPECT_EQ(request, should_allow_request_info->request);
@@ -54,7 +55,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       should_allow_request_info->request_info.transition_type));
 }
 
-// Tests |decidePolicyForNavigationResponse:forMainFrame:completionHandler:|
+// Tests |decidePolicyForNavigationResponse:responseInfo:completionHandler:|
 // forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
   ASSERT_FALSE([decider_ decidePolicyForNavigationResponseInfo]);
@@ -63,16 +64,18 @@ TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
                                                       MIMEType:@"text/html"
                                          expectedContentLength:0
                                               textEncodingName:nil];
-  bool for_main_frame = true;
-  decider_bridge_.ShouldAllowResponse(response, for_main_frame,
+  const bool for_main_frame = true;
+  const WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+  decider_bridge_.ShouldAllowResponse(response, response_info,
                                       base::DoNothing());
-  FakeDecidePolicyForNavigationResponseInfo*
+  const FakeDecidePolicyForNavigationResponseInfo*
       decide_policy_for_navigation_response_info =
           [decider_ decidePolicyForNavigationResponseInfo];
   ASSERT_TRUE(decide_policy_for_navigation_response_info);
   EXPECT_EQ(response, decide_policy_for_navigation_response_info->response);
-  EXPECT_EQ(for_main_frame,
-            decide_policy_for_navigation_response_info->for_main_frame);
+  EXPECT_EQ(
+      for_main_frame,
+      decide_policy_for_navigation_response_info->response_info.for_main_frame);
 }
 
 }  // namespace web

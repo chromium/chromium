@@ -4,6 +4,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 
+const MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED = 10;
 /**
  * The data of a peer connection update.
  * @param {number} pid The id of the renderer.
@@ -81,18 +82,9 @@ export class PeerConnectionUpdateTable {
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
 
-    // map internal event names to spec event names.
-    let type = {
-      onRenegotiationNeeded: 'negotiationneeded',
-      signalingStateChange: 'signalingstatechange',
-      iceGatheringStateChange: 'icegatheringstatechange',
-      legacyIceConnectionStateChange: 'iceconnectionstatechange (legacy)',
-      iceConnectionStateChange: 'iceconnectionstatechange',
-      connectionStateChange: 'connectionstatechange',
-      onIceCandidate: 'icecandidate',
-      stop: 'close'
-    }[update.type] ||
-        update.type;
+    // `type` is a display variant of update.type which does not get serialized
+    // into chrome://webrtc-internals.
+    let type = update.type;
 
     if (update.value.length === 0) {
       const typeItem = document.createElement('td');
@@ -101,7 +93,7 @@ export class PeerConnectionUpdateTable {
       return;
     }
 
-    if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
+    if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
       // extract ICE candidate type from the field following typ.
       const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
       if (candidateType) {
@@ -118,6 +110,20 @@ export class PeerConnectionUpdateTable {
     } else if (update.type === 'setConfiguration') {
       // Update the configuration that is displayed at the top.
       peerConnectionElement.firstChild.children[2].textContent = update.value;
+    } else if (['iceconnectionstatechange', 'connectionstatechange',
+        'signalingstatechange'].includes(update.type)) {
+      const fieldName = {
+        'iceconnectionstatechange' : 'iceconnectionstate',
+        'connectionstatechange' : 'connectionstate',
+        'signalingstatechange' : 'signalingstate',
+      }[update.type];
+      const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
+      const numberOfEvents = el.textContent.split(' => ').length;
+      if (numberOfEvents < MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' => ' + update.value;
+      } else if (numberOfEvents === MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' ...';
+      }
     }
 
     const summaryItem = $('summary-template').content.cloneNode(true);
@@ -130,45 +136,13 @@ export class PeerConnectionUpdateTable {
     details.appendChild(valueContainer);
 
     // Highlight ICE failures and failure callbacks.
-    if ((update.type === 'iceConnectionStateChange' &&
-         update.value === 'ICEConnectionStateFailed') ||
+    if ((update.type === 'iceconnectionstatechange' &&
+         update.value === 'failed') ||
+        (update.type === 'iceconnectionstatechange (legacy)' &&
+         update.value === 'failed') ||
         update.type.indexOf('OnFailure') !== -1 ||
         update.type === 'addIceCandidateFailed') {
       valueContainer.parentElement.classList.add('update-log-failure');
-    }
-
-    let {value} = update;
-    // map internal names and values to names and events from the
-    // specification. This is a display change which shall not
-    // change the JSON dump.
-    if (update.type === 'iceConnectionStateChange') {
-      value = {
-        ICEConnectionStateNew: 'new',
-        ICEConnectionStateChecking: 'checking',
-        ICEConnectionStateConnected: 'connected',
-        ICEConnectionStateCompleted: 'completed',
-        ICEConnectionStateFailed: 'failed',
-        ICEConnectionStateDisconnected: 'disconnected',
-        ICEConnectionStateClosed: 'closed',
-      }[value] ||
-          value;
-    } else if (update.type === 'iceGatheringStateChange') {
-      value = {
-        ICEGatheringStateNew: 'new',
-        ICEGatheringStateGathering: 'gathering',
-        ICEGatheringStateComplete: 'complete',
-      }[value] ||
-          value;
-    } else if (update.type === 'signalingStateChange') {
-      value = {
-        SignalingStateStable: 'stable',
-        SignalingStateHaveLocalOffer: 'have-local-offer',
-        SignalingStateHaveRemoteOffer: 'have-remote-offer',
-        SignalingStateHaveLocalPrAnswer: 'have-local-pranswer',
-        SignalingStateHaveRemotePrAnswer: 'have-remote-pranswer',
-        SignalingStateClosed: 'closed',
-      }[value] ||
-          value;
     }
 
     // RTCSessionDescription is serialized as 'type: <type>, sdp:'
@@ -203,7 +177,7 @@ export class PeerConnectionUpdateTable {
         valueContainer.appendChild(sectionDetails);
       });
     } else {
-      valueContainer.textContent = value;
+      valueContainer.textContent = update.value;
     }
   }
 

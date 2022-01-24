@@ -174,7 +174,7 @@ public class ContentShellActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mIntentRequestTracker.onActivityResult(requestCode, resultCode, data, mWindowAndroid);
+        mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

@@ -1,0 +1,57 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.text-button {
+  box-sizing: border-box;
+  font: 500 13px/20px Roboto;
+  height: 32px;
+  padding: 0 16px;
+}
+
+.text-button.pill {
+  border-radius: var(--border-radius-rounded-with-short-side);
+}
+
+button.text-button.pill:focus {
+  --focus-ring-size: 2px;
+  --focus-ring-style: pill;
+}
+
+.text-button.pill {
+  border-radius: var(--border-radius-rounded-with-short-side);
+}
+
+.text-button.dark.primary {
+  background: var(--blue-300);
+  color: var(--grey-900);
+}
+
+.text-button.dark.primary:hover {
+  background: rgba(var(--blue-300-rgb), 0.92);
+}
+
+.text-button.dark.secondary {
+  background: 1px solid var(--grey-900);
+  border: 1px solid var(--grey-700);
+  color: var(--blue-300);
+}
+
+.text-button.dark.secondary:hover {
+  background: rgba(var(--blue-300-rgb), 0.08);
+}
+
+.icon-button {
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+
+button.icon-button:focus {
+  --focus-ring-size: 2px;
+  --focus-ring-style: circle;
+}
+
+button.icon-button.dark:hover {
+  background-color: rgba(var(--blue-300-rgb), 0.08);
+}

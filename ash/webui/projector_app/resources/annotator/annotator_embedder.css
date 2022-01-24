@@ -1,0 +1,18 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  background-color: transparent;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.marker-iframe {
+  border:0px;
+  height:100vh;
+  margin:0px;
+  overflow:hidden;
+  width:100vw;
+}

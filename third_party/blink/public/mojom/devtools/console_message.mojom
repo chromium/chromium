@@ -27,3 +27,7 @@ enum ConsoleMessageSource {
   kIntervention,
   kRecommendation
 };
+
+enum ConsoleMessageCategory {
+  Cors,
+};

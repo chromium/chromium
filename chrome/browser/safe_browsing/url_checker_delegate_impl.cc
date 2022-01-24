@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -52,11 +53,11 @@ void DestroyNoStatePrefetchContents(
 }
 
 void CreateSafeBrowsingUserInteractionObserver(
-    const content::WebContents::Getter& web_contents_getter,
     const security_interstitials::UnsafeResource& resource,
     bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
-  content::WebContents* web_contents = web_contents_getter.Run();
+  content::WebContents* web_contents =
+      security_interstitials::GetWebContentsForResource(resource);
   // Don't delay the interstitial for prerender pages and portals.
   if (!web_contents ||
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
@@ -125,8 +126,7 @@ void UrlCheckerDelegateImpl::
         bool is_main_frame) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CreateSafeBrowsingUserInteractionObserver,
-                                resource.web_contents_getter, resource,
-                                is_main_frame, ui_manager_));
+                                resource, is_main_frame, ui_manager_));
 }
 
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {

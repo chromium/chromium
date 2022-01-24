@@ -20,7 +20,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
@@ -30,14 +29,16 @@
 #include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
@@ -67,6 +68,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/common/partition_alloc_support.h"
 #include "content/common/process_visibility_tracker.h"
+#include "content/common/pseudonymization_salt.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
@@ -82,6 +84,7 @@
 #include "content/renderer/categorized_worker_pool.h"
 #include "content/renderer/effective_connection_type_helper.h"
 #include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
+#include "content/renderer/media/media_factory.h"
 #include "content/renderer/media/media_interface_factory.h"
 #include "content/renderer/media/render_media_client.h"
 #include "content/renderer/net_info_helper.h"
@@ -93,6 +96,7 @@
 #include "content/renderer/variations_render_thread_observer.h"
 #include "content/renderer/worker/embedded_shared_worker_stub.h"
 #include "content/renderer/worker/worker_thread_registry.h"
+#include "content/services/shared_storage_worklet/shared_storage_worklet_service_impl.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "gin/public/debug.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -147,6 +151,7 @@
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_features.h"
@@ -154,6 +159,7 @@
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/rendering_pipeline.h"
+#include "v8/include/v8-extension.h"
 
 #if defined(OS_ANDROID)
 #include <cpu-features.h>
@@ -169,6 +175,7 @@
 #if defined(OS_WIN)
 #include <objbase.h>
 #include <windows.h>
+#include "content/renderer/media/win/dcomp_texture_factory.h"
 #endif
 
 #ifdef ENABLE_VTUNE_JIT_INTERFACE
@@ -195,7 +202,6 @@ namespace content {
 namespace {
 
 using ::base::PassKey;
-using ::base::ThreadRestrictions;
 using ::blink::WebDocument;
 using ::blink::WebFrame;
 using ::blink::WebNetworkStateNotifier;
@@ -236,34 +242,6 @@ static_assert(
         base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) ==
         v8::MemoryPressureLevel::kCritical,
     "critical level not align");
-
-void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
-  // Each histogram has an implicit '0' bucket (for underflow), so we can always
-  // bump the minimum to 1.
-  DCHECK_LE(0, min);
-  min = std::max(1, min);
-
-  // For boolean histograms, always include an overflow bucket [2, infinity).
-  if (max == 1 && buckets == 2) {
-    max = 2;
-    buckets = 3;
-  }
-
-  RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
-  // render_thread_impl can be null in tests.
-  std::string histogram_name = render_thread_impl
-                                   ? render_thread_impl->histogram_customizer()
-                                         ->ConvertToCustomHistogramName(name)
-                                   : std::string{name};
-  return base::Histogram::FactoryGet(
-      histogram_name, min, max, buckets,
-      base::Histogram::kUmaTargetedHistogramFlag);
-}
-
-void AddHistogramSample(void* hist, int sample) {
-  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
-  histogram->Add(sample);
-}
 
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   using base::debug::AllocateCrashKeyString;
@@ -362,6 +340,55 @@ static bool IsSingleProcess() {
       switches::kSingleProcess);
 }
 
+// Whether to initialize the font manager when the renderer starts on a
+// background thread.
+const base::Feature kFontManagerEarlyInit{"FontManagerEarlyInit",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// A thread for running shared storage worklet operations. It hosts a worklet
+// environment belonging to one Document. The object owns itself, cleaning up
+// when the worklet has shut down.
+class SelfOwnedSharedStorageWorkletThread {
+ public:
+  SelfOwnedSharedStorageWorkletThread(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
+      mojo::PendingReceiver<
+          shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)
+      : main_thread_runner_(std::move(main_thread_runner)) {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+
+    auto disconnect_handler = base::BindPostTask(
+        main_thread_runner_,
+        base::BindOnce(&SelfOwnedSharedStorageWorkletThread::
+                           OnSharedStorageWorkletServiceDestroyed,
+                       weak_factory_.GetWeakPtr()));
+
+    auto task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::BEST_EFFORT,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+    // Initialize the worklet service in a new thread.
+    worklet_thread_ = base::SequenceBound<
+        shared_storage_worklet::SharedStorageWorkletServiceImpl>(
+        task_runner, std::move(receiver), std::move(disconnect_handler));
+  }
+
+ private:
+  void OnSharedStorageWorkletServiceDestroyed() {
+    DCHECK(main_thread_runner_->BelongsToCurrentThread());
+    worklet_thread_.Reset();
+    delete this;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
+
+  base::SequenceBound<shared_storage_worklet::SharedStorageWorkletServiceImpl>
+      worklet_thread_;
+
+  base::WeakPtrFactory<SelfOwnedSharedStorageWorkletThread> weak_factory_{this};
+};
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -406,7 +433,6 @@ void RenderThreadImpl::HistogramCustomizer::SetCommonHost(
   if (host != common_host_) {
     common_host_ = host;
     common_host_histogram_suffix_ = HostToCustomHistogramSuffix(host);
-    blink::MainThreadIsolate()->SetCreateHistogramFunction(CreateHistogram);
   }
 }
 
@@ -736,6 +762,11 @@ void RenderThreadImpl::Init() {
 
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
   AddObserver(variations_observer_.get());
+
+  if (base::FeatureList::IsEnabled(kFontManagerEarlyInit)) {
+    base::ThreadPool::PostTask(FROM_HERE,
+                               base::BindOnce([] { SkFontMgr::RefDefault(); }));
+  }
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
@@ -757,13 +788,7 @@ void RenderThreadImpl::Shutdown() {
   // crashes caused by shutdown ordering. Immediate exit eliminates
   // those problems.
 
-  // Give the V8 isolate a chance to dump internal stats useful for performance
-  // evaluation and debugging.
-  blink::MainThreadIsolate()->DumpAndResetStats();
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpBlinkRuntimeCallStats))
-    blink::LogRuntimeCallStats();
+  blink::LogStatsDuringShutdown();
 
   // In a single-process mode, we cannot call _exit(0) in Shutdown() because
   // it will exit the process before the browser side is ready to exit.
@@ -868,10 +893,8 @@ void RenderThreadImpl::InitializeCompositorThread() {
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
 
-  compositor_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&ThreadRestrictions::SetIOAllowed),
-                     false));
+  compositor_task_runner_->PostTask(FROM_HERE,
+                                    base::BindOnce(&base::DisallowBlocking));
   GetContentClient()->renderer()->PostCompositorThreadCreated(
       compositor_task_runner_.get());
 }
@@ -889,6 +912,13 @@ RenderThreadImpl::CreateVideoFrameCompositorTaskRunner() {
   }
 
   return video_frame_compositor_task_runner_;
+}
+
+void RenderThreadImpl::CreateSharedStorageWorkletService(
+    mojo::PendingReceiver<
+        shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {
+  new SelfOwnedSharedStorageWorkletThread(
+      GetWebMainThreadScheduler()->DefaultTaskRunner(), std::move(receiver));
 }
 
 void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
@@ -917,8 +947,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
                     main_thread_scheduler_.get());
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  isolate->SetCreateHistogramFunction(CreateHistogram);
-  isolate->SetAddHistogramSampleFunction(AddHistogramSample);
   isolate->SetAddCrashKeyCallback(AddCrashKey);
 
   if (!command_line.HasSwitch(switches::kDisableThreadedCompositing))
@@ -958,6 +986,12 @@ void RenderThreadImpl::RegisterSchemes() {
       chrome_untrusted_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
       chrome_untrusted_scheme);
+
+  if (base::FeatureList::IsEnabled(features::kWebUICodeCache)) {
+    WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(chrome_scheme);
+    WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
+        chrome_untrusted_scheme);
+  }
 
   // devtools:
   WebString devtools_scheme(WebString::FromASCII(kChromeDevToolsScheme));
@@ -1166,17 +1200,10 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 
   bool support_locking = false;
   bool support_raster_interface = true;
-
-  // Only support OOPR on this context if the general feature is enabled in
-  // addition to OOPR for canvas. Otherwise this context will raster canvas
-  // through Skia's GrContext.
   bool support_oop_rasterization =
       gpu_channel_host->gpu_feature_info()
-              .status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-          gpu::kGpuFeatureStatusEnabled &&
-      !gpu_channel_host->gpu_feature_info().IsWorkaroundEnabled(
-          gpu::DISABLE_CANVAS_OOP_RASTERIZATION) &&
-      base::FeatureList::IsEnabled(features::kCanvasOopRasterization);
+          .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
+      gpu::kGpuFeatureStatusEnabled;
   bool support_gles2_interface = false;
   bool support_grcontext = !support_oop_rasterization;
   // Enable automatic flushes to improve canvas throughput.
@@ -1196,7 +1223,6 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
 }
 
 #if defined(OS_ANDROID)
-
 scoped_refptr<StreamTextureFactory> RenderThreadImpl::GetStreamTexureFactory() {
   DCHECK(IsMainThread());
   if (!stream_texture_factory_ || stream_texture_factory_->IsLost()) {
@@ -1213,8 +1239,23 @@ scoped_refptr<StreamTextureFactory> RenderThreadImpl::GetStreamTexureFactory() {
 bool RenderThreadImpl::EnableStreamTextureCopy() {
   return GetContentClient()->UsingSynchronousCompositing();
 }
+#endif  // defined(OS_ANDROID)
 
-#endif
+#if defined(OS_WIN)
+scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
+  DCHECK(IsMainThread());
+  if (!dcomp_texture_factory_.get() || dcomp_texture_factory_->IsLost()) {
+    scoped_refptr<gpu::GpuChannelHost> channel = EstablishGpuChannelSync();
+    if (!channel) {
+      dcomp_texture_factory_ = nullptr;
+      return nullptr;
+    }
+    dcomp_texture_factory_ = DCOMPTextureFactory::Create(
+        std::move(channel), GetMediaThreadTaskRunner());
+  }
+  return dcomp_texture_factory_;
+}
+#endif  // defined(OS_WIN)
 
 base::WaitableEvent* RenderThreadImpl::GetShutdownEvent() {
   return ChildProcess::current()->GetShutDownEvent();
@@ -1231,7 +1272,14 @@ void RenderThreadImpl::SetRendererProcessType(
 
 blink::WebString RenderThreadImpl::GetUserAgent() {
   DCHECK(!user_agent_.IsNull());
+
   return user_agent_;
+}
+
+blink::WebString RenderThreadImpl::GetReducedUserAgent() {
+  DCHECK(!reduced_user_agent_.IsNull());
+
+  return reduced_user_agent_;
 }
 
 const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
@@ -1240,6 +1288,12 @@ const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
 
 bool RenderThreadImpl::IsUseZoomForDSF() {
   return is_zoom_for_dsf_enabled_;
+}
+
+void RenderThreadImpl::WriteIntoTrace(
+    perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
+  int id = GetClientId();
+  proto->set_id(id);
 }
 
 void RenderThreadImpl::OnAssociatedInterfaceRequest(
@@ -1323,10 +1377,6 @@ bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   }
 
   return false;
-}
-
-void RenderThreadImpl::SetSchedulerKeepActive(bool keep_active) {
-  main_thread_scheduler_->SetSchedulerKeepActive(keep_active);
 }
 
 void RenderThreadImpl::SetProcessState(
@@ -1539,21 +1589,21 @@ void RenderThreadImpl::RecordMetricsForBackgroundedRendererPurge() {
           &RenderThreadImpl::
               OnRecordMetricsForBackgroundedRendererPurgeTimerExpired,
           base::Unretained(this), "30min", process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(30));
+      base::Minutes(30));
   GetWebMainThreadScheduler()->DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &RenderThreadImpl::
               OnRecordMetricsForBackgroundedRendererPurgeTimerExpired,
           base::Unretained(this), "60min", process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(60));
+      base::Minutes(60));
   GetWebMainThreadScheduler()->DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &RenderThreadImpl::
               OnRecordMetricsForBackgroundedRendererPurgeTimerExpired,
           base::Unretained(this), "90min", process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(90));
+      base::Minutes(90));
 }
 
 void RenderThreadImpl::CompositingModeFallbackToSoftware() {
@@ -1639,6 +1689,11 @@ void RenderThreadImpl::SetUserAgent(const std::string& user_agent) {
   DCHECK(user_agent_.IsNull());
   user_agent_ = WebString::FromUTF8(user_agent);
   GetContentClient()->renderer()->DidSetUserAgent(user_agent);
+}
+
+void RenderThreadImpl::SetReducedUserAgent(const std::string& user_agent) {
+  DCHECK(reduced_user_agent_.IsNull());
+  reduced_user_agent_ = WebString::FromUTF8(user_agent);
 }
 
 void RenderThreadImpl::SetUserAgentMetadata(
@@ -1866,19 +1921,19 @@ void RenderThreadImpl::OnRendererBackgrounded() {
       base::BindOnce(&RenderThreadImpl::RecordMemoryUsageAfterBackgrounded,
                      base::Unretained(this), "5min",
                      process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(5));
+      base::Minutes(5));
   GetWebMainThreadScheduler()->DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RenderThreadImpl::RecordMemoryUsageAfterBackgrounded,
                      base::Unretained(this), "10min",
                      process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(10));
+      base::Minutes(10));
   GetWebMainThreadScheduler()->DefaultTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RenderThreadImpl::RecordMemoryUsageAfterBackgrounded,
                      base::Unretained(this), "15min",
                      process_foregrounded_count_),
-      base::TimeDelta::FromMinutes(15));
+      base::Minutes(15));
 }
 
 void RenderThreadImpl::OnRendererForegrounded() {

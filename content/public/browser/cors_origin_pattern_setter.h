@@ -10,7 +10,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
@@ -54,6 +53,9 @@ class CONTENT_EXPORT CorsOriginPatternSetter
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure);
 
+  CorsOriginPatternSetter(const CorsOriginPatternSetter&) = delete;
+  CorsOriginPatternSetter& operator=(const CorsOriginPatternSetter&) = delete;
+
  private:
   friend class base::RefCounted<CorsOriginPatternSetter>;
   ~CorsOriginPatternSetter();
@@ -65,8 +67,6 @@ class CONTENT_EXPORT CorsOriginPatternSetter
   const std::vector<network::mojom::CorsOriginPatternPtr> block_patterns_;
 
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetter);
 };
 
 }  // namespace content

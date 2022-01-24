@@ -22,10 +22,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -49,13 +49,10 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
-#include "net/android/cellular_signal_strength.h"
 #include "net/android/network_library.h"
 #endif  // OS_ANDROID
 
 namespace net {
-
-class HostResolver;
 
 namespace {
 
@@ -133,8 +130,7 @@ NetworkQualityEstimator::NetworkQualityEstimator(
               1.0 /*params_->weight_multiplier_per_signal_strength_level()*/)},
       effective_connection_type_at_last_main_frame_(
           EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
-      effective_connection_type_recomputation_interval_(
-          base::TimeDelta::FromSeconds(10)),
+      effective_connection_type_recomputation_interval_(base::Seconds(10)),
       rtt_observations_size_at_last_ect_computation_(0),
       throughput_observations_size_at_last_ect_computation_(0),
       transport_rtt_observation_count_last_ect_computation_(0),
@@ -281,7 +277,7 @@ bool NetworkQualityEstimator::IsHangingRequest(
           params_->http_rtt_transport_rtt_min_count() &&
       (observed_http_rtt <
        params_->hanging_request_http_rtt_upper_bound_transport_rtt_multiplier() *
-           GetTransportRTT().value_or(base::TimeDelta::FromSeconds(10)))) {
+           GetTransportRTT().value_or(base::Seconds(10)))) {
     // If there are sufficient number of transport RTT samples available, use
     // the transport RTT estimate to determine if the request is hanging.
     return false;
@@ -292,7 +288,7 @@ bool NetworkQualityEstimator::IsHangingRequest(
 
   if (observed_http_rtt <
       params_->hanging_request_http_rtt_upper_bound_http_rtt_multiplier() *
-          GetHttpRTT().value_or(base::TimeDelta::FromSeconds(10))) {
+          GetHttpRTT().value_or(base::Seconds(10))) {
     // Use the HTTP RTT estimate to determine if the request is hanging.
     return false;
   }
@@ -469,7 +465,7 @@ bool NetworkQualityEstimator::RequestProvidesRTTObservation(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool private_network_request =
-      nqe::internal::IsRequestForPrivateHost(request);
+      nqe::internal::IsRequestForPrivateHost(request, net_log_);
 
   return (use_localhost_requests_ || !private_network_request) &&
          // Verify that response headers are received, so it can be ensured that
@@ -730,7 +726,7 @@ void NetworkQualityEstimator::AdjustHttpRttBasedOnRTTCounts(
   base::TimeDelta time_since_connection_change =
       tick_clock_->NowTicks() - last_connection_change_;
   if (cached_estimate_applied_ &&
-      time_since_connection_change <= base::TimeDelta::FromMinutes(1)) {
+      time_since_connection_change <= base::Minutes(1)) {
     UMA_HISTOGRAM_TIMES("NQE.HttpRttReduction.BasedOnRTTCounts",
                         base::TimeDelta());
     return;
@@ -1012,7 +1008,7 @@ base::TimeDelta NetworkQualityEstimator::GetRTTEstimateInternal(
     case nqe::internal::OBSERVATION_CATEGORY_HTTP:
     case nqe::internal::OBSERVATION_CATEGORY_TRANSPORT:
     case nqe::internal::OBSERVATION_CATEGORY_END_TO_END:
-      return base::TimeDelta::FromMilliseconds(
+      return base::Milliseconds(
           rtt_ms_observations_[observation_category]
               .GetPercentile(start_time, current_network_id_.signal_strength,
                              percentile, observations_count)
@@ -1154,7 +1150,7 @@ void NetworkQualityEstimator::AddAndNotifyObserversOfRTT(
     const Observation& observation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(nqe::internal::InvalidRTT(),
-            base::TimeDelta::FromMilliseconds(observation.value()));
+            base::Milliseconds(observation.value()));
   DCHECK_GT(NETWORK_QUALITY_OBSERVATION_SOURCE_MAX, observation.source());
 
   if (!ShouldAddObservation(observation))
@@ -1531,8 +1527,7 @@ void NetworkQualityEstimator::OnPeerToPeerConnectionsCountChange(
     base::TimeDelta duration = tick_clock_->NowTicks() -
                                p2p_connections_count_active_timestamp_.value();
     LOCAL_HISTOGRAM_CUSTOM_TIMES("NQE.PeerToPeerConnectionsDuration", duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromHours(1), 50);
+                                 base::Milliseconds(1), base::Hours(1), 50);
     p2p_connections_count_active_timestamp_ = absl::nullopt;
   }
 

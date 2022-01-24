@@ -38,6 +38,10 @@
 #include "ui/gfx/delegated_ink_point.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 namespace {
 
 // In mouse lock mode, we need to prevent the (invisible) cursor from hitting
@@ -842,7 +846,7 @@ bool RenderWidgetHostViewEventHandler::MatchesSynthesizedMovePosition(
     const blink::WebMouseEvent& event) {
   if (event.GetType() == blink::WebInputEvent::Type::kMouseMove &&
       synthetic_move_position_.has_value()) {
-    if (IsFractionalScaleFactor(host_view_->GetCurrentDeviceScaleFactor())) {
+    if (IsFractionalScaleFactor(host_view_->GetDeviceScaleFactor())) {
       // For fractional scale factors, the conversion from pixels to dip and
       // vice versa could result in off by 1 or 2 errors which hurts us because
       // the artificial move to center event cause the cursor to bounce around
@@ -900,7 +904,7 @@ bool RenderWidgetHostViewEventHandler::ShouldRouteEvents() const {
   // Do not route events that are currently targeted to page popups such as
   // <select> element drop-downs, since these cannot contain cross-process
   // frames.
-  if (!host_->delegate()->IsWidgetForMainFrame(host_))
+  if (!host_->delegate()->IsWidgetForPrimaryMainFrame(host_))
     return false;
 
   return !!host_->delegate()->GetInputEventRouter();

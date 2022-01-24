@@ -24,7 +24,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="14dp"
         android:layout_marginStart="12dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline"
+        android:textAlignment="viewStart"
         android:text="@string/dino_widget_text" />
 
 </RelativeLayout>

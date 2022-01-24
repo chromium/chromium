@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_CHANNEL_MOJO_DATA_PUMP_H_
 #define COMPONENTS_CAST_CHANNEL_MOJO_DATA_PUMP_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/cast_channel/cast_transport.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -24,6 +23,9 @@ class MojoDataPump : public CastTransportImpl::Channel {
  public:
   MojoDataPump(mojo::ScopedDataPipeConsumerHandle receive_stream,
                mojo::ScopedDataPipeProducerHandle send_stream);
+
+  MojoDataPump(const MojoDataPump&) = delete;
+  MojoDataPump& operator=(const MojoDataPump&) = delete;
 
   ~MojoDataPump() override;
 
@@ -58,8 +60,6 @@ class MojoDataPump : public CastTransportImpl::Channel {
   scoped_refptr<net::IOBuffer> pending_write_buffer_;
   int pending_write_buffer_size_ = 0;
   uint32_t read_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoDataPump);
 };
 
 }  // namespace cast_channel

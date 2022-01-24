@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/credential_provider/extension/task.h"
 #include "net/base/backoff_entry.h"
 

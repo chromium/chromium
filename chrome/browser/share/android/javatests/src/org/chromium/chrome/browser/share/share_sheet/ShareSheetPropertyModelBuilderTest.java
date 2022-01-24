@@ -35,6 +35,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder.ContentType;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
@@ -70,13 +71,9 @@ public final class ShareSheetPropertyModelBuilderTest {
     @Mock
     private Profile mProfile;
     @Mock
-    private ShareParams mParams;
-    @Mock
     private ResolveInfo mTextResolveInfo1;
     @Mock
     private ResolveInfo mTextResolveInfo2;
-    @Mock
-    private ResolveInfo mTextResolveInfo3;
     @Mock
     private ResolveInfo mImageResolveInfo1;
     @Mock
@@ -171,7 +168,9 @@ public final class ShareSheetPropertyModelBuilderTest {
     public void getContentTypes_UrlDifferentFromText_hasHighlightedTextContentType() {
         ShareParams shareParams = new ShareParams.Builder(null, "", "").setText("testText").build();
         ChromeShareExtras shareExtras =
-                new ChromeShareExtras.Builder().setIsUserHighlightedText(true).build();
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
 
         assertEquals("Should contain HIGHLIGHTED_TEXT.",
                 ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT),
@@ -282,7 +281,8 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE), shareParams, /*saveLastUsed=*/false,
-                /*shareStartTime=*/0, /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
+                /*shareStartTime=*/0, /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX,
+                /*linkToggleMetricsDetails=*/null);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(
@@ -297,7 +297,8 @@ public final class ShareSheetPropertyModelBuilderTest {
 
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.IMAGE), shareParams, /*saveLastUsed=*/false,
-                /*shareStartTime=*/0, /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
+                /*shareStartTime=*/0, /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX,
+                /*linkToggleMetricsDetails=*/null);
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
         assertModelsAreInTheRightOrder(
@@ -313,7 +314,8 @@ public final class ShareSheetPropertyModelBuilderTest {
         List<PropertyModel> propertyModels = mPropertyModelBuilder.selectThirdPartyApps(null,
                 ImmutableSet.of(ContentType.LINK_PAGE_VISIBLE, ContentType.IMAGE), shareParams,
                 /*saveLastUsed=*/false, /*shareStartTime=*/0,
-                /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX);
+                /*linkGenerationStatusForMetrics=*/LinkGeneration.MAX,
+                /*linkToggleMetricsDetails=*/null);
 
         assertEquals("Incorrect number of property models.", 4, propertyModels.size());
         assertModelsAreInTheRightOrder(propertyModels,

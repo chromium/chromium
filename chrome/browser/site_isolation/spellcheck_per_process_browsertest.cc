@@ -47,6 +47,10 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
  public:
   explicit MockSpellCheckHost(content::RenderProcessHost* process_host)
       : process_host_(process_host) {}
+
+  MockSpellCheckHost(const MockSpellCheckHost&) = delete;
+  MockSpellCheckHost& operator=(const MockSpellCheckHost&) = delete;
+
   ~MockSpellCheckHost() override {}
 
   content::RenderProcessHost* process_host() const { return process_host_; }
@@ -72,7 +76,7 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
     ui_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&MockSpellCheckHost::Timeout, base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_ = run_loop.QuitClosure();
@@ -181,8 +185,6 @@ class MockSpellCheckHost : spellcheck::mojom::SpellCheckHost {
   std::u16string text_;
   mojo::Receiver<spellcheck::mojom::SpellCheckHost> receiver_{this};
   base::OnceClosure quit_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSpellCheckHost);
 };
 
 class SpellCheckBrowserTestHelper {
@@ -192,6 +194,10 @@ class SpellCheckBrowserTestHelper {
         base::BindRepeating(&SpellCheckBrowserTestHelper::BindSpellCheckHost,
                             base::Unretained(this)));
   }
+
+  SpellCheckBrowserTestHelper(const SpellCheckBrowserTestHelper&) = delete;
+  SpellCheckBrowserTestHelper& operator=(const SpellCheckBrowserTestHelper&) =
+      delete;
 
   ~SpellCheckBrowserTestHelper() {
     SpellCheckHostChromeImpl::OverrideBinderForTesting(base::NullCallback());
@@ -228,7 +234,7 @@ class SpellCheckBrowserTestHelper {
         FROM_HERE,
         base::BindOnce(&SpellCheckBrowserTestHelper::Timeout,
                        base::Unretained(this)),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
 
     base::RunLoop run_loop;
     quit_on_bind_closure_ = run_loop.QuitClosure();
@@ -255,8 +261,6 @@ class SpellCheckBrowserTestHelper {
 
   base::OnceClosure quit_on_bind_closure_;
   std::vector<std::unique_ptr<MockSpellCheckHost>> spell_check_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckBrowserTestHelper);
 };
 
 class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
@@ -284,7 +288,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBind();
 
     content::WebContents* web_contents =
@@ -319,7 +323,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
 
     GURL main_url(embedded_test_server()->GetURL(
         "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
     spell_check_helper.RunUntilBindOrTimeout();
 
     content::WebContents* web_contents =
@@ -360,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
 
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/page_with_contenteditable_in_cross_site_subframe.html"));
-  ui_test_utils::NavigateToURL(browser(), main_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

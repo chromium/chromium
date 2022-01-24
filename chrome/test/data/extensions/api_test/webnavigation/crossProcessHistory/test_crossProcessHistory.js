@@ -102,7 +102,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                transitionQualifiers: ['client_redirect'],
+                transitionQualifiers: [],
                 transitionType: 'link',
                 url: URL_TEST + '2'
               }
@@ -322,7 +322,7 @@ loadScript.then(async function() {
                 processId: 1,
                 tabId: 0,
                 timeStamp: 0,
-                transitionQualifiers: ['client_redirect'],
+                transitionQualifiers: [],
                 transitionType: 'link',
                 url: URL_TEST + '6'
               }

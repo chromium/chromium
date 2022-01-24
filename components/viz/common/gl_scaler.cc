@@ -79,10 +79,10 @@ int GLScaler::GetMaxDrawBuffersSupported() const {
     DCHECK(gl);
     if (AreAllGLExtensionsPresent(gl, {"GL_EXT_draw_buffers"})) {
       gl->GetIntegerv(GL_MAX_DRAW_BUFFERS_EXT, &max_draw_buffers_);
-    }
-
-    if (max_draw_buffers_ < 1) {
-      max_draw_buffers_ = 1;
+    } else {
+      // The extension is not present & OpenGL ES 2.0 does not support
+      // glDrawBuffers function without it.
+      max_draw_buffers_ = 0;
     }
   }
 
@@ -646,6 +646,9 @@ std::unique_ptr<GLScaler::ScalerStage> GLScaler::MaybeAppendExportStage(
       // Horizontal scale is only 0.5X, not 0.25X like all the others.
       scale_from.set_x(scale_from.x() / 2);
       break;
+    case Parameters::ExportFormat::UV_CHANNELS:
+      shader = Shader::PLANAR_CHANNELS_1_2;
+      break;
   }
 
   auto export_stage = std::make_unique<ScalerStage>(gl, shader, HORIZONTAL,
@@ -678,6 +681,7 @@ const char* GLScaler::GetShaderName(GLScaler::Shader shader) {
     CASE_RETURN_SHADER_STR(PLANAR_CHANNEL_3);
     CASE_RETURN_SHADER_STR(I422_NV61_MRT);
     CASE_RETURN_SHADER_STR(DEINTERLEAVE_PAIRWISE_MRT);
+    CASE_RETURN_SHADER_STR(PLANAR_CHANNELS_1_2);
 #undef CASE_RETURN_SHADER_STR
   }
 }
@@ -1078,16 +1082,56 @@ GLScaler::ShaderProgram::ShaderProgram(
       }
       fragment_main << "  gl_FragData[1] = vvvv;\n";
       break;
+
+    case Shader::PLANAR_CHANNELS_1_2: {
+      // Select two color channels, and pack 2 pairs of pixels into one output
+      // quad. See header file for diagram.
+      // This shader performs the same work that is being done by
+      // Shader::I422_NV61_MRT (see above) for its second render target.
+      shared_variables << "varying highp vec4 v_texcoords[2];\n";
+      vertex_header << "uniform vec2 scaling_vector;\n";
+      vertex_main
+          << ("  vec2 step = scaling_vector / 4.0;\n"
+              "  v_texcoords[0].xy = texcoord - step * 1.5;\n"
+              "  v_texcoords[0].zw = texcoord - step * 0.5;\n"
+              "  v_texcoords[1].xy = texcoord + step * 0.5;\n"
+              "  v_texcoords[1].zw = texcoord + step * 1.5;\n");
+      fragment_main
+          << ("  vec3 pixel0 = texture2D(s_texture, v_texcoords[0].xy).rgb;\n"
+              "  vec3 pixel1 = texture2D(s_texture, v_texcoords[0].zw).rgb;\n"
+              "  vec3 pixel01 = (pixel0 + pixel1) / 2.0;\n"
+              "  vec3 pixel2 = texture2D(s_texture, v_texcoords[1].xy).rgb;\n"
+              "  vec3 pixel3 = texture2D(s_texture, v_texcoords[1].zw).rgb;\n"
+              "  vec3 pixel23 = (pixel2 + pixel3) / 2.0;\n");
+
+      if (color_transform) {
+        fragment_main
+            << ("  pixel01 = DoColorConversion(pixel01);\n"
+                "  pixel23 = DoColorConversion(pixel23);\n");
+      }
+
+      fragment_main
+          << ("  vec4 packed_quad = vec4(\n"
+              "      pixel01.g, pixel01.b, pixel23.g, pixel23.b);\n");
+
+      if (swizzle[0] == GL_BGRA_EXT) {
+        fragment_main << "  packed_quad.rb = packed_quad.br;\n";
+      }
+
+      fragment_main << "  gl_FragColor = packed_quad;\n";
+      break;
+    }
   }
 
   // Helper function to compile the shader source and log the GLSL compiler's
   // results.
+  const char* shader_name = GLScaler::GetShaderName(shader_);
   const auto CompileShaderFromSource =
-      [](GLES2Interface* gl, const std::basic_string<GLchar>& source,
-         GLenum type) -> GLuint {
+      [shader_name](GLES2Interface* gl, const std::basic_string<GLchar>& source,
+                    GLenum type) -> GLuint {
     VLOG(2) << __func__ << ": Compiling shader " << type
             << " with source:" << std::endl
-            << source;
+            << source << ", for GLScaler::Shader=" << shader_name;
     const GLuint shader = gl->CreateShader(type);
     const GLchar* source_data = source.data();
     const GLint length = base::checked_cast<GLint>(source.size());
@@ -1188,6 +1232,7 @@ GLScaler::ShaderProgram::ShaderProgram(
     case Shader::PLANAR_CHANNEL_3:
     case Shader::I422_NV61_MRT:
     case Shader::DEINTERLEAVE_PAIRWISE_MRT:
+    case Shader::PLANAR_CHANNELS_1_2:
       scaling_vector_location_ =
           gl_->GetUniformLocation(program_, "scaling_vector");
       DCHECK_RESOLVED_LOCATION(scaling_vector_location_);
@@ -1268,6 +1313,7 @@ void GLScaler::ShaderProgram::UseProgram(const gfx::Size& src_texture_size,
     case Shader::PLANAR_CHANNEL_3:
     case Shader::I422_NV61_MRT:
     case Shader::DEINTERLEAVE_PAIRWISE_MRT:
+    case Shader::PLANAR_CHANNELS_1_2:
       switch (primary_axis) {
         case HORIZONTAL:
           gl_->Uniform2f(scaling_vector_location_,
@@ -1521,7 +1567,8 @@ gfx::Rect GLScaler::ScalerStage::ToInputRect(gfx::RectF source_rect) const {
     case Shader::PLANAR_CHANNEL_2:
     case Shader::PLANAR_CHANNEL_3:
     case Shader::I422_NV61_MRT:
-      // All of these sample 4x1 source pixels to produce each output "pixel."
+    case Shader::PLANAR_CHANNELS_1_2:
+      // All of these sample 4x1 source pixels to produce each output "pixel".
       // There is no overscan. They can also be combined with a bilinear
       // downscale, but not an upscale.
       DCHECK_GE(scale_from_.x(), 4 * scale_to_.x());
@@ -1529,7 +1576,7 @@ gfx::Rect GLScaler::ScalerStage::ToInputRect(gfx::RectF source_rect) const {
       break;
 
     case Shader::DEINTERLEAVE_PAIRWISE_MRT:
-      // This shader samples 2x1 source pixels to produce each output "pixel."
+      // This shader samples 2x1 source pixels to produce each output "pixel".
       // There is no overscan. It can also be combined with a bilinear
       // downscale, but not an upscale.
       DCHECK_GE(scale_from_.x(), 2 * scale_to_.x());

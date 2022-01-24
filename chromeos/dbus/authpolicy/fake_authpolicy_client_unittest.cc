@@ -29,6 +29,9 @@ class FakeAuthPolicyClientTest : public ::testing::Test {
  public:
   FakeAuthPolicyClientTest() = default;
 
+  FakeAuthPolicyClientTest(const FakeAuthPolicyClientTest&) = delete;
+  FakeAuthPolicyClientTest& operator=(const FakeAuthPolicyClientTest&) = delete;
+
  protected:
   FakeAuthPolicyClient* authpolicy_client() {
     return FakeAuthPolicyClient::Get();
@@ -99,8 +102,6 @@ class FakeAuthPolicyClientTest : public ::testing::Test {
  private:
   ScopedStubInstallAttributes install_attributes_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthPolicyClientTest);
 };
 
 // Tests parsing machine name.

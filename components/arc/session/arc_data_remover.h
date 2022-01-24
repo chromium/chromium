@@ -6,7 +6,6 @@
 #define COMPONENTS_ARC_SESSION_ARC_DATA_REMOVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
@@ -22,6 +21,10 @@ class ArcDataRemover {
  public:
   ArcDataRemover(PrefService* prefs,
                  const cryptohome::Identification& cryptohome_id);
+
+  ArcDataRemover(const ArcDataRemover&) = delete;
+  ArcDataRemover& operator=(const ArcDataRemover&) = delete;
+
   ~ArcDataRemover();
 
   // Schedules to remove the data. This is persistent, calling Run() just
@@ -49,7 +52,6 @@ class ArcDataRemover {
   const cryptohome::Identification cryptohome_id_;
 
   base::WeakPtrFactory<ArcDataRemover> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ArcDataRemover);
 };
 
 }  // namespace arc

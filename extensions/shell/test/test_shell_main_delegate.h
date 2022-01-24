@@ -27,6 +27,10 @@ namespace extensions {
 class TestShellMainDelegate : public extensions::ShellMainDelegate {
  public:
   TestShellMainDelegate();
+
+  TestShellMainDelegate(const TestShellMainDelegate&) = delete;
+  TestShellMainDelegate& operator=(const TestShellMainDelegate&) = delete;
+
   ~TestShellMainDelegate() override;
 
   // ContentMainDelegate implementation:
@@ -44,8 +48,6 @@ class TestShellMainDelegate : public extensions::ShellMainDelegate {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::LacrosService> lacros_service_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestShellMainDelegate);
 };
 
 }  // namespace extensions

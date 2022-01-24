@@ -58,9 +58,9 @@ using shared_highlighting::LinkGenerationError;
   LinkToTextTabHelper* tabHelper = [self linkToTextTabHelper];
 
   __weak __typeof(self) weakSelf = self;
-  tabHelper->GetLinkToText(^(LinkToTextResponse* response) {
+  tabHelper->GetLinkToText(base::BindOnce(^(LinkToTextResponse* response) {
     [weakSelf receivedLinkToTextResponse:response];
-  });
+  }));
 }
 
 - (void)receivedLinkToTextResponse:(LinkToTextResponse*)response {

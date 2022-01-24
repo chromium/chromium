@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -19,6 +18,11 @@ class PasswordsModelDelegateMock
       public base::SupportsWeakPtr<PasswordsModelDelegateMock> {
  public:
   PasswordsModelDelegateMock();
+
+  PasswordsModelDelegateMock(const PasswordsModelDelegateMock&) = delete;
+  PasswordsModelDelegateMock& operator=(const PasswordsModelDelegateMock&) =
+      delete;
+
   ~PasswordsModelDelegateMock() override;
 
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
@@ -101,13 +105,15 @@ class PasswordsModelDelegateMock
               AuthenticateUserForAccountStoreOptInAndMovePassword,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
+      (),
+      (override));
   MOCK_METHOD(bool,
               ArePasswordsRevealedWhenBubbleIsOpened,
               (),
               (const override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordsModelDelegateMock);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

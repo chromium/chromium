@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Scroll anchor is re-selected after adjustment if there are dirty descendants at selection time assert_equals: Scroll position should've been preserved expected 1207 but got 0
+Harness: the test ran to completion.
+

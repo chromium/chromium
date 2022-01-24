@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -57,6 +56,9 @@ class DiskSpaceTest : public DiagnosticsTest {
  public:
   DiskSpaceTest() : DiagnosticsTest(DIAGNOSTICS_DISK_SPACE_TEST) {}
 
+  DiskSpaceTest(const DiskSpaceTest&) = delete;
+  DiskSpaceTest& operator=(const DiskSpaceTest&) = delete;
+
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     base::FilePath data_dir;
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &data_dir))
@@ -75,9 +77,6 @@ class DiskSpaceTest : public DiagnosticsTest {
     RecordSuccess("Free space: " + printable_size);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiskSpaceTest);
 };
 
 // Check if it is system install or per-user install.
@@ -85,6 +84,9 @@ class InstallTypeTest : public DiagnosticsTest {
  public:
   InstallTypeTest()
       : DiagnosticsTest(DIAGNOSTICS_INSTALL_TYPE_TEST), user_level_(false) {}
+
+  InstallTypeTest(const InstallTypeTest&) = delete;
+  InstallTypeTest& operator=(const InstallTypeTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
 #if defined(OS_WIN)
@@ -103,7 +105,6 @@ class InstallTypeTest : public DiagnosticsTest {
 
  private:
   bool user_level_;
-  DISALLOW_COPY_AND_ASSIGN(InstallTypeTest);
 };
 
 // Checks that a given JSON file can be correctly parsed.
@@ -122,6 +123,9 @@ class JSONTest : public DiagnosticsTest {
         path_(path),
         max_file_size_(max_file_size),
         importance_(importance) {}
+
+  JSONTest(const JSONTest&) = delete;
+  JSONTest& operator=(const JSONTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     if (!base::PathExists(path_)) {
@@ -176,7 +180,6 @@ class JSONTest : public DiagnosticsTest {
   base::FilePath path_;
   int64_t max_file_size_;
   FileImportance importance_;
-  DISALLOW_COPY_AND_ASSIGN(JSONTest);
 };
 
 // Check that the flavor of the operating system is supported.
@@ -185,6 +188,9 @@ class OperatingSystemTest : public DiagnosticsTest {
   OperatingSystemTest()
       : DiagnosticsTest(DIAGNOSTICS_OPERATING_SYSTEM_TEST) {}
 
+  OperatingSystemTest(const OperatingSystemTest&) = delete;
+  OperatingSystemTest& operator=(const OperatingSystemTest&) = delete;
+
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     // TODO(port): define the OS criteria for Linux and Mac.
     RecordSuccess(base::StringPrintf(
@@ -192,9 +198,6 @@ class OperatingSystemTest : public DiagnosticsTest {
         base::SysInfo::OperatingSystemVersion().c_str()));
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OperatingSystemTest);
 };
 
 struct TestPathInfo {
@@ -223,6 +226,9 @@ class PathTest : public DiagnosticsTest {
   explicit PathTest(const TestPathInfo& path_info)
       : DiagnosticsTest(path_info.test_id),
         path_info_(path_info) {}
+
+  PathTest(const PathTest&) = delete;
+  PathTest& operator=(const PathTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     if (!g_install_type) {
@@ -280,13 +286,15 @@ class PathTest : public DiagnosticsTest {
 
  private:
   TestPathInfo path_info_;
-  DISALLOW_COPY_AND_ASSIGN(PathTest);
 };
 
 // Check the version of Chrome.
 class VersionTest : public DiagnosticsTest {
  public:
   VersionTest() : DiagnosticsTest(DIAGNOSTICS_VERSION_TEST) {}
+
+  VersionTest(const VersionTest&) = delete;
+  VersionTest& operator=(const VersionTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
     std::string current_version = version_info::GetVersionNumber();
@@ -304,9 +312,6 @@ class VersionTest : public DiagnosticsTest {
     RecordSuccess(current_version);
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VersionTest);
 };
 
 }  // namespace

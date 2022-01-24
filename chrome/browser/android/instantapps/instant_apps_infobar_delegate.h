@@ -12,9 +12,17 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
+namespace content {
+class Page;
+}
+
 class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
                                    public content::WebContentsObserver {
  public:
+  InstantAppsInfoBarDelegate(const InstantAppsInfoBarDelegate&) = delete;
+  InstantAppsInfoBarDelegate& operator=(const InstantAppsInfoBarDelegate&) =
+      delete;
+
   ~InstantAppsInfoBarDelegate() override;
 
   static void Create(content::WebContents* web_contents,
@@ -28,8 +36,7 @@ class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
   bool ShouldExpire(const NavigationDetails& details) const override;
 
   // WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -51,8 +58,6 @@ class InstantAppsInfoBarDelegate : public ConfirmInfoBarDelegate,
   std::string url_;
   bool user_navigated_away_from_launch_url_;
   bool instant_app_is_default_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstantAppsInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_INFOBAR_DELEGATE_H_

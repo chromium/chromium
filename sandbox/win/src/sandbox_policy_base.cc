@@ -110,7 +110,8 @@ PolicyBase::PolicyBase()
       policy_(nullptr),
       lockdown_default_dacl_(false),
       add_restricting_random_sid_(false),
-      effective_token_(nullptr) {
+      effective_token_(nullptr),
+      allow_no_sandbox_job_(false) {
   ::InitializeCriticalSection(&lock_);
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
@@ -780,6 +781,15 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       }
       break;
     }
+    case SUBSYS_SOCKET: {
+      // Only one semantic is supported for this subsystem; to allow socket
+      // brokering.
+      DCHECK_EQ(SOCKET_ALLOW_BROKER, semantics);
+      // A very simple policy that just allows socket brokering if present.
+      PolicyRule socket_policy(ASK_BROKER);
+      policy_maker_->AddRule(IpcTag::WS2SOCKET, &socket_policy);
+      break;
+    }
 
     default: { return SBOX_ERROR_UNSUPPORTED; }
   }
@@ -790,6 +800,14 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
 std::unique_ptr<PolicyInfo> PolicyBase::GetPolicyInfo() {
   auto diagnostic = std::make_unique<PolicyDiagnostic>(this);
   return diagnostic;
+}
+
+void PolicyBase::SetAllowNoSandboxJob() {
+  allow_no_sandbox_job_ = true;
+}
+
+bool PolicyBase::GetAllowNoSandboxJob() {
+  return allow_no_sandbox_job_;
 }
 
 }  // namespace sandbox

@@ -13,15 +13,22 @@
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "extensions/browser/api/storage/value_store_cache.h"
 
-namespace extensions {
-
+namespace value_store {
 class ValueStoreFactory;
+}
+
+namespace extensions {
 
 // ValueStoreCache for the LOCAL namespace. It owns a backend for apps and
 // another for extensions. Each backend takes care of persistence.
 class LocalValueStoreCache : public ValueStoreCache {
  public:
-  explicit LocalValueStoreCache(scoped_refptr<ValueStoreFactory> factory);
+  explicit LocalValueStoreCache(
+      scoped_refptr<value_store::ValueStoreFactory> factory);
+
+  LocalValueStoreCache(const LocalValueStoreCache&) = delete;
+  LocalValueStoreCache& operator=(const LocalValueStoreCache&) = delete;
+
   ~LocalValueStoreCache() override;
 
   // ValueStoreCache implementation:
@@ -31,20 +38,19 @@ class LocalValueStoreCache : public ValueStoreCache {
   void DeleteStorageSoon(const std::string& extension_id) override;
 
  private:
-  using StorageMap = std::map<std::string, std::unique_ptr<ValueStore>>;
+  using StorageMap =
+      std::map<std::string, std::unique_ptr<value_store::ValueStore>>;
 
-  ValueStore* GetStorage(const Extension* extension);
+  value_store::ValueStore* GetStorage(const Extension* extension);
 
   // The Factory to use for creating new ValueStores.
-  const scoped_refptr<ValueStoreFactory> storage_factory_;
+  const scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
 
   // Quota limits (see SettingsStorageQuotaEnforcer).
   const SettingsStorageQuotaEnforcer::Limits quota_;
 
   // The collection of ValueStores for local storage.
   StorageMap storage_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalValueStoreCache);
 };
 
 }  // namespace extensions

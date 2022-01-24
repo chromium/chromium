@@ -66,10 +66,10 @@ NetworkLogsMessageHandler::~NetworkLogsMessageHandler() = default;
 
 void NetworkLogsMessageHandler::RegisterMessages() {
   out_dir_ = GetDownloadsDirectory(web_ui());
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "storeLogs", base::BindRepeating(&NetworkLogsMessageHandler::OnStoreLogs,
                                        base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setShillDebugging",
       base::BindRepeating(&NetworkLogsMessageHandler::OnSetShillDebugging,
                           base::Unretained(this)));
@@ -85,9 +85,8 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 }
 
 void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetSize());
-  std::string callback_id;
-  CHECK(list->GetString(0, &callback_id));
+  CHECK_EQ(2u, list->GetList().size());
+  std::string callback_id = list->GetList()[0].GetString();
   const base::Value* options;
   CHECK(list->Get(1, &options));
   AllowJavascript();
@@ -182,10 +181,9 @@ void NetworkLogsMessageHandler::OnWriteSystemLogsCompleted(
 
 void NetworkLogsMessageHandler::OnSetShillDebugging(
     const base::ListValue* list) {
-  CHECK_EQ(2u, list->GetSize());
-  std::string callback_id, subsystem;
-  CHECK(list->GetString(0, &callback_id));
-  CHECK(list->GetString(1, &subsystem));
+  CHECK_EQ(2u, list->GetList().size());
+  std::string callback_id = list->GetList()[0].GetString();
+  std::string subsystem = list->GetList()[1].GetString();
   AllowJavascript();
   chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetDebugMode(
       subsystem,

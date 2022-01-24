@@ -11,7 +11,6 @@
 #include "chromeos/printing/printer_configuration.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -24,13 +23,12 @@ CHROMEOS_EXPORT extern const char kPrinterId[];
 // Returns a new printer populated with the fields from |pref|.  Processes
 // dictionaries from policy.
 CHROMEOS_EXPORT std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::DictionaryValue& pref);
+    const base::Value& pref);
 
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
 // printer uri cannot be parsed, the relevant fields are populated with default
 // values. CupsPrinterInfo is defined in cups_printers_browser_proxy.js.
-CHROMEOS_EXPORT std::unique_ptr<base::DictionaryValue> GetCupsPrinterInfo(
-    const Printer& printer);
+CHROMEOS_EXPORT base::Value GetCupsPrinterInfo(const Printer& printer);
 
 // Returns a JSON representation of a CupsPrinterStatus
 CHROMEOS_EXPORT base::Value CreateCupsPrinterStatusDictionary(

@@ -37,12 +37,14 @@ SimpleWatcher::ReadyCallback NotReached() {
 class SimpleWatcherTest : public testing::Test {
  public:
   SimpleWatcherTest() {}
+
+  SimpleWatcherTest(const SimpleWatcherTest&) = delete;
+  SimpleWatcherTest& operator=(const SimpleWatcherTest&) = delete;
+
   ~SimpleWatcherTest() override {}
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleWatcherTest);
 };
 
 TEST_F(SimpleWatcherTest, WatchBasic) {

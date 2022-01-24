@@ -35,12 +35,15 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/test/model/mock_model_type_change_processor.h"
 #include "components/sync/test/model/test_matchers.h"
 #include "components/webdata/common/web_database.h"
@@ -210,6 +213,11 @@ MATCHER_P2(AddChange, key, data, "") {
 class AutofillWalletSyncBridgeTest : public testing::Test {
  public:
   AutofillWalletSyncBridgeTest() {}
+
+  AutofillWalletSyncBridgeTest(const AutofillWalletSyncBridgeTest&) = delete;
+  AutofillWalletSyncBridgeTest& operator=(const AutofillWalletSyncBridgeTest&) =
+      delete;
+
   ~AutofillWalletSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -331,8 +339,6 @@ class AutofillWalletSyncBridgeTest : public testing::Test {
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
   std::unique_ptr<AutofillWalletSyncBridge> bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWalletSyncBridgeTest);
 };
 
 // The following 4 tests make sure client tags stay stable.

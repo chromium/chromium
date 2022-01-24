@@ -44,26 +44,6 @@ function flag(flag, value) {
 }
 
 /**
- * @param {string} p
- * @return {!Array<string>}
- */
-function exclude(p) {
-  return flag('--exclude', path.resolve(CLOSURE_PATH, p));
-}
-
-/**
- * Skips lines for test files, as those are not present in the npm package for
- * the library.
- *
- *
- * @param {string} line
- * @return {boolean}
- */
-function skipTests(line) {
-  return !/goog\.addDependency\('[^']*_test\.js/.test(line);
-}
-
-/**
  * Sorts the lines of a string, since the specific order of the addDependency
  * lines is not strictly important. TODO(sdh): ideally we would not need to
  * do this, but due to some internal work moving these files, we end up with
@@ -97,36 +77,6 @@ describe('closure-make-deps', function() {
     if (fs.existsSync(tempFile)) {
       fs.unlinkSync(tempFile);
     }
-  });
-
-  it('produces closure library deps file', async function() {
-    const flags = [
-      ...flag('--root', CLOSURE_PATH),
-      ...flag('--root', THIRD_PARTY_PATH),
-      ...exclude('deps.js'),
-      ...exclude('transpile.js'),
-      ...exclude('testing/testdata'),
-      ...exclude('bin'),
-      ...exclude('conformance'),
-      ...exclude('css'),
-      ...exclude('demos'),
-      ...exclude('docs'),
-      ...exclude('transpile'),
-      ...exclude('debug_loader_integration_tests'),
-      ...exclude('base_debug_loader_test.js'),
-    ];
-
-    const result = await execute(flags);
-    expect(result.errors.filter(e => e.fatal).map(e => e.toString()))
-        .toEqual([]);
-
-    let resultLines = result.text.split('\n').sort();
-    resultLines = resultLines.filter(skipTests);
-
-    let expectedLines = closureDepsContents.split('\n').sort();
-    expectedLines = expectedLines.filter(skipTests);
-
-    expect(resultLines).toEqual(expectedLines);
   });
 
   it('merge only deps produces same file', async function() {

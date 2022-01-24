@@ -52,6 +52,10 @@ class MODULES_EXPORT VibrationController final
   static bool vibrate(Navigator&, const VibrationPattern&);
 
   explicit VibrationController(Navigator&);
+
+  VibrationController(const VibrationController&) = delete;
+  VibrationController& operator=(const VibrationController&) = delete;
+
   ~VibrationController() override;
 
   static VibrationPattern SanitizeVibrationPattern(
@@ -108,8 +112,6 @@ class MODULES_EXPORT VibrationController final
   bool is_calling_vibrate_;
 
   VibrationPattern pattern_;
-
-  DISALLOW_COPY_AND_ASSIGN(VibrationController);
 };
 
 }  // namespace blink

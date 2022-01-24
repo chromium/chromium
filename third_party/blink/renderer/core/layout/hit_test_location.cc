@@ -28,7 +28,7 @@ namespace blink {
 HitTestLocation::HitTestLocation()
     : is_rect_based_(false), is_rectilinear_(true) {}
 
-HitTestLocation::HitTestLocation(const IntPoint& point)
+HitTestLocation::HitTestLocation(const gfx::Point& point)
     : HitTestLocation(PhysicalOffset(point)) {}
 
 HitTestLocation::HitTestLocation(const PhysicalOffset& point)
@@ -104,19 +104,17 @@ HitTestLocation& HitTestLocation::operator=(const HitTestLocation& other) =
 void HitTestLocation::Move(const PhysicalOffset& offset) {
   point_ += offset;
   bounding_box_.Move(offset);
-  transformed_point_.Move(FloatSize(offset));
+  transformed_point_.Offset(FloatSize(offset));
   transformed_rect_.Move(FloatSize(offset));
 }
 
-template <typename RectType>
-bool HitTestLocation::IntersectsRect(const RectType& rect,
-                                     const RectType& bounding_box) const {
+bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
   // FIXME: When the hit test is not rect based we should use
   // rect.contains(m_point).
   // That does change some corner case tests though.
 
   // First check if rect even intersects our bounding box.
-  if (!rect.Intersects(bounding_box))
+  if (!rect.Intersects(bounding_box_))
     return false;
 
   // If the transformed rect is rectilinear the bounding box intersection was
@@ -126,21 +124,17 @@ bool HitTestLocation::IntersectsRect(const RectType& rect,
 
   // If rect fully contains our bounding box, we are also sure of an
   // intersection.
-  if (rect.Contains(bounding_box))
+  if (rect.Contains(bounding_box_))
     return true;
 
   // Otherwise we need to do a slower quad based intersection test.
   return transformed_rect_.IntersectsRect(FloatRect(rect));
 }
 
-bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
-  return IntersectsRect(rect, bounding_box_);
-}
-
 bool HitTestLocation::Intersects(const FloatRect& rect) const {
   if (is_rect_based_)
     return transformed_rect_.IntersectsRect(rect);
-  return rect.Contains(transformed_point_);
+  return rect.InclusiveContains(transformed_point_);
 }
 
 bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {

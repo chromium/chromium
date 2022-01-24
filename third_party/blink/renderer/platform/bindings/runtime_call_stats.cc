@@ -18,7 +18,6 @@
 
 namespace blink {
 
-// Function defined in third_party/blink/public/web/blink.h.
 void LogRuntimeCallStats() {
   LOG(INFO) << "\n"
             << RuntimeCallStats::From(MainThreadIsolate())->ToString().Utf8();

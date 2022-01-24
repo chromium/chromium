@@ -79,11 +79,6 @@ ContextResult RasterInProcessContext::Initialize(
   DCHECK(!attribs.bind_generates_resource);
   constexpr bool bind_generates_resource = false;
 
-  // TODO(https://crbug.com/829469): Remove check once we fuzz RasterDecoder.
-  // enable_oop_rasterization is currently necessary to create RasterDecoder
-  // in InProcessCommandBuffer.
-  DCHECK(attribs.enable_oop_rasterization);
-
   // Create the RasterCmdHelper, which writes the command buffer protocol.
   auto raster_helper =
       std::make_unique<raster::RasterCmdHelper>(command_buffer_.get());

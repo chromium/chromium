@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_base.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -23,6 +22,10 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
                                      public ::wm::ActivationChangeObserver {
  public:
   TrayBubbleWrapper(TrayBackgroundView* tray, TrayBubbleView* bubble_view);
+
+  TrayBubbleWrapper(const TrayBubbleWrapper&) = delete;
+  TrayBubbleWrapper& operator=(const TrayBubbleWrapper&) = delete;
+
   ~TrayBubbleWrapper() override;
 
   // TrayBubbleBase overrides:
@@ -48,8 +51,6 @@ class ASH_EXPORT TrayBubbleWrapper : public TrayBubbleBase,
   TrayBackgroundView* tray_;
   TrayBubbleView* bubble_view_;  // unowned
   views::Widget* bubble_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrayBubbleWrapper);
 };
 
 }  // namespace ash

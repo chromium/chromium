@@ -289,8 +289,7 @@ class Collection : public Edge {
 // An iterator edge is a direct edge to some iterator type.
 class Iterator : public Edge {
  public:
-  Iterator(RecordInfo* info, bool on_heap, bool is_unsafe)
-      : info_(info), on_heap_(on_heap), is_unsafe_(is_unsafe) {}
+  Iterator(RecordInfo* info, bool on_heap) : info_(info), on_heap_(on_heap) {}
   ~Iterator() {}
 
   void Accept(EdgeVisitor* visitor) override { visitor->VisitIterator(this); }
@@ -298,18 +297,17 @@ class Iterator : public Edge {
   bool NeedsFinalization() override { return false; }
   TracingStatus NeedsTracing(NeedsTracingOption) override {
     if (on_heap_)
-      return TracingStatus::Needed();
+      return TracingStatus::Illegal();
     return TracingStatus::Unneeded();
   }
 
   RecordInfo* info() const { return info_; }
 
-  bool IsUnsafe() const { return is_unsafe_; }
+  bool on_heap() const { return on_heap_; }
 
  private:
   RecordInfo* info_;
   bool on_heap_;
-  bool is_unsafe_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_EDGE_H_

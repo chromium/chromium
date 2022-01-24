@@ -30,6 +30,10 @@ HEADER = headers.header(
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chromeos-gardeners",
         ),
         headers.oncall(
+            name = "Fuchsia",
+            url = "https://chrome-ops-rotation-proxy.appspot.com/current/grotation:chrome-fuchsia-gardener",
+        ),
+        headers.oncall(
             name = "GPU",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler",
         ),
@@ -105,8 +109,10 @@ HEADER = headers.header(
                     text = "source",
                     branch_selector = branches.ALL_BRANCHES,
                     url = branches.value(
-                        for_main = "https://chromium.googlesource.com/chromium/src",
-                        for_branches = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
+                        {
+                            branches.MAIN: "https://chromium.googlesource.com/chromium/src",
+                        },
+                        default = "https://chromium.googlesource.com/chromium/src/+/{}".format(settings.ref),
                     ),
                     alt = "Chromium source code repository",
                 ),
@@ -297,7 +303,7 @@ HEADER = headers.header(
                 headers.link(
                     text = "customize",
                     branch_selector = branches.ALL_BRANCHES,
-                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci-milo.cfg".format(settings.ref),
+                    url = "https://chromium.googlesource.com/chromium/src/+/{}/infra/config/generated/luci/luci-milo.cfg".format(settings.ref),
                     alt = "Customize this console",
                 ),
             ],
@@ -350,5 +356,5 @@ HEADER = headers.header(
             ]],
         ),
     ],
-    tree_status_host = branches.value(for_main = "chromium-status.appspot.com"),
+    tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
 )

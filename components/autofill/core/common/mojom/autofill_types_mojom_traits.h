@@ -269,20 +269,10 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return r.button_titles;
   }
 
-  static const GURL& url(const autofill::FormData& r) { return r.url; }
-
-  static const GURL& full_url(const autofill::FormData& r) {
-    return r.full_url;
-  }
-
   static const GURL& action(const autofill::FormData& r) { return r.action; }
 
   static bool is_action_empty(const autofill::FormData& r) {
     return r.is_action_empty;
-  }
-
-  static const url::Origin& main_frame_origin(const autofill::FormData& r) {
-    return r.main_frame_origin;
   }
 
   static bool is_form_tag(const autofill::FormData& r) { return r.is_form_tag; }

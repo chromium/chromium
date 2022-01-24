@@ -485,10 +485,11 @@ static void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
     MapLoweredLocalNameToName(case_map, svg_tags.get(), svg_names::kTagsCount);
   }
 
-  const QualifiedName& cased_name = case_map->at(token->GetName());
-  if (cased_name.LocalName().IsNull())
-    return;
-  token->SetName(cased_name.LocalName());
+  const auto it = case_map->find(token->GetName());
+  if (it != case_map->end()) {
+    DCHECK(!it->value.LocalName().IsNull());
+    token->SetName(it->value.LocalName());
+  }
 }
 
 template <std::unique_ptr<const QualifiedName* []> getAttrs(), unsigned length>
@@ -501,9 +502,11 @@ static void AdjustAttributes(AtomicHTMLToken* token) {
   }
 
   for (auto& token_attribute : token->Attributes()) {
-    const QualifiedName& cased_name = case_map->at(token_attribute.LocalName());
-    if (!cased_name.LocalName().IsNull())
-      token_attribute.ParserSetName(cased_name);
+    const auto it = case_map->find(token_attribute.LocalName());
+    if (it != case_map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
@@ -550,9 +553,11 @@ static void AdjustForeignAttributes(AtomicHTMLToken* token) {
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {
     Attribute& token_attribute = token->Attributes().at(i);
-    const QualifiedName& name = map->at(token_attribute.LocalName());
-    if (!name.LocalName().IsNull())
-      token_attribute.ParserSetName(name);
+    const auto it = map->find(token_attribute.LocalName());
+    if (it != map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
@@ -903,10 +908,6 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
-  if (!RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-          document.GetExecutionContext())) {
-    return DeclarativeShadowRootType::kNone;
-  }
   Attribute* type_attribute =
       token->GetAttributeItem(html_names::kShadowrootAttr);
   if (!type_attribute)
@@ -968,9 +969,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
   ResetInsertionModeAppropriately();
-  if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
-          shadow_host_stack_item->GetNode()->GetExecutionContext()) &&
-      template_stack_item) {
+  if (template_stack_item) {
     DCHECK(template_stack_item->IsElementNode());
     HTMLTemplateElement* template_element =
         DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
@@ -1559,9 +1558,19 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
   // The adoption agency algorithm is N^2. We limit the number of iterations
   // to stop from hanging the whole browser. This limit is specified in the
   // adoption agency algorithm:
-  // http://www.whatwg.org/specs/web-apps/current-work/multipage/tree-construction.html#parsing-main-inbody
+  // https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm
   static const int kOuterIterationLimit = 8;
   static const int kInnerIterationLimit = 3;
+
+  // 2. If the current node is an HTML element whose tag name is subject,
+  // and the current node is not in the list of active formatting elements,
+  // then pop the current node off the stack of open elements and return.
+  if (!tree_.IsEmpty() && tree_.CurrentStackItem()->IsElementNode() &&
+      tree_.CurrentElement()->HasLocalName(token->GetName()) &&
+      !tree_.ActiveFormattingElements()->Contains(tree_.CurrentElement())) {
+    tree_.OpenElements()->Pop();
+    return;
+  }
 
   // 1, 2, 3 and 16 are covered by the for() loop.
   for (int i = 0; i < kOuterIterationLimit; ++i) {

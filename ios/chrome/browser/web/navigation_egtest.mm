@@ -584,12 +584,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
 // Tests that navigating forward from NTP works when resuming from session
 // restore. This is a regression test for https://crbug.com/814790.
 - (void)testRestoreHistoryToNTPAndNavigateForward {
-  // This test fails in iOS 13.4 but is fixed in iOS 14. See crbug.com/1076598.
-  if (base::ios::IsRunningOnOrLater(13, 4, 0) &&
-      !base::ios::IsRunningOnIOS14OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.4 but enabled in iOS 14");
-  }
-
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationURL = self.testServer->GetURL(kSimpleFileBasedTestURL);
   [ChromeEarlGrey loadURL:destinationURL];

@@ -1,0 +1,21 @@
+<style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    width: 300px;
+    height: 200px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <!-- TODO(gavindodd): update for i18n -->
+    <h1>Calibrating device components</h1>
+    <div id="calibration">
+      <span>[[calibrationStatusMessage_]]</span>
+    </div>
+    <span hidden$="[[!calibrationComplete_]]">Completed</span>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with accelerometer calibration image -->
+    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
+  </div>
+</base-page>

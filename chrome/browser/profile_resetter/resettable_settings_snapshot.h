@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -42,6 +41,11 @@ class ResettableSettingsSnapshot {
   };
 
   explicit ResettableSettingsSnapshot(Profile* profile);
+
+  ResettableSettingsSnapshot(const ResettableSettingsSnapshot&) = delete;
+  ResettableSettingsSnapshot& operator=(const ResettableSettingsSnapshot&) =
+      delete;
+
   ~ResettableSettingsSnapshot();
 
   // Getters.
@@ -118,8 +122,6 @@ class ResettableSettingsSnapshot {
   scoped_refptr<SharedCancellationFlag> cancellation_flag_;
 
   base::WeakPtrFactory<ResettableSettingsSnapshot> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResettableSettingsSnapshot);
 };
 
 // Serializes specified |snapshot| members to a protobuf. |field_mask| is a bit

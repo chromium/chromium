@@ -19,7 +19,6 @@
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
@@ -27,12 +26,13 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/download_protection/download_reporter.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
@@ -68,6 +68,10 @@ class DownloadProtectionService {
   // Creates a download service.  The service is initially disabled.  You need
   // to call SetEnabled() to start it.  |sb_service| owns this object.
   explicit DownloadProtectionService(SafeBrowsingService* sb_service);
+
+  DownloadProtectionService(const DownloadProtectionService&) = delete;
+  DownloadProtectionService& operator=(const DownloadProtectionService&) =
+      delete;
 
   virtual ~DownloadProtectionService();
 
@@ -184,17 +188,40 @@ class DownloadProtectionService {
       const download::DownloadItem* item,
       bool show_download_in_folder);
 
-  // Uploads |item| to Safe Browsing for deep scanning, using the upload
-  // service attached to the profile |item| was downloaded in. This is
-  // non-blocking, and the result we be provided through |callback|. |source| is
-  // used to identify the reason for deep scanning. Only the scan types listed
-  // in |allowed_scans| will be performed. This must be called on the UI
+  // Called to trigger a bypass event report for |download|. This is used when
+  // the async scan verdict is received for a file that was already opened by
+  // the user while it was being processed, and the verdict ended up being
+  // "dangerous" or "sensitive".
+  void ReportDelayedBypassEvent(download::DownloadItem* download,
+                                download::DownloadDangerType danger_type);
+
+  // Uploads `item` to Safe Browsing for deep scanning, using the upload
+  // service attached to the profile `item` was downloaded in. This is
+  // non-blocking, and the result we be provided through `callback`. `trigger`
+  // is used to identify the reason for deep scanning, aka enterprise policy or
+  // APP. `download_check_result` indicates the previously known SB verdict to
+  // apply to the download should deep scanning fail. `analysis_settings`
+  // contains settings to apply throughout scanning (types of scans to do,
+  // whether to block/allow large files, etc). This must be called on the UI
   // thread.
   void UploadForDeepScanning(
       download::DownloadItem* item,
       CheckDownloadRepeatingCallback callback,
       DeepScanningRequest::DeepScanTrigger trigger,
+      DownloadCheckResult download_check_result,
       enterprise_connectors::AnalysisSettings analysis_settings);
+
+  // Uploads a save package `item` for deep scanning. `save_package_file`
+  // contains a mapping of on-disk files part of that save package to their
+  // final paths.
+  void UploadSavePackageForDeepScanning(
+      download::DownloadItem* item,
+      base::flat_map<base::FilePath, base::FilePath> save_package_files,
+      CheckDownloadRepeatingCallback callback,
+      enterprise_connectors::AnalysisSettings analysis_settings);
+
+  // Returns all the currently active deep scanning requests.
+  std::vector<DeepScanningRequest*> GetDeepScanningRequests();
 
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
@@ -229,12 +256,13 @@ class DownloadProtectionService {
     explicit DownloadPingToken(const std::string& token)
         : token_string_(token) {}
 
+    DownloadPingToken(const DownloadPingToken&) = delete;
+    DownloadPingToken& operator=(const DownloadPingToken&) = delete;
+
     std::string token_string() { return token_string_; }
 
    private:
     std::string token_string_;
-
-    DISALLOW_COPY_AND_ASSIGN(DownloadPingToken);
   };
 
   // Cancels all requests in |download_requests_|, and empties it, releasing
@@ -242,8 +270,11 @@ class DownloadProtectionService {
   void CancelPendingRequests();
 
   // Called by a CheckClientDownloadRequest instance when it finishes, to
-  // remove it from |download_requests_|.
-  void RequestFinished(CheckClientDownloadRequestBase* request);
+  // remove it from |download_requests_| and to report security sensitive
+  // events to safe_browsing_metrics_collector.
+  void RequestFinished(CheckClientDownloadRequestBase* request,
+                       content::BrowserContext* browser_context,
+                       DownloadCheckResult result);
 
   // Called by a DeepScanningRequest when it finishes, to remove it from
   // |deep_scanning_requests_|.
@@ -332,12 +363,11 @@ class DownloadProtectionService {
   // Rate of allowlisted downloads we sample to send out download ping.
   double allowlist_sample_rate_;
 
-  // DownloadReporter to send real time reports for dangerous download events.
-  DownloadReporter download_reporter_;
+  // DownloadProtectionObserver to send real time reports for dangerous download
+  // events and handle special user actions on the download.
+  DownloadProtectionObserver download_protection_observer_;
 
   base::WeakPtrFactory<DownloadProtectionService> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadProtectionService);
 };
 }  // namespace safe_browsing
 

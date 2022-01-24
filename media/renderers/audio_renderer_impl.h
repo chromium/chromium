@@ -23,7 +23,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
@@ -78,6 +77,10 @@ class MEDIA_EXPORT AudioRendererImpl
       const CreateAudioDecodersCB& create_audio_decoders_cb,
       MediaLog* media_log,
       SpeechRecognitionClient* speech_recognition_client = nullptr);
+
+  AudioRendererImpl(const AudioRendererImpl&) = delete;
+  AudioRendererImpl& operator=(const AudioRendererImpl&) = delete;
+
   ~AudioRendererImpl() override;
 
   // TimeSource implementation.
@@ -109,6 +112,10 @@ class MEDIA_EXPORT AudioRendererImpl
 
   void SetPlayDelayCBForTesting(PlayDelayCBForTesting cb);
   bool was_unmuted_for_testing() const { return was_unmuted_; }
+
+  void decoded_audio_ready_for_testing() {
+    DecodedAudioReady(StatusCode::kCodeOnlyForTesting);
+  }
 
  private:
   friend class AudioRendererImplTest;
@@ -383,8 +390,6 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<AudioRendererImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };
 
 }  // namespace media

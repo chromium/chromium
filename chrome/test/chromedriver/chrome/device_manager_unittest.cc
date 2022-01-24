@@ -85,6 +85,20 @@ class FakeAdb : public Adb {
   }
 };
 
+class ClearAppDataCalledFakeAdb : public FakeAdb {
+ public:
+  Status ClearAppData(const std::string& device_serial,
+                      const std::string& package) override {
+    clear_app_data_called = true;
+    return FakeAdb::ClearAppData(device_serial, package);
+  }
+
+  bool ClearAppDataCalledIsCalled() { return clear_app_data_called; }
+
+ private:
+  bool clear_app_data_called = false;
+};
+
 class SucceedsForwardPortFakeAdb : public FakeAdb {
  public:
   SucceedsForwardPortFakeAdb() {}
@@ -162,37 +176,71 @@ TEST(Device, StartStopApp) {
   std::unique_ptr<Device> device1;
   ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
-  ASSERT_TRUE(
-      device1->SetUp("a.chrome.package", "", "",
-                     "", "", "", false, &devtools_port).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          &devtools_port)
+                  .IsOk());
+  ASSERT_FALSE(device1
+                   ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                           &devtools_port)
+                   .IsOk());
+  ASSERT_TRUE(device1->TearDown().IsOk());
+  ASSERT_FALSE(device1
+                   ->SetUp("a.chrome.package", "an.activity", "", "", "", "",
+                           false, false, &devtools_port)
+                   .IsOk());
   ASSERT_FALSE(
-      device1->SetUp("a.chrome.package", "", "",
-                     "", "", "", false, &devtools_port).IsOk());
+      device1
+          ->SetUp("a.package", "", "", "", "", "", false, false, &devtools_port)
+          .IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.package", "an.activity", "", "", "", "", false,
+                          false, &devtools_port)
+                  .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
-  ASSERT_FALSE(
-      device1->SetUp("a.chrome.package", "an.activity", "",
-                     "", "", "", false, &devtools_port).IsOk());
-  ASSERT_FALSE(
-      device1->SetUp("a.package", "", "",
-                     "", "", "", false, &devtools_port).IsOk());
-  ASSERT_TRUE(
-      device1->SetUp("a.package", "an.activity", "",
-                     "", "", "", false, &devtools_port).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.package", "an.activity", "a.process", "", "", "",
+                          false, false, &devtools_port)
+                  .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
-  ASSERT_TRUE(
-      device1->SetUp("a.package", "an.activity", "a.process",
-                     "", "", "", false, &devtools_port).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.package", "an.activity", "a.process",
+                          "a.deviceSocket", "", "", false, false,
+                          &devtools_port)
+                  .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
-  ASSERT_TRUE(
-      device1->SetUp("a.package", "an.activity", "a.process",
-                     "a.deviceSocket", "", "", false,
-                     &devtools_port).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.package", "an.activity", "a.process",
+                          "a.deviceSocket", "an.execName", "", false, false,
+                          &devtools_port)
+                  .IsOk());
   ASSERT_TRUE(device1->TearDown().IsOk());
-  ASSERT_TRUE(
-      device1->SetUp("a.package", "an.activity", "a.process",
-                     "a.deviceSocket", "an.execName", "", false,
-                     &devtools_port).IsOk());
-  ASSERT_TRUE(device1->TearDown().IsOk());
+}
+
+TEST(Device, ClearAppDataCalled) {
+  int devtools_port;
+  ClearAppDataCalledFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device1;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                          &devtools_port)
+                  .IsOk());
+  ASSERT_TRUE(adb.ClearAppDataCalledIsCalled());
+}
+
+TEST(Device, ClearAppDataNotCalled) {
+  int devtools_port;
+  ClearAppDataCalledFakeAdb adb;
+  DeviceManager device_manager(&adb);
+  std::unique_ptr<Device> device1;
+  ASSERT_TRUE(device_manager.AcquireDevice(&device1).IsOk());
+  ASSERT_TRUE(device1
+                  ->SetUp("a.chrome.package", "", "", "", "", "", false, true,
+                          &devtools_port)
+                  .IsOk());
+  ASSERT_FALSE(adb.ClearAppDataCalledIsCalled());
 }
 
 TEST(ForwardPort, Success) {
@@ -201,8 +249,8 @@ TEST(ForwardPort, Success) {
   DeviceManager device_manager(&adb);
   std::unique_ptr<Device> device1;
   device_manager.AcquireDevice(&device1);
-  device1->SetUp("a.chrome.package", "", "",
-                 "", "", "", false, &devtools_port);
+  device1->SetUp("a.chrome.package", "", "", "", "", "", false, false,
+                 &devtools_port);
   device1->TearDown();
   ASSERT_TRUE(adb.KillForwardPortIsCalled());
 }
@@ -213,8 +261,8 @@ TEST(ForwardPort, Failure) {
   DeviceManager device_manager(&adb);
   std::unique_ptr<Device> device1;
   device_manager.AcquireDevice(&device1);
-  device1->SetUp("a.package", "an.activity", "",
-                 "", "", "", false, &devtools_port);
+  device1->SetUp("a.package", "an.activity", "", "", "", "", false, false,
+                 &devtools_port);
   device1->TearDown();
   ASSERT_FALSE(adb.KillForwardPortIsCalled());
 }

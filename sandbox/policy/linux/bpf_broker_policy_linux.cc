@@ -29,6 +29,11 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
 #endif
 #if defined(__NR_faccessat)
     case __NR_faccessat:
+#endif
+#if defined(__NR_faccessat2)
+    case __NR_faccessat2:
+#endif
+#if defined(__NR_faccessat) || defined(__NR_faccessat2)
       if (allowed_command_set_.test(syscall_broker::COMMAND_ACCESS))
         return Allow();
       break;

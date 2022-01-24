@@ -62,6 +62,9 @@ public class AssistantOverlayModel extends PropertyModel {
     public static final WritableObjectPropertyKey<WebContents> WEB_CONTENTS =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableObjectPropertyKey<RectF> VISUAL_VIEWPORT =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<List<AssistantOverlayRect>> TOUCHABLE_AREA =
             new WritableObjectPropertyKey<>();
 
@@ -87,9 +90,9 @@ public class AssistantOverlayModel extends PropertyModel {
             new WritableObjectPropertyKey<>();
 
     public AssistantOverlayModel() {
-        super(WEB_CONTENTS, STATE, TOUCHABLE_AREA, RESTRICTED_AREA, DELEGATE, BACKGROUND_COLOR,
-                HIGHLIGHT_BORDER_COLOR, TAP_TRACKING_COUNT, TAP_TRACKING_DURATION_MS,
-                OVERLAY_IMAGE);
+        super(WEB_CONTENTS, STATE, VISUAL_VIEWPORT, TOUCHABLE_AREA, RESTRICTED_AREA, DELEGATE,
+                BACKGROUND_COLOR, HIGHLIGHT_BORDER_COLOR, TAP_TRACKING_COUNT,
+                TAP_TRACKING_DURATION_MS, OVERLAY_IMAGE);
     }
 
     @CalledByNative
@@ -111,6 +114,11 @@ public class AssistantOverlayModel extends PropertyModel {
                     /* fullWidth= */ (int) coords[i + 4] == 1));
         }
         return boxes;
+    }
+
+    @CalledByNative
+    private void setVisualViewport(float left, float top, float right, float bottom) {
+        set(VISUAL_VIEWPORT, new RectF(left, top, right, bottom));
     }
 
     @CalledByNative

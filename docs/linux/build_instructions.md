@@ -15,8 +15,8 @@ Are you a Google employee? See
 *   A 64-bit Intel machine with at least 8GB of RAM. More than 16GB is highly
     recommended.
 *   At least 100GB of free disk space.
-*   You must have Git and Python v3 installed already (and `python3` must point
-    to a Python v3 binary).
+*   You must have Git and Python v3.6+ installed already (and `python3` must point
+    to a Python v3.6+ binary).
 
 Most development is done on Ubuntu (currently 18.04, Bionic Beaver). There are
 some instructions for other distros below, but they are mostly unsupported.

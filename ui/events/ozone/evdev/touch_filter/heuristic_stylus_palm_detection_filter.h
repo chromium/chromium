@@ -8,7 +8,6 @@
 #include <bitset>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
@@ -42,6 +41,12 @@ class COMPONENT_EXPORT(EVDEV) HeuristicStylusPalmDetectionFilter
       int hold_stroke_count,
       base::TimeDelta hold,
       base::TimeDelta cancel);
+
+  HeuristicStylusPalmDetectionFilter(
+      const HeuristicStylusPalmDetectionFilter&) = delete;
+  HeuristicStylusPalmDetectionFilter& operator=(
+      const HeuristicStylusPalmDetectionFilter&) = delete;
+
   ~HeuristicStylusPalmDetectionFilter() override;
 
   void Filter(const std::vector<InProgressTouchEvdev>& touches,
@@ -67,8 +72,6 @@ class COMPONENT_EXPORT(EVDEV) HeuristicStylusPalmDetectionFilter
 
   // How many items have we seen in this stroke so far?
   std::vector<int> stroke_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeuristicStylusPalmDetectionFilter);
 };
 
 }  // namespace ui

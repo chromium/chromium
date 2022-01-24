@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/mojom/metrics.mojom.h"
@@ -51,6 +50,10 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   ArcAppPerformanceTracing(content::BrowserContext* context,
                            ArcBridgeService* bridge);
+
+  ArcAppPerformanceTracing(const ArcAppPerformanceTracing&) = delete;
+  ArcAppPerformanceTracing& operator=(const ArcAppPerformanceTracing&) = delete;
+
   ~ArcAppPerformanceTracing() override;
 
   // Returns singleton instance for the given BrowserContext,
@@ -179,8 +182,6 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Timer for jankiness tracing.
   base::OneShotTimer jankiness_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracing);
 };
 
 }  // namespace arc

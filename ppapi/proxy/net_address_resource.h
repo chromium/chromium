@@ -28,6 +28,9 @@ class PPAPI_PROXY_EXPORT NetAddressResource : public PluginResource,
                      PP_Instance instance,
                      const PP_NetAddress_Private& private_addr);
 
+  NetAddressResource(const NetAddressResource&) = delete;
+  NetAddressResource& operator=(const NetAddressResource&) = delete;
+
   ~NetAddressResource() override;
 
   // PluginResource implementation.
@@ -44,8 +47,6 @@ class PPAPI_PROXY_EXPORT NetAddressResource : public PluginResource,
   // TODO(yzshen): Refactor the code so that PPB_NetAddress resource doesn't
   // use PP_NetAddress_Private as storage type.
   PP_NetAddress_Private address_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetAddressResource);
 };
 
 }  // namespace proxy

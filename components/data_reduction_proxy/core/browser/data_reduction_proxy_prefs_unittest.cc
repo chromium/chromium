@@ -39,7 +39,7 @@ class DataReductionProxyPrefsTest : public testing::Test {
                       PrefService* pref_service) {
     ListPrefUpdate list(local_state_prefs(), pref_name);
     for (int64_t i = 0; i < 10L; ++i) {
-      list->AppendString(base::NumberToString(i + starting_value));
+      list->Append(base::NumberToString(i + starting_value));
     }
   }
 

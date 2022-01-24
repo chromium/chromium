@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace language {
@@ -17,6 +16,10 @@ class UrlLanguageHistogram;
 // Methods to record language usage as UMA histograms.
 class LanguageUsageMetrics {
  public:
+  LanguageUsageMetrics() = delete;
+  LanguageUsageMetrics(const LanguageUsageMetrics&) = delete;
+  LanguageUsageMetrics& operator=(const LanguageUsageMetrics&) = delete;
+
   // Records accept languages as a UMA histogram. |accept_languages| is a
   // case-insensitive comma-separated list of languages/locales of either xx,
   // xx-YY, or xx_YY format where xx is iso-639 language code and YY is iso-3166
@@ -36,19 +39,18 @@ class LanguageUsageMetrics {
   // Only the language part (xx in the example) is considered.
   static void RecordApplicationLanguage(base::StringPiece application_locale);
 
-  // Parses |locale| and returns the language code. Returns 0 in case of errors.
-  // The language code is calculated from two alphabets. For example, if
-  // |locale| is 'en' which represents 'English', the codes of 'e' and 'n' are
-  // 101 and 110 respectively, and the language code will be 101 * 256 + 100 =
-  // 25966.
-  // |locale| is case-insensitive, such that "EN" will return the same language
-  // code as "en". This function doesn't check whether |locale| is valid locale
-  // or not.
-  static int ToLanguageCode(base::StringPiece locale);
+  // Maps |locale| to a hash value in the "LanguageName" enum.
+  // Deprecated - please use the enum "LocaleCodeISO639" which maps the full
+  // locale including country variant to a base::HashMetricName value.
+  //
+  // The language hash is calculated by splitting the locale on "-" and bit
+  // shifting the char int values. For example, if |locale| is 'en' the codes
+  // of 'e' and 'n' are 101 and 110 respectively, and the language hash will be
+  // 101 * 256 + 100 = 25966. |locale| is case-insensitive and not checked for
+  // validity. Returns 0 in case of errors.
+  static int ToLanguageCodeHash(base::StringPiece locale);
 
  private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LanguageUsageMetrics);
-
   // Parses |accept_languages| and returns a set of language codes in
   // |languages|.
   static void ParseAcceptLanguages(base::StringPiece accept_languages,

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
@@ -57,6 +56,9 @@ class BleListenerOperation
     static Factory* test_factory_;
   };
 
+  BleListenerOperation(const BleListenerOperation&) = delete;
+  BleListenerOperation& operator=(const BleListenerOperation&) = delete;
+
   ~BleListenerOperation() override;
 
  private:
@@ -85,8 +87,6 @@ class BleListenerOperation
 
   bool is_attempt_active_ = false;
   base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleListenerOperation);
 };
 
 }  // namespace secure_channel

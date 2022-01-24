@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="1113173431709655881">카메라 모드</translation>
+<translation id="1175958423215084756">링크가 감지되었습니다. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">시계 방향으로 90도 회전</translation>
+<translation id="1276998909102132017">갤러리 이미지</translation>
+<translation id="1300209025925956156">문서 스캔</translation>
+<translation id="1303487788671416818">원본 크기 동영상 스냅샷 사용</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. 검색 + 왼쪽 화살표 키를 사용하여 액세스하세요.</translation>
+<translation id="1430915738399379752">인쇄</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
+<translation id="1473110567575736769">3초 타이머</translation>
+<translation id="1545749641540134597">QR 코드 스캔</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">일반</translation>
+<translation id="1620510694547887537">카메라</translation>
+<translation id="1627744224761163218">4x4</translation>
+<translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
+<translation id="1838104802459806957">위로 기울이기</translation>
+<translation id="1851169887664797861">추가 카메라 제어 기능 사용 가능</translation>
+<translation id="1851616744363735765">일시중지됨</translation>
+<translation id="1862930711583847113"><ph name="FILE" /> 파일을 내보낼 수 없습니다.</translation>
+<translation id="1899697626337024495">사진 해상도</translation>
+<translation id="2022953316617983419">QR 코드</translation>
+<translation id="2036868001356139588">타이머 시간</translation>
+<translation id="2050339315714019657">세로 방향</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> 사용 중</translation>
+<translation id="2144806332417375165">맞춤 동영상 매개변수</translation>
+<translation id="2175927920773552910">QR 코드</translation>
+<translation id="229579744168541441">디스크로 내보내기</translation>
+<translation id="2320741269052147773">왼쪽으로 화면 이동</translation>
+<translation id="2501278716633472235">뒤로 이동</translation>
+<translation id="2501853267655415902">녹화가 중지되었습니다.</translation>
+<translation id="2501953888035679275">카메라로 사진을 찍고 동영상을 녹화합니다.</translation>
+<translation id="2517472476991765520">검색</translation>
+<translation id="2549985041256363841">녹화 시작</translation>
+<translation id="2599796128805996109">후면 카메라</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" />초</translation>
+<translation id="2761536921376153655">검색 유형</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
+<translation id="2968794441791257519">카메라로 촬영된 사진 및 동영상은 다운로드 폴더로 이동됩니다. 파일 앱에서 이러한 사진 및 동영상에 액세스할 수 있습니다.
+
+        저장용량 권한이 있는 앱은 사진 및 동영상에 액세스할 수 있습니다.</translation>
+<translation id="3067436040345934772">오른쪽으로 화면 이동</translation>
+<translation id="3081586908890909590">동영상 녹화 모드로 전환</translation>
+<translation id="313467653172006084">30FPS</translation>
+<translation id="3183731565330012717">그리드 유형</translation>
+<translation id="3227137524299004712">마이크</translation>
+<translation id="3240426699337459095">링크 복사됨</translation>
+<translation id="3259149966178251584">카메라 해상도</translation>
+<translation id="3260401663013584785">문서를 감지할 수 없음</translation>
+<translation id="3305962767867348165">고정</translation>
+<translation id="3448774564454087943">동영상이 너무 짧아 저장할 수 없습니다.</translation>
+<translation id="346539236881580388">다시 촬영</translation>
+<translation id="3517926952904427380">세로 모드 사진을 찍을 수 없습니다.</translation>
+<translation id="3569311554794739032"><ph name="FILE" /> 파일을 삭제하시겠습니까?</translation>
+<translation id="3573890771273113519">스캔 모드로 전환</translation>
+<translation id="3789724198583203151">시계 반대 방향으로 90도 회전</translation>
+<translation id="3810838688059735925">동영상</translation>
+<translation id="3838931309141338733">바코드 스캔</translation>
+<translation id="3892148308691398805">텍스트 복사</translation>
+<translation id="4118525110028899586">녹화 일시중지</translation>
+<translation id="4121305183798804752">문서 삭제됨</translation>
+<translation id="4269820728363426813">링크 주소 복사</translation>
+<translation id="4279490309300973883">미러링</translation>
+<translation id="4329152592498422850">스퀘어 사진 촬영으로 전환</translation>
+<translation id="4383571725254449280">실적 로그 인쇄</translation>
+<translation id="4445542136948522167">사진 촬영 중지</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
+<translation id="4570032796877367747">전면 카메라</translation>
+<translation id="4628948037717959914">사진</translation>
+<translation id="4649291346448517080">파일을 저장할 수 없습니다.</translation>
+<translation id="4890010094662541459">3x3</translation>
+<translation id="491895758387112773">멀티스트림 동영상 녹화</translation>
+<translation id="5057360777601936059">현재 카메라를 사용할 수 없습니다.
+        카메라가 제대로 연결되어 있는지 확인하세요.</translation>
+<translation id="5152121255775685072">갤러리로 이동</translation>
+<translation id="520537883758714667">이제 문서를 스캔할 수 있습니다.</translation>
+<translation id="5317780077021120954">저장</translation>
+<translation id="5444515100983837161">프레임 안에 문서의 네 모서리를 위치시키세요. 문서와 배경이 서로 다른 색상일 때 스캔이 가장 잘 작동합니다.</translation>
+<translation id="5671277269877808209">정사각형</translation>
+<translation id="5746169159649715125">PDF로 저장</translation>
+<translation id="5753488212459587150">전문가 모드 사용 설정</translation>
+<translation id="5759254179196327752">문서 스캔</translation>
+<translation id="5775960006311140197">전문가 모드</translation>
+<translation id="5869546221129391014">격자</translation>
+<translation id="5975083100439434680">축소</translation>
+<translation id="6073451960410192870">녹화 중지</translation>
+<translation id="6197807149213783179">메타데이터 저장</translation>
+<translation id="6233780560267770709">3x3</translation>
+<translation id="6243827288366940320">황금 비율</translation>
+<translation id="6248749904681914629">외장 카메라</translation>
+<translation id="6353688143752491039">카메라 앱에 대한 의견을 제공해 주셔서 감사합니다.
+
+이미지 또는 동영상 품질에 관한 의견인 경우 샘플 사진이나 동영상을 첨부하고 문제를 설명해 주세요. 예를 들면 사진이 너무 어둡다거나 대상에 초점이 맞지 않는다고 설명할 수 있습니다.</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" />메가픽셀</translation>
+<translation id="6527303717912515753">공유</translation>
+<translation id="667999046851023355">문서</translation>
+<translation id="6681668084120808868">사진 찍기</translation>
+<translation id="6778482348691154169">사진을 찍을 수 없습니다.</translation>
+<translation id="695140971690006676">모두 재설정</translation>
+<translation id="6965382102122355670">확인</translation>
+<translation id="698156982839284926">3초</translation>
+<translation id="712848772518857951">항목 <ph name="COUNT" />개를 삭제하시겠습니까?</translation>
+<translation id="7134221860976209830">10초 타이머</translation>
+<translation id="7191890674911603392">녹화 유형</translation>
+<translation id="7243947652761655814">동영상 해상도</translation>
+<translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>
+<translation id="7450541714075000668">텍스트 복사됨</translation>
+<translation id="7476762461674917065">GIF 녹화 옵션 표시</translation>
+<translation id="7488619942230388918">GIF 동영상 녹화</translation>
+<translation id="7557677699350329807">다음 카메라로 전환</translation>
+<translation id="7607002721634913082">일시중지됨</translation>
+<translation id="7608223098072244877">4x4</translation>
+<translation id="7649070708921625228">도움말</translation>
+<translation id="7658239707568436148">취소</translation>
+<translation id="7670511624014457267">60FPS</translation>
+<translation id="7726641833034062494">일반 동영상 녹화</translation>
+<translation id="7983668134180549431">텍스트가 감지되었습니다.</translation>
+<translation id="8067883171444229417">동영상 재생</translation>
+<translation id="8120146556401698679">이동, 기울이기, 확대/축소</translation>
+<translation id="8131740175452115882">확인</translation>
+<translation id="8145038249676204903">사진 촬영 모드로 전환</translation>
+<translation id="8167081290930651932">사진으로 저장</translation>
+<translation id="8239780215768881278">동영상 스냅샷 촬영</translation>
+<translation id="8261506727792406068">삭제</translation>
+<translation id="8425673304802773841">아래로 기울이기</translation>
+<translation id="8428213095426709021">설정</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">확인</translation>
+<translation id="8730621377337864115">완료</translation>
+<translation id="8732462232047530626">메타데이터 미리보기</translation>
+<translation id="8815966864175525708">세로 모드 사진 촬영으로 전환</translation>
+<translation id="8828441885228359828">녹화 재개</translation>
+<translation id="8870695351537079478">녹화를 시작할 수 없습니다.</translation>
+<translation id="8903921497873541725">확대</translation>
+<translation id="9045010116236796332">프레임 안에 문서의 네 모서리를 위치시키세요.</translation>
+<translation id="9045155556724273246">10초</translation>
+<translation id="906331135292332864">이미지 처리 중...</translation>
+<translation id="945522503751344254">의견 보내기</translation>
+</translationbundle>

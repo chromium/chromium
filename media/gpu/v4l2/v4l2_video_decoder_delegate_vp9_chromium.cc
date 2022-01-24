@@ -23,6 +23,9 @@ class V4L2VP9Picture : public VP9Picture {
   explicit V4L2VP9Picture(scoped_refptr<V4L2DecodeSurface> dec_surface)
       : dec_surface_(std::move(dec_surface)) {}
 
+  V4L2VP9Picture(const V4L2VP9Picture&) = delete;
+  V4L2VP9Picture& operator=(const V4L2VP9Picture&) = delete;
+
   V4L2VP9Picture* AsV4L2VP9Picture() override { return this; }
   scoped_refptr<V4L2DecodeSurface> dec_surface() { return dec_surface_; }
 
@@ -34,8 +37,6 @@ class V4L2VP9Picture : public VP9Picture {
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2VP9Picture);
 };
 
 namespace {

@@ -195,12 +195,6 @@ void SegregatedPrefStore::CommitPendingWrite(
                                            synchronous_callback_wrapper);
 }
 
-void SegregatedPrefStore::CommitPendingWriteSynchronously() {
-  // This function was added for one very specific use case and is intentionally
-  // not implemented for other pref stores.
-  NOTREACHED();
-}
-
 void SegregatedPrefStore::SchedulePendingLossyWrites() {
   default_pref_store_->SchedulePendingLossyWrites();
   selected_pref_store_->SchedulePendingLossyWrites();

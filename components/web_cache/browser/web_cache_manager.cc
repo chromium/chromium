@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -21,7 +21,6 @@
 #include "components/web_cache/public/features.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace web_cache {
 
@@ -389,7 +388,7 @@ void WebCacheManager::ReviseAllocationStrategyLater() {
       FROM_HERE,
       base::BindOnce(&WebCacheManager::ReviseAllocationStrategy,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kReviseAllocationDelayMS));
+      base::Milliseconds(kReviseAllocationDelayMS));
 }
 
 void WebCacheManager::FindInactiveRenderers() {
@@ -397,8 +396,8 @@ void WebCacheManager::FindInactiveRenderers() {
   while (iter != active_renderers_.end()) {
     auto elmt = stats_.find(*iter);
     DCHECK(elmt != stats_.end());
-    TimeDelta idle = Time::Now() - elmt->second.access;
-    if (idle >= TimeDelta::FromMinutes(kRendererInactiveThresholdMinutes)) {
+    base::TimeDelta idle = Time::Now() - elmt->second.access;
+    if (idle >= base::Minutes(kRendererInactiveThresholdMinutes)) {
       // Moved to inactive status.  This invalidates our iterator.
       inactive_renderers_.insert(*iter);
       active_renderers_.erase(*iter);

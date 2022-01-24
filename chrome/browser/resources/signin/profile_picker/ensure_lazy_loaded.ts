@@ -15,9 +15,10 @@ export function ensureLazyLoaded(): Promise<void[]> {
     document.body.appendChild(script);
 
     lazyLoadPromise = Promise.all([
-      'profile-type-choice',
-      'local-profile-customization',
-      'profile-switch',
+      'profile-type-choice', 'local-profile-customization', 'profile-switch',
+      // <if expr="lacros">
+      'account-selection-lacros',
+      // </if>
     ].map(name => customElements.whenDefined(name)));
   }
   return lazyLoadPromise;

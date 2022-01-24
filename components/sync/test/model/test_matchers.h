@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"

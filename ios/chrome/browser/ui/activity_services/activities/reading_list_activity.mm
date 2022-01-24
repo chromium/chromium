@@ -70,10 +70,10 @@ NSString* const kReadingListActivityType =
 }
 
 - (void)performActivity {
+  [self activityDidFinish:YES];
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:_activityURL title:_title];
   [_dispatcher addToReadingList:command];
-  [self activityDidFinish:YES];
 }
 
 @end

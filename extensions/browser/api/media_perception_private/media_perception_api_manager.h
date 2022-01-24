@@ -38,6 +38,11 @@ class MediaPerceptionAPIManager
       extensions::api::media_perception_private::Diagnostics diagnostics)>;
 
   explicit MediaPerceptionAPIManager(content::BrowserContext* context);
+
+  MediaPerceptionAPIManager(const MediaPerceptionAPIManager&) = delete;
+  MediaPerceptionAPIManager& operator=(const MediaPerceptionAPIManager&) =
+      delete;
+
   ~MediaPerceptionAPIManager() override;
 
   // Convenience method to get the MediaPeceptionAPIManager for a
@@ -166,8 +171,6 @@ class MediaPerceptionAPIManager
                           chromeos::MediaAnalyticsClient::Observer>
       scoped_observation_{this};
   base::WeakPtrFactory<MediaPerceptionAPIManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPerceptionAPIManager);
 };
 
 }  // namespace extensions

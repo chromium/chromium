@@ -36,6 +36,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentManagerClient
     virtual void AgentManagerRemoved(const dbus::ObjectPath& object_path) {}
   };
 
+  BluetoothAgentManagerClient(const BluetoothAgentManagerClient&) = delete;
+  BluetoothAgentManagerClient& operator=(const BluetoothAgentManagerClient&) =
+      delete;
+
   ~BluetoothAgentManagerClient() override;
 
   // Adds and removes observers for events on agent manager.
@@ -79,9 +83,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentManagerClient
 
  protected:
   BluetoothAgentManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAgentManagerClient);
 };
 
 }  // namespace bluez

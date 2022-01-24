@@ -5,7 +5,6 @@
 #include "components/media_router/browser/route_message_util.h"
 
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/values.h"
 
 using media_router::mojom::RouteMessage;

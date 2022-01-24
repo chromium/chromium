@@ -371,8 +371,8 @@ struct __attribute__((packed, aligned(4))) MachExceptionRaiseStateRequest {
 // are identical.
 using MachExceptionRaiseStateReply = ExceptionRaiseStateReply;
 
-struct __attribute__((packed,
-                      aligned(4))) MachExceptionRaiseStateIdentityRequest {
+struct __attribute__((packed, aligned(4)))
+MachExceptionRaiseStateIdentityRequest {
   MachExceptionRaiseStateIdentityRequest() {
     memset(this, 0xa5, sizeof(*this));
     Head.msgh_bits =
@@ -509,17 +509,18 @@ class MockUniversalMachExcServer : public UniversalMachExcServer::Interface {
                                   trailer);
   }
 
-  MOCK_METHOD10(MockCatchMachException,
-                kern_return_t(exception_behavior_t behavior,
-                              exception_handler_t exception_port,
-                              thread_t thread,
-                              task_t task,
-                              exception_type_t exception,
-                              const ConstExceptionCodes* exception_codes,
-                              thread_state_flavor_t* flavor,
-                              const ConstThreadStateAndCount* old_thread_state,
-                              ThreadStateAndCount* new_thread_state,
-                              const mach_msg_trailer_t* trailer));
+  MOCK_METHOD(kern_return_t,
+              MockCatchMachException,
+              (exception_behavior_t behavior,
+               exception_handler_t exception_port,
+               thread_t thread,
+               task_t task,
+               exception_type_t exception,
+               const ConstExceptionCodes* exception_codes,
+               thread_state_flavor_t* flavor,
+               const ConstThreadStateAndCount* old_thread_state,
+               ThreadStateAndCount* new_thread_state,
+               const mach_msg_trailer_t* trailer));
 };
 
 // Matcher for ConstExceptionCodes, testing that it carries 2 codes matching
@@ -978,6 +979,9 @@ class TestExcServerVariants : public MachMultiprocess,
     SetExpectedChildTerminationBuiltinTrap();
   }
 
+  TestExcServerVariants(const TestExcServerVariants&) = delete;
+  TestExcServerVariants& operator=(const TestExcServerVariants&) = delete;
+
   // UniversalMachExcServer::Interface:
 
   virtual kern_return_t CatchMachException(
@@ -1088,8 +1092,6 @@ class TestExcServerVariants : public MachMultiprocess,
 
   static const mach_msg_option_t kMachMessageOptions =
       MACH_RCV_TRAILER_TYPE(MACH_MSG_TRAILER_FORMAT_0);
-
-  DISALLOW_COPY_AND_ASSIGN(TestExcServerVariants);
 };
 
 TEST(ExcServerVariants, ExceptionRaise) {

@@ -36,8 +36,7 @@ WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate* g_arcvm_delegate_for_testing =
     nullptr;
 
 // Reports ARCVM trim metrics every |kArcVmTrimMetricReportDelay| minutes.
-constexpr base::TimeDelta kArcVmTrimMetricReportDelay =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kArcVmTrimMetricReportDelay = base::Minutes(30);
 
 // It is very unlikely to do the trim more than |kArcVmTrimMetricMaxCount|
 // times in |kArcVmTrimMetricReportDelay|.
@@ -339,7 +338,9 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
       (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
   const bool need_reclaim =
       force_reclaim ||
-      arcvm_delegate->IsEligibleForReclaim(params.arcvm_inactivity_time);
+      arcvm_delegate->IsEligibleForReclaim(
+          params.arcvm_inactivity_time,
+          params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot);
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses,

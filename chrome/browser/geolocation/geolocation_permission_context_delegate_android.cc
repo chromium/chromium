@@ -93,10 +93,10 @@ void GeolocationPermissionContextDelegateAndroid::FinishNotifyPermissionSet(
 
   // If this is the default search origin, and the DSE Geolocation setting is
   // being used, potentially show the disclosure.
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      id.render_process_id(), id.render_frame_id());
   content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(id.render_process_id(),
-                                           id.render_frame_id()));
+      content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
 
@@ -105,5 +105,5 @@ void GeolocationPermissionContextDelegateAndroid::FinishNotifyPermissionSet(
 
   // The tab helper can be null in tests.
   if (disclosure_helper)
-    disclosure_helper->MaybeShowDisclosureForAPIAccess(requesting_origin);
+    disclosure_helper->MaybeShowDisclosureForAPIAccess(rfh, requesting_origin);
 }

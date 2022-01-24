@@ -19,7 +19,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/safety_check.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
@@ -49,7 +48,6 @@
 #include "ios/chrome/browser/upgrade/upgrade_utils.h"
 #include "ios/chrome/common/channel_info.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -466,12 +464,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case PasswordItemType:
       return [self passwordCheckErrorInfo];
     case SafeBrowsingItemType: {
-      NSString* message =
-          signin::IsMobileIdentityConsistencyEnabled()
-              ? l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO)
-              : l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_INFO);
+      NSString* message = l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_OPEN_SAFE_BROWSING_INFO);
       GURL safeBrowsingURL(
           base::SysNSStringToUTF8(kSafeBrowsingSafetyCheckStringURL));
       return [self attributedStringWithText:message link:safeBrowsingURL];
@@ -1188,7 +1182,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
   std::u16string timestamp;
   // If check found issues less than 1 minuete ago.
-  if (elapsedTime < base::TimeDelta::FromMinutes(1)) {
+  if (elapsedTime < base::Minutes(1)) {
     timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
   } else {
     timestamp = ui::TimeFormat::SimpleWithMonthAndYear(

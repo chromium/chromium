@@ -12,15 +12,15 @@
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="change_picture_browser_proxy.html">
 <link rel="import" href="../metrics_recorder.html">
 
 <dom-module id="settings-change-picture">
   <template>
-    <style>
+    <style include="settings-shared">
       :host {
-        --cr-toolbar-height: 56px;
         /* #headerLine height + padding */
         --cr-settings-header-height: calc(62px + 1.34em);
         --title-height: 2em;
@@ -56,8 +56,8 @@
         width: 288px;
       }
 
-      #authorCredit {
-        color: var(--google-grey-500);
+      #sourceInfo {
+        color: var(--cros-text-color-disabled);
         display: flex;
         flex-direction: column;
         margin-top: 20px;
@@ -68,6 +68,7 @@
            without using fixed position. */
         height: calc(100vh -
             var(--cr-toolbar-height) -
+            var(--cr-toolbar-padding-top) -
             var(--cr-settings-header-height) -
             var(--title-padding) -
             var(--title-height));
@@ -96,20 +97,18 @@
             camera-video-mode-enabled="[[cameraVideoModeEnabled_]]"
             on-keys-pressed="onCameraPaneKeysPressed_">
         </cr-picture-pane>
-        <div id="authorCredit"
-            hidden="[[!isAuthorCreditShown_(selectedItem_)]]">
-          [[getAuthorCredit_(selectedItem_, defaultImages_)]]
-          <a href="[[getAuthorWebsite_(selectedItem_, defaultImages_)]]"
-              target="_blank">
-            [[getAuthorWebsite_(selectedItem_, defaultImages_)]]
+        <div id="sourceInfo"
+            hidden="[[!shouldShowSourceInfo_(selectedItem_, authorInfo_, websiteInfo_)]]">
+          [[authorInfo_]]
+          <a href="[[websiteInfo_]]" target="_blank">
+            [[websiteInfo_]]
           </a>
         </div>
       </div>
       <cr-picture-list id="pictureList"
-          hidden="[[!defaultImages_]]"
+          hidden="[[!currentDefaultImages_]]"
           camera-present="[[cameraPresent_]]"
-          default-images="[[getDefaultImages_(defaultImages_,
-              firstDefaultImageIndex_)]]"
+          default-images="[[currentDefaultImages_]]"
           selected-item="{{selectedItem_}}"
           choose-file-label="$i18n{chooseFile}"
           old-image-label="[[oldImageLabel_]]"

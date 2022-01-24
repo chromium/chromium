@@ -16,8 +16,7 @@ enum class FrameOriginType {
   kMainFrame = 0,
   kSameOriginToMainFrame = 1,
   kCrossOriginToMainFrame = 2,
-  // TODO(dcheng): Get rid of this and use the kMaxValue idiom.
-  kCount = 3,
+  kMaxValue = kCrossOriginToMainFrame,
 };
 
 FrameOriginType GetFrameOriginType(FrameScheduler* frame_scheduler);

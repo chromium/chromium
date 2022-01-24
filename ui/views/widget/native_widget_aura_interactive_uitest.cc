@@ -19,6 +19,10 @@ namespace {
 class TestFocusRules : public wm::BaseFocusRules {
  public:
   TestFocusRules() = default;
+
+  TestFocusRules(const TestFocusRules&) = delete;
+  TestFocusRules& operator=(const TestFocusRules&) = delete;
+
   ~TestFocusRules() override = default;
 
   void set_can_activate(bool can_activate) { can_activate_ = can_activate; }
@@ -34,8 +38,6 @@ class TestFocusRules : public wm::BaseFocusRules {
 
  private:
   bool can_activate_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
 };
 
 }  // namespace

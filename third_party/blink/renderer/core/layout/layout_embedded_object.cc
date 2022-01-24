@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/embedded_object_painter.h"
@@ -95,7 +94,6 @@ void LayoutEmbeddedObject::PaintReplaced(
 void LayoutEmbeddedObject::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
-  LayoutAnalyzer::Scope analyzer(*this);
 
   UpdateLogicalWidth();
   UpdateLogicalHeight();
@@ -126,10 +124,10 @@ void LayoutEmbeddedObject::ComputeIntrinsicSizingInfo(
     if (aspect_ratio.GetType() == EAspectRatioType::kRatio ||
         (aspect_ratio.GetType() == EAspectRatioType::kAutoAndRatio &&
          intrinsic_sizing_info.aspect_ratio.IsEmpty())) {
-      intrinsic_sizing_info.aspect_ratio.SetWidth(
-          aspect_ratio.GetRatio().Width());
-      intrinsic_sizing_info.aspect_ratio.SetHeight(
-          aspect_ratio.GetRatio().Height());
+      intrinsic_sizing_info.aspect_ratio.set_width(
+          aspect_ratio.GetRatio().width());
+      intrinsic_sizing_info.aspect_ratio.set_height(
+          aspect_ratio.GetRatio().height());
     }
 
     if (!IsHorizontalWritingMode())

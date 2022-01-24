@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_NOTIFICATION_SWIPE_CONTROL_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkColor.h"

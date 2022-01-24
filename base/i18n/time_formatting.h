@@ -115,12 +115,6 @@ BASE_I18N_EXPORT std::u16string TimeFormatWithPattern(const Time& time,
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See
 // DurationFormatWidth for details.
-//
-// Please don't use width = DURATION_WIDTH_NUMERIC when the time duration
-// can possibly be larger than 24h, as the hour value will be cut below 24
-// after formatting.
-// TODO(crbug.com/675791): fix function output when width =
-// DURATION_WIDTH_NUMERIC.
 BASE_I18N_EXPORT bool TimeDurationFormat(const TimeDelta time,
                                          const DurationFormatWidth width,
                                          std::u16string* out)
@@ -129,12 +123,6 @@ BASE_I18N_EXPORT bool TimeDurationFormat(const TimeDelta time,
 // Formats a time duration of hours, minutes and seconds into various formats,
 // e.g., "3:07:30" or "3 hours, 7 minutes, 30 seconds", and returns true on
 // success. See DurationFormatWidth for details.
-//
-// Please don't use width = DURATION_WIDTH_NUMERIC when the time duration
-// can possibly be larger than 24h, as the hour value will be cut below 24
-// after formatting.
-// TODO(crbug.com/675791): fix function output when width =
-// DURATION_WIDTH_NUMERIC.
 BASE_I18N_EXPORT bool TimeDurationFormatWithSeconds(
     const TimeDelta time,
     const DurationFormatWidth width,

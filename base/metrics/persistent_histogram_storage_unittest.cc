@@ -25,6 +25,12 @@ constexpr char kTestHistogramAllocatorName[] = "TestMetrics";
 }  // namespace
 
 class PersistentHistogramStorageTest : public testing::Test {
+ public:
+  PersistentHistogramStorageTest(const PersistentHistogramStorageTest&) =
+      delete;
+  PersistentHistogramStorageTest& operator=(
+      const PersistentHistogramStorageTest&) = delete;
+
  protected:
   PersistentHistogramStorageTest() = default;
   ~PersistentHistogramStorageTest() override = default;
@@ -47,8 +53,6 @@ class PersistentHistogramStorageTest : public testing::Test {
 
   // The directory into which metrics files are written.
   FilePath test_storage_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramStorageTest);
 };
 
 #if !defined(OS_NACL)

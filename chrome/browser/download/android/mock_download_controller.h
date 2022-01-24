@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_MOCK_DOWNLOAD_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 
@@ -17,6 +16,10 @@ namespace android {
 class MockDownloadController : public DownloadControllerBase {
  public:
   MockDownloadController();
+
+  MockDownloadController(const MockDownloadController&) = delete;
+  MockDownloadController& operator=(const MockDownloadController&) = delete;
+
   ~MockDownloadController() override;
 
   // DownloadControllerBase implementation.
@@ -34,7 +37,6 @@ class MockDownloadController : public DownloadControllerBase {
 
  private:
   bool approve_file_access_request_;
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadController);
 };
 
 }  // namespace android

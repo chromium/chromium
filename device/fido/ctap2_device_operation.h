@@ -71,6 +71,9 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
         device_response_parser_(std::move(device_response_parser)),
         string_fixup_predicate_(string_fixup_predicate) {}
 
+  Ctap2DeviceOperation(const Ctap2DeviceOperation&) = delete;
+  Ctap2DeviceOperation& operator=(const Ctap2DeviceOperation&) = delete;
+
   ~Ctap2DeviceOperation() override = default;
 
   void Start() override {
@@ -205,8 +208,6 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   DeviceResponseParser device_response_parser_;
   const CBORPathPredicate string_fixup_predicate_;
   base::WeakPtrFactory<Ctap2DeviceOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Ctap2DeviceOperation);
 };
 
 }  // namespace device

@@ -69,9 +69,9 @@ class DateDeserializer final {
 };
 
 // Parses the offset info in `deserializer`, which is the time offset portion of
-// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1
-// standard. An input is expected to look like "HH'mm", such that "HH" is the
-// hour and "mm" is the minute.
+// the date format provided in section 7.9.4 "Dates" of the ISO 32000-1:2008
+// spec. An input is expected to look like "HH'mm", such that "HH" is the hour
+// and "mm" is the minute.
 base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   base::TimeDelta offset;
 
@@ -80,7 +80,7 @@ base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   if (!sign.has_value() || (sign.value() != '+' && sign.value() != '-'))
     return offset;
 
-  offset += base::TimeDelta::FromHours(deserializer.PopDigits(2).value_or(0));
+  offset += base::Hours(deserializer.PopDigits(2).value_or(0));
 
   // The spec requires that the hours offset be followed by an apostrophe, but
   // don't be strict about its presence.
@@ -92,7 +92,7 @@ base::TimeDelta ParseOffset(DateDeserializer& deserializer) {
   // following the minutes offset. One reason for the leniency is the apostrophe
   // following the minues, which is only mentioned in earlier versions of the
   // spec.
-  offset += base::TimeDelta::FromMinutes(deserializer.PopDigits(2).value_or(0));
+  offset += base::Minutes(deserializer.PopDigits(2).value_or(0));
 
   return sign.value() == '+' ? offset : -offset;
 }

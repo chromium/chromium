@@ -320,6 +320,7 @@ blink_core_tests_dom = [
   "space_split_string_test.cc",
   "static_range_test.cc",
   "text_test.cc",
+  "tree_ordered_list_test.cc",
   "tree_ordered_map_test.cc",
   "tree_scope_adopter_test.cc",
   "tree_scope_test.cc",

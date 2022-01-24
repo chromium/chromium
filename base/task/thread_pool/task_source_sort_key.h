@@ -24,8 +24,8 @@ class BASE_EXPORT TaskSourceSortKey final {
   uint8_t worker_count() const { return worker_count_; }
   TimeTicks ready_time() const { return ready_time_; }
 
-  // Lower sort key means more important.
-  bool operator<=(const TaskSourceSortKey& other) const;
+  // Used for a max-heap.
+  bool operator<(const TaskSourceSortKey& other) const;
 
   bool operator==(const TaskSourceSortKey& other) const {
     return priority_ == other.priority_ &&

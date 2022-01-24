@@ -54,6 +54,11 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
   FileSystemAccessTabHelperPrerenderingBrowserTest& operator=(
       const FileSystemAccessTabHelperPrerenderingBrowserTest&) = delete;
 
+  void SetUp() override {
+    prerender_test_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     FileSystemAccessPermissionContextFactory::GetInstance()
         ->SetTestingFactoryAndUse(
@@ -63,7 +68,6 @@ class FileSystemAccessTabHelperPrerenderingBrowserTest
                     BuildMockFileSystemAccessPermissionContext,
                 base::Unretained(this)));
 
-    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

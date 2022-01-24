@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 #define COMPONENTS_PERMISSIONS_CONTEXTS_CAMERA_PAN_TILT_ZOOM_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_context_base.h"
@@ -22,10 +21,26 @@ namespace permissions {
 class CameraPanTiltZoomPermissionContext
     : public permissions::PermissionContextBase {
  public:
+  // Delegate which allows embedders to modify the logic of this permission
+  // context.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Allows the delegate to override the context's
+    // GetPermissionStatusInternal() logic. If this returns true, the base
+    // context's GetPermissionStatusInternal() will not be called.
+    virtual bool GetPermissionStatusInternal(
+        const GURL& requesting_origin,
+        const GURL& embedding_origin,
+        ContentSetting* content_setting_result) = 0;
+  };
+
   // Constructs a CameraPanTiltZoomPermissionContext for |browser_context|. Note
   // that the passed in |device_enumerator| must outlive |this|.
   CameraPanTiltZoomPermissionContext(
       content::BrowserContext* browser_context,
+      std::unique_ptr<Delegate> delegate,
       const webrtc::MediaStreamDeviceEnumerator* device_enumerator);
   ~CameraPanTiltZoomPermissionContext() override;
 
@@ -42,22 +57,23 @@ class CameraPanTiltZoomPermissionContext
       const GURL& requesting_frame_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
-#if defined(OS_ANDROID)
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-#endif
   bool IsRestrictedToSecureOrigins() const override;
 
   // content_settings::Observer
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   // Returns true if at least one video capture device has PTZ capabilities.
   // Otherwise returns false.
   bool HasAvailableCameraPtzDevices() const;
+
+  std::unique_ptr<Delegate> delegate_;
 
   HostContentSettingsMap* host_content_settings_map_;
 

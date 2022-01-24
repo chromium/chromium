@@ -10,14 +10,11 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
+#include "chrome/browser/ash/child_accounts/usage_time_state_notifier.h"
 
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace ash {
 // This class records: FamilyUser.ChromeBrowserEngagement.Duration. It is the
@@ -25,6 +22,7 @@ namespace ash {
 // the beginning of the first active Chrome OS session on a subsequent day.
 class FamilyUserChromeActivityMetrics
     : public app_time::AppServiceWrapper::EventListener,
+      public UsageTimeStateNotifier::Observer,
       public FamilyUserMetricsService::Observer {
  public:
   static const char kChromeBrowserEngagementDurationHistogramName[];
@@ -45,12 +43,25 @@ class FamilyUserChromeActivityMetrics
 
  private:
   // AppServiceWrapper::EventListener:
+  // When the screen goes from off to on or device goes idle
+  // to active, this function does not get called. OnUsageTimeStateChange() gets
+  // called instead.
   void OnAppActive(const app_time::AppId& app_id,
-                   aura::Window* window,
+                   const apps::Instance::InstanceKey& instance_key,
                    base::Time timestamp) override;
+  // When the screen goes from on to off or device goes active
+  // to idle, this function does not get called. OnUsageTimeStateChange() gets
+  // called instead.
   void OnAppInactive(const app_time::AppId& app_id,
-                     aura::Window* window,
+                     const apps::Instance::InstanceKey& instance_key,
                      base::Time timestamp) override;
+
+  // UsageTimeStateNotifier::Observer:
+  // When the user signs out, this function doesn't get called and
+  // UsageTimeStateNotifier::UsageTimeState doesn't change to inactive.
+  // OnAppInactive will be called.
+  void OnUsageTimeStateChange(
+      UsageTimeStateNotifier::UsageTimeState state) override;
 
   // Called when user engagement of browser changes. Saves duration data to
   // prefs or report to UMA.
@@ -62,11 +73,11 @@ class FamilyUserChromeActivityMetrics
   // The time when the user becomes active.
   base::Time active_duration_start_;
 
-  // A set of active browser window instances. When the new Chrome browser
-  // window get created or activated, OnAppActive adds that window to the set.
-  // When the Chrome browser window get destroyed or deactivated, OnAppInactive
-  // might remove that window from the set.
-  std::set<aura::Window*> active_browser_windows_;
+  // A set of active browser instances. When a new Chrome browser instance gets
+  // created or activated, OnAppActive adds that instance to the set. When the
+  // Chrome browser instance gets destroyed or deactivated, OnAppInactive might
+  // remove that instance from the set.
+  std::set<apps::Instance::InstanceKey> active_browser_instances_;
 };
 }  // namespace ash
 

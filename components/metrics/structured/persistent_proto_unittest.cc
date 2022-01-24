@@ -44,7 +44,7 @@ bool ProtoEquals(const KeyProto* actual, const KeyProto* expected) {
 }
 
 base::TimeDelta WriteDelay() {
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 }
 
 }  // namespace

@@ -14,12 +14,12 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -58,6 +58,7 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -805,80 +806,18 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   base::DeleteFile(filename);
   net::TestCompletionCallback cb;
 
-  bool prev = base::ThreadRestrictions::SetIOAllowed(false);
+  // Blocking shouldn't be needed to create the cache.
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking(
+      absl::in_place);
   std::unique_ptr<disk_cache::BackendImpl> cache(
       std::make_unique<disk_cache::BackendImpl>(cache_path_, nullptr, nullptr,
                                                 net::DISK_CACHE, nullptr));
   int rv = cache->Init(cb.callback());
   EXPECT_THAT(cb.GetResult(rv), IsError(net::ERR_FAILED));
-  base::ThreadRestrictions::SetIOAllowed(prev);
+  disallow_blocking.reset();
 
   cache.reset();
   DisableIntegrityCheck();
-}
-
-TEST_F(DiskCacheBackendTest, MemCacheMemoryDump) {
-  SetMemoryOnlyMode();
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_LT(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(2u, pmd.allocator_dumps().size());
-  const base::trace_event::MemoryAllocatorDump* sub_dump =
-      pmd.GetAllocatorDump(parent->absolute_name() + "/memory_backend");
-  ASSERT_NE(nullptr, sub_dump);
-
-  using MADEntry = base::trace_event::MemoryAllocatorDump::Entry;
-  const std::vector<MADEntry>& entries = sub_dump->entries();
-  ASSERT_THAT(
-      entries,
-      Contains(Field(&MADEntry::name,
-                     Eq(base::trace_event::MemoryAllocatorDump::kNameSize))));
-  ASSERT_THAT(entries,
-              Contains(Field(&MADEntry::name, Eq("mem_backend_max_size"))));
-  ASSERT_THAT(entries,
-              Contains(Field(&MADEntry::name, Eq("mem_backend_size"))));
-}
-
-TEST_F(DiskCacheBackendTest, SimpleCacheMemoryDump) {
-  simple_cache_mode_ = true;
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_LT(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(2u, pmd.allocator_dumps().size());
-  const base::trace_event::MemoryAllocatorDump* sub_dump =
-      pmd.GetAllocatorDump(parent->absolute_name() + "/simple_backend");
-  ASSERT_NE(nullptr, sub_dump);
-
-  using MADEntry = base::trace_event::MemoryAllocatorDump::Entry;
-  const std::vector<MADEntry>& entries = sub_dump->entries();
-  ASSERT_THAT(entries,
-              ElementsAre(Field(
-                  &MADEntry::name,
-                  Eq(base::trace_event::MemoryAllocatorDump::kNameSize))));
-}
-
-TEST_F(DiskCacheBackendTest, BlockFileCacheMemoryDump) {
-  // TODO(jkarlin): If the blockfile cache gets memory dump support, update
-  // this test.
-  BackendBasics();
-  base::trace_event::MemoryDumpArgs args = {
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
-  base::trace_event::ProcessMemoryDump pmd(args);
-  base::trace_event::MemoryAllocatorDump* parent =
-      pmd.CreateAllocatorDump("net/url_request_context/main/0x123/http_cache");
-
-  ASSERT_EQ(0u, cache_->DumpMemoryStats(&pmd, parent->absolute_name()));
-  EXPECT_EQ(1u, pmd.allocator_dumps().size());
 }
 
 TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
@@ -2662,15 +2601,16 @@ TEST_F(DiskCacheBackendTest, DeleteOld) {
   SetNewEviction();
 
   net::TestCompletionCallback cb;
-  bool prev = base::ThreadRestrictions::SetIOAllowed(false);
-  base::FilePath path(cache_path_);
-  int rv = disk_cache::CreateCacheBackend(
-      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE, path, 0,
-      disk_cache::ResetHandling::kResetOnError, nullptr, &cache_,
-      cb.callback());
-  path.clear();  // Make sure path was captured by the previous call.
-  ASSERT_THAT(cb.GetResult(rv), IsOk());
-  base::ThreadRestrictions::SetIOAllowed(prev);
+  {
+    base::ScopedDisallowBlocking disallow_blocking;
+    base::FilePath path(cache_path_);
+    int rv = disk_cache::CreateCacheBackend(
+        net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE, path, 0,
+        disk_cache::ResetHandling::kResetOnError, nullptr, &cache_,
+        cb.callback());
+    path.clear();  // Make sure path was captured by the previous call.
+    ASSERT_THAT(cb.GetResult(rv), IsOk());
+  }
   cache_.reset();
   EXPECT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, /*max_size = */ 0,
                                   mask_));
@@ -4643,8 +4583,8 @@ TEST_F(DiskCacheBackendTest, SimpleLastModified) {
   // Don't want AddDelay since it sleep 1s(!) for SimpleCache, and we don't
   // care about reduced precision in index here.
   while (base::Time::NowFromSystemTime() <=
-         (entry1_timestamp + base::TimeDelta::FromMilliseconds(10))) {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+         (entry1_timestamp + base::Milliseconds(10))) {
+    base::PlatformThread::Sleep(base::Milliseconds(1));
   }
 
   disk_cache::Entry* entry2;
@@ -5432,7 +5372,7 @@ TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
   EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));
   entry->Close();
 
-  clock.Advance(-base::TimeDelta::FromHours(1));
+  clock.Advance(-base::Hours(1));
 
   ASSERT_THAT(CreateEntry("key2", &entry), IsOk());
   EXPECT_EQ(kBufSize, WriteData(entry, 0, 0, buffer.get(), kBufSize, false));

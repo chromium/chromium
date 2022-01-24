@@ -33,6 +33,7 @@ absl::StatusOr<std::string> ProtocolEncodeCallback(absl::string_view input);
 absl::StatusOr<std::string> UsernameEncodeCallback(absl::string_view input);
 absl::StatusOr<std::string> PasswordEncodeCallback(absl::string_view input);
 absl::StatusOr<std::string> HostnameEncodeCallback(absl::string_view input);
+absl::StatusOr<std::string> IPv6HostnameEncodeCallback(absl::string_view input);
 absl::StatusOr<std::string> PortEncodeCallback(absl::string_view input);
 absl::StatusOr<std::string> StandardURLPathnameEncodeCallback(
     absl::string_view input);

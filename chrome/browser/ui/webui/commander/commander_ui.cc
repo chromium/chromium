@@ -23,6 +23,10 @@ CommanderUI::CommanderUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICommanderHost);
+  // TODO(lgrey): Localize when these are no longer temp.
+  source->AddString("placeholder", "Type to search Chrome Commands…");
+  source->AddString("noResults", "No Chrome Commands found.");
+  source->AddString("pageTitle", "Commander");
   webui::SetupWebUIDataSource(
       source, base::make_span(kCommanderResources, kCommanderResourcesSize),
       IDR_COMMANDER_COMMANDER_HTML);

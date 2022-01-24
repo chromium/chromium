@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_METRICS_BROWSER_ACTIVITY_WATCHER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -19,6 +18,10 @@ class BrowserActivityWatcher : public BrowserListObserver,
  public:
   explicit BrowserActivityWatcher(
       const base::RepeatingClosure& on_browser_activity);
+
+  BrowserActivityWatcher(const BrowserActivityWatcher&) = delete;
+  BrowserActivityWatcher& operator=(const BrowserActivityWatcher&) = delete;
+
   ~BrowserActivityWatcher() override;
 
   // BrowserListObserver:
@@ -33,8 +36,6 @@ class BrowserActivityWatcher : public BrowserListObserver,
 
  private:
   base::RepeatingClosure on_browser_activity_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserActivityWatcher);
 };
 
 #endif  // CHROME_BROWSER_METRICS_BROWSER_ACTIVITY_WATCHER_H_

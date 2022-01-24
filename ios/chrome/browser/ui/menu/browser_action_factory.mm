@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 
+#include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -70,20 +73,18 @@
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block {
   // Wrap the block with the incognito auth check, if necessary.
-  if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
-    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
-                           ->GetSceneState()];
-    if (reauthAgent.authenticationRequired) {
-      block = ^{
-        [reauthAgent
-            authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
-              if (success && block != nullptr) {
-                block();
-              }
-            }];
-      };
-    }
+  IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
+      agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+                         ->GetSceneState()];
+  if (reauthAgent.authenticationRequired) {
+    block = ^{
+      [reauthAgent
+          authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
+            if (success && block != nullptr) {
+              block();
+            }
+          }];
+    };
   }
 
   return [self actionWithTitle:l10n_util::GetNSString(
@@ -98,7 +99,20 @@
                                  (WindowActivityOrigin)activityOrigin {
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
+
   NSUserActivity* activity = ActivityToLoadURL(activityOrigin, URL);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
+                         image:[UIImage imageNamed:@"open_new_window"]
+                          type:MenuActionType::OpenInNewWindow
+                         block:^{
+                           [windowOpener openNewWindowWithActivity:activity];
+                         }];
+}
+
+- (UIAction*)actionToOpenInNewWindowWithActivity:(NSUserActivity*)activity {
+  id<ApplicationCommands> windowOpener = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW)
                          image:[UIImage imageNamed:@"open_new_window"]
@@ -115,7 +129,7 @@
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE)
                 image:[UIImage imageNamed:@"open"]
-                 type:MenuActionType::OpenInCurrentTab
+                 type:MenuActionType::OpenImageInCurrentTab
                 block:^{
                   loadingAgent->Load(UrlLoadParams::InCurrentTab(URL));
                   if (completion) {
@@ -134,13 +148,39 @@
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB)
                       image:[UIImage imageNamed:@"open_image_in_new_tab"]
-                       type:MenuActionType::OpenInNewTab
+                       type:MenuActionType::OpenImageInNewTab
                       block:^{
                         loadingAgent->Load(params);
                         if (completion) {
                           completion();
                         }
                       }];
+  return action;
+}
+
+- (UIAction*)actionToShowLinkPreview {
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_SHOWLINKPREVIEW)
+                image:[UIImage imageNamed:@"show_preview"]
+                 type:MenuActionType::ShowLinkPreview
+                block:^{
+                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, true);
+                }];
+  return action;
+}
+
+- (UIAction*)actionToHideLinkPreview {
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW)
+                image:[UIImage imageNamed:@"hide_preview"]
+                 type:MenuActionType::HideLinkPreview
+                block:^{
+                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, false);
+                }];
   return action;
 }
 

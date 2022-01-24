@@ -53,6 +53,9 @@ class InitializationSubTask : public DatabaseTask {
     DCHECK(sub_task_init_.initialization_data);
   }
 
+  InitializationSubTask(const InitializationSubTask&) = delete;
+  InitializationSubTask& operator=(const InitializationSubTask&) = delete;
+
   ~InitializationSubTask() override = default;
 
  protected:
@@ -68,8 +71,6 @@ class InitializationSubTask : public DatabaseTask {
  private:
   SubTaskInit sub_task_init_;
   base::OnceClosure done_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitializationSubTask);
 };
 
 // Fills the BackgroundFetchInitializationData with the most recent UI title.
@@ -146,6 +147,9 @@ class GetRequestsTask : public InitializationSubTask {
                   const SubTaskInit& sub_task_init,
                   base::OnceClosure done_closure)
       : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
+
+  GetRequestsTask(const GetRequestsTask&) = delete;
+  GetRequestsTask& operator=(const GetRequestsTask&) = delete;
 
   ~GetRequestsTask() override = default;
 
@@ -275,8 +279,6 @@ class GetRequestsTask : public InitializationSubTask {
   }
 
   base::WeakPtrFactory<GetRequestsTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(GetRequestsTask);
 };
 
 // Fills the BackgroundFetchInitializationData with all the relevant information
@@ -287,6 +289,9 @@ class FillFromMetadataTask : public InitializationSubTask {
                        const SubTaskInit& sub_task_init,
                        base::OnceClosure done_closure)
       : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
+
+  FillFromMetadataTask(const FillFromMetadataTask&) = delete;
+  FillFromMetadataTask& operator=(const FillFromMetadataTask&) = delete;
 
   ~FillFromMetadataTask() override = default;
 
@@ -371,14 +376,14 @@ class FillFromMetadataTask : public InitializationSubTask {
         }
       }
     }
+    sub_task_init().initialization_data->isolation_info =
+        net::IsolationInfo::Deserialize(metadata.isolation_info());
 
     FinishWithError(blink::mojom::BackgroundFetchError::NONE);
   }
 
   base::WeakPtrFactory<FillFromMetadataTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(FillFromMetadataTask);
 };
 
 // Asynchronously calls the SubTasks required to collect all the information for
@@ -389,6 +394,11 @@ class FillBackgroundFetchInitializationDataTask : public InitializationSubTask {
                                             const SubTaskInit& sub_task_init,
                                             base::OnceClosure done_closure)
       : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
+
+  FillBackgroundFetchInitializationDataTask(
+      const FillBackgroundFetchInitializationDataTask&) = delete;
+  FillBackgroundFetchInitializationDataTask& operator=(
+      const FillBackgroundFetchInitializationDataTask&) = delete;
 
   ~FillBackgroundFetchInitializationDataTask() override = default;
 
@@ -417,8 +427,6 @@ class FillBackgroundFetchInitializationDataTask : public InitializationSubTask {
  private:
   base::WeakPtrFactory<FillBackgroundFetchInitializationDataTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(FillBackgroundFetchInitializationDataTask);
 };
 
 }  // namespace

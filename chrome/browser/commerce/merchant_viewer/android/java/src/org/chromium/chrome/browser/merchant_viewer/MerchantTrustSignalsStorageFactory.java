@@ -46,10 +46,6 @@ class MerchantTrustSignalsStorageFactory {
      * context {@link Profile} supplier.
      */
     void destroy() {
-        for (MerchantTrustSignalsEventStorage storage : sProfileToStorage.values()) {
-            storage.destroy();
-        }
-
         sProfileToStorage.clear();
     }
 

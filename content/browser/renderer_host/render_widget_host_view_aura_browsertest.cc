@@ -5,15 +5,17 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +43,7 @@ const char kMinimalPageDataURL[] =
 void GiveItSomeTime() {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(),
-      base::TimeDelta::FromMilliseconds(250));
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(250));
   run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,6 +51,10 @@ void GiveItSomeTime() {
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
   FakeWebContentsDelegate() = default;
+
+  FakeWebContentsDelegate(const FakeWebContentsDelegate&) = delete;
+  FakeWebContentsDelegate& operator=(const FakeWebContentsDelegate&) = delete;
+
   ~FakeWebContentsDelegate() override = default;
 
   void SetShowStaleContentOnEviction(bool value) {
@@ -62,8 +67,6 @@ class FakeWebContentsDelegate : public WebContentsDelegate {
 
  private:
   bool show_stale_content_on_eviction_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebContentsDelegate);
 };
 
 }  // namespace
@@ -446,7 +449,18 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewAuraActiveWidgetTest() = default;
+
+  RenderWidgetHostViewAuraActiveWidgetTest(
+      const RenderWidgetHostViewAuraActiveWidgetTest&) = delete;
+  RenderWidgetHostViewAuraActiveWidgetTest& operator=(
+      const RenderWidgetHostViewAuraActiveWidgetTest&) = delete;
+
   ~RenderWidgetHostViewAuraActiveWidgetTest() override = default;
+
+  void SetUp() override {
+    EnablePixelOutput(1.0);
+    ContentBrowserTest::SetUp();
+  }
 
   // Helper function to check |isActivated| for a given frame.
   bool FrameIsActivated(content::RenderFrameHost* rfh) {
@@ -456,6 +470,18 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
         "window.domAutomationController.send(window.internals.isActivated())",
         &active));
     return active;
+  }
+
+  RenderViewHost* GetRenderViewHost() const {
+    RenderViewHost* const rvh =
+        shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
+    CHECK(rvh);
+    return rvh;
+  }
+
+  RenderWidgetHostViewAura* GetRenderWidgetHostView() const {
+    return static_cast<RenderWidgetHostViewAura*>(
+        GetRenderViewHost()->GetWidget()->GetView());
   }
 
  protected:
@@ -472,9 +498,6 @@ class RenderWidgetHostViewAuraActiveWidgetTest : public ContentBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewAuraActiveWidgetTest);
 };
 
 // In this test, toggling the value of 'active' state changes the
@@ -506,5 +529,39 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(FrameIsActivated(main_frame));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Verifies that getting active input control accounts for iframe positioning.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
+                       TextControlBoundingRegionInIframe) {
+  GURL page(
+      embedded_test_server()->GetURL("example.com", "/input_in_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), page));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Ensure both the main page and the iframe are loaded.
+  ASSERT_EQ("OUTER_LOADED",
+            EvalJs(root->current_frame_host(), "notifyWhenLoaded()",
+                   content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  ASSERT_EQ("LOADED", EvalJs(root->current_frame_host(),
+                             "document.querySelector(\"iframe\").contentWindow."
+                             "notifyWhenLoaded();",
+                             content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
+  // TODO(b/204006085): Remove this sleep call and replace with polling.
+  GiveItSomeTime();
+
+  absl::optional<gfx::Rect> control_bounds;
+  absl::optional<gfx::Rect> selection_bounds;
+  GetRenderWidgetHostView()->GetActiveTextInputControlLayoutBounds(
+      &control_bounds, &selection_bounds);
+
+  // 4000px from input offset inside input_box.html
+  // 200px from input_in_iframe.html
+  EXPECT_TRUE(control_bounds.has_value());
+  ASSERT_EQ(4200, control_bounds->origin().y());
+}
+#endif
 
 }  // namespace content

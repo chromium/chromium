@@ -18,14 +18,14 @@ ClockModel::ClockModel() : hour_clock_type_(base::GetHourClockType()) {
     chromeos::SystemClockClient::Get()->AddObserver(this);
     can_set_time_ = chromeos::SystemClockClient::Get()->CanSetTime();
   }
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  system::TimezoneSettings::GetInstance()->AddObserver(this);
 }
 
 ClockModel::~ClockModel() {
   // SystemClockClient may be null in tests.
   if (chromeos::SystemClockClient::Get())
     chromeos::SystemClockClient::Get()->RemoveObserver(this);
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
 void ClockModel::AddObserver(ClockObserver* observer) {

@@ -12,6 +12,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
 
 /**
  * Tests for the confirmation dialog used by the "Save passwords" settings page during exporting
@@ -27,7 +28,8 @@ public class ExportWarningDialogFragmentTest {
      */
     @Test
     public void testDismissWithoutInit() {
-        FragmentActivity testActivity = Robolectric.setupActivity(FragmentActivity.class);
+        FragmentActivity testActivity =
+                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
 
         ExportWarningDialogFragment exportWarningDialogFragment = new ExportWarningDialogFragment();
         // No initialization, just show and dismiss.

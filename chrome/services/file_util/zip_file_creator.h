@@ -33,6 +33,9 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   explicit ZipFileCreator(PendingCreator receiver);
 
+  ZipFileCreator(const ZipFileCreator&) = delete;
+  ZipFileCreator& operator=(const ZipFileCreator&) = delete;
+
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
  private:
@@ -47,12 +50,11 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
   void CreateZipFile(PendingDirectory src_dir,
                      const std::vector<base::FilePath>& relative_paths,
                      base::File zip_file,
-                     PendingListener listener,
-                     CreateZipFileCallback callback) override;
+                     PendingListener listener) override;
 
   // Zips |src_dir| files given by |relative_paths| into |zip_file|.
   // Must be run in a separate task runner.
-  bool WriteZipFile(PendingDirectory src_dir,
+  void WriteZipFile(PendingDirectory src_dir,
                     const std::vector<base::FilePath>& relative_paths,
                     base::File zip_file,
                     PendingListener listener) const;
@@ -78,8 +80,6 @@ class ZipFileCreator : public base::RefCountedThreadSafe<ZipFileCreator>,
 
   // Flag used to cancel an ongoing ZIP creation.
   base::AtomicFlag cancelled_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipFileCreator);
 };
 
 }  // namespace chrome

@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -35,6 +34,10 @@ namespace feedback {
 class FeedbackUploaderChrome : public FeedbackUploader {
  public:
   explicit FeedbackUploaderChrome(content::BrowserContext* context);
+
+  FeedbackUploaderChrome(const FeedbackUploaderChrome&) = delete;
+  FeedbackUploaderChrome& operator=(const FeedbackUploaderChrome&) = delete;
+
   ~FeedbackUploaderChrome() override;
 
   class Delegate {
@@ -80,8 +83,6 @@ class FeedbackUploaderChrome : public FeedbackUploader {
   Delegate* delegate_ = nullptr;  // Not owned.
 
   content::BrowserContext* context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderChrome);
 };
 
 }  // namespace feedback

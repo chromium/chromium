@@ -20,6 +20,10 @@ class MODULES_EXPORT ManifestChangeNotifier
     : public GarbageCollected<ManifestChangeNotifier> {
  public:
   explicit ManifestChangeNotifier(LocalDOMWindow& window);
+
+  ManifestChangeNotifier(const ManifestChangeNotifier&) = delete;
+  ManifestChangeNotifier& operator=(const ManifestChangeNotifier&) = delete;
+
   virtual ~ManifestChangeNotifier();
 
   virtual void Trace(Visitor*) const;
@@ -34,8 +38,6 @@ class MODULES_EXPORT ManifestChangeNotifier
   HeapMojoAssociatedRemote<mojom::blink::ManifestUrlChangeObserver>
       manifest_change_observer_;
   bool report_task_scheduled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestChangeNotifier);
 };
 
 }  // namespace blink

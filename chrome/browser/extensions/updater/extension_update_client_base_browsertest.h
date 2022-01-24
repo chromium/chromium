@@ -41,6 +41,11 @@ class ExtensionUpdateClientBaseTest : public ExtensionBrowserTest {
   using ConfigFactoryCallback = ChromeUpdateClientConfig::FactoryCallback;
 
   ExtensionUpdateClientBaseTest();
+
+  ExtensionUpdateClientBaseTest(const ExtensionUpdateClientBaseTest&) = delete;
+  ExtensionUpdateClientBaseTest& operator=(
+      const ExtensionUpdateClientBaseTest&) = delete;
+
   ~ExtensionUpdateClientBaseTest() override;
 
   // ExtensionBrowserTest:
@@ -91,8 +96,6 @@ class ExtensionUpdateClientBaseTest : public ExtensionBrowserTest {
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params);
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionUpdateClientBaseTest);
 };
 
 }  // namespace extensions

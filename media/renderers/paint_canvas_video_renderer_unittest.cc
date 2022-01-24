@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
@@ -110,6 +109,11 @@ class PaintCanvasVideoRendererTest : public testing::Test {
   };
 
   PaintCanvasVideoRendererTest();
+
+  PaintCanvasVideoRendererTest(const PaintCanvasVideoRendererTest&) = delete;
+  PaintCanvasVideoRendererTest& operator=(const PaintCanvasVideoRendererTest&) =
+      delete;
+
   ~PaintCanvasVideoRendererTest() override;
 
   // Paints to |canvas| using |renderer_| without any frame data.
@@ -150,8 +154,6 @@ class PaintCanvasVideoRendererTest : public testing::Test {
   SkBitmap bitmap_;
   cc::SkiaPaintCanvas target_canvas_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintCanvasVideoRendererTest);
 };
 
 static SkBitmap AllocBitmap(int width, int height) {
@@ -164,7 +166,7 @@ static SkBitmap AllocBitmap(int width, int height) {
 static scoped_refptr<VideoFrame> CreateCroppedFrame() {
   scoped_refptr<VideoFrame> cropped_frame = VideoFrame::CreateFrame(
       PIXEL_FORMAT_I420, gfx::Size(16, 16), gfx::Rect(6, 6, 8, 6),
-      gfx::Size(8, 6), base::TimeDelta::FromMilliseconds(4));
+      gfx::Size(8, 6), base::Milliseconds(4));
   // Make sure the cropped video frame's aspect ratio matches the output device.
   // Update cropped_frame_'s crop dimensions if this is not the case.
   EXPECT_EQ(cropped_frame->visible_rect().width() * kHeight,
@@ -256,9 +258,9 @@ PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
       bitmap_(AllocBitmap(kWidth, kHeight)),
       target_canvas_(bitmap_) {
   // Give each frame a unique timestamp.
-  natural_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(1));
-  larger_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(2));
-  smaller_frame_->set_timestamp(base::TimeDelta::FromMilliseconds(3));
+  natural_frame_->set_timestamp(base::Milliseconds(1));
+  larger_frame_->set_timestamp(base::Milliseconds(2));
+  smaller_frame_->set_timestamp(base::Milliseconds(3));
 }
 
 PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
@@ -682,20 +684,20 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
 TEST_F(PaintCanvasVideoRendererTest, Yuv420P12OddWidth) {
   // Allocate the Y, U, V planes for a 3x3 12-bit YUV 4:2:0 image. Note that
   // there are no padding bytes after each row.
-  constexpr int kWidth = 3;
-  constexpr int kHeight = 3;
-  constexpr int kUvWidth = (kWidth + 1) / 2;
-  constexpr int kUvHeight = (kHeight + 1) / 2;
+  constexpr int kImgWidth = 3;
+  constexpr int kImgHeight = 3;
+  constexpr int kUvWidth = (kImgWidth + 1) / 2;
+  constexpr int kUvHeight = (kImgHeight + 1) / 2;
   std::unique_ptr<uint16_t[]> y_plane =
-      std::make_unique<uint16_t[]>(kWidth * kHeight);
+      std::make_unique<uint16_t[]>(kImgWidth * kImgHeight);
   std::unique_ptr<uint16_t[]> u_plane =
       std::make_unique<uint16_t[]>(kUvWidth * kUvHeight);
   std::unique_ptr<uint16_t[]> v_plane =
       std::make_unique<uint16_t[]>(kUvWidth * kUvHeight);
   // Set all pixels to white.
-  for (int i = 0; i < kHeight; ++i) {
-    for (int j = 0; j < kWidth; ++j) {
-      y_plane[i * kWidth + j] = 4095;
+  for (int i = 0; i < kImgHeight; ++i) {
+    for (int j = 0; j < kImgWidth; ++j) {
+      y_plane[i * kImgWidth + j] = 4095;
     }
   }
   for (int i = 0; i < kUvHeight; ++i) {
@@ -704,25 +706,25 @@ TEST_F(PaintCanvasVideoRendererTest, Yuv420P12OddWidth) {
       v_plane[i * kUvWidth + j] = 2048;
     }
   }
-  const int32_t y_stride = sizeof(uint16_t) * kWidth;
+  const int32_t y_stride = sizeof(uint16_t) * kImgWidth;
   const int32_t uv_stride = sizeof(uint16_t) * kUvWidth;
   uint8_t* const y_data = reinterpret_cast<uint8_t*>(y_plane.get());
   uint8_t* const u_data = reinterpret_cast<uint8_t*>(u_plane.get());
   uint8_t* const v_data = reinterpret_cast<uint8_t*>(v_plane.get());
 
-  auto size = gfx::Size(kWidth, kHeight);
+  auto size = gfx::Size(kImgWidth, kImgHeight);
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
       PIXEL_FORMAT_YUV420P12, size, gfx::Rect(size), size, y_stride, uv_stride,
       uv_stride, y_data, u_data, v_data, base::TimeDelta());
 
   std::unique_ptr<uint32_t[]> rgba =
-      std::make_unique<uint32_t[]>(kWidth * kHeight);
+      std::make_unique<uint32_t[]>(kImgWidth * kImgHeight);
   PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
       frame.get(), rgba.get(), frame->visible_rect().width() * 4,
       /*premultiply_alpha=*/true);
-  for (int i = 0; i < kHeight; ++i) {
-    for (int j = 0; j < kWidth; ++j) {
-      EXPECT_EQ(rgba[i * kWidth + j], 0xffffffff);
+  for (int i = 0; i < kImgHeight; ++i) {
+    for (int j = 0; j < kImgWidth; ++j) {
+      EXPECT_EQ(rgba[i * kImgWidth + j], 0xffffffff);
     }
   }
 }
@@ -829,8 +831,7 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
 
   auto video_frame = media::VideoFrame::WrapExternalData(
       media::PIXEL_FORMAT_Y16, coded_size, gfx::Rect(visible_size),
-      visible_size, &memory[0], fWidth * fHeight * 2,
-      base::TimeDelta::FromMilliseconds(4));
+      visible_size, &memory[0], fWidth * fHeight * 2, base::Milliseconds(4));
 
   gfx::RectF visible_rect(visible_size.width(), visible_size.height());
   cc::PaintFlags flags;
@@ -944,21 +945,23 @@ class PaintCanvasVideoRendererWithGLTest : public testing::TestWithParam<bool> {
     gl::GLSurfaceTestSupport::InitializeOneOff();
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/GetParam(), /*support_locking=*/false);
+        /*enable_gles2_interface=*/false,
+        /*support_locking=*/false,
+        GetParam() ? viz::RasterInterfaceType::OOPR
+                   : viz::RasterInterfaceType::GPU);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gpu_rasterization=*/false,
-        /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+        /*enable_gles2_interface=*/true, /*support_locking=*/false,
+        viz::RasterInterfaceType::None);
     result = gles2_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gpu_rasterization=*/false,
-            /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+            /*enable_gles2_interface=*/true, /*support_locking=*/false,
+            viz::RasterInterfaceType::None);
     result = destination_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cropped_frame_ = CreateCroppedFrame();

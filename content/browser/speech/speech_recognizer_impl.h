@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/speech/endpointer/endpointer.h"
@@ -52,6 +51,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
                        bool continuous,
                        bool provisional_results,
                        SpeechRecognitionEngine* engine);
+
+  SpeechRecognizerImpl(const SpeechRecognizerImpl&) = delete;
+  SpeechRecognizerImpl& operator=(const SpeechRecognizerImpl&) = delete;
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
@@ -186,7 +188,6 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   std::unique_ptr<SpeechRecognizerImpl::OnDataConverter> audio_converter_;
 
   base::WeakPtrFactory<SpeechRecognizerImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImpl);
 };
 
 }  // namespace content

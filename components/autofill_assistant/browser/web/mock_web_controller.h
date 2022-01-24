@@ -17,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+struct RectF;
 
 class MockWebController : public WebController {
  public:
@@ -25,15 +26,10 @@ class MockWebController : public WebController {
 
   MOCK_METHOD1(LoadURL, void(const GURL&));
 
-  void FindElement(const Selector& selector,
-                   bool strict_mode,
-                   ElementFinder::Callback callback) override {
-    OnFindElement(selector, callback);
-  }
-  MOCK_METHOD2(OnFindElement,
+  MOCK_METHOD3(FindElement,
                void(const Selector& selector,
-                    ElementFinder::Callback& callback));
-
+                    bool strict,
+                    ElementFinder::Callback callback));
   MOCK_METHOD4(ScrollToElementPosition,
                void(std::unique_ptr<ElementFinder::Result>,
                     const TopPadding&,
@@ -73,9 +69,6 @@ class MockWebController : public WebController {
                void(const ElementFinder::Result& option,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD2(HighlightElement,
-               void(const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>));
   MOCK_METHOD2(SelectFieldValue,
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
@@ -91,8 +84,14 @@ class MockWebController : public WebController {
                     int delay_in_millisecond,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD2(GetOuterHtml,
-               void(const ElementFinder::Result& element,
+  MOCK_METHOD4(SendTextInput,
+               void(int key_press_delay_in_millisecond,
+                    const std::string& value,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(GetOuterHtml,
+               void(bool include_all_inner_text,
+                    const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
   MOCK_METHOD2(GetElementTag,
@@ -103,11 +102,14 @@ class MockWebController : public WebController {
       GetDocumentReadyState,
       void(const ElementFinder::Result&,
            base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>));
-  MOCK_METHOD2(
+
+  MOCK_METHOD3(
       GetOuterHtmls,
-      void(const ElementFinder::Result& elements,
+      void(bool include_all_inner_text,
+           const ElementFinder::Result& elements,
            base::OnceCallback<void(const ClientStatus&,
                                    const std::vector<std::string>&)> callback));
+
   MOCK_METHOD4(WaitUntilElementIsStable,
                void(int,
                     base::TimeDelta wait_time,
@@ -139,6 +141,9 @@ class MockWebController : public WebController {
                     const std::string&,
                     const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD1(GetVisualViewport,
+               void(base::OnceCallback<void(const ClientStatus&, const RectF&)>
+                        callback));
   MOCK_METHOD2(GetElementRect,
                void(const ElementFinder::Result& element,
                     ElementRectGetter::ElementRectCallback callback));

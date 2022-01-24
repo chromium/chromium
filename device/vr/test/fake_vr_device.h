@@ -18,6 +18,10 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
                                       public mojom::XRSessionController {
  public:
   explicit FakeVRDevice(mojom::XRDeviceId id);
+
+  FakeVRDevice(const FakeVRDevice&) = delete;
+  FakeVRDevice& operator=(const FakeVRDevice&) = delete;
+
   ~FakeVRDevice() override;
 
   void RequestSession(
@@ -41,8 +45,6 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
                             uint32_t size);
 
   mojom::VRPosePtr pose_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVRDevice);
 };
 
 }  // namespace device

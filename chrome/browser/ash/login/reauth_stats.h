@@ -7,7 +7,7 @@
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 // Track all the ways a user may be sent through the re-auth flow.
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -72,13 +72,6 @@ enum ReauthReason {
 void RecordReauthReason(const AccountId& account_id, ReauthReason reason);
 void SendReauthReason(const AccountId& account_id, bool password_changed);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ReauthReason;
-using ::chromeos::SendReauthReason;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_REAUTH_STATS_H_

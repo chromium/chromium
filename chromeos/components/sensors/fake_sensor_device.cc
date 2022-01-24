@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
@@ -52,11 +53,43 @@ void FakeSensorDevice::RemoveReceiver(mojo::ReceiverId id) {
   receiver_set_.Remove(id);
 }
 
+void FakeSensorDevice::RemoveReceiverWithReason(
+    mojo::ReceiverId id,
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(receiver_set_.HasReceiver(id));
+
+  uint32_t custom_reason_code = base::checked_cast<uint32_t>(reason);
+
+  auto it = clients_.find(id);
+  if (it != clients_.end()) {
+    it->second.observer.ResetWithReason(custom_reason_code, description);
+    clients_.erase(it);
+  }
+
+  receiver_set_.RemoveWithReason(id, custom_reason_code, description);
+}
+
 void FakeSensorDevice::ClearReceivers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   clients_.clear();
   receiver_set_.Clear();
+}
+
+void FakeSensorDevice::ClearReceiversWithReason(
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  uint32_t custom_reason_code = base::checked_cast<uint32_t>(reason);
+
+  for (auto& client : clients_)
+    client.second.observer.ResetWithReason(custom_reason_code, description);
+  clients_.clear();
+
+  receiver_set_.ClearWithReason(custom_reason_code, description);
 }
 
 bool FakeSensorDevice::HasReceivers() const {
@@ -86,6 +119,20 @@ void FakeSensorDevice::ResetObserverRemote(mojo::ReceiverId id) {
     return;
 
   it->second.observer.reset();
+}
+
+void FakeSensorDevice::ResetObserverRemoteWithReason(
+    mojo::ReceiverId id,
+    mojom::SensorDeviceDisconnectReason reason,
+    const std::string& description) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = clients_.find(id);
+  if (it == clients_.end())
+    return;
+
+  it->second.observer.ResetWithReason(base::checked_cast<uint32_t>(reason),
+                                      description);
 }
 
 void FakeSensorDevice::SetChannelsEnabledWithId(

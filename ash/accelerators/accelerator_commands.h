@@ -59,6 +59,9 @@ ASH_EXPORT void MediaRewind();
 // Stop playing media.
 ASH_EXPORT void MediaStop();
 
+// Toggle microphone mute.
+ASH_EXPORT void MicrophoneMuteToggle();
+
 // Open a new incognito browser window.
 ASH_EXPORT void NewIncognitoWindow();
 
@@ -92,6 +95,10 @@ ASH_EXPORT void RestoreTab();
 // Change primary display to the secondary display next to current primary
 // display
 ASH_EXPORT void ShiftPrimaryDisplay();
+
+// Toggles the floating state. If the floating window feature is enabled, it
+// will keep the window always on top.
+ASH_EXPORT void ToggleFloating();
 
 // Toggles the fullscreen state. The behavior can be overridden
 // by WindowStateDelegate::ToggleFullscreen().

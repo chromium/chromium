@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -82,7 +81,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
 // supported profiles. Many platforms fall back to use the VDAVideoDecoder
 // so that implementation is shared, and its supported configs can be
 // queries using the |get_vda_configs| callback.
-SupportedVideoDecoderConfigs GetPlatformSupportedVideoDecoderConfigs(
+absl::optional<SupportedVideoDecoderConfigs>
+GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs);
@@ -113,6 +113,10 @@ class GpuMojoMediaClient final : public MojoMediaClient {
       base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+  GpuMojoMediaClient(const GpuMojoMediaClient&) = delete;
+  GpuMojoMediaClient& operator=(const GpuMojoMediaClient&) = delete;
+
   ~GpuMojoMediaClient() final;
 
   // MojoMediaClient implementation.
@@ -144,7 +148,6 @@ class GpuMojoMediaClient final : public MojoMediaClient {
   base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager_;
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
   gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
-  DISALLOW_COPY_AND_ASSIGN(GpuMojoMediaClient);
 };
 
 }  // namespace media

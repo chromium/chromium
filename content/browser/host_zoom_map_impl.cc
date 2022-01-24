@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -27,6 +28,10 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+
+#if defined(OS_ANDROID)
+#include "content/public/android/content_jni_headers/HostZoomMapImpl_jni.h"
+#endif
 
 namespace content {
 
@@ -96,14 +101,6 @@ double HostZoomMap::GetZoomLevel(WebContents* web_contents) {
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
       HostZoomMap::GetForWebContents(web_contents));
   return host_zoom_map->GetZoomLevelForWebContents(
-      static_cast<WebContentsImpl*>(web_contents));
-}
-
-bool HostZoomMap::PageScaleFactorIsOne(WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(web_contents));
-  return host_zoom_map->PageScaleFactorIsOneForWebContents(
       static_cast<WebContentsImpl*>(web_contents));
 }
 
@@ -387,36 +384,6 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
   }
 }
 
-void HostZoomMapImpl::SetPageScaleFactorIsOneForView(int render_process_id,
-                                                     int render_view_id,
-                                                     bool is_one) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  view_page_scale_factors_are_one_[RenderViewKey(render_process_id,
-                                                 render_view_id)] = is_one;
-  HostZoomMap::ZoomLevelChange change;
-  change.mode = HostZoomMap::PAGE_SCALE_IS_ONE_CHANGED;
-  zoom_level_changed_callbacks_.Notify(change);
-}
-
-bool HostZoomMapImpl::PageScaleFactorIsOneForWebContents(
-    WebContentsImpl* web_contents_impl) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents_impl->GetRenderViewHost()->GetProcess())
-    return true;
-
-  const auto it = view_page_scale_factors_are_one_.find(RenderViewKey(
-      web_contents_impl->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents_impl->GetRenderViewHost()->GetRoutingID()));
-  return it != view_page_scale_factors_are_one_.end() ? it->second : true;
-}
-
-void HostZoomMapImpl::ClearPageScaleFactorIsOneForView(int render_process_id,
-                                                       int render_view_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  view_page_scale_factors_are_one_.erase(
-      RenderViewKey(render_process_id, render_view_id));
-}
-
 bool HostZoomMapImpl::UsesTemporaryZoomLevel(int render_process_id,
                                              int render_view_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -514,7 +481,6 @@ void HostZoomMapImpl::WillCloseRenderView(int render_process_id,
                                           int render_view_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ClearTemporaryZoomLevel(render_process_id, render_view_id);
-  ClearPageScaleFactorIsOneForView(render_process_id, render_view_id);
 }
 
 HostZoomMapImpl::~HostZoomMapImpl() {
@@ -524,5 +490,26 @@ HostZoomMapImpl::~HostZoomMapImpl() {
 void HostZoomMapImpl::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
 }
+
+#if defined(OS_ANDROID)
+void JNI_HostZoomMapImpl_SetZoomLevel(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    jdouble new_zoom_level) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
+  DCHECK(web_contents);
+
+  HostZoomMap::SetZoomLevel(web_contents, new_zoom_level);
+}
+
+jdouble JNI_HostZoomMapImpl_GetZoomLevel(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
+  DCHECK(web_contents);
+
+  return HostZoomMap::GetZoomLevel(web_contents);
+}
+#endif
 
 }  // namespace content

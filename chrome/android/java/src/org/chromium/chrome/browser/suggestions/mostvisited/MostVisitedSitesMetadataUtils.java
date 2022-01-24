@@ -167,7 +167,8 @@ public class MostVisitedSitesMetadataUtils {
             SiteSuggestion suggestionInfo = suggestionTiles.get(i).getData();
             stream.writeUTF(suggestionInfo.title);
             stream.writeUTF(suggestionInfo.url.serialize());
-            stream.writeUTF(suggestionInfo.allowlistIconPath);
+            // Write an empty string for the allowlistIconPath, which is a deprecated field.
+            stream.writeUTF("");
             stream.writeInt(suggestionInfo.titleSource);
             stream.writeInt(suggestionInfo.source);
             stream.writeInt(suggestionInfo.sectionType);
@@ -199,12 +200,13 @@ public class MostVisitedSitesMetadataUtils {
             GURL url = GURL.deserialize(stream.readUTF());
             if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
 
+            // Read the allowlistIconPath, which is always an empty string.
             String allowlistIconPath = stream.readUTF();
             int titleSource = stream.readInt();
             int source = stream.readInt();
             int sectionType = stream.readInt();
-            SiteSuggestion newSite = new SiteSuggestion(
-                    title, url, allowlistIconPath, titleSource, source, sectionType);
+            SiteSuggestion newSite =
+                    new SiteSuggestion(title, url, titleSource, source, sectionType);
             Tile newTile = new Tile(newSite, index);
             tiles.add(newTile);
         }

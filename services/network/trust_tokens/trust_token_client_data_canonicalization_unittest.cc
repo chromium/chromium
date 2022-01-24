@@ -18,7 +18,7 @@ namespace network {
 
 TEST(TrustTokenClientDataCanonicalization, TimeBeforeUnixEpoch) {
   EXPECT_FALSE(CanonicalizeTrustTokenClientDataForRedemption(
-      base::Time::UnixEpoch() - base::TimeDelta::FromSeconds(1),
+      base::Time::UnixEpoch() - base::Seconds(1),
       url::Origin::Create(GURL("https://topframe.example")), "public key"));
 }
 

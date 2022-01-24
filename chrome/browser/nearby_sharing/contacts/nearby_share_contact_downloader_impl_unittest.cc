@@ -31,7 +31,7 @@ const char kTestContactRecordId4[] = "contact_id_4";
 const char kTestContactRecordId5[] = "contact_id_5";
 const char kTestPageToken[] = "token";
 
-constexpr base::TimeDelta kTestTimeout = base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestTimeout = base::Minutes(123);
 
 const std::vector<nearbyshare::proto::ContactRecord>& TestContactRecordList() {
   static const base::NoDestructor<

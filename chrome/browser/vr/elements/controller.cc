@@ -67,8 +67,7 @@ std::unique_ptr<gfx::FloatAnimationCurve> CreateAlphaCurve(
   auto alpha_curve = gfx::KeyframedFloatAnimationCurve::Create();
   for (size_t i = 0; i < length; i += 2) {
     alpha_curve->AddKeyframe(gfx::FloatKeyframe::Create(
-        base::TimeDelta::FromSecondsD(alpha_stops[i + 1]), alpha_stops[i],
-        nullptr));
+        base::Seconds(alpha_stops[i + 1]), alpha_stops[i], nullptr));
   }
   return alpha_curve;
 }
@@ -89,7 +88,7 @@ void AddColor(float alpha,
   colors->push_back(SkColorGetR(kColor) / 255.0);
   colors->push_back(SkColorGetG(kColor) / 255.0);
   colors->push_back(SkColorGetB(kColor) / 255.0);
-  colors->push_back(alpha_curve.GetValue(base::TimeDelta::FromSecondsD(alpha)));
+  colors->push_back(alpha_curve.GetValue(base::Seconds(alpha)));
 }
 
 void AddSphere(size_t num_rings,

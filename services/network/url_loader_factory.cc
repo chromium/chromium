@@ -29,7 +29,7 @@
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
-#include "services/network/web_bundle_url_loader_factory.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -39,32 +39,7 @@ namespace network {
 namespace {
 
 // The interval to send load updates.
-constexpr auto kUpdateLoadStatesInterval =
-    base::TimeDelta::FromMilliseconds(250);
-
-// An enum class representing whether / how keepalive requests are blocked. This
-// is used for UMA so do NOT re-assign values.
-enum class KeepaliveBlockStatus {
-  // The request is not blocked.
-  kNotBlocked = 0,
-  // The request is blocked due to NetworkContext::CanCreateLoader.
-  kBlockedDueToCanCreateLoader = 1,
-  // The request is blocked due to the number of requests per process.
-  kBlockedDueToNumberOfRequestsPerProcess = 2,
-  // The request is blocked due to the number of requests per top-level frame.
-  kBlockedDueToNumberOfRequestsPerTopLevelFrame = 3,
-  // The request is blocked due to the number of requests in the system.
-  kBlockedDueToNumberOfRequests = 4,
-  // The request is blocked due to the total size of URL and request headers.
-  kBlockedDueToTotalSizeOfUrlAndHeaders = 5,
-  // The request is NOT blocked but the total size of URL and request headers
-  // exceeds 384kb.
-  kNotBlockedButUrlAndHeadersExceeds384kb = 6,
-  // The request is NOT blocked but the total size of URL and request headers
-  // exceeds 256kb.
-  kNotBlockedButUrlAndHeadersExceeds256kb = 7,
-  kMaxValue = kNotBlockedButUrlAndHeadersExceeds256kb,
-};
+constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 
 }  // namespace
 
@@ -81,7 +56,6 @@ URLLoaderFactory::URLLoaderFactory(
       params_(std::move(params)),
       resource_scheduler_client_(std::move(resource_scheduler_client)),
       header_client_(std::move(params_->header_client)),
-      coep_reporter_(std::move(params_->coep_reporter)),
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
       url_loader_network_service_observer_(
@@ -119,6 +93,24 @@ void URLLoaderFactory::CreateLoaderAndStart(
     uint32_t options,
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  CreateLoaderAndStartWithSyncClient(
+      std::move(receiver), request_id, options, url_request, std::move(client),
+      /* sync_client= */ nullptr, traffic_annotation);
+}
+
+void URLLoaderFactory::Clone(
+    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
+  NOTREACHED();
+}
+
+void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
+    mojo::PendingReceiver<mojom::URLLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    const ResourceRequest& url_request,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
+    base::WeakPtr<mojom::URLLoaderClient> sync_client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Requests with |trusted_params| when params_->is_trusted is not set should
   // have been rejected at the CorsURLLoader layer.
@@ -181,40 +173,18 @@ void URLLoaderFactory::CreateLoaderAndStart(
 
     keepalive_request_size = url_size + headers_size;
 
-    KeepaliveBlockStatus block_status = KeepaliveBlockStatus::kNotBlocked;
     const auto& top_frame_id = *params_->top_frame_id;
     const auto& recorder = *keepalive_statistics_recorder;
 
-    if (!context_->CanCreateLoader(params_->process_id)) {
-      // We already checked this, but we have this here for histogram.
-      DCHECK(exhausted);
-      block_status = KeepaliveBlockStatus::kBlockedDueToCanCreateLoader;
-    } else if (recorder.num_inflight_requests() >= kMaxKeepaliveConnections) {
-      exhausted = true;
-      block_status = KeepaliveBlockStatus::kBlockedDueToNumberOfRequests;
-    } else if (recorder.NumInflightRequestsPerTopLevelFrame(top_frame_id) >=
-               kMaxKeepaliveConnectionsPerTopLevelFrame) {
-      exhausted = true;
-      block_status =
-          KeepaliveBlockStatus::kBlockedDueToNumberOfRequestsPerTopLevelFrame;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               kMaxTotalKeepaliveRequestSize) {
-      exhausted = true;
-      block_status =
-          KeepaliveBlockStatus::kBlockedDueToTotalSizeOfUrlAndHeaders;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               384 * 1024) {
-      block_status =
-          KeepaliveBlockStatus::kNotBlockedButUrlAndHeadersExceeds384kb;
-    } else if (recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
-                   keepalive_request_size >
-               256 * 1024) {
-      block_status =
-          KeepaliveBlockStatus::kNotBlockedButUrlAndHeadersExceeds256kb;
-    } else {
-      block_status = KeepaliveBlockStatus::kNotBlocked;
+    if (!exhausted) {
+      if (recorder.num_inflight_requests() >= kMaxKeepaliveConnections ||
+          recorder.NumInflightRequestsPerTopLevelFrame(top_frame_id) >=
+              kMaxKeepaliveConnectionsPerTopLevelFrame ||
+          recorder.GetTotalRequestSizePerTopLevelFrame(top_frame_id) +
+                  keepalive_request_size >
+              kMaxTotalKeepaliveRequestSize) {
+        exhausted = true;
+      }
     }
   }
 
@@ -286,11 +256,11 @@ void URLLoaderFactory::CreateLoaderAndStart(
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
+      std::move(sync_client),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
-      params_.get(), coep_reporter_ ? coep_reporter_.get() : nullptr,
-      request_id, keepalive_request_size,
-      context_->require_network_isolation_key(), resource_scheduler_client_,
-      std::move(keepalive_statistics_recorder),
+      params_.get(), cors_url_loader_factory_->coep_reporter(), request_id,
+      keepalive_request_size, context_->require_network_isolation_key(),
+      resource_scheduler_client_, std::move(keepalive_statistics_recorder),
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
       context_->cors_origin_access_list(), std::move(cookie_observer),
@@ -298,11 +268,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
       std::move(accept_ch_frame_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
-}
-
-void URLLoaderFactory::Clone(
-    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
 }
 
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,7 +55,7 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
               base::BindOnce(&StorageServiceRestartBrowserTest::
                                  WaitForAnyLocalStorageDataAsync,
                              base::Unretained(test), std::move(callback)),
-              base::TimeDelta::FromMilliseconds(50));
+              base::Milliseconds(50));
         },
         this, std::move(callback)));
   }

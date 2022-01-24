@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_switches.h"
 #include "services/network/public/cpp/features.h"
@@ -71,7 +72,7 @@ TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest,
   // The |component_install_dir_.GetPath()| should be ignored in favor of the
   // separate path we provide through the switch.
   policy->ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                         std::make_unique<base::DictionaryValue>());
+                         base::Value(base::Value::Type::DICTIONARY));
 
   run_loop.Run();
 
@@ -101,7 +102,7 @@ TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, LoadsCommitments) {
       expectation));
 
   policy->ComponentReady(base::Version(), component_install_dir_.GetPath(),
-                         std::make_unique<base::DictionaryValue>());
+                         base::Value(base::Value::Type::DICTIONARY));
 
   run_loop.Run();
 }

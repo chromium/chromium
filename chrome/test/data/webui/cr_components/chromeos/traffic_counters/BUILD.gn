@@ -1,0 +1,32 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/cr_components/chromeos/os_cr_components.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://network/=../../chrome/browser/resources/chromeos/network/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [ ":traffic_counters_test" ]
+}
+
+js_library("traffic_counters_test") {
+  deps = [
+    "../../..:chai_assert",
+    "//chrome/test/data/webui/chromeos:fake_network_config_mojom.m",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container.m",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}

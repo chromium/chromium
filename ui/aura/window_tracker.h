@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
 
@@ -23,6 +22,10 @@ class AURA_EXPORT WindowTracker : public WindowObserver {
 
   explicit WindowTracker(const WindowList& windows);
   WindowTracker();
+
+  WindowTracker(const WindowTracker&) = delete;
+  WindowTracker& operator=(const WindowTracker&) = delete;
+
   ~WindowTracker() override;
 
   // Returns the set of windows being observed.
@@ -47,8 +50,6 @@ class AURA_EXPORT WindowTracker : public WindowObserver {
 
  private:
   WindowList windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowTracker);
 };
 
 }  // namespace aura

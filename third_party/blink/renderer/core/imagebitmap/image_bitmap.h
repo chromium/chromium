@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -101,7 +101,9 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       SourceImageStatus*,
       const FloatSize&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
-  bool WouldTaintOrigin() const override { return !image_->OriginClean(); }
+  bool WouldTaintOrigin() const override {
+    return image_ ? !image_->OriginClean() : false;
+  }
   FloatSize ElementSize(const FloatSize&,
                         const RespectImageOrientationEnum) const override;
   bool IsImageBitmap() const override { return true; }

@@ -19,6 +19,9 @@
 class RepostFormTabHelper : public web::WebStateUserData<RepostFormTabHelper>,
                             public web::WebStateObserver {
  public:
+  RepostFormTabHelper(const RepostFormTabHelper&) = delete;
+  RepostFormTabHelper& operator=(const RepostFormTabHelper&) = delete;
+
   ~RepostFormTabHelper() override;
 
   // Creates TabHelper. |delegate| is not retained by TabHelper and must not be
@@ -54,8 +57,6 @@ class RepostFormTabHelper : public web::WebStateUserData<RepostFormTabHelper>,
   bool is_presenting_dialog_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(RepostFormTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_REPOST_FORM_TAB_HELPER_H_

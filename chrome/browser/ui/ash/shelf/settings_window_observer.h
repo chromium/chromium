@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/settings_window_manager_observer_chromeos.h"
 #include "ui/aura/window_tracker.h"
 
@@ -16,6 +15,10 @@
 class SettingsWindowObserver : public chrome::SettingsWindowManagerObserver {
  public:
   SettingsWindowObserver();
+
+  SettingsWindowObserver(const SettingsWindowObserver&) = delete;
+  SettingsWindowObserver& operator=(const SettingsWindowObserver&) = delete;
+
   ~SettingsWindowObserver() override;
 
   // chrome::SettingsWindowManagerObserver:
@@ -24,8 +27,6 @@ class SettingsWindowObserver : public chrome::SettingsWindowManagerObserver {
  private:
   // Set of windows whose title is forced to 'Settings.'
   std::unique_ptr<aura::WindowTracker> aura_window_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsWindowObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SETTINGS_WINDOW_OBSERVER_H_

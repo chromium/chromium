@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -40,6 +39,11 @@ class RendererEventInjectionTest
       public ::testing::WithParamInterface<const char*> {
  public:
   RendererEventInjectionTest() {}
+
+  RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
+  RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
+      delete;
+
   ~RendererEventInjectionTest() override {}
 
   // InProcessBrowserTest:
@@ -66,8 +70,6 @@ class RendererEventInjectionTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererEventInjectionTest);
 };
 
 // Detects when a touch press is received.
@@ -77,6 +79,10 @@ class TouchEventObserver
   TouchEventObserver(const gfx::Point& location,
                      base::RepeatingClosure quit_closure)
       : expected_location_(location), quit_closure_(std::move(quit_closure)) {}
+
+  TouchEventObserver(const TouchEventObserver&) = delete;
+  TouchEventObserver& operator=(const TouchEventObserver&) = delete;
+
   ~TouchEventObserver() override = default;
 
  private:
@@ -102,15 +108,13 @@ class TouchEventObserver
 
   const gfx::Point expected_location_;
   base::RepeatingClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchEventObserver);
 };
 
 IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   base::RunLoop run_loop;
   content::RenderWidgetHost* rwh =
       main_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();

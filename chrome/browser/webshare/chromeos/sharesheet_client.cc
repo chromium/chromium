@@ -25,7 +25,6 @@
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,6 +61,7 @@ blink::mojom::ShareError SharesheetResultToShareError(
       return blink::mojom::ShareError::OK;
     case sharesheet::SharesheetResult::kCancel:
     case sharesheet::SharesheetResult::kErrorAlreadyOpen:
+    case sharesheet::SharesheetResult::kErrorWindowClosed:
       return blink::mojom::ShareError::CANCELED;
   }
 }
@@ -114,7 +114,7 @@ void SharesheetClient::Share(
             FROM_HERE,
             base::BindOnce(std::move(callback),
                            blink::mojom::ShareError::CANCELED),
-            base::TimeDelta::FromSecondsD(delay_seconds));
+            base::Seconds(delay_seconds));
     return;
   }
 
@@ -137,8 +137,8 @@ void SharesheetClient::Share(
   if (current_share_->files.empty()) {
     GetSharesheetCallback().Run(
         web_contents(), current_share_->file_paths,
-        current_share_->content_types, current_share_->text,
-        current_share_->title,
+        current_share_->content_types, current_share_->file_sizes,
+        current_share_->text, current_share_->title,
         base::BindOnce(&SharesheetClient::OnShowSharesheet,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -173,6 +173,7 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
     current_share_->content_types.push_back(file->blob->content_type);
     current_share_->file_paths.push_back(
         GenerateFileName(current_share_->directory, file->name));
+    current_share_->file_sizes.push_back(file->blob->size);
   }
 
   std::unique_ptr<StoreFilesTask> store_files_task =
@@ -194,14 +195,14 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
     PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(current_share_->file_paths), base::TimeDelta::FromMinutes(0));
+        std::move(current_share_->file_paths), base::Minutes(0));
     current_share_ = absl::nullopt;
     return;
   }
 
   GetSharesheetCallback().Run(
       web_contents(), current_share_->file_paths, current_share_->content_types,
-      current_share_->text, current_share_->title,
+      current_share_->file_sizes, current_share_->text, current_share_->title,
       base::BindOnce(&SharesheetClient::OnShowSharesheet,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -222,13 +223,12 @@ void SharesheetClient::ShowSharesheet(
     content::WebContents* web_contents,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& content_types,
+    const std::vector<uint64_t>& file_sizes,
     const std::string& text,
     const std::string& title,
     DeliveredCallback delivered_callback) {
-  if (!base::FeatureList::IsEnabled(features::kSharesheet)) {
-    std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
-    return;
-  }
+  DCHECK_EQ(file_paths.size(), content_types.size());
+  DCHECK_EQ(file_paths.size(), file_sizes.size());
 
   Profile* const profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -241,6 +241,12 @@ void SharesheetClient::ShowSharesheet(
       file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
                          : apps_util::CreateShareIntentFromFiles(
                                profile, file_paths, content_types, text, title);
+  if (intent->files.has_value() && intent->files->size() == file_paths.size()) {
+    for (size_t index = 0; index < file_paths.size(); ++index) {
+      (*intent->files)[index]->mime_type = content_types[index];
+      (*intent->files)[index]->file_size = file_sizes[index];
+    }
+  }
   sharesheet_service->ShowBubble(
       web_contents, std::move(intent),
       sharesheet::SharesheetMetrics::LaunchSource::kWebShare,

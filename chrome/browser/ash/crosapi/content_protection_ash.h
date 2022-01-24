@@ -47,6 +47,8 @@ class ContentProtectionAsh : public aura::WindowObserver,
   void ChallengePlatform(const std::string& service_id,
                          const std::string& challenge,
                          ChallengePlatformCallback callback) override;
+  void IsVerifiedAccessEnabled(
+      IsVerifiedAccessEnabledCallback callback) override;
 
  private:
   // If an OutputProtectionDelegate already exists, returns it. Otherwise

@@ -83,15 +83,16 @@ void MakeRowHeader(AXNodeData* cell,
 class AXTableInfoTest : public testing::Test {
  public:
   AXTableInfoTest() {}
+
+  AXTableInfoTest(const AXTableInfoTest&) = delete;
+  AXTableInfoTest& operator=(const AXTableInfoTest&) = delete;
+
   ~AXTableInfoTest() override {}
 
  protected:
   AXTableInfo* GetTableInfo(AXTree* tree, AXNode* node) {
     return tree->GetTableInfo(node);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXTableInfoTest);
 };
 
 TEST_F(AXTableInfoTest, SimpleTable) {
@@ -157,8 +158,8 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   EXPECT_EQ(3u, table_info->cell_id_to_index[7]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 
 #if defined(OS_MAC)
   EXPECT_EQ(3U, table_info->extra_mac_nodes.size());
@@ -272,8 +273,8 @@ TEST_F(AXTableInfoTest, ComputedTableSizeIncludesSpans) {
   EXPECT_EQ(6u, table_info->col_count);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, AuthorRowAndColumnCountsAreRespected) {
@@ -294,7 +295,7 @@ TEST_F(AXTableInfoTest, AuthorRowAndColumnCountsAreRespected) {
   EXPECT_EQ(9u, table_info->col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
 }
 
 TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
@@ -327,7 +328,7 @@ TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
   EXPECT_EQ(2u, table_info_3->col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
 }
 
 TEST_F(AXTableInfoTest, CellIdsHandlesSpansAndMissingCells) {
@@ -370,8 +371,8 @@ TEST_F(AXTableInfoTest, CellIdsHandlesSpansAndMissingCells) {
   EXPECT_EQ(2u, table_info->cell_id_to_index[6]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
@@ -428,8 +429,8 @@ TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
   EXPECT_EQ(10, table_info->cell_ids[1][1]);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(8, table_info->row_nodes[1]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(8, table_info->row_nodes[1]->id());
 }
 
 TEST_F(AXTableInfoTest, HeadersWithSpans) {
@@ -491,9 +492,9 @@ TEST_F(AXTableInfoTest, HeadersWithSpans) {
   EXPECT_EQ(8, table_info->cell_ids[2][2]);
 
   EXPECT_EQ(3u, table_info->row_nodes.size());
-  EXPECT_EQ(2, table_info->row_nodes[0]->data().id);
-  EXPECT_EQ(3, table_info->row_nodes[1]->data().id);
-  EXPECT_EQ(4, table_info->row_nodes[2]->data().id);
+  EXPECT_EQ(2, table_info->row_nodes[0]->id());
+  EXPECT_EQ(3, table_info->row_nodes[1]->id());
+  EXPECT_EQ(4, table_info->row_nodes[2]->id());
 }
 
 #if defined(OS_MAC)
@@ -526,16 +527,16 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(3U, table_info->extra_mac_nodes.size());
 
   // The first column.
-  AXNodeData extra_node_0 = table_info->extra_mac_nodes[0]->data();
-  EXPECT_EQ(-1, table_info->extra_mac_nodes[0]->id());
-  EXPECT_EQ(1, table_info->extra_mac_nodes[0]->parent()->id());
-  EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0.role);
-  EXPECT_EQ(2U, table_info->extra_mac_nodes[0]->GetIndexInParent());
-  EXPECT_EQ(2U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
-  EXPECT_EQ(0, extra_node_0.GetIntAttribute(
+  AXNode* extra_node_0 = table_info->extra_mac_nodes[0];
+  EXPECT_EQ(-1, extra_node_0->id());
+  EXPECT_EQ(1, extra_node_0->parent()->id());
+  EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0->GetRole());
+  EXPECT_EQ(2U, extra_node_0->GetIndexInParent());
+  EXPECT_EQ(2U, extra_node_0->GetUnignoredIndexInParent());
+  EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                    ax::mojom::IntAttribute::kTableColumnIndex));
   std::vector<AXNodeID> indirect_child_ids;
-  EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
+  EXPECT_EQ(true, extra_node_0->GetIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds,
                       &indirect_child_ids));
   EXPECT_EQ(2U, indirect_child_ids.size());
@@ -543,16 +544,16 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(6, indirect_child_ids[1]);
 
   // The second column.
-  AXNodeData extra_node_1 = table_info->extra_mac_nodes[1]->data();
-  EXPECT_EQ(-2, table_info->extra_mac_nodes[1]->id());
-  EXPECT_EQ(1, table_info->extra_mac_nodes[1]->parent()->id());
-  EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1.role);
-  EXPECT_EQ(3U, table_info->extra_mac_nodes[1]->GetIndexInParent());
-  EXPECT_EQ(3U, table_info->extra_mac_nodes[1]->GetUnignoredIndexInParent());
-  EXPECT_EQ(1, extra_node_1.GetIntAttribute(
+  AXNode* extra_node_1 = table_info->extra_mac_nodes[1];
+  EXPECT_EQ(-2, extra_node_1->id());
+  EXPECT_EQ(1, extra_node_1->parent()->id());
+  EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1->GetRole());
+  EXPECT_EQ(3U, extra_node_1->GetIndexInParent());
+  EXPECT_EQ(3U, extra_node_1->GetUnignoredIndexInParent());
+  EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                    ax::mojom::IntAttribute::kTableColumnIndex));
   indirect_child_ids.clear();
-  EXPECT_EQ(true, extra_node_1.GetIntListAttribute(
+  EXPECT_EQ(true, extra_node_1->GetIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds,
                       &indirect_child_ids));
   EXPECT_EQ(2U, indirect_child_ids.size());
@@ -560,14 +561,14 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(7, indirect_child_ids[1]);
 
   // The table header container.
-  AXNodeData extra_node_2 = table_info->extra_mac_nodes[2]->data();
-  EXPECT_EQ(-3, table_info->extra_mac_nodes[2]->id());
-  EXPECT_EQ(1, table_info->extra_mac_nodes[2]->parent()->id());
-  EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2.role);
-  EXPECT_EQ(4U, table_info->extra_mac_nodes[2]->GetIndexInParent());
-  EXPECT_EQ(4U, table_info->extra_mac_nodes[2]->GetUnignoredIndexInParent());
+  AXNode* extra_node_2 = table_info->extra_mac_nodes[2];
+  EXPECT_EQ(-3, extra_node_2->id());
+  EXPECT_EQ(1, extra_node_2->parent()->id());
+  EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
+  EXPECT_EQ(4U, extra_node_2->GetIndexInParent());
+  EXPECT_EQ(4U, extra_node_2->GetUnignoredIndexInParent());
   indirect_child_ids.clear();
-  EXPECT_EQ(true, extra_node_2.GetIntListAttribute(
+  EXPECT_EQ(true, extra_node_2->GetIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds,
                       &indirect_child_ids));
   EXPECT_EQ(2U, indirect_child_ids.size());
@@ -982,46 +983,46 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
 
   {
     // The first column.
-    AXNodeData extra_node_0 = table_info->extra_mac_nodes[0]->data();
-    EXPECT_EQ(-4, table_info->extra_mac_nodes[0]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[0]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0.role);
-    EXPECT_EQ(2U, table_info->extra_mac_nodes[0]->GetIndexInParent());
-    EXPECT_EQ(3U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
-    EXPECT_EQ(0, extra_node_0.GetIntAttribute(
+    AXNode* extra_node_0 = table_info->extra_mac_nodes[0];
+    EXPECT_EQ(-4, extra_node_0->id());
+    EXPECT_EQ(1, extra_node_0->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0->GetRole());
+    EXPECT_EQ(2U, extra_node_0->GetIndexInParent());
+    EXPECT_EQ(3U, extra_node_0->GetUnignoredIndexInParent());
+    EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
     std::vector<AXNodeID> indirect_child_ids;
-    EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_0->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(1U, indirect_child_ids.size());
     EXPECT_EQ(6, indirect_child_ids[0]);
 
     // The second column.
-    AXNodeData extra_node_1 = table_info->extra_mac_nodes[1]->data();
-    EXPECT_EQ(-5, table_info->extra_mac_nodes[1]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[1]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1.role);
-    EXPECT_EQ(3U, table_info->extra_mac_nodes[1]->GetIndexInParent());
-    EXPECT_EQ(4U, table_info->extra_mac_nodes[1]->GetUnignoredIndexInParent());
-    EXPECT_EQ(1, extra_node_1.GetIntAttribute(
+    AXNode* extra_node_1 = table_info->extra_mac_nodes[1];
+    EXPECT_EQ(-5, extra_node_1->id());
+    EXPECT_EQ(1, extra_node_1->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1->GetRole());
+    EXPECT_EQ(3U, extra_node_1->GetIndexInParent());
+    EXPECT_EQ(4U, extra_node_1->GetUnignoredIndexInParent());
+    EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
     indirect_child_ids.clear();
-    EXPECT_EQ(true, extra_node_1.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_1->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(1U, indirect_child_ids.size());
     EXPECT_EQ(7, indirect_child_ids[0]);
 
     // The table header container.
-    AXNodeData extra_node_2 = table_info->extra_mac_nodes[2]->data();
-    EXPECT_EQ(-6, table_info->extra_mac_nodes[2]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[2]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2.role);
-    EXPECT_EQ(4U, table_info->extra_mac_nodes[2]->GetIndexInParent());
-    EXPECT_EQ(5U, table_info->extra_mac_nodes[2]->GetUnignoredIndexInParent());
+    AXNode* extra_node_2 = table_info->extra_mac_nodes[2];
+    EXPECT_EQ(-6, extra_node_2->id());
+    EXPECT_EQ(1, extra_node_2->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
+    EXPECT_EQ(4U, extra_node_2->GetIndexInParent());
+    EXPECT_EQ(5U, extra_node_2->GetUnignoredIndexInParent());
     indirect_child_ids.clear();
-    EXPECT_EQ(true, extra_node_2.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_2->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(0U, indirect_child_ids.size());
@@ -1040,46 +1041,46 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
 
   {
     // The first column.
-    AXNodeData extra_node_0 = table_info->extra_mac_nodes[0]->data();
-    EXPECT_EQ(-7, table_info->extra_mac_nodes[0]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[0]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0.role);
-    EXPECT_EQ(1U, table_info->extra_mac_nodes[0]->GetIndexInParent());
-    EXPECT_EQ(1U, table_info->extra_mac_nodes[0]->GetUnignoredIndexInParent());
-    EXPECT_EQ(0, extra_node_0.GetIntAttribute(
+    AXNode* extra_node_0 = table_info->extra_mac_nodes[0];
+    EXPECT_EQ(-7, extra_node_0->id());
+    EXPECT_EQ(1, extra_node_0->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_0->GetRole());
+    EXPECT_EQ(1U, extra_node_0->GetIndexInParent());
+    EXPECT_EQ(1U, extra_node_0->GetUnignoredIndexInParent());
+    EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
     std::vector<AXNodeID> indirect_child_ids;
-    EXPECT_EQ(true, extra_node_0.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_0->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(1U, indirect_child_ids.size());
     EXPECT_EQ(6, indirect_child_ids[0]);
 
     // The second column.
-    AXNodeData extra_node_1 = table_info->extra_mac_nodes[1]->data();
-    EXPECT_EQ(-8, table_info->extra_mac_nodes[1]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[1]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1.role);
-    EXPECT_EQ(2U, table_info->extra_mac_nodes[1]->GetIndexInParent());
-    EXPECT_EQ(2U, table_info->extra_mac_nodes[1]->GetUnignoredIndexInParent());
-    EXPECT_EQ(1, extra_node_1.GetIntAttribute(
+    AXNode* extra_node_1 = table_info->extra_mac_nodes[1];
+    EXPECT_EQ(-8, extra_node_1->id());
+    EXPECT_EQ(1, extra_node_1->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kColumn, extra_node_1->GetRole());
+    EXPECT_EQ(2U, extra_node_1->GetIndexInParent());
+    EXPECT_EQ(2U, extra_node_1->GetUnignoredIndexInParent());
+    EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
     indirect_child_ids.clear();
-    EXPECT_EQ(true, extra_node_1.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_1->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(1U, indirect_child_ids.size());
     EXPECT_EQ(7, indirect_child_ids[0]);
 
     // The table header container.
-    AXNodeData extra_node_2 = table_info->extra_mac_nodes[2]->data();
-    EXPECT_EQ(-9, table_info->extra_mac_nodes[2]->id());
-    EXPECT_EQ(1, table_info->extra_mac_nodes[2]->parent()->id());
-    EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2.role);
-    EXPECT_EQ(3U, table_info->extra_mac_nodes[2]->GetIndexInParent());
-    EXPECT_EQ(3U, table_info->extra_mac_nodes[2]->GetUnignoredIndexInParent());
+    AXNode* extra_node_2 = table_info->extra_mac_nodes[2];
+    EXPECT_EQ(-9, extra_node_2->id());
+    EXPECT_EQ(1, extra_node_2->parent()->id());
+    EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
+    EXPECT_EQ(3U, extra_node_2->GetIndexInParent());
+    EXPECT_EQ(3U, extra_node_2->GetUnignoredIndexInParent());
     indirect_child_ids.clear();
-    EXPECT_EQ(true, extra_node_2.GetIntListAttribute(
+    EXPECT_EQ(true, extra_node_2->GetIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds,
                         &indirect_child_ids));
     EXPECT_EQ(0U, indirect_child_ids.size());

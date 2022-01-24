@@ -16,6 +16,9 @@
 
 namespace viz {
 
+// The priority for a quads to require being promoted to overlay.
+enum class OverlayPriority { kLow, kRegular, kRequired };
+
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
   static const size_t kResourceIdIndex = 0;
@@ -30,15 +33,15 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::Rect& visible_rect,
               bool needs_blending,
               ResourceId resource_id,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -46,15 +49,15 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               bool needs_blending,
               ResourceId resource_id,
               gfx::Size resource_size_in_pixels,
-              bool premultiplied_alpha,
-              const gfx::PointF& uv_top_left,
-              const gfx::PointF& uv_bottom_right,
-              SkColor background_color,
-              const float vertex_opacity[4],
-              bool y_flipped,
-              bool nearest_neighbor,
-              bool secure_output_only,
-              gfx::ProtectedVideoType protected_video_type);
+              bool premultiplied,
+              const gfx::PointF& top_left,
+              const gfx::PointF& bottom_right,
+              SkColor background,
+              const float opacity[4],
+              bool flipped,
+              bool nearest,
+              bool secure_output,
+              gfx::ProtectedVideoType video_type);
 
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;
@@ -76,13 +79,11 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // regular display path. They need either a protected output or a protected
   // hardware overlay.
   gfx::ProtectedVideoType protected_video_type : 2;
+  // The overlay promotion hint.
+  OverlayPriority overlay_priority_hint = OverlayPriority::kRegular;
 
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;
-
-  // Identifier passed through by the video decoder that allows us to validate
-  // if a protected surface can still be displayed. Non-zero when valid.
-  uint32_t hw_protected_validation_id = 0;
 
   struct OverlayResources {
     OverlayResources();

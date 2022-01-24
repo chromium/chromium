@@ -5,7 +5,6 @@
 #ifndef BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 
@@ -55,6 +54,10 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // Move operations are allowed.
   ReadOnlySharedMemoryRegion(ReadOnlySharedMemoryRegion&&);
   ReadOnlySharedMemoryRegion& operator=(ReadOnlySharedMemoryRegion&&);
+
+  ReadOnlySharedMemoryRegion(const ReadOnlySharedMemoryRegion&) = delete;
+  ReadOnlySharedMemoryRegion& operator=(const ReadOnlySharedMemoryRegion&) =
+      delete;
 
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
@@ -112,8 +115,6 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedMemoryRegion);
 };
 
 // Helper struct for return value of ReadOnlySharedMemoryRegion::Create().

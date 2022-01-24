@@ -36,7 +36,7 @@ ResultExpr TtsProcessPolicy::EvaluateSyscall(int sysno) const {
 
   auto* sandbox_linux = SandboxLinux::GetInstance();
   if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))
-    return sandbox_linux->HandleViaBroker();
+    return sandbox_linux->HandleViaBroker(sysno);
 
   return BPFBasePolicy::EvaluateSyscall(sysno);
 }

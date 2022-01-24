@@ -136,7 +136,7 @@ void EdgeEffect::Pull(base::TimeTicks current_time,
   state_ = STATE_PULL;
 
   start_time_ = current_time;
-  duration_ = base::TimeDelta::FromMilliseconds(kPullTimeMs);
+  duration_ = base::Milliseconds(kPullTimeMs);
 
   float abs_delta_distance = std::abs(delta_distance);
   pull_distance_ += delta_distance;
@@ -172,7 +172,7 @@ void EdgeEffect::Release(base::TimeTicks current_time) {
   glow_scale_y_finish_ = 0.f;
 
   start_time_ = current_time;
-  duration_ = base::TimeDelta::FromMilliseconds(kRecedeTimeMs);
+  duration_ = base::Milliseconds(kRecedeTimeMs);
 }
 
 void EdgeEffect::Absorb(base::TimeTicks current_time, float velocity) {
@@ -182,7 +182,7 @@ void EdgeEffect::Absorb(base::TimeTicks current_time, float velocity) {
 
   start_time_ = current_time;
   // This should never be less than 1 millisecond.
-  duration_ = base::TimeDelta::FromMilliseconds(0.15f + (velocity * 0.02f));
+  duration_ = base::Milliseconds(0.15f + (velocity * 0.02f));
 
   // The glow depends more on the velocity, and therefore starts out
   // nearly invisible.
@@ -216,7 +216,7 @@ bool EdgeEffect::Update(base::TimeTicks current_time) {
       case STATE_ABSORB:
         state_ = STATE_RECEDE;
         start_time_ = current_time;
-        duration_ = base::TimeDelta::FromMilliseconds(kRecedeTimeMs);
+        duration_ = base::Milliseconds(kRecedeTimeMs);
 
         glow_alpha_start_ = glow_alpha_;
         glow_scale_y_start_ = glow_scale_y_;
@@ -227,7 +227,7 @@ bool EdgeEffect::Update(base::TimeTicks current_time) {
       case STATE_PULL:
         state_ = STATE_PULL_DECAY;
         start_time_ = current_time;
-        duration_ = base::TimeDelta::FromMilliseconds(kPullDecayTimeMs);
+        duration_ = base::Milliseconds(kPullDecayTimeMs);
 
         glow_alpha_start_ = glow_alpha_;
         glow_scale_y_start_ = glow_scale_y_;

@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
@@ -98,6 +97,11 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
             MockCryptAuthClientFactory::MockType::MAKE_NICE_MOCKS) {
     mock_client_factory_.AddObserver(this);
   }
+
+  DeviceSyncCryptAuthDeviceNotifierImplTest(
+      const DeviceSyncCryptAuthDeviceNotifierImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceNotifierImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceNotifierImplTest&) = delete;
 
   ~DeviceSyncCryptAuthDeviceNotifierImplTest() override {
     mock_client_factory_.RemoveObserver(this);
@@ -214,8 +218,6 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
   base::MockOneShotTimer* mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthDeviceNotifier> device_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceNotifierImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceNotifierImplTest, Test) {

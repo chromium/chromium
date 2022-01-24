@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -26,7 +25,7 @@ class NetworkContext;
 }  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace login {
 
 // Manages storage partitions for sign-in attempts on the sign-in screen and
@@ -47,6 +46,10 @@ class SigninPartitionManager : public KeyedService {
       base::OnceCallback<void(const std::string& partition_name)>;
 
   explicit SigninPartitionManager(content::BrowserContext* browser_context);
+
+  SigninPartitionManager(const SigninPartitionManager&) = delete;
+  SigninPartitionManager& operator=(const SigninPartitionManager&) = delete;
+
   ~SigninPartitionManager() override;
 
   // Creates a new StoragePartition for a sign-in attempt. If a previous
@@ -98,6 +101,9 @@ class SigninPartitionManager : public KeyedService {
 
     static Factory* GetInstance();
 
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
    private:
     friend struct base::DefaultSingletonTraits<Factory>;
 
@@ -109,8 +115,6 @@ class SigninPartitionManager : public KeyedService {
         content::BrowserContext* context) const override;
     content::BrowserContext* GetBrowserContextToUse(
         content::BrowserContext* context) const override;
-
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
  private:
@@ -129,11 +133,17 @@ class SigninPartitionManager : public KeyedService {
   // The StoragePartition identified by `storage_partition_domain_` and
   // `current_storage_partition_name_`.
   content::StoragePartition* current_storage_partition_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninPartitionManager);
 };
 
 }  // namespace login
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace login {
+using ::ash::login::SigninPartitionManager;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_PARTITION_MANAGER_H_

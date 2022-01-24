@@ -4,6 +4,7 @@
 
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
+import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {str} from '../../common/js/util.js';
 import {xfm} from '../../common/js/xfm.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
@@ -287,8 +288,8 @@ ProgressCenterImpl.Notifications_ = class {
     // Create/update the notification with the item.
     this.queue_.run(proceed => {
       const params = {
-        title: chrome.runtime.getManifest().name,
-        iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+        title: str('FILEMANAGER_APP_NAME'),
+        iconUrl: getFilesAppIconURL().toString(),
         type: item.state === ProgressItemState.PROGRESSING ? 'progress' :
                                                              'basic',
         message: item.message,

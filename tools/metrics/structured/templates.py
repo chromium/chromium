@@ -14,6 +14,7 @@ HEADER_FILE_TEMPLATE = """\
 #include <cstdint>
 #include <string>
 
+#include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event_base.h"
 
 namespace metrics {{
@@ -47,6 +48,8 @@ class {event.name} final : public ::metrics::structured::EventBase {{
   static constexpr uint64_t kProjectNameHash = UINT64_C({project.name_hash});
   static constexpr IdType kIdType = IdType::{project.id_type};
   static constexpr IdScope kIdScope = IdScope::{project.id_scope};
+  static constexpr StructuredEventProto_EventType kEventType =
+      StructuredEventProto_EventType_{project.event_type};
 
 {metric_code}\
 }};
@@ -86,7 +89,7 @@ namespace {project.namespace} {{
 IMPL_EVENT_TEMPLATE = """\
 {event.name}::{event.name}() :
   ::metrics::structured::EventBase(kEventNameHash, kProjectNameHash,
-    kIdType, kIdScope) {{}}
+    kIdType, kIdScope, kEventType) {{}}
 {event.name}::~{event.name}() = default;
 {metric_code}\
 """

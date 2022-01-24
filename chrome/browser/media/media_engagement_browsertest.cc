@@ -39,7 +39,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/common/prerender_final_status.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -68,12 +68,17 @@ class WasRecentlyAudibleWatcher {
   // entire lifetime of |this|.
   explicit WasRecentlyAudibleWatcher(content::WebContents* web_contents)
       : audible_helper_(RecentlyAudibleHelper::FromWebContents(web_contents)) {}
+
+  WasRecentlyAudibleWatcher(const WasRecentlyAudibleWatcher&) = delete;
+  WasRecentlyAudibleWatcher& operator=(const WasRecentlyAudibleWatcher&) =
+      delete;
+
   ~WasRecentlyAudibleWatcher() = default;
 
   // Waits until WasRecentlyAudible is true.
   void WaitForWasRecentlyAudible() {
     if (!audible_helper_->WasRecentlyAudible()) {
-      timer_.Start(FROM_HERE, base::TimeDelta::FromMicroseconds(100),
+      timer_.Start(FROM_HERE, base::Microseconds(100),
                    base::BindRepeating(
                        &WasRecentlyAudibleWatcher::TestWasRecentlyAudible,
                        base::Unretained(this)));
@@ -94,8 +99,6 @@ class WasRecentlyAudibleWatcher {
 
   base::RepeatingTimer timer_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WasRecentlyAudibleWatcher);
 };
 
 }  // namespace
@@ -135,7 +138,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     // need it before the page navigates.
     InjectTimerTaskRunner();
 
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void LoadTestPageAndWaitForPlay(const GURL& url, bool web_contents_muted) {
@@ -259,8 +262,8 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
     // need it before the page navigates.
     InjectTimerTaskRunner();
 
-    ui_test_utils::NavigateToURL(
-        browser(), http_server_origin2_.GetURL("/engagement_test.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_server_origin2_.GetURL("/engagement_test.html")));
   }
 
   const net::EmbeddedTestServer& http_server() const { return http_server_; }
@@ -308,7 +311,7 @@ class MediaEngagementBrowserTest : public InProcessBrowserTest {
 
   const base::TimeDelta kMaxWaitingTime =
       MediaEngagementContentsObserver::kSignificantMediaPlaybackTime +
-      base::TimeDelta::FromSeconds(2);
+      base::Seconds(2);
 };
 
 // Class used to test the MEI preload component.
@@ -353,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DoNotRecordEngagement_NotTime) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   CloseTab();
   ExpectScores(1, 0);
 }
@@ -369,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        MAYBE_DoNotRecordEngagement_NotTime_AudioOnly) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test_audio.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   CloseTab();
   ExpectScores(1, 0);
 }
@@ -420,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        DISABLED_DoNotRecordEngagement_PlaybackStopped) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   ExecuteScript("document.getElementById(\"media\").pause();");
   AdvanceMeaningfulPlaybackTime();
   CloseTab();
@@ -438,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        MAYBE_DoNotRecordEngagement_PlaybackStopped_AudioOnly) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test_audio.html", false);
-  Advance(base::TimeDelta::FromSeconds(1));
+  Advance(base::Seconds(1));
   ExecuteScript("document.getElementById(\"media\").pause();");
   AdvanceMeaningfulPlaybackTime();
   CloseTab();
@@ -617,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_MultipleElements) {
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
                        RecordAudibleBasedOnShortTime) {
   LoadTestPageAndWaitForPlayAndAudible("engagement_test.html", false);
-  Advance(base::TimeDelta::FromSeconds(4));
+  Advance(base::Seconds(4));
   CloseTab();
   ExpectScores(1, 0);
 }
@@ -783,8 +786,8 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_Ignored) {
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager->AddPrerenderFromOmnibox(url, storage_namespace,
-                                                         gfx::Size(640, 480));
+      no_state_prefetch_manager->StartPrefetchingFromOmnibox(
+          url, storage_namespace, gfx::Size(640, 480));
 
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 

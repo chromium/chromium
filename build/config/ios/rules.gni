@@ -6,6 +6,7 @@ import("//build/apple/apple_info_plist.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
@@ -113,12 +114,11 @@ template("lipo_binary") {
         "$_dsyms_output_dir/Contents/Info.plist",
         "$_dsyms_output_dir/Contents/Resources/DWARF/$_output_name",
       ]
-      args += [ "-Wcrl,dsym," + rebase_path("$root_out_dir/.", root_build_dir) ]
-      if (!use_xcode_clang) {
-        args += [ "-Wcrl,dsymutilpath," +
-                  rebase_path("//tools/clang/dsymutil/bin/dsymutil",
-                              root_build_dir) ]
-      }
+      args += [
+        "-Wcrl,dsym," + rebase_path("$root_out_dir/.", root_build_dir),
+        "-Wcrl,dsymutilpath," +
+            rebase_path("//tools/clang/dsymutil/bin/dsymutil", root_build_dir),
+      ]
     }
 
     if (enable_stripping) {
@@ -348,27 +348,31 @@ template("create_signed_bundle") {
     }
 
     if (ios_set_attributes_for_xcode_project_generation) {
-      _xcode_product_bundle_id = ""
+      _bundle_identifier = ""
       if (defined(invoker.xcode_product_bundle_id)) {
-        _xcode_product_bundle_id = invoker.xcode_product_bundle_id
+        _bundle_identifier = invoker.xcode_product_bundle_id
+        assert(
+            _bundle_identifier == string_replace(_bundle_identifier, "_", "-"),
+            "$target_name: bundle_identifier does not respect rfc1034: " +
+                _bundle_identifier)
       }
 
-      if (_xcode_product_bundle_id != "") {
+      if (_bundle_identifier != "") {
         _ios_provisioning_profile_info =
             exec_script("//build/config/ios/codesign.py",
                         [
                           "find-provisioning-profile",
-                          "-b=" + _xcode_product_bundle_id,
+                          "-b=" + _bundle_identifier,
                         ],
                         "json")
       }
 
       xcode_extra_attributes = {
         IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
-        if (_xcode_product_bundle_id != "") {
+        if (_bundle_identifier != "") {
           CODE_SIGN_IDENTITY = "iPhone Developer"
           DEVELOPMENT_TEAM = _ios_provisioning_profile_info.team_identifier
-          PRODUCT_BUNDLE_IDENTIFIER = _xcode_product_bundle_id
+          PRODUCT_BUNDLE_IDENTIFIER = _bundle_identifier
           PROVISIONING_PROFILE_SPECIFIER = _ios_provisioning_profile_info.name
         }
 
@@ -459,7 +463,7 @@ template("create_signed_bundle") {
       # rebase_path here unless using Goma RBE and system Xcode (as in that
       # case the system framework are found via a symlink in root_build_dir).
       foreach(_framework, invoker.extra_system_frameworks) {
-        if (use_system_xcode && use_goma) {
+        if (use_system_xcode && (use_goma || use_remoteexec)) {
           _framework_path = rebase_path(_framework, root_build_dir)
         } else {
           _framework_path = _framework
@@ -528,11 +532,7 @@ template("ios_info_plist") {
 
   apple_info_plist(target_name) {
     format = "binary1"
-    extra_substitutions = []
-    if (defined(invoker.extra_substitutions)) {
-      extra_substitutions = invoker.extra_substitutions
-    }
-    extra_substitutions += [
+    extra_substitutions = [
       "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
       "IOS_PLATFORM_BUILD=$ios_platform_build",
       "IOS_PLATFORM_NAME=$ios_sdk_name",
@@ -545,6 +545,9 @@ template("ios_info_plist") {
       "XCODE_BUILD=$xcode_build",
       "XCODE_VERSION=$xcode_version",
     ]
+    if (defined(invoker.extra_substitutions)) {
+      extra_substitutions += invoker.extra_substitutions
+    }
     plist_templates = [
       "//build/config/ios/BuildInfo.plist",
       _info_plist,
@@ -615,10 +618,11 @@ template("ios_info_plist") {
 #       variant with the same binary but the correct bundle_deps, the bundle
 #       at $target_out_dir/$output_name will be a copy of the first variant.
 #
-#   xcode_product_bundle_id:
-#       (optional) string, the bundle ID that will be added in the XCode
-#       attributes to enable some features when debugging (e.g. MetricKit).
-#       defaults to "$ios_app_bundle_id_prefix.$output_name".
+#   bundle_identifier:
+#       (optional) string, value of CFBundleIdentifier in the application
+#       Info.plist, defaults to "$ios_app_bundle_id_prefix.$output_name"
+#       if omitted. Will be used to set BUNDLE_IDENTIFIER when generating
+#       the application Info.plist
 #
 # For more information, see "gn help executable".
 template("ios_app_bundle") {
@@ -637,18 +641,16 @@ template("ios_app_bundle") {
       !defined(invoker.bundle_extension),
       "bundle_extension must not be set for ios_app_bundle template for $target_name")
 
-  _xcode_product_bundle_id = "$ios_app_bundle_id_prefix.$_output_name"
-  if (defined(invoker.xcode_product_bundle_id)) {
-    _xcode_product_bundle_id = invoker.xcode_product_bundle_id
-    _xcode_product_bundle_id =
-        "$ios_app_bundle_id_prefix.$_xcode_product_bundle_id"
-  } else if (defined(invoker.bundle_id)) {
-    _xcode_product_bundle_id = invoker.bundle_id
+  if (defined(invoker.bundle_identifier)) {
+    _bundle_identifier = invoker.bundle_identifier
+    assert(_bundle_identifier == string_replace(_bundle_identifier, "_", "-"),
+           "$target_name: bundle_identifier does not respect rfc1034: " +
+               _bundle_identifier)
+  } else {
+    # Bundle identifier should respect rfc1034, so replace "_" with "-".
+    _bundle_identifier =
+        "$ios_app_bundle_id_prefix." + string_replace(_output_name, "_", "-")
   }
-
-  # Bundle ID should respect rfc1034 and replace _ with -.
-  _xcode_product_bundle_id =
-      string_replace("$_xcode_product_bundle_id", "_", "-")
 
   _arch_executable_source = _target_name + "_arch_executable_sources"
   _arch_executable_target = _target_name + "_arch_executable"
@@ -826,12 +828,16 @@ template("ios_app_bundle") {
     ios_info_plist(_generate_info_plist) {
       forward_variables_from(invoker,
                              [
-                               "extra_substitutions",
                                "info_plist",
                                "info_plist_target",
                              ])
 
       executable_name = _output_name
+
+      extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
+      if (defined(invoker.extra_substitutions)) {
+        extra_substitutions += invoker.extra_substitutions
+      }
     }
 
     if (!is_fat_secondary_toolchain) {
@@ -926,7 +932,7 @@ template("ios_app_bundle") {
         bundle_binary_output = _output_name
         bundle_extension = _bundle_extension
         product_type = _product_type
-        xcode_product_bundle_id = _xcode_product_bundle_id
+        xcode_product_bundle_id = _bundle_identifier
 
         _generate_info_plist_outputs =
             get_target_outputs(":$_generate_info_plist")
@@ -1536,6 +1542,10 @@ template("ios_framework_bundle") {
       arch_binary_output = _output_name
     }
 
+    # Bundle identifier should respect rfc1034, so replace "_" with "-".
+    _bundle_identifier =
+        "$ios_app_bundle_id_prefix." + string_replace(_output_name, "_", "-")
+
     _info_plist_target = _target_name + "_info_plist"
     _info_plist_bundle = _target_name + "_info_plist_bundle"
     ios_info_plist(_info_plist_target) {
@@ -1543,10 +1553,14 @@ template("ios_framework_bundle") {
       executable_name = _output_name
       forward_variables_from(invoker,
                              [
-                               "extra_substitutions",
                                "info_plist",
                                "info_plist_target",
                              ])
+
+      extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
+      if (defined(invoker.extra_substitutions)) {
+        extra_substitutions += invoker.extra_substitutions
+      }
     }
 
     bundle_data(_info_plist_bundle) {
@@ -1756,6 +1770,10 @@ template("ios_xctest_bundle") {
     _info_plist_target = _target_name + "_info_plist"
     _info_plist_bundle = _target_name + "_info_plist_bundle"
 
+    # Bundle identifier should respect rfc1034, so replace "_" with "-".
+    _bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+                         string_replace(_output_name, "_", "-")
+
     ios_info_plist(_info_plist_target) {
       testonly = true
       visibility = [ ":$_info_plist_bundle" ]
@@ -1771,7 +1789,7 @@ template("ios_xctest_bundle") {
       }
       extra_substitutions = [
         "XCTEST_BUNDLE_PRINCIPAL_CLASS=${_principal_class}",
-        "MODULE_BUNDLE_ID=gtest.$_output_name",
+        "BUNDLE_IDENTIFIER=$_bundle_identifier",
       ]
     }
 
@@ -1817,14 +1835,11 @@ template("ios_xctest_bundle") {
       bundle_binary_output = _output_name
 
       if (ios_set_attributes_for_xcode_project_generation) {
-        _xcode_product_bundle_id =
-            "$ios_app_bundle_id_prefix.gtest.$_output_name"
-
         _ios_provisioning_profile_info =
             exec_script("//build/config/ios/codesign.py",
                         [
                           "find-provisioning-profile",
-                          "-b=" + _xcode_product_bundle_id,
+                          "-b=" + _bundle_identifier,
                         ],
                         "json")
 
@@ -1832,7 +1847,7 @@ template("ios_xctest_bundle") {
           IPHONEOS_DEPLOYMENT_TARGET = ios_deployment_target
           CODE_SIGN_IDENTITY = "iPhone Developer"
           DEVELOPMENT_TEAM = _ios_provisioning_profile_info.team_identifier
-          PRODUCT_BUNDLE_IDENTIFIER = _xcode_product_bundle_id
+          PRODUCT_BUNDLE_IDENTIFIER = _bundle_identifier
           PROVISIONING_PROFILE_SPECIFIER = _ios_provisioning_profile_info.name
 
           # For XCUITest, Xcode requires specifying the host application name
@@ -1930,7 +1945,12 @@ template("ios_xctest_test") {
   }
 
   ios_app_bundle(_host_target) {
-    forward_variables_from(invoker, "*", [ "testonly" ])
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "testonly",
+                             "bundle_identifier",
+                           ])
 
     testonly = true
     output_name = _host_output
@@ -2001,6 +2021,10 @@ template("ios_xcuitest_test_runner_bundle") {
     _output_name = invoker.output_name
   }
 
+  # Bundle identifier should respect rfc1034, so replace "_" with "-".
+  _bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+                       string_replace(_output_name, "_", "-")
+
   _xctrunner_path =
       "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
 
@@ -2030,7 +2054,7 @@ template("ios_xcuitest_test_runner_bundle") {
              "-o=" + rebase_path(_output_name, root_build_dir),
            ] + rebase_path(sources, root_build_dir)
 
-    if (use_system_xcode && use_goma) {
+    if (use_system_xcode && (use_goma || use_remoteexec)) {
       deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }
@@ -2041,6 +2065,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     executable_name = _output_name
     info_plist_target = ":$_info_plist_merge_plist"
+    extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
   }
 
   bundle_data(_info_plist_bundle) {
@@ -2062,7 +2087,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     outputs = [ "{{bundle_contents_dir}}/PkgInfo" ]
 
-    if (use_system_xcode && use_goma) {
+    if (use_system_xcode && (use_goma || use_remoteexec)) {
       public_deps = [ "//build/config/ios:copy_xctrunner_app" ]
     }
   }

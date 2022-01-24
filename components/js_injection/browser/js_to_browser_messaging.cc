@@ -9,6 +9,7 @@
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -83,8 +84,10 @@ void JsToBrowserMessaging::PostMessage(
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 
-  if (render_frame_host_->IsInactiveAndDisallowActivation())
+  if (render_frame_host_->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kJsInjectionPostMessage)) {
     return;
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);

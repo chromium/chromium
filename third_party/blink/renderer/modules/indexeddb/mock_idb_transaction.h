@@ -34,12 +34,6 @@ class MockIDBTransaction
                Vector<IDBIndexKeys>,
                PutCallback callback),
               (override));
-  MOCK_METHOD(void,
-              PutAll,
-              (int64_t object_store_id,
-               Vector<mojom::blink::IDBPutParamsPtr> puts,
-               PutAllCallback callback),
-              (override));
   MOCK_METHOD(void, Commit, (int64_t num_errors_handled), (override));
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>);

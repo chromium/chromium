@@ -218,8 +218,7 @@ void MojoAudioOutputIPC::ReceivedDeviceAuthorization(
   // making it the upper limit.
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Render.OutputDeviceAuthorizationTime",
                              base::TimeTicks::Now() - auth_start_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(15), 100);
+                             base::Milliseconds(1), base::Seconds(15), 100);
 
   delegate_->OnDeviceAuthorized(static_cast<media::OutputDeviceStatus>(status),
                                 params, device_id.Utf8());

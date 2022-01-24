@@ -65,7 +65,13 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
 
 // This is a Chrome OS-only test ensuring that mirror account consistency is
 // enabled for child accounts, but not enabled for other account types.
-class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
+class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
+ public:
+  ChromeOsMirrorAccountConsistencyTest(
+      const ChromeOsMirrorAccountConsistencyTest&) = delete;
+  ChromeOsMirrorAccountConsistencyTest& operator=(
+      const ChromeOsMirrorAccountConsistencyTest&) = delete;
+
  protected:
   ~ChromeOsMirrorAccountConsistencyTest() override {}
 
@@ -75,7 +81,7 @@ class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    chromeos::LoginManagerTest::SetUpCommandLine(command_line);
+    ash::LoginManagerTest::SetUpCommandLine(command_line);
 
     // HTTPS server only serves a valid cert for localhost, so this is needed to
     // load pages from "www.google.com" without an interstitial.
@@ -94,17 +100,14 @@ class ChromeOsMirrorAccountConsistencyTest : public chromeos::LoginManagerTest {
     net::test_server::RegisterDefaultHandlers(test_server_.get());
     ASSERT_TRUE(test_server_->Start());
 
-    chromeos::LoginManagerTest::SetUpOnMainThread();
+    ash::LoginManagerTest::SetUpOnMainThread();
   }
 
   AccountId account_id_;
-  chromeos::LoginManagerMixin login_mixin_{&mixin_host_};
+  ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
  protected:
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeOsMirrorAccountConsistencyTest);
 };
 
 // Mirror is enabled for child accounts.
@@ -129,8 +132,9 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
 
   // Incognito is always disabled for child accounts.
   PrefService* prefs = profile->GetPrefs();
-  prefs->SetInteger(prefs::kIncognitoModeAvailability,
-                    IncognitoModePrefs::DISABLED);
+  prefs->SetInteger(
+      prefs::kIncognitoModeAvailability,
+      static_cast<int>(IncognitoModePrefs::Availability::kDisabled));
   ASSERT_EQ(1, signin::PROFILE_MODE_INCOGNITO_DISABLED);
 
   // TODO(http://crbug.com/1134144): This test seems to test supervised profiles

@@ -27,6 +27,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptor {
   using ErrorCallback =
       base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
 
+  BluetoothGattDescriptor(const BluetoothGattDescriptor&) = delete;
+  BluetoothGattDescriptor& operator=(const BluetoothGattDescriptor&) = delete;
+
   // The Bluetooth Specification declares several predefined descriptors that
   // profiles can use. The following are definitions for the list of UUIDs
   // and descriptions of the characteristic descriptors that they represent.
@@ -128,9 +131,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptor {
  protected:
   BluetoothGattDescriptor();
   virtual ~BluetoothGattDescriptor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDescriptor);
 };
 
 }  // namespace device

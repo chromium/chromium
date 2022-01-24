@@ -41,6 +41,9 @@ class BASE_EXPORT EtwTraceProperties {
  public:
   EtwTraceProperties();
 
+  EtwTraceProperties(const EtwTraceProperties&) = delete;
+  EtwTraceProperties& operator=(const EtwTraceProperties&) = delete;
+
   EVENT_TRACE_PROPERTIES* get() { return &properties_; }
 
   const EVENT_TRACE_PROPERTIES* get() const {
@@ -78,8 +81,6 @@ class BASE_EXPORT EtwTraceProperties {
     // The actual size of the buffer is forced by this member.
     char buffer_[kBufSize];
   };
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceProperties);
 };
 
 // This class implements an ETW controller, which knows how to start and
@@ -88,6 +89,10 @@ class BASE_EXPORT EtwTraceProperties {
 class BASE_EXPORT EtwTraceController {
  public:
   EtwTraceController();
+
+  EtwTraceController(const EtwTraceController&) = delete;
+  EtwTraceController& operator=(const EtwTraceController&) = delete;
+
   ~EtwTraceController();
 
   // Start a session with given name and properties.
@@ -143,8 +148,6 @@ class BASE_EXPORT EtwTraceController {
  private:
   std::wstring session_name_;
   TRACEHANDLE session_ = NULL;
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceController);
 };
 
 }  // namespace win

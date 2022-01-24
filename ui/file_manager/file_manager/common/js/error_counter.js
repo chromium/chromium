@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {GlitchType, reportGlitch} from './glitch.js';
 
 (function() {
-
 
 /**
  * This variable is checked in several integration and unit tests, to make sure
@@ -18,12 +18,14 @@ window.JSErrorCount = 0;
  */
 window.onerror = (message, url) => {
   window.JSErrorCount++;
+  reportGlitch(GlitchType.UNHANDLED_ERROR);
 };
 
 /**
  * Count uncaught errors in promises.
  */
 window.addEventListener('unhandledrejection', (event) => {
+  reportGlitch(GlitchType.UNHANDLED_REJECTION);
   console.error(event.reason);
 });
 

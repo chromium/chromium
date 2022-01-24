@@ -33,23 +33,13 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
  public:
   using Direction = cc::KeyframeModel::Direction;
   using FillMode = cc::KeyframeModel::FillMode;
+  using TargetPropertyId = cc::KeyframeModel::TargetPropertyId;
 
-  CompositorKeyframeModel(const CompositorAnimationCurve&,
-                          compositor_target_property::Type,
-                          int keyframe_model_id,
-                          int group_id);
-  // The |custom_property_name| is the name of animated custom property.
-  CompositorKeyframeModel(const CompositorAnimationCurve&,
-                          compositor_target_property::Type,
+  CompositorKeyframeModel(const CompositorAnimationCurve& curve,
                           int keyframe_model_id,
                           int group_id,
-                          const AtomicString& custom_property_name);
-  CompositorKeyframeModel(
-      const CompositorAnimationCurve&,
-      compositor_target_property::Type,
-      int keyframe_model_id,
-      int group_id,
-      CompositorPaintWorkletInput::NativePropertyType native_property_type);
+                          cc::KeyframeModel::TargetPropertyId);
+
   CompositorKeyframeModel(const CompositorKeyframeModel&) = delete;
   CompositorKeyframeModel& operator=(const CompositorKeyframeModel&) = delete;
   ~CompositorKeyframeModel();
@@ -97,11 +87,6 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   }
 
  private:
-  CompositorKeyframeModel(const CompositorAnimationCurve& curve,
-                          int keyframe_model_id,
-                          int group_id,
-                          const cc::KeyframeModel::TargetPropertyId& id);
-
   std::unique_ptr<cc::KeyframeModel> keyframe_model_;
 };
 

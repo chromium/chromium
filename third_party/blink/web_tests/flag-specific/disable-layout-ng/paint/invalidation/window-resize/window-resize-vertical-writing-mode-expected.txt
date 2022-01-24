@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [939, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -11,10 +11,9 @@
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [600, 15],
-      "contentsOpaque": true
+      "bounds": [600, 15]
     }
   ],
   "transforms": [
@@ -32,7 +31,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [939, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -42,10 +41,9 @@
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [400, 15],
-      "contentsOpaque": true
+      "bounds": [400, 15]
     }
   ],
   "transforms": [
@@ -63,7 +61,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -76,7 +74,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",

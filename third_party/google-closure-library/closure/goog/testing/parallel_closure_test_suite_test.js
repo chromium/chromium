@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the 'License');
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS-IS' BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.parallelClosureTestSuiteTest');
 goog.setTestOnly('goog.testing.parallelClosureTestSuiteTest');
@@ -30,7 +22,7 @@ const stubs = new PropertyReplacer();
 
 function setTestRunnerGlobals(
     testTimeout, allTests, parallelFrames, parallelTimeout) {
-  const tr = goog.global['G_parallelTestRunner'] = {};
+  const tr = globalThis['G_parallelTestRunner'] = {};
   tr['testTimeout'] = testTimeout;
   tr['allTests'] = allTests;
   tr['parallelFrames'] = parallelFrames;
@@ -39,13 +31,16 @@ function setTestRunnerGlobals(
 
 testSuite({
   tearDown: function() {
-    goog.global['G_parallelTestRunner'] = undefined;
+    globalThis['G_parallelTestRunner'] = undefined;
     mocks.$tearDown();
     stubs.reset();
   },
 
   testProcessAllTestResultsEmptyResults: function() {
     const testResults = [];
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
     const allResults =
         parallelClosureTestSuite.processAllTestResults(testResults);
     assertEquals(0, allResults.totalTests);
@@ -56,6 +51,9 @@ testSuite({
 
   testProcessAllTestResultsNoFailures: function() {
     const testResults = [{'testA': []}, {'testB': []}];
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
     const allResults =
         parallelClosureTestSuite.processAllTestResults(testResults);
     assertEquals(2, allResults.totalTests);
@@ -66,6 +64,9 @@ testSuite({
 
   testProcessAllTestResultsWithFailures: function() {
     let testResults = [{'testA': []}, {'testB': ['testB Failed!']}];
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
     let allResults =
         parallelClosureTestSuite.processAllTestResults(testResults);
     assertEquals(2, allResults.totalTests);
@@ -75,6 +76,9 @@ testSuite({
         {'testA': [], 'testB': ['testB Failed!']}, allResults.allResults);
 
     testResults = [{'testA': ['testA Failed!']}, {'testB': ['testB Failed!']}];
+    /**
+     * @suppress {missingProperties} suppression added to enable type checking
+     */
     allResults = parallelClosureTestSuite.processAllTestResults(testResults);
     assertEquals(2, allResults.totalTests);
     assertEquals(2, allResults.totalFailures);
@@ -85,91 +89,109 @@ testSuite({
         allResults.allResults);
   },
 
-  testSetUpPageTestRunnerInitializedProperly: function() {
-    setTestRunnerGlobals(100, ['foo.html'], 8, 360);
-    const mockRender =
-        mocks.createMethodMock(MultiTestRunner.prototype, 'render');
-    const elementMatcher = new ArgumentMatcher(function(container) {
-      return dom.isElement(container);
-    });
-    const testCaseObj = {promiseTimeout: -1};
-    stubs.set(
-        TestCase, 'getActiveTestCase', function() { return testCaseObj; });
+  testSetUpPageTestRunnerInitializedProperly: /**
+                                                 @suppress {checkTypes}
+                                                 suppression added to enable
+                                                 type checking
+                                               */
+      function() {
+        setTestRunnerGlobals(100, ['foo.html'], 8, 360);
+        const mockRender =
+            mocks.createMethodMock(MultiTestRunner.prototype, 'render');
+        const elementMatcher = new ArgumentMatcher(function(container) {
+          return dom.isElement(container);
+        });
+        const testCaseObj = {promiseTimeout: -1};
+        stubs.set(TestCase, 'getActiveTestCase', function() {
+          return testCaseObj;
+        });
 
-    mockRender(elementMatcher);
+        mockRender(elementMatcher);
 
-    mocks.$replayAll();
+        mocks.$replayAll();
 
-    const testRunner = parallelClosureTestSuite.setUpPage();
-    assertArrayEquals(['foo.html'], testRunner.getAllTests());
-    assertEquals(8, testRunner.getPoolSize());
-    assertEquals(100000, testRunner.getTimeout());
-    assertEquals(360000, testCaseObj.promiseTimeout);
-    mocks.$verifyAll();
-    testRunner.dispose();
-  },
+        const testRunner = parallelClosureTestSuite.setUpPage();
+        assertArrayEquals(['foo.html'], testRunner.getAllTests());
+        assertEquals(8, testRunner.getPoolSize());
+        assertEquals(100000, testRunner.getTimeout());
+        assertEquals(360000, testCaseObj.promiseTimeout);
+        mocks.$verifyAll();
+        testRunner.dispose();
+      },
 
-  testRunAllTestsFailures: function() {
-    setTestRunnerGlobals(100, ['foo.html', 'bar.html'], 8, 360);
-    const mockStart =
-        mocks.createMethodMock(MultiTestRunner.prototype, 'start');
-    const mockFail = mocks.createMethodMock(goog.global, 'fail');
-    const failureMatcher = new ArgumentMatcher(function(failMsg) {
-      return /testA Failed!/.test(failMsg) &&
-          /1 of 2 test\(s\) failed/.test(failMsg);
-    });
-    // Don't want this test case's timeout overwritten, so set a stub for
-    // getActiveTestCase.
-    stubs.set(
-        TestCase, 'getActiveTestCase', function() { return {timeout: 100}; });
+  testRunAllTestsFailures: /**
+                              @suppress {checkTypes} suppression added to
+                              enable type checking
+                            */
+      function() {
+        setTestRunnerGlobals(100, ['foo.html', 'bar.html'], 8, 360);
+        const mockStart =
+            mocks.createMethodMock(MultiTestRunner.prototype, 'start');
+        const mockFail = mocks.createMethodMock(globalThis, 'fail');
+        const failureMatcher = new ArgumentMatcher(function(failMsg) {
+          return /testA Failed!/.test(failMsg) &&
+              /1 of 2 test\(s\) failed/.test(failMsg);
+        });
+        // Don't want this test case's timeout
+        // overwritten, so set a stub for
+        // getActiveTestCase.
+        stubs.set(TestCase, 'getActiveTestCase', function() {
+          return {timeout: 100};
+        });
 
-    mockStart();
-    fail(failureMatcher);
+        mockStart();
+        fail(failureMatcher);
 
-    mocks.$replayAll();
+        mocks.$replayAll();
 
-    const testRunner = parallelClosureTestSuite.setUpPage();
-    const testPromise = parallelClosureTestSuite.testRunAllTests();
-    testRunner.dispatchEvent({
-      'type': MultiTestRunner.TESTS_FINISHED,
-      'allTestResults': [{'testA': ['testA Failed!']}, {'testB': []}]
-    });
+        const testRunner = parallelClosureTestSuite.setUpPage();
+        const testPromise = parallelClosureTestSuite.testRunAllTests();
+        testRunner.dispatchEvent({
+          'type': MultiTestRunner.TESTS_FINISHED,
+          'allTestResults': [{'testA': ['testA Failed!']}, {'testB': []}]
+        });
 
-    return testPromise.then(function() {
-      mocks.$verifyAll();
-      testRunner.dispose();
-    });
-  },
+        return testPromise.then(function() {
+          mocks.$verifyAll();
+          testRunner.dispose();
+        });
+      },
 
-  testRunAllTestsSuccess: function() {
-    setTestRunnerGlobals(100, ['foo.html', 'bar.html'], 8, 360);
-    const mockStart =
-        mocks.createMethodMock(MultiTestRunner.prototype, 'start');
-    const mockFail = mocks.createMethodMock(goog.global, 'fail');
-    const failureMatcher = new ArgumentMatcher(function(failMsg) {
-      return /testA Failed!/.test(failMsg) &&
-          /1 of 2 test\(s\) failed/.test(failMsg);
-    });
-    // Don't want this test case's timeout overwritten, so set a stub for
-    // getActiveTestCase.
-    stubs.set(
-        TestCase, 'getActiveTestCase', function() { return {timeout: 100}; });
+  testRunAllTestsSuccess: /**
+                             @suppress {checkTypes} suppression added to enable
+                             type checking
+                           */
+      function() {
+        setTestRunnerGlobals(100, ['foo.html', 'bar.html'], 8, 360);
+        const mockStart =
+            mocks.createMethodMock(MultiTestRunner.prototype, 'start');
+        const mockFail = mocks.createMethodMock(globalThis, 'fail');
+        const failureMatcher = new ArgumentMatcher(function(failMsg) {
+          return /testA Failed!/.test(failMsg) &&
+              /1 of 2 test\(s\) failed/.test(failMsg);
+        });
+        // Don't want this test case's timeout
+        // overwritten, so set a stub for
+        // getActiveTestCase.
+        stubs.set(TestCase, 'getActiveTestCase', function() {
+          return {timeout: 100};
+        });
 
-    mockStart();
-    fail(mockmatchers.ignoreArgument).$times(0);
+        mockStart();
+        fail(mockmatchers.ignoreArgument).$times(0);
 
-    mocks.$replayAll();
+        mocks.$replayAll();
 
-    const testRunner = parallelClosureTestSuite.setUpPage();
-    const testPromise = parallelClosureTestSuite.testRunAllTests();
-    testRunner.dispatchEvent({
-      'type': MultiTestRunner.TESTS_FINISHED,
-      'allTestResults': [{'testA': []}, {'testB': []}]
-    });
+        const testRunner = parallelClosureTestSuite.setUpPage();
+        const testPromise = parallelClosureTestSuite.testRunAllTests();
+        testRunner.dispatchEvent({
+          'type': MultiTestRunner.TESTS_FINISHED,
+          'allTestResults': [{'testA': []}, {'testB': []}]
+        });
 
-    return testPromise.then(function() {
-      mocks.$verifyAll();
-      testRunner.dispose();
-    });
-  }
+        return testPromise.then(function() {
+          mocks.$verifyAll();
+          testRunner.dispose();
+        });
+      }
 });

@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemBackend {
   // |error_code| correspondingly.
   // This method is usually dispatched by
   // FileSystemContext::CreateFileSystemOperation.
-  virtual FileSystemOperation* CreateFileSystemOperation(
+  virtual std::unique_ptr<FileSystemOperation> CreateFileSystemOperation(
       const FileSystemURL& url,
       FileSystemContext* context,
       base::File::Error* error_code) const = 0;

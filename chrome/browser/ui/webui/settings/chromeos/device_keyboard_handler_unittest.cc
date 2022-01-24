@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "content/public/test/test_web_ui.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -42,6 +41,9 @@ class KeyboardHandlerTest : public testing::Test {
     // Make sure that we start out without any keyboards reported.
     device_data_manager_test_api_.SetKeyboardDevices({});
   }
+
+  KeyboardHandlerTest(const KeyboardHandlerTest&) = delete;
+  KeyboardHandlerTest& operator=(const KeyboardHandlerTest&) = delete;
 
  protected:
   // Updates out-params from the last message sent to WebUI about a change to
@@ -163,9 +165,6 @@ class KeyboardHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   TestKeyboardHandler handler_;
   KeyboardHandler::TestAPI handler_test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardHandlerTest);
 };
 
 TEST_F(KeyboardHandlerTest, DefaultKeys) {

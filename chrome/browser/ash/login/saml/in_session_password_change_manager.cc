@@ -110,13 +110,13 @@ const base::TaskTraits kRecheckTaskTraits = {
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 // A time delta of length one hour.
-const base::TimeDelta kOneHour = base::TimeDelta::FromHours(1);
+const base::TimeDelta kOneHour = base::Hours(1);
 
 // A time delta of length one day.
-const base::TimeDelta kOneDay = base::TimeDelta::FromDays(1);
+const base::TimeDelta kOneDay = base::Days(1);
 
 // A time delta with length of a half day.
-const base::TimeDelta kHalfDay = base::TimeDelta::FromHours(12);
+const base::TimeDelta kHalfDay = base::Hours(12);
 
 // A time delta with length zero.
 const base::TimeDelta kZeroTime = base::TimeDelta();
@@ -275,7 +275,7 @@ void InSessionPasswordChangeManager::MaybeShowExpiryNotification() {
     // We have not yet reached the advance warning threshold. Check again
     // once we have arrived at expiry_time minus advance_warning_days...
     base::TimeDelta recheck_delay =
-        time_until_expiry - base::TimeDelta::FromDays(advance_warning_days);
+        time_until_expiry - base::Days(advance_warning_days);
     // But, wait an extra hour so that when this code is next run, it is clear
     // we are now inside advance_warning_days (and not right on the boundary).
     recheck_delay += kOneHour;

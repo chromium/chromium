@@ -51,6 +51,9 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
    public:
     Delegate();
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Called when the stream is ready for writing and reading. This is called
     // at most once for the lifetime of a stream.
     // The delegate may call BidirectionalStream::ReadData to start reading,
@@ -95,9 +98,6 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
 
    protected:
     virtual ~Delegate();
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Constructs a BidirectionalStream. |request_info| contains information about
@@ -122,6 +122,9 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
       bool send_request_headers_automatically,
       Delegate* delegate,
       std::unique_ptr<base::OneShotTimer> timer);
+
+  BidirectionalStream(const BidirectionalStream&) = delete;
+  BidirectionalStream& operator=(const BidirectionalStream&) = delete;
 
   // Cancels |stream_request_| or |stream_impl_| if applicable.
   // |this| should not be destroyed during Delegate::OnHeadersSent or
@@ -260,8 +263,6 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   LoadTimingInfo load_timing_info_;
 
   base::WeakPtrFactory<BidirectionalStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BidirectionalStream);
 };
 
 }  // namespace net

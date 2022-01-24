@@ -23,8 +23,8 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
     uint32_t option,
     const GPUInfo* gpu_info,
     uint32_t heap_memory_limit) {
-  auto device_queue = std::make_unique<VulkanDeviceQueue>(
-      vulkan_implementation->GetVulkanInstance()->vk_instance());
+  auto* instance = vulkan_implementation->GetVulkanInstance();
+  auto device_queue = std::make_unique<VulkanDeviceQueue>(instance);
   auto callback = base::BindRepeating(
       &VulkanImplementation::GetPhysicalDevicePresentationSupport,
       base::Unretained(vulkan_implementation));
@@ -32,14 +32,21 @@ std::unique_ptr<VulkanDeviceQueue> CreateVulkanDeviceQueue(
       vulkan_implementation->GetRequiredDeviceExtensions();
   std::vector<const char*> optional_extensions =
       vulkan_implementation->GetOptionalDeviceExtensions();
-  if (!device_queue->Initialize(
-          option, gpu_info,
-          vulkan_implementation->GetVulkanInstance()->vulkan_info(),
-          std::move(required_extensions), std::move(optional_extensions),
-          vulkan_implementation->allow_protected_memory(), callback,
-          heap_memory_limit)) {
-    device_queue->Destroy();
-    return nullptr;
+
+  if (instance->is_from_angle()) {
+    if (!device_queue->InitializeFromANGLE()) {
+      device_queue->Destroy();
+      return nullptr;
+    }
+  } else {
+    if (!device_queue->Initialize(
+            option, gpu_info, std::move(required_extensions),
+            std::move(optional_extensions),
+            vulkan_implementation->allow_protected_memory(), callback,
+            heap_memory_limit)) {
+      device_queue->Destroy();
+      return nullptr;
+    }
   }
 
   return device_queue;

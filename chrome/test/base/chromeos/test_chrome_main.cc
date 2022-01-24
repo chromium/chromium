@@ -35,6 +35,6 @@ int ChromeMain(int argc, const char** argv) {
   // run the sampling profiler for test ash chrome.
   MainThreadStackSamplingProfiler scoped_sampling_profiler;
 
-  test::TestChromeBase test_chrome_base(params);
+  test::TestChromeBase test_chrome_base(std::move(params));
   return test_chrome_base.Start();
 }

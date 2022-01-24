@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace dbus {
 class Bus;
@@ -27,6 +26,7 @@ class ChunneldClient;
 class CrosDisksClient;
 class DebugDaemonClient;
 class EasyUnlockClient;
+class FwupdClient;
 class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   // Creates real implementations if |use_real_clients| is true and fakes
   // otherwise. Fakes are used when running on Linux desktop and in tests.
   explicit DBusClientsBrowser(bool use_real_clients);
+
+  DBusClientsBrowser(const DBusClientsBrowser&) = delete;
+  DBusClientsBrowser& operator=(const DBusClientsBrowser&) = delete;
+
   ~DBusClientsBrowser();
 
   void Initialize(dbus::Bus* system_bus);
@@ -66,6 +70,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<CrosDisksClient> cros_disks_client_;
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
   std::unique_ptr<EasyUnlockClient> easy_unlock_client_;
+  std::unique_ptr<FwupdClient> fwupd_client_;
   std::unique_ptr<GnubbyClient> gnubby_client_;
   std::unique_ptr<ImageBurnerClient> image_burner_client_;
   std::unique_ptr<ImageLoaderClient> image_loader_client_;
@@ -76,8 +81,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusClientsBrowser {
   std::unique_ptr<UpdateEngineClient> update_engine_client_;
   std::unique_ptr<VirtualFileProviderClient> virtual_file_provider_client_;
   std::unique_ptr<VmPluginDispatcherClient> vm_plugin_dispatcher_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DBusClientsBrowser);
 };
 
 }  // namespace chromeos

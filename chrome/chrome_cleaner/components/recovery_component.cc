@@ -191,7 +191,7 @@ void RecoveryComponent::Run() {
   ran_ = true;
   // We must make sure that the crx expansion is complete.
   if (!done_expanding_crx_.TimedWait(
-          base::TimeDelta::FromMinutes(kDownloadCrxWaitTimeInMin))) {
+          base::Minutes(kDownloadCrxWaitTimeInMin))) {
     LOG(WARNING) << "Timed out waiting for crx expansion completion.";
     return;
   }
@@ -217,7 +217,7 @@ void RecoveryComponent::Run() {
 
   int exit_code = -1;
   bool success = recovery_process.WaitForExitWithTimeout(
-      base::TimeDelta::FromMinutes(kExecutionCrxWaitTimeInMin), &exit_code);
+      base::Minutes(kExecutionCrxWaitTimeInMin), &exit_code);
   LOG_IF(INFO, success) << "ChromeRecovery returned code: " << exit_code;
   PLOG_IF(ERROR, !success) << "ChromeRecovery failed to start in time.";
 }

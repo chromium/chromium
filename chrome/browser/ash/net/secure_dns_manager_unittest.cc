@@ -19,6 +19,7 @@
 
 #include "base/logging.h"
 
+namespace ash {
 namespace {
 
 constexpr const char kGoogleDns[] = "https://dns.google/dns-query{?dns}";
@@ -56,14 +57,12 @@ std::map<std::string, std::string> GetDOHProviders() {
   return props;
 }
 
-}  // namespace
-
-namespace net {
-namespace {
-
 class SecureDnsManagerTest : public testing::Test {
  public:
   SecureDnsManagerTest() = default;
+
+  SecureDnsManagerTest(const SecureDnsManagerTest&) = delete;
+  SecureDnsManagerTest& operator=(const SecureDnsManagerTest&) = delete;
 
   void SetUp() override {
     pref_service_.registry()->RegisterStringPref(prefs::kDnsOverHttpsMode,
@@ -78,8 +77,6 @@ class SecureDnsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsManagerTest);
 };
 
 TEST_F(SecureDnsManagerTest, SetModeOff) {
@@ -155,4 +152,4 @@ TEST_F(SecureDnsManagerTest, SetModeAutomaticWithTemplates) {
 }
 
 }  // namespace
-}  // namespace net
+}  // namespace ash

@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_WEBAUTHN_DIALOG_CONTROLLER_H_
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }

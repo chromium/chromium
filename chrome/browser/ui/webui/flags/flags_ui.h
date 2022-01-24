@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,6 +22,10 @@ class WebUIDataSource;
 class FlagsUI : public content::WebUIController {
  public:
   explicit FlagsUI(content::WebUI* web_ui);
+
+  FlagsUI(const FlagsUI&) = delete;
+  FlagsUI& operator=(const FlagsUI&) = delete;
+
   ~FlagsUI() override;
 
   static void AddStrings(content::WebUIDataSource* source);
@@ -31,13 +34,15 @@ class FlagsUI : public content::WebUIController {
 
  private:
   base::WeakPtrFactory<FlagsUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsUI);
 };
 
 class FlagsDeprecatedUI : public content::WebUIController {
  public:
   explicit FlagsDeprecatedUI(content::WebUI* web_ui);
+
+  FlagsDeprecatedUI(const FlagsDeprecatedUI&) = delete;
+  FlagsDeprecatedUI& operator=(const FlagsDeprecatedUI&) = delete;
+
   ~FlagsDeprecatedUI() override;
 
   static void AddStrings(content::WebUIDataSource* source);
@@ -45,7 +50,5 @@ class FlagsDeprecatedUI : public content::WebUIController {
 
  private:
   base::WeakPtrFactory<FlagsDeprecatedUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsDeprecatedUI);
 };
 #endif  // CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_

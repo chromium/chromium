@@ -8,15 +8,16 @@
 #include <string>
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/hash/hash.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -85,9 +86,15 @@ scoped_refptr<media::VideoFrame> CopyFrame(
     }
   } else {
     DCHECK(frame->IsMappable());
-    DCHECK(frame->format() == media::PIXEL_FORMAT_I420A ||
-           frame->format() == media::PIXEL_FORMAT_I420 ||
-           frame->format() == media::PIXEL_FORMAT_NV12);
+    if (frame->format() != media::PIXEL_FORMAT_I420A &&
+        frame->format() != media::PIXEL_FORMAT_I420 &&
+        frame->format() != media::PIXEL_FORMAT_NV12 &&
+        frame->format() != media::PIXEL_FORMAT_ARGB) {
+      DLOG(WARNING) << frame->format() << " is not supported.";
+      return media::VideoFrame::CreateColorFrame(
+          frame->visible_rect().size(), 0u, 0x80, 0x80, frame->timestamp());
+    }
+
     const gfx::Size& coded_size = frame->coded_size();
     new_frame = media::VideoFrame::CreateFrame(
         frame->format(), coded_size, frame->visible_rect(),
@@ -106,6 +113,12 @@ scoped_refptr<media::VideoFrame> CopyFrame(
                        new_frame->stride(media::VideoFrame::kYPlane),
                        new_frame->data(media::VideoFrame::kUVPlane),
                        new_frame->stride(media::VideoFrame::kUVPlane),
+                       coded_size.width(), coded_size.height());
+    } else if (frame->format() == media::PIXEL_FORMAT_ARGB) {
+      libyuv::ARGBCopy(frame->data(media::VideoFrame::kARGBPlane),
+                       frame->stride(media::VideoFrame::kARGBPlane),
+                       new_frame->data(media::VideoFrame::kARGBPlane),
+                       new_frame->stride(media::VideoFrame::kARGBPlane),
                        coded_size.width(), coded_size.height());
     } else {
       libyuv::I420Copy(frame->data(media::VideoFrame::kYPlane),
@@ -162,7 +175,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       player_(player),
       video_frame_provider_client_(nullptr),
       current_frame_rendered_(false),
-      last_render_length_(base::TimeDelta::FromSecondsD(1.0 / 60.0)),
+      last_render_length_(base::Seconds(1.0 / 60.0)),
       total_frame_count_(0),
       dropped_frame_count_(0),
       stopped_(true),
@@ -708,10 +721,10 @@ void WebMediaPlayerMSCompositor::CheckForFrameChanges(
     PostCrossThreadTask(
         *main_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&WebMediaPlayerMS::TriggerResize, player_));
+    PostCrossThreadTask(
+        *main_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&WebMediaPlayerMS::ResetCanvasCache, player_));
   }
-  PostCrossThreadTask(
-      *main_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&WebMediaPlayerMS::ResetCanvasCache, player_));
 }
 
 void WebMediaPlayerMSCompositor::StartRenderingInternal() {
@@ -811,6 +824,9 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->average_frame_duration = last_preferred_render_interval_;
     frame_metadata->rendering_interval = last_render_length_;
   }
+
+  if (base::FeatureList::IsEnabled(media::kKeepRvfcFrameAlive))
+    frame_metadata->frame = last_frame;
 
   frame_metadata->width = last_frame->visible_rect().width();
   frame_metadata->height = last_frame->visible_rect().height();

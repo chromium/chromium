@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -41,6 +40,9 @@ class PasswordsSyncPerfTest : public SyncTest {
  public:
   PasswordsSyncPerfTest() : SyncTest(TWO_CLIENT), password_number_(0) {}
 
+  PasswordsSyncPerfTest(const PasswordsSyncPerfTest&) = delete;
+  PasswordsSyncPerfTest& operator=(const PasswordsSyncPerfTest&) = delete;
+
   // Adds |num_logins| new unique passwords to |profile|.
   void AddLogins(int profile, int num_logins);
 
@@ -58,7 +60,6 @@ class PasswordsSyncPerfTest : public SyncTest {
   std::string NextPassword();
 
   int password_number_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordsSyncPerfTest);
 };
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {

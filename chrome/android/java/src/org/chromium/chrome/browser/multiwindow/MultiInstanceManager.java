@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -98,6 +99,7 @@ public class MultiInstanceManager
      *         associated activity.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the
      *         associated activity.
+     * @param modalDialogManagerSupplier A supplier for the {@link ModalDialogManager}.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
      *         associated activity.
      * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
@@ -106,13 +108,14 @@ public class MultiInstanceManager
             ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             return null;
-        } else if (MultiWindowUtils.instanceSwitcherEnabled()) {
+        } else if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,
-                    menuOrKeyboardActionController);
+                    modalDialogManagerSupplier, menuOrKeyboardActionController);
         } else {
             return new MultiInstanceManager(activity, tabModelOrchestratorSupplier,
                     multiWindowModeStateDispatcher, activityLifecycleDispatcher,
@@ -368,7 +371,7 @@ public class MultiInstanceManager
             if (currentTab != null) moveTabToOtherWindow(currentTab);
             return true;
         } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
-            openNewWindow();
+            openNewWindow("MobileMenuNewWindow");
             return true;
         }
 
@@ -475,7 +478,7 @@ public class MultiInstanceManager
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
-    protected void openNewWindow() {
+    protected void openNewWindow(String umaAction) {
         assert mMultiWindowModeStateDispatcher.canEnterMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode();
@@ -488,7 +491,7 @@ public class MultiInstanceManager
         onMultiInstanceModeStarted();
         mActivity.startActivity(
                 intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
-        RecordUserAction.record("MobileMenuNewWindow");
+        RecordUserAction.record(umaAction);
     }
 
     /**
@@ -503,8 +506,10 @@ public class MultiInstanceManager
      * Assigned an ID for the current activity instance.
      * @param windowId Instance ID explicitly given for assignment.
      * @param taskId Task ID of the activity.
+     * @param preferNew Boolean indicating a fresh new instance is preferred
+     *        over the one that will load previous tab files from disk.
      */
-    public int allocInstanceId(int windowId, int taskId) {
+    public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
         return 0; // Use a default index 0.
     }
 

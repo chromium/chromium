@@ -44,6 +44,11 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
       scoped_refptr<TokenValidatorFactory> token_validator_factory);
 
   Me2MeHostAuthenticatorFactory();
+
+  Me2MeHostAuthenticatorFactory(const Me2MeHostAuthenticatorFactory&) = delete;
+  Me2MeHostAuthenticatorFactory& operator=(
+      const Me2MeHostAuthenticatorFactory&) = delete;
+
   ~Me2MeHostAuthenticatorFactory() override;
 
   // AuthenticatorFactory interface.
@@ -66,8 +71,6 @@ class Me2MeHostAuthenticatorFactory : public AuthenticatorFactory {
 
   // Used only for pairing host authenticators.
   scoped_refptr<PairingRegistry> pairing_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(Me2MeHostAuthenticatorFactory);
 };
 
 }  // namespace protocol

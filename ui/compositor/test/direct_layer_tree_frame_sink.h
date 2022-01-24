@@ -6,7 +6,7 @@
 #define UI_COMPOSITOR_TEST_DIRECT_LAYER_TREE_FRAME_SINK_H_
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"

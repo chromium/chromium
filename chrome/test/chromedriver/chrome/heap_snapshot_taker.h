@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -24,6 +23,10 @@ class Status;
 class HeapSnapshotTaker : public DevToolsEventListener {
  public:
   explicit HeapSnapshotTaker(DevToolsClient* client);
+
+  HeapSnapshotTaker(const HeapSnapshotTaker&) = delete;
+  HeapSnapshotTaker& operator=(const HeapSnapshotTaker&) = delete;
+
   ~HeapSnapshotTaker() override;
 
   Status TakeSnapshot(std::unique_ptr<base::Value>* snapshot);
@@ -38,8 +41,6 @@ class HeapSnapshotTaker : public DevToolsEventListener {
 
   DevToolsClient* client_;
   std::string snapshot_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeapSnapshotTaker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_HEAP_SNAPSHOT_TAKER_H_

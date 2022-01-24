@@ -59,14 +59,16 @@ class SurfaceDelegate {
   // Called when surface was requested to start resize.
   virtual void OnSetServerStartResize() = 0;
 
-  // Called to show the snap preview to the right or left, or to hide it.
-  virtual void ShowSnapPreviewToLeft() = 0;
-  virtual void ShowSnapPreviewToRight() = 0;
+  // Called to show the snap preview to the primary or secondary position, or
+  // to hide it.
+  virtual void ShowSnapPreviewToPrimary() = 0;
+  virtual void ShowSnapPreviewToSecondary() = 0;
   virtual void HideSnapPreview() = 0;
 
-  // Called when the client was snapped to right or left, and reset.
-  virtual void SetSnappedToLeft() = 0;
-  virtual void SetSnappedToRight() = 0;
+  // Called when the client was snapped to primary or secondary position, and
+  // reset.
+  virtual void SetSnappedToPrimary() = 0;
+  virtual void SetSnappedToSecondary() = 0;
   virtual void UnsetSnap() = 0;
 
   // Whether the current client window can go back, as per its navigation list.
@@ -79,6 +81,25 @@ class SurfaceDelegate {
 
   // Called when surface was requested to maintain an aspect ratio.
   virtual void SetAspectRatio(const gfx::SizeF& aspect_ratio) = 0;
+
+  // Called when surface was requested to move the window to a desk at
+  // |desk_index|.
+  virtual void MoveToDesk(int desk_index) = 0;
+
+  // Called when surface was requested to be visible on all workspaces.
+  virtual void SetVisibleOnAllWorkspaces() = 0;
+
+  // Called to set the initial workspace to restore a window to the
+  // corresponding desk.
+  virtual void SetInitialWorkspace(const char* initial_workspace) = 0;
+
+  // Pins/locks a window to the screen so that the user cannot do anything
+  // else before the mode is released. If trusted is set, it is an invocation
+  // from a trusted app like a school test mode app.
+  virtual void Pin(bool trusted) = 0;
+
+  // Releases the pinned mode and allows the user to do other things again.
+  virtual void Unpin() = 0;
 
  protected:
   virtual ~SurfaceDelegate() {}

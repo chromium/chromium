@@ -1,16 +1,8 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Python style iteration utilities.
@@ -53,6 +45,9 @@ goog.iter.StopIteration = ('StopIteration' in goog.global) ?
  * iterator or in case you are only targeting JavaScript 1.7 for in loops.
  * @constructor
  * @template VALUE
+ * @deprecated Use objects implementing JavaScript iterable protocol introduced
+ *     in ES6.
+ *     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
  */
 goog.iter.Iterator = function() {};
 
@@ -60,9 +55,9 @@ goog.iter.Iterator = function() {};
 /**
  * Returns the next value of the iteration.  This will throw the object
  * {@see goog.iter.StopIteration} when the iteration passes the end.
- * @return {VALUE} Any object or value.
+ * @return {VALUE} Any object or value
  */
-goog.iter.Iterator.prototype.next = function() {
+goog.iter.Iterator.prototype.nextValueOrThrow = function() {
   throw goog.iter.StopIteration;
 };
 
@@ -78,6 +73,7 @@ goog.iter.Iterator.prototype.next = function() {
  * @return {!goog.iter.Iterator<VALUE>} The object itself.
  */
 goog.iter.Iterator.prototype.__iterator__ = function(opt_keys) {
+  'use strict';
   return this;
 };
 
@@ -94,6 +90,7 @@ goog.iter.Iterator.prototype.__iterator__ = function(opt_keys) {
  * @template VALUE
  */
 goog.iter.toIterator = function(iterable) {
+  'use strict';
   if (iterable instanceof goog.iter.Iterator) {
     return iterable;
   }
@@ -105,7 +102,8 @@ goog.iter.toIterator = function(iterable) {
     var like = /** @type {!IArrayLike<number|string>} */ (iterable);
     var i = 0;
     var newIter = new goog.iter.Iterator;
-    newIter.next = function() {
+    newIter.nextValueOrThrow = function() {
+      'use strict';
       while (true) {
         if (i >= like.length) {
           throw goog.iter.StopIteration;
@@ -118,6 +116,7 @@ goog.iter.toIterator = function(iterable) {
         return like[i++];
       }
     };
+
     return newIter;
   }
 
@@ -146,8 +145,8 @@ goog.iter.toIterator = function(iterable) {
  * @template THIS, VALUE
  */
 goog.iter.forEach = function(iterable, f, opt_obj) {
+  'use strict';
   if (goog.isArrayLike(iterable)) {
-
     try {
       // NOTES: this passes the index number to the second parameter
       // of the callback contrary to the documentation above.
@@ -163,7 +162,7 @@ goog.iter.forEach = function(iterable, f, opt_obj) {
 
     try {
       while (true) {
-        f.call(opt_obj, iterable.next(), undefined, iterable);
+        f.call(opt_obj, iterable.nextValueOrThrow(), undefined, iterable);
       }
     } catch (ex) {
       if (ex !== goog.iter.StopIteration) {
@@ -193,16 +192,19 @@ goog.iter.forEach = function(iterable, f, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.filter = function(iterable, f, opt_obj) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var newIter = new goog.iter.Iterator;
-  newIter.next = function() {
+  newIter.nextValueOrThrow = function() {
+    'use strict';
     while (true) {
-      var val = iterator.next();
+      var val = iterator.nextValueOrThrow();
       if (f.call(opt_obj, val, undefined, iterator)) {
         return val;
       }
     }
   };
+
   return newIter;
 };
 
@@ -226,6 +228,7 @@ goog.iter.filter = function(iterable, f, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.filterFalse = function(iterable, f, opt_obj) {
+  'use strict';
   return goog.iter.filter(iterable, goog.functions.not(f), opt_obj);
 };
 
@@ -249,6 +252,7 @@ goog.iter.filterFalse = function(iterable, f, opt_obj) {
  *     in the range.
  */
 goog.iter.range = function(startOrStop, opt_stop, opt_step) {
+  'use strict';
   var start = 0;
   var stop = startOrStop;
   var step = opt_step || 1;
@@ -261,7 +265,8 @@ goog.iter.range = function(startOrStop, opt_stop, opt_step) {
   }
 
   var newIter = new goog.iter.Iterator;
-  newIter.next = function() {
+  newIter.nextValueOrThrow = function() {
+    'use strict';
     if (step > 0 && start >= stop || step < 0 && start <= stop) {
       throw goog.iter.StopIteration;
     }
@@ -269,6 +274,7 @@ goog.iter.range = function(startOrStop, opt_stop, opt_step) {
     start += step;
     return rv;
   };
+
   return newIter;
 };
 
@@ -282,6 +288,7 @@ goog.iter.range = function(startOrStop, opt_stop, opt_step) {
  * @template VALUE
  */
 goog.iter.join = function(iterable, deliminator) {
+  'use strict';
   return goog.iter.toArray(iterable).join(deliminator);
 };
 
@@ -304,12 +311,15 @@ goog.iter.join = function(iterable, deliminator) {
  * @template THIS, VALUE, RESULT
  */
 goog.iter.map = function(iterable, f, opt_obj) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var newIter = new goog.iter.Iterator;
-  newIter.next = function() {
-    var val = iterator.next();
+  newIter.nextValueOrThrow = function() {
+    'use strict';
+    var val = iterator.nextValueOrThrow();
     return f.call(opt_obj, val, undefined, iterator);
   };
+
   return newIter;
 };
 
@@ -333,9 +343,12 @@ goog.iter.map = function(iterable, f, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.reduce = function(iterable, f, val, opt_obj) {
+  'use strict';
   var rval = val;
-  goog.iter.forEach(
-      iterable, function(val) { rval = f.call(opt_obj, rval, val); });
+  goog.iter.forEach(iterable, function(val) {
+    'use strict';
+    rval = f.call(opt_obj, rval, val);
+  });
   return rval;
 };
 
@@ -357,11 +370,12 @@ goog.iter.reduce = function(iterable, f, val, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.some = function(iterable, f, opt_obj) {
+  'use strict';
   iterable = goog.iter.toIterator(iterable);
 
   try {
     while (true) {
-      if (f.call(opt_obj, iterable.next(), undefined, iterable)) {
+      if (f.call(opt_obj, iterable.nextValueOrThrow(), undefined, iterable)) {
         return true;
       }
     }
@@ -391,11 +405,12 @@ goog.iter.some = function(iterable, f, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.every = function(iterable, f, opt_obj) {
+  'use strict';
   iterable = goog.iter.toIterator(iterable);
 
   try {
     while (true) {
-      if (!f.call(opt_obj, iterable.next(), undefined, iterable)) {
+      if (!f.call(opt_obj, iterable.nextValueOrThrow(), undefined, iterable)) {
         return false;
       }
     }
@@ -418,6 +433,7 @@ goog.iter.every = function(iterable, f, opt_obj) {
  * @template VALUE
  */
 goog.iter.chain = function(var_args) {
+  'use strict';
   return goog.iter.chainFromIterable(arguments);
 };
 
@@ -434,18 +450,20 @@ goog.iter.chain = function(var_args) {
  * @template VALUE
  */
 goog.iter.chainFromIterable = function(iterable) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var iter = new goog.iter.Iterator();
   var current = null;
 
-  iter.next = function() {
+  iter.nextValueOrThrow = function() {
+    'use strict';
     while (true) {
       if (current == null) {
-        var it = iterator.next();
+        var it = iterator.nextValueOrThrow();
         current = goog.iter.toIterator(it);
       }
       try {
-        return current.next();
+        return current.nextValueOrThrow();
       } catch (ex) {
         if (ex !== goog.iter.StopIteration) {
           throw ex;
@@ -454,6 +472,7 @@ goog.iter.chainFromIterable = function(iterable) {
       }
     }
   };
+
 
   return iter;
 };
@@ -475,12 +494,14 @@ goog.iter.chainFromIterable = function(iterable) {
  * @template THIS, VALUE
  */
 goog.iter.dropWhile = function(iterable, f, opt_obj) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var newIter = new goog.iter.Iterator;
   var dropping = true;
-  newIter.next = function() {
+  newIter.nextValueOrThrow = function() {
+    'use strict';
     while (true) {
-      var val = iterator.next();
+      var val = iterator.nextValueOrThrow();
       if (dropping && f.call(opt_obj, val, undefined, iterator)) {
         continue;
       } else {
@@ -489,6 +510,7 @@ goog.iter.dropWhile = function(iterable, f, opt_obj) {
       return val;
     }
   };
+
   return newIter;
 };
 
@@ -508,15 +530,18 @@ goog.iter.dropWhile = function(iterable, f, opt_obj) {
  * @template THIS, VALUE
  */
 goog.iter.takeWhile = function(iterable, f, opt_obj) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var iter = new goog.iter.Iterator();
-  iter.next = function() {
-    var val = iterator.next();
+  iter.nextValueOrThrow = function() {
+    'use strict';
+    var val = iterator.nextValueOrThrow();
     if (f.call(opt_obj, val, undefined, iterator)) {
       return val;
     }
     throw goog.iter.StopIteration;
   };
+
   return iter;
 };
 
@@ -529,13 +554,17 @@ goog.iter.takeWhile = function(iterable, f, opt_obj) {
  * @template VALUE
  */
 goog.iter.toArray = function(iterable) {
+  'use strict';
   // Fast path for array-like.
   if (goog.isArrayLike(iterable)) {
     return goog.array.toArray(/** @type {!IArrayLike<?>} */ (iterable));
   }
   iterable = goog.iter.toIterator(iterable);
   var array = [];
-  goog.iter.forEach(iterable, function(val) { array.push(val); });
+  goog.iter.forEach(iterable, function(val) {
+    'use strict';
+    array.push(val);
+  });
   return array;
 };
 
@@ -557,11 +586,14 @@ goog.iter.toArray = function(iterable) {
  * @template VALUE
  */
 goog.iter.equals = function(iterable1, iterable2, opt_equalsFn) {
+  'use strict';
   var fillValue = {};
   var pairs = goog.iter.zipLongest(fillValue, iterable1, iterable2);
   var equalsFn = opt_equalsFn || goog.array.defaultCompareEquality;
-  return goog.iter.every(
-      pairs, function(pair) { return equalsFn(pair[0], pair[1]); });
+  return goog.iter.every(pairs, function(pair) {
+    'use strict';
+    return equalsFn(pair[0], pair[1]);
+  });
 };
 
 
@@ -576,8 +608,9 @@ goog.iter.equals = function(iterable1, iterable2, opt_equalsFn) {
  * @template VALUE
  */
 goog.iter.nextOrValue = function(iterable, defaultValue) {
+  'use strict';
   try {
-    return goog.iter.toIterator(iterable).next();
+    return goog.iter.toIterator(iterable).nextValueOrThrow();
   } catch (e) {
     if (e != goog.iter.StopIteration) {
       throw e;
@@ -599,8 +632,11 @@ goog.iter.nextOrValue = function(iterable, defaultValue) {
  * @template VALUE
  */
 goog.iter.product = function(var_args) {
-  var someArrayEmpty =
-      goog.array.some(arguments, function(arr) { return !arr.length; });
+  'use strict';
+  var someArrayEmpty = Array.prototype.some.call(arguments, function(arr) {
+    'use strict';
+    return !arr.length;
+  });
 
   // An empty set in a cartesian product gives an empty set.
   if (someArrayEmpty || !arguments.length) {
@@ -614,10 +650,11 @@ goog.iter.product = function(var_args) {
   /** @type {?Array<number>} */
   var indicies = goog.array.repeat(0, arrays.length);
 
-  iter.next = function() {
-
+  iter.nextValueOrThrow = function() {
+    'use strict';
     if (indicies) {
       var retVal = goog.array.map(indicies, function(valueIndex, arrayIndex) {
+        'use strict';
         return arrays[arrayIndex][valueIndex];
       });
 
@@ -648,6 +685,7 @@ goog.iter.product = function(var_args) {
     throw goog.iter.StopIteration;
   };
 
+
   return iter;
 };
 
@@ -663,6 +701,7 @@ goog.iter.product = function(var_args) {
  * @template VALUE
  */
 goog.iter.cycle = function(iterable) {
+  'use strict';
   var baseIterator = goog.iter.toIterator(iterable);
 
   // We maintain a cache to store the iterable elements as we iterate
@@ -676,14 +715,15 @@ goog.iter.cycle = function(iterable) {
   // This flag is set after the iterable is iterated over once
   var useCache = false;
 
-  iter.next = function() {
+  iter.nextValueOrThrow = function() {
+    'use strict';
     var returnElement = null;
 
     // Pull elements off the original iterator if not using cache
     if (!useCache) {
       try {
         // Return the element from the iterable
-        returnElement = baseIterator.next();
+        returnElement = baseIterator.nextValueOrThrow();
         cache.push(returnElement);
         return returnElement;
       } catch (e) {
@@ -706,6 +746,7 @@ goog.iter.cycle = function(iterable) {
     return returnElement;
   };
 
+
   return iter;
 };
 
@@ -720,15 +761,18 @@ goog.iter.cycle = function(iterable) {
  *     in the series.
  */
 goog.iter.count = function(opt_start, opt_step) {
+  'use strict';
   var counter = opt_start || 0;
   var step = (opt_step !== undefined) ? opt_step : 1;
   var iter = new goog.iter.Iterator();
 
-  iter.next = function() {
+  iter.nextValueOrThrow = function() {
+    'use strict';
     var returnValue = counter;
     counter += step;
     return returnValue;
   };
+
 
   return iter;
 };
@@ -742,9 +786,11 @@ goog.iter.count = function(opt_start, opt_step) {
  * @template VALUE
  */
 goog.iter.repeat = function(value) {
+  'use strict';
   var iter = new goog.iter.Iterator();
 
-  iter.next = goog.functions.constant(value);
+  iter.nextValueOrThrow = goog.functions.constant(value);
+
 
   return iter;
 };
@@ -761,14 +807,17 @@ goog.iter.repeat = function(value) {
  *     numbers in the series.
  */
 goog.iter.accumulate = function(iterable) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var total = 0;
   var iter = new goog.iter.Iterator();
 
-  iter.next = function() {
-    total += iterator.next();
+  iter.nextValueOrThrow = function() {
+    'use strict';
+    total += iterator.nextValueOrThrow();
     return total;
   };
+
 
   return iter;
 };
@@ -778,7 +827,7 @@ goog.iter.accumulate = function(iterable) {
  * Creates an iterator that returns arrays containing the ith elements from the
  * provided iterables. The returned arrays will be the same size as the number
  * of iterables given in `var_args`. Once the shortest iterable is
- * exhausted, subsequent calls to `next()` will throw
+ * exhausted, subsequent calls to `nextValueOrThrow()` will throw
  * `goog.iter.StopIteration`.
  * @see http://docs.python.org/2/library/itertools.html#itertools.izip
  * @param {...!goog.iter.Iterator<VALUE>|!goog.iter.Iterable} var_args Any
@@ -788,13 +837,18 @@ goog.iter.accumulate = function(iterable) {
  * @template VALUE
  */
 goog.iter.zip = function(var_args) {
+  'use strict';
   var args = arguments;
   var iter = new goog.iter.Iterator();
 
   if (args.length > 0) {
     var iterators = goog.array.map(args, goog.iter.toIterator);
-    iter.next = function() {
-      var arr = goog.array.map(iterators, function(it) { return it.next(); });
+    iter.nextValueOrThrow = function() {
+      'use strict';
+      var arr = goog.array.map(iterators, function(it) {
+        'use strict';
+        return it.nextValueOrThrow();
+      });
       return arr;
     };
   }
@@ -808,7 +862,7 @@ goog.iter.zip = function(var_args) {
  * provided iterables. The returned arrays will be the same size as the number
  * of iterables given in `var_args`. Shorter iterables will be extended
  * with `fillValue`. Once the longest iterable is exhausted, subsequent
- * calls to `next()` will throw `goog.iter.StopIteration`.
+ * calls to `nextValueOrThrow()` will throw `goog.iter.StopIteration`.
  * @see http://docs.python.org/2/library/itertools.html#itertools.izip_longest
  * @param {VALUE} fillValue The object or value used to fill shorter iterables.
  * @param {...!goog.iter.Iterator<VALUE>|!goog.iter.Iterable} var_args Any
@@ -818,18 +872,21 @@ goog.iter.zip = function(var_args) {
  * @template VALUE
  */
 goog.iter.zipLongest = function(fillValue, var_args) {
-  var args = goog.array.slice(arguments, 1);
+  'use strict';
+  var args = Array.prototype.slice.call(arguments, 1);
   var iter = new goog.iter.Iterator();
 
   if (args.length > 0) {
     var iterators = goog.array.map(args, goog.iter.toIterator);
 
-    iter.next = function() {
+    iter.nextValueOrThrow = function() {
+      'use strict';
       var iteratorsHaveValues = false;  // false when all iterators are empty.
       var arr = goog.array.map(iterators, function(it) {
+        'use strict';
         var returnValue;
         try {
-          returnValue = it.next();
+          returnValue = it.nextValueOrThrow();
           // Iterator had a value, so we've not exhausted the iterators.
           // Set flag accordingly.
           iteratorsHaveValues = true;
@@ -855,11 +912,11 @@ goog.iter.zipLongest = function(fillValue, var_args) {
 
 /**
  * Creates an iterator that filters `iterable` based on a series of
- * `selectors`. On each call to `next()`, one item is taken from
+ * `selectors`. On each call to `nextValueOrThrow()`, one item is taken from
  * both the `iterable` and `selectors` iterators. If the item from
  * `selectors` evaluates to true, the item from `iterable` is given.
  * Otherwise, it is skipped. Once either `iterable` or `selectors`
- * is exhausted, subsequent calls to `next()` will throw
+ * is exhausted, subsequent calls to `nextValueOrThrow()` will throw
  * `goog.iter.StopIteration`.
  * @see http://docs.python.org/2/library/itertools.html#itertools.compress
  * @param {!goog.iter.Iterator<VALUE>|!goog.iter.Iterable} iterable The
@@ -873,10 +930,13 @@ goog.iter.zipLongest = function(fillValue, var_args) {
  * @template VALUE
  */
 goog.iter.compress = function(iterable, selectors) {
+  'use strict';
   var selectorIterator = goog.iter.toIterator(selectors);
 
-  return goog.iter.filter(
-      iterable, function() { return !!selectorIterator.next(); });
+  return goog.iter.filter(iterable, function() {
+    'use strict';
+    return !!selectorIterator.nextValueOrThrow();
+  });
 };
 
 
@@ -894,7 +954,7 @@ goog.iter.compress = function(iterable, selectors) {
  * @private
  */
 goog.iter.GroupByIterator_ = function(iterable, opt_keyFunc) {
-
+  'use strict';
   /**
    * The iterable to group, coerced to an iterator.
    * @type {!goog.iter.Iterator}
@@ -931,14 +991,17 @@ goog.inherits(goog.iter.GroupByIterator_, goog.iter.Iterator);
 
 
 /** @override */
-goog.iter.GroupByIterator_.prototype.next = function() {
+goog.iter.GroupByIterator_.prototype.nextValueOrThrow = function() {
+  'use strict';
   while (this.currentKey == this.targetKey) {
-    this.currentValue = this.iterator.next();  // Exits on StopIteration
+    this.currentValue =
+        this.iterator.nextValueOrThrow();  // Exits on StopIteration
     this.currentKey = this.keyFunc(this.currentValue);
   }
   this.targetKey = this.currentKey;
   return [this.currentKey, this.groupItems_(this.targetKey)];
 };
+
 
 
 /**
@@ -948,11 +1011,12 @@ goog.iter.GroupByIterator_.prototype.next = function() {
  * @private
  */
 goog.iter.GroupByIterator_.prototype.groupItems_ = function(targetKey) {
+  'use strict';
   var arr = [];
   while (this.currentKey == targetKey) {
     arr.push(this.currentValue);
     try {
-      this.currentValue = this.iterator.next();
+      this.currentValue = this.iterator.nextValueOrThrow();
     } catch (ex) {
       if (ex !== goog.iter.StopIteration) {
         throw ex;
@@ -983,6 +1047,7 @@ goog.iter.GroupByIterator_.prototype.groupItems_ = function(targetKey) {
  * @template KEY, VALUE
  */
 goog.iter.groupBy = function(iterable, opt_keyFunc) {
+  'use strict';
   return new goog.iter.GroupByIterator_(iterable, opt_keyFunc);
 };
 
@@ -1010,13 +1075,16 @@ goog.iter.groupBy = function(iterable, opt_keyFunc) {
  * @template THIS, RESULT
  */
 goog.iter.starMap = function(iterable, f, opt_obj) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var iter = new goog.iter.Iterator();
 
-  iter.next = function() {
-    var args = goog.iter.toArray(iterator.next());
+  iter.nextValueOrThrow = function() {
+    'use strict';
+    var args = goog.iter.toArray(iterator.nextValueOrThrow());
     return f.apply(opt_obj, goog.array.concat(args, undefined, iterator));
   };
+
 
   return iter;
 };
@@ -1033,17 +1101,25 @@ goog.iter.starMap = function(iterable, f, opt_obj) {
  * @template VALUE
  */
 goog.iter.tee = function(iterable, opt_num) {
+  'use strict';
   var iterator = goog.iter.toIterator(iterable);
   var num = (typeof opt_num === 'number') ? opt_num : 2;
-  var buffers =
-      goog.array.map(goog.array.range(num), function() { return []; });
+  var buffers = goog.array.map(goog.array.range(num), function() {
+    'use strict';
+    return [];
+  });
 
   var addNextIteratorValueToBuffers = function() {
-    var val = iterator.next();
-    goog.array.forEach(buffers, function(buffer) { buffer.push(val); });
+    'use strict';
+    var val = iterator.nextValueOrThrow();
+    goog.array.forEach(buffers, function(buffer) {
+      'use strict';
+      buffer.push(val);
+    });
   };
 
   var createIterator = function(buffer) {
+    'use strict';
     // Each tee'd iterator has an associated buffer (initially empty). When a
     // tee'd iterator's buffer is empty, it calls
     // addNextIteratorValueToBuffers(), adding the next value to all tee'd
@@ -1051,13 +1127,15 @@ goog.iter.tee = function(iterable, opt_num) {
     // iterator to be advanced independently.
     var iter = new goog.iter.Iterator();
 
-    iter.next = function() {
+    iter.nextValueOrThrow = function() {
+      'use strict';
       if (goog.array.isEmpty(buffer)) {
         addNextIteratorValueToBuffers();
       }
       goog.asserts.assert(!goog.array.isEmpty(buffer));
       return buffer.shift();
     };
+
 
     return iter;
   };
@@ -1078,6 +1156,7 @@ goog.iter.tee = function(iterable, opt_num) {
  * @template VALUE
  */
 goog.iter.enumerate = function(iterable, opt_start) {
+  'use strict';
   return goog.iter.zip(goog.iter.count(opt_start), iterable);
 };
 
@@ -1095,6 +1174,7 @@ goog.iter.enumerate = function(iterable, opt_start) {
  * @template VALUE
  */
 goog.iter.limit = function(iterable, limitSize) {
+  'use strict';
   goog.asserts.assert(goog.math.isInt(limitSize) && limitSize >= 0);
 
   var iterator = goog.iter.toIterator(iterable);
@@ -1102,12 +1182,14 @@ goog.iter.limit = function(iterable, limitSize) {
   var iter = new goog.iter.Iterator();
   var remaining = limitSize;
 
-  iter.next = function() {
+  iter.nextValueOrThrow = function() {
+    'use strict';
     if (remaining-- > 0) {
-      return iterator.next();
+      return iterator.nextValueOrThrow();
     }
     throw goog.iter.StopIteration;
   };
+
 
   return iter;
 };
@@ -1117,7 +1199,7 @@ goog.iter.limit = function(iterable, limitSize) {
  * Creates an iterator that is advanced `count` steps ahead. Consumed
  * values are silently discarded. If `count` is greater than the number
  * of elements in `iterable`, an empty iterator is returned. Subsequent
- * calls to `next()` will throw `goog.iter.StopIteration`.
+ * calls to `nextValueOrThrow()` will throw `goog.iter.StopIteration`.
  * @param {!goog.iter.Iterator<VALUE>|!goog.iter.Iterable} iterable The
  *     iterable to consume.
  * @param {number} count  The number of elements to consume from the iterator.
@@ -1126,6 +1208,7 @@ goog.iter.limit = function(iterable, limitSize) {
  * @template VALUE
  */
 goog.iter.consume = function(iterable, count) {
+  'use strict';
   goog.asserts.assert(goog.math.isInt(count) && count >= 0);
 
   var iterator = goog.iter.toIterator(iterable);
@@ -1151,6 +1234,7 @@ goog.iter.consume = function(iterable, count) {
  * @template VALUE
  */
 goog.iter.slice = function(iterable, start, opt_end) {
+  'use strict';
   goog.asserts.assert(goog.math.isInt(start) && start >= 0);
 
   var iterator = goog.iter.consume(iterable, start);
@@ -1174,6 +1258,7 @@ goog.iter.slice = function(iterable, start, opt_end) {
  */
 // TODO(user): Consider moving this into goog.array as a public function.
 goog.iter.hasDuplicates_ = function(arr) {
+  'use strict';
   var deduped = [];
   goog.array.removeDuplicates(arr, deduped);
   return arr.length != deduped.length;
@@ -1198,14 +1283,17 @@ goog.iter.hasDuplicates_ = function(arr) {
  * @template VALUE
  */
 goog.iter.permutations = function(iterable, opt_length) {
+  'use strict';
   var elements = goog.iter.toArray(iterable);
   var length = (typeof opt_length === 'number') ? opt_length : elements.length;
 
   var sets = goog.array.repeat(elements, length);
   var product = goog.iter.product.apply(undefined, sets);
 
-  return goog.iter.filter(
-      product, function(arr) { return !goog.iter.hasDuplicates_(arr); });
+  return goog.iter.filter(product, function(arr) {
+    'use strict';
+    return !goog.iter.hasDuplicates_(arr);
+  });
 };
 
 
@@ -1226,21 +1314,29 @@ goog.iter.permutations = function(iterable, opt_length) {
  * @template VALUE
  */
 goog.iter.combinations = function(iterable, length) {
+  'use strict';
   var elements = goog.iter.toArray(iterable);
   var indexes = goog.iter.range(elements.length);
   var indexIterator = goog.iter.permutations(indexes, length);
   // sortedIndexIterator will now give arrays of with the given length that
   // indicate what indexes into "elements" should be returned on each iteration.
-  var sortedIndexIterator = goog.iter.filter(
-      indexIterator, function(arr) { return goog.array.isSorted(arr); });
+  var sortedIndexIterator = goog.iter.filter(indexIterator, function(arr) {
+    'use strict';
+    return goog.array.isSorted(arr);
+  });
 
   var iter = new goog.iter.Iterator();
 
-  function getIndexFromElements(index) { return elements[index]; }
+  function getIndexFromElements(index) {
+    return elements[index];
+  }
 
-  iter.next = function() {
-    return goog.array.map(sortedIndexIterator.next(), getIndexFromElements);
+  iter.nextValueOrThrow = function() {
+    'use strict';
+    return goog.array.map(
+        sortedIndexIterator.nextValueOrThrow(), getIndexFromElements);
   };
+
 
   return iter;
 };
@@ -1264,24 +1360,31 @@ goog.iter.combinations = function(iterable, length) {
  * @template VALUE
  */
 goog.iter.combinationsWithReplacement = function(iterable, length) {
+  'use strict';
   var elements = goog.iter.toArray(iterable);
   var indexes = goog.array.range(elements.length);
   var sets = goog.array.repeat(indexes, length);
   var indexIterator = goog.iter.product.apply(undefined, sets);
   // sortedIndexIterator will now give arrays of with the given length that
   // indicate what indexes into "elements" should be returned on each iteration.
-  var sortedIndexIterator = goog.iter.filter(
-      indexIterator, function(arr) { return goog.array.isSorted(arr); });
+  var sortedIndexIterator = goog.iter.filter(indexIterator, function(arr) {
+    'use strict';
+    return goog.array.isSorted(arr);
+  });
 
   var iter = new goog.iter.Iterator();
 
-  function getIndexFromElements(index) { return elements[index]; }
+  function getIndexFromElements(index) {
+    return elements[index];
+  }
 
-  iter.next = function() {
+  iter.nextValueOrThrow = function() {
+    'use strict';
     return goog.array.map(
         /** @type {!Array<number>} */
-        (sortedIndexIterator.next()), getIndexFromElements);
+        (sortedIndexIterator.nextValueOrThrow()), getIndexFromElements);
   };
+
 
   return iter;
 };

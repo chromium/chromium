@@ -6,7 +6,6 @@
 #define CHROMEOS_DBUS_HERMES_FAKE_HERMES_MANAGER_CLIENT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "third_party/cros_system_api/dbus/hermes/dbus-constants.h"
 

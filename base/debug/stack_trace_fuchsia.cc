@@ -90,6 +90,10 @@ class SymbolMap {
   };
 
   SymbolMap();
+
+  SymbolMap(const SymbolMap&) = delete;
+  SymbolMap& operator=(const SymbolMap&) = delete;
+
   ~SymbolMap() = default;
 
   // Gets all entries for the symbol map.
@@ -107,8 +111,6 @@ class SymbolMap {
 
   size_t count_ = 0;
   bool valid_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SymbolMap);
 };
 
 SymbolMap::SymbolMap() {
@@ -256,7 +258,6 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
   SymbolMap map;
 
   int module_id = 0;
-  *os << "{{{reset}}}\n";
   for (const SymbolMap::Module& entry : map.GetModules()) {
     *os << "{{{module:" << module_id << ":" << entry.name
         << ":elf:" << entry.build_id << "}}}\n";
@@ -278,6 +279,8 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
 
   for (size_t i = 0; i < count_; ++i)
     *os << "{{{bt:" << i << ":" << trace_[i] << "}}}\n";
+
+  *os << "{{{reset}}}\n";
 }
 
 }  // namespace debug

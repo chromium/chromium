@@ -11,14 +11,15 @@ import './icons.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStep, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {ProvisioningObserverInterface, ProvisioningObserverReceiver, ProvisioningStatus, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 // TODO(gavindodd): Update text for i18n
-/** @type {!Object<!ProvisioningStep, string>} */
-const provisioningStepText = {
-  [ProvisioningStep.kProvisioningUnknown]: 'Starting...',
-  [ProvisioningStep.kInProgress]: 'In progress...',
-  [ProvisioningStep.kProvisioningComplete]: 'Complete.',
+/** @type {!Object<!ProvisioningStatus, string>} */
+const provisioningStatusText = {
+  [ProvisioningStatus.kInProgress]: 'In progress...',
+  [ProvisioningStatus.kComplete]: 'Complete.',
+  [ProvisioningStatus.kFailedBlocking]: 'Failed, blocking.',
+  [ProvisioningStatus.kFailedNonBlocking]: 'Failed, non blocking.',
 };
 
 /**
@@ -39,50 +40,30 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private {ShimlessRmaServiceInterface} */
-      shimlessRmaService_: {
+      /** @protected {!ProvisioningStatus} */
+      status_: {
         type: Object,
-        value: {},
       },
 
-      /**
-       * Receiver responsible for observing provisioning progress.
-       * @private {ProvisioningObserverReceiver}
-       */
-      provisioningObserverReceiver_: {
-        type: Object,
-        value: null,
-      },
-
-      /** @protected {!ProvisioningStep} */
-      step_: {
-        type: Object,
-        value: ProvisioningStep.kProvisioningUnknown,
-      },
-
-      /** @protected {number} */
+      /** @protected */
       progress_: {
         type: Number,
         value: 0.0,
       },
 
-      /** @protected {string} */
+      /** @protected */
       statusString_: {
         type: String,
-        computed: 'getStatusString_(step_, progress_)',
+        computed: 'getStatusString_(status_, progress_)',
       },
     };
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
-    this.observeProvisioningProgress_();
-  }
-
-  /** @private */
-  observeProvisioningProgress_() {
+    /** @private {ProvisioningObserverReceiver} */
     this.provisioningObserverReceiver_ = new ProvisioningObserverReceiver(
         /**
          * @type {!ProvisioningObserverInterface}
@@ -99,32 +80,38 @@ export class ReimagingProvisioningPageElement extends PolymerElement {
    */
   getStatusString_() {
     // TODO(gavindodd): Update text for i18n
-    return provisioningStepText[this.step_] + ' ' +
+    return provisioningStatusText[this.status_] + ' ' +
         Math.round(this.progress_ * 100) + '%';
   }
 
   /**
    * Implements ProvisioningObserver.onProvisioningUpdated()
+   * TODO(joonbug): Add error handling and display failure using cr-dialog.
    * @protected
-   * @param {!ProvisioningStep} step
+   * @param {!ProvisioningStatus} status
    * @param {number} progress
    */
-  onProvisioningUpdated(step, progress) {
-    this.step_ = step;
+  onProvisioningUpdated(status, progress) {
+    this.status_ = status;
     this.progress_ = progress;
+    const disabled = this.status_ != ProvisioningStatus.kComplete &&
+        this.status_ != ProvisioningStatus.kFailedNonBlocking;
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: disabled},
+        ));
   }
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    if (this.step_ == ProvisioningStep.kProvisioningComplete) {
-      // TODO(crbug.com/1218180): Replace with a state specific function e.g.
-      // ProvisioningComplete()
-      return this.shimlessRmaService_.transitionNextState();
+    if (this.status_ == ProvisioningStatus.kComplete ||
+        this.status_ == ProvisioningStatus.kFailedNonBlocking) {
+      return this.shimlessRmaService_.provisioningComplete();
     } else {
       return Promise.reject(new Error('Provisioning is not complete.'));
     }
   }
-};
+}
 
 customElements.define(
     ReimagingProvisioningPageElement.is, ReimagingProvisioningPageElement);

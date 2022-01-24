@@ -7,9 +7,11 @@ import datetime
 import json
 import logging
 import re
+import six
 
 from collections import namedtuple
 from six.moves.urllib.error import HTTPError
+from six.moves.urllib.error import URLError
 from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
@@ -48,7 +50,8 @@ class WPTGitHub(object):
 
     def auth_token(self):
         assert self.has_credentials()
-        return base64.b64encode('{}:{}'.format(self.user, self.token))
+        data = '{}:{}'.format(self.user, self.token).encode('utf-8')
+        return base64.b64encode(data).decode('utf-8')
 
     def request(self, path, method, body=None, accept_header=None):
         """Sends a request to GitHub API and deserializes the response.
@@ -65,7 +68,10 @@ class WPTGitHub(object):
         assert path.startswith('/')
 
         if body:
-            body = json.dumps(body)
+            if six.PY3:
+                body = json.dumps(body).encode("utf-8")
+            else:
+                body = json.dumps(body)
 
         if accept_header:
             headers = {'Accept': accept_header}
@@ -368,18 +374,27 @@ class WPTGitHub(object):
         """
         path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
                                                 pr_number)
-        try:
-            response = self.request(path, method='GET')
-            if response.status_code == 204:
-                return True
-            else:
-                raise GitHubError(204, response.status_code,
-                                  'check if PR %d is merged' % pr_number)
-        except HTTPError as e:
-            if e.code == 404:
-                return False
-            else:
-                raise
+        cached_error = None
+        for i in range(5):
+            try:
+                response = self.request(path, method='GET')
+                if response.status_code == 204:
+                    return True
+                else:
+                    raise GitHubError(204, response.status_code,
+                                      'check if PR %d is merged' % pr_number)
+            except HTTPError as e:
+                if e.code == 404:
+                    return False
+                else:
+                    raise
+            except URLError as e:
+                # After migrate to py3 we met random timeout issue here,
+                # Retry this request in this case
+                _log.warning("Meet URLError...")
+                cached_error = e
+        else:
+            raise cached_error
 
     def merge_pr(self, pr_number):
         """Merges a PR.
@@ -470,7 +485,10 @@ class JSONResponse(object):
         """Gets the value of the header with the given name.
 
         Delegates to HTTPMessage.getheader(), which is case-insensitive."""
-        return self._raw_response.info().getheader(header)
+        if six.PY3:
+            return self._raw_response.getheader(header)
+        else:
+            return self._raw_response.info().getheader(header)
 
 
 class GitHubError(Exception):

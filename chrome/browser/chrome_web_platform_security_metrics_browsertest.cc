@@ -18,6 +18,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 const int kWasmPageSize = 1 << 16;
@@ -39,7 +40,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
         {
             // Enabled:
             network::features::kCrossOriginOpenerPolicy,
-            network::features::kCrossOriginOpenerPolicyReporting,
             network::features::kCrossOriginEmbedderPolicyCredentialless,
             // SharedArrayBuffer is needed for these tests.
             features::kSharedArrayBuffer,
@@ -103,7 +103,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
       if (count == expected_count)
         return;
 
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(5));
+      base::PlatformThread::Sleep(base::Milliseconds(5));
     }
   }
 
@@ -128,6 +128,20 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
   base::HistogramTester histogram_;
   WebFeature monitored_feature_;
   base::test::ScopedFeatureList features_;
+};
+
+// An extension to the ChromeWebPlatformSecurityMetricsBrowserTest that
+// enables cross-origin sharing of WebAssembly modules.
+class ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest
+    : public ChromeWebPlatformSecurityMetricsBrowserTest {
+ public:
+  ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest() {
+    sharing_feature_.InitWithFeatures(
+        {features::kCrossOriginWebAssemblyModuleSharingEnabled}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList sharing_feature_;
 };
 
 // Check the kCrossOriginOpenerPolicyReporting feature usage. No header => 0
@@ -428,8 +442,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_memory = undefined;
@@ -471,8 +485,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     addEventListener("message", event => {
@@ -509,8 +523,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_memory = undefined;
@@ -548,8 +562,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -589,8 +603,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -632,8 +646,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
   LoadIFrame(url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     addEventListener("message", event => {
@@ -670,8 +684,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -713,10 +727,55 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  // It doesn't exist yet a warning or an error being dispatched for failing to
+  // send a WebAssembly.Module. This test simply wait.
+  EXPECT_EQ("Success: Nothing received", content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      await new Promise(r => setTimeout(r, 1000));
+      if (received_module)
+        resolve("Failure: Received Webassembly module");
+      else
+        resolve("Success: Nothing received");
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  CheckCounter(WebFeature::kWasmModuleSharing, 0);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest,
+    WasmModuleSharingSameSite) {
+  GURL main_url = https_server().GetURL("a.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("b.a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    received_module = undefined;
     addEventListener("message", event => {
       received_module = event.data;
     });
@@ -751,8 +810,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     received_module = undefined;
@@ -790,8 +849,54 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
+
+  EXPECT_EQ(true, content::ExecJs(main_document, R"(
+    document.domain = "a.com";
+    received_module = undefined;
+    addEventListener("message", event => {
+      received_module = event.data;
+    });
+  )"));
+
+  EXPECT_EQ(true, content::ExecJs(sub_document, R"(
+    document.domain = "a.com";
+    let module = new WebAssembly.Module(new Uint8Array([
+      0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+    parent.postMessage(module, "*");
+  )"));
+
+  // It doesn't exist yet a warning or an error being dispatched for failing to
+  // send a WebAssembly.Module. This test simply wait.
+  EXPECT_EQ("Success: Nothing received", content::EvalJs(main_document, R"(
+    new Promise(async resolve => {
+      await new Promise(r => setTimeout(r, 1000));
+      if (received_module)
+        resolve("Failure: Received Webassembly module");
+      else
+        resolve("Success: Nothing received");
+    });
+  )"));
+
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation, 0);
+  CheckCounter(WebFeature::kV8SharedArrayBufferConstructed, 0);
+
+  CheckCounter(WebFeature::kWasmModuleSharing, 0);
+  CheckCounter(WebFeature::kCrossOriginWasmModuleSharing, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsWithModuleSharingEnabledBrowserTest,
+    WasmModuleSharingSameSiteBeforeSetDocumentDomain) {
+  GURL main_url = https_server().GetURL("sub.a.com", "/empty.html");
+  GURL sub_url = https_server().GetURL("a.com", "/empty.html");
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
+  LoadIFrame(sub_url);
+
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -831,8 +936,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
   LoadIFrame(sub_url);
 
-  content::RenderFrameHost* main_document = web_contents()->GetAllFrames()[0];
-  content::RenderFrameHost* sub_document = web_contents()->GetAllFrames()[1];
+  content::RenderFrameHost* main_document = web_contents()->GetMainFrame();
+  content::RenderFrameHost* sub_document = ChildFrameAt(main_document, 0);
 
   EXPECT_EQ(true, content::ExecJs(main_document, R"(
     document.domain = "a.com";
@@ -1113,6 +1218,68 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   LoadIFrame(child_url);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyCredentialless, 1);
   CheckCounter(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 1);
+}
+
+class ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker
+    : public ChromeWebPlatformSecurityMetricsBrowserTest {
+ public:
+  ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker() {
+    feature_.InitWithFeatures({blink::features::kCOEPForSharedWorker}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepNoneSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: unsafe-none");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 1);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepCredentiallessSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: credentialless");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 1);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
+    CoepRequireCorpSharedWorker) {
+  GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
+  GURL worker_url =
+      https_server().GetURL("a.test",
+                            "/set-header?"
+                            "Cross-Origin-Embedder-Policy: require-corp");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), main_page_url));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("worker = new SharedWorker($1)", worker_url)));
+  CheckCounter(WebFeature::kCoepNoneSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepCredentiallessSharedWorker, 0);
+  CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 1);
 }
 
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:

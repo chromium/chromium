@@ -108,9 +108,9 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     return mark->startTime();
   }
 
-  PerformanceTiming::PerformanceTimingGetter timing_function =
-      PerformanceTiming::GetAttributeMapping().at(mark_name);
-  if (!timing_function) {
+  // Although there was no mark with the given name in UserTiming, we need to
+  // support measuring with respect to |PerformanceTiming| attributes.
+  if (!PerformanceTiming::IsAttributeName(mark_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "The mark '" + mark_name + "' does not exist.");
@@ -129,7 +129,9 @@ double UserTiming::FindExistingMarkStartTime(const AtomicString& mark_name,
     return 0.0;
   }
 
-  double value = static_cast<double>((timing->*timing_function)());
+  // Because we know |PerformanceTiming::IsAttributeName(mark_name)| is true
+  // (from above), we know calling |GetNamedAttribute| won't fail.
+  double value = static_cast<double>(timing->GetNamedAttribute(mark_name));
   if (!value) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "'" + mark_name +
@@ -176,8 +178,7 @@ base::TimeTicks UserTiming::GetPerformanceMarkUnsafeTimeForTraces(
       return mark->UnsafeTimeForTraces();
     }
   }
-  return performance_->GetTimeOriginInternal() +
-         base::TimeDelta::FromMillisecondsD(start_time);
+  return performance_->GetTimeOriginInternal() + base::Milliseconds(start_time);
 }
 
 PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,

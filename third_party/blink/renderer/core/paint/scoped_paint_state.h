@@ -51,11 +51,6 @@ class ScopedPaintState {
     if (properties->PaintOffsetTranslation()) {
       AdjustForPaintOffsetTranslation(object,
                                       *properties->PaintOffsetTranslation());
-    } else if (object.IsNGSVGText()) {
-      if (const auto* transform = properties->Transform()) {
-        adjusted_paint_info_.emplace(paint_info);
-        adjusted_paint_info_->TransformCullRect(*transform);
-      }
     }
   }
 
@@ -88,12 +83,6 @@ class ScopedPaintState {
   PhysicalOffset PaintOffset() const { return paint_offset_; }
 
   const FragmentData* FragmentToPaint() const { return fragment_to_paint_; }
-
-  PhysicalRect LocalCullRect() const {
-    PhysicalRect cull_rect(LayoutRect(GetPaintInfo().GetCullRect().Rect()));
-    cull_rect.Move(-PaintOffset());
-    return cull_rect;
-  }
 
   bool LocalRectIntersectsCullRect(const PhysicalRect& local_rect) const {
     return GetPaintInfo().IntersectsCullRect(local_rect, PaintOffset());

@@ -20,11 +20,13 @@ namespace {
 
 struct SystemIndicatorInfo : public Extension::ManifestData {
   SystemIndicatorInfo();
+
+  SystemIndicatorInfo(const SystemIndicatorInfo&) = delete;
+  SystemIndicatorInfo& operator=(const SystemIndicatorInfo&) = delete;
+
   ~SystemIndicatorInfo() override;
 
   ExtensionIconSet icon_set;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemIndicatorInfo);
 };
 
 SystemIndicatorInfo::SystemIndicatorInfo() {}

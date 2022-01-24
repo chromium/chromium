@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -48,7 +47,6 @@ struct FormFieldData;
 
 namespace content {
 class WebContents;
-class RenderFrameHost;
 }  // namespace content
 
 namespace autofill_assistant {
@@ -68,12 +66,18 @@ class WebController {
   // for the lifetime of the controller.
   static std::unique_ptr<WebController> CreateForWebContents(
       content::WebContents* web_contents,
-      const UserData* user_data);
+      const UserData* user_data,
+      ProcessedActionStatusDetailsProto* log_info);
 
   // |web_contents| and |user_data| must outlive this web controller.
   WebController(content::WebContents* web_contents,
                 std::unique_ptr<DevtoolsClient> devtools_client,
-                const UserData* user_data);
+                const UserData* user_data,
+                ProcessedActionStatusDetailsProto* log_info);
+
+  WebController(const WebController&) = delete;
+  WebController& operator=(const WebController&) = delete;
+
   virtual ~WebController();
 
   // Load |url| in the current tab. Returns immediately, before the new page has
@@ -82,12 +86,19 @@ class WebController {
 
   // Find the element given by |selector|. If multiple elements match
   // |selector| and if |strict_mode| is false, return the first one that is
-  // found. Otherwise if |strict-mode| is true, do not return any.
+  // found. Otherwise if |strict_mode| is true, do not return any.
   //
   // To check multiple elements, use a BatchElementChecker.
   virtual void FindElement(const Selector& selector,
                            bool strict_mode,
                            ElementFinder::Callback callback);
+
+  // Find the element given by |selector| starting from the given
+  // |start_element|. Returns results or errors based on the |result_type|.
+  virtual void RunElementFinder(const ElementFinder::Result& start_element,
+                                const Selector& selector,
+                                ElementFinder::ResultType result_type,
+                                ElementFinder::Callback callback);
 
   // Find all elements matching |selector|. If there are no matches, the status
   // will be ELEMENT_RESOLUTION_FAILED.
@@ -200,11 +211,6 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Highlight an |element|.
-  virtual void HighlightElement(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   // Scrolls |container| to an |element|'s position. |top_padding|
   // specifies the padding between the focused element and the top of the
   // container. If |scrollable_element| is not specified, the window will be
@@ -291,6 +297,7 @@ class WebController {
 
   // Return the outerHTML of |element|.
   virtual void GetOuterHtml(
+      bool include_all_inner_text,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
@@ -298,6 +305,7 @@ class WebController {
   // Return the outerHTML of each element in |elements|. |elements| must contain
   // the object ID of a JS array containing the elements.
   virtual void GetOuterHtmls(
+      bool include_all_inner_text,
       const ElementFinder::Result& elements,
       base::OnceCallback<void(const ClientStatus&,
                               const std::vector<std::string>&)> callback);
@@ -308,6 +316,12 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
+
+  // Gets the visual viewport coordinates and size.
+  //
+  // The rectangle is expressed in absolute CSS coordinates.
+  virtual void GetVisualViewport(
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback);
 
   // Gets the position of the |element|.
   //
@@ -353,31 +367,6 @@ class WebController {
  private:
   friend class WebControllerBrowserTest;
 
-  // RAII object that sets the action state to "running" when the object is
-  // allocated and to "not running" when it gets deallocated.
-  class ScopedAssistantActionStateRunning
-      : private content::WebContentsObserver {
-   public:
-    explicit ScopedAssistantActionStateRunning(
-        content::WebContents* web_contents,
-        content::RenderFrameHost* render_frame_host);
-    ~ScopedAssistantActionStateRunning() override;
-
-    ScopedAssistantActionStateRunning(
-        const ScopedAssistantActionStateRunning&) = delete;
-    ScopedAssistantActionStateRunning& operator=(
-        const ScopedAssistantActionStateRunning&) = delete;
-
-   private:
-    void SetAssistantActionState(bool running);
-
-    // Overrides content::WebContentsObserver:
-    void RenderFrameDeleted(
-        content::RenderFrameHost* render_frame_host) override;
-
-    content::RenderFrameHost* render_frame_host_;
-  };
-
   void OnJavaScriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
@@ -420,9 +409,6 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
-  void RunElementFinder(const Selector& selector,
-                        ElementFinder::ResultType result_type,
-                        ElementFinder::Callback callback);
   void OnFindElementResult(ElementFinder* finder_to_release,
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
@@ -498,20 +484,24 @@ class WebController {
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
   // Handling a JS result for a "SelectOption" action. This expects the JS
-  // result to contain an integer and returns the following status:
-  // * -1 -> INVALID_TARGET
-  // *  0 -> OPTION_ELEMENT_NOT_FOUND
-  // *  1 -> ACTION_APPLIED
-  // *  n -> TOO_MANY_OPTION_VALUES_FOUND
+  // result to contain an integer mapped to a ClientStatus.
   void OnSelectOptionJavascriptResult(
       base::OnceCallback<void(const ClientStatus&)> callback,
-      ProcessedActionStatusProto status_if_zero,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void SendKeyEvents(WebControllerErrorInfoProto::WebAction web_action,
+                     const std::vector<KeyEvent>& key_events,
+                     int key_press_delay,
+                     const ElementFinder::Result& element,
+                     base::OnceCallback<void(const ClientStatus&)> callback);
   void OnSendKeyboardInputDone(
       SendKeyboardInputWorker* worker_to_release,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status);
+  void OnGetVisualViewport(
+      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::EvaluateResult> result);
   void OnGetElementRect(ElementRectGetter* getter_to_release,
                         ElementRectGetter::ElementRectCallback callback,
                         const ClientStatus& rect_status,
@@ -527,32 +517,18 @@ class WebController {
                          const DevtoolsClient::ReplyStatus& reply_status,
                          std::unique_ptr<runtime::EvaluateResult> result) const;
 
-  // Wrapper for calling the |callback| after re-enabling the keyboard by
-  // setting the assistant action state to "not running".
-  void RetainAssistantActionRunningStateAndExecuteCallback(
-      std::unique_ptr<ScopedAssistantActionStateRunning> scoped_state,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& client_status);
-  // Disables the keyboard by setting the assistant action state to "running"
-  // and wraps the |callback| such that the keyboard is re-enabled before
-  // calling it. Uses the |RenderFrameHost| of the |ElementFinder::Result| to
-  // extract the appropriate |ContentAutofillDriver|.
-  base::OnceCallback<void(const ClientStatus&)>
-  GetAssistantActionRunningStateRetainingCallback(
-      const ElementFinder::Result& element_result,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.
   content::WebContents* const web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
+  // Must not be |nullptr| and outlive this web controller.
   const UserData* const user_data_;
+  ProcessedActionStatusDetailsProto* const log_info_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;
 
   base::WeakPtrFactory<WebController> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebController);
 };
 }  // namespace autofill_assistant
 #endif  // COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_WEB_CONTROLLER_H_

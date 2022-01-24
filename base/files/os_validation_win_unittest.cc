@@ -355,7 +355,7 @@ TEST_P(OpenFileTest, MapThenDelete) {
 //
 // base_unittests.exe --single-process-tests --gtest_also_run_disabled_tests \
 //     --gtest_filter=*OpenFileTest*
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     DISABLED_Test,
     OpenFileTest,
     ::testing::Combine(

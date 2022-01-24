@@ -12,7 +12,7 @@ include_rules = [
   "+cc/input/scroll_input_stype.h",
   "+cc/input/touch_action.h",
   "+cc/metrics/event_metrics.h",
-  "+cc/trees/swap_promise_monitor.h",
+  "+cc/trees/latency_info_swap_promise_monitor.h",
   "+components/viz/common",
   "+services/tracing/public/cpp/perfetto/flow_event_utils.h",
   "+services/tracing/public/cpp/perfetto/macros.h",

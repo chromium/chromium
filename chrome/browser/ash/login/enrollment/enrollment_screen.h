@@ -12,7 +12,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
@@ -24,21 +23,21 @@
 #include "chrome/browser/ash/policy/active_directory/active_directory_join_delegate.h"
 #include "chrome/browser/ash/policy/enrollment/account_status_check_fetcher.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ElapsedTimer;
 }
 
-namespace chromeos {
+namespace ash {
 namespace test {
 class EnrollmentHelperMixin;
 }
-}  // namespace chromeos
-
-namespace ash {
 
 // The screen implementation that links the enterprise enrollment UI into the
 // OOBE wizard.
@@ -48,16 +47,31 @@ class EnrollmentScreen
       public EnrollmentScreenView::Controller,
       public policy::ActiveDirectoryJoinDelegate {
  public:
-  enum class Result { COMPLETED, BACK, SKIPPED_FOR_TESTS };
+  enum class Result {
+    COMPLETED,
+    BACK,
+    SKIPPED_FOR_TESTS,
+    TPM_ERROR,
+    TPM_DBUS_ERROR
+  };
 
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+  using TpmStatusCallback = chromeos::TpmManagerClient::TakeOwnershipCallback;
   EnrollmentScreen(EnrollmentScreenView* view,
                    const ScreenExitCallback& exit_callback);
+
+  EnrollmentScreen(const EnrollmentScreen&) = delete;
+  EnrollmentScreen& operator=(const EnrollmentScreen&) = delete;
+
   ~EnrollmentScreen() override;
 
   static EnrollmentScreen* Get(ScreenManager* manager);
+
+  // Called when `view` has been destroyed. If this instance is destroyed before
+  // the `view` it should call view->Unbind().
+  void OnViewDestroyed(EnrollmentScreenView* view);
 
   // Setup how this screen will handle enrollment.
   void SetEnrollmentConfig(const policy::EnrollmentConfig& enrollment_config);
@@ -100,12 +114,22 @@ class EnrollmentScreen
     exit_callback_ = callback;
   }
 
+  void set_tpm_ownership_callback_for_testing(TpmStatusCallback&& callback) {
+    tpm_ownership_callback_for_testing_ = std::move(callback);
+  }
+
+  TpmStatusCallback get_tpm_ownership_callback_for_testing() {
+    return base::BindOnce(&EnrollmentScreen::OnTpmStatusResponse,
+                          weak_ptr_factory_.GetWeakPtr());
+  }
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+  void OnUserAction(const std::string& action_id) override;
 
   // Expose the exit_callback to test screen overrides.
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
@@ -113,7 +137,7 @@ class EnrollmentScreen
  private:
   friend class ZeroTouchEnrollmentScreenUnitTest;
   friend class AutomaticReenrollmentScreenUnitTest;
-  friend class chromeos::test::EnrollmentHelperMixin;
+  friend class test::EnrollmentHelperMixin;
 
   FRIEND_TEST_ALL_PREFIXES(AttestationAuthEnrollmentScreenTest, TestCancel);
   FRIEND_TEST_ALL_PREFIXES(ForcedAttestationAuthEnrollmentScreenTest,
@@ -197,8 +221,14 @@ class EnrollmentScreen
                                authpolicy::ErrorType error,
                                const std::string& machine_domain);
 
+  // Tries to take TPM ownership.
+  void TakeTpmOwnership();
+  // Processes a reply from tpm_manager.
+  void OnTpmStatusResponse(const ::tpm_manager::TakeOwnershipReply& reply);
+
   EnrollmentScreenView* view_;
   ScreenExitCallback exit_callback_;
+  absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;
   policy::EnrollmentConfig enrollment_config_;
 
@@ -208,6 +238,8 @@ class EnrollmentScreen
 
   bool enrollment_failed_once_ = false;
   bool enrollment_succeeded_ = false;
+  // Check tpm before enrollment starts if --tpm-is-dynamic switch is enabled.
+  bool tpm_checked_ = false;
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
   net::BackoffEntry::Policy retry_policy_;
@@ -223,7 +255,6 @@ class EnrollmentScreen
   std::unique_ptr<AuthPolicyHelper> authpolicy_login_helper_;
 
   base::WeakPtrFactory<EnrollmentScreen> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(EnrollmentScreen);
 };
 
 }  // namespace ash

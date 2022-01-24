@@ -20,6 +20,7 @@ import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 import android.view.MotionEvent;
 import android.view.MotionEvent.PointerCoords;
 import android.view.MotionEvent.PointerProperties;
@@ -53,6 +54,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility_tab_switcher.OverviewListLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -180,7 +182,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount,
             int standardIndexSelected, int incognitoIndexSelected, boolean incognitoSelected) {
-        Context context = InstrumentationRegistry.getContext();
+        Context context =
+                new ContextThemeWrapper(InstrumentationRegistry.getContext(), R.style.ColorOverlay);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 

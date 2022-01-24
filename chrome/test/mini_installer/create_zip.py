@@ -49,13 +49,13 @@ SELENIUM_PATH = os.path.abspath(
     os.path.join(SRC_DIR, r'third_party', 'webdriver', 'pylib'))
 TYP_PATH = os.path.abspath(
     os.path.join(SRC_DIR, r'third_party', 'catapult', 'third_party', 'typ'))
-BLACKLIST = ['', '.pyc', '.gn', '.gni', '.txt', '.bat']
+BLOCKLIST = ['', '.pyc', '.gn', '.gni', '.txt', '.bat']
 
 
 def ArchiveDirectory(path, zipf):
     """Archive an entire directory and subdirectories.
 
-    This will skip files that have an extension in BLACKLIST.
+    This will skip files that have an extension in BLOCKLIST.
 
     Args:
         path: The path to the current directory.
@@ -64,7 +64,7 @@ def ArchiveDirectory(path, zipf):
     logging.debug('Archiving %s', path)
     for c_path in [os.path.join(path, name) for name in os.listdir(path)]:
         if os.path.isfile(c_path):
-            if os.path.splitext(c_path)[-1] in BLACKLIST:
+            if os.path.splitext(c_path)[-1] in BLOCKLIST:
                 continue
             logging.debug('Adding %s', os.path.relpath(c_path, SRC_DIR))
             zipf.write(c_path, os.path.relpath(c_path, SRC_DIR))

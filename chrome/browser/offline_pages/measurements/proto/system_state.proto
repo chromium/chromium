@@ -14,7 +14,8 @@ package offline_measurements_system_state.proto;
 message SystemState {
   // Defined in tools/metrics/histograms/enums.xml. These values are persisted
   // to logs. Entries should not be renumbered and numeric values should never
-  // be reused.
+  // be reused. These values are also defined in
+  // OfflineMeasurementsBackgroundTask.
   enum UserState {
     INVALID_USER_STATE = 0;
     PHONE_OFF = 1;
@@ -26,7 +27,8 @@ message SystemState {
 
   // Defined in tools/metrics/histograms/enums.xml. These values are persisted
   // to logs. Entries should not be renumbered and numeric values should never
-  // be reused.
+  // be reused. These values are also defined in
+  // OfflineMeasurementsBackgroundTask.
   enum ProbeResult {
     INVALID_PROBE_RESULT = 0;
     NO_INTERNET = 1;
@@ -34,6 +36,7 @@ message SystemState {
     UNEXPECTED_RESPONSE = 3;
     VALIDATED = 4;
     CANCELLED = 5;
+    MULTIPLE_URL_CONNECTIONS_OPEN = 6;
   }
   optional ProbeResult probe_result = 2;
   optional bool is_roaming = 3;

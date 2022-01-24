@@ -16,6 +16,7 @@ include_rules = [
   "+services/device/public",
   "+services/network/public",
   "+storage/browser",
+  "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+ui/android",
 ]

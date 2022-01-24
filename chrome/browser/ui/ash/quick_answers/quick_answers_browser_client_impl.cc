@@ -11,9 +11,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 
@@ -22,10 +22,8 @@ namespace {
 constexpr char kCloudTranslationScope[] =
     "https://www.googleapis.com/auth/cloud-translation";
 
-constexpr base::TimeDelta kMinTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(1000);
-constexpr base::TimeDelta kMaxTokenRefreshDelay =
-    base::TimeDelta::FromMilliseconds(60 * 1000);
+constexpr base::TimeDelta kMinTokenRefreshDelay = base::Milliseconds(1000);
+constexpr base::TimeDelta kMaxTokenRefreshDelay = base::Milliseconds(60 * 1000);
 
 }  // namespace
 

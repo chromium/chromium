@@ -1,0 +1,109 @@
+<style include="trusted-style common-style">
+  :host {
+    overflow: hidden;
+  }
+
+  #main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .tab-strip {
+    flex: 0 0 auto;
+    margin-bottom: calc(var(--personalization-app-grid-item-spacing) / 2);
+    width: 100%;
+  }
+
+  .tab-strip cr-button {
+    border: 0;
+  }
+
+  .tab-strip cr-button[aria-pressed='false'] {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #albumsContent,
+  #photosContent {
+    flex: 1 1 auto;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  #albumsContent iron-list,
+  #photosContent iron-list {
+    height: 100%;
+    width: 100%;
+  }
+
+  .album {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: center;
+  }
+
+  .row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .row:focus-visible {
+    outline: 0;
+  }
+
+  .photo {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: center;
+  }
+</style>
+<main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
+  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
+    <div class="tab-strip">
+      <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
+        on-click="onTabSelected_">
+        <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
+      </cr-button>
+      <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
+        on-click="onTabSelected_">
+        <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
+      </cr-button>
+    </div>
+  </template>
+  <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
+    <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
+      <template>
+        <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
+          on-focus="onPhotosGridRowFocused_"
+          on-keydown="onPhotosGridRowKeyDown_">
+          <template is="dom-repeat" items="[[row]]" as="photo">
+            <personalization-grid-item>
+              <div class="photo" colindex$="[[index]]" tabindex="-1">
+                [[photo]]
+              </div>
+            </personalization-grid-item>
+          </template>
+        </div>
+      </template>
+    </iron-list>
+  </div>
+  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
+    <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]">
+      <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
+        <template>
+          <personalization-grid-item>
+            <div class="album" tabindex$="[[tabIndex]]">[[album.name]]</div>
+          </personalization-grid-item>
+        </template>
+      </iron-list>
+    </div>
+  </template>
+</main>

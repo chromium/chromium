@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 #define CHROMEOS_COMPONENTS_TETHER_NETWORK_LIST_SORTER_H_
 
-#include "base/macros.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/network/network_state_handler.h"
 
@@ -22,14 +21,15 @@ namespace tether {
 class NetworkListSorter : public NetworkStateHandler::TetherSortDelegate {
  public:
   NetworkListSorter();
+
+  NetworkListSorter(const NetworkListSorter&) = delete;
+  NetworkListSorter& operator=(const NetworkListSorter&) = delete;
+
   virtual ~NetworkListSorter();
 
   // NetworkStateHandler::TetherNetworkListSorter:
   void SortTetherNetworkList(
       NetworkStateHandler::ManagedStateList* tether_networks) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkListSorter);
 };
 
 }  // namespace tether

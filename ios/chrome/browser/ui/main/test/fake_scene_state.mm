@@ -25,6 +25,7 @@
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
+  std::unique_ptr<TestBrowser> _incognito_browser;
   UIWindow* _window;
 }
 
@@ -36,11 +37,20 @@
     self.interfaceProvider = [[StubBrowserInterfaceProvider alloc] init];
     StubBrowserInterface* mainInterface = static_cast<StubBrowserInterface*>(
         self.interfaceProvider.mainInterface);
+    StubBrowserInterface* incognitoInterface =
+        static_cast<StubBrowserInterface*>(
+            self.interfaceProvider.incognitoInterface);
     _browser = std::make_unique<TestBrowser>();
+    _incognito_browser = std::make_unique<TestBrowser>();
     mainInterface.browser = _browser.get();
+    incognitoInterface.browser = _incognito_browser.get();
   }
   return self;
 }
+
+//- (id<BrowserInterfaceProvider>)interfaceProvider {
+//    return _interfaceProvider;
+//}
 
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count {
   NSMutableArray<SceneState*>* scenes = [NSMutableArray array];

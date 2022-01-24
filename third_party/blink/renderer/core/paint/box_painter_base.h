@@ -118,7 +118,7 @@ class BoxPainterBase {
                   RespectImageOrientationEnum,
                   PhysicalBoxSides sides_to_include,
                   bool is_inline,
-                  bool is_painting_scrolling_background);
+                  bool is_painting_background_in_contents_space);
 
     // FillLayerInfo is a temporary, stack-allocated container which cannot
     // outlive the StyleImage.  This would normally be a raw pointer, if not for
@@ -164,8 +164,8 @@ class BoxPainterBase {
       const Color&,
       const FillLayer&,
       BackgroundBleedAvoidance,
-      bool is_painting_scrolling_background) const = 0;
-  virtual bool IsPaintingScrollingBackground(const PaintInfo&) const = 0;
+      bool is_painting_background_in_contents_space) const = 0;
+  virtual bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const = 0;
   static void PaintInsetBoxShadow(
       const PaintInfo&,
       const FloatRoundedRect&,
@@ -173,6 +173,8 @@ class BoxPainterBase {
       PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
  private:
+  LayoutRectOutsets ComputeSnappedBorders() const;
+
   const Document* document_;
   const ComputedStyle& style_;
   Node* node_;

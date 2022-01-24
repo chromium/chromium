@@ -20,8 +20,7 @@ namespace {
 void WorkForOneCpuSec(base::WaitableEvent* event) {
   auto initial_ticks = base::ThreadTicks::Now();
   while (!event->IsSignaled()) {
-    if (base::ThreadTicks::Now() >
-        initial_ticks + base::TimeDelta::FromSeconds(1)) {
+    if (base::ThreadTicks::Now() > initial_ticks + base::Seconds(1)) {
       event->Signal();
     }
   }

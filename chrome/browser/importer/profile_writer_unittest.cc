@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -45,7 +44,7 @@ using password_manager::TestPasswordStore;
 PasswordForm MakePasswordForm() {
   PasswordForm form;
   form.url = GURL("https://example.com/");
-  form.signon_realm = form.url.GetOrigin().spec();
+  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = u"user@gmail.com";
   form.password_value = u"s3cre3t";
   form.in_store = PasswordForm::Store::kProfileStore;
@@ -64,6 +63,10 @@ class TestProfileWriter : public ProfileWriter {
 class ProfileWriterTest : public testing::Test {
  public:
   ProfileWriterTest() {}
+
+  ProfileWriterTest(const ProfileWriterTest&) = delete;
+  ProfileWriterTest& operator=(const ProfileWriterTest&) = delete;
+
   ~ProfileWriterTest() override {}
 
   void SetUp() override {
@@ -112,7 +115,7 @@ class ProfileWriterTest : public testing::Test {
     row.set_visit_count(visit_count);
     row.set_typed_count(typed_count);
     row.set_last_visit(base::Time::NowFromSystemTime() -
-                       base::TimeDelta::FromDays(days_since_last_visit));
+                       base::Days(days_since_last_visit));
     return row;
   }
 
@@ -187,8 +190,6 @@ class ProfileWriterTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfile> second_profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileWriterTest);
 };
 
 // Add bookmarks via ProfileWriter to profile1 when profile2 also exists.

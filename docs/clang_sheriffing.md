@@ -186,7 +186,9 @@ reverted, if the C++ code in question in Chromium looks valid.
 Miscompiles tend to result in crashes, so if you see a test with the CRASHED
 status, this is probably what you want to do.
 
-1. Bisect object files to find the object with the code that changed.
+1. Bisect object files to find the object with the code that changed. LLVM
+   contains `llvm/utils/rsp_bisect.py` which may be useful for bisecting object
+   files using an rsp file.
 1. Debug it with a traditional debugger
 
 ## Linker error

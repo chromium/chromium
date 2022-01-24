@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -260,8 +261,6 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_LAYOUT},
       {"inputMethodOptionsKoreanSyllableInput",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_SYLLABLE_INPUT},
-      {"inputMethodOptionsKoreanShowHangulCandidate",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_KOREAN_SHOW_HANGUL_CANDIDATE},
       {"inputMethodOptionsDvorakKeyboard",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_DVORAK},
       {"inputMethodOptionsColemakKeyboard",
@@ -319,7 +318,8 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "translateTargetLabel",
       l10n_util::GetStringUTF16(
-          ash::features::IsQuickAnswersV2Enabled()
+          ash::QuickAnswersState::Get() &&
+                  ash::QuickAnswersState::Get()->is_eligible()
               ? IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL_WITH_QUICK_ANSWERS
               : IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL));
   html_source->AddString(
@@ -456,21 +456,27 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddString(
+      "languagePacksNotice",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE,
+          base::ASCIIToUTF16(chrome::kLanguagePacksLearnMoreURL)));
   AddSmartInputsStrings(html_source, IsEmojiSuggestionAllowed());
   AddInputMethodOptionsStrings(html_source);
   AddLanguagesPageStringsV2(html_source);
   AddInputPageStringsV2(html_source);
 
-  html_source->AddBoolean(
-      "imeOptionsInSettings",
-      base::FeatureList::IsEnabled(
-          ::chromeos::features::kImeOptionsInSettings) &&
-          base::FeatureList::IsEnabled(::chromeos::features::kImeMojoDecoder));
+  html_source->AddBoolean("imeOptionsInSettings",
+                          base::FeatureList::IsEnabled(
+                              ::chromeos::features::kImeOptionsInSettings));
   html_source->AddBoolean("enableLanguageSettingsV2Update2",
                           IsLanguageSettingsV2Update2Enabled());
   html_source->AddBoolean("onDeviceGrammarCheckEnabled",
                           base::FeatureList::IsEnabled(
                               ::chromeos::features::kOnDeviceGrammarCheck));
+  html_source->AddBoolean("languagePacksHandwritingEnabled",
+                          base::FeatureList::IsEnabled(
+                              ::chromeos::features::kLanguagePacksHandwriting));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {

@@ -11,7 +11,6 @@
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -30,6 +29,9 @@ using OnStartNativeTimerCallback = base::OnceCallback<void(bool)>;
 class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
  public:
   explicit NativeTimer(const std::string& tag);
+
+  NativeTimer(const NativeTimer&) = delete;
+  NativeTimer& operator=(const NativeTimer&) = delete;
 
   ~NativeTimer();
 
@@ -93,8 +95,6 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NativeTimer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeTimer);
 };
 
 }  // namespace chromeos

@@ -51,6 +51,10 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   DemoClient(const viz::FrameSinkId& frame_sink_id,
              const viz::LocalSurfaceId& local_surface_id,
              const gfx::Rect& bounds);
+
+  DemoClient(const DemoClient&) = delete;
+  DemoClient& operator=(const DemoClient&) = delete;
+
   ~DemoClient() override;
 
   const viz::FrameSinkId& frame_sink_id() const { return frame_sink_id_; }
@@ -124,8 +128,6 @@ class DemoClient : public viz::mojom::CompositorFrameSinkClient {
   // embeds other clients.
   viz::ParentLocalSurfaceIdAllocator allocator_;
   std::map<viz::FrameSinkId, EmbedInfo> embeds_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(DemoClient);
 };
 
 }  // namespace demo

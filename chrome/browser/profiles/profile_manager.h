@@ -31,6 +31,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !defined(OS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AccountProfileMapper;
+#endif
+
 class ProfileAttributesStorage;
 enum class ProfileKeepAliveOrigin;
 class ProfileManagerObserver;
@@ -136,7 +140,7 @@ class ProfileManager : public Profile::Delegate {
   // already exist on disk
   // Returns true if the profile exists, but the final loaded profile will come
   // as part of the callback.
-  bool LoadProfile(const std::string& profile_base_name,
+  bool LoadProfile(const base::FilePath& profile_base_name,
                    bool incognito,
                    ProfileLoadedCallback callback);
   bool LoadProfileByPath(const base::FilePath& profile_path,
@@ -161,8 +165,15 @@ class ProfileManager : public Profile::Delegate {
   // profile.
   base::FilePath GetLastUsedProfileDir();
 
-  // Returns created and fully initialized profiles. Note, profiles order is NOT
-  // guaranteed to be related with the creation order.
+  // Returns the path of a profile with the requested account, or the empty
+  // path if none exists.
+  base::FilePath GetProfileDirForEmail(const std::string& email);
+
+  // Returns created and fully initialized profiles. Notes:
+  // - profiles order is NOT guaranteed to be related with the creation order.
+  // - only returns profiles owned by the ProfileManager. In particular, this
+  //   does not return incognito profiles, because they are owned by their
+  //   original profiles.
   std::vector<Profile*> GetLoadedProfiles() const;
 
   // If a profile with the given path is currently managed by this object and
@@ -206,6 +217,10 @@ class ProfileManager : public Profile::Delegate {
   // Returns a ProfileShortcut Manager that enables the caller to create
   // profile specfic desktop shortcuts.
   ProfileShortcutManager* profile_shortcut_manager();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  AccountProfileMapper* GetAccountProfileMapper();
+#endif
 
 #if !defined(OS_ANDROID)
   // Less strict version of ScheduleProfileForDeletion(), silently exits if
@@ -506,6 +521,14 @@ class ProfileManager : public Profile::Delegate {
   // |profiles_info_| because ~ProfileInfo can trigger a chain of events leading
   // to an access to this member.
   std::unique_ptr<ProfileAttributesStorage> profile_attributes_storage_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Object that maintains a mapping between accounts known to the OS and Chrome
+  // profiles. AccountProfileMapper has dependencies on other members of this
+  // class. It must be destroyed after `profiles_info_` and before
+  // `profile_attributes_storage_`.
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
+#endif
 
   base::CallbackListSubscription closing_all_browsers_subscription_;
 

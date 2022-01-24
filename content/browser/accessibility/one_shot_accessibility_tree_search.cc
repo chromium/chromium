@@ -287,7 +287,7 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
 bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
   bool focusable = node->HasState(ax::mojom::State::kFocusable);
-  if (ui::IsIframe(node->GetRole()) || node->IsPlatformDocument())
+  if (ui::IsIframe(node->GetRole()) || ui::IsPlatformDocument(node->GetRole()))
     focusable = false;
   return focusable;
 }
@@ -436,17 +436,17 @@ bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,
 
 bool AccessibilityTextStyleBoldPredicate(BrowserAccessibility* start,
                                          BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kBold);
+  return node->HasTextStyle(ax::mojom::TextStyle::kBold);
 }
 
 bool AccessibilityTextStyleItalicPredicate(BrowserAccessibility* start,
                                            BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kItalic);
+  return node->HasTextStyle(ax::mojom::TextStyle::kItalic);
 }
 
 bool AccessibilityTextStyleUnderlinePredicate(BrowserAccessibility* start,
                                               BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
 }
 
 bool AccessibilityTreePredicate(BrowserAccessibility* start,

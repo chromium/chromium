@@ -112,8 +112,10 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogUIInteraction(ui_interaction);
   }
 
-  translate::TranslationType GetNextManualTranslationType() override {
-    return mock_translate_metrics_logger_->GetNextManualTranslationType();
+  translate::TranslationType GetNextManualTranslationType(
+      bool is_context_menu_initiated_translation) override {
+    return mock_translate_metrics_logger_->GetNextManualTranslationType(
+        is_context_menu_initiated_translation);
   }
 
   void SetHasHrefTranslateTarget(bool has_href_translate_target) override {

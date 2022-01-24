@@ -194,10 +194,11 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const LayoutRect& image_rect =
-      (layout_box_->IsLayoutImage())
-          ? To<LayoutImage>(layout_box_)->ReplacedContentRect().ToLayoutRect()
-          : LayoutRect(LayoutPoint(), image_size);
+  const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
+                                     ? To<LayoutImage>(layout_box_.Get())
+                                           ->ReplacedContentRect()
+                                           .ToLayoutRect()
+                                     : LayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
@@ -426,7 +427,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
                 : containing_block.MarginEndForChild(*layout_box_);
         LayoutUnit raw_left_margin_box_delta =
             segment.logical_left + LogicalLeftOffset() + logical_left_margin;
-        LayoutUnit left_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit left_margin_box_delta = ClampTo<LayoutUnit>(
             raw_left_margin_box_delta, LayoutUnit(), float_margin_box_width);
 
         LayoutUnit logical_right_margin =
@@ -437,7 +438,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
             segment.logical_right + LogicalLeftOffset() -
             containing_block.LogicalWidthForChild(*layout_box_) -
             logical_right_margin;
-        LayoutUnit right_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit right_margin_box_delta = ClampTo<LayoutUnit>(
             raw_right_margin_box_delta, -float_margin_box_width, LayoutUnit());
 
         shape_outside_deltas_ =
@@ -478,13 +479,24 @@ PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
 }
 
 FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
-  FloatPoint result = FloatPoint(point.X() + LogicalLeftOffset(),
-                                 point.Y() + LogicalTopOffset());
+  FloatPoint result = FloatPoint(point.x() + LogicalLeftOffset(),
+                                 point.y() + LogicalTopOffset());
   if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
-    result.SetY(layout_box_->LogicalHeight() - result.Y());
+    result.set_y(layout_box_->LogicalHeight() - result.y());
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
     result = result.TransposedPoint();
   return result;
+}
+
+// static
+ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
+  DEFINE_STATIC_LOCAL(Persistent<InfoMap>, static_info_map,
+                      (MakeGarbageCollected<InfoMap>()));
+  return *static_info_map;
+}
+
+void ShapeOutsideInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_box_);
 }
 
 }  // namespace blink

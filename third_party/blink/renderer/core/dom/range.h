@@ -90,12 +90,6 @@ class CORE_EXPORT Range final : public AbstractRange {
   void collapse(bool to_start);
   bool isPointInRange(Node* ref_node, unsigned offset, ExceptionState&) const;
   int16_t comparePoint(Node* ref_node, unsigned offset, ExceptionState&) const;
-  enum CompareResults {
-    NODE_BEFORE,
-    NODE_AFTER,
-    NODE_BEFORE_AND_AFTER,
-    NODE_INSIDE
-  };
   enum CompareHow { kStartToStart, kStartToEnd, kEndToEnd, kEndToStart };
   int16_t compareBoundaryPoints(unsigned how,
                                 const Range* source_range,
@@ -182,7 +176,7 @@ class CORE_EXPORT Range final : public AbstractRange {
   void CheckExtractPrecondition(ExceptionState&);
   bool HasSameRoot(const Node&) const;
 
-  enum ActionType { DELETE_CONTENTS, EXTRACT_CONTENTS, CLONE_CONTENTS };
+  enum ActionType { kDeleteContents, kExtractContents, kCloneContents };
   DocumentFragment* ProcessContents(ActionType, ExceptionState&);
   static Node* ProcessContentsBetweenOffsets(ActionType,
                                              DocumentFragment*,
@@ -206,7 +200,7 @@ class CORE_EXPORT Range final : public AbstractRange {
                                                 Node* common_root,
                                                 ExceptionState&);
   void UpdateSelectionIfAddedToSelection();
-  void ScheduleVisualUpdateIfInRegisteredHighlight();
+  void ScheduleVisualUpdateIfInRegisteredHighlight(Document& document);
   void RemoveFromSelectionIfInDifferentRoot(Document& old_document);
 
   Member<Document> owner_document_;  // Cannot be null.
@@ -224,7 +218,7 @@ using RangeVector = HeapVector<Member<Range>>;
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::Range*);
+void ShowTree(const blink::Range*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_

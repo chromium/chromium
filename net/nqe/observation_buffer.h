@@ -50,6 +50,8 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   //  observations to |other|.
   ObservationBuffer(const ObservationBuffer& other);
 
+  ObservationBuffer& operator=(const ObservationBuffer&) = delete;
+
   ~ObservationBuffer();
 
   // Adds |observation| to the buffer. The oldest observation in the buffer
@@ -126,8 +128,6 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   const double weight_multiplier_per_signal_level_;
 
   const base::TickClock* tick_clock_;
-
-  DISALLOW_ASSIGN(ObservationBuffer);
 };
 
 }  // namespace internal

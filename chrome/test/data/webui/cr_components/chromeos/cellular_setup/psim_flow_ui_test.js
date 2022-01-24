@@ -14,7 +14,7 @@
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // #import {FakeCarrierPortalHandlerRemote, FakeCellularSetupRemote} from './fake_cellular_setup_remote.m.js';
 // #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('CrComponentsPsimFlowUiTest', function() {

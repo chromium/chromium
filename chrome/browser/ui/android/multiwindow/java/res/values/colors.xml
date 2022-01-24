@@ -7,4 +7,5 @@
 
     <!-- Multi-instance switcher dialog -->
     <color name="current_item_bullet">@color/default_green</color>
+    <color name="checked_item">@color/default_bg_color_blue</color>
 </resources>

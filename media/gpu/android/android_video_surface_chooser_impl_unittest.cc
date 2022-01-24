@@ -109,7 +109,7 @@ class AndroidVideoSurfaceChooserImplTest
     overlay_ = std::make_unique<MockAndroidOverlay>();
 
     // Advance the clock just so we're not at 0.
-    tick_clock_.Advance(base::TimeDelta::FromSeconds(10));
+    tick_clock_.Advance(base::Seconds(10));
 
     // Don't prevent promotions because of the compositor.
     chooser_state_.is_compositor_promotable = true;
@@ -258,7 +258,7 @@ TEST_F(AndroidVideoSurfaceChooserImplTest,
   testing::Mock::VerifyAndClearExpectations(this);
 
   // Try to get it to choose again, which shouldn't do anything.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(2));
+  tick_clock_.Advance(base::Seconds(2));
   EXPECT_CALL(*this, MockOnOverlayCreated()).Times(0);
   chooser_->UpdateState(FactoryFor(nullptr), chooser_state_);
   testing::Mock::VerifyAndClearExpectations(&client_);
@@ -266,7 +266,7 @@ TEST_F(AndroidVideoSurfaceChooserImplTest,
 
   // Advance some more and try again.  This time, it should request an overlay
   // from the factory.
-  tick_clock_.Advance(base::TimeDelta::FromSeconds(100));
+  tick_clock_.Advance(base::Seconds(100));
   EXPECT_CALL(*this, MockOnOverlayCreated()).Times(1);
   chooser_->UpdateState(FactoryFor(nullptr), chooser_state_);
   testing::Mock::VerifyAndClearExpectations(&client_);

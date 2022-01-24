@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
@@ -27,6 +26,12 @@ namespace content {
 class UtilityBlinkPlatformWithSandboxSupportImpl : public blink::Platform {
  public:
   UtilityBlinkPlatformWithSandboxSupportImpl();
+
+  UtilityBlinkPlatformWithSandboxSupportImpl(
+      const UtilityBlinkPlatformWithSandboxSupportImpl&) = delete;
+  UtilityBlinkPlatformWithSandboxSupportImpl& operator=(
+      const UtilityBlinkPlatformWithSandboxSupportImpl&) = delete;
+
   ~UtilityBlinkPlatformWithSandboxSupportImpl() override;
 
   // BlinkPlatformImpl
@@ -39,8 +44,6 @@ class UtilityBlinkPlatformWithSandboxSupportImpl : public blink::Platform {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(UtilityBlinkPlatformWithSandboxSupportImpl);
 };
 
 }  // namespace content

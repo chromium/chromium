@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/chrome_browser_cloud_management_controller_desktop.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/client_data_delegate_desktop.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/remote_commands_invalidator_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -26,7 +29,6 @@
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -54,9 +56,8 @@
 #endif  // defined(OS_WIN)
 
 #if defined(OS_FUCHSIA)
-#include "base/notreached.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#endif
+#include "chrome/browser/policy/browser_dm_token_storage_fuchsia.h"
+#endif  // defined(OS_FUCHSIA)
 
 namespace policy {
 
@@ -85,6 +86,8 @@ void ChromeBrowserCloudManagementControllerDesktop::
   storage_delegate = std::make_unique<BrowserDMTokenStorageLinux>();
 #elif defined(OS_WIN)
   storage_delegate = std::make_unique<BrowserDMTokenStorageWin>();
+#elif defined(OS_FUCHSIA)
+  storage_delegate = std::make_unique<BrowserDMTokenStorageFuchsia>();
 #else
   NOTREACHED();
 #endif
@@ -227,10 +230,12 @@ bool ChromeBrowserCloudManagementControllerDesktop::ReadyToInit() {
   return true;
 }
 
-void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
-  DCHECK(
-      base::FeatureList::IsEnabled(policy::features::kCBCMPolicyInvalidations));
+std::unique_ptr<ClientDataDelegate>
+ChromeBrowserCloudManagementControllerDesktop::CreateClientDataDelegate() {
+  return std::make_unique<ClientDataDelegateDesktop>();
+}
 
+void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
   if (invalidation_service_) {
     NOTREACHED() << "Trying to start an invalidation service when there's "
                     "already one. Please see crbug.com/1186159.";
@@ -266,21 +271,19 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       0 /* highest_handled_invalidation_version */);
   policy_invalidator_->Initialize(invalidation_service_.get());
 
-  if (base::FeatureList::IsEnabled(policy::features::kCBCMRemoteCommands)) {
-    g_browser_process->browser_policy_connector()
-        ->machine_level_user_cloud_policy_manager()
-        ->core()
-        ->StartRemoteCommandsService(
-            std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
-            PolicyInvalidationScope::kCBCM);
+  g_browser_process->browser_policy_connector()
+      ->machine_level_user_cloud_policy_manager()
+      ->core()
+      ->StartRemoteCommandsService(
+          std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
+          PolicyInvalidationScope::kCBCM);
 
-    commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
-        g_browser_process->browser_policy_connector()
-            ->machine_level_user_cloud_policy_manager()
-            ->core(),
-        base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
-    commands_invalidator_->Initialize(invalidation_service_.get());
-  }
+  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager()
+          ->core(),
+      base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
+  commands_invalidator_->Initialize(invalidation_service_.get());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

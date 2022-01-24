@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -30,6 +29,12 @@ class DriveFileStreamServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
   DriveFileStreamServiceProvider();
+
+  DriveFileStreamServiceProvider(const DriveFileStreamServiceProvider&) =
+      delete;
+  DriveFileStreamServiceProvider& operator=(
+      const DriveFileStreamServiceProvider&) = delete;
+
   ~DriveFileStreamServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -44,8 +49,6 @@ class DriveFileStreamServiceProvider
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<DriveFileStreamServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFileStreamServiceProvider);
 };
 
 }  // namespace ash

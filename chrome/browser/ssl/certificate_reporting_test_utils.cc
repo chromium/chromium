@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,6 +43,9 @@ class MockSSLCertReporter : public SSLCertReporter {
         expect_report_(expect_report),
         reported_(false) {}
 
+  MockSSLCertReporter(const MockSSLCertReporter&) = delete;
+  MockSSLCertReporter& operator=(const MockSSLCertReporter&) = delete;
+
   ~MockSSLCertReporter() override {
     if (expect_report_ == CERT_REPORT_EXPECTED) {
       EXPECT_TRUE(reported_);
@@ -68,8 +70,6 @@ class MockSSLCertReporter : public SSLCertReporter {
       report_sent_callback_;
   const ExpectReport expect_report_;
   bool reported_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSSLCertReporter);
 };
 
 SSLCertReporterCallback::SSLCertReporterCallback(base::RunLoop* run_loop)

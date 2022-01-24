@@ -17,16 +17,10 @@ constexpr size_t kNumTopMatches = 3u;
 // The score threshold before we consider a result a top match.
 constexpr double kTopMatchThreshold = 0.9;
 
-// The score added to a results relevance to make it a top match.
-constexpr double kTopMatchScoreBoost = 1000.0;
-
-// How much to multiply a category's rank by when adjusting a result's score for
-// its category. A result's final score is:
-//   kCategoryScoreFactor*(category rank) + (result relevance)
-constexpr double kCategoryScoreFactor = 10.0;
-
 // String to add to the details text of top match results. Keep the char[] and
 // char16_t versions in sync.
+// TODO(crbug.com/1199206): Once the UI has support for categories these can be
+// removed.
 constexpr char kTopMatchDetails[] = "(top match) ";
 constexpr char16_t kTopMatchDetailsUTF16[] = u"(top match) ";
 

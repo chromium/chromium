@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/types/strong_alias.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -131,9 +132,24 @@ class CONTENT_EXPORT BrowserMainParts {
   virtual void PostCreateThreads() {}
   virtual int PreMainMessageLoopRun();
 
+  // This method returns true by default, telling InterceptMainMessageLoopRun
+  // that it should attempt to intercept the main message loop run. Overriding
+  // it enables the embedder to conditionally cancel that attempt and the
+  // message loop run itself(by returning false). This is key in some
+  // integration tests that verify early exit by testing that the test body
+  // (entered when the main message loop run is intercepted) is never entered.
+  // On Android, BrowserMainLoop never enters MainMessageLoopRun() but this
+  // method is still relevant to control whether InterceptMainMessageLoopRun()
+  // is allowed to take control of the browser main loop (browser tests).
+  virtual bool ShouldInterceptMainMessageLoopRun();
+
   // This gives BrowserMainParts one last opportunity to tweak the upcoming main
   // message loop run. The embedder may replace |run_loop| to alter the default
-  // RunLoop about to be run or even reset() it to cancel the upcoming run.
+  // RunLoop about to be run (must not be nullified, override
+  // CanRunMainMessageLoop to cancel the run). Note: This point is never
+  // reached on Android as it never invokes MainMessageLoopRun(),
+  // InterceptMainMessageLoopRun() is Android's last chance at altering the
+  // default native loop run.
   virtual void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) {}
 

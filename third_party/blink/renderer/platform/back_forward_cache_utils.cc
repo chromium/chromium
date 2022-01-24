@@ -27,12 +27,11 @@ bool IsInflightNetworkRequestBackForwardCacheSupportEnabled() {
          base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable);
 }
 
-bool IsFreezeWhileKeepActiveBackForwardCacheSupportEnabled() {
-  // Similar to in IsInflightNetworkRequestBackForwardCacheSupportEnabled(), the
-  // call to RuntimeEnabledFeatures::BackForwardCacheEnabled() must be done
-  // first.
-  return RuntimeEnabledFeatures::BackForwardCacheEnabled() &&
-         base::FeatureList::IsEnabled(features::kFreezeWhileKeepActive);
+bool OnlyUsePerProcessBufferLimit() {
+  // TODO(crbug.com/1243600) Remove this flag and also the logic to count the
+  // bytes per request.
+  return base::FeatureList::IsEnabled(
+      features::kNetworkRequestUsesOnlyPerProcessBufferLimit);
 }
 
 int GetLoadingTasksUnfreezableParamAsInt(const std::string& param_name,

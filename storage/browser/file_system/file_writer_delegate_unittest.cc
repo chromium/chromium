@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
@@ -38,6 +38,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "testing/platform_test.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -99,9 +100,10 @@ class FileWriterDelegateTest : public PlatformTest {
 
   int64_t usage() {
     return file_system_context_->GetQuotaUtil(kFileSystemType)
-        ->GetOriginUsageOnFileTaskRunner(file_system_context_.get(),
-                                         url::Origin::Create(GURL(kOrigin)),
-                                         kFileSystemType);
+        ->GetStorageKeyUsageOnFileTaskRunner(
+            file_system_context_.get(),
+            blink::StorageKey::CreateFromStringForTesting(kOrigin),
+            kFileSystemType);
   }
 
   int64_t GetFileSizeOnDisk(const char* test_file_path) {
@@ -119,7 +121,7 @@ class FileWriterDelegateTest : public PlatformTest {
 
   FileSystemURL GetFileSystemURL(const char* file_name) const {
     return file_system_context_->CreateCrackedFileSystemURL(
-        url::Origin::Create(GURL(kOrigin)), kFileSystemType,
+        blink::StorageKey::CreateFromStringForTesting(kOrigin), kFileSystemType,
         base::FilePath().FromUTF8Unsafe(file_name));
   }
 

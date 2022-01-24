@@ -762,6 +762,6 @@ void PresentationServiceDelegateImpl::OnConnectionStateChanged(
   state_changed_cb.Run(info);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PresentationServiceDelegateImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PresentationServiceDelegateImpl);
 
 }  // namespace media_router

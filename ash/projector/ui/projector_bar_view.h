@@ -5,14 +5,15 @@
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_BAR_VIEW_H_
 
+#include <vector>
+
 #include "ash/ash_export.h"
 #include "ash/projector/model/projector_ui_model.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/projector/ui/projector_image_button.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
-
-#include <vector>
 
 namespace views {
 class BoxLayoutView;

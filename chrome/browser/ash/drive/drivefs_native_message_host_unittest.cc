@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +30,9 @@ class MockClient : public extensions::NativeMessageHost::Client {
  public:
   MockClient() {}
 
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
+
   MOCK_METHOD(void,
               PostMessageFromNativeHost,
               (const std::string& message),
@@ -38,9 +41,6 @@ class MockClient : public extensions::NativeMessageHost::Client {
               CloseChannel,
               (const std::string& error_message),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
 };
 
 class DriveFsNativeMessageHostTest
@@ -52,6 +52,10 @@ class DriveFsNativeMessageHostTest
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
+
+  DriveFsNativeMessageHostTest(const DriveFsNativeMessageHostTest&) = delete;
+  DriveFsNativeMessageHostTest& operator=(const DriveFsNativeMessageHostTest&) =
+      delete;
 
   DriveFs* GetForwardingInterface() override {
     NOTREACHED();
@@ -79,8 +83,6 @@ class DriveFsNativeMessageHostTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTest);
 };
 
 TEST_F(DriveFsNativeMessageHostTest, DriveFsInitiatedMessaging) {
@@ -172,10 +174,13 @@ class DriveFsNativeMessageHostTestWithoutFlag
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
+  DriveFsNativeMessageHostTestWithoutFlag(
+      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
+  DriveFsNativeMessageHostTestWithoutFlag& operator=(
+      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTestWithoutFlag);
 };
 
 TEST_F(DriveFsNativeMessageHostTestWithoutFlag,

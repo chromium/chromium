@@ -10,16 +10,16 @@
 #include <set>
 #include <vector>
 
+#include "ash/components/drivefs/drivefs_host_observer.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/dbus/seneschal/seneschal_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -41,7 +41,7 @@ struct SharedPathInfo {
 // Handles sharing and unsharing paths from the Chrome OS host to guest VMs via
 // seneschal.
 class GuestOsSharePath : public KeyedService,
-                         public chromeos::VmShutdownObserver,
+                         public ash::VmShutdownObserver,
                          public file_manager::VolumeManagerObserver,
                          public drivefs::DriveFsHostObserver {
  public:
@@ -64,6 +64,10 @@ class GuestOsSharePath : public KeyedService,
 
   static GuestOsSharePath* GetForProfile(Profile* profile);
   explicit GuestOsSharePath(Profile* profile);
+
+  GuestOsSharePath(const GuestOsSharePath&) = delete;
+  GuestOsSharePath& operator=(const GuestOsSharePath&) = delete;
+
   ~GuestOsSharePath() override;
 
   // KeyedService:
@@ -117,7 +121,7 @@ class GuestOsSharePath : public KeyedService,
   // Returns true if |path| or a parent is shared with |vm_name|.
   bool IsPathShared(const std::string& vm_name, base::FilePath path) const;
 
-  // chromeos::VmShutdownObserver
+  // ash::VmShutdownObserver
   void OnVmShutdown(const std::string& vm_name) override;
 
   // file_manager::VolumeManagerObserver
@@ -178,8 +182,6 @@ class GuestOsSharePath : public KeyedService,
   std::map<base::FilePath, SharedPathInfo> shared_paths_;
 
   base::WeakPtrFactory<GuestOsSharePath> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestOsSharePath);
 };  // class
 
 }  // namespace guest_os

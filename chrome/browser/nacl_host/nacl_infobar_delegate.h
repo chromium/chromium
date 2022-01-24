@@ -17,6 +17,9 @@ class NaClInfoBarDelegate : public ConfirmInfoBarDelegate {
   // |infobar_manager|.
   static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
+  NaClInfoBarDelegate(const NaClInfoBarDelegate&) = delete;
+  NaClInfoBarDelegate& operator=(const NaClInfoBarDelegate&) = delete;
+
  private:
   NaClInfoBarDelegate();
   ~NaClInfoBarDelegate() override;
@@ -26,8 +29,6 @@ class NaClInfoBarDelegate : public ConfirmInfoBarDelegate {
   GURL GetLinkURL() const override;
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(NaClInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_NACL_HOST_NACL_INFOBAR_DELEGATE_H_

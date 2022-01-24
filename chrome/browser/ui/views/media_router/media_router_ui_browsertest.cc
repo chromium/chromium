@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
   content::ContextMenuParams params;
   params.page_url =
       web_contents->GetController().GetLastCommittedEntry()->GetURL();
-  TestRenderViewContextMenu menu(web_contents->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents->GetMainFrame(), params);
   menu.Init();
 
   ASSERT_TRUE(menu.IsItemPresent(IDC_ROUTE_MEDIA));
@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   EXPECT_TRUE(dialog_controller->IsShowingMediaRouterDialog());
 
   // Navigate away.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // The navigation should have closed the dialog.
   EXPECT_FALSE(dialog_controller->IsShowingMediaRouterDialog());

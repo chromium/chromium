@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/action_surface.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -29,10 +30,9 @@ namespace {
 bool ShouldUpload(const StoredAction& action) {
   base::Time action_time =
       base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(
-          action.action().client_data().timestamp_seconds());
+      base::Seconds(action.action().client_data().timestamp_seconds());
   base::TimeDelta age = base::Time::Now() - action_time;
-  if (age < base::TimeDelta())
+  if (age.is_negative())
     age = base::TimeDelta();
 
   return action.upload_attempt_count() <
@@ -119,7 +119,7 @@ UploadActionsTask::UploadActionsTask(
   client_data->set_timestamp_seconds(
       (base::Time::Now() - base::Time::UnixEpoch()).InSeconds());
   client_data->set_action_surface(
-      feedwire::FeedAction::ClientData::ANDROID_CHROME_NEW_TAB);
+      feedwire::ActionSurface::ANDROID_CHROME_NEW_TAB);
   gaia_ = stream_.GetSyncSignedInGaia();
 }
 

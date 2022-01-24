@@ -15,24 +15,11 @@ constexpr char kTabLoadTimeoutInMsParameterName[] = "tabLoadTimeoutInMs";
 
 namespace features {
 
-// Enables using customized value for tab load timeout. This is used by both
-// staggered background tab opening and session restore in finch experiment to
-// see what timeout value is better. The default timeout is used when this
-// feature is disabled.
+// Enables using customized value for tab load timeout. This is used by session
+// restore in finch experiment to see what timeout value is better. The default
+// timeout is used when this feature is disabled.
 const base::Feature kCustomizedTabLoadTimeout{
     "CustomizedTabLoadTimeout", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables delaying the navigation of background tabs in order to improve
-// foreground tab's user experience.
-const base::Feature kStaggeredBackgroundTabOpening{
-    "StaggeredBackgroundTabOpening", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// This controls whether we are running experiment with staggered background
-// tab opening feature. For control group, this should be disabled. This depends
-// on |kStaggeredBackgroundTabOpening| above.
-const base::Feature kStaggeredBackgroundTabOpeningExperiment{
-    "StaggeredBackgroundTabOpeningExperiment",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables using the Tab Ranker to score tabs for discarding instead of relying
 // on last focused time.
@@ -50,7 +37,7 @@ base::TimeDelta GetTabLoadTimeout(const base::TimeDelta& default_timeout) {
   if (timeout_in_ms <= 0)
     return default_timeout;
 
-  return base::TimeDelta::FromMilliseconds(timeout_in_ms);
+  return base::Milliseconds(timeout_in_ms);
 }
 
 int GetNumOldestTabsToScoreWithTabRanker() {

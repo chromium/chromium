@@ -4,8 +4,10 @@
 
 #include "chrome/browser/web_applications/web_app_provider.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/testing_profile.h"
 
 namespace web_app {
@@ -19,7 +21,12 @@ class WebAppProviderUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = WebAppProvider::Get(profile());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    provider_ = WebAppProvider::GetForLocalAppsUnchecked(profile());
   }
 
   WebAppProvider* provider() { return provider_; }

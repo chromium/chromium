@@ -26,6 +26,14 @@ const char kForcePrefersReducedMotion[] = "force-prefers-reduced-motion";
 // Run in headless mode, i.e., without a UI or display server dependencies.
 const char kHeadless[] = "headless";
 
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Which X11 display to connect to. Emulates the GTK+ "--display=" command line
+// argument. In use only with Ozone/X11.
+const char kX11Display[] = "display";
+// Disables MIT-SHM extension. In use only with Ozone/X11.
+const char kNoXshm[] = "no-xshm";
+#endif
+
 }  // namespace switches
 
 namespace features {

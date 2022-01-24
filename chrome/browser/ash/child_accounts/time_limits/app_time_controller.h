@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_tick_clock.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_notification_delegate.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,6 +76,9 @@ class AppTimeController : public SystemClockClient::Observer,
   AppTimeController(const AppTimeController&) = delete;
   AppTimeController& operator=(const AppTimeController&) = delete;
   ~AppTimeController() override;
+
+  // Initializes AppTimeController. It should be called after the constructor.
+  void Init();
 
   bool IsExtensionAllowlisted(const std::string& extension_id) const;
 
@@ -161,7 +164,7 @@ class AppTimeController : public SystemClockClient::Observer,
 
   // The time of the day when app time limits should be reset.
   // Defaults to 6am local time.
-  base::TimeDelta limits_reset_time_ = base::TimeDelta::FromHours(6);
+  base::TimeDelta limits_reset_time_ = base::Hours(6);
 
   // The last time when |reset_timer_| fired.
   base::Time last_limits_reset_time_;

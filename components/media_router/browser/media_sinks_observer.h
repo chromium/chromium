@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,6 +34,10 @@ class MediaSinksObserver {
   // source, so the returned sink list may be incomplete.
   // TODO(crbug.com/929937): Fix this.
   explicit MediaSinksObserver(MediaRouter* router);
+
+  MediaSinksObserver(const MediaSinksObserver&) = delete;
+  MediaSinksObserver& operator=(const MediaSinksObserver&) = delete;
+
   virtual ~MediaSinksObserver();
 
   // Registers with MediaRouter to start observing. Must be called before the
@@ -70,8 +73,6 @@ class MediaSinksObserver {
 #if DCHECK_IS_ON()
   bool in_on_sinks_updated_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinksObserver);
 };
 
 }  // namespace media_router

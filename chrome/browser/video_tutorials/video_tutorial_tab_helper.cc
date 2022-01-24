@@ -43,6 +43,6 @@ void VideoTutorialTabHelper::ReadyToCommitNavigation(
                            blink::mojom::kAutoplayFlagUserException);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoTutorialTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoTutorialTabHelper);
 
 }  // namespace video_tutorials

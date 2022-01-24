@@ -15,10 +15,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
                                const PaintFlags& flags,
                                const FloatRect& dest_rect,
                                const FloatRect& src_rect,
-                               const SkSamplingOptions&,
-                               RespectImageOrientationEnum,
-                               ImageClampingMode,
-                               ImageDecodingMode) {
+                               const ImageDrawOptions&) {
   PaintCanvasAutoRestore ar(canvas, true);
   canvas->clipRect(dest_rect);
   canvas->concat(SkMatrix::RectToRect(src_rect, dest_rect));
@@ -29,7 +26,7 @@ void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
 
 void PaintGeneratedImage::DrawTile(GraphicsContext& context,
                                    const FloatRect& src_rect,
-                                   RespectImageOrientationEnum) {
+                                   const ImageDrawOptions&) {
   context.DrawRecord(record_);
 }
 

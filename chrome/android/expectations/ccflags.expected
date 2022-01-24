@@ -44,7 +44,7 @@
 -Xclang -add-plugin -Xclang find-bad-constructs
 -Xclang -fdebug-compilation-dir -Xclang .
 -Xclang -plugin-arg-find-bad-constructs -Xclang check-ipc
--Xclang -plugin-arg-find-bad-constructs -Xclang checked-ptr-as-trivial-member
+-Xclang -plugin-arg-find-bad-constructs -Xclang raw-ptr-template-as-trivial-member
 -fPIC
 -fcomplete-member-pointers
 -fdata-sections

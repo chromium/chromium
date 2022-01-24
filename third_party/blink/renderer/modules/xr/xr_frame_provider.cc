@@ -152,7 +152,7 @@ void XRFrameProvider::OnSessionEnded(XRSession* session) {
     frame_id_ = -1;
     immersive_presentation_provider_.reset();
     immersive_data_provider_.reset();
-    immersive_frame_pose_ = nullptr;
+    immersive_frame_viewer_pose_ = nullptr;
     is_immersive_frame_position_emulated_ = false;
     first_immersive_frame_time_ = absl::nullopt;
     first_immersive_frame_time_delta_ = absl::nullopt;
@@ -299,12 +299,12 @@ void XRFrameProvider::OnImmersiveFrameData(
   // [1] https://immersive-web.github.io/webxr/#xr-animation-frame
   double high_res_now_ms = UpdateImmersiveFrameTime(window, *data);
 
-  immersive_frame_pose_ = std::move(data->pose);
-  if (immersive_frame_pose_) {
+  immersive_frame_viewer_pose_ = std::move(data->mojo_from_viewer);
+  if (immersive_frame_viewer_pose_) {
     DVLOG(3) << __func__ << ": pose available, emulated_position="
-             << immersive_frame_pose_->emulated_position;
+             << immersive_frame_viewer_pose_->emulated_position;
     is_immersive_frame_position_emulated_ =
-        immersive_frame_pose_->emulated_position;
+        immersive_frame_viewer_pose_->emulated_position;
   } else {
     DVLOG(2) << __func__ << ": emulating immersive frame position";
     is_immersive_frame_position_emulated_ = true;
@@ -450,13 +450,13 @@ void XRFrameProvider::ProcessScheduledFrame(
     // because input events may call into |session.end()| which will destroy
     // this data otherwise. Move the data into local scope here so that it can't
     // be destroyed.
-    auto frame_pose = std::move(immersive_frame_pose_);
+    auto mojo_from_viewer_pose = std::move(immersive_frame_viewer_pose_);
 
     // Prior to updating input source state, update the state needed to create
     // presentation frame as newly created presentation frame will get passed to
     // the input source select[/start/end] events.
     immersive_session_->UpdatePresentationFrameState(
-        high_res_now_ms, frame_pose, frame_data, frame_id_,
+        high_res_now_ms, mojo_from_viewer_pose, frame_data, frame_id_,
         is_immersive_frame_position_emulated_);
 
     // Check if immersive session is still set as OnInputStateChange may have
@@ -522,7 +522,8 @@ void XRFrameProvider::ProcessScheduledFrame(
 
       const auto& inline_frame_data = request.value;
       device::mojom::blink::VRPosePtr inline_pose_data =
-          inline_frame_data ? std::move(inline_frame_data->pose) : nullptr;
+          inline_frame_data ? std::move(inline_frame_data->mojo_from_viewer)
+                            : nullptr;
 
       // Prior to updating input source state, update the state needed to create
       // presentation frame as newly created presentation frame will get passed

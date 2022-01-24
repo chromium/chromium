@@ -18,6 +18,11 @@
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGuid
                       targetDeviceName:(NSString*)deviceName;
 
+// Opens the page where the user can manage known target devices. This is done
+// in a new tab to avoid exiting the current page, which the user possibly wants
+// to share.
+- (void)openManageDevicesTab;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_MODAL_DELEGATE_H_

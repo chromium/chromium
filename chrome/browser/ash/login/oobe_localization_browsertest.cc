@@ -8,7 +8,7 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -33,16 +33,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_util.h"
 
 namespace base {
 class TaskRunner;
 }
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // OOBE constants.
@@ -191,6 +190,9 @@ class OobeLocalizationTest
  public:
   OobeLocalizationTest();
 
+  OobeLocalizationTest(const OobeLocalizationTest&) = delete;
+  OobeLocalizationTest& operator=(const OobeLocalizationTest&) = delete;
+
   // Verifies that the comma-separated `values` corresponds with the first
   // values in `select_id`, optionally checking for an options group label after
   // the first set of options.
@@ -210,8 +212,6 @@ class OobeLocalizationTest
 
  private:
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeLocalizationTest);
 };
 
 OobeLocalizationTest::OobeLocalizationTest() : OobeBaseTest() {
@@ -384,4 +384,4 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Range(&oobe_localization_test_parameters[0],
                    &oobe_localization_test_parameters[base::size(
                        oobe_localization_test_parameters)]));
-}  // namespace chromeos
+}  // namespace ash

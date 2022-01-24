@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
@@ -44,6 +43,10 @@ class FakeSyncManager : public SyncManager {
   FakeSyncManager(ModelTypeSet initial_sync_ended_types,
                   ModelTypeSet progress_marker_types,
                   ModelTypeSet configure_fail_types);
+
+  FakeSyncManager(const FakeSyncManager&) = delete;
+  FakeSyncManager& operator=(const FakeSyncManager&) = delete;
+
   ~FakeSyncManager() override;
 
   // Returns those types that have been downloaded since the last call to
@@ -68,7 +71,7 @@ class FakeSyncManager : public SyncManager {
   // loop for purposes of callbacks.
   void Init(InitArgs* args) override;
   ModelTypeSet InitialSyncEndedTypes() override;
-  ModelTypeSet GetEnabledTypes() override;
+  ModelTypeSet GetConnectedTypes() override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   void StartSyncingNormally(base::Time last_poll_time) override;
@@ -133,8 +136,6 @@ class FakeSyncManager : public SyncManager {
 
   // Number of invalidations received per type since startup.
   std::map<ModelType, int> num_invalidations_received_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncManager);
 };
 
 }  // namespace syncer

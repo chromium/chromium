@@ -28,7 +28,8 @@ Workspace: 14 uiSourceCodes.
 Running: detachFrame1
 Removed: 1 uiSourceCodes
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-script.js
-Workspace: 15 uiSourceCodes.
+Workspace: 16 uiSourceCodes.
+[+] debugger:///VM[XXX]
     debugger:///VM[XXX]
     debugger:///VM[XXX] sourcemap-script.js
     debugger:///VM[XXX] sourcemap-script.js
@@ -52,8 +53,10 @@ Removed: 5 uiSourceCodes
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-script.js
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-style.css
 [-] http://127.0.0.1:8000/devtools/bindings/resources/sourcemap-typescript.ts
-Workspace: 12 uiSourceCodes.
+Workspace: 14 uiSourceCodes.
     debugger:///VM[XXX]
+    debugger:///VM[XXX]
+[+] debugger:///VM[XXX]
     debugger:///VM[XXX] sourcemap-script.js
     debugger:///VM[XXX] sourcemap-script.js
     debugger:///VM[XXX] _test_create-iframe1.js

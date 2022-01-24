@@ -1,16 +1,13 @@
-// Copyright 2014 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/**
+ * @fileoverview
+ * @suppress {missingRequire} swapping userAgent
+ */
 
 goog.module('goog.events.WheelHandlerTest');
 goog.setTestOnly();
@@ -46,12 +43,14 @@ let mouseWheelHandlerRtl;
 
 // Be sure to call this after setting up goog.userAgent mock and not before.
 function createHandlerAndListen() {
+  /** @suppress {checkTypes} suppression added to enable type checking */
   mouseWheelHandler = new WheelHandler(dom.getElement('foo'));
 
   events.listen(mouseWheelHandler, EventsWheelEvent.EventType.WHEEL, (e) => {
     mouseWheelEvent = e;
   });
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   mouseWheelHandlerRtl = new WheelHandler(dom.getElement('fooRtl'));
 
   events.listen(mouseWheelHandlerRtl, EventsWheelEvent.EventType.WHEEL, (e) => {
@@ -115,6 +114,7 @@ function assertPixelDeltas(scale) {
       mouseWheelEventRtl.deltaZ * scale, mouseWheelEventRtl.pixelDeltaZ);
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function createFakePreferredEvent(
     opt_deltaMode, opt_deltaX, opt_deltaY, opt_deltaZ) {
   const event = {
@@ -127,6 +127,7 @@ function createFakePreferredEvent(
   return new BrowserEvent(event);
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function createFakeLegacyEvent(
     opt_wheelDelta, opt_wheelDeltaX, opt_wheelDeltaY) {
   const event = {
@@ -138,6 +139,7 @@ function createFakeLegacyEvent(
   return new BrowserEvent(event);
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function createFakeGeckoEvent(opt_detail, opt_axis) {
   const event = {
     type: GECKO_TYPE,
@@ -155,6 +157,7 @@ testSuite({
 
   setUp() {
     stubs.remove(goog, 'userAgent');
+    /** @suppress {checkTypes} suppression added to enable type checking */
     goog.userAgent = {
       product: {
         CHROME: false,
@@ -187,8 +190,9 @@ testSuite({
     mouseWheelHandler = new WheelHandler(document.body);
 
     events.listen(mouseWheelHandler, EventsWheelEvent.EventType.WHEEL, (e) => {
-      log.innerHTML += googString.subs(
-          '<br />(deltaX, deltaY): (%s, %s)', e.deltaX, e.deltaY);
+      log.append(
+          document.createElement('br'),
+          googString.subs('(deltaX, deltaY): (%s, %s)', e.deltaX, e.deltaY));
     });
   },
 
@@ -295,6 +299,7 @@ testSuite({
     goog.userAgent.IE = true;
     const documentObjectWithNoBody = {};
     testingEvents.mixinListenable(documentObjectWithNoBody);
+    /** @suppress {checkTypes} suppression added to enable type checking */
     mouseWheelHandler = new WheelHandler(documentObjectWithNoBody);
   },
 });

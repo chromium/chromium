@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<head>
+  <link rel="manifest" id="linkManifest">
+</head>
+<script>
+  // The manifest URL must be specified as the GET value
+  // e.g.: get_manifest.html?basic.json
+  linkManifest.href = location.search.slice(1);
+</script>

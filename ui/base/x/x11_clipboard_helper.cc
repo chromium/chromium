@@ -142,7 +142,8 @@ XClipboardHelper::XClipboardHelper(
     : connection_(x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       x_window_(x11::CreateDummyWindow("Chromium Clipboard Window")),
-      selection_requestor_(std::make_unique<SelectionRequestor>(x_window_)),
+      selection_requestor_(
+          std::make_unique<SelectionRequestor>(x_window_, this)),
       clipboard_owner_(connection_, x_window_, x11::GetAtom(kClipboard)),
       primary_owner_(connection_, x_window_, x11::Atom::PRIMARY) {
   DCHECK(selection_requestor_);
@@ -215,9 +216,11 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
     available_types.push_back(kMimeTypeText);
   if (target_list.ContainsFormat(ClipboardFormatType::HtmlType()))
     available_types.push_back(kMimeTypeHTML);
+  if (target_list.ContainsFormat(ClipboardFormatType::SvgType()))
+    available_types.push_back(kMimeTypeSvg);
   if (target_list.ContainsFormat(ClipboardFormatType::RtfType()))
     available_types.push_back(kMimeTypeRTF);
-  if (target_list.ContainsFormat(ClipboardFormatType::BitmapType()))
+  if (target_list.ContainsFormat(ClipboardFormatType::PngType()))
     available_types.push_back(kMimeTypePNG);
   if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType()))
     available_types.push_back(kMimeTypeURIList);
@@ -346,10 +349,10 @@ XClipboardHelper::TargetList XClipboardHelper::GetTargetList(
   return XClipboardHelper::TargetList(out);
 }
 
-void XClipboardHelper::OnEvent(const x11::Event& xev) {
+bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
   if (auto* request = xev.As<x11::SelectionRequestEvent>()) {
     if (request->owner != x_window_)
-      return;
+      return false;
     if (request->selection == x11::Atom::PRIMARY) {
       primary_owner_.OnSelectionRequest(*request);
     } else {
@@ -361,9 +364,11 @@ void XClipboardHelper::OnEvent(const x11::Event& xev) {
   } else if (auto* notify = xev.As<x11::SelectionNotifyEvent>()) {
     if (notify->requestor == x_window_)
       selection_requestor_->OnSelectionNotify(*notify);
+    else
+      return false;
   } else if (auto* clear = xev.As<x11::SelectionClearEvent>()) {
     if (clear->owner != x_window_)
-      return;
+      return false;
     if (clear->selection == x11::Atom::PRIMARY) {
       primary_owner_.OnSelectionClear(*clear);
     } else {
@@ -375,11 +380,24 @@ void XClipboardHelper::OnEvent(const x11::Event& xev) {
   } else if (auto* prop = xev.As<x11::PropertyNotifyEvent>()) {
     if (primary_owner_.CanDispatchPropertyEvent(*prop))
       primary_owner_.OnPropertyEvent(*prop);
-    if (clipboard_owner_.CanDispatchPropertyEvent(*prop))
+    else if (clipboard_owner_.CanDispatchPropertyEvent(*prop))
       clipboard_owner_.OnPropertyEvent(*prop);
-    if (selection_requestor_->CanDispatchPropertyEvent(*prop))
+    else if (selection_requestor_->CanDispatchPropertyEvent(*prop))
       selection_requestor_->OnPropertyEvent(*prop);
+    else
+      return false;
+  } else {
+    return false;
   }
+  return true;
+}
+
+SelectionRequestor* XClipboardHelper::GetSelectionRequestorForTest() {
+  return selection_requestor_.get();
+}
+
+void XClipboardHelper::OnEvent(const x11::Event& xev) {
+  DispatchEvent(xev);
 }
 
 x11::Atom XClipboardHelper::LookupSelectionForClipboardBuffer(

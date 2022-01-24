@@ -21,7 +21,7 @@ AccountManagerErrorUI::AccountManagerErrorUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
       chrome::kChromeUIAccountManagerErrorHost);
 
-  web_ui->RegisterMessageCallback(
+  web_ui->RegisterDeprecatedMessageCallback(
       "closeDialog", base::BindRepeating(&WebDialogUI::CloseDialog,
                                          weak_factory_.GetWeakPtr()));
 

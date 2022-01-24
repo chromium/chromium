@@ -13,19 +13,22 @@
 namespace content {
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibilityWin();
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return std::unique_ptr<BrowserAccessibilityWin>(
+      new BrowserAccessibilityWin(manager, node));
 }
 
-BrowserAccessibilityWin::BrowserAccessibilityWin() {
+BrowserAccessibilityWin::BrowserAccessibilityWin(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node)
+    : BrowserAccessibility(manager, node) {
   ui::win::CreateATLModuleIfNeeded();
   HRESULT hr = CComObject<BrowserAccessibilityComWin>::CreateInstance(
       &browser_accessibility_com_);
   DCHECK(SUCCEEDED(hr));
-
   browser_accessibility_com_->AddRef();
-
-  // Set the delegate to us
   browser_accessibility_com_->Init(this);
 }
 
@@ -71,33 +74,55 @@ std::u16string BrowserAccessibilityWin::GetHypertext() const {
 }
 
 const std::vector<gfx::NativeViewAccessible>
-BrowserAccessibilityWin::GetUIADescendants() const {
+BrowserAccessibilityWin::GetUIADirectChildrenInRange(
+    ui::AXPlatformNodeDelegate* start,
+    ui::AXPlatformNodeDelegate* end) {
   std::vector<gfx::NativeViewAccessible> descendants;
+
   if (!IsIgnored() && !ShouldHideChildrenForUIA() && PlatformChildCount() > 0) {
-    BrowserAccessibility* next_sibling_node = PlatformGetNextSibling();
-    BrowserAccessibility* next_descendant_node =
-        BrowserAccessibilityManager::NextInTreeOrder(this);
+    BrowserAccessibility* start_wrapper = FromAXPlatformNodeDelegate(start);
+    DCHECK(start_wrapper);
+    BrowserAccessibility* end_wrapper = FromAXPlatformNodeDelegate(end);
+    DCHECK(end_wrapper);
 
-    while (next_descendant_node && next_descendant_node != next_sibling_node) {
-      // Don't add an ignored node to the returned descendants.
-      if (!next_descendant_node->IsIgnored()) {
-        descendants.emplace_back(
-            next_descendant_node->GetNativeViewAccessible());
+    // When either (or both) of the start/end node is the same as the common
+    // anchor, make them null. A null start node means that all UIA embedded
+    // objects from the start will be added, and a null end node means that all
+    // UIA embedded objects past the start of the range will be included. When
+    // both are null, all UIA embedded objects will be included.
+    if (this == start_wrapper)
+      start_wrapper = nullptr;
+    if (this == end_wrapper)
+      end_wrapper = nullptr;
 
-        if (!ToBrowserAccessibilityWin(next_descendant_node)
-                 ->ShouldHideChildrenForUIA()) {
-          next_descendant_node = BrowserAccessibilityManager::NextInTreeOrder(
-              next_descendant_node);
-          continue;
-        }
+    // Don't include nodes that are before the start node - they are not in the
+    // range. If the start node is the one we're on right now (ie. the common
+    // anchor is the start anchor), include all nodes from the start.
+    bool in_range = !start_wrapper;
+
+    for (auto it = PlatformChildrenBegin(); it != PlatformChildrenEnd(); ++it) {
+      BrowserAccessibility* child = it.get();
+      DCHECK(child);
+
+      if (!in_range &&
+          (start_wrapper &&
+           (child == start_wrapper || start_wrapper->IsDescendantOf(child)))) {
+        in_range = true;
       }
-      // When a node is ignored or hides its children, don't return any of its
-      // descendants.
-      next_descendant_node =
-          BrowserAccessibilityManager::NextNonDescendantInTreeOrder(
-              next_descendant_node);
+
+      // The only children that should be returned are the ones that are
+      // unignored UIA embedded objects.
+      if (in_range && ui::IsUIAEmbeddedObject(child->GetRole()))
+        descendants.emplace_back(child->GetNativeViewAccessible());
+
+      // Don't include the nodes that follow the end of the range.
+      if (end_wrapper &&
+          (child == end_wrapper || end_wrapper->IsDescendantOf(child))) {
+        break;
+      }
     }
   }
+
   return descendants;
 }
 

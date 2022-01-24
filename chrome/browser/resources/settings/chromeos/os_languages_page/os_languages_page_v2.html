@@ -16,15 +16,17 @@
 <link rel="import" href="change_device_language_dialog.html">
 <link rel="import" href="languages_metrics_proxy.html">
 <link rel="import" href="os_add_languages_dialog.html">
-<link rel="import" href="../localized_link/localized_link.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="../deep_linking_behavior.html">
 <link rel="import" href="../os_route.html">
 <link rel="import" href="../../i18n_setup.html">
 <link rel="import" href="../../router.html">
+<link rel="import" href="../route_observer_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../metrics_recorder.html">
+<link rel="import" href="languages_types.html">
 
 <dom-module id="os-settings-languages-page-v2">
   <template>
@@ -77,7 +79,7 @@
       }
 
       #addLanguages[disabled] {
-        --iron-icon-fill-color: var(--google-grey-600);
+        --iron-icon-fill-color: var(--cros-icon-color-disabled);
       }
 
       #addLanguagesIcon {
@@ -120,10 +122,12 @@
         <h2 aria-hidden="true">
           [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
         </h2>
-        <settings-localized-link class="cr-row first bottom-margin"
+        <localized-link id="webLanguagesDescription"
+            class="cr-row first bottom-margin"
             localized-string="[[getLanguagePreferenceDescription_(
-                languageSettingsV2Update2Enabled_)]]">
-        </settings-localized-link>
+                languageSettingsV2Update2Enabled_)]]"
+            on-link-clicked="onLanguagePreferenceDescriptionLinkClick_">
+        </localized-link>
         <div class="list-frame vertical-list" id="languagesList">
           <template is="dom-repeat" items="[[languages.enabled]]">
             <div class$="list-item [[getTranslationTargetClass_(
@@ -163,7 +167,8 @@
             $i18n{googleAccountLanguageDescription}
           </div>
           <div class="subsection cr-padded-text">
-            <cr-link-row label="$i18n{manageGoogleAccountLanguageLabel}"
+            <cr-link-row id="manageGoogleAccountLanguage"
+                label="$i18n{manageGoogleAccountLanguageLabel}"
                 external on-click="openManageGoogleAccountLanguage_">
             </cr-link-row>
           </div>

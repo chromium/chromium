@@ -16,11 +16,14 @@ namespace payments {
 
 class PaymentRequestOrderSummaryViewControllerTest
     : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestOrderSummaryViewControllerTest(
+      const PaymentRequestOrderSummaryViewControllerTest&) = delete;
+  PaymentRequestOrderSummaryViewControllerTest& operator=(
+      const PaymentRequestOrderSummaryViewControllerTest&) = delete;
+
  protected:
   PaymentRequestOrderSummaryViewControllerTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestOrderSummaryViewControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestOrderSummaryViewControllerTest,

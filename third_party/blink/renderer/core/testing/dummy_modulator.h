@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -60,18 +61,10 @@ class DummyModulator : public Modulator {
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;
   bool HasValidContext() override;
   void ResolveDynamically(const ModuleRequest& module_request,
-                          const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  ScriptValue CreateTypeError(const String& message) const override;
-  ScriptValue CreateSyntaxError(const String& message) const override;
-  void RegisterImportMap(const ImportMap*,
-                         ScriptValue error_to_rethrow) override;
-  AcquiringImportMapsState GetAcquiringImportMapsState() const override;
-  void SetAcquiringImportMapsState(AcquiringImportMapsState) override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
-  const ImportMap* GetImportMapForTest() const override;
   ModuleType ModuleTypeFromRequest(
       const ModuleRequest& module_request) const override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(

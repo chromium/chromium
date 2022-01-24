@@ -17,16 +17,19 @@ namespace weblayer {
 class WebContentsViewDelegateImpl : public content::WebContentsViewDelegate {
  public:
   explicit WebContentsViewDelegateImpl(content::WebContents* web_contents);
+
+  WebContentsViewDelegateImpl(const WebContentsViewDelegateImpl&) = delete;
+  WebContentsViewDelegateImpl& operator=(const WebContentsViewDelegateImpl&) =
+      delete;
+
   ~WebContentsViewDelegateImpl() override;
 
   // WebContentsViewDelegate overrides.
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
 
  private:
   content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewDelegateImpl);
 };
 
 }  // namespace weblayer

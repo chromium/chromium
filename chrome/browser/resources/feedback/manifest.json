@@ -21,5 +21,9 @@
     "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources; style-src 'unsafe-inline' blob: chrome: file: filesystem: data: *; img-src * blob: chrome: file: filesystem: data:; media-src 'self' blob: filesystem:"
   },
   "display_in_launcher": false,
-  "display_in_new_tab_page": false
+  "display_in_new_tab_page": false,
+  "externally_connectable": {
+    "matches": ["chrome://file-manager/*"],
+    "ids": ["*"]
+  }
 }

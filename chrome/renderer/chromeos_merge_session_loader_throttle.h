@@ -26,6 +26,11 @@ class MergeSessionLoaderThrottle
   explicit MergeSessionLoaderThrottle(
       scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
           chromeos_listener);
+
+  MergeSessionLoaderThrottle(const MergeSessionLoaderThrottle&) = delete;
+  MergeSessionLoaderThrottle& operator=(const MergeSessionLoaderThrottle&) =
+      delete;
+
   ~MergeSessionLoaderThrottle() override;
 
  private:
@@ -50,8 +55,6 @@ class MergeSessionLoaderThrottle
   scoped_refptr<ChromeRenderThreadObserver::ChromeOSListener>
       chromeos_listener_;
   base::WeakPtrFactory<MergeSessionLoaderThrottle> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MergeSessionLoaderThrottle);
 };
 
 #endif  // CHROME_RENDERER_CHROMEOS_MERGE_SESSION_LOADER_THROTTLE_H_

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -119,13 +118,11 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    if ([self.traitCollection
-            hasDifferentColorAppearanceComparedToTraitCollection:
-                previousTraitCollection]) {
-      self.textFieldStackHolder.layer.borderColor =
-          UIColor.cr_separatorColor.CGColor;
-    }
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    self.textFieldStackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
   }
 }
 
@@ -284,14 +281,14 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     // fields.
     UIView* stackHolder = [[UIView alloc] init];
     stackHolder.layer.cornerRadius = kTextFieldCornerRadius;
-    stackHolder.layer.borderColor = UIColor.cr_separatorColor.CGColor;
-    if (@available(iOS 13, *)) {
-      // Use performAsCurrentTraitCollection to get the correct CGColor for the
-      // given dynamic color and current userInterfaceStyle.
-      [self.traitCollection performAsCurrentTraitCollection:^{
-        stackHolder.layer.borderColor = UIColor.cr_separatorColor.CGColor;
-      }];
-    }
+    stackHolder.layer.borderColor =
+        [UIColor colorNamed:kSeparatorColor].CGColor;
+    // Use performAsCurrentTraitCollection to get the correct CGColor for the
+    // given dynamic color and current userInterfaceStyle.
+    [self.traitCollection performAsCurrentTraitCollection:^{
+      stackHolder.layer.borderColor =
+          [UIColor colorNamed:kSeparatorColor].CGColor;
+    }];
     stackHolder.layer.borderWidth = 1.0 / [UIScreen mainScreen].scale;
     stackHolder.clipsToBounds = YES;
     stackHolder.backgroundColor =
@@ -339,7 +336,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       if (textFieldConfiguration !=
           [self.textFieldConfigurations firstObject]) {
         UIView* hairline = [[UIView alloc] init];
-        hairline.backgroundColor = UIColor.cr_separatorColor;
+        hairline.backgroundColor = [UIColor colorNamed:kSeparatorColor];
         hairline.translatesAutoresizingMaskIntoConstraints = NO;
         [fieldStack addArrangedSubview:hairline];
         CGFloat pixelHeight = 1.0 / [UIScreen mainScreen].scale;
@@ -352,6 +349,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       UITextField* textField = [[UITextField alloc] init];
       textField.text = textFieldConfiguration.text;
       textField.placeholder = textFieldConfiguration.placeholder;
+      textField.autocapitalizationType =
+          textFieldConfiguration.autocapitalizationType;
       textField.secureTextEntry = textFieldConfiguration.secureTextEntry;
       textField.accessibilityIdentifier =
           textFieldConfiguration.accessibilityIdentifier;
@@ -380,7 +379,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   self.buttonAlertActionsDictionary = [[NSMutableDictionary alloc] init];
   for (AlertAction* action in self.actions) {
     UIView* hairline = [[UIView alloc] init];
-    hairline.backgroundColor = UIColor.cr_separatorColor;
+    hairline.backgroundColor = [UIColor colorNamed:kSeparatorColor];
     hairline.translatesAutoresizingMaskIntoConstraints = NO;
     [stackView addArrangedSubview:hairline];
 

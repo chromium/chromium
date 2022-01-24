@@ -179,7 +179,7 @@ def main():
     --diff: (Optional) Prints diff to stdout rather than modifying the file.
 
   Example usage:
-    pretty_print.py histograms_xml/Fingerprint/histograms.xml
+    pretty_print.py metadata/Fingerprint/histograms.xml
     pretty_print.py enums.xml
   """
   parser = argparse.ArgumentParser()

@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/paint_preview/browser/directory_key.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

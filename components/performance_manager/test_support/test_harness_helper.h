@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/graph_impl.h"
 
 namespace content {
@@ -77,9 +77,7 @@ class PerformanceManagerTestHarnessHelper {
 
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features.
-  GraphFeaturesHelper& GetGraphFeaturesHelper() {
-    return graph_features_helper_;
-  }
+  GraphFeatures& GetGraphFeatures() { return graph_features_; }
 
   // Allows configuring a Graph callback that will be invoked when the Graph
   // is initialized in "SetUp".
@@ -88,7 +86,7 @@ class PerformanceManagerTestHarnessHelper {
   }
 
  private:
-  GraphFeaturesHelper graph_features_helper_;
+  GraphFeatures graph_features_;
   GraphImplCallback graph_impl_callback_;
   std::unique_ptr<PerformanceManagerImpl> perf_man_;
   std::unique_ptr<PerformanceManagerRegistry> registry_;

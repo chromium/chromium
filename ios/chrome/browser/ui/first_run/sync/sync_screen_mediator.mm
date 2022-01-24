@@ -6,8 +6,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
+#include "components/sync/driver/sync_service.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -20,7 +22,10 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SyncScreenMediator ()
+@interface SyncScreenMediator () <ChromeAccountManagerServiceObserver> {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+}
 
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
@@ -35,6 +40,8 @@
     unified_consent::UnifiedConsentService* unifiedConsentService;
 // Manager for the authentication flow.
 @property(nonatomic, strong) AuthenticationFlow* authenticationFlow;
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
 
 @end
 
@@ -43,11 +50,14 @@
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
                  syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
-                (unified_consent::UnifiedConsentService*)unifiedConsentService {
+                (unified_consent::UnifiedConsentService*)unifiedConsentService
+                      syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     DCHECK(unifiedConsentService);
@@ -57,8 +67,16 @@
     _authenticationService = authenticationService;
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
+    _syncService = syncService;
+    _accountManagerServiceObserver.reset(
+        new ChromeAccountManagerServiceObserverBridge(self,
+                                                      accountManagerService));
   }
   return self;
+}
+
+- (void)disconnect {
+  _accountManagerServiceObserver = nullptr;
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
@@ -82,6 +100,16 @@
   }];
 }
 
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  if (!identity) {
+    [self.delegate userRemoved];
+  }
+}
+
 #pragma mark - Private
 
 // Callback used when the sign in flow is complete, with |success|.
@@ -92,33 +120,42 @@
   self.authenticationFlow = nil;
   [self.consumer setUIEnabled:YES];
 
-  if (!success)
+  if (!success) {
     return;
-
-  ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
-  DCHECK(identity);
-
-  sync_pb::UserConsentTypes::SyncConsent syncConsent;
-  syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
-                             UserConsentTypes_ConsentStatus_GIVEN);
-
-  syncConsent.set_confirmation_grd_id(confirmationID);
-  for (NSNumber* consentID in consentIDs) {
-    syncConsent.add_description_grd_ids([consentID intValue]);
   }
 
-  CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
-      base::SysNSStringToUTF8([identity gaiaID]),
-      base::SysNSStringToUTF8([identity userEmail]));
-  self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-  self.authenticationService->GrantSyncConsent(identity);
+  // The user does not give Sync Consent if the Advanced Settings link is
+  // tapped.
+  if (advancedSettingsRequested) {
+    // Sync has to be set as requested in order to display the preferences
+    // correctly and differentiate the special state where the user is signed
+    // in, but the sync feature can't start yet.
+    _syncService->GetUserSettings()->SetSyncRequested(true);
+  } else {
+    // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
+    // user_signin_mediator.
+    ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    DCHECK(identity);
 
-  // The consent has to be given as soon as the user is signed in. Even when
-  // they open the settings through the link.
-  self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+    sync_pb::UserConsentTypes::SyncConsent syncConsent;
+    syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
+                               UserConsentTypes_ConsentStatus_GIVEN);
 
-  if (!advancedSettingsRequested) {
+    syncConsent.set_confirmation_grd_id(confirmationID);
+    for (NSNumber* consentID in consentIDs) {
+      syncConsent.add_description_grd_ids([consentID intValue]);
+    }
+
+    CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
+        base::SysNSStringToUTF8([identity gaiaID]),
+        base::SysNSStringToUTF8([identity userEmail]));
+    self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
+    self.authenticationService->GrantSyncConsent(identity);
+
+    self.unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(
+        true);
+
     // Turn on FirstSetupComplete flag after the authentication service has
     // granted user consent to start Sync.
     self.syncSetupService->SetFirstSetupComplete(
@@ -127,8 +164,7 @@
     self.syncSetupService->CommitSyncChanges();
   }
 
-  [self.delegate syncScreenMediator:self
-          didFinishSigninWithResult:SigninCoordinatorResultSuccess];
+  [self.delegate syncScreenMediatorDidSuccessfulyFinishSignin:self];
 }
 
 @end

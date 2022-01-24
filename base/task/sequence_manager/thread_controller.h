@@ -11,8 +11,8 @@
 #include "base/base_export.h"
 #include "base/message_loop/message_pump.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -124,7 +124,7 @@ class ThreadController {
   // with MessageLoop.
 
   virtual bool RunsTasksInCurrentSequence() = 0;
-  virtual const TickClock* GetClock() = 0;
+  virtual void SetTickClock(const TickClock* clock) = 0;
   virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
   virtual void RestoreDefaultTaskRunner() = 0;
   virtual void AddNestingObserver(RunLoop::NestingObserver* observer) = 0;

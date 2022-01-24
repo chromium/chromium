@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Element.getClientRects() on an SVGElement assert_equals: expected 50.66666793823242 but got 50.66667175292969
+Harness: the test ran to completion.
+

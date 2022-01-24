@@ -27,6 +27,11 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
 
   static BackgroundStartupTracingObserver* GetInstance();
 
+  BackgroundStartupTracingObserver(const BackgroundStartupTracingObserver&) =
+      delete;
+  BackgroundStartupTracingObserver& operator=(
+      const BackgroundStartupTracingObserver&) = delete;
+
   // Returns startup tracing rule from the given config, null if doesn't exist.
   static const BackgroundTracingRule* FindStartupRuleInConfig(
       const BackgroundTracingConfigImpl& config);
@@ -60,8 +65,6 @@ class CONTENT_EXPORT BackgroundStartupTracingObserver
   bool enabled_in_current_session_;
 
   std::unique_ptr<PreferenceManager> preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundStartupTracingObserver);
 };
 
 }  // namespace content

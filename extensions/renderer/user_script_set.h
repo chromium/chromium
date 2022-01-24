@@ -44,6 +44,10 @@ class UserScriptSet {
   };
 
   explicit UserScriptSet(mojom::HostID host_id);
+
+  UserScriptSet(const UserScriptSet&) = delete;
+  UserScriptSet& operator=(const UserScriptSet&) = delete;
+
   ~UserScriptSet();
 
   // Adds or removes observers.
@@ -109,8 +113,6 @@ class UserScriptSet {
 
   // The associated observers.
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserScriptSet);
 };
 
 }  // namespace extensions

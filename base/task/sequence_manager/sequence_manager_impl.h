@@ -23,8 +23,6 @@
 #include "base/pending_task.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/current_thread.h"
@@ -35,10 +33,13 @@
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_queue_selector.h"
 #include "base/task/sequence_manager/thread_controller.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -57,6 +58,7 @@ namespace internal {
 
 class RealTimeDomain;
 class TaskQueueImpl;
+class DefaultWakeUpQueue;
 class ThreadControllerImpl;
 
 // The task queue manager provides N task queues and a selector interface for
@@ -79,6 +81,9 @@ class BASE_EXPORT SequenceManagerImpl
  public:
   using Observer = SequenceManager::Observer;
 
+  // This feature controls whether wake ups are possible for canceled tasks.
+  static const Feature kNoWakeUpsForCanceledTasks;
+
   SequenceManagerImpl(const SequenceManagerImpl&) = delete;
   SequenceManagerImpl& operator=(const SequenceManagerImpl&) = delete;
   ~SequenceManagerImpl() override;
@@ -97,6 +102,14 @@ class BASE_EXPORT SequenceManagerImpl
   static std::unique_ptr<SequenceManagerImpl> CreateUnbound(
       SequenceManager::Settings settings);
 
+  // Sets state to eliminate wake ups for canceled tasks, if the
+  // kNoWakeUpsForCanceledTasks feature is enabled. Must be invoked after
+  // FeatureList initialization.
+  static void MaybeSetNoWakeUpsForCanceledTasks();
+
+  // Resets state that eliminates wake ups for canceled tasks.
+  static void ResetNoWakeUpsForCanceledTasksForTesting();
+
   // SequenceManager implementation:
   void BindToCurrentThread() override;
   scoped_refptr<SequencedTaskRunner> GetTaskRunnerForCurrentTask() override;
@@ -104,9 +117,8 @@ class BASE_EXPORT SequenceManagerImpl
   void SetObserver(Observer* observer) override;
   void AddTaskTimeObserver(TaskTimeObserver* task_time_observer) override;
   void RemoveTaskTimeObserver(TaskTimeObserver* task_time_observer) override;
-  void RegisterTimeDomain(TimeDomain* time_domain) override;
-  void UnregisterTimeDomain(TimeDomain* time_domain) override;
-  TimeDomain* GetRealTimeDomain() const override;
+  void SetTimeDomain(TimeDomain* time_domain) override;
+  void ResetTimeDomain() override;
   const TickClock* GetTickClock() const override;
   TimeTicks NowTicks() const override;
   void SetDefaultTaskRunner(
@@ -126,12 +138,14 @@ class BASE_EXPORT SequenceManagerImpl
   void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
+  absl::optional<DelayedWakeUp> GetNextDelayedWakeUp() const override;
 
   // SequencedTaskSource implementation:
-  Task* SelectNextTask(
+  absl::optional<SelectedTask> SelectNextTask(
       SelectTaskOption option = SelectTaskOption::kDefault) override;
   void DidRunTask() override;
-  TimeDelta DelayTillNextTask(
+  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override;
+  TimeTicks GetNextTaskTime(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const override;
   bool HasPendingHighResolutionTasks() override;
@@ -155,20 +169,15 @@ class BASE_EXPORT SequenceManagerImpl
   void AttachToMessagePump();
 #endif
   bool IsIdleForTesting() override;
-  void BindToCurrentThread(std::unique_ptr<MessagePump> pump);
-  MessagePumpType GetType() const;
 
   // Requests that a task to process work is scheduled.
   void ScheduleWork();
 
-  // Requests that a delayed task to process work is posted on the main task
-  // runner. These delayed tasks are de-duplicated. Must be called on the thread
-  // this class was created on.
-
-  // Schedules next wake-up at the given time, cancels any previous requests.
-  // Use TimeTicks::Max() to cancel a wake-up.
-  // Must be called from a TimeDomain only.
-  void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time);
+  // Schedules next wake-up at the given time, canceling any previous requests.
+  // Use absl::nullopt to cancel a wake-up. Must be called on the thread this
+  // class was created on. Must be called from a TimeDomain only.
+  void SetNextDelayedWakeUp(LazyNow* lazy_now,
+                            absl::optional<DelayedWakeUp> wake_up);
 
   // Returns the currently executing TaskQueue if any. Must be called on the
   // thread this class was created on.
@@ -192,8 +201,7 @@ class BASE_EXPORT SequenceManagerImpl
   WeakPtr<SequenceManagerImpl> GetWeakPtr();
 
   // How frequently to perform housekeeping tasks (sweeping canceled tasks etc).
-  static constexpr TimeDelta kReclaimMemoryInterval =
-      TimeDelta::FromSeconds(30);
+  static constexpr TimeDelta kReclaimMemoryInterval = Seconds(30);
 
  protected:
   static std::unique_ptr<ThreadControllerImpl>
@@ -205,6 +213,7 @@ class BASE_EXPORT SequenceManagerImpl
                       SequenceManager::Settings settings = Settings());
 
   friend class internal::TaskQueueImpl;
+  friend class internal::DefaultWakeUpQueue;
   friend class ::base::sequence_manager::SequenceManagerForTest;
 
  private:
@@ -256,8 +265,10 @@ class BASE_EXPORT SequenceManagerImpl
 
   struct MainThreadOnly {
     explicit MainThreadOnly(
+        SequenceManagerImpl* sequence_manager,
         const scoped_refptr<AssociatedThreadId>& associated_thread,
-        const SequenceManager::Settings& settings);
+        const SequenceManager::Settings& settings,
+        const base::TickClock* clock);
     ~MainThreadOnly();
 
     int nesting_depth = 0;
@@ -270,13 +281,16 @@ class BASE_EXPORT SequenceManagerImpl
     std::array<char, static_cast<size_t>(debug::CrashKeySize::Size64)>
         async_stack_buffer = {};
 
-    base::InsecureRandomGenerator random_generator;
+    absl::optional<base::InsecureRandomGenerator> random_generator;
 
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::Unchecked task_observers;
     ObserverList<TaskTimeObserver>::Unchecked task_time_observers;
-    std::set<TimeDomain*> time_domains;
-    std::unique_ptr<internal::RealTimeDomain> real_time_domain;
+    std::unique_ptr<RealTimeDomain> real_time_domain;
+    TimeDomain* time_domain = nullptr;
+
+    std::unique_ptr<WakeUpQueue> wake_up_queue;
+    std::unique_ptr<WakeUpQueue> non_waking_wake_up_queue;
 
     // If true MaybeReclaimMemory will attempt to reclaim memory.
     bool memory_reclaim_scheduled = false;
@@ -377,19 +391,22 @@ class BASE_EXPORT SequenceManagerImpl
   TaskQueue::TaskTiming::TimeRecordingPolicy ShouldRecordTaskTiming(
       const internal::TaskQueueImpl* task_queue);
   bool ShouldRecordCPUTimeForTask();
+
+  // Write the async stack trace onto a crash key as whitespace-delimited hex
+  // addresses.
   void RecordCrashKeys(const PendingTask&);
 
   // Helper to terminate all scoped trace events to allow starting new ones
   // in SelectNextTask().
-  Task* SelectNextTaskImpl(SelectTaskOption option);
+  absl::optional<SelectedTask> SelectNextTaskImpl(SelectTaskOption option);
 
   // Check if a task of priority |priority| should run given the pending set of
   // native work.
   bool ShouldRunTaskOfPriority(TaskQueue::QueuePriority priority) const;
 
   // Ignores any immediate work.
-  TimeDelta GetDelayTillNextDelayedTask(LazyNow* lazy_now,
-                                        SelectTaskOption option) const;
+  TimeTicks GetNextDelayedTaskTimeImpl(LazyNow* lazy_now,
+                                       SelectTaskOption option) const;
 
 #if DCHECK_IS_ON()
   void LogTaskDebugInfo(const internal::WorkQueue* work_queue) const;
@@ -428,6 +445,23 @@ class BASE_EXPORT SequenceManagerImpl
   const MainThreadOnly& main_thread_only() const {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
+  }
+
+  // |clock_| refers to the TickClock representation of |time_domain| (same
+  // object). It is maintained as an atomic pointer here for multi-threaded
+  // usage.
+  std::atomic<const base::TickClock*> clock_;
+  const base::TickClock* main_thread_clock() const {
+    DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+    return clock_.load(std::memory_order_relaxed);
+  }
+  const base::TickClock* any_thread_clock() const {
+    // |memory_order_acquire| matched by |memory_order_release| in
+    // SetTimeDomain() to ensure all data used by |clock_| is visible when read
+    // from the current thread. A thread might try to access a stale |clock_|
+    // but that's not an issue since |time_domain| contractually outlives
+    // SequenceManagerImpl even if it's reset.
+    return clock_.load(std::memory_order_acquire);
   }
 
   WeakPtrFactory<SequenceManagerImpl> weak_factory_{this};

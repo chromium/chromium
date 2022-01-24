@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/virtual_file_provider/virtual_file_provider_client.h"
 
 namespace chromeos {
@@ -18,6 +17,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER)
     FakeVirtualFileProviderClient : public VirtualFileProviderClient {
  public:
   FakeVirtualFileProviderClient();
+
+  FakeVirtualFileProviderClient(const FakeVirtualFileProviderClient&) = delete;
+  FakeVirtualFileProviderClient& operator=(
+      const FakeVirtualFileProviderClient&) = delete;
+
   ~FakeVirtualFileProviderClient() override;
 
   // DBusClient override.
@@ -37,8 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VIRTUAL_FILE_PROVIDER)
   int64_t expected_size_ = 0;  // Expectation for GenerateVirtualFileId.
   std::string result_id_;      // Returned by GenerateVirtualFileId.
   base::ScopedFD result_fd_;   // Returned by OpenFileById.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVirtualFileProviderClient);
 };
 
 }  // namespace chromeos

@@ -4,14 +4,14 @@
 
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/settings/cros_settings_names.h"
 
 namespace virtual_machines {
 
 bool AreVirtualMachinesAllowedByPolicy() {
   bool virtual_machines_allowed;
-  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kVirtualMachinesAllowed,
+  if (ash::CrosSettings::Get()->GetBoolean(ash::kVirtualMachinesAllowed,
                                            &virtual_machines_allowed)) {
     return virtual_machines_allowed;
   }

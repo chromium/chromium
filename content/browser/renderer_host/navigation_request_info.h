@@ -28,6 +28,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   NavigationRequestInfo(
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::BeginNavigationParamsPtr begin_params,
+      network::mojom::WebSandboxFlags sandbox_flags,
       const net::IsolationInfo& isolation_info,
       bool is_main_frame,
       bool are_ancestors_secure,
@@ -42,12 +43,23 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const absl::optional<std::vector<net::SourceStream::SourceType>>&
-          devtools_accepted_stream_types);
+          devtools_accepted_stream_types,
+      bool is_pdf);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
   blink::mojom::CommonNavigationParamsPtr common_params;
   blink::mojom::BeginNavigationParamsPtr begin_params;
+
+  // Sandbox flags inherited from the frame where this navigation occurs. In
+  // particular, this does not include:
+  // - Sandbox flags inherited from the creator via the PolicyContainer.
+  // - Sandbox flags forced for MHTML documents.
+  // - Sandbox flags from the future response via CSP.
+  // It is used by the ExternalProtocolHandler to ensure sandboxed iframe won't
+  // navigate the user toward a different application, which can be seen as a
+  // main frame navigation somehow.
+  const network::mojom::WebSandboxFlags sandbox_flags;
 
   // Contains information used to prevent sharing information from a navigation
   // request across first party contexts. In particular, tracks the
@@ -98,6 +110,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // decoding any non-listed stream types.
   absl::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
+
+  // Indicates that this navigation is for PDF content in a renderer.
+  const bool is_pdf;
 };
 
 }  // namespace content

@@ -15,9 +15,9 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_local.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_remote.h"
@@ -92,6 +92,9 @@ class WebRtcEventLogManager final
   // base::FilePath will be returned for them.
   static base::FilePath GetRemoteBoundWebRtcEventLogsDir(
       content::BrowserContext* browser_context);
+
+  WebRtcEventLogManager(const WebRtcEventLogManager&) = delete;
+  WebRtcEventLogManager& operator=(const WebRtcEventLogManager&) = delete;
 
   ~WebRtcEventLogManager() override;
 
@@ -484,8 +487,6 @@ class WebRtcEventLogManager final
   // |remote_logs_manager_| when (and if) produced.
   std::unique_ptr<LogFileWriter::Factory>
       remote_log_file_writer_factory_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManager);
 };
 
 }  // namespace webrtc_event_logging

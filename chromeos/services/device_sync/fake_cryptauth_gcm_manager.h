@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
@@ -25,6 +24,10 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
   //     enrollment. Pass in an empty |registration_id| to simulate never having
   //     registered successfully.
   explicit FakeCryptAuthGCMManager(const std::string& registration_id);
+
+  FakeCryptAuthGCMManager(const FakeCryptAuthGCMManager&) = delete;
+  FakeCryptAuthGCMManager& operator=(const FakeCryptAuthGCMManager&) = delete;
+
   ~FakeCryptAuthGCMManager() override;
 
   bool registration_in_progress() { return registration_in_progress_; }
@@ -65,8 +68,6 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
   std::string registration_id_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthGCMManager);
 };
 
 }  // namespace device_sync

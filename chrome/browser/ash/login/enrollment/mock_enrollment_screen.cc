@@ -19,6 +19,19 @@ MockEnrollmentScreen::~MockEnrollmentScreen() {}
 
 MockEnrollmentScreenView::MockEnrollmentScreenView() {}
 
-MockEnrollmentScreenView::~MockEnrollmentScreenView() {}
+MockEnrollmentScreenView::~MockEnrollmentScreenView() {
+  if (screen_)
+    screen_->OnViewDestroyed(this);
+}
+
+void MockEnrollmentScreenView::Bind(EnrollmentScreen* screen) {
+  screen_ = screen;
+  MockBind(screen);
+}
+
+void MockEnrollmentScreenView::Unbind() {
+  screen_ = nullptr;
+  MockUnbind();
+}
 
 }  // namespace ash

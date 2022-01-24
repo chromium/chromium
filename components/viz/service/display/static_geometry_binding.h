@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_STATIC_GEOMETRY_BINDING_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_STATIC_GEOMETRY_BINDING_H_
 
-#include "base/macros.h"
 #include "components/viz/service/display/geometry_binding.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -17,6 +16,10 @@ class VIZ_SERVICE_EXPORT StaticGeometryBinding {
  public:
   StaticGeometryBinding(gpu::gles2::GLES2Interface* gl,
                         const gfx::RectF& quad_vertex_rect);
+
+  StaticGeometryBinding(const StaticGeometryBinding&) = delete;
+  StaticGeometryBinding& operator=(const StaticGeometryBinding&) = delete;
+
   ~StaticGeometryBinding();
 
   void PrepareForDraw();
@@ -30,8 +33,6 @@ class VIZ_SERVICE_EXPORT StaticGeometryBinding {
 
   GLuint quad_vertices_vbo_;
   GLuint quad_elements_vbo_;
-
-  DISALLOW_COPY_AND_ASSIGN(StaticGeometryBinding);
 };
 
 }  // namespace viz

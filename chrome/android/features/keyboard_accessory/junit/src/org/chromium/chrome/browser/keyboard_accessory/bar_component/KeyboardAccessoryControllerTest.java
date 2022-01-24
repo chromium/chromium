@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -115,7 +116,7 @@ public class KeyboardAccessoryControllerTest {
     private void setAutofillFeature(boolean enabled) {
         HashMap<String, Boolean> features = new HashMap<>();
         features.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, enabled);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
     }
 
     @Test

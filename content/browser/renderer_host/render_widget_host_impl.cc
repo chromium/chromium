@@ -21,22 +21,23 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -61,7 +62,6 @@
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/display_feature.h"
-#include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/input/fling_scheduler.h"
@@ -80,6 +80,7 @@
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/cursors/webcursor.h"
@@ -115,17 +116,19 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
+#include "third_party/blink/public/mojom/drag/drag.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom.h"
-#include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
@@ -162,8 +165,7 @@ namespace {
 
 // How long to wait for newly loaded content to send a compositor frame
 // before clearing previously displayed graphics.
-constexpr base::TimeDelta kNewContentRenderingDelay =
-    base::TimeDelta::FromSeconds(4);
+constexpr base::TimeDelta kNewContentRenderingDelay = base::Seconds(4);
 
 bool g_check_for_pending_visual_properties_ack = true;
 
@@ -196,6 +198,11 @@ base::LazyInstance<RoutingIDWidgetMap>::DestructorAtExit
 class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
  public:
   RenderWidgetHostIteratorImpl() = default;
+
+  RenderWidgetHostIteratorImpl(const RenderWidgetHostIteratorImpl&) = delete;
+  RenderWidgetHostIteratorImpl& operator=(const RenderWidgetHostIteratorImpl&) =
+      delete;
+
   ~RenderWidgetHostIteratorImpl() override = default;
 
   void Add(RenderWidgetHost* host) {
@@ -216,8 +223,6 @@ class RenderWidgetHostIteratorImpl : public RenderWidgetHostIterator {
  private:
   std::vector<RenderWidgetHostID> hosts_;
   size_t current_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostIteratorImpl);
 };
 
 std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
@@ -259,6 +264,11 @@ std::vector<DropData::Metadata> DropDataToMetaData(const DropData& drop_data) {
     }
   }
 
+  if (drop_data.file_contents_source_url.is_valid()) {
+    metadata.push_back(DropData::Metadata::CreateForBinary(
+        drop_data.file_contents_source_url));
+  }
+
   for (const auto& custom_data_item : drop_data.custom_data) {
     metadata.push_back(DropData::Metadata::CreateForMimeType(
         DropData::Kind::STRING, custom_data_item.first));
@@ -286,7 +296,8 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
                          int32_t start,
-                         int32_t end) override {
+                         int32_t end,
+                         ImeSetCompositionCallback callback) override {
     DLOG(WARNING) << "Input request on unbound interface";
   }
   void ImeCommitText(const std::u16string& text,
@@ -418,7 +429,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       delegate_(delegate),
       agent_scheduling_group_(agent_scheduling_group),
       routing_id_(routing_id),
-      clock_(base::DefaultTickClock::GetInstance()),
       is_hidden_(hidden),
       latency_tracker_(delegate_),
       hung_renderer_delay_(kHungRendererDelay),
@@ -580,7 +590,7 @@ void RenderWidgetHostImpl::SetView(RenderWidgetHostViewBase* view) {
 
 // static
 const base::TimeDelta RenderWidgetHostImpl::kActivationNotificationExpireTime =
-    base::TimeDelta::FromMilliseconds(300);
+    base::Milliseconds(300);
 
 RenderProcessHost* RenderWidgetHostImpl::GetProcess() {
   return agent_scheduling_group_.GetProcess();
@@ -592,6 +602,26 @@ int RenderWidgetHostImpl::GetRoutingID() {
 
 RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() {
   return view_.get();
+}
+
+VisibleTimeRequestTrigger*
+RenderWidgetHostImpl::GetVisibleTimeRequestTrigger() {
+  auto* trigger = delegate()->GetVisibleTimeRequestTrigger();
+
+  // Use the delegate's trigger only if the kTabSwitchMetrics2 feature is
+  // enabled. `trigger` can never be null if the feature is enabled.
+  if (trigger && trigger->is_tab_switch_metrics2_feature_enabled())
+    return trigger;
+
+  // Go through this widget's view. This is different from
+  // delegate()->GetVisibleTimeRequestTrigger() which goes through the current
+  // view for the WebContents - this widget may not be current.
+  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
+  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
+  // becomes the default.
+  if (GetView())
+    return GetView()->GetVisibleTimeRequestTrigger();
+  return nullptr;
 }
 
 const viz::FrameSinkId& RenderWidgetHostImpl::GetFrameSinkId() {
@@ -740,10 +770,15 @@ void RenderWidgetHostImpl::Init() {
   SynchronizeVisualProperties();
   // Show/Hide state is not given to the renderer while we are
   // `waiting_for_init_`, but Init() signals that the renderer is ready to
-  // receive them. This closure will inform the renderer that the widget is
-  // shown.
-  if (pending_show_closure_)
-    std::move(pending_show_closure_).Run();
+  // receive them. This call will inform the renderer that the widget is shown.
+  if (pending_show_params_) {
+    DCHECK(blink_widget_.is_bound());
+    blink_widget_->WasShown(
+        pending_show_params_->show_request_timestamp,
+        pending_show_params_->is_evicted,
+        std::move(pending_show_params_->visible_time_request));
+    pending_show_params_.reset();
+  }
 }
 
 bool RenderWidgetHostImpl::ShouldShowStaleContentOnEviction() {
@@ -758,8 +793,7 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
 }
 
 void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
-  is_loading_ = is_loading;
-  power_mode_loading_voter_->VoteFor(is_loading_
+  power_mode_loading_voter_->VoteFor(is_loading
                                          ? power_scheduler::PowerMode::kLoading
                                          : power_scheduler::PowerMode::kIdle);
   if (view_)
@@ -785,11 +819,11 @@ void RenderWidgetHostImpl::WasHidden() {
 
   // Show/Hide state is not sent to the renderer when it has requested for us to
   // wait until it requests them via Init().
-  if (pending_show_closure_) {
-    pending_show_closure_.Reset();
+  if (pending_show_params_) {
+    pending_show_params_.reset();
   } else {
     // Widgets start out hidden, so we must have previously been shown to get
-    // here, and we'd have a `pending_show_closure_` if we are
+    // here, and we'd have a `pending_show_params_` if we are
     // `waiting_for_init_`.
     DCHECK(!waiting_for_init_);
     blink_widget_->WasHidden();
@@ -832,14 +866,14 @@ void RenderWidgetHostImpl::WasShown(
   auto show_request_timestamp = record_tab_switch_time_request
                                     ? base::TimeTicks::Now()
                                     : base::TimeTicks();
+  DCHECK(!pending_show_params_);
   if (!waiting_for_init_) {
     blink_widget_->WasShown(show_request_timestamp, view_->is_evicted(),
                             std::move(record_tab_switch_time_request));
   } else {
-    pending_show_closure_ = base::BindOnce(
-        &RenderWidgetHostImpl::RunPendingWasShown, base::Unretained(this),
-        show_request_timestamp, view_->is_evicted(),
-        std::move(record_tab_switch_time_request));
+    // Delay the WasShown message until Init is called.
+    pending_show_params_.emplace(show_request_timestamp, view_->is_evicted(),
+                                 std::move(record_tab_switch_time_request));
   }
   view_->reset_is_evicted();
 
@@ -872,14 +906,39 @@ void RenderWidgetHostImpl::WasShown(
   SynchronizeVisualProperties();
 }
 
-void RenderWidgetHostImpl::RunPendingWasShown(
-    base::TimeTicks show_request_timestamp,
-    bool is_evicted,
-    blink::mojom::RecordContentToVisibleTimeRequestPtr
-        record_tab_switch_time_request) {
-  DCHECK(blink_widget_.is_bound());
-  blink_widget_->WasShown(show_request_timestamp, is_evicted,
-                          std::move(record_tab_switch_time_request));
+void RenderWidgetHostImpl::RequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(!is_hidden_);
+  DCHECK(visible_time_request);
+  const auto show_request_timestamp = base::TimeTicks::Now();
+  if (waiting_for_init_) {
+    // This method should only be called if the RWHI is already visible, meaning
+    // there will be a WasShown call that's queued until init. Update that with
+    // the new request.
+    DCHECK(pending_show_params_);
+    pending_show_params_->show_request_timestamp = show_request_timestamp;
+    pending_show_params_->visible_time_request =
+        std::move(visible_time_request);
+    return;
+  }
+  DCHECK(!pending_show_params_);
+  blink_widget_->RequestPresentationTimeForNextFrame(
+      show_request_timestamp, std::move(visible_time_request));
+}
+
+void RenderWidgetHostImpl::CancelPresentationTimeRequest() {
+  DCHECK(!is_hidden_);
+  if (waiting_for_init_) {
+    // This method should only be called if the RWHI is already visible, meaning
+    // there will be a WasShown call that's queued until init. Update that to
+    // clear any request that was set.
+    DCHECK(pending_show_params_);
+    pending_show_params_->show_request_timestamp = base::TimeTicks();
+    pending_show_params_->visible_time_request = nullptr;
+    return;
+  }
+  DCHECK(!pending_show_params_);
+  blink_widget_->CancelPresentationTimeRequest();
 }
 
 #if defined(OS_ANDROID)
@@ -933,6 +992,17 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // Note: Later in this method, ScreenInfo rects might be overridden!
   visual_properties.screen_infos = GetScreenInfos();
   auto& current_screen_info = visual_properties.screen_infos.mutable_current();
+
+  // For testing, override the raster color profile.
+  // Note: this needs to be done here and not earlier in the pipeline because
+  // Mac uses the display color space to update an NSSurface and this setting
+  // is only for "raster" color space.
+  if (display::Display::HasForceRasterColorProfile()) {
+    for (auto& screen_info : visual_properties.screen_infos.screen_infos) {
+      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
+          display::Display::GetForcedRasterColorProfile());
+    }
+  }
 
   visual_properties.is_fullscreen_granted = delegate_->IsFullscreen();
   visual_properties.window_controls_overlay_rect =
@@ -1199,6 +1269,11 @@ bool RenderWidgetHostImpl::SynchronizeVisualProperties(
       delegate_->DidChangeScreenOrientation();
   }
 
+  if (ShouldUseZoomForDSF()) {
+    input_router_->SetDeviceScaleFactor(
+        visual_properties->screen_infos.current().device_scale_factor);
+  }
+
   // If we do not have a valid viz::LocalSurfaceId then we are a child frame
   // waiting on the id to be propagated from our parent. We cannot create a hash
   // for tracing of an invalid id.
@@ -1267,6 +1342,8 @@ void RenderWidgetHostImpl::FlushForTesting() {
 }
 
 void RenderWidgetHostImpl::SetPageFocus(bool focused) {
+  OPTIONAL_TRACE_EVENT1("content", "RenderWidgetHostImpl::SetPageFocus",
+                        "is_focused", focused);
   is_focused_ = focused;
 
   // Portals should never get page focus.
@@ -1292,13 +1369,14 @@ void RenderWidgetHostImpl::SetPageFocus(bool focused) {
 
   // Also send page-level focus state to other SiteInstances involved in
   // rendering the current FrameTree, if this widget is for a main frame.
-  // TODO(crbug.com/689777): We should be telling the delegate which
+  // TODO(crbug.com/689777): We should be telling `frame_tree_` which
   // RenderWidgetHost was focused (if we send it to the focused one instead
   // of the main frame in order to order it correctly with other input events),
-  // so that the delegate can propagate it to all other WebViews based on
+  // so that `frame_tree_` can propagate it to all other WebViews based on
   // where this RenderWidgetHost lives.
-  if (owner_delegate_ && delegate_)
-    delegate_->ReplicatePageFocus(focused);
+  if (owner_delegate_ && frame_tree_) {
+    frame_tree_->ReplicatePageFocus(focused);
+  }
 }
 
 void RenderWidgetHostImpl::LostCapture() {
@@ -1859,22 +1937,24 @@ void RenderWidgetHostImpl::RemoveObserver(RenderWidgetHostObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void RenderWidgetHostImpl::GetScreenInfo(display::ScreenInfo* result) {
+display::ScreenInfo RenderWidgetHostImpl::GetScreenInfo() const {
   TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfo");
+
   if (view_)
-    view_->GetScreenInfo(result);
-  else
-    DisplayUtil::GetDefaultScreenInfo(result);
+    return view_->GetScreenInfo();
 
-  if (display::Display::HasForceRasterColorProfile()) {
-    result->display_color_spaces = gfx::DisplayColorSpaces(
-        display::Display::GetForcedRasterColorProfile());
-  }
+  // If this widget has not been connected to a view yet (or has been
+  // disconnected), the display code may be using a fake primary display.
+  display::ScreenInfo screen_info;
+  display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+  return screen_info;
+}
 
-  // TODO(sievers): find a way to make this done another way so the method
-  // can be const.
-  if (ShouldUseZoomForDSF())
-    input_router_->SetDeviceScaleFactor(result->device_scale_factor);
+display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() const {
+  TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfos");
+
+  return view_ ? view_->GetScreenInfos()
+               : display::ScreenInfos(GetScreenInfo());
 }
 
 float RenderWidgetHostImpl::GetDeviceScaleFactor() {
@@ -1915,8 +1995,9 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
         base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragCursor,
                        base::Unretained(this), std::move(callback));
     blink_frame_widget_->DragTargetDragEnter(
-        DropMetaDataToDragData(metadata), client_pt, screen_pt,
-        operations_allowed, key_modifiers, std::move(callback_wrapper));
+        DropMetaDataToDragData(metadata),
+        ConvertWindowPointToViewport(client_pt), screen_pt, operations_allowed,
+        key_modifiers, std::move(callback_wrapper));
   }
 }
 
@@ -1941,10 +2022,8 @@ void RenderWidgetHostImpl::DragTargetDragLeave(
     const gfx::PointF& screen_point) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
-    gfx::PointF viewport_point = client_point;
-    if (ShouldUseZoomForDSF())
-      viewport_point.Scale(GetScaleFactorForView(GetView()));
-    blink_frame_widget_->DragTargetDragLeave(viewport_point, screen_point);
+    blink_frame_widget_->DragTargetDragLeave(
+        ConvertWindowPointToViewport(client_point), screen_point);
   }
 }
 
@@ -2069,106 +2148,18 @@ RenderWidgetHostImpl::GetWidgetInputHandler() {
 void RenderWidgetHostImpl::NotifyScreenInfoChanged() {
   // The resize message (which may not happen immediately) will carry with it
   // the screen info as well as the new size (if the screen has changed scale
-  // factor).
-  SynchronizeVisualProperties();
+  // factor). Force sending the new visual properties even if there is one in
+  // flight to ensure proper IPC ordering for features like the Fullscreen API.
+  SynchronizeVisualPropertiesIgnoringPendingAck();
 
   // The device scale factor will be same for all the views contained by the
-  // MainFrame, so just set it once.
-  if (delegate_ && !delegate_->IsWidgetForMainFrame(this))
+  // primary main frame, so just set it once.
+  if (delegate_ && !delegate_->IsWidgetForPrimaryMainFrame(this))
     return;
 
   // The delegate may not have an input event router in tests.
   if (auto* touch_emulator = GetExistingTouchEmulator())
     touch_emulator->SetDeviceScaleFactor(GetScaleFactorForView(view_.get()));
-}
-
-display::ScreenInfos RenderWidgetHostImpl::GetScreenInfos() {
-  TRACE_EVENT0("renderer_host", "RenderWidgetHostImpl::GetScreenInfos");
-
-  // Use GetScreenInfo here to retain legacy behavior for the current screen.
-  display::ScreenInfo current_screen_info;
-  GetScreenInfo(&current_screen_info);
-
-  // If this widget has not been connected to a view yet (or has been
-  // disconnected), the display code may be using a fake primary display.
-  // In these cases, temporarily return the legacy screen info until
-  // it is connected and visual properties updates this correctly.
-  if (!view_) {
-    return display::ScreenInfos(current_screen_info);
-  }
-
-  // TODO(enne): add ScreenInfos to FrameVisualProperties and store these
-  // on CrossProcessFrameConnector.  For now, only return the legacy
-  // screen info for any child widgets to avoid races between visual
-  // property propagation of legacy screen info vs GetAllDisplays.
-  // In the future, child frames should use screen_infos from the connector.
-  if (view_->IsRenderWidgetHostViewChildFrame()) {
-    return display::ScreenInfos(current_screen_info);
-  }
-
-  // Get displays from RenderWidgetHostView, not directly from display::Screen.
-  // This helps maintain consistency with the legacy singular GetScreenInfo().
-  // For example, Mac may cache display info from a remote process NSWindow.
-  const std::vector<display::Display>& displays = view_->GetDisplays();
-
-  // Just return the legacy singular ScreenInfo, if its id is invalid or if the
-  // display::Screen is not initialized; each of which occurs in various tests.
-  // When there are no valid displays, some platforms can also create a
-  // fake default Display as well (e.g. Display::GetDefaultDisplay).
-  if (current_screen_info.display_id == display::kInvalidDisplayId ||
-      current_screen_info.display_id == display::kDefaultDisplayId ||
-      displays.empty()) {
-    return display::ScreenInfos(current_screen_info);
-  }
-
-  // Build multi-screen info from the displays returned by RenderWidgetHostView,
-  // ensure its legacy singular screen info struct is included in this set.
-  display::ScreenInfos result;
-  bool current_display_added = false;
-  for (const auto& display : displays) {
-    if (display.id() == current_screen_info.display_id) {
-      DCHECK(!current_display_added);
-      result.screen_infos.push_back(current_screen_info);
-      result.current_display_id = current_screen_info.display_id;
-      current_display_added = true;
-      continue;
-    }
-    display::ScreenInfo screen_info;
-    DisplayUtil::DisplayToScreenInfo(&screen_info, display);
-    if (display::Display::HasForceRasterColorProfile()) {
-      screen_info.display_color_spaces = gfx::DisplayColorSpaces(
-          display::Display::GetForcedRasterColorProfile());
-    }
-    result.screen_infos.push_back(screen_info);
-  }
-
-  if (current_display_added)
-    return result;
-
-  // TODO(enne): temporary debugging logic.  GetScreens() is called during
-  // frequent visual property updates, and so will crash even when the
-  // multi-screen window placement api is not enabled.  Instead of CHECK, do a
-  // dump here so we can check if this is happening without having a full-on
-  // browser crash.
-  static bool have_crash_dumped = false;
-  if (!have_crash_dumped) {
-    have_crash_dumped = true;
-
-    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "display_id",
-                            current_screen_info.display_id);
-    SCOPED_CRASH_KEY_NUMBER("GetScreenInfos", "num_displays", displays.size());
-
-    std::string display_ids;
-    for (const auto& display : displays) {
-      base::StringAppendF(&display_ids, "%" PRId64 ",", display.id());
-    }
-    SCOPED_CRASH_KEY_STRING256("GetScreenInfos", "displays", display_ids);
-
-    base::debug::DumpWithoutCrashing();
-  }
-
-  // Fall back to legacy screen info, if we are in a bad state.
-  return display::ScreenInfos(current_screen_info);
 }
 
 void RenderWidgetHostImpl::GetSnapshotFromBrowser(
@@ -2298,8 +2289,10 @@ void RenderWidgetHostImpl::ImeSetComposition(
     const gfx::Range& replacement_range,
     int selection_start,
     int selection_end) {
+  // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeSetComposition(
-      text, ime_text_spans, replacement_range, selection_start, selection_end);
+      text, ime_text_spans, replacement_range, selection_start, selection_end,
+      base::OnceClosure());
 #if defined(OS_ANDROID)
   for (auto& observer : ime_input_event_observers_) {
     observer.OnImeSetComposingTextEvent(text);
@@ -2312,6 +2305,7 @@ void RenderWidgetHostImpl::ImeCommitText(
     const std::vector<ui::ImeTextSpan>& ime_text_spans,
     const gfx::Range& replacement_range,
     int relative_cursor_pos) {
+  // Passing null callback since it is only needed for Devtools
   GetWidgetInputHandler()->ImeCommitText(text, ime_text_spans,
                                          replacement_range, relative_cursor_pos,
                                          base::OnceClosure());
@@ -2332,9 +2326,10 @@ void RenderWidgetHostImpl::ImeFinishComposingText(bool keep_selection) {
 }
 
 void RenderWidgetHostImpl::ImeCancelComposition() {
-  GetWidgetInputHandler()->ImeSetComposition(std::u16string(),
-                                             std::vector<ui::ImeTextSpan>(),
-                                             gfx::Range::InvalidRange(), 0, 0);
+  // Passing null callback since it is only needed for Devtools
+  GetWidgetInputHandler()->ImeSetComposition(
+      std::u16string(), std::vector<ui::ImeTextSpan>(),
+      gfx::Range::InvalidRange(), 0, 0, base::OnceClosure());
 }
 
 void RenderWidgetHostImpl::RejectMouseLockOrUnlockIfNecessary(
@@ -2532,9 +2527,10 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
 }
 
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_rect,
+                                     const gfx::Rect& anchor_rect,
                                      ShowPopupCallback callback) {
   delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                               initial_rect);
+                               initial_rect, anchor_rect);
   std::move(callback).Run();
 }
 
@@ -2559,6 +2555,13 @@ void RenderWidgetHostImpl::UpdateTooltipFromKeyboard(
       GetWrappedTooltipText(tooltip_text, text_direction_hint), bounds);
 }
 
+void RenderWidgetHostImpl::ClearKeyboardTriggeredTooltip() {
+  if (!GetView())
+    return;
+
+  view_->ClearKeyboardTriggeredTooltip();
+}
+
 void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
   waiting_for_screen_rects_ack_ = false;
   if (!view_)
@@ -2573,6 +2576,8 @@ void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
 
   SendScreenRects();
 }
+
+void RenderWidgetHostImpl::OnRenderFrameSubmission() {}
 
 void RenderWidgetHostImpl::OnLocalSurfaceIdChanged(
     const cc::RenderFrameMetadata& metadata) {
@@ -2812,17 +2817,28 @@ void RenderWidgetHostImpl::StartDragging(
   storage::FileSystemContext* file_system_context =
       GetProcess()->GetStoragePartition()->GetFileSystemContext();
   filtered_data.file_system_files.clear();
+  // TODO(https://crbug.com/1221308): determine whether StorageKey should be
+  // replaced with a non-first-party value
   for (const auto& file_system_file : drop_data.file_system_files) {
-    storage::FileSystemURL file_system_url =
-        file_system_context->CrackURL(file_system_file.url);
+    storage::FileSystemURL file_system_url = file_system_context->CrackURL(
+        file_system_file.url,
+        blink::StorageKey(url::Origin::Create(file_system_file.url)));
     if (policy->CanReadFileSystemFile(GetProcess()->GetID(), file_system_url))
       filtered_data.file_system_files.push_back(file_system_file);
   }
 
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
-  view->StartDragging(filtered_data, drag_operations_mask, image,
-                      bitmap_offset_in_dip, *event_info, this);
+  gfx::Vector2d offset = bitmap_offset_in_dip;
+#if defined(OS_WIN)
+  // On Windows, scale the offset by device scale factor, otherwise the drag
+  // image location doesn't line up with the drop location (drag destination).
+  gfx::Vector2dF scaled_offset = gfx::Vector2dF(offset);
+  scaled_offset.Scale(scale);
+  offset = gfx::ToRoundedVector2d(scaled_offset);
+#endif
+  view->StartDragging(filtered_data, drag_operations_mask, image, offset,
+                      *event_info, this);
 }
 
 bool RenderWidgetHostImpl::IsAutoscrollInProgress() {
@@ -3325,7 +3341,7 @@ void RenderWidgetHostImpl::GotResponseToForceRedraw(int snapshot_id) {
       FROM_HERE,
       base::BindOnce(&RenderWidgetHostImpl::WindowSnapshotReachedScreen,
                      weak_factory_.GetWeakPtr(), snapshot_id),
-      base::TimeDelta::FromSecondsD(1. / 6));
+      base::Seconds(1. / 6));
 #else
   WindowSnapshotReachedScreen(snapshot_id);
 #endif
@@ -3752,5 +3768,15 @@ RenderWidgetHostImpl::MainFramePropagationProperties::
 
 RenderWidgetHostImpl::MainFramePropagationProperties::
     ~MainFramePropagationProperties() = default;
+
+RenderWidgetHostImpl::PendingShowParams::PendingShowParams(
+    base::TimeTicks show_request_timestamp,
+    bool is_evicted,
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+    : show_request_timestamp(show_request_timestamp),
+      is_evicted(is_evicted),
+      visible_time_request(std::move(visible_time_request)) {}
+
+RenderWidgetHostImpl::PendingShowParams::~PendingShowParams() = default;
 
 }  // namespace content

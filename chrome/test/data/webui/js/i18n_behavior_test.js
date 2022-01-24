@@ -48,7 +48,7 @@ suite('I18nBehaviorModuleTest', function() {
   });
 
   test('i18n dynamic', function() {
-    var locale = 'en';
+    const locale = 'en';
     assertEquals(text, I18nBehavior.i18nDynamic(locale, 'text'));
   });
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ class EVRootCAMetadata;
 // must contain a PKCS#8 PrivateKeyInfo in DER encoding. Returns true on success
 // and false on failure.
 bool ImportSensitiveKeyFromFile(const base::FilePath& dir,
-                                const std::string& key_filename,
+                                base::StringPiece key_filename,
                                 PK11SlotInfo* slot);
 
 bool ImportClientCertToSlot(CERTCertificate* cert, PK11SlotInfo* slot);
@@ -46,30 +47,30 @@ ScopedCERTCertificate ImportClientCertToSlot(
 
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    const std::string& cert_filename,
-    const std::string& key_filename,
+    base::StringPiece cert_filename,
+    base::StringPiece key_filename,
     PK11SlotInfo* slot,
     ScopedCERTCertificate* nss_cert);
 scoped_refptr<X509Certificate> ImportClientCertAndKeyFromFile(
     const base::FilePath& dir,
-    const std::string& cert_filename,
-    const std::string& key_filename,
+    base::StringPiece cert_filename,
+    base::StringPiece key_filename,
     PK11SlotInfo* slot);
 
 ScopedCERTCertificate ImportCERTCertificateFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file);
+    base::StringPiece cert_file);
 
 ScopedCERTCertificateList CreateCERTCertificateListFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file,
+    base::StringPiece cert_file,
     int format);
 #endif
 
 // Imports all of the certificates in |cert_file|, a file in |certs_dir|, into a
 // CertificateList.
 CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
-                                              const std::string& cert_file,
+                                              base::StringPiece cert_file,
                                               int format);
 
 // Imports all the certificates given a list of filenames, and assigns the
@@ -85,15 +86,16 @@ CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
 // intermediate certificates.
 scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file,
+    base::StringPiece cert_file,
     int format);
 
 // Imports a single certificate from |cert_file|.
 // |certs_dir| represents the test certificates directory. |cert_file| is the
 // name of the certificate file. If cert_file contains multiple certificates,
 // the first certificate found will be returned.
-scoped_refptr<X509Certificate> ImportCertFromFile(const base::FilePath& certs_dir,
-                                                  const std::string& cert_file);
+scoped_refptr<X509Certificate> ImportCertFromFile(
+    const base::FilePath& certs_dir,
+    base::StringPiece cert_file);
 
 // ScopedTestEVPolicy causes certificates marked with |policy|, issued from a
 // root with the given fingerprint, to be treated as EV. |policy| is expressed

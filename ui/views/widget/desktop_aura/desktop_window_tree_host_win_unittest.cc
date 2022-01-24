@@ -42,6 +42,12 @@ class DesktopWindowTreeHostWinAccessibilityObjectTest
     : public DesktopWidgetTest {
  public:
   DesktopWindowTreeHostWinAccessibilityObjectTest() = default;
+
+  DesktopWindowTreeHostWinAccessibilityObjectTest(
+      const DesktopWindowTreeHostWinAccessibilityObjectTest&) = delete;
+  DesktopWindowTreeHostWinAccessibilityObjectTest& operator=(
+      const DesktopWindowTreeHostWinAccessibilityObjectTest&) = delete;
+
   ~DesktopWindowTreeHostWinAccessibilityObjectTest() override = default;
 
  protected:
@@ -62,9 +68,6 @@ class DesktopWindowTreeHostWinAccessibilityObjectTest
   }
 
   Microsoft::WRL::ComPtr<ui::AXPlatformNodeWin> test_node_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesktopWindowTreeHostWinAccessibilityObjectTest);
 };
 
 // This test validates that we do not leak the root accessibility object when

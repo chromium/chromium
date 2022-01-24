@@ -23,7 +23,8 @@ ScreenCaptureNotificationUIAsh::~ScreenCaptureNotificationUIAsh() {
 
 gfx::NativeViewId ScreenCaptureNotificationUIAsh::OnStarted(
     base::OnceClosure stop_callback,
-    content::MediaStreamUI::SourceCallback source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback,
+    const std::vector<content::DesktopMediaID>& media_ids) {
   stop_callback_ = std::move(stop_callback);
   ash::Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
       base::BindRepeating(

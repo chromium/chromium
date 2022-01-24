@@ -119,7 +119,7 @@ class SplitViewMetricsController : public TabletModeObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // DeskController::Observer:
+  // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
   void OnDeskRemoved(const Desk* desk) override;
   void OnDeskReordered(int old_index, int new_index) override;
@@ -127,6 +127,8 @@ class SplitViewMetricsController : public TabletModeObserver,
                                const Desk* deactivated) override;
   void OnDeskSwitchAnimationLaunching() override;
   void OnDeskSwitchAnimationFinished() override;
+  void OnDeskNameChanged(const Desk* desk,
+                         const std::u16string& new_name) override;
 
   // aura::EnvObserver
   void OnWindowInitialized(aura::Window* window) override;
@@ -195,6 +197,11 @@ class SplitViewMetricsController : public TabletModeObserver,
   void StartRecordTabletMultiDisplaySplitView();
   void StopRecordTabletMultiDisplaySplitView();
 
+  // Called when the display orientation or mode changes to report device mode
+  // and orientation the user uses split screen in. This updates UMA metric
+  // `Ash.SplitView.DeviceOrientation.{DeviceUIMode}`.
+  void ReportDeviceUIModeAndOrientationHistogram();
+
   // We need to save an ptr of the observed `SplitViewController`. Because the
   // `RootWindowController` will be deconstructed in advance. Then, we cannot
   // use it to get observed `SplitViewController`.
@@ -212,9 +219,9 @@ class SplitViewMetricsController : public TabletModeObserver,
   // Observed windows on the active desk.
   std::vector<aura::Window*> observed_windows_;
 
-  // Windows that recovered by full restore have no parents at the initialize
+  // Windows that recovered by window restore have no parents at the initialize
   // stage, so their window states cannot be observed when are inserted into
-  // `observed_windows_` list. This set contains the windows recovered by full
+  // `observed_windows_` list. This set contains the windows recovered by window
   // restored whose window states have not been observed yet.
   std::set<aura::Window*> no_state_observed_windows_;
 

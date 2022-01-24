@@ -15,13 +15,24 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/net/server_connection_manager.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+namespace sync_pb {
+class EntitySpecifics;
+class SyncEntity;
+class ClientCommand;
+class CommitMessage;
+class CommitResponse;
+class ClientToServerMessage;
+class ClientToServerResponse;
+class DataTypeProgressMarker;
+class GetUpdatesResponse;
+class ClientCommand;
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -37,6 +48,10 @@ class MockConnectionManager : public ServerConnectionManager {
   };
 
   MockConnectionManager();
+
+  MockConnectionManager(const MockConnectionManager&) = delete;
+  MockConnectionManager& operator=(const MockConnectionManager&) = delete;
+
   ~MockConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
@@ -347,8 +362,6 @@ class MockConnectionManager : public ServerConnectionManager {
   std::string next_token_;
 
   std::vector<sync_pb::ClientToServerMessage> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConnectionManager);
 };
 
 }  // namespace syncer

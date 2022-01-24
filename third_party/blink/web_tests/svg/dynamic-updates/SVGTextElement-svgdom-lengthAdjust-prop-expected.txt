@@ -12,7 +12,7 @@ PASS lastLength = textElement.getComputedTextLength(); lastLength > 0 && lastLen
 PASS textElement.getAttribute('lengthAdjust') is "spacingAndGlyphs"
 PASS textElement.lengthAdjust.baseVal is SVGTextContentElement.LENGTHADJUST_SPACINGANDGLYPHS
 PASS textElement.textLength.baseVal.value is 200
-PASS textElement.getComputedTextLength() == lastLength is true
+FAIL textElement.getComputedTextLength() == lastLength should be true. Was false.
 PASS successfullyParsed is true
 
 TEST COMPLETE

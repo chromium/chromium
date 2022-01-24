@@ -79,8 +79,7 @@ BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
 
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : BrowserAccessibilityState(),
-      histogram_delay_(
-          base::TimeDelta::FromSeconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)) {
+      histogram_delay_(base::Seconds(ACCESSIBILITY_HISTOGRAM_DELAY_SECS)) {
   force_renderer_accessibility_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceRendererAccessibility);
@@ -262,7 +261,7 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
     return;
 
   if (now - first_user_input_event_time_ >
-      base::TimeDelta::FromSeconds(kAutoDisableAccessibilityTimeSecs)) {
+      base::Seconds(kAutoDisableAccessibilityTimeSecs)) {
     if (!accessibility_active_start_time_.is_null()) {
       base::UmaHistogramLongTimes(
           "Accessibility.ActiveTime",
@@ -303,7 +302,7 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
         base::BindOnce(
             &BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask,
             base::Unretained(this)),
-        base::TimeDelta::FromSeconds(kOnAccessibilityUsageUpdateDelaySecs));
+        base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
   }
 }
 
@@ -403,7 +402,7 @@ void BrowserAccessibilityStateImpl::CallInitBackgroundTasksForTesting(
     base::RepeatingClosure done_callback) {
   // Set the delay to 1 second, that ensures that we actually test having
   // a nonzero delay but the test still runs quickly.
-  histogram_delay_ = base::TimeDelta::FromSeconds(1);
+  histogram_delay_ = base::Seconds(1);
   background_thread_done_callback_ = done_callback;
   InitBackgroundTasks();
 }

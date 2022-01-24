@@ -12,7 +12,7 @@ namespace media {
 static base::TimeDelta ToTimeDelta(int seconds) {
   if (seconds < 0)
     return kNoTimestamp;
-  return base::TimeDelta::FromSeconds(seconds);
+  return base::Seconds(seconds);
 }
 
 // Helper to create buffers with specified timestamp in seconds.

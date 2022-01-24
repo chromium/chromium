@@ -16,6 +16,10 @@ namespace shell {
 class CastPermissionManager : public content::PermissionControllerDelegate {
  public:
   CastPermissionManager();
+
+  CastPermissionManager(const CastPermissionManager&) = delete;
+  CastPermissionManager& operator=(const CastPermissionManager&) = delete;
+
   ~CastPermissionManager() override;
 
   // content::PermissionControllerDelegate implementation:
@@ -53,9 +57,6 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       override;
   void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastPermissionManager);
 };
 
 }  // namespace shell

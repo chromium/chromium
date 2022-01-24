@@ -5,7 +5,7 @@
 export interface ListPropertyUpdateBehavior {
   updateList(
       propertyPath: string,
-      identityGetter: ((arg0: object) => (object | string)),
+      identityGetter: ((arg0: any) => (any | string)),
       updatedList: object[], identityBasedUpdate?: boolean): boolean;
 }
 

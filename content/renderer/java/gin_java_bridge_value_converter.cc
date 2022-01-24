@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
@@ -76,6 +75,9 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
         new TypedArraySerializerImpl<ElementType, ListType>(typed_array));
   }
 
+  TypedArraySerializerImpl(const TypedArraySerializerImpl&) = delete;
+  TypedArraySerializerImpl& operator=(const TypedArraySerializerImpl&) = delete;
+
   void serializeTo(char* data,
                    size_t data_length,
                    base::ListValue* out) override {
@@ -100,8 +102,6 @@ class TypedArraySerializerImpl : public TypedArraySerializer {
       : typed_array_(typed_array) {}
 
   v8::Local<v8::TypedArray> typed_array_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedArraySerializerImpl);
 };
 
 // static

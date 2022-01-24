@@ -5,12 +5,9 @@
 #ifndef FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
 #define FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_
 
-#include <vector>
-
-#include "base/memory/ref_counted.h"
-#include "fuchsia/engine/url_request_rewrite.mojom.h"
+#include "base/memory/scoped_refptr.h"
+#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "fuchsia/engine/web_engine_export.h"
-#include "net/http/http_request_headers.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 // Implements a URLLoaderThrottle for the WebEngine. Applies network request
@@ -18,11 +15,8 @@
 class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
     : public blink::URLLoaderThrottle {
  public:
-  using UrlRequestRewriteRules =
-      base::RefCountedData<std::vector<mojom::UrlRequestRulePtr>>;
-
   explicit WebEngineURLLoaderThrottle(
-      scoped_refptr<UrlRequestRewriteRules> rules);
+      scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules);
   ~WebEngineURLLoaderThrottle() override;
 
   WebEngineURLLoaderThrottle(const WebEngineURLLoaderThrottle&) = delete;
@@ -50,7 +44,7 @@ class WEB_ENGINE_EXPORT WebEngineURLLoaderThrottle
       network::ResourceRequest* request,
       const mojom::UrlRequestRewriteAddHeadersPtr& add_headers);
 
-  scoped_refptr<UrlRequestRewriteRules> rules_;
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> rules_;
 };
 
 #endif  // FUCHSIA_ENGINE_COMMON_WEB_ENGINE_URL_LOADER_THROTTLE_H_

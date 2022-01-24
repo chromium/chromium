@@ -36,6 +36,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "chevron.icon",
     "clear.icon",
     "clock.icon",
+    "dino.icon",
     "drive_docs.icon",
     "drive_folder.icon",
     "drive_forms.icon",
@@ -53,13 +54,12 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "google_super_g.icon",
     "http.icon",
     "https_valid_in_chip.icon",
+    "incognito.icon",
     "install_desktop.icon",
-    "install_download.icon",
     "keyword_search.icon",
     "offline_pin.icon",
     "page.icon",
     "pedal.icon",
-    "plus.icon",
     "product.icon",
     "send.icon",
     "share.icon",
@@ -69,6 +69,14 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "tab.icon",
     "trending_up.icon",
   ]
+
+  if (is_mac) {
+    sources += [ "share_mac.icon" ]
+  }
+
+  if (is_win) {
+    sources += [ "share_win.icon" ]
+  }
 }
 
 static_library("vector_icons") {
@@ -90,8 +98,6 @@ static_library("browser") {
     "actions/omnibox_pedal.cc",
     "actions/omnibox_pedal.h",
     "actions/omnibox_pedal_concepts.h",
-    "actions/omnibox_pedal_implementations.cc",
-    "actions/omnibox_pedal_implementations.h",
     "actions/omnibox_pedal_provider.cc",
     "actions/omnibox_pedal_provider.h",
     "answers_cache.cc",
@@ -172,8 +178,8 @@ static_library("browser") {
     "omnibox_metrics_provider.cc",
     "omnibox_metrics_provider.h",
     "omnibox_navigation_observer.h",
-    "omnibox_popup_model.cc",
-    "omnibox_popup_model.h",
+    "omnibox_popup_selection.cc",
+    "omnibox_popup_selection.h",
     "omnibox_popup_view.h",
     "omnibox_prefs.cc",
     "omnibox_prefs.h",
@@ -207,6 +213,8 @@ static_library("browser") {
     "shortcuts_provider.h",
     "suggestion_answer.cc",
     "suggestion_answer.h",
+    "tab_matcher.cc",
+    "tab_matcher.h",
     "tailored_word_break_iterator.cc",
     "tailored_word_break_iterator.h",
     "titled_url_match_utils.cc",
@@ -511,7 +519,6 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "actions/omnibox_pedal_implementations_unittest.cc",
     "actions/omnibox_pedal_provider_unittest.cc",
     "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",
@@ -540,7 +547,6 @@ source_set("unit_tests") {
     "omnibox_controller_unittest.cc",
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
-    "omnibox_popup_model_unittest.cc",
     "omnibox_prefs_unittest.cc",
     "omnibox_view_unittest.cc",
     "on_device_head_model_unittest.cc",

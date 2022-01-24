@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 
 // kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
-// length fields. See table 3.
+// length fields, i.e. that is |VersionClass::SMALL|. See table 3.
 static constexpr int kMaxVersionWithSmallLengths = 9;
 
 // A structure containing QR version-specific constants and data.
@@ -56,12 +56,13 @@ struct QRVersionInfo {
         (version < 7 && encoded_version != 0) ||
         (version >= 7 &&
          encoded_version >> 12 != static_cast<uint32_t>(version)) ||
-        (version <= kMaxVersionWithSmallLengths && input_bytes() >= 256) ||
         (group2_num_blocks != 0 &&
          group2_block_ec_bytes() != group1_block_ec_bytes())) {
       __builtin_unreachable();
     }
   }
+  QRVersionInfo(const QRVersionInfo&) = delete;
+  QRVersionInfo& operator=(const QRVersionInfo&) = delete;
 
   // The version of the QR code.
   const int version;
@@ -119,14 +120,9 @@ struct QRVersionInfo {
     return group2_block_data_bytes * group2_num_blocks;
   }
 
-  // Two bytes of overhead are needed for QR framing.
-  // If extending beyond version 26, framing would need to be updated.
+  // input_bytes is the maximum number of data bytes, including framing bytes.
   constexpr size_t input_bytes() const {
-    if (version <= 9) {
-      return group1_data_bytes() + group2_data_bytes() - 2;
-    } else {
-      return group1_data_bytes() + group2_data_bytes() - 3;
-    }
+    return group1_data_bytes() + group2_data_bytes();
   }
 
  private:
@@ -142,8 +138,6 @@ struct QRVersionInfo {
 
     return true;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(QRVersionInfo);
 };
 
 namespace {
@@ -348,18 +342,85 @@ static_assert(kAlphanumValue[static_cast<int>(' ')] == 36, "");
 static_assert(kAlphanumValue[static_cast<int>(':')] == 44, "");
 static_assert(kAlphanumValue[static_cast<int>('"')] == 255, "");
 
+// LengthBits returns the number of bits used to encode the length of a given
+// segment type. See table 3.
+constexpr size_t LengthBits(QRCodeGenerator::VersionClass vclass,
+                            QRCodeGenerator::SegmentType type) {
+  switch (type) {
+    case QRCodeGenerator::SegmentType::DIGIT:
+      switch (vclass) {
+        case QRCodeGenerator::VersionClass::SMALL:
+          return 10;
+        case QRCodeGenerator::VersionClass::LARGE:
+          return 12;
+      }
+
+    case QRCodeGenerator::SegmentType::ALPHANUM:
+      switch (vclass) {
+        case QRCodeGenerator::VersionClass::SMALL:
+          return 9;
+        case QRCodeGenerator::VersionClass::LARGE:
+          return 11;
+      }
+
+    case QRCodeGenerator::SegmentType::BINARY:
+      switch (vclass) {
+        case QRCodeGenerator::VersionClass::SMALL:
+          return 8;
+        case QRCodeGenerator::VersionClass::LARGE:
+          return 16;
+      }
+  }
+}
+
 // BitPacker appends bits to |output|, packing them from most-significant place
 // to least significant.
 class BitPacker {
  public:
-  enum class Mode {
-    ALPHANUM = 2,
-    BINARY = 4,
-  };
-
   explicit BitPacker(std::vector<uint8_t>* output) : out_(output) {}
 
-  void AppendBits(uint8_t v, int num_bits) {
+  // AppendSegments adds the contents of |input| using the segmentation from
+  // |segments|.
+  void AppendSegments(const std::vector<QRCodeGenerator::Segment>& segments,
+                      QRCodeGenerator::VersionClass vclass,
+                      base::span<const uint8_t> input) {
+    size_t offset = 0;
+    for (const auto& segment : segments) {
+      base::span<const uint8_t> segment_data =
+          input.subspan(offset, segment.length);
+      switch (segment.type) {
+        case QRCodeGenerator::SegmentType::DIGIT:
+          AppendDigits(segment_data, vclass);
+          break;
+        case QRCodeGenerator::SegmentType::ALPHANUM:
+          AppendAlphanum(segment_data, vclass);
+          break;
+        case QRCodeGenerator::SegmentType::BINARY:
+          AppendBinary(segment_data, vclass);
+          break;
+      }
+
+      offset += segment.length;
+    }
+  }
+
+  void AppendTerminator() { AppendBitsFromByte(0, 4); }
+
+ private:
+  // ModeNumber returns the 4-bit identifier for the given mode. See table 2.
+  static constexpr uint8_t ModeNumber(QRCodeGenerator::SegmentType stype) {
+    switch (stype) {
+      case QRCodeGenerator::SegmentType::DIGIT:
+        return 1;
+      case QRCodeGenerator::SegmentType::ALPHANUM:
+        return 2;
+      case QRCodeGenerator::SegmentType::BINARY:
+        return 4;
+    }
+  }
+
+  // AppendBitsFromByte appends |num_bits| (which must be <= 8) from |v|.
+  void AppendBitsFromByte(uint8_t v, int num_bits) {
     DCHECK_LE(num_bits, 8);
 
     v <<= 8 - num_bits;
@@ -374,24 +435,130 @@ class BitPacker {
     }
   }
 
-  void AppendMode(Mode mode) { AppendBits(static_cast<uint8_t>(mode), 4); }
+  // AppendBits appends |num_bits| (which must be <= 16) from |v|.
+  void AppendBits(const uint16_t v, const int num_bits) {
+    DCHECK_LE(num_bits, 16);
+    DCHECK_LT(v, 1u << num_bits);
 
-  void Append9Bits(uint16_t v) {
-    AppendBits(static_cast<uint8_t>(v >> 1), 8);
-    AppendBits(static_cast<uint8_t>(v & 11), 1);
+    if (num_bits <= 8) {
+      AppendBitsFromByte(static_cast<uint8_t>(v), num_bits);
+      return;
+    }
+
+    const int n = num_bits - 8;
+    AppendBitsFromByte(static_cast<uint8_t>(v >> n), 8);
+    AppendBitsFromByte(static_cast<uint8_t>(v & ((1u << n) - 1)), n);
   }
 
-  void Append11Bits(uint16_t v) {
-    AppendBits(static_cast<uint8_t>(v >> 3), 8);
-    AppendBits(static_cast<uint8_t>(v & 0b111), 3);
+  static unsigned DigitValue(uint8_t digit) {
+    DCHECK('0' <= digit && digit <= '9');
+    return digit - '0';
   }
 
-  void AppendTerminator() { AppendBits(0, 4); }
+  void AppendDigits(base::span<const uint8_t> in,
+                    QRCodeGenerator::VersionClass vclass) {
+    const auto stype = QRCodeGenerator::SegmentType::DIGIT;
+    AppendBitsFromByte(ModeNumber(stype), 4);
+    AppendBits(in.size(), LengthBits(vclass, stype));
 
- private:
+    while (in.size() >= 3) {
+      // Triples of digits are encoded as 10-bit values.
+      AppendBits(
+          DigitValue(in[0]) * 100 + DigitValue(in[1]) * 10 + DigitValue(in[2]),
+          10);
+      in = in.subspan(3);
+    }
+
+    // Any remaining digits are encoded using the minimal number of bits.
+    if (in.size() == 2) {
+      AppendBitsFromByte(DigitValue(in[0]) * 10 + DigitValue(in[1]), 7);
+    } else if (in.size() == 1) {
+      AppendBitsFromByte(DigitValue(in[0]), 4);
+    }
+  }
+
+  void AppendAlphanum(base::span<const uint8_t> in,
+                      QRCodeGenerator::VersionClass vclass) {
+    const auto stype = QRCodeGenerator::SegmentType::ALPHANUM;
+    AppendBitsFromByte(ModeNumber(stype), 4);
+    AppendBits(in.size(), LengthBits(vclass, stype));
+
+    while (in.size() >= 2) {
+      DCHECK(in[0] < sizeof(kAlphanumValue) && kAlphanumValue[in[0]] != 0xff)
+          << in[0];
+      DCHECK(in[1] < sizeof(kAlphanumValue) && kAlphanumValue[in[1]] != 0xff)
+          << in[1];
+      AppendBits(kAlphanumValue[in[0]] * 45 + kAlphanumValue[in[1]], 11);
+      in = in.subspan(2);
+    }
+
+    if (!in.empty()) {
+      AppendBitsFromByte(kAlphanumValue[in[0]], 6);
+    }
+  }
+
+  void AppendBinary(base::span<const uint8_t> in,
+                    QRCodeGenerator::VersionClass vclass) {
+    const auto stype = QRCodeGenerator::SegmentType::BINARY;
+    AppendBitsFromByte(ModeNumber(stype), 4);
+    AppendBits(in.size(), LengthBits(vclass, stype));
+
+    for (const uint8_t b : in) {
+      AppendBitsFromByte(b, 8);
+    }
+  }
+
   std::vector<uint8_t>* const out_;
   int bits_remaining_in_final_byte_ = 0;
 };
+
+// VersionClassForVersion translates a QR code version number into whether it
+// uses small or large lengths.
+QRCodeGenerator::VersionClass VersionClassForVersion(int version) {
+  return version <= kMaxVersionWithSmallLengths
+             ? QRCodeGenerator::VersionClass::SMALL
+             : QRCodeGenerator::VersionClass::LARGE;
+}
+
+// SegmentBits returns the number of bits needed to encode the given segment.
+size_t SegmentBits(QRCodeGenerator::VersionClass vclass,
+                   const QRCodeGenerator::Segment& segment) {
+  static const uint8_t kDigitTrailingBits[3] = {0, 4, 7};
+  const size_t header_bits = 4 + LengthBits(vclass, segment.type);
+
+  switch (segment.type) {
+    case QRCodeGenerator::SegmentType::DIGIT:
+      return header_bits + (10 * (segment.length / 3)) +
+             kDigitTrailingBits[segment.length % 3];
+
+    case QRCodeGenerator::SegmentType::ALPHANUM:
+      return header_bits + (11 * (segment.length / 2)) +
+             (segment.length & 1 ? 6 : 0);
+
+    case QRCodeGenerator::SegmentType::BINARY:
+      return header_bits + 8 * segment.length;
+  }
+}
+
+size_t SegmentBits(QRCodeGenerator::VersionClass vclass,
+                   base::span<const QRCodeGenerator::Segment> segments) {
+  size_t sum = 0;
+  for (const auto& segment : segments) {
+    sum += SegmentBits(vclass, segment);
+  }
+
+  return sum;
+}
+
+// SegmentSpanLength returns the total length of |segments|.
+size_t SegmentSpanLength(base::span<const QRCodeGenerator::Segment> segments) {
+  size_t sum = 0;
+  for (const auto& segment : segments) {
+    sum += segment.length;
+  }
+
+  return sum;
+}
 
 }  // namespace
 
@@ -410,54 +577,31 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     absl::optional<uint8_t> mask) {
   CHECK(!mask || *mask <= kMaxMask);
 
-  const bool is_alphanum =
-      std::all_of(in.begin(), in.end(), [](uint8_t input_byte) -> bool {
-        return input_byte < sizeof(kAlphanumValue) &&
-               kAlphanumValue[input_byte] != 0xff;
-      });
+  std::vector<Segment> segments;
+  const QRVersionInfo* version_info = nullptr;
 
-  // The size of the length field varies depending on the size of the QR code
-  // so that smaller QR codes don't have to carry a length field that supports
-  // sizes larger than they can encode. Therefore two lengths are calculated:
-  // one assuming a small QR code, and one assuming the larger.
-  size_t small_length_bits;
-  size_t large_length_bits;
+  // First assume that we can use |SMALL| QR codes. If the input is too large
+  // for that than recalculate for |LARGE| codes.
+  for (VersionClass version_class :
+       {VersionClass::SMALL, VersionClass::LARGE}) {
+    segments = SegmentInput(version_class, in);
+    DCHECK(IsValidSegmentation(segments, in));
 
-  if (is_alphanum) {
-    small_length_bits = /* mode indicator */ 4 + 9 /* length field */;
-    // Each input byte is converted into a value from 0 to 44. Each pair of
-    // input characters is encoded in 11 bits, with six bits for the final byte,
-    // if any.
-    small_length_bits += 11 * (in.size() / 2) + 6 * (in.size() % 2);
-    small_length_bits += 4 /* terminator */;
-    // For larger QR codes, the length is 11 bits, not 9.
-    large_length_bits = small_length_bits + 2;
-  } else {
-    small_length_bits = /* mode indicator */ 4 + 8 /* length field */;
-    small_length_bits += 8 * in.size();
-    small_length_bits += 4 /* terminator */;
-    // For larger QR codes, the length is 16 bits, not 8.
-    large_length_bits = small_length_bits + 8;
-  }
-
-  const size_t small_length_bytes = (small_length_bits + 7) / 8;
-  const size_t large_length_bytes = (large_length_bits + 7) / 8;
-
-  const QRVersionInfo* version_info =
-      GetVersionForDataSize(small_length_bytes, min_version);
-  if (!version_info) {
-    return absl::nullopt;
-  }
-
-  if (version_info->version > kMaxVersionWithSmallLengths) {
-    // The data is too large to fit in a small QR code, but the larger length
-    // now needed may change the selected version.
-    version_info = GetVersionForDataSize(large_length_bytes, min_version);
+    const size_t length_bits =
+        SegmentBits(version_class, segments) + 4 /* for the terminator */;
+    const size_t length_bytes = (length_bits + 7) / 8;
+    version_info = GetVersionForDataSize(length_bytes, min_version);
     if (!version_info) {
       return absl::nullopt;
     }
+
+    if (VersionClassForVersion(version_info->version) == version_class) {
+      break;
+    }
   }
 
+  const VersionClass version_class =
+      VersionClassForVersion(version_info->version);
   if (version_info != version_info_) {
     version_info_ = version_info;
     d_.resize(version_info_->total_size());
@@ -471,40 +615,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   prefixed_data.reserve(framed_input_size);
   BitPacker packer(&prefixed_data);
 
-  if (is_alphanum) {
-    packer.AppendMode(BitPacker::Mode::ALPHANUM);
-    if (version_info_->version <= kMaxVersionWithSmallLengths) {
-      DCHECK_LT(in.size(), 1u << 9);
-      packer.Append9Bits(in.size());
-    } else {
-      DCHECK_LT(in.size(), 1u << 11);
-      packer.Append11Bits(in.size());
-    }
-
-    for (size_t i = 0; i < in.size(); i += 2) {
-      if (i == in.size() - 1) {
-        packer.AppendBits(kAlphanumValue[in[i]], 6);
-      } else {
-        packer.Append11Bits(static_cast<uint16_t>(kAlphanumValue[in[i]]) * 45 +
-                            kAlphanumValue[in[i + 1]]);
-      }
-    }
-  } else {
-    packer.AppendMode(BitPacker::Mode::BINARY);
-    if (version_info_->version <= kMaxVersionWithSmallLengths) {
-      DCHECK_LT(in.size(), 1u << 8);
-      packer.AppendBits(in.size(), 8);
-    } else {
-      DCHECK_LT(in.size(), 1u << 16);
-      packer.AppendBits(in.size() >> 8, 8);
-      packer.AppendBits(in.size() & 0xff, 8);
-    }
-
-    for (size_t i = 0; i < in.size(); i++) {
-      packer.AppendBits(in[i], 8);
-    }
-  }
-
+  packer.AppendSegments(segments, version_class, in);
   packer.AppendTerminator();
 
   // The remainder of the space is filled with alternatining 0xec and 0x11
@@ -623,7 +734,7 @@ absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
   DCHECK(version_info_->group2_num_blocks == 0 ||
          version_info_->group2_block_ec_bytes() ==
              version_info_->group1_block_ec_bytes());
-  for (size_t j = 0; j < version_info_->group1_block_ec_bytes(); j++) {
+  for (j = 0; j < version_info_->group1_block_ec_bytes(); j++) {
     for (size_t i = 0; i < group1_num_blocks; i++) {
       interleaved_data[k++] =
           expanded_blocks[i][version_info_->group1_block_data_bytes + j];
@@ -1145,4 +1256,333 @@ unsigned QRCodeGenerator::CountPenaltyPoints() const {
   penalty += 5 * static_cast<unsigned>(floor(deviation));
 
   return penalty;
+}
+
+// Segmentation
+//
+// The data in a QR code is a series of "segments". Each segment has a type,
+// a length, and encoding rules. The set of bytes that can be encoded varies
+// between segment types. A DIGIT segment can only encode '0'<=x<='9' but it
+// encodes them more efficiently than ASCII.
+//
+// For the segment types that we support here, there is a super-set relation:
+// BINARY can encode everything that ALPHANUM can, which can encode everything
+// that DIGIT can.
+//
+// To perform segmentation we first need a function that returns the minimum
+// segment type for a given byte. "Minimum" here is defined using the super-set
+// relation, so DIGIT < ALPHANUM < BINARY.
+
+// static
+QRCodeGenerator::SegmentType QRCodeGenerator::ClassifyByte(uint8_t byte) {
+  if ('0' <= byte && byte <= '9') {
+    return QRCodeGenerator::SegmentType::DIGIT;
+  } else if (byte < sizeof(kAlphanumValue) && kAlphanumValue[byte] != 0xff) {
+    return QRCodeGenerator::SegmentType::ALPHANUM;
+  } else {
+    return QRCodeGenerator::SegmentType::BINARY;
+  }
+}
+
+// A "valid" segmentation is one where:
+//
+//    1. The sum of the segment lengths is equal to the input length.
+//    2. No byte of input is in a segment that cannot encode it.
+
+// static
+bool QRCodeGenerator::IsValidSegmentation(const std::vector<Segment>& segments,
+                                          base::span<const uint8_t> input) {
+  size_t offset = 0;
+  for (const auto& segment : segments) {
+    for (size_t i = offset; i < offset + segment.length; i++) {
+      const auto min_type = ClassifyByte(input[i]);
+      if (static_cast<int>(segment.type) < static_cast<int>(min_type)) {
+        return false;
+      }
+    }
+    offset += segment.length;
+  }
+
+  return offset == input.size();
+}
+
+// Segmentation is the problem of finding a valid segmentation for an input and,
+// preferably, one that is optimal. Segments have headers that take space so,
+// for example, it's not optimal to use a DIGIT segment to encode a single digit
+// in a span of otherwise BINARY data.
+//
+// To start, we define an additional invariant that we will always maintain:
+//
+//    3. No two consecutive segments have the same type.
+//
+// (I.e. consecutive segments with the same type must immediately be merged
+// together.)
+
+bool QRCodeGenerator::NoSuperfluousSegments(
+    const std::vector<Segment>& segments) {
+  for (size_t i = 1; i < segments.size(); i++) {
+    if (segments[i - 1].type == segments[i].type) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Given a classification for each byte of an input, the "initial segmentation"
+// is defined as a segmentation that puts each byte of the input into a segment
+// of minimal type.
+
+// static
+std::vector<QRCodeGenerator::Segment> QRCodeGenerator::InitialSegmentation(
+    base::span<const uint8_t> input) {
+  std::vector<Segment> segments;
+  absl::optional<Segment> current;
+
+  for (const uint8_t b : input) {
+    const SegmentType type = ClassifyByte(b);
+    if (current.has_value() && type == current->type) {
+      current->length++;
+    } else {
+      if (current.has_value()) {
+        segments.push_back(*current);
+      } else {
+        current.emplace();
+      }
+
+      current->type = type;
+      current->length = 1;
+    }
+  }
+
+  if (current.has_value()) {
+    segments.push_back(*current);
+  }
+
+  DCHECK(IsValidSegmentation(segments, input));
+  DCHECK(NoSuperfluousSegments(segments));
+
+  return segments;
+}
+
+// In order to improve on the initial segmentation we need the ability to
+// merge segments. Spans of segments are specified by (start, end) indexes where
+// start is the index of the first segment of the span and end is the index of
+// the last.
+//
+// |MergeSegments| replaces a span of segments with a given segment and returns
+// the index of the replacement.
+
+// static
+size_t QRCodeGenerator::MergeSegments(std::vector<Segment>* segments,
+                                      size_t start,
+                                      size_t end,
+                                      Segment replacement) {
+  DCHECK_LT(start, segments->size());
+  DCHECK_LT(end, segments->size());
+  DCHECK_LT(start, end);
+
+  segments->at(start) = replacement;
+  segments->erase(segments->begin() + start + 1, segments->begin() + end + 1);
+  return start;
+}
+
+// Segments should only be merged when the replacement is smaller than the
+// separate segments. |MaybeMerge| will replace a span of segments with a
+// single segment of |merged_type| if the merged form is equal or smaller than
+// the span. It returns the index of the right-edge of the span, whether merged
+// or not.
+//
+// Callers of this function must ensure that merging a span doesn't violate
+// invariant three.
+
+// static
+size_t QRCodeGenerator::MaybeMerge(VersionClass vclass,
+                                   std::vector<Segment>* segments,
+                                   size_t start,
+                                   size_t end,
+                                   SegmentType merged_type) {
+  auto s = base::span<const Segment>(&segments->at(start), (end - start) + 1);
+  const size_t unmerged_cost = SegmentBits(vclass, s);
+  const Segment merged = {
+      .type = merged_type,
+      .length = SegmentSpanLength(s),
+  };
+  const size_t merged_cost = SegmentBits(vclass, merged);
+
+  if (merged_cost <= unmerged_cost) {
+    return MergeSegments(segments, start, end, merged);
+  }
+  return end;
+}
+
+// If there were only two classes then there would be an obvious solution for
+// merging: for each transition to the smaller class, consider whether the
+// overhead of the segment was worth the more compact encoding and promote the
+// segment if not.
+//
+// There are three classes here but we deal with that by using the two-class
+// solution twice. Runs of DIGIT and ALPHANUM segments are considered to be
+// subproblems and solved using the two-class pattern. Then those runs are
+// considered to be a single segment for the purpose of applying the two-class
+// solution again for BINARY and DIGIT/ALPHANUM runs.
+//
+// It is not clear that is gives an optimal segmentation, but it does a pretty
+// good job in linear time. ("Sort of" linear: since the segments are kept in
+// a vector and moved down when merging, it's probably quadratic. But I
+// suspect the fixed overhead of a linked list would make it slower in practice
+// for the sizes of problems that we care about.)
+//
+// Since the size of a segment is monotonic with number of input bytes
+// contained, and the edge cases (where an additional input element can cost
+// different numbers of bits depending on the length mod 3 or 2) differ only by
+// one bit, I _suspect_ that this algorithm might be optimal. It would be a fun
+// formal verification problem had I a couple of months to spare. But I don't,
+// so pressing on:
+//
+// First we define a function, |SegmentDigitAlphaSpan|, which performs the
+// two-class solution on a span of segments that are all DIGIT or ALPHANUM
+// segments.
+
+// static
+size_t QRCodeGenerator::SegmentDigitAlphaSpan(VersionClass vclass,
+                                              std::vector<Segment>* segments,
+                                              size_t start,
+                                              size_t end) {
+  // |start| and |end| are the indexes of the first and last segment of the
+  // span.
+  DCHECK_LE(start, end);
+  for (size_t i = start; i <= end; i++) {
+    DCHECK(segments->at(i).type == SegmentType::DIGIT ||
+           segments->at(i).type == SegmentType::ALPHANUM);
+  }
+
+  // A single segment span is trivially optimal.
+  if (end - start == 0) {
+    return end;
+  }
+
+  // Merging segments invalidates |end| (but not |start|). The distance from the
+  // end of |segments| to |end| is constant, however, and used to fix up |end|
+  // after merging.
+  const size_t distance_from_vector_end = segments->size() - end;
+
+  for (size_t i = start + 1; i <= end; i++) {
+    // Find an ALPHANUM segment.
+    if (segments->at(i).type != SegmentType::ALPHANUM) {
+      continue;
+    }
+
+    // |segments[i]| is ALPHANUM and, because of invariant three, |i-1| must
+    // be DIGIT.
+    DCHECK_EQ(segments->at(i - 1).type, SegmentType::DIGIT);
+    DCHECK_EQ(segments->at(i).type, SegmentType::ALPHANUM);
+
+    // If there's another ALPHANUM segment at |i-2| then we must include it in
+    // any merge decisions in order to maintain invariant three. Thus figure
+    // out if segment |i-2| exists.
+    const bool have_left = i >= 2 && i - 2 >= start;
+
+    if (!have_left) {
+      i = MaybeMerge(vclass, segments, i - 1, i, SegmentType::ALPHANUM);
+    } else {
+      DCHECK_EQ(segments->at(i - 2).type, SegmentType::ALPHANUM);
+      i = MaybeMerge(vclass, segments, i - 2, i, SegmentType::ALPHANUM);
+    }
+
+    end = segments->size() - distance_from_vector_end;
+  }
+
+  if (segments->at(end).type == SegmentType::DIGIT) {
+    // If the last segment was DIGIT then it won't have been considered for
+    // merging. So do that.
+    DCHECK_EQ(segments->at(end - 1).type, SegmentType::ALPHANUM);
+    DCHECK_EQ(segments->at(end).type, SegmentType::DIGIT);
+    return MaybeMerge(vclass, segments, end - 1, end, SegmentType::ALPHANUM);
+  }
+
+  return end;
+}
+
+// Having seen the two-class solution for the subproblem of DIGIT/ALPHANUM
+// segments we use the same pattern to cover BINARY segments too. Spans of
+// DIGIT/ALPHANUM segments are found and optimised using the previous function.
+// Then those spans are treated like a single segment for the purposes of
+// merging with BINARY segments.
+
+// static
+std::vector<QRCodeGenerator::Segment> QRCodeGenerator::SegmentInput(
+    VersionClass vclass,
+    base::span<const uint8_t> input) {
+  std::vector<Segment> segments = InitialSegmentation(input);
+
+  // Zero or one segments are trivially optimal.
+  if (segments.size() < 2) {
+    return segments;
+  }
+
+  // digit_alpha_start_idx is the index of the start of the current span of
+  // DIGIT/ALPHANUM segments.
+  absl::optional<size_t> digit_alpha_start_idx;
+
+  for (size_t i = 0; i < segments.size(); i++) {
+    // Invariants must always be maintained.
+    DCHECK(IsValidSegmentation(segments, input));
+    DCHECK(NoSuperfluousSegments(segments));
+
+    const bool is_digit_alpha = segments[i].type == SegmentType::DIGIT ||
+                                segments[i].type == SegmentType::ALPHANUM;
+    if (is_digit_alpha) {
+      if (!digit_alpha_start_idx) {
+        digit_alpha_start_idx = i;
+      }
+
+      continue;
+    }
+
+    if (!digit_alpha_start_idx) {
+      continue;
+    }
+
+    // |segment[i]| is BINARY and |*digit_alpha_start_idx| to i-1 are all
+    // DIGIT/ALPHANUM segments.
+    DCHECK_EQ(segments[i].type, SegmentType::BINARY);
+
+    // Optimise the span of DIGIT/ALPHANUM segments. This returns the index of
+    // the right edge of the span after merging, i.e. the translation of |i-1|.
+    // Thus |i| is adjusted to be that plus one.
+    i = SegmentDigitAlphaSpan(vclass, &segments, *digit_alpha_start_idx,
+                              i - 1) +
+        1;
+
+    // Is there also a BINARY segment on the left of the DIGIT/ALPHANUM span? If
+    // so it must be included in merge decisions in order to maintain invariant
+    // three.
+    const bool has_left = *digit_alpha_start_idx != 0;
+    DCHECK(!has_left ||
+           segments[*digit_alpha_start_idx - 1].type == SegmentType::BINARY);
+    if (!has_left) {
+      i = MaybeMerge(vclass, &segments, *digit_alpha_start_idx, i,
+                     SegmentType::BINARY);
+    } else {
+      i = MaybeMerge(vclass, &segments, *digit_alpha_start_idx - 1, i,
+                     SegmentType::BINARY);
+    }
+
+    digit_alpha_start_idx.reset();
+  }
+
+  if (digit_alpha_start_idx) {
+    // There was a trailing span of DIGIT/ALPHANUM segments that wasn't
+    // considered for merging. So we do that now.
+    SegmentDigitAlphaSpan(vclass, &segments, *digit_alpha_start_idx,
+                          segments.size() - 1);
+    if (*digit_alpha_start_idx != 0) {
+      DCHECK_EQ(segments[*digit_alpha_start_idx - 1].type, SegmentType::BINARY);
+      MaybeMerge(vclass, &segments, *digit_alpha_start_idx - 1,
+                 segments.size() - 1, SegmentType::BINARY);
+    }
+  }
+
+  return segments;
 }

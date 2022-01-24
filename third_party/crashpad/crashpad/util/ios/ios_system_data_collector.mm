@@ -77,6 +77,9 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   processor_count_ =
       base::saturated_cast<int>([[NSProcessInfo processInfo] processorCount]);
   build_ = ReadStringSysctlByName("kern.osversion");
+  bundle_identifier_ =
+      base::SysNSStringToUTF8([[NSBundle mainBundle] bundleIdentifier]);
+  is_extension_ = [[NSBundle mainBundle].bundlePath hasSuffix:@"appex"];
 
 #if defined(ARCH_CPU_X86_64)
   cpu_vendor_ = ReadStringSysctlByName("machdep.cpu.vendor");

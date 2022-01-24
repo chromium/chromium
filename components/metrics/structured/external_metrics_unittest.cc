@@ -58,7 +58,7 @@ class ExternalMetricsTest : public testing::Test {
     // We don't use the scheduling feature when testing ExternalMetrics, instead
     // we just call CollectMetrics directly. So make up a time interval here
     // that we'll never reach in a test.
-    const auto one_hour = base::TimeDelta::FromHours(1);
+    const auto one_hour = base::Hours(1);
     external_metrics_ = std::make_unique<ExternalMetrics>(
         temp_dir_.GetPath(), one_hour,
         base::BindRepeating(&ExternalMetricsTest::OnEventsCollected,

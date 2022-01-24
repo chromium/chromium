@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
@@ -23,9 +24,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_default_provider.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
@@ -304,8 +305,9 @@ void HostContentSettingsMap::RegisterProvider(
       << "Used from multiple threads before initialization complete.";
 #endif
 
-  OnContentSettingChanged(ContentSettingsPattern(), ContentSettingsPattern(),
-                          ContentSettingsType::DEFAULT);
+  OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                          ContentSettingsPattern::Wildcard(),
+                          ContentSettingsTypeSet::AllTypes());
 }
 
 ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
@@ -742,10 +744,14 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
 void HostContentSettingsMap::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsTypeSet content_type_set) {
+  DCHECK(primary_pattern.IsValid());
+  DCHECK(secondary_pattern.IsValid());
   for (content_settings::Observer& observer : observers_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
-                                     content_type);
+                                     content_type_set);
+    observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
+                                     content_type_set.GetTypeOrDefault());
   }
 }
 

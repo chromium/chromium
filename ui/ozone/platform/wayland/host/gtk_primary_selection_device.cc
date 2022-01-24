@@ -6,6 +6,7 @@
 
 #include <gtk-primary-selection-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
@@ -17,9 +18,8 @@ GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
     WaylandConnection* connection,
     gtk_primary_selection_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static const struct gtk_primary_selection_device_listener kListener = {
-      GtkPrimarySelectionDevice::OnDataOffer,
-      GtkPrimarySelectionDevice::OnSelection};
+  static constexpr gtk_primary_selection_device_listener kListener = {
+      &OnDataOffer, &OnSelection};
   gtk_primary_selection_device_add_listener(data_device_.get(), &kListener,
                                             this);
 }
@@ -28,9 +28,14 @@ GtkPrimarySelectionDevice::~GtkPrimarySelectionDevice() = default;
 
 void GtkPrimarySelectionDevice::SetSelectionSource(
     GtkPrimarySelectionSource* source) {
+  auto serial = GetSerialForSelection();
+  if (!serial.has_value()) {
+    LOG(ERROR) << "Failed to set selection. No serial found.";
+    return;
+  }
   auto* data_source = source ? source->data_source() : nullptr;
   gtk_primary_selection_device_set_selection(data_device_.get(), data_source,
-                                             connection()->serial());
+                                             serial->value);
   connection()->ScheduleFlush();
 }
 
@@ -61,8 +66,7 @@ void GtkPrimarySelectionDevice::OnSelection(
     self->data_offer()->EnsureTextMimeTypeIfNeeded();
   }
 
-  if (self->selection_delegate())
-    self->selection_delegate()->OnSelectionOffer(self->data_offer());
+  self->NotifySelectionOffer(self->data_offer());
 }
 
 }  // namespace ui

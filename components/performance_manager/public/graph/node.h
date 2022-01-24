@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "components/performance_manager/public/graph/node_state.h"
 
 namespace performance_manager {
@@ -20,6 +19,10 @@ class Graph;
 class Node {
  public:
   Node();
+
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+
   virtual ~Node();
 
   // Returns the graph to which this node belongs.
@@ -33,9 +36,6 @@ class Node {
   // the underlying implementation.
   virtual uintptr_t GetImplType() const = 0;
   virtual const void* GetImpl() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Node);
 };
 
 }  // namespace performance_manager

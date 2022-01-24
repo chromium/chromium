@@ -21,32 +21,27 @@ namespace ash {
 namespace {
 
 // The time duration for fading out when closing an item.
-constexpr base::TimeDelta kCloseFadeOut =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kCloseFadeOut = base::Milliseconds(100);
 
 // The time duration for scaling down when an item is closed.
-constexpr base::TimeDelta kCloseScale = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kCloseScale = base::Milliseconds(100);
 
 // The time duration for widgets to fade in.
-constexpr base::TimeDelta kFadeInDelay = base::TimeDelta::FromMilliseconds(83);
-constexpr base::TimeDelta kFadeIn = base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kFadeInDelay = base::Milliseconds(83);
+constexpr base::TimeDelta kFadeIn = base::Milliseconds(167);
 
 // The time duration for widgets to fade out.
-constexpr base::TimeDelta kFadeOut = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFadeOut = base::Milliseconds(100);
 
-constexpr base::TimeDelta kFromHomeLauncherDelay =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kHomeLauncherTransition =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kFromHomeLauncherDelay = base::Milliseconds(250);
+constexpr base::TimeDelta kHomeLauncherTransition = base::Milliseconds(350);
 
 // Time duration of the show animation of the drop target.
-constexpr base::TimeDelta kDropTargetFade =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kDropTargetFade = base::Milliseconds(250);
 
 // Time duration to fade in overview windows when a window drag slows down or
 // stops.
-constexpr base::TimeDelta kFadeInOnWindowDrag =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kFadeInOnWindowDrag = base::Milliseconds(350);
 
 base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
   switch (animation_type) {

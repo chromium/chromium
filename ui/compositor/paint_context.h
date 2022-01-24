@@ -5,9 +5,7 @@
 #ifndef UI_COMPOSITOR_PAINT_CONTEXT_H_
 #define UI_COMPOSITOR_PAINT_CONTEXT_H_
 
-
 #include "base/check.h"
-#include "base/macros.h"
 #include "cc/paint/paint_recorder.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
@@ -38,6 +36,9 @@ class COMPOSITOR_EXPORT PaintContext {
     CLONE_WITHOUT_INVALIDATION,
   };
   PaintContext(const PaintContext& other, CloneWithoutInvalidation c);
+
+  PaintContext(const PaintContext&) = delete;
+  PaintContext& operator=(const PaintContext&) = delete;
 
   ~PaintContext();
 
@@ -110,8 +111,6 @@ class COMPOSITOR_EXPORT PaintContext {
   // recorder is active.
   mutable bool inside_paint_recorder_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PaintContext);
 };
 
 }  // namespace ui

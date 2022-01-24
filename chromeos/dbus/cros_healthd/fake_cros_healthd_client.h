@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
@@ -31,6 +30,10 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // instance will set the global instance for the fake and for the base class,
   // so the static Get() accessor can be used with that pattern.
   FakeCrosHealthdClient();
+
+  FakeCrosHealthdClient(const FakeCrosHealthdClient&) = delete;
+  FakeCrosHealthdClient& operator=(const FakeCrosHealthdClient&) = delete;
+
   ~FakeCrosHealthdClient() override;
 
   // Checks that a FakeCrosHealthdClient instance was initialized and returns
@@ -110,28 +113,34 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // Calls the audio event OnUnderrun on all registered audio observers.
   void EmitAudioUnderrunEventForTesting();
 
+  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
+  void EmitThunderboltAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
       const std::string& network_guid,
-      chromeos::network_health::mojom::NetworkState state);
+      ash::network_health::mojom::NetworkState state);
 
   // Calls the network event OnSignalStrengthChangedEvent on all registered
   // network observers.
   void EmitSignalStrengthChangedEventForTesting(
       const std::string& network_guid,
-      chromeos::network_health::mojom::UInt32ValuePtr signal_strength);
+      ash::network_health::mojom::UInt32ValuePtr signal_strength);
 
   // Requests the network health state using the NetworkHealthService remote.
   void RequestNetworkHealthForTesting(
-      chromeos::network_health::mojom::NetworkHealthService::
+      ash::network_health::mojom::NetworkHealthService::
           GetHealthSnapshotCallback callback);
 
   // Calls the LanConnectivity routine using the NetworkDiagnosticsRoutines
   // remote.
   void RunLanConnectivityRoutineForTesting(
-      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
-          LanConnectivityCallback);
+      ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+          RunLanConnectivityCallback);
+
+  // Returns the last created routine by any Run*Routine method.
+  absl::optional<mojom::DiagnosticRoutineEnum> GetLastRunRoutine() const;
 
   // Returns the parameters passed for the most recent call to
   // `GetRoutineUpdate`.
@@ -141,8 +150,6 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
  private:
   FakeCrosHealthdService fake_service_;
   mojo::Receiver<mojom::CrosHealthdServiceFactory> receiver_{&fake_service_};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCrosHealthdClient);
 };
 
 }  // namespace cros_healthd

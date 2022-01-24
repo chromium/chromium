@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_THUNK_VIDEO_DECODER_DEV_API_H_
-#define PPAPI_THUNK_VIDEO_DECODER_DEV_API_H_
+#ifndef PPAPI_THUNK_PPB_VIDEO_DECODER_DEV_API_H_
+#define PPAPI_THUNK_PPB_VIDEO_DECODER_DEV_API_H_
 
 #include <stdint.h>
 
@@ -33,4 +33,4 @@ class PPB_VideoDecoder_Dev_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_VIDEO_DECODER_DEV_API_H_
+#endif  // PPAPI_THUNK_PPB_VIDEO_DECODER_DEV_API_H_

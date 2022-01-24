@@ -29,7 +29,10 @@ test(t => {
   assert_equals(frame.visibleRect, null, 'visibleRect');
   assert_equals(frame.displayWidth, 0, 'displayWidth');
   assert_equals(frame.displayHeight, 0, 'displayHeight');
-  assert_equals(frame.colorSpace, null, 'colorSpace');
+  assert_equals(frame.colorSpace.primaries, null, 'colorSpace.primaries');
+  assert_equals(frame.colorSpace.transfer, null, 'colorSpace.transfer');
+  assert_equals(frame.colorSpace.matrix, null, 'colorSpace.matrix');
+  assert_equals(frame.colorSpace.fullRange, null, 'colorSpace.fullRange');
 
   assert_throws_dom('InvalidStateError', () => frame.clone());
 }, 'Test closed VideoFrame.');
@@ -54,14 +57,239 @@ test(t => {
 }, 'Test we can construct an odd-sized VideoFrame.');
 
 test(t => {
-  let image = makeImageBitmap(32, 16);
+  // Test only valid for Window contexts.
+  if (!('document' in self))
+    return;
 
+  let video = document.createElement('video');
+
+  assert_throws_dom('InvalidStateError', () => {
+    let frame = new VideoFrame(video, {timestamp: 10});
+  })
+}, 'Test constructing w/ unusable image argument throws: HAVE_NOTHING <video>.');
+
+test(t => {
+  let canvas = new OffscreenCanvas(0, 0);
+
+  assert_throws_dom('InvalidStateError', () => {
+    let frame = new VideoFrame(canvas, {timestamp: 10});
+  })
+}, 'Test constructing w/ unusable image argument throws: emtpy Canvas.');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
   image.close();
 
   assert_throws_dom('InvalidStateError', () => {
     let frame = new VideoFrame(image, {timestamp: 10});
   })
-}, 'Test constructing VideoFrames from closed ImageBitmap throws.');
+}, 'Test constructing w/ unusable image argument throws: closed ImageBitmap.');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
+  let frame = new VideoFrame(image, {timestamp: 10});
+  frame.close();
+
+  assert_throws_dom('InvalidStateError', () => {
+    let newFrame = new VideoFrame(frame);
+  })
+}, 'Test constructing w/ unusable image argument throws: closed VideoFrame.');
+
+test(t => {
+  let init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let i420Frame = new VideoFrame(data, init);
+  let image = makeImageBitmap(32, 16);
+
+
+  assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: -1, y: 0, width: 10, height: 10}}),
+    'negative visibleRect x');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 0, y: 0, width: -10, height: 10}}),
+    'negative visibleRect width');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 0, y: 0, width: 10, height: 0}}),
+    'zero visibleRect height');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 0, y: Infinity, width: 10, height: 10}}),
+    'non finite visibleRect y');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 0, y: 0, width: 10, height: Infinity}}),
+    'non finite visibleRect height');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 0, y: 0, width: 33, height: 17}}),
+    'visibleRect area exceeds coded size');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, visibleRect: {x: 2, y: 2, width: 32, height: 16}}),
+    'visibleRect outside coded size');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, displayHeight: 10}),
+    'displayHeight provided without displayWidth');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, displayWidth: 10}),
+    'displayWidth provided without displayHeight');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, displayWidth: 0, displayHeight: 10}),
+    'displayWidth is zero');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(image, {timestamp: 10, displayWidth: 10, displayHeight: 0}),
+    'displayHeight is zero');
+
+    assert_throws_js(
+      TypeError,
+      () => new VideoFrame(i420Frame, {visibleRect: {x: 1, y: 0, width: 2, height: 2}}),
+      'visibleRect x is not sample aligned');
+
+    assert_throws_js(
+        TypeError,
+        () => new VideoFrame(i420Frame, {visibleRect: {x: 0, y: 0, width: 1, height: 2}}),
+        'visibleRect width is not sample aligned');
+
+}, 'Test invalid CanvasImageSource constructed VideoFrames');
+
+test(t => {
+  let init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let origFrame = new VideoFrame(data, init);
+
+  let cropLeftHalf = new VideoFrame(origFrame, {visibleRect : {x: 0, y: 0, width: 2, height: 2}});
+  assert_equals(cropLeftHalf.codedWidth, origFrame.codedWidth);
+  assert_equals(cropLeftHalf.codedHeight, origFrame.codedHeight);
+  assert_equals(cropLeftHalf.visibleRect.x, 0);
+  assert_equals(cropLeftHalf.visibleRect.y, 0);
+  assert_equals(cropLeftHalf.visibleRect.width, 2);
+  assert_equals(cropLeftHalf.visibleRect.height, 2);
+  assert_equals(cropLeftHalf.displayWidth, 2);
+  assert_equals(cropLeftHalf.displayHeight, 2);
+}, 'Test visibleRect metadata override where source display size = visible size');
+
+test(t => {
+  let init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2,
+    displayWidth: 8,
+    displayHeight: 2
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let anamorphicFrame = new VideoFrame(data, init);
+
+  let cropRightFrame = new VideoFrame(anamorphicFrame, {visibleRect : {x: 2, y: 0, width: 2, height: 2}});
+  assert_equals(cropRightFrame.codedWidth, anamorphicFrame.codedWidth);
+  assert_equals(cropRightFrame.codedHeight, anamorphicFrame.codedHeight);
+  assert_equals(cropRightFrame.visibleRect.x, 2);
+  assert_equals(cropRightFrame.visibleRect.y, 0);
+  assert_equals(cropRightFrame.visibleRect.width, 2);
+  assert_equals(cropRightFrame.visibleRect.height, 2);
+  assert_equals(cropRightFrame.displayWidth, 4, 'cropRightFrame.displayWidth');
+  assert_equals(cropRightFrame.displayHeight, 2, 'cropRightFrame.displayHeight');
+}, 'Test visibleRect metadata override where source display width = 2 * visible width (anamorphic)');
+
+test(t => {
+  let init = {
+    format: 'I420',
+    timestamp: 1234,
+    codedWidth: 4,
+    codedHeight: 2,
+    displayWidth: 8,
+    displayHeight: 4
+  };
+  let data = new Uint8Array([
+    1, 2, 3, 4, 5, 6, 7, 8,  // y
+    1, 2,                    // u
+    1, 2,                    // v
+  ]);
+  let scaledFrame = new VideoFrame(data, init);
+
+  let cropRightFrame = new VideoFrame(scaledFrame, {visibleRect : {x: 2, y: 0, width: 2, height: 2}});
+  assert_equals(cropRightFrame.codedWidth, scaledFrame.codedWidth);
+  assert_equals(cropRightFrame.codedHeight, scaledFrame.codedHeight);
+  assert_equals(cropRightFrame.visibleRect.x, 2);
+  assert_equals(cropRightFrame.visibleRect.y, 0);
+  assert_equals(cropRightFrame.visibleRect.width, 2);
+  assert_equals(cropRightFrame.visibleRect.height, 2);
+  assert_equals(cropRightFrame.displayWidth, 4, 'cropRightFrame.displayWidth');
+  assert_equals(cropRightFrame.displayHeight, 4, 'cropRightFrame.displayHeight');
+}, 'Test visibleRect metadata override where source display size = 2 * visible size for both width and height');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
+
+  let scaledFrame = new VideoFrame(image,
+    { visibleRect : {x: 0, y: 0, width: 2, height: 2},
+      displayWidth: 10, displayHeight: 20
+    });
+  assert_equals(scaledFrame.codedWidth, 32);
+  assert_equals(scaledFrame.codedHeight, 16);
+  assert_equals(scaledFrame.visibleRect.x, 0);
+  assert_equals(scaledFrame.visibleRect.y, 0);
+  assert_equals(scaledFrame.visibleRect.width, 2);
+  assert_equals(scaledFrame.visibleRect.height, 2);
+  assert_equals(scaledFrame.displayWidth, 10, 'scaledFrame.displayWidth');
+  assert_equals(scaledFrame.displayHeight, 20, 'scaledFrame.displayHeight');
+}, 'Test visibleRect + display size metadata override');
+
+test(t => {
+  let image = makeImageBitmap(32, 16);
+
+  let scaledFrame = new VideoFrame(image,
+    {
+      displayWidth: 10, displayHeight: 20
+    });
+  assert_equals(scaledFrame.codedWidth, 32);
+  assert_equals(scaledFrame.codedHeight, 16);
+  assert_equals(scaledFrame.visibleRect.x, 0);
+  assert_equals(scaledFrame.visibleRect.y, 0);
+  assert_equals(scaledFrame.visibleRect.width, 32);
+  assert_equals(scaledFrame.visibleRect.height, 16);
+  assert_equals(scaledFrame.displayWidth, 10, 'scaledFrame.displayWidth');
+  assert_equals(scaledFrame.displayHeight, 20, 'scaledFrame.displayHeight');
+}, 'Test display size metadata override');
 
 test(t => {
   assert_throws_js(

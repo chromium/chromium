@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"

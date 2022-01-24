@@ -41,26 +41,40 @@ class ResourcedClientImpl : public ResourcedClient {
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
                        weak_factory_.GetWeakPtr()));
+    proxy_->ConnectToSignal(
+        resource_manager::kResourceManagerInterface,
+        resource_manager::kMemoryPressureArcvm,
+        base::BindRepeating(&ResourcedClientImpl::MemoryPressureArcVmReceived,
+                            weak_factory_.GetWeakPtr()),
+        base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // ResourcedClient interface.
-  void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
+  void SetGameModeWithTimeout(bool state,
+                              uint32_t refresh_seconds,
+                              DBusMethodCallback<bool> callback) override;
 
   void AddObserver(Observer* observer) override;
 
   void RemoveObserver(Observer* observer) override;
 
+  void AddArcVmObserver(ArcVmObserver* observer) override;
+
+  void RemoveArcVmObserver(ArcVmObserver* observer) override;
+
  private:
   // D-Bus response handlers.
-  void HandleSetGameModeResponse(DBusMethodCallback<bool> callback,
-                                 bool status,
-                                 dbus::Response* response);
+  void HandleSetGameModeWithTimeoutResponse(DBusMethodCallback<bool> callback,
+                                            dbus::Response* response);
 
   // D-Bus signal handlers.
   void MemoryPressureReceived(dbus::Signal* signal);
   void MemoryPressureConnected(const std::string& interface_name,
                                const std::string& signal_name,
                                bool success);
+
+  void MemoryPressureArcVmReceived(dbus::Signal* signal);
 
   // Member variables.
 
@@ -72,6 +86,9 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;
+
+  // A list of observers listening for ARCVM memory pressure signals.
+  base::ObserverList<ArcVmObserver> arcvm_observers_;
 
   base::WeakPtrFactory<ResourcedClientImpl> weak_factory_{this};
 };
@@ -121,6 +138,51 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
   }
 }
 
+void ResourcedClientImpl::MemoryPressureArcVmReceived(dbus::Signal* signal) {
+  dbus::MessageReader signal_reader(signal);
+
+  uint8_t pressure_level_byte;
+  PressureLevelArcVm pressure_level;
+  uint64_t reclaim_target_kb;
+
+  if (!signal_reader.PopByte(&pressure_level_byte) ||
+      !signal_reader.PopUint64(&reclaim_target_kb)) {
+    LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
+    return;
+  }
+  switch (
+      static_cast<resource_manager::PressureLevelArcvm>(pressure_level_byte)) {
+    case resource_manager::PressureLevelArcvm::NONE:
+      pressure_level = PressureLevelArcVm::NONE;
+      break;
+
+    case resource_manager::PressureLevelArcvm::CACHED:
+      pressure_level = PressureLevelArcVm::CACHED;
+      break;
+
+    case resource_manager::PressureLevelArcvm::PERCEPTIBLE:
+      pressure_level = PressureLevelArcVm::PERCEPTIBLE;
+      break;
+
+    case resource_manager::PressureLevelArcvm::FOREGROUND:
+      pressure_level = PressureLevelArcVm::FOREGROUND;
+      break;
+
+    default:
+      LOG(ERROR) << "Unknown memory pressure level: " << pressure_level_byte;
+      return;
+  }
+
+  if (reclaim_target_kb > total_memory_kb_) {
+    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
+    return;
+  }
+
+  for (auto& observer : arcvm_observers_) {
+    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
+  }
+}
+
 void ResourcedClientImpl::MemoryPressureConnected(
     const std::string& interface_name,
     const std::string& signal_name,
@@ -128,29 +190,33 @@ void ResourcedClientImpl::MemoryPressureConnected(
   PLOG_IF(ERROR, !success) << "Failed to connect to signal: " << signal_name;
 }
 
-// Response will be true if entering game mode, false if exiting.
-void ResourcedClientImpl::HandleSetGameModeResponse(
+// Response will be true if game mode was on previously, false otherwise.
+void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
     DBusMethodCallback<bool> callback,
-    bool status,
     dbus::Response* response) {
-  if (!response) {
+  dbus::MessageReader reader(response);
+  uint8_t previous;
+  if (!reader.PopByte(&previous)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  std::move(callback).Run(status);
+  std::move(callback).Run(previous);
 }
 
-void ResourcedClientImpl::SetGameMode(bool status,
-                                      DBusMethodCallback<bool> callback) {
+void ResourcedClientImpl::SetGameModeWithTimeout(
+    bool status,
+    uint32_t refresh_seconds,
+    DBusMethodCallback<bool> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kSetGameModeMethod);
+                               resource_manager::kSetGameModeWithTimeoutMethod);
   dbus::MessageWriter writer(&method_call);
   writer.AppendByte(status);
+  writer.AppendUint32(refresh_seconds);
 
   proxy_->CallMethod(
       &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleSetGameModeResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback), status));
+      base::BindOnce(&ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ResourcedClientImpl::AddObserver(Observer* observer) {
@@ -159,6 +225,14 @@ void ResourcedClientImpl::AddObserver(Observer* observer) {
 
 void ResourcedClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void ResourcedClientImpl::AddArcVmObserver(ArcVmObserver* observer) {
+  arcvm_observers_.AddObserver(observer);
+}
+
+void ResourcedClientImpl::RemoveArcVmObserver(ArcVmObserver* observer) {
+  arcvm_observers_.RemoveObserver(observer);
 }
 
 }  // namespace

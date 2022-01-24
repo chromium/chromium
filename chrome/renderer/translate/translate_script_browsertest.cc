@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -77,6 +76,10 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
  public:
   TranslateScriptBrowserTest() {}
 
+  TranslateScriptBrowserTest(const TranslateScriptBrowserTest&) = delete;
+  TranslateScriptBrowserTest& operator=(const TranslateScriptBrowserTest&) =
+      delete;
+
  protected:
   void InjectElementLibrary() {
     std::string script =
@@ -132,8 +135,6 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     }
     return result.As<v8::Boolean>()->Value();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScriptBrowserTest);
 };
 
 // Test if onTranslateElementLoad() succeeds to initialize the element library.

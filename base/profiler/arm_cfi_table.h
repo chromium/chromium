@@ -41,6 +41,10 @@ class BASE_EXPORT ArmCFITable {
   ArmCFITable(span<const uint32_t> function_addresses,
               span<const uint16_t> entry_data_indices,
               span<const uint8_t> entry_data);
+
+  ArmCFITable(const ArmCFITable&) = delete;
+  ArmCFITable& operator=(const ArmCFITable&) = delete;
+
   ~ArmCFITable();
 
   // Finds the CFI row for the given |address| in terms of offset from the
@@ -66,8 +70,6 @@ class BASE_EXPORT ArmCFITable {
   // corresponds to a function, which in turn corresponds to an array of
   // CFIDataRows. (see arm_cfi_reader.cc).
   const span<const uint8_t> entry_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArmCFITable);
 };
 
 }  // namespace base

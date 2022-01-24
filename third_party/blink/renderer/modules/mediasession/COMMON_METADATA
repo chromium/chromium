@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Media>Session"
+}
+team_email: "media-dev@chromium.org"

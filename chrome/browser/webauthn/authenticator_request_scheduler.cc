@@ -15,6 +15,10 @@ namespace {
 class ActiveRequestWeakHolder : public base::SupportsUserData::Data {
  public:
   ActiveRequestWeakHolder() = default;
+
+  ActiveRequestWeakHolder(const ActiveRequestWeakHolder&) = delete;
+  ActiveRequestWeakHolder& operator=(const ActiveRequestWeakHolder&) = delete;
+
   ~ActiveRequestWeakHolder() override = default;
 
   static ActiveRequestWeakHolder* EnsureForWebContents(
@@ -35,8 +39,6 @@ class ActiveRequestWeakHolder : public base::SupportsUserData::Data {
 
  private:
   base::WeakPtr<ChromeAuthenticatorRequestDelegate> request_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveRequestWeakHolder);
 };
 
 }  // namespace

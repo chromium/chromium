@@ -46,6 +46,9 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
     virtual void OnDeviceRemoved(scoped_refptr<UsbDevice> device);
   };
 
+  UsbDevice(const UsbDevice&) = delete;
+  UsbDevice& operator=(const UsbDevice&) = delete;
+
   const mojom::UsbDeviceInfo& device_info() const { return *device_info_; }
 
   // A unique identifier which remains stable for the lifetime of this device
@@ -161,8 +164,6 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   std::list<UsbDeviceHandle*> handles_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbDevice);
 };
 
 }  // namespace device

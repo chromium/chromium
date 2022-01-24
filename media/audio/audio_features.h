@@ -28,10 +28,6 @@ MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAecAgc;
 MEDIA_EXPORT extern const base::Feature kCrOSEnforceSystemAec;
 #endif
 
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-MEDIA_EXPORT extern const base::Feature kForceEnableSystemAec;
-#endif
-
 #if defined(OS_WIN)
 MEDIA_EXPORT extern const base::Feature kAllowIAudioClient3;
 #endif

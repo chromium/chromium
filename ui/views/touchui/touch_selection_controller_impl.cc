@@ -567,10 +567,6 @@ bool TouchSelectionControllerImpl::ShouldShowHandleFor(
   return client_bounds.Contains(BoundToRect(bound));
 }
 
-const char* TouchSelectionControllerImpl::GetType() {
-  return "TouchSelectionControllerImpl";
-}
-
 bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
   return client_view_->IsCommandIdEnabled(command_id);
 }
@@ -582,8 +578,7 @@ void TouchSelectionControllerImpl::ExecuteCommand(int command_id,
   // Note that we only log the duration stats for the 'successful' selections,
   // i.e. selections ending with the execution of a command.
   UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.Duration", duration,
-                             base::TimeDelta::FromMilliseconds(500),
-                             base::TimeDelta::FromSeconds(60), 60);
+                             base::Milliseconds(500), base::Seconds(60), 60);
   client_view_->ExecuteCommand(command_id, event_flags);
 }
 
@@ -648,8 +643,7 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
 void TouchSelectionControllerImpl::StartQuickMenuTimer() {
   if (quick_menu_timer_.IsRunning())
     return;
-  quick_menu_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(200),
-                          this,
+  quick_menu_timer_.Start(FROM_HERE, base::Milliseconds(200), this,
                           &TouchSelectionControllerImpl::QuickMenuTimerFired);
 }
 

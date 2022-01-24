@@ -5,7 +5,6 @@
 #include "chrome/browser/query_tiles/tile_background_task.h"
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/query_tiles/tile_service_factory.h"

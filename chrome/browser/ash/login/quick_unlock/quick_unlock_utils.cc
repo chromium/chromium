@@ -63,13 +63,13 @@ base::TimeDelta PasswordConfirmationFrequencyToTimeDelta(
     PasswordConfirmationFrequency frequency) {
   switch (frequency) {
     case PasswordConfirmationFrequency::SIX_HOURS:
-      return base::TimeDelta::FromHours(6);
+      return base::Hours(6);
     case PasswordConfirmationFrequency::TWELVE_HOURS:
-      return base::TimeDelta::FromHours(12);
+      return base::Hours(12);
     case PasswordConfirmationFrequency::TWO_DAYS:
-      return base::TimeDelta::FromDays(2);
+      return base::Days(2);
     case PasswordConfirmationFrequency::WEEK:
-      return base::TimeDelta::FromDays(7);
+      return base::Days(7);
   }
   NOTREACHED();
   return base::TimeDelta();

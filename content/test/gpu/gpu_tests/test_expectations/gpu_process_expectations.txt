@@ -9,9 +9,9 @@
 #             sierra
 #         win win7 win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
+# tags: [ android-nexus-5 android-nexus-5x android-nexus-9 android-pixel-2
+#             android-pixel-4 android-shield-android-tv
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
 #         fuchsia-board-astro fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
@@ -55,16 +55,22 @@
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
+
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
 
 # Dual-GPU NVIDIA MacBook Pros no longer activate the discrete GPU.
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
-
-# Dual-GPU problem with SkiaRenderer.
-crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
 
 # Android and Fuchsia do not support software fallback.
 [ android ] GpuProcess_disable_gpu [ Skip ]
@@ -76,22 +82,43 @@ crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_h
 [ fuchsia ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 [ fuchsia ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
-# Fuchsia flakes.
-crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
+# Software Compositing is not supported on ChromeOS.
+crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
 
 # SwiftShader GL does not work on CrOS, wait for it to be replaced by SwANGLE.
 crbug.com/1084794 [ chromeos ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 crbug.com/1084794 [ chromeos ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
-# Software Compositing is not supported on ChromeOS.
-crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+# Dual-GPU problem with SkiaRenderer.
+crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
+
+# Fuchsia flakes.
+crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
 
 # Started crashing with passthrough field trial.
-crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
-crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
+crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
+crbug.com/1099576 [ mac intel ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]
 
 # Flakily hits a DCHECK during shared image creation.
 crbug.com/1188437 [ linux intel display-server-wayland ] GpuProcess_webgl [ RetryOnFailure ]
+crbug.com/1253917 [ linux intel display-server-wayland ] GpuProcess_disable_gpu [ RetryOnFailure ]
+
+# Flakey/slow tests using clang_rt.
+crbug.com/1261260 [ android android-nexus-5x ] GpuProcess_webgpu_iframe_removed [ Failure ]
+crbug.com/1261260 [ android android-nexus-9 ] GpuProcess_webgpu_iframe_removed [ Failure ]
+crbug.com/1261260 [ android android-shield-android-tv ] GpuProcess_webgpu_iframe_removed [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

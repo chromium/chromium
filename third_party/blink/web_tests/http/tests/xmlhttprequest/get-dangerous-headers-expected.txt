@@ -1,8 +1,7 @@
-CONSOLE WARNING: line 10: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-CONSOLE ERROR: line 15: Refused to get unsafe header "Set-Cookie"
-CONSOLE ERROR: line 17: Refused to get unsafe header "set-cookie"
-CONSOLE ERROR: line 19: Refused to get unsafe header "Set-Cookie2"
-CONSOLE ERROR: line 21: Refused to get unsafe header "set-cookie2"
+CONSOLE ERROR: Refused to get unsafe header "Set-Cookie"
+CONSOLE ERROR: Refused to get unsafe header "set-cookie"
+CONSOLE ERROR: Refused to get unsafe header "Set-Cookie2"
+CONSOLE ERROR: Refused to get unsafe header "set-cookie2"
 Test that getResponseHeader and getAllResponseHeaders cannot be used to get the cookie header fields.
 
 PASS

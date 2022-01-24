@@ -55,11 +55,12 @@ config("freetype-warnings") {
     # The reduction of FreeType files to a minimum triggers -Wunused-function
     # warnings in ftbase.c
     cflags += [
-      "-Wno-unused-function",
-
       # TODO(drott): Remove once we can roll past a commit that fixes:
       # https://savannah.nongnu.org/bugs/index.php?54852
       "-Wno-deprecated-declarations",
+
+      "-Wno-shadow",
+      "-Wno-unused-function",
     ]
   }
 }

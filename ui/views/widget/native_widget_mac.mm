@@ -23,6 +23,7 @@
 #import "ui/base/cocoa/window_size_constants.h"
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -646,7 +647,8 @@ void NativeWidgetMac::Restore() {
   GetNSWindowMojo()->SetMiniaturized(false);
 }
 
-void NativeWidgetMac::SetFullscreen(bool fullscreen, bool delay) {
+void NativeWidgetMac::SetFullscreen(bool fullscreen,
+                                    const base::TimeDelta& delay) {
   if (!ns_window_host_)
     return;
   ns_window_host_->SetFullscreen(fullscreen, delay);

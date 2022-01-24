@@ -33,7 +33,7 @@ class LayoutAnimationsPolicy {
   // which is tracked by
   // Blink.UserCounters.FeaturePolicy.PotentialViolation.
   static void ReportViolation(const CSSProperty& animated_property,
-                              const ExecutionContext& context);
+                              ExecutionContext& context);
 
  private:
   LayoutAnimationsPolicy();

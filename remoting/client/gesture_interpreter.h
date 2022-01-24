@@ -32,6 +32,10 @@ class GestureInterpreter {
   };
 
   GestureInterpreter();
+
+  GestureInterpreter(const GestureInterpreter&) = delete;
+  GestureInterpreter& operator=(const GestureInterpreter&) = delete;
+
   ~GestureInterpreter();
 
   // Sets the context for the interpreter. Both arguments are nullable. If both
@@ -120,9 +124,6 @@ class GestureInterpreter {
   FlingAnimation scroll_animation_;
 
   base::WeakPtrFactory<GestureInterpreter> weak_factory_{this};
-
-  // GestureInterpreter is neither copyable nor movable.
-  DISALLOW_COPY_AND_ASSIGN(GestureInterpreter);
 };
 
 }  // namespace remoting

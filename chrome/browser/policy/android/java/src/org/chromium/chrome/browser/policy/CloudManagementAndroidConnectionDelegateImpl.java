@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.policy;
 
-import java.util.UUID;
-
 /**
  * Instantiable version of {@link CloudManagementAndroidConnectionDelegate}.
  * Downstream targets may provide a different implementation. In GN, we specify that
@@ -15,11 +13,8 @@ import java.util.UUID;
  */
 public class CloudManagementAndroidConnectionDelegateImpl
         implements CloudManagementAndroidConnectionDelegate {
-    /* Returns the client ID to be used in the DM token generation. By default a random UUID is
-     * generated for development and testing purposes. Any device that uses randomly generated UUID
-     * as client id for CBCM might be wiped out from the server without notice. */
     @Override
-    public String generateClientId() {
-        return UUID.randomUUID().toString();
+    public String getGservicesAndroidId() {
+        return "";
     }
 }

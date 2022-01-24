@@ -7,7 +7,15 @@
  * component warning the user that re-running the setup guide will clear their
  * existing switches. By clicking 'Continue', the user acknowledges that.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../settings_shared_css.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-switch-access-setup-guide-warning-dialog',
 
   /** @override */
