@@ -5385,7 +5385,7 @@ GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
   resources_->texture_object_map.RemoveClientID(texture_client_id);
   resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
   resources_->texture_shared_image_map[texture_client_id] =
-      PassthroughResources::SharedImageData(std::move(shared_image));
+      PassthroughResources::SharedImageData(std::move(shared_image), api());
 
   return error::kNoError;
 }

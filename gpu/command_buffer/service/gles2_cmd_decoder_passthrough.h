@@ -100,7 +100,8 @@ struct PassthroughResources {
     SharedImageData();
     explicit SharedImageData(
         std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-            representation);
+            representation,
+        gl::GLApi* api);
     SharedImageData(SharedImageData&& other);
 
     SharedImageData(const SharedImageData&) = delete;
@@ -112,6 +113,8 @@ struct PassthroughResources {
     SharedImageRepresentationGLTexturePassthrough* representation() const {
       return representation_.get();
     }
+
+    void EnsureClear(gl::GLApi* api);
 
     bool BeginAccess(GLenum mode, gl::GLApi* api);
 

@@ -400,8 +400,15 @@ void PassthroughResources::Destroy(gl::GLApi* api,
 PassthroughResources::SharedImageData::SharedImageData() = default;
 PassthroughResources::SharedImageData::SharedImageData(
     std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
-        representation)
-    : representation_(std::move(representation)) {}
+        representation,
+    gl::GLApi* api)
+    : representation_(std::move(representation)) {
+  DCHECK(representation_);
+
+  // Note, that ideally we could defer clear till BeginAccess, but there is no
+  // enforcement that will require clients to call Begin/End access.
+  EnsureClear(api);
+}
 PassthroughResources::SharedImageData::SharedImageData(
     SharedImageData&& other) = default;
 PassthroughResources::SharedImageData::~SharedImageData() = default;
@@ -413,24 +420,19 @@ operator=(SharedImageData&& other) {
   return *this;
 }
 
-bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
-                                                        gl::GLApi* api) {
-  DCHECK(!is_being_accessed());
-  // When importing a texture for use in passthrough cmd decoder, always allow
-  // uncleared access. We ensure the texture is cleared below.
-  scoped_access_ = representation_->BeginScopedAccess(
-      mode, SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  if (!scoped_access_) {
-    return false;
-  }
-  // ANGLE does not handle clear tracking in an interoperable way. Clear
-  // any uncleared SharedImage before using it with ANGLE.
-  //
-  // NOTE: This will not introduce extra clears in common cases. The default GL
-  // SharedImage, which is exclusively used with ANGLE, always returns true
-  // from IsCleared, allowing ANGLE to manage clearing internally. This path is
-  // only run for interop shared image backings.
+void PassthroughResources::SharedImageData::EnsureClear(gl::GLApi* api) {
+  // To avoid unnessary overhead we don't enable robust initialization on shared
+  // gl context where all shared images are created, so we clear image here if
+  // necessary.
   if (!representation_->IsCleared()) {
+    // Allow uncleared access as we're going to clear the image.
+    auto scoped_access = representation_->BeginScopedAccess(
+        GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+    if (!scoped_access)
+      return;
+
     auto texture = representation_->GetTexturePassthrough();
 
     // Back up all state we are about to change.
@@ -464,7 +466,17 @@ bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
     // Mark the shared image as cleared.
     representation_->SetCleared();
   }
-  return true;
+}
+
+bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
+                                                        gl::GLApi* api) {
+  DCHECK(!is_being_accessed());
+  // The image should have been cleared already when we created the texture if
+  // necessary.
+  scoped_access_ = representation_->BeginScopedAccess(
+      mode, SharedImageRepresentation::AllowUnclearedAccess::kNo);
+
+  return !!scoped_access_;
 }
 
 GLES2DecoderPassthroughImpl::PendingQuery::PendingQuery() = default;
