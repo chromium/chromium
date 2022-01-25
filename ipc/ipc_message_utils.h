@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -18,21 +17,22 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/stack_container.h"
 #include "base/files/file.h"
-#include "base/format_macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/pickle.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
+#include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
-#include "ipc/ipc_sync_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -42,6 +42,14 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
 #include <lib/zx/vmo.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/string_util_win.h"
+#endif
+
+#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#include "ipc/ipc_message.h"
 #endif
 
 namespace base {
@@ -58,6 +66,7 @@ struct FileDescriptor;
 
 namespace IPC {
 
+class Message;
 struct ChannelHandle;
 
 #if BUILDFLAG(IS_WIN)

@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "ipc/ipc_message.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/array_var.h"
