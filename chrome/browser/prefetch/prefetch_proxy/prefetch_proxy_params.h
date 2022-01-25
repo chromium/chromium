@@ -116,6 +116,11 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch(
 // proxy. Normally, this is restricted to Google domains.
 bool PrefetchProxyAllowAllDomains();
 
+// Returns true if any domain can issue private prefetches using the Google
+// proxy, so long as the user opted-in to extended preloading. This allows us
+// to disable the prefetch proxy on non-Google origins via Finch.
+bool PrefetchProxyAllowAllDomainsForExtendedPreloading();
+
 // The maximum time a prefetched response is servable.
 base::TimeDelta PrefetchProxyCacheableDuration();
 

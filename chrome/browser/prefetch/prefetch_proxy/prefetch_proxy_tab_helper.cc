@@ -1237,12 +1237,18 @@ void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
     return;
 
   // For IP-private prefetches, using the Google proxy needs to be restricted to
-  // first party sites until we understand the benefit and determine interest
-  // from other sites.
+  // first party sites unless users opted-in to extended preloading.
   std::vector<std::pair<GURL, PrefetchType>> filtered_prefetches = prefetches;
-  if (!PrefetchProxyAllowAllDomains() &&
+  const bool allow_all_domains =
+      PrefetchProxyAllowAllDomains() ||
+      (PrefetchProxyAllowAllDomainsForExtendedPreloading() &&
+       prefetch::GetPreloadPagesState(*profile_->GetPrefs()) ==
+           prefetch::PreloadPagesState::kExtendedPreloading);
+  if (!allow_all_domains &&
       !IsGoogleDomainUrl(source_document_url, google_util::ALLOW_SUBDOMAIN,
-                         google_util::ALLOW_NON_STANDARD_PORTS)) {
+                         google_util::ALLOW_NON_STANDARD_PORTS) &&
+      !IsYoutubeDomainUrl(source_document_url, google_util::ALLOW_SUBDOMAIN,
+                          google_util::ALLOW_NON_STANDARD_PORTS)) {
     // Filter out prefetches that require the Google proxy.
     auto new_end =
         std::remove_if(filtered_prefetches.begin(), filtered_prefetches.end(),
