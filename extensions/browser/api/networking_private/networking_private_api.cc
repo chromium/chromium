@@ -247,8 +247,7 @@ NetworkingPrivateSetPropertiesFunction::Run() {
       private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  base::Value properties_dict(
-      std::move(*params->properties.ToValue().release()));
+  base::Value properties_dict(std::move(*params->properties.ToValue()));
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
@@ -296,8 +295,7 @@ NetworkingPrivateCreateNetworkFunction::Run() {
     return RespondNow(Error(networking_private::kErrorAccessToSharedConfig));
   }
 
-  base::Value properties_dict(
-      std::move(*params->properties.ToValue().release()));
+  base::Value properties_dict(std::move(*params->properties.ToValue()));
 
   std::vector<std::string> not_allowed_properties =
       FilterProperties(&properties_dict, PropertiesType::SET, extension(),
