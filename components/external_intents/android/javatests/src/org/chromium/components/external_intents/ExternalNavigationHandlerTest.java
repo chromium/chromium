@@ -2512,19 +2512,16 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected void startActivity(Intent intent, boolean proxy) {
-            mStartActivityIntent = intent;
-            mCalledWithProxy = proxy;
-            if (mSendIntentsForReal) super.startActivity(intent, proxy);
-        }
-
-        @Override
-        protected OverrideUrlLoadingResult startActivityIfNeededInternal(Intent intent,
-                boolean proxy, boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
+        protected OverrideUrlLoadingResult startActivity(Intent intent, boolean proxy,
+                boolean requiresIntentChooser, List<ResolveInfo> resolvingInfos,
                 ResolveActivitySupplier resolveActivity, GURL browserFallbackUrl,
                 GURL intentDataUrl, GURL referrerUrl) {
             mStartActivityIntent = intent;
             mCalledWithProxy = proxy;
+            if (mSendIntentsForReal) {
+                return super.startActivity(intent, proxy, requiresIntentChooser, resolvingInfos,
+                        resolveActivity, browserFallbackUrl, intentDataUrl, referrerUrl);
+            }
             return OverrideUrlLoadingResult.forExternalIntent();
         }
 
