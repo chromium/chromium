@@ -479,6 +479,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1166647")
     public void testNewIntentDiscardsQuery() {
         final SearchActivity searchActivity = startSearchActivity();
         // Note: we should not need to request focus here.
