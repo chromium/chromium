@@ -10,21 +10,21 @@
     </div>
     <div class="permission-list indented-permission-block">
       <app-management-permission-item id="camera-permission"
-        app_="[[app_]]"
+        app="[[app_]]"
         class="subpermission-row" icon="app-management:camera"
         sync-permission-manually
         permission-label="$i18n{appManagementCameraPermissionLabel}"
         permission-type="kCamera" on-change="onPermissionChanged_">
       </app-management-permission-item>
       <app-management-permission-item id="microphone-permission"
-        app_="[[app_]]"
+        app="[[app_]]"
         class="subpermission-row" icon="app-management:microphone"
         sync-permission-manually
         permission-label="$i18n{appManagementMicrophonePermissionLabel}"
         permission-type="kMicrophone" on-change="onPermissionChanged_">
       </app-management-permission-item>
       <app-management-permission-item class="subpermission-row" icon="cr:print"
-        app_="[[app_]]"
+        app="[[app_]]"
         permission-label="$i18n{appManagementPrintingPermissionLabel}"
         permission-type="kPrinting">
       </app-management-permission-item>

@@ -35,7 +35,7 @@ suite('<app-management-permission-item>', () => {
     const app = await fakeHandler.addApp(null, arcOptions);
 
     permissionItem = document.createElement('app-management-permission-item');
-    permissionItem.app_ = app;
+    permissionItem.app = app;
   });
 
   test('Toggle permission', async () => {
@@ -44,7 +44,7 @@ suite('<app-management-permission-item>', () => {
     replaceBody(permissionItem);
     await fakeHandler.flushPipesForTesting();
     assertTrue(getPermissionValueBool(
-        permissionItem.app_, permissionItem.permissionType));
+        permissionItem.app, permissionItem.permissionType));
 
     permissionItem.click();
     await test_util.flushTasks();
@@ -52,6 +52,6 @@ suite('<app-management-permission-item>', () => {
     // Store gets updated permission.
     const storeData = app_management.AppManagementStore.getInstance().data;
     assertFalse(getPermissionValueBool(
-      storeData.apps[permissionItem.app_.id], permissionItem.permissionType));
+        storeData.apps[permissionItem.app.id], permissionItem.permissionType));
   });
 });

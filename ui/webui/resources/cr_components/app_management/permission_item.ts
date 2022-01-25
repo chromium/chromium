@@ -47,30 +47,30 @@ export class AppManamentPermissionItemElement extends PolymerElement {
        */
       syncPermissionManually: Boolean,
 
-      app_: Object,
+      app: Object,
 
       /**
        * True if the permission type is available for the app.
        */
       available_: {
         type: Boolean,
-        computed: 'isAvailable_(app_, permissionType)',
+        computed: 'isAvailable_(app, permissionType)',
         reflectToAttribute: true,
       },
 
       disabled_: {
         type: Boolean,
-        computed: 'isManaged_(app_, permissionType)',
+        computed: 'isManaged_(app, permissionType)',
         reflectToAttribute: true,
       },
     };
   }
 
-  private permissionLabel: string;
-  private permissionType: PermissionTypeIndex;
-  private icon: string;
+  app: App;
+  permissionLabel: string;
+  permissionType: PermissionTypeIndex;
+  icon: string;
   private syncPermissionManually: boolean;
-  private app_: App;
   private available_: boolean;
   private disabled_: boolean;
 
@@ -114,7 +114,7 @@ export class AppManamentPermissionItemElement extends PolymerElement {
   }
 
   resetToggle() {
-    const currentValue = this.getValue_(this.app_, this.permissionType);
+    const currentValue = this.getValue_(this.app, this.permissionType);
     this.shadowRoot!
         .querySelector<AppManagementToggleRowElement>('#toggle-row')!.setToggle(
             currentValue);
@@ -136,19 +136,19 @@ export class AppManamentPermissionItemElement extends PolymerElement {
    * called when `syncPermissionManually` is set.
    */
   syncPermission() {
-    assert(this.app_);
+    assert(this.app);
 
     let newPermission: Permission|undefined = undefined;
 
     let newBoolState = false;  // to keep the closure compiler happy.
-    const permissionValue = getPermission(this.app_, this.permissionType).value;
+    const permissionValue = getPermission(this.app, this.permissionType).value;
     if (isBoolValue(permissionValue)) {
       newPermission =
-          this.getUIPermissionBoolean_(this.app_, this.permissionType);
+          this.getUIPermissionBoolean_(this.app, this.permissionType);
       newBoolState = getBoolPermissionValue(newPermission.value);
     } else if (isTriStateValue(permissionValue)) {
       newPermission =
-          this.getUIPermissionTriState_(this.app_, this.permissionType);
+          this.getUIPermissionTriState_(this.app, this.permissionType);
 
       newBoolState =
           getTriStatePermissionValue(newPermission.value) === TriState.kAllow;
@@ -157,10 +157,10 @@ export class AppManamentPermissionItemElement extends PolymerElement {
     }
 
     BrowserProxy.getInstance().handler.setPermission(
-        this.app_.id, newPermission!);
+        this.app.id, newPermission!);
 
     recordAppManagementUserAction(
-        this.app_.type,
+        this.app.type,
         this.getUserMetricActionForPermission_(
             newBoolState, this.permissionType));
   }
