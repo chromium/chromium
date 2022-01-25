@@ -426,6 +426,22 @@ chrome.developerPrivate.ReloadOptions;
 chrome.developerPrivate.LoadUnpackedOptions;
 
 /**
+ * @enum {string}
+ */
+chrome.developerPrivate.UserSiteSet = {
+  PERMITTED: 'PERMITTED',
+  RESTRICTED: 'RESTRICTED',
+};
+
+/**
+ * @typedef {{
+ *   siteList: !chrome.developerPrivate.UserSiteSet,
+ *   host: string
+ * }}
+ */
+chrome.developerPrivate.UserSiteSettingsOptions;
+
+/**
  * @typedef {{
  *   permittedSites: !Array<string>,
  *   restrictedSites: !Array<string>
@@ -793,6 +809,22 @@ chrome.developerPrivate.removeHostPermission = function(extensionId, host, callb
  * @param {function(!chrome.developerPrivate.UserSiteSettings): void=} callback
  */
 chrome.developerPrivate.getUserSiteSettings = function(callback) {};
+
+/**
+ * Adds a host to the set of user permitted or restricted sites. If the host in
+ * the other set than what's specified in `options`, then it is removed from
+ * that set.
+ * @param {!chrome.developerPrivate.UserSiteSettingsOptions} options
+ * @param {function(): void=} callback
+ */
+chrome.developerPrivate.addUserSpecifiedSite = function(options, callback) {};
+
+/**
+ * Removes a host from the specified set of user permitted or restricted sites.
+ * @param {!chrome.developerPrivate.UserSiteSettingsOptions} options
+ * @param {function(): void=} callback
+ */
+chrome.developerPrivate.removeUserSpecifiedSite = function(options, callback) {};
 
 /**
  * @param {string} id

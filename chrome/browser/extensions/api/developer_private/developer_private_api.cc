@@ -2135,6 +2135,60 @@ DeveloperPrivateGetUserSiteSettingsFunction::Run() {
       base::Value::FromUniquePtrValue(user_site_settings.ToValue())));
 }
 
+DeveloperPrivateAddUserSpecifiedSiteFunction::
+    DeveloperPrivateAddUserSpecifiedSiteFunction() = default;
+DeveloperPrivateAddUserSpecifiedSiteFunction::
+    ~DeveloperPrivateAddUserSpecifiedSiteFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateAddUserSpecifiedSiteFunction::Run() {
+  std::unique_ptr<developer::AddUserSpecifiedSite::Params> params(
+      developer::AddUserSpecifiedSite::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  const url::Origin url = url::Origin::Create(GURL(params->options.host));
+  switch (params->options.site_list) {
+    case developer::USER_SITE_SET_PERMITTED:
+      manager->AddUserPermittedSite(url);
+      break;
+    case developer::USER_SITE_SET_RESTRICTED:
+      manager->AddUserRestrictedSite(url);
+      break;
+    case developer::USER_SITE_SET_NONE:
+      NOTREACHED();
+  }
+
+  return RespondNow(NoArguments());
+}
+
+DeveloperPrivateRemoveUserSpecifiedSiteFunction::
+    DeveloperPrivateRemoveUserSpecifiedSiteFunction() = default;
+DeveloperPrivateRemoveUserSpecifiedSiteFunction::
+    ~DeveloperPrivateRemoveUserSpecifiedSiteFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateRemoveUserSpecifiedSiteFunction::Run() {
+  std::unique_ptr<developer::RemoveUserSpecifiedSite::Params> params(
+      developer::RemoveUserSpecifiedSite::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  const url::Origin url = url::Origin::Create(GURL(params->options.host));
+  switch (params->options.site_list) {
+    case developer::USER_SITE_SET_PERMITTED:
+      manager->RemoveUserPermittedSite(url);
+      break;
+    case developer::USER_SITE_SET_RESTRICTED:
+      manager->RemoveUserRestrictedSite(url);
+      break;
+    case developer::USER_SITE_SET_NONE:
+      NOTREACHED();
+  }
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace api
 
 }  // namespace extensions

@@ -1830,6 +1830,59 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateGetUserSiteSettings) {
               testing::UnorderedElementsAre("http://b.example.com"));
 }
 
+// Test developerPrivate.addUserPermittedSite, addUserRestrictedSite and
+// removeUserSpecifiedSite.
+TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateModifyUserSiteSettings) {
+  static constexpr char kExample[] = "http://example.com";
+  static constexpr char kChromium[] = "http://chromium.org";
+  static constexpr char kGoogle[] = "http://google.com";
+
+  const url::Origin example_url = url::Origin::Create(GURL(kExample));
+  const url::Origin chromium_url = url::Origin::Create(GURL(kChromium));
+  const url::Origin google_url = url::Origin::Create(GURL(kGoogle));
+
+  auto add_site = [this](const char* site, bool restricted) {
+    scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
+        api::DeveloperPrivateAddUserSpecifiedSiteFunction>();
+    std::string args =
+        base::StringPrintf(R"([{"siteList":"%s","host":"%s"}])",
+                           restricted ? "RESTRICTED" : "PERMITTED", site);
+    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile()))
+        << function->GetError();
+  };
+
+  auto remove_site = [this](const char* site, bool restricted) {
+    scoped_refptr<ExtensionFunction> function = base::MakeRefCounted<
+        api::DeveloperPrivateRemoveUserSpecifiedSiteFunction>();
+    std::string args =
+        base::StringPrintf(R"([{"siteList":"%s","host":"%s"}])",
+                           restricted ? "RESTRICTED" : "PERMITTED", site);
+    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile()))
+        << function->GetError();
+  };
+
+  // First, add some permitted and restricted sites, and check that these sites
+  // are stored in the manager.
+  add_site(kExample, /*restricted=*/false);
+  add_site(kChromium, /*restricted=*/false);
+  add_site(kGoogle, /*restricted=*/true);
+
+  PermissionsManager* manager = PermissionsManager::Get(browser_context());
+  EXPECT_THAT(manager->GetUserPermissionsSettings().permitted_sites,
+              testing::UnorderedElementsAre(example_url, chromium_url));
+  EXPECT_THAT(manager->GetUserPermissionsSettings().restricted_sites,
+              testing::UnorderedElementsAre(google_url));
+
+  // Attempting to add a restricted site should remove it as a permitted site.
+  add_site(kChromium, /*restricted=*/true);
+  remove_site(kExample, /*restricted=*/false);
+  remove_site(kGoogle, /*restricted=*/true);
+
+  EXPECT_TRUE(manager->GetUserPermissionsSettings().permitted_sites.empty());
+  EXPECT_THAT(manager->GetUserPermissionsSettings().restricted_sites,
+              testing::UnorderedElementsAre(chromium_url));
+}
+
 class DeveloperPrivateApiAllowlistUnitTest
     : public DeveloperPrivateApiUnitTest {
  public:
