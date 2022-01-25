@@ -1576,6 +1576,24 @@ None
 
 The following Abseil library features are allowed in the Chromium codebase.
 
+### 128bit integer <sup>[allowed]</sup>
+
+```c++
+uint64_t a;
+absl::uint128 v = a;
+```
+
+**Description:** Signed and unsigned 128-bit integer types meant to mimic
+intrinsic types as closely as possible.
+
+**Documentation:**
+[Numerics](https://abseil.io/docs/cpp/guides/numeric)
+
+**Notes:**
+*** promo
+[Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/6l8MlO7vEek)
+***
+
 ### Optional <sup>[allowed]</sup>
 
 ```c++
@@ -1713,24 +1731,6 @@ Banned due to only working with 8-bit characters. Keep using
 The following Abseil library features are not allowed in the Chromium codebase.
 See the top of this page on how to propose moving a feature from this list into
 the allowed or banned sections.
-
-### 128bit integer <sup>[tbd]</sup>
-
-```c++
-uint64_t a;
-absl::uint128 v = a;
-```
-
-**Description:** Signed and unsigned 128-bit integer types meant to mimic
-intrinsic types as closely as possible.
-
-**Documentation:**
-[Numerics](https://abseil.io/docs/cpp/guides/numeric)
-
-**Notes:**
-*** promo
-None
-***
 
 ### bind_front <sup>[tbd]</sup>
 
