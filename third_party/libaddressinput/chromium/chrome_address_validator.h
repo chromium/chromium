@@ -180,8 +180,8 @@ class AddressValidator {
   // Loads and stores aggregate rules at COUNTRY level.
   const std::unique_ptr<::i18n::addressinput::PreloadSupplier> supplier_;
 
-  // Suggests addresses based on user input.
-  const std::unique_ptr<InputSuggester> input_suggester_;
+  // Suggests addresses based on user input. Initialized lazily.
+  mutable std::unique_ptr<InputSuggester> input_suggester_;
 
   // Normalizes addresses into a canonical form.
   const std::unique_ptr<::i18n::addressinput::AddressNormalizer> normalizer_;
