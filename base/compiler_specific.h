@@ -31,23 +31,6 @@
 #define HAS_BUILTIN(x) 0
 #endif
 
-// Annotate a variable indicating it's ok if the variable is not used.
-// (Typically used to silence a compiler warning when the assignment
-// is important for some other reason.)
-// Use like:
-//   int x = ...;
-//   ALLOW_UNUSED_LOCAL(x);
-#define ALLOW_UNUSED_LOCAL(x) (void)x
-
-// Annotate a typedef or function indicating it's ok if it's not used.
-// Use like:
-//   typedef Foo Bar ALLOW_UNUSED_TYPE;
-#if defined(COMPILER_GCC) || defined(__clang__)
-#define ALLOW_UNUSED_TYPE __attribute__((unused))
-#else
-#define ALLOW_UNUSED_TYPE
-#endif
-
 // Annotate a function indicating it should not be inlined.
 // Use like:
 //   NOINLINE void DoStuff() { ... }
@@ -336,13 +319,11 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 #define ANALYZER_ASSUME_TRUE(arg) ::AnalyzerAssumeTrue(!!(arg))
 #define ANALYZER_SKIP_THIS_PATH() static_cast<void>(::AnalyzerNoReturn())
-#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 #else  // !defined(__clang_analyzer__)
 
 #define ANALYZER_ASSUME_TRUE(arg) (arg)
 #define ANALYZER_SKIP_THIS_PATH()
-#define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 #endif  // defined(__clang_analyzer__)
 

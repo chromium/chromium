@@ -4,16 +4,15 @@
 
 #include "base/feature_list.h"
 
-#include <string>
-
-#include "build/build_config.h"
-
 // feature_list.h is a widely included header and its size impacts build
 // time. Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #ifndef NACL_TC_REV
 #pragma clang max_tokens_here 545000
 #endif
+
+#include <string>
+#include <tuple>
 
 #include <stddef.h>
 
@@ -92,8 +91,7 @@ struct FeatureEntry {
       return false;
 
     // Return true because we are not guaranteed to have a trial name anyways.
-    auto sink = pickle_iter.ReadStringPiece(trial_name);
-    ALLOW_UNUSED_LOCAL(sink);
+    std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
   }
 };

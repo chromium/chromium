@@ -370,16 +370,14 @@ void AwMainDelegate::PostEarlyInitialization(bool is_running_tests) {
 
 void AwMainDelegate::PostFieldTrialInitialization() {
   version_info::Channel channel = version_info::android::GetChannel();
-  bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                        channel == version_info::Channel::DEV);
+  [[maybe_unused]] bool is_canary_dev =
+      (channel == version_info::Channel::CANARY ||
+       channel == version_info::Channel::DEV);
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
   bool is_browser_process = process_type.empty();
-
-  ALLOW_UNUSED_LOCAL(is_canary_dev);
-  ALLOW_UNUSED_LOCAL(is_browser_process);
 
   // Enable LITTLE-cores only mode/idle power mode throttling if the features
   // are enabled, but only for child processes, as the browser process is shared

@@ -53,9 +53,8 @@ DCHECK recklessly just to quiet down the analyzer. :)
 Other types of false positives and their suppressions:
 * Unreachable code paths. To suppress, add the `ANALYZER_SKIP_THIS_PATH();`
   directive to the relevant code block.
-* Dead stores. To suppress, use the macro
-  `ANALYZER_ALLOW_UNUSED(my_var)`. This also suppresses dead store warnings
-  on conventional builds without static analysis enabled!
+* Dead stores. To suppress, use `[[maybe_unused]]`. This also suppresses dead
+  store warnings on conventional builds without static analysis enabled!
 
 See the definitions of the `ANALYZER_*` macros in base/logging.h for more
 detailed information about how the annotations are implemented.
