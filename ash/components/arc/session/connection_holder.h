@@ -304,7 +304,7 @@ class ConnectionHolder {
   void AddObserver(Observer* observer) {
     connection_notifier_.AddObserver(observer);
     if (impl_.IsConnected())
-      connection_notifier_.NotifyConnectionReady();
+      observer->OnConnectionReady();
   }
 
   void RemoveObserver(Observer* observer) {
