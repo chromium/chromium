@@ -102,6 +102,9 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
 
   virtual ~CALayerOverlayProcessor() = default;
 
+  void SetIsVideoCaptureEnabled(bool enabled) {
+    video_capture_enabled_ = enabled;
+  }
   bool AreClipSettingsValid(const CALayerOverlay& ca_layer_overlay,
                             CALayerOverlayList* ca_layer_overlay_list) const;
   void PutForcedOverlayContentIntoUnderlays(
@@ -156,6 +159,10 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
   // Controls the feature of putting HDR videos into underlays if the
   // CARenderer fails (so that we can use the tone mapping provided by macOS).
   const bool enable_hdr_underlays_;
+
+  // The CARenderer is disabled when video capture is enabled.
+  // https://crbug.com/836351, https://crbug.com/1290384
+  bool video_capture_enabled_ = false;
 
   size_t max_quad_list_size_ = 0;
 

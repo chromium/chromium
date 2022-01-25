@@ -11349,6 +11349,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="30" label="YUVVideoDrawQuad has invalid planes"/>
   <int value="31" label="Has copy requests"/>
   <int value="32" label="Overlay disabled"/>
+  <int value="33" label="Video capture enabled"/>
 </enum>
 
 <enum name="CalendarEventFetchApiError">
