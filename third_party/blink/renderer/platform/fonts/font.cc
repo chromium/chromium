@@ -117,7 +117,7 @@ void Font::RevalidateFontFallbackList() const {
 }
 
 FontFallbackList* Font::EnsureFontFallbackList() const {
-  if (!font_fallback_list_) {
+  if (!font_fallback_list_ || !font_fallback_list_->HasFontFallbackMap()) {
     font_fallback_list_ =
         GetOrCreateFontFallbackList(font_description_, nullptr);
   }
