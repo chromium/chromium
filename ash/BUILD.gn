@@ -2173,6 +2173,7 @@ component("ash") {
     "//ui/events:gesture_detection",
     "//ui/events/devices",
     "//ui/events/ozone",
+    "//ui/lottie",
     "//ui/message_center",
     "//ui/native_theme",
     "//ui/ozone",

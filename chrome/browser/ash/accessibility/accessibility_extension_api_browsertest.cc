@@ -67,14 +67,13 @@ class AccessibilityPrivateApiTest
     return controller->dictation_bubble_view_->GetTextForTesting();
   }
 
-  bool IsDictationBubbleStandbyImageVisible() {
+  bool IsDictationBubbleStandbyViewVisible() {
     DictationBubbleController* controller =
         Shell::Get()
             ->accessibility_controller()
             ->GetDictationBubbleControllerForTest();
     DCHECK(controller != nullptr);
-    return controller->dictation_bubble_view_
-        ->IsStandbyImageVisibleForTesting();
+    return controller->dictation_bubble_view_->IsStandbyViewVisibleForTesting();
   }
 
   bool IsDictationBubbleMacroSucceededImageVisible() {
@@ -98,11 +97,11 @@ class AccessibilityPrivateApiTest
   }
 
   DictationBubbleIconType GetDictationBubbleVisibleIcon() {
-    DCHECK_GE(1, IsDictationBubbleStandbyImageVisible() +
+    DCHECK_GE(1, IsDictationBubbleStandbyViewVisible() +
                      IsDictationBubbleMacroSucceededImageVisible() +
                      IsDictationBubbleMacroFailedImageVisible())
         << "No more than one icon should be visible!";
-    if (IsDictationBubbleStandbyImageVisible())
+    if (IsDictationBubbleStandbyViewVisible())
       return DictationBubbleIconType::kStandby;
     if (IsDictationBubbleMacroSucceededImageVisible())
       return DictationBubbleIconType::kMacroSuccess;

@@ -5,12 +5,18 @@
 #include "ash/system/accessibility/dictation_bubble_view.h"
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/lottie/animation.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -32,8 +38,14 @@ DictationBubbleView::~DictationBubbleView() = default;
 
 void DictationBubbleView::Update(DictationBubbleIconType icon,
                                  const absl::optional<std::u16string>& text) {
-  // Update icon visibility.
-  standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
+  // Update visibility.
+  if (use_standby_animation_) {
+    standby_animation_->SetVisible(icon == DictationBubbleIconType::kStandby);
+    icon == DictationBubbleIconType::kStandby ? standby_animation_->Play()
+                                              : standby_animation_->Stop();
+  } else {
+    standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
+  }
   macro_succeeded_image_->SetVisible(icon ==
                                      DictationBubbleIconType::kMacroSuccess);
   macro_failed_image_->SetVisible(icon == DictationBubbleIconType::kMacroFail);
@@ -52,19 +64,11 @@ void DictationBubbleView::Init() {
 
   UseCompactMargins();
 
-  auto create_image_view = [](views::ImageView** destination_view,
-                              const gfx::VectorIcon& icon) {
-    return views::Builder<views::ImageView>()
-        .CopyAddressTo(destination_view)
-        .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, kIconAndLabelColor))
-        .Build();
-  };
-
-  AddChildView(create_image_view(&standby_image_, kDictationBubbleIcon));
-  AddChildView(create_image_view(&macro_succeeded_image_,
-                                 kDictationBubbleMacroSucceededIcon));
+  AddChildView(CreateStandbyView());
+  AddChildView(CreateImageView(&macro_succeeded_image_,
+                               kDictationBubbleMacroSucceededIcon));
   AddChildView(
-      create_image_view(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
+      CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
   AddChildView(CreateLabel(std::u16string()));
 }
 
@@ -86,7 +90,10 @@ std::u16string DictationBubbleView::GetTextForTesting() {
   return label_->GetText();
 }
 
-bool DictationBubbleView::IsStandbyImageVisibleForTesting() {
+bool DictationBubbleView::IsStandbyViewVisibleForTesting() {
+  if (use_standby_animation_)
+    return standby_animation_->GetVisible();
+
   return standby_image_->GetVisible();
 }
 
@@ -96,6 +103,34 @@ bool DictationBubbleView::IsMacroSucceededImageVisibleForTesting() {
 
 bool DictationBubbleView::IsMacroFailedImageVisibleForTesting() {
   return macro_failed_image_->GetVisible();
+}
+
+std::unique_ptr<views::View> DictationBubbleView::CreateStandbyView() {
+  absl::optional<std::string> json =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DICTATION_BUBBLE_ANIMATION);
+  if (json.has_value()) {
+    use_standby_animation_ = true;
+    auto skottie = cc::SkottieWrapper::CreateSerializable(
+        std::vector<uint8_t>(json.value().begin(), json.value().end()));
+    return views::Builder<views::AnimatedImageView>()
+        .CopyAddressTo(&standby_animation_)
+        .SetAnimatedImage(std::make_unique<lottie::Animation>(skottie))
+        .SetImageSize(gfx::Size(32, 16))
+        .Build();
+  }
+
+  use_standby_animation_ = false;
+  return CreateImageView(&standby_image_, kDictationBubbleIcon);
+}
+
+std::unique_ptr<views::ImageView> DictationBubbleView::CreateImageView(
+    views::ImageView** destination_view,
+    const gfx::VectorIcon& icon) {
+  return views::Builder<views::ImageView>()
+      .CopyAddressTo(destination_view)
+      .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, kIconAndLabelColor))
+      .Build();
 }
 
 std::unique_ptr<views::Label> DictationBubbleView::CreateLabel(
