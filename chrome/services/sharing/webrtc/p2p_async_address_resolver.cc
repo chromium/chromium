@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 
 namespace sharing {
 

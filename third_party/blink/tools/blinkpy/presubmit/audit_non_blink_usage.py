@@ -1486,7 +1486,7 @@ _CONFIG = [
             'base::Thread',
             'base::WrapRefCounted',
             'cricket::.*',
-            'jingle_glue::JingleThreadWrapper',
+            'webrtc::ThreadWrapper',
             # TODO(crbug.com/787254): Remove GURL usage.
             'GURL',
             'media::.+',

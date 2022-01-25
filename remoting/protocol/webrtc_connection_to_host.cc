@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/client_control_dispatcher.h"
 #include "remoting/protocol/client_event_dispatcher.h"
@@ -37,8 +37,7 @@ void WebrtcConnectionToHost::Connect(
   DCHECK(clipboard_stub_);
 
   transport_ = std::make_unique<WebrtcTransport>(
-      jingle_glue::JingleThreadWrapper::current(), transport_context, nullptr,
-      this);
+      webrtc::ThreadWrapper::current(), transport_context, nullptr, this);
 
   if (audio_decode_task_runner_)
     transport_->audio_module()->SetAudioTaskRunner(audio_decode_task_runner_);

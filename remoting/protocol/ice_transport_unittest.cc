@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -86,7 +86,7 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 class IceTransportTest : public testing::Test {
  public:
   IceTransportTest() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
   }
@@ -117,7 +117,7 @@ class IceTransportTest : public testing::Test {
   }
 
   void InitializeConnection() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),

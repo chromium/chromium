@@ -172,7 +172,7 @@ if (enable_remoting_host) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
-      "//jingle:webrtc_glue",
+      "//components/webrtc:thread_wrapper",
       "//net:test_support",
       "//remoting/base",
       "//remoting/client:client",

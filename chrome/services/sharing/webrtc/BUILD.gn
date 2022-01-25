@@ -24,7 +24,8 @@ source_set("webrtc") {
   ]
 
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 

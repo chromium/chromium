@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "remoting/codec/video_encoder.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
@@ -55,7 +55,7 @@ WebrtcConnectionToClient::WebrtcConnectionToClient(
   auto video_encoder_factory = std::make_unique<WebrtcVideoEncoderFactory>();
   video_encoder_factory_ = video_encoder_factory.get();
   transport_ = std::make_unique<WebrtcTransport>(
-      jingle_glue::JingleThreadWrapper::current(), transport_context,
+      webrtc::ThreadWrapper::current(), transport_context,
       std::move(video_encoder_factory), this);
   session_->SetEventHandler(this);
   session_->SetTransport(transport_.get());

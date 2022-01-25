@@ -54,13 +54,40 @@ source_set("fake_ssl_socket") {
   ]
 }
 
+source_set("net_address_utils") {
+  sources = [
+    "net_address_utils.cc",
+    "net_address_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
+source_set("thread_wrapper") {
+  sources = [
+    "thread_wrapper.cc",
+    "thread_wrapper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "fake_ssl_client_socket_unittest.cc" ]
+  sources = [
+    "fake_ssl_client_socket_unittest.cc",
+    "thread_wrapper_unittest.cc",
+  ]
 
   deps = [
     ":fake_ssl_socket",
+    ":thread_wrapper",
     "//base/test:test_support",
     "//net:test_support",
     "//testing/gmock",

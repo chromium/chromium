@@ -25,7 +25,7 @@ include_rules = [
     "+base/threading/thread.h",
     "+base/values.h",
     "+crypto/openssl_util.h",
-    "+jingle/glue/thread_wrapper.h",
+    "+components/webrtc/thread_wrapper.h",
     "+media/base",
     "+media/media_buildflags.h",
     "+media/video/gpu_video_accelerator_factories.h",

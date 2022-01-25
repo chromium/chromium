@@ -19,7 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/timer/timer.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/socket/client_socket_factory.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/service_urls.h"
@@ -512,7 +512,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
     return;
   }
 
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   client_context_ = std::make_unique<ClientContext>(network_task_runner());
   client_context_->Start();

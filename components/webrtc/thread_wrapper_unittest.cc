@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webrtc/thread_wrapper.h"
+
 #include <stdint.h>
 
 #include "base/bind.h"
@@ -11,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "jingle/glue/thread_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,7 +21,7 @@ using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 
-namespace jingle_glue {
+namespace webrtc {
 
 static const uint32_t kTestMessage1 = 1;
 static const uint32_t kTestMessage2 = 2;
@@ -39,9 +40,8 @@ class MockMessageHandler : public rtc::MessageHandlerAutoCleanup {
 };
 
 MATCHER_P3(MatchMessage, handler, message_id, data, "") {
-  return arg->phandler == handler &&
-      arg->message_id == message_id &&
-      arg->pdata == data;
+  return arg->phandler == handler && arg->message_id == message_id &&
+         arg->pdata == data;
 }
 
 ACTION(DeleteMessageData) {
@@ -51,14 +51,9 @@ ACTION(DeleteMessageData) {
 // Helper class used in the Dispose test.
 class DeletableObject {
  public:
-  DeletableObject(bool* deleted)
-      : deleted_(deleted) {
-    *deleted = false;
-  }
+  DeletableObject(bool* deleted) : deleted_(deleted) { *deleted = false; }
 
-  ~DeletableObject() {
-    *deleted_ = true;
-  }
+  ~DeletableObject() { *deleted_ = true; }
 
  private:
   raw_ptr<bool> deleted_;
@@ -74,8 +69,7 @@ class ThreadWrapperTest : public testing::Test {
     rtc::MessageData* data = new rtc::MessageData();
     MockMessageHandler handler;
 
-    EXPECT_CALL(handler, OnMessage(
-        MatchMessage(&handler, kTestMessage2, data)))
+    EXPECT_CALL(handler, OnMessage(MatchMessage(&handler, kTestMessage2, data)))
         .WillOnce(DeleteMessageData());
     thread_->Send(RTC_FROM_HERE, &handler, kTestMessage2, data);
   }
@@ -84,7 +78,7 @@ class ThreadWrapperTest : public testing::Test {
   ThreadWrapperTest() : thread_(nullptr) {}
 
   void SetUp() override {
-    JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    ThreadWrapper::EnsureForCurrentMessageLoop();
     thread_ = rtc::Thread::Current();
   }
 
@@ -108,17 +102,17 @@ TEST_F(ThreadWrapperTest, Post) {
 
   InSequence in_seq;
 
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, data1)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, data1)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage2, data2)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage2, data2)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, data3)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, data3)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, data4)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, data4)))
       .WillOnce(DeleteMessageData());
 
   base::RunLoop().RunUntilIdle();
@@ -141,17 +135,17 @@ TEST_F(ThreadWrapperTest, PostDelayed) {
 
   InSequence in_seq;
 
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, data1)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, data1)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage2, data2)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage2, data2)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, data3)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, data3)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, data4)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, data4)))
       .WillOnce(DeleteMessageData());
 
   base::RunLoop run_loop;
@@ -171,14 +165,14 @@ TEST_F(ThreadWrapperTest, Clear) {
   InSequence in_seq;
 
   rtc::MessageData* null_data = NULL;
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, null_data)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, null_data)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, null_data)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, null_data)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage2, null_data)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage2, null_data)))
       .WillOnce(DeleteMessageData());
 
   base::RunLoop().RunUntilIdle();
@@ -199,14 +193,14 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
   InSequence in_seq;
 
   rtc::MessageData* null_data = NULL;
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, null_data)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, null_data)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, null_data)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, null_data)))
       .WillOnce(DeleteMessageData());
-  EXPECT_CALL(handler2_, OnMessage(
-      MatchMessage(&handler2_, kTestMessage1, null_data)))
+  EXPECT_CALL(handler2_,
+              OnMessage(MatchMessage(&handler2_, kTestMessage1, null_data)))
       .WillOnce(DeleteMessageData());
 
   base::RunLoop run_loop;
@@ -233,26 +227,26 @@ TEST_F(ThreadWrapperTest, ClearDestroyed) {
 TEST_F(ThreadWrapperTest, SendSameThread) {
   rtc::MessageData* data = new rtc::MessageData();
 
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, data)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, data)))
       .WillOnce(DeleteMessageData());
   thread_->Send(RTC_FROM_HERE, &handler1_, kTestMessage1, data);
 }
 
 void InitializeWrapperForNewThread(rtc::Thread** thread,
                                    base::WaitableEvent* done_event) {
-  JingleThreadWrapper::EnsureForCurrentMessageLoop();
-  JingleThreadWrapper::current()->set_send_allowed(true);
-  *thread = JingleThreadWrapper::current();
+  ThreadWrapper::EnsureForCurrentMessageLoop();
+  ThreadWrapper::current()->set_send_allowed(true);
+  *thread = ThreadWrapper::current();
   done_event->Signal();
 }
 
 // Verify that Send() calls handler synchronously when called for a
 // different thread.
 TEST_F(ThreadWrapperTest, SendToOtherThread) {
-  JingleThreadWrapper::current()->set_send_allowed(true);
+  ThreadWrapper::current()->set_send_allowed(true);
 
-  base::Thread second_thread("JingleThreadWrapperTest");
+  base::Thread second_thread("adWrapperTest");
   second_thread.Start();
 
   base::WaitableEvent initialized_event(
@@ -268,8 +262,8 @@ TEST_F(ThreadWrapperTest, SendToOtherThread) {
 
   rtc::MessageData* data = new rtc::MessageData();
 
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, data)))
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, data)))
       .WillOnce(DeleteMessageData());
   target->Send(RTC_FROM_HERE, &handler1_, kTestMessage1, data);
 
@@ -281,9 +275,9 @@ TEST_F(ThreadWrapperTest, SendToOtherThread) {
 // to that thread. kTestMessage1 handler calls PingMainThread() which
 // tries to Send() kTestMessage2 to the main thread.
 TEST_F(ThreadWrapperTest, SendDuringSend) {
-  JingleThreadWrapper::current()->set_send_allowed(true);
+  ThreadWrapper::current()->set_send_allowed(true);
 
-  base::Thread second_thread("JingleThreadWrapperTest");
+  base::Thread second_thread("adWrapperTest");
   second_thread.Start();
 
   base::WaitableEvent initialized_event(
@@ -299,12 +293,11 @@ TEST_F(ThreadWrapperTest, SendDuringSend) {
 
   rtc::MessageData* data = new rtc::MessageData();
 
-  EXPECT_CALL(handler1_, OnMessage(
-      MatchMessage(&handler1_, kTestMessage1, data)))
-      .WillOnce(DoAll(
-          InvokeWithoutArgs(
-              this, &ThreadWrapperTest::PingMainThread),
-          DeleteMessageData()));
+  EXPECT_CALL(handler1_,
+              OnMessage(MatchMessage(&handler1_, kTestMessage1, data)))
+      .WillOnce(
+          DoAll(InvokeWithoutArgs(this, &ThreadWrapperTest::PingMainThread),
+                DeleteMessageData()));
   target->Send(RTC_FROM_HERE, &handler1_, kTestMessage1, data);
 
   Mock::VerifyAndClearExpectations(&handler1_);
@@ -318,4 +311,4 @@ TEST_F(ThreadWrapperTest, Dispose) {
   EXPECT_TRUE(deleted_);
 }
 
-}  // namespace jingle_glue
+}  // namespace webrtc

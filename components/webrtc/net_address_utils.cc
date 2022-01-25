@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 
 #include <stdint.h>
 
@@ -17,14 +17,14 @@
 #include "third_party/webrtc/rtc_base/byte_order.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
-namespace jingle_glue {
+namespace webrtc {
 
 bool IPEndPointToSocketAddress(const net::IPEndPoint& ip_endpoint,
                                rtc::SocketAddress* address) {
   sockaddr_storage addr;
   socklen_t len = sizeof(addr);
   return ip_endpoint.ToSockAddr(reinterpret_cast<sockaddr*>(&addr), &len) &&
-      rtc::SocketAddressFromSockAddrStorage(addr, address);
+         rtc::SocketAddressFromSockAddrStorage(addr, address);
 }
 
 bool SocketAddressToIPEndPoint(const rtc::SocketAddress& address,
@@ -32,7 +32,7 @@ bool SocketAddressToIPEndPoint(const rtc::SocketAddress& address,
   sockaddr_storage addr;
   int size = address.ToSockAddrStorage(&addr);
   return (size > 0) &&
-      ip_endpoint->FromSockAddr(reinterpret_cast<sockaddr*>(&addr), size);
+         ip_endpoint->FromSockAddr(reinterpret_cast<sockaddr*>(&addr), size);
 }
 
 rtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address) {
@@ -53,7 +53,7 @@ rtc::IPAddress NetIPAddressToRtcIPAddress(const net::IPAddress& ip_address) {
 net::IPAddress RtcIPAddressToNetIPAddress(const rtc::IPAddress& ip_address) {
   rtc::SocketAddress socket_address(ip_address, 0);
   net::IPEndPoint ip_endpoint;
-  jingle_glue::SocketAddressToIPEndPoint(socket_address, &ip_endpoint);
+  webrtc::SocketAddressToIPEndPoint(socket_address, &ip_endpoint);
   return ip_endpoint.address();
 }
 
@@ -115,4 +115,4 @@ bool DeserializeP2PCandidate(const std::string& candidate_str,
   return true;
 }
 
-}  // namespace jingle_glue
+}  // namespace webrtc

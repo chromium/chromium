@@ -60,7 +60,6 @@ static_library("signaling") {
     "//build:chromeos_buildflags",
     "//crypto",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",

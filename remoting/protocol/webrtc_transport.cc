@@ -23,8 +23,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/threading/watchdog.h"
-#include "jingle/glue/thread_wrapper.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/port_allocator_factory.h"
@@ -520,10 +520,10 @@ void WebrtcTransport::Start(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(send_transport_info_callback_.is_null());
 
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   // TODO(sergeyu): Investigate if it's possible to avoid Send().
-  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  webrtc::ThreadWrapper::current()->set_send_allowed(true);
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
 
@@ -1070,12 +1070,12 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
   // for example, a "relay" or "prflx" candidate from a relay connection
   // might have the IP address stripped away by WebRTC - see
   // http://crbug.com/1128667.
-  if (!jingle_glue::SocketAddressToIPEndPoint(remote_candidate.address(),
-                                              &route.remote_address)) {
+  if (!webrtc::SocketAddressToIPEndPoint(remote_candidate.address(),
+                                         &route.remote_address)) {
     VLOG(0) << "Peer IP address is invalid.";
   }
-  if (!jingle_glue::SocketAddressToIPEndPoint(local_candidate.address(),
-                                              &route.local_address)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
+                                         &route.local_address)) {
     VLOG(0) << "Local IP address is invalid.";
   }
 

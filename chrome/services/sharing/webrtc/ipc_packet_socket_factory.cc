@@ -19,7 +19,7 @@
 #include "chrome/services/sharing/webrtc/p2p_async_address_resolver.h"
 #include "chrome/services/sharing/webrtc/p2p_socket_client.h"
 #include "chrome/services/sharing/webrtc/p2p_socket_client_delegate.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "net/base/ip_address.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
@@ -268,7 +268,7 @@ bool IpcPacketSocket::Init(network::P2PSocketType type,
   state_ = IS_OPENING;
 
   net::IPEndPoint local_endpoint;
-  if (!jingle_glue::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
     return false;
   }
 
@@ -280,8 +280,8 @@ bool IpcPacketSocket::Init(network::P2PSocketType type,
       remote_endpoint =
           net::IPEndPoint(net::IPAddress(), remote_address.port());
     } else {
-      if (!jingle_glue::SocketAddressToIPEndPoint(remote_address,
-                                                  &remote_endpoint)) {
+      if (!webrtc::SocketAddressToIPEndPoint(remote_address,
+                                             &remote_endpoint)) {
         return false;
       }
     }
@@ -376,7 +376,7 @@ int IpcPacketSocket::SendTo(const void* data,
   if (address.IsUnresolvedIP()) {
     address_chrome = net::IPEndPoint(net::IPAddress(), address.port());
   } else {
-    if (!jingle_glue::SocketAddressToIPEndPoint(address, &address_chrome)) {
+    if (!webrtc::SocketAddressToIPEndPoint(address, &address_chrome)) {
       LOG(WARNING) << "Failed to convert remote address to IPEndPoint: address="
                    << address.ipaddr().ToSensitiveString()
                    << ", remote_address_="
@@ -492,7 +492,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
                              const net::IPEndPoint& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!jingle_glue::IPEndPointToSocketAddress(local_address, &local_address_)) {
+  if (!webrtc::IPEndPointToSocketAddress(local_address, &local_address_)) {
     // Always expect correct IPv4 address to be allocated.
     NOTREACHED();
     OnError();
@@ -517,8 +517,8 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
       // |remote_address| could be unresolved if the connection is behind a
       // proxy.
       if (!remote_address.address().empty() &&
-          jingle_glue::IPEndPointToSocketAddress(remote_address,
-                                                 &jingle_socket_address)) {
+          webrtc::IPEndPointToSocketAddress(remote_address,
+                                            &jingle_socket_address)) {
         // Set only the IP address.
         remote_address_.SetResolvedIP(jingle_socket_address.ipaddr());
       }
@@ -584,7 +584,7 @@ void IpcPacketSocket::OnDataReceived(const net::IPEndPoint& address,
     // |address| could be empty for TCP connections behind a proxy.
     address_lj = remote_address_;
   } else {
-    if (!jingle_glue::IPEndPointToSocketAddress(address, &address_lj)) {
+    if (!webrtc::IPEndPointToSocketAddress(address, &address_lj)) {
       // We should always be able to convert address here because we
       // don't expect IPv6 address on IPv4 connections.
       NOTREACHED();
@@ -651,8 +651,8 @@ void AsyncAddressResolverImpl::OnAddressResolved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& address : addresses) {
     rtc::SocketAddress socket_address;
-    if (!jingle_glue::IPEndPointToSocketAddress(net::IPEndPoint(address, 0),
-                                                &socket_address)) {
+    if (!webrtc::IPEndPointToSocketAddress(net::IPEndPoint(address, 0),
+                                           &socket_address)) {
       NOTREACHED();
     }
     addresses_.push_back(socket_address.ipaddr());

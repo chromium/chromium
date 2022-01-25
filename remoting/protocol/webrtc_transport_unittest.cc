@@ -17,7 +17,7 @@
 #include "base/threading/watchdog.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/compound_buffer.h"
@@ -182,7 +182,7 @@ class WebrtcTransportTest : public testing::Test {
  public:
   WebrtcTransportTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
   }
@@ -214,7 +214,7 @@ class WebrtcTransportTest : public testing::Test {
 
   void InitializeConnection() {
     host_transport_ = std::make_unique<WebrtcTransport>(
-        jingle_glue::JingleThreadWrapper::current(),
+        webrtc::ThreadWrapper::current(),
         TransportContext::ForTests(TransportRole::SERVER),
         std::make_unique<WebrtcVideoEncoderFactory>(), &host_event_handler_);
 
@@ -232,7 +232,7 @@ class WebrtcTransportTest : public testing::Test {
     host_authenticator_->set_auth_key(kAuthKey);
 
     client_transport_ = std::make_unique<WebrtcTransport>(
-        jingle_glue::JingleThreadWrapper::current(),
+        webrtc::ThreadWrapper::current(),
         TransportContext::ForTests(TransportRole::CLIENT), nullptr,
         &client_event_handler_);
 

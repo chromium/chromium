@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
 #include "third_party/webrtc/rtc_base/ip_address.h"
@@ -55,7 +55,7 @@ void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
   }
 
   mdns_responder_->CreateNameForAddress(
-      jingle_glue::RtcIPAddressToNetIPAddress(addr),
+      webrtc::RtcIPAddressToNetIPAddress(addr),
       base::BindOnce(&OnNameCreatedForAddress, callback, addr));
 }
 
@@ -70,7 +70,7 @@ void MdnsResponderAdapter::RemoveNameForAddress(const rtc::IPAddress& addr,
   }
 
   mdns_responder_->RemoveNameForAddress(
-      jingle_glue::RtcIPAddressToNetIPAddress(addr),
+      webrtc::RtcIPAddressToNetIPAddress(addr),
       base::BindOnce(&OnNameRemovedForAddress, callback));
 }
 

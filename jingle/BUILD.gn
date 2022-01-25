@@ -5,49 +5,13 @@
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
-source_set("webrtc_glue") {
-  visibility = [
-    ":*",
-    "//chrome/services/sharing/nearby/platform",
-    "//chrome/services/sharing/webrtc",
-    "//remoting/*",
-    "//third_party/blink/renderer/modules",
-    "//third_party/blink/renderer/modules/peerconnection",
-    "//third_party/blink/renderer/platform",
-  ]
-  sources = [
-    "glue/thread_wrapper.cc",
-    "glue/thread_wrapper.h",
-    "glue/utils.cc",
-    "glue/utils.h",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-}
-
+# TODO(crbug.com/1287596): Remove jingle_unittests
 test("jingle_unittests") {
-  sources = [
-    "glue/thread_wrapper_unittest.cc",
-    "run_all_unittests.cc",
-  ]
+  sources = [ "run_all_unittests.cc" ]
 
   deps = [
-    ":webrtc_glue",
     "//base",
     "//base/test:test_support",
-    "//mojo/core/embedder",
-    "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/system",
-    "//net",
-    "//net:test_support",
-    "//services/network:network_service",
-    "//services/network:test_support",
-    "//testing/gmock",
     "//testing/gtest",
-    "//third_party/libjingle_xmpp:rtc_task_runner",
-    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

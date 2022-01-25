@@ -1,5 +1,5 @@
 include_rules = [
-  "+jingle/glue",
+  "+components/webrtc",
   "+third_party/webrtc/media/base",
   "+third_party/webrtc/rtc_base",
 ]

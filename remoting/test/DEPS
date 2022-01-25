@@ -1,7 +1,7 @@
 include_rules = [
+  "+components/webrtc",
   "+extensions/browser/api/messaging",
   "+google_apis",
-  "+jingle/glue",
   "+mojo/core/embedder",
   "+net",
   "+remoting/client",

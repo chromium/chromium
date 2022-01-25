@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JINGLE_GLUE_THREAD_WRAPPER_H_
-#define JINGLE_GLUE_THREAD_WRAPPER_H_
+#ifndef COMPONENTS_WEBRTC_THREAD_WRAPPER_H_
+#define COMPONENTS_WEBRTC_THREAD_WRAPPER_H_
 
 #include <stdint.h>
 
@@ -22,60 +22,60 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
 
-namespace jingle_glue {
+namespace webrtc {
 
-// JingleThreadWrapper implements rtc::Thread interface on top of
+// ThreadWrapper implements rtc::Thread interface on top of
 // Chromium's SingleThreadTaskRunner interface. Currently only the bare minimum
 // that is used by P2P part of libjingle is implemented. There are two ways to
 // create this object:
 //
 // - Call EnsureForCurrentMessageLoop(). This approach works only on threads
-//   that have MessageLoop In this case JingleThreadWrapper deletes itself
+//   that have MessageLoop In this case ThreadWrapper deletes itself
 //   automatically when MessageLoop is destroyed.
-// - Using JingleThreadWrapper() constructor. In this case the creating code
+// - Using ThreadWrapper() constructor. In this case the creating code
 //   must pass a valid task runner for the current thread and also delete the
 //   wrapper later.
-class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
-                            public rtc::Thread {
+class ThreadWrapper : public base::CurrentThread::DestructionObserver,
+                      public rtc::Thread {
  public:
   // A repeating callback whose TimeDelta argument indicates a duration sample.
   // What the duration represents is contextual.
   using SampledDurationCallback =
       base::RepeatingCallback<void(base::TimeDelta)>;
 
-  // Create JingleThreadWrapper for the current thread if it hasn't been created
+  // Create ThreadWrapper for the current thread if it hasn't been created
   // yet. The thread wrapper is destroyed automatically when the current
   // MessageLoop is destroyed.
   static void EnsureForCurrentMessageLoop();
 
-  // Creates JingleThreadWrapper for |task_runner| that runs tasks on the
+  // Creates ThreadWrapper for |task_runner| that runs tasks on the
   // current thread.
-  static std::unique_ptr<JingleThreadWrapper> WrapTaskRunner(
+  static std::unique_ptr<ThreadWrapper> WrapTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Returns thread wrapper for the current thread or nullptr if it doesn't
   // exist.
-  static JingleThreadWrapper* current();
+  static ThreadWrapper* current();
 
   // Sets task latency & duration sample callbacks intended to gather UMA
   // statistics. Samples are acquired periodically every several seconds by
-  // JingleThreadWrapper. In this context,
+  // ThreadWrapper. In this context,
   // * task latency is defined as the duration between the moment a task is
-  //   scheduled from JingleThreadWrapper's task runner, and the moment
+  //   scheduled from ThreadWrapper's task runner, and the moment
   //   it begins running.
   // * task duration is defined as the duration between the moment the
-  //   JingleThreadWrapper begins running a task and the moment it ends
+  //   ThreadWrapper begins running a task and the moment it ends
   //   executing it. It only measures durations of tasks posted to rtc::Thread.
-  // The passed callbacks are called in the JingleThreadWrapper's task runner
+  // The passed callbacks are called in the ThreadWrapper's task runner
   // context.
   void SetLatencyAndTaskDurationCallbacks(
       SampledDurationCallback task_latency_callback,
       SampledDurationCallback task_duration_callback);
 
-  JingleThreadWrapper(const JingleThreadWrapper&) = delete;
-  JingleThreadWrapper& operator=(const JingleThreadWrapper&) = delete;
+  ThreadWrapper(const ThreadWrapper&) = delete;
+  ThreadWrapper& operator=(const ThreadWrapper&) = delete;
 
-  ~JingleThreadWrapper() override;
+  ~ThreadWrapper() override;
 
   // Sets whether the thread can be used to send messages
   // synchronously to another thread using Send() method. Set to false
@@ -132,8 +132,8 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   struct PendingSend;
   class PostTaskLatencySampler;
 
-  explicit JingleThreadWrapper(
-     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit ThreadWrapper(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void PostTaskInternal(const rtc::Location& posted_from,
                         int delay_ms,
@@ -175,10 +175,10 @@ class JingleThreadWrapper : public base::CurrentThread::DestructionObserver,
   SampledDurationCallback task_latency_callback_;
   SampledDurationCallback task_duration_callback_;
 
-  base::WeakPtr<JingleThreadWrapper> weak_ptr_;
-  base::WeakPtrFactory<JingleThreadWrapper> weak_ptr_factory_{this};
+  base::WeakPtr<ThreadWrapper> weak_ptr_;
+  base::WeakPtrFactory<ThreadWrapper> weak_ptr_factory_{this};
 };
 
-}  // namespace jingle_glue
+}  // namespace webrtc
 
-#endif  // JINGLE_GLUE_THREAD_WRAPPER_H_
+#endif  // COMPONENTS_WEBRTC_THREAD_WRAPPER_H_

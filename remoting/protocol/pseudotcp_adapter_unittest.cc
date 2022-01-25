@@ -19,7 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -296,7 +296,7 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
 class PseudoTcpAdapterTest : public testing::Test {
  protected:
   void SetUp() override {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_socket_ = new FakeSocket();
     client_socket_ = new FakeSocket();

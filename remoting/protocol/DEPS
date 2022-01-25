@@ -1,7 +1,7 @@
 include_rules = [
+  "+components/webrtc",
   "+google_apis",
   "+google/protobuf",
-  "+jingle/glue",
   "+net",
   "+ppapi/c",
   "+ppapi/cpp",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef JINGLE_GLUE_UTILS_H_
-#define JINGLE_GLUE_UTILS_H_
+#ifndef COMPONENTS_WEBRTC_NET_ADDRESS_UTILS_H_
+#define COMPONENTS_WEBRTC_NET_ADDRESS_UTILS_H_
 
 #include <string>
 
@@ -22,7 +22,7 @@ namespace cricket {
 class Candidate;
 }  // namespace cricket
 
-namespace jingle_glue {
+namespace webrtc {
 
 // Chromium and libjingle represent socket addresses differently. The
 // following two functions are used to convert addresses from one
@@ -41,6 +41,6 @@ std::string SerializeP2PCandidate(const cricket::Candidate& candidate);
 bool DeserializeP2PCandidate(const std::string& address,
                              cricket::Candidate* candidate);
 
-}  // namespace jingle_glue
+}  // namespace webrtc
 
-#endif  // JINGLE_GLUE_UTILS_H_
+#endif  // COMPONENTS_WEBRTC_NET_ADDRESS_UTILS_H_

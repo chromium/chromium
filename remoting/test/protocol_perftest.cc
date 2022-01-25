@@ -20,7 +20,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/base/network_change_notifier.h"
 #include "net/test/test_data_directory.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -261,7 +261,7 @@ class ProtocolPerfTest
     client_signaling_ =
         std::make_unique<FakeSignalStrategy>(SignalingAddress(kClientJid));
 
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     protocol_config_ = protocol::CandidateSessionConfig::CreateDefault();
     protocol_config_->DisableAudioChannel();
@@ -276,7 +276,7 @@ class ProtocolPerfTest
   void StartHost() {
     DCHECK(host_thread_.task_runner()->BelongsToCurrentThread());
 
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_signaling_ =
         std::make_unique<FakeSignalStrategy>(SignalingAddress(kHostJid));

@@ -15,6 +15,7 @@ include_rules = [
   # ****************************************************************************
 
   "+chromeos/system/core_scheduling.h",
+  "+components/webrtc",
   "+content/public/child",
   "+content/public/renderer",
   "+content/child",
@@ -23,7 +24,6 @@ include_rules = [
   "+device/gamepad/public/cpp",
   "+device/gamepad/public/mojom",
   "+gin",
-  "+jingle/glue",
   "+mojo",
   "+services",
   "-storage/browser",

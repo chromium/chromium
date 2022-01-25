@@ -62,8 +62,9 @@ static_library("test_support") {
   ]
 
   deps = [
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//remoting/base:authorization",
     "//remoting/base:test_support",
     "//services/network:network_service",
@@ -208,7 +209,7 @@ executable("ftl_signaling_playground") {
   ]
   deps = [
     ":test_support",
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",

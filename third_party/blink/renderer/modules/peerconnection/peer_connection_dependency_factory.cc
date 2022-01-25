@@ -22,8 +22,8 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "crypto/openssl_util.h"
-#include "jingle/glue/thread_wrapper.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_permission.h"
 #include "media/media_buildflags.h"
@@ -152,8 +152,8 @@ class PeerConnectionStaticDeps {
       chrome_worker_thread_.Start();
 
     // To allow sending to the signaling/worker threads.
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-    jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::current()->set_send_allowed(true);
   }
 
   base::WaitableEvent& InitializeWorkerThread() {
@@ -247,13 +247,12 @@ class PeerConnectionStaticDeps {
       base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
       base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
-    jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
-    jingle_glue::JingleThreadWrapper::current()
-        ->SetLatencyAndTaskDurationCallbacks(std::move(latency_callback),
-                                             std::move(duration_callback));
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::current()->set_send_allowed(true);
+    webrtc::ThreadWrapper::current()->SetLatencyAndTaskDurationCallbacks(
+        std::move(latency_callback), std::move(duration_callback));
     if (!*thread) {
-      *thread = jingle_glue::JingleThreadWrapper::current();
+      *thread = webrtc::ThreadWrapper::current();
       event->Signal();
     }
   }
