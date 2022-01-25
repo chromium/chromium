@@ -71,8 +71,6 @@ TOUGH_COMPOSITOR = Tag(
     'tough_compositor', 'Tough compositor stories')
 TOUGH_FILTERS = Tag(
     'tough_filters', 'Tough filters stories')
-TOUGH_IMAGE_DECODE = Tag(
-    'tough_image_decode', 'Tough image decode stories')
 TOUGH_PATH_RENDERING = Tag(
     'tough_path_rendering', 'Tough path rendering stories')
 TOUGH_PINCH_ZOOM = Tag(

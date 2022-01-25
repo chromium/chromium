@@ -236,14 +236,6 @@
         "name": "rendering.mobile/card_flying"
     },
     {
-        "duration": "23.0",
-        "name": "rendering.mobile/cats_unscaled"
-    },
-    {
-        "duration": "13.0",
-        "name": "rendering.mobile/cats_viewport_width"
-    },
-    {
         "duration": "32.0",
         "name": "rendering.mobile/cc_poster_circle"
     },

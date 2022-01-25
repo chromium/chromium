@@ -2172,10 +2172,6 @@
         "name": "rendering.mobile/card_flying"
     },
     {
-        "duration": "11.0",
-        "name": "rendering.mobile/cats_viewport_width"
-    },
-    {
         "duration": "36.0",
         "name": "rendering.mobile/cc_poster_circle"
     },

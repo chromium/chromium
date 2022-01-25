@@ -4044,22 +4044,6 @@
         "name": "smoothness.tough_filters_cases/motion_mark_focus"
     },
     {
-        "duration": "7.838621234375",
-        "name": "smoothness.tough_image_decode_cases/cats_unscaled"
-    },
-    {
-        "duration": "6.262414159374999",
-        "name": "smoothness.tough_image_decode_cases/cats_viewport_width"
-    },
-    {
-        "duration": "7.830854551515154",
-        "name": "smoothness.tough_image_decode_cases/http://localhost:9000/cats-unscaled.html"
-    },
-    {
-        "duration": "6.235782620202023",
-        "name": "smoothness.tough_image_decode_cases/http://localhost:9000/cats-viewport-width.html"
-    },
-    {
         "duration": "17.647949535353536",
         "name": "smoothness.tough_path_rendering_cases/GUIMark_Vector_Chart_Test"
     },
