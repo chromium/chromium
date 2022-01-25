@@ -6,7 +6,9 @@
 *.mp4
 *.ogg
 *.ogv
-*.png
+# TODO(jonross): re-add this once tests requiring hard-coded .png files have
+# been updated.
+#*.png
 *.wav
 *.webm
 *.wpr

@@ -2716,10 +2716,6 @@
         "name": "rendering.mobile/list_recycle_transform"
     },
     {
-        "duration": "65.0",
-        "name": "rendering.mobile/lost_crypt"
-    },
-    {
         "duration": "28.0",
         "name": "rendering.mobile/main_0fps_impl_60fps"
     },
