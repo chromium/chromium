@@ -1617,8 +1617,7 @@ Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {
   // file for writing).
   for (;;) {
     DCHECK(!files_.empty()) << "Empty storage queue";
-    auto next_it = files_.begin();
-    ++next_it;  // Need to consider the next file.
+    auto next_it = std::next(files_.begin());  // Need to consider the next file
     if (next_it == files_.end()) {
       // We are on the last file, keep it.
       break;
@@ -1631,9 +1630,8 @@ Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {
     // Current file holds only ids <= sequencing_id.
     // Delete it.
     files_.begin()->second->Close();
-    if (files_.begin()->second->Delete().ok()) {
-      files_.erase(files_.begin());
-    }
+    files_.begin()->second->Delete();  // ignore results
+    files_.erase(files_.begin());
   }
   // Even if there were errors, ignore them.
   return Status::StatusOK();
