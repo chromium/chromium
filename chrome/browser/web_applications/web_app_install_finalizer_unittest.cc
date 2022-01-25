@@ -47,15 +47,15 @@ class TestInstallManagerObserver : public WebAppInstallManagerObserver {
 
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override {
-    web_app_manifest_updated_called = true;
+    web_app_manifest_updated_called_ = true;
   }
 
-  bool GetWebAppManifestUpdatedCalled() const {
-    return web_app_manifest_updated_called;
+  bool web_app_manifest_updated_called() const {
+    return web_app_manifest_updated_called_;
   }
 
  private:
-  bool web_app_manifest_updated_called = false;
+  bool web_app_manifest_updated_called_ = false;
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
@@ -222,6 +222,23 @@ TEST_F(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
   EXPECT_TRUE(install_source.has_value());
   EXPECT_EQ(static_cast<webapps::WebappInstallSource>(*install_source),
             webapps::WebappInstallSource::INTERNAL_DEFAULT);
+}
+
+TEST_F(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
+  auto info = std::make_unique<WebAppInstallInfo>();
+  info->start_url = GURL("https://foo.example");
+  info->title = u"Foo Title";
+  WebAppInstallFinalizer::FinalizeOptions options;
+  options.install_source = webapps::WebappInstallSource::EXTERNAL_POLICY;
+
+  FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
+  base::RunLoop runloop;
+  finalizer_->FinalizeUpdate(
+      *info, base::BindLambdaForTesting(
+                 [&](const web_app::AppId& app_id,
+                     web_app::InstallResultCode code) { runloop.Quit(); }));
+  runloop.Run();
+  EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 
 }  // namespace web_app
