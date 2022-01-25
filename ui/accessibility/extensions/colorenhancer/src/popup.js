@@ -9,13 +9,6 @@
   let site;
 
   /**
-   * Toggle between filters 0 and 1 in order to force a repaint.
-   * TODO(kevers): Consolidate with filter in CVD.
-   * @type {!number}
-   */
-  let activeFilterIndex = 0;
-
-  /**
    * Save previous state of setup parameters for use in the event of a canceled
    * setup.
    * @type {{type: string, severity: number} | undefined}
@@ -305,14 +298,6 @@
         $('setup').onclick();
       }
     });
-  }
-
-  /**
-   * Callback for resetting stored per-site values.
-   */
-  function onReset() {
-    debugPrint('onReset');
-    resetSiteDeltas().then(update);
   }
 
   /**
