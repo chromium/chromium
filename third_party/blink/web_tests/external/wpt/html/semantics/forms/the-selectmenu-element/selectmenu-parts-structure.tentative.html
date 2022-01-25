@@ -149,6 +149,20 @@
   <option id="selectMenu14-option2">two</option>
 </selectmenu>
 
+<selectmenu id="selectMenu15">
+  <div slot="button" id="selectMenu15-div0"></div>
+  <option>one</option>
+</selectmenu>
+
+<selectmenu id="selectMenu16">
+  <div slot="button">
+    <div id="selectMenu16-div0">
+      <div behavior="button" id="selectMenu16-button0">button</div>
+    </div>
+  </div>
+  <option>one</option>
+</selectmenu>
+
 <script>
   function clickOn(element) {
     const actions = new test_driver.Actions();
@@ -485,4 +499,30 @@ promise_test(async () => {
     selectMenu1.removeChild(secondOption);
     assert_equals(selectMenu1.value, "one");
   }, "Moving a selectmenu between documents should keep controller code active");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu15");
+    const selectMenuButtonContainer = document.getElementById("selectMenu15-div0");
+
+    const outerDiv = document.createElement("div");
+    const button = document.createElement("input");
+    button.type = button.value = "button";
+    button.setAttribute("behavior", "button");
+    outerDiv.appendChild(button);
+    selectMenuButtonContainer.appendChild(outerDiv);
+
+    await clickOn(selectMenu);
+    assert_true(selectMenu.open, "New button should receive controller code");
+  }, "New parts should be detected even when in the subtree of an inserted node");
+
+  promise_test(async () => {
+    const selectMenu = document.getElementById("selectMenu16");
+    const selectMenuButtonContainer = document.getElementById("selectMenu16-div0");
+    const selectMenuButton = document.getElementById("selectMenu16-button0");
+
+    selectMenuButtonContainer.remove();
+
+    selectMenuButton.click();
+    assert_false(selectMenu.open, "Removed button should no longer have controller code");
+  }, "Part removals should be detected even when in the subtree of a removed node");
 </script>

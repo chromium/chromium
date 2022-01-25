@@ -75,18 +75,26 @@ void HTMLSelectMenuElement::SelectMutationCallback::DidChangeChildren(
     return;
 
   if (change.type == ChildrenChangeType::kElementInserted) {
-    if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
-      const AtomicString& part =
-          element->getAttribute(html_names::kBehaviorAttr);
-      PartInserted(part, element);
-      SlotChanged(element->SlotName());
+    auto* root_node = change.sibling_changed;
+    for (auto* node = root_node; node != nullptr;
+         node = SelectMenuPartTraversal::Next(*node, root_node)) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
+        PartInserted(part, element);
+        SlotChanged(element->SlotName());
+      }
     }
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
-    if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
-      const AtomicString& part =
-          element->getAttribute(html_names::kBehaviorAttr);
-      PartRemoved(part, element);
-      SlotChanged(element->SlotName());
+    auto* root_node = change.sibling_changed;
+    for (auto* node = root_node; node != nullptr;
+         node = SelectMenuPartTraversal::Next(*node, root_node)) {
+      if (auto* element = DynamicTo<Element>(node)) {
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
+        PartRemoved(part, element);
+        SlotChanged(element->SlotName());
+      }
     }
   } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
     select_->EnsureButtonPartIsValid();
