@@ -50920,6 +50920,8 @@ from previous Chrome versions.
   <int value="-2082462043" label="ViewPasswords:disabled"/>
   <int value="-2082042818"
       label="AutofillCreditCardLastUsedDateDisplay:enabled"/>
+  <int value="-2081943876"
+      label="ExperimentalAccessibilityDictationHints:enabled"/>
   <int value="-2080657940" label="DirectActions:disabled"/>
   <int value="-2080504230" label="TabHoverCards:disabled"/>
   <int value="-2077268643" label="disable-device-enumeration"/>
@@ -51984,6 +51986,8 @@ from previous Chrome versions.
   <int value="-1349872906"
       label="disallow-autofill-sync-credential-for-reauth"/>
   <int value="-1349826793" label="ArcInputMethod:disabled"/>
+  <int value="-1349535766"
+      label="ExperimentalAccessibilityDictationHints:disabled"/>
   <int value="-1349532167" label="enable-wifi-credential-sync"/>
   <int value="-1349146355" label="Win11StyleMenus:disabled"/>
   <int value="-1348040371" label="ScanAppStickySettings:disabled"/>

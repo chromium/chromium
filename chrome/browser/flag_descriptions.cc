@@ -4628,6 +4628,11 @@ const char kExperimentalAccessibilityDictationCommandsName[] =
 const char kExperimentalAccessibilityDictationCommandsDescription[] =
     "Enables text editing commands for the accessibility dictation feature.";
 
+const char kExperimentalAccessibilityDictationHintsName[] =
+    "Experimental accessibility dictation UI hints.";
+const char kExperimentalAccessibilityDictationHintsDescription[] =
+    "Enables UI hints for the accessibility dictation feature.";
+
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
