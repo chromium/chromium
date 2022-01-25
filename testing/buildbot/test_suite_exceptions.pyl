@@ -1265,7 +1265,9 @@
         ],
       },
       'android-11-x86-rel': {
-        # TODO(crbug.com/1137474): Remove after the test suite is green.
+        # TODO(crbug.com/1137474): Remove ci_only and experiment_percentage
+        # after the test suite is green.
+        'ci_only': True,
         'experiment_percentage': 100,
         # TODO(crbug.com/1137474): Revisit the shard number once failed tests
         # are fixed.
