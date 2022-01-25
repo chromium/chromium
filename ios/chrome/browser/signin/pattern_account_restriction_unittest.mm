@@ -23,10 +23,10 @@ class PatternAccountRestrictionTest : public PlatformTest {};
 // Tests that the PatternAccountRestriction filters email correctly when
 // restrictions are set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
-  base::ListValue value;
+  base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com");
   value.Append("*google.com");
-  auto restriction = PatternAccountRestrictionFromValue(&value);
+  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -36,8 +36,8 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
 // Tests that the PatternAccountRestriction does not filter emails when
 // restrictions are not set.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
-  base::ListValue value;
-  auto restriction = PatternAccountRestrictionFromValue(&value);
+  base::Value value{base::Value::Type::LIST};
+  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -47,10 +47,10 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
 // Tests that the PatternAccountRestriction does not filter emails when the
 // restriction is not correctly formatted.
 TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
-  base::ListValue value;
+  base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com\\");
   value.Append("*google.com");
-  auto restriction = PatternAccountRestrictionFromValue(&value);
+  auto restriction = PatternAccountRestrictionFromValue(value.GetList());
 
   EXPECT_EQ(restriction->IsAccountRestricted(email1), true);
   EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
@@ -92,7 +92,7 @@ TEST_F(PatternAccountRestrictionTest, PatternMatchChunck) {
 
 // Tests that valid patterns are correctly identified.
 TEST_F(PatternAccountRestrictionTest, ValidPattern) {
-  base::ListValue value;
+  base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com");
   value.Append("myemail@gmail.com");
   value.Append("myemail\\*@gmail.com");
@@ -103,7 +103,7 @@ TEST_F(PatternAccountRestrictionTest, ValidPattern) {
 
 // Tests that invalid patterns are correctly identified.
 TEST_F(PatternAccountRestrictionTest, InvalidPattern) {
-  base::ListValue value;
+  base::Value value{base::Value::Type::LIST};
   value.Append("*gmail.com\\");
   value.Append("*google.com");
 
@@ -112,7 +112,7 @@ TEST_F(PatternAccountRestrictionTest, InvalidPattern) {
 
 // Tests that empty patterns are correctly identified.
 TEST_F(PatternAccountRestrictionTest, EmptyPattern) {
-  base::ListValue value;
+  base::Value value{base::Value::Type::LIST};
 
   EXPECT_TRUE(ArePatternsValid(&value));
 }

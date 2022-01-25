@@ -153,9 +153,8 @@ class FunctorHasRestrictedIdentities
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
     PrefService* pref_service) {
-  auto maybe_restriction =
-      PatternAccountRestrictionFromValue(&base::Value::AsListValue(
-          *pref_service->GetList(prefs::kRestrictAccountsToPatterns)));
+  auto maybe_restriction = PatternAccountRestrictionFromValue(
+      pref_service->GetList(prefs::kRestrictAccountsToPatterns)->GetList());
   return *std::move(maybe_restriction);
 }
 
