@@ -1263,21 +1263,6 @@
             ]
         }
     ],
-    "BackgroundThreadPool": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackgroundThreadPool"
-                    ]
-                }
-            ]
-        }
-    ],
     "BaseAssistantIntegration": [
         {
             "platforms": [
