@@ -963,7 +963,7 @@ const base::Feature kWarnAboutSecurePrivateNetworkRequests{
 
 // Enable window controls overlays for desktop PWAs
 const base::Feature kWebAppWindowControlsOverlay{
-    "WebAppWindowControlsOverlay", base::FEATURE_ENABLED_BY_DEFAULT};
+    "WebAppWindowControlsOverlay", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable WebAssembly baseline compilation (Liftoff).
 const base::Feature kWebAssemblyBaseline{"WebAssemblyBaseline",
