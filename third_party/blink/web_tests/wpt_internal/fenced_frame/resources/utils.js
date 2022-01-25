@@ -36,9 +36,6 @@ const KEYS = {
   "fenced_navigation_complete"                  : "00000000-0000-0000-0000-000000000013",
   "outer_page_ready_for_next_fenced_navigation" : "00000000-0000-0000-0000-000000000014",
 
-  "focus-changed"                               : "00000000-0000-0000-0000-000000000015",
-  "focus-ready"                                 : "00000000-0000-0000-0000-000000000016",
-
   "navigate_ancestor"                           : "00000000-0000-0000-0000-000000000017",
   "navigate_ancestor_from_nested"               : "00000000-0000-0000-0000-000000000018",
 

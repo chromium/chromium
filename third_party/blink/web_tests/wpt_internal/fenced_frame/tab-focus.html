@@ -11,7 +11,7 @@
 <body>
 
   <input id="input"></input>
-  <fencedframe src="resources/tab-focus-inner.html"></fencedframe>
+  <fencedframe id="fenced_frame"></fencedframe>
   <select id="select">
     <option>A</option>
     <option>B</option>
@@ -37,16 +37,22 @@
   });
 
   promise_test(async () => {
+    const focus_ready_key = token();
+    const focus_changed_key = token();
+
+    const frame_url = generateURL("resources/tab-focus-inner.html",
+      [focus_ready_key, focus_changed_key]);
+    document.getElementById('fenced_frame').src = frame_url;
 
     document.getElementById('input').focus();
     testRunner.setBrowserHandlesFocus(true);
 
-    await nextValueFromServer(KEYS["focus-ready"]);
+    await nextValueFromServer(focus_ready_key);
 
     // Move focus away from input
     test_driver.send_keys(document.documentElement, '\uE004');
 
-    var focus_result = await nextValueFromServer(KEYS["focus-changed"]);
+    var focus_result = await nextValueFromServer(focus_changed_key);
     combined_events.push(...focus_result.split(','));
 
     // Now send focus in reverse. Use eventSender as test_driver doesn't
@@ -54,7 +60,7 @@
     // yet.
     eventSender.keyDown('Tab', ['shiftKey']);
 
-    focus_result = await nextValueFromServer(KEYS["focus-changed"]);
+    focus_result = await nextValueFromServer(focus_changed_key);
     combined_events.push(...focus_result.split(','));
     combined_events.push(...events);
 

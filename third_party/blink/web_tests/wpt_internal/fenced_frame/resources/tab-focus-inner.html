@@ -13,7 +13,7 @@
   </select>
 
   <script>
-    const focus_changed_key = KEYS["focus-changed"];
+    const [focus_ready_key, focus_changed_key] = parseKeylist();
     var events = [];
     var reverse = false;
     testRunner.setBrowserHandlesFocus(true);
@@ -40,6 +40,6 @@
           reverse = !reverse;
       }
     });
-    writeValueToServer(KEYS["focus-ready"], 'loaded');
+    writeValueToServer(focus_ready_key, 'loaded');
   </script>
 </body>
