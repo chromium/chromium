@@ -12,6 +12,7 @@
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
 #include <gaming-input-unstable-v2-client-protocol.h>
+#include <idle-inhibit-unstable-v1-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <keyboard-configuration-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
@@ -128,6 +129,7 @@ DEFAULT_DELETER_FDECL(zxdg_surface_v6)
 DEFAULT_DELETER_FDECL(zxdg_toplevel_v6)
 DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
 DEFAULT_DELETER_FDECL(weston_test)
+DEFAULT_DELETER_FDECL(zwp_idle_inhibit_manager_v1)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)
