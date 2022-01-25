@@ -76,6 +76,42 @@ constexpr int kImageIconCornerRadius = 4;
 constexpr int kSearchRatingStarPadding = 4;
 constexpr int kSearchRatingStarSize = 16;
 constexpr gfx::Insets kAnswerCardBorder(12, 12, 12, 12);
+
+views::ImageView* SetupChildImageView(views::FlexLayoutView* parent) {
+  views::ImageView* image_view =
+      parent->AddChildView(std::make_unique<views::ImageView>());
+  image_view->SetCanProcessEventsWithinSubtree(false);
+  image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+  image_view->SetVisible(false);
+  return image_view;
+}
+
+views::Label* SetupChildLabelView(
+    views::FlexLayoutView* parent,
+    SearchResultView::SearchResultViewType view_type) {
+  // Create and setup label.
+  views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
+  label->SetBackgroundColor(SK_ColorTRANSPARENT);
+  label->SetVisible(false);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum));
+
+  // Apply label text styling.
+  label->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
+  switch (view_type) {
+    case SearchResultView::SearchResultViewType::kClassic:
+      label->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
+      break;
+    case SearchResultView::SearchResultViewType::kDefault:
+    case SearchResultView::SearchResultViewType::kAnswerCard:
+      label->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
+  }
+  return label;
+}
+
 }  // namespace
 
 // static
@@ -168,73 +204,35 @@ SearchResultView::SearchResultView(
   text_container_->GetViewAccessibility().OverrideIsIgnored(true);
   text_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
-  SetSearchResultViewType(view_type);
+  SetSearchResultViewType(view_type_);
 
-  auto setup_flex_specifications = [](views::View* view) {
-    view->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kScaleToMaximum));
-  };
+  title_container_ =
+      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  title_container_->GetViewAccessibility().OverrideIsIgnored(true);
+  title_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  title_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  title_label_ = SetupChildLabelView(title_container_, view_type_);
 
-  title_label_ =
-      text_container_->AddChildView(std::make_unique<views::Label>());
-  title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title_label_->SetVisible(false);
-  title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  setup_flex_specifications(title_label_);
+  separator_label_ = SetupChildLabelView(text_container_, view_type_);
+  separator_label_->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR));
 
-  separator_label_ =
-      text_container_->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_SEPARATOR)));
-  separator_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  separator_label_->SetVisible(false);
-  separator_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  setup_flex_specifications(separator_label_);
+  details_container_ =
+      text_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  details_container_->GetViewAccessibility().OverrideIsIgnored(true);
+  details_container_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  details_container_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  details_label_ = SetupChildLabelView(details_container_, view_type_);
 
-  details_label_ =
-      text_container_->AddChildView(std::make_unique<views::Label>());
-  details_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  details_label_->SetVisible(false);
-  details_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  setup_flex_specifications(details_label_);
+  rating_ = SetupChildLabelView(text_container_, view_type_);
 
-  rating_ = text_container_->AddChildView(std::make_unique<views::Label>());
-  rating_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  rating_->SetVisible(false);
-  rating_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  setup_flex_specifications(rating_);
-
-  rating_star_ =
-      text_container_->AddChildView(std::make_unique<views::ImageView>());
-  rating_star_->SetCanProcessEventsWithinSubtree(false);
-  rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
-  rating_star_->SetVisible(false);
+  rating_star_ = SetupChildImageView(text_container_);
   rating_star_->SetImage(gfx::CreateVectorIcon(
       kBadgeRatingIcon, kSearchRatingStarSize,
       AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
           kDeprecatedSearchBoxTextDefaultColor)));
   rating_star_->SetBorder(
       views::CreateEmptyBorder(0, kSearchRatingStarPadding, 0, 0));
-
-  title_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-  separator_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-  details_label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-  rating_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW);
-  switch (view_type_) {
-    case SearchResultViewType::kClassic:
-      title_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
-      separator_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
-      details_label_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
-      rating_->SetTextStyle(STYLE_CLASSIC_LAUNCHER);
-      break;
-    case SearchResultViewType::kDefault:
-    case SearchResultViewType::kAnswerCard:
-      title_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-      separator_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-      details_label_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-      rating_->SetTextStyle(STYLE_PRODUCTIVITY_LAUNCHER);
-  }
 }
 
 SearchResultView::~SearchResultView() = default;

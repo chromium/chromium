@@ -128,10 +128,17 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   SearchResultPageDialogController* const dialog_controller_;
 
-  MaskedImageView* icon_ = nullptr;              // Owned by views hierarchy.
-  views::ImageView* badge_icon_ = nullptr;       // Owned by views hierarchy.
+  MaskedImageView* icon_ = nullptr;         // Owned by views hierarchy.
+  views::ImageView* badge_icon_ = nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* text_container_ =
       nullptr;                               // Owned by views hierarchy.
+  // TODO(crbug/1216097): Update `title_container_` and `details_container_` to
+  // build `views::Label` and `views::ImageView` based on TextVector metadata.
+  views::FlexLayoutView* title_container_ =
+      nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* details_container_ =
+      nullptr;  // Owned by views hierarchy.
+  // TODO(crbug/1216097): Deprecate title and details labels.
   views::Label* title_label_ = nullptr;      // Owned by views hierarchy.
   views::Label* details_label_ = nullptr;    // Owned by views hierarchy.
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
