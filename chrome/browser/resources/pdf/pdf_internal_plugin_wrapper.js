@@ -60,6 +60,7 @@ plugin.addEventListener('message', e => {
 // Parent-to-plugin message handlers. Most messages are passed through, but some
 // messages (with handlers that `return` immediately) are meant only for this
 // frame, not the plugin.
+let isPresentationMode = false;
 channel.port1.onmessage = e => {
   switch (e.data.type) {
     case 'loadArray':
@@ -69,6 +70,22 @@ channel.port1.onmessage = e => {
       plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
       plugin.setAttribute('has-edits', '');
       return;
+
+    case 'setReadOnly':
+      // TODO(crbug.com/702993): Rename the incoming message to reflect that
+      // this is only used by Presentation mode.
+      isPresentationMode = e.data.enableReadOnly;
+
+      gestureDetector.setPresentationMode(isPresentationMode);
+      if (isPresentationMode) {
+        document.documentElement.className = 'fullscreen';
+      } else {
+        document.documentElement.className = '';
+
+        // Ensure that directional keys still work after exiting.
+        plugin.focus();
+      }
+      break;
 
     case 'syncScrollToRemote':
       window.scrollTo(e.data.x, e.data.y);
@@ -136,7 +153,7 @@ function relayGesture(e) {
 }
 
 const gestureDetector = new GestureDetector(plugin);
-for (const type of ['pinchstart', 'pinchupdate', 'pinchend']) {
+for (const type of ['pinchstart', 'pinchupdate', 'pinchend', 'wheel']) {
   gestureDetector.getEventTarget().addEventListener(type, relayGesture);
 }
 
@@ -167,12 +184,26 @@ document.addEventListener('keydown', e => {
       // Print Preview is interested in Escape and Tab.
       break;
 
+    case '=':
+    case '-':
+    case '+':
+      // Ignore zoom shortcuts in Presentation mode.
+      if (isPresentationMode && hasCtrlModifier(e)) {
+        e.preventDefault();
+      }
+      return;
+
+    case 'a':
+      // Take over CTRL+A.
+      if (hasCtrlModifier(e)) {
+        e.preventDefault();
+        break;
+      }
+      return;
+
     default:
-      if (e.ctrlKey || e.metaKey) {
-        // Take over Ctrl+A, but not other shortcuts, such as zoom or print.
-        if (e.key === 'a') {
-          e.preventDefault();
-        }
+      // Relay (but don't prevent) other shortcuts.
+      if (hasCtrlModifier(e)) {
         break;
       }
       return;
@@ -205,6 +236,19 @@ document.addEventListener('keypress', e => {
       break;
   }
 });
+
+// TODO(crbug.com/1252096): Load from pdf_viewer_utils.js instead.
+/**
+ * @param {!KeyboardEvent} e
+ * @return {boolean}
+ */
+function hasCtrlModifier(e) {
+  let hasModifier = e.ctrlKey;
+  // <if expr="is_macosx">
+  hasModifier = e.metaKey;  // AKA Command.
+  // </if>
+  return hasModifier;
+}
 
 // TODO(crbug.com/1252096): Load from chrome://resources/js/util.m.js instead.
 /**

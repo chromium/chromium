@@ -168,6 +168,10 @@ export class Viewport {
         'pinchend',
         e => this.onPinchEnd_(
             /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+    this.gestureDetector_.getEventTarget().addEventListener(
+        'wheel',
+        e => this.onWheel_(
+            /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
 
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
@@ -197,6 +201,15 @@ export class Viewport {
 
     document.body.addEventListener(
         'change-zoom', e => this.setZoom(e.detail.zoom));
+  }
+
+  /**
+   * Sets whether the viewport is in Presentation mode.
+   * @param {boolean} enabled
+   */
+  setPresentationMode(enabled) {
+    assert((document.fullscreenElement !== null) === enabled);
+    this.gestureDetector_.setPresentationMode(enabled);
   }
 
   /**
@@ -1539,6 +1552,19 @@ export class Viewport {
       // By doing so we will be able to compute the pan distance.
       this.firstPinchCenterInFrame_ = e.detail.center;
     });
+  }
+
+  /**
+   * A callback that's called when a Presentation mode wheel event is detected.
+   * @param {!CustomEvent<!PinchEventDetail>} e the pinch event.
+   * @private
+   */
+  onWheel_(e) {
+    if (e.detail.direction === 'down') {
+      this.goToNextPage();
+    } else {
+      this.goToPreviousPage();
+    }
   }
 
   /** @return {!GestureDetector} */
