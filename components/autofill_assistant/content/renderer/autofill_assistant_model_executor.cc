@@ -11,6 +11,8 @@
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/tflite/src/tensorflow/lite/kernels/internal/runtime_shape.h"
+#include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.h"
 
@@ -121,10 +123,11 @@ bool AutofillAssistantModelExecutor::Preprocess(
   }
   std::vector<std::vector<float>> inputs;
   for (const auto* input_tensor : input_tensors) {
-    if (!input_tensor->dims || input_tensor->dims->size < 1) {
+    tflite::RuntimeShape shape = tflite::GetTensorShape(input_tensor);
+    if (shape.DimensionsCount() < 2) {
       return false;
     }
-    inputs.emplace_back(std::vector(input_tensor->dims->data[1], 0.0f));
+    inputs.emplace_back(std::vector(shape.Dims(1), 0.0f));
   }
 
   DCHECK(tags_tokenizer_);
