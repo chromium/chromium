@@ -23,8 +23,6 @@ class WiredDisplayMediaRouteProvider;
 // MediaRouter implementation that uses the desktop MediaRouteProviders.
 class MediaRouterDesktop : public MediaRouterMojoImpl {
  public:
-  // This constructor performs a firewall check on Windows and is not suitable
-  // for use in unit tests; instead use the constructor below.
   explicit MediaRouterDesktop(content::BrowserContext* context);
 
   MediaRouterDesktop(const MediaRouterDesktop&) = delete;
@@ -45,13 +43,6 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
       const std::string& presentation_id) override;
 
  private:
-  friend class MediaRouterDesktopTest;
-
-  // Used by tests only. This constructor skips the firewall check so unit tests
-  // do not have to depend on the system's firewall configuration.
-  MediaRouterDesktop(content::BrowserContext* context,
-                     DualMediaSinkService* media_sink_service);
-
   // mojom::MediaRouter implementation.
   void RegisterMediaRouteProvider(mojom::MediaRouteProviderId provider_id,
                                   mojo::PendingRemote<mojom::MediaRouteProvider>
@@ -62,6 +53,8 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
                        const std::vector<url::Origin>& origins) override;
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override;
+
+  void Initialize() override;
 
   // Initializes MRPs and adds them to |media_route_providers_|.
   void InitializeMediaRouteProviders();
@@ -97,7 +90,10 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   std::unique_ptr<DialMediaRouteProvider, base::OnTaskRunnerDeleter>
       dial_provider_;
 
-  raw_ptr<DualMediaSinkService> media_sink_service_;
+  // May be nullptr if default Media Route Providers are disabled for
+  // integration tests.
+  const raw_ptr<DualMediaSinkService> media_sink_service_;
+
   base::CallbackListSubscription media_sink_service_subscription_;
 
   // A status object that keeps track of sinks discovered by media sink

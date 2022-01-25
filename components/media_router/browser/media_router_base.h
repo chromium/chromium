@@ -34,7 +34,7 @@ class MediaRouterBase : public MediaRouter {
   ~MediaRouterBase() override;
 
   // Must be called before invoking any other method.
-  void Initialize();
+  virtual void Initialize();
 
   // MediaRouter implementation.
   base::CallbackListSubscription AddPresentationConnectionStateChangedCallback(

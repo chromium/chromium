@@ -154,8 +154,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                            PresentationConnectionStateChangedCallbackRemoved);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            TestRecordPresentationRequestUrlBySink);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
-                           SyncStateToMediaRouteProvider);
 
   // Represents a query to the MediaRouteProviders for media sinks and caches
   // media sinks returned by MRPs. Holds observers for the query.

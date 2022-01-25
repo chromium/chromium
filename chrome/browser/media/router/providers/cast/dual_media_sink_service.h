@@ -112,7 +112,6 @@ class DualMediaSinkService {
                            ValidDiscoveryDeviceAndCode);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, InvalidDiscoveryDevice);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, NonOKResultCode);
-  friend class MediaRouterDesktopTest;
 
   friend struct std::default_delete<DualMediaSinkService>;
 
