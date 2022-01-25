@@ -23,8 +23,12 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
       delete;
   ~BluetoothDeviceListItemView() override;
 
-  // Update the view to reflect the given device properties |device_properties|.
+  // Update the view to reflect the latest position of this device within the
+  // list of devices, e.g. with |device_index| and |total_device_count|, and to
+  // reflect the given device properties |device_properties|.
   void UpdateDeviceProperties(
+      size_t device_index,
+      size_t total_device_count,
       const chromeos::bluetooth_config::mojom::
           PairedBluetoothDevicePropertiesPtr& device_properties);
 
@@ -36,6 +40,12 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
  private:
   // views::View:
   const char* GetClassName() const override;
+
+  // Updates the a11y name used for this view. This name should include the name
+  // of the device, the type of the device, the connected state of the device,
+  // any battery information available, and the index of the device within the
+  // device list.
+  void UpdateAccessibleName(size_t device_index, size_t total_device_count);
 
   // Update the view responsible for showing the battery percentage to reflect
   // the given battery information |battery_info|.

@@ -20,7 +20,7 @@ bool IsBluetoothEnabledOrEnabling(
 // Returns the nickname of the provided device if it is set, otherwise returns
 // the public device name.
 std::u16string GetPairedDeviceName(
-    const mojom::PairedBluetoothDeviceProperties* paired_device_properties);
+    const mojom::PairedBluetoothDevicePropertiesPtr& paired_device_properties);
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

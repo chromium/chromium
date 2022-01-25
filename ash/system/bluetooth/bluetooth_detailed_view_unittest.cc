@@ -299,7 +299,8 @@ TEST_F(BluetoothDetailedViewTest, SelectingDeviceListItemNotifiesDelegate) {
 
   BluetoothDeviceListItemView* device_list_item =
       bluetooth_detailed_view()->AddDeviceListItem();
-  device_list_item->UpdateDeviceProperties(paired_properties);
+  device_list_item->UpdateDeviceProperties(
+      /*device_index=*/0, /*device_count=*/0, paired_properties);
 
   bluetooth_detailed_view()->NotifyDeviceListChanged();
 

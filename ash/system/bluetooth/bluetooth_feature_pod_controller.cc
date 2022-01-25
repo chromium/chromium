@@ -203,7 +203,7 @@ void BluetoothFeaturePodController::OnPropertiesUpdated(
     if (first_connected_device_.has_value())
       continue;
     first_connected_device_.emplace(
-        GetPairedDeviceName(paired_device.get()),
+        GetPairedDeviceName(paired_device),
         mojo::Clone(paired_device->device_properties->battery_info));
   }
   modification_state_ = properties->modification_state;

@@ -2045,6 +2045,61 @@ Try tapping the mic to ask me anything.
       <message name="IDS_BLUETOOTH_DEVICE_LIST_NO_CONNECTED_DEVICES" desc="Text displayed indicating there are currently no paired Bluetooth devices.">
         No device connected
       </message>
+      <!-- Connection statuses -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_CONNECTED" desc="Accessibility text for the connection status of a device that is connected.">
+        Device is connected.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_CONNECTING" desc="Accessibility text for the connection status of a device that is connecting.">
+        Device is connecting.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_CONNECTION_STATE_NOT_CONNECTED" desc="Accessibility text for the connection status of a device that is not connected.">
+        Device is not connected.
+      </message>
+      <!-- Device types -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_UNKNOWN" desc="Accessibility text for the type of a device whose type is unknown.">
+        Device type is unknown.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_COMPUTER" desc="Accessibility text for the type of a device that is a computer.">
+        Device is a computer.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_PHONE" desc="Accessibility text for the type of a device that is a phone.">
+        Device is a phone.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_HEADSET" desc="Accessibility text for the type of a device that is an audio device.">
+        Device is an audio device.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_VIDEO_CAMERA" desc="Accessibility text for the type of a device that is a video camera.">
+        Device is a video camera.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_GAME_CONTROLLER" desc="Accessibility text for the type of a device that is a game controller.">
+        Device is a game controller.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_KEYBOARD" desc="Accessibility text for the type of a device that is a keyboard.">
+        Device is a keyboard.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_MOUSE" desc="Accessibility text for the type of a device that is a mouse.">
+        Device is a mouse.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_TYPE_TABLET" desc="Accessibility text for the type of a device that is a tablet.">
+        Device is a tablet.
+      </message>
+      <!-- Battery information -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_BATTERY_INFO" desc="Accessibility text for the battery of a device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_LEFT_BUD" desc="Accessibility text for the left bud battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% left bud battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_CASE" desc="Accessibility text for the case battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% case battery.
+      </message>
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAMED_BATTERY_INFO_RIGHT_BUD" desc="Accessibility text for the right bud battery of a true wireless device.">
+        Device has <ph name="BATTERY_PERCENTAGE">$1<ex>100</ex></ph>% right bud battery.
+      </message>
+      <!-- Formattable strings -->
+      <message name="IDS_BLUETOOTH_A11Y_DEVICE_NAME" desc="Label to display the name of a device item within a device list.">
+        Device <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>15</ex></ph> named <ph name="NAME">$3<ex>Beats</ex></ph>.
+      </message>
 
       <!-- Shimless RMA -->
       <!-- Component names. Used by select components and calibration pages-->

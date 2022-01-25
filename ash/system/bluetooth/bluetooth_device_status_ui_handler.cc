@@ -44,7 +44,7 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-          GetPairedDeviceName(device.get())));
+          GetPairedDeviceName(device)));
 
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(device::BluetoothUiSurface::kPairedToast);
@@ -58,7 +58,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST,
-          GetPairedDeviceName(device.get())));
+          GetPairedDeviceName(device)));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
@@ -72,7 +72,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-          GetPairedDeviceName(device.get())));
+          GetPairedDeviceName(device)));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kDisconnectedToast);
