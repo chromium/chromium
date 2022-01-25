@@ -3106,39 +3106,6 @@
             ]
         }
     ],
-    "EnableDangerousDownloadDialog": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledNoFilledButton",
-                    "params": {
-                        "filled_negative_button": "false"
-                    },
-                    "enable_features": [
-                        "EnableDangerousDownloadDialog"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableDuplicateDownloadDialog": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDuplicateDownloadDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableSuggestedFiles": [
         {
             "platforms": [
