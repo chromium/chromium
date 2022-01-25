@@ -868,7 +868,7 @@ int EstimateHistoryOffset(NavigationController& controller,
   int pending_index = controller.GetPendingEntryIndex();
 
   // +1 for non history navigation.
-  if (pending_index == -1)
+  if (current_index == -1 || pending_index == -1)
     return 1;
 
   return pending_index - current_index;
@@ -7132,7 +7132,6 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
 // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
 bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
-  DCHECK_GE(frame_tree_node_->navigator().controller().GetEntryCount(), 1);
 
   // Not a same-url navigation. Note that this is comparing against the "last
   // loading URL" since this is what was used in the renderer check that was
@@ -7155,6 +7154,10 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
     // https://crbug.com/1244746#c1 for more details).
     return false;
   }
+
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
 
   // Reloads and history navigations have special handling and don't need to
   // set |common_params_->should_replace_current_entry|.
@@ -7187,6 +7190,10 @@ bool NavigationRequest::
     ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocumentOrEntry()
         const {
   DCHECK_LE(state_, WILL_START_NAVIGATION);
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
+
   if (common_params_->navigation_type !=
           blink::mojom::NavigationType::SAME_DOCUMENT &&
       common_params_->navigation_type !=
@@ -7195,6 +7202,29 @@ bool NavigationRequest::
     // replacement.
     return false;
   }
+
+  if (!blink::features::IsInitialNavigationEntryEnabled()) {
+    // History replacement behaves a bit differently when we don't have initial
+    // NavigationEntries.
+    if (IsInMainFrame()) {
+      // Currently we only handle subframe initial empty document replacements.
+      // TODO(https://crbug.com/1215096): Handle main frame navigations too.
+      return false;
+    }
+
+    if (!frame_tree_node_->is_on_initial_empty_document()) {
+      // Only replace if we're not on the initial empty document.
+      return false;
+    }
+
+    // If the navigation explicitly requested for history list clearing (e.g.
+    // when running layout tests), don't do a replacement (since there won't be
+    // any entry to replace after the navigation).
+    return !commit_params_->should_clear_history_list;
+  }
+
+  // If InitialNavigationEntry is enabled, we only need to check the "initial
+  // NavigationEntry" status and the "initial empty document" status.
 
   if (frame_tree_node_->navigator()
           .controller()
@@ -7208,15 +7238,20 @@ bool NavigationRequest::
     return true;
   }
 
+  // When InitialNavigationEntry is enabled, we always replace initial empty
+  // document entries.
   return frame_tree_node_->is_on_initial_empty_document();
 }
 
 bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
   DCHECK(state_ == CANCELING || state_ == WILL_FAIL_REQUEST);
-  DCHECK_GE(frame_tree_node_->navigator().controller().GetEntryCount(), 1);
 
   if (common_params_->should_replace_current_entry)
     return true;
+
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
 
   auto page_state =
       blink::PageState::CreateFromEncodedData(commit_params_->page_state);

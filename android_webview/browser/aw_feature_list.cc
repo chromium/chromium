@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "third_party/blink/public/common/features.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -22,6 +23,7 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content/, components/, etc).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &blink::features::kInitialNavigationEntry,
     &features::kWebViewConnectionlessSafeBrowsing,
     &features::kWebViewDisplayCutout,
     &features::kWebViewMixedContentAutoupgrades,

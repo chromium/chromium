@@ -363,9 +363,9 @@ class NoCommittedNavigationWebContentsObserver
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override {
     auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-    if (web_contents->GetController()
-            .GetLastCommittedEntry()
-            ->IsInitialEntry()) {
+    content::NavigationEntry* current_entry =
+        web_contents->GetController().GetLastCommittedEntry();
+    if (!current_entry || current_entry->IsInitialEntry()) {
       did_update_favicon_url_with_no_committed_navigation_ = true;
     }
   }

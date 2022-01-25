@@ -3213,7 +3213,7 @@ RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
 
 void RenderFrameHostImpl::DidChangeReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  if (!IsActive())
+  if (!IsActive() || !frame_tree_->controller().GetLastCommittedEntry())
     return;
   // The FrameNavigationEntry may want to change whether to protect its url
   // in the appHistory API when the referrer policy changes.
@@ -11566,12 +11566,13 @@ bool CalculateShouldReplaceCurrentEntry(
   // should_replace_current_entry will be true) but the renderer doesn't know
   // about it so DidCommitParams' should_replace_current_entry might differ,
   // which is why we depend on the DidCommitParams for that case (for now).
+  NavigationEntryImpl* last_entry = request->frame_tree_node()
+                                        ->navigator()
+                                        .controller()
+                                        .GetLastCommittedEntry();
   return (request->IsSameDocument() ||
-          (request->IsInMainFrame() && request->frame_tree_node()
-                                           ->navigator()
-                                           .controller()
-                                           .GetLastCommittedEntry()
-                                           ->IsInitialEntry()))
+          (request->IsInMainFrame() && last_entry &&
+           last_entry->IsInitialEntry()))
              ? params.should_replace_current_entry
              : request->common_params().should_replace_current_entry;
 }

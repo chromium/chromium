@@ -332,7 +332,11 @@ std::unique_ptr<NavigationSimulator> NavigationSimulator::CreateForFencedFrame(
                                                        fenced_frame_root);
   simulator->set_supports_loading_mode_header("fenced-frame");
   simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  simulator->set_should_replace_current_entry(true);
+  // When InitialNavigationEntry is enabled, set should_replace_current_entry to
+  // true, to pass the DidCommitParams check that expects the initial
+  // NavigationEntry to always be replaced.
+  simulator->set_should_replace_current_entry(
+      blink::features::IsInitialNavigationEntryEnabled());
   return simulator;
 }
 

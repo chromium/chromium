@@ -731,6 +731,9 @@ bool NavigationEntryImpl::GetCanLoadLocalResources() {
 }
 
 bool NavigationEntryImpl::IsInitialEntry() {
+  DCHECK(blink::features::IsInitialNavigationEntryEnabled() ||
+         initial_navigation_entry_state_ ==
+             InitialNavigationEntryState::kNonInitial);
   return initial_navigation_entry_state_ !=
          InitialNavigationEntryState::kNonInitial;
 }

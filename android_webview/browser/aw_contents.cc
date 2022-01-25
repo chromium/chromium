@@ -883,7 +883,7 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetCertificate(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::NavigationEntry* entry =
       web_contents_->GetController().GetLastCommittedEntry();
-  if (entry->IsInitialEntry() || !entry->GetSSL().certificate) {
+  if (!entry || entry->IsInitialEntry() || !entry->GetSSL().certificate) {
     return ScopedJavaLocalRef<jbyteArray>();
   }
 
@@ -1033,8 +1033,12 @@ base::android::ScopedJavaLocalRef<jbyteArray> AwContents::GetOpaqueState(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Required optimization in WebViewClassic to not save any state if
   // there has been no navigations.
-  if (web_contents_->GetController().GetLastCommittedEntry()->IsInitialEntry())
+  if (!web_contents_->GetController().GetLastCommittedEntry() ||
+      web_contents_->GetController()
+          .GetLastCommittedEntry()
+          ->IsInitialEntry()) {
     return ScopedJavaLocalRef<jbyteArray>();
+  }
 
   base::Pickle pickle;
   WriteToPickle(*web_contents_, &pickle);

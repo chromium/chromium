@@ -342,6 +342,7 @@ class NavigationController {
   // Returns the entry that should be displayed to the user in the address bar.
   // This is the pending entry if a navigation is in progress *and* is safe to
   // display to the user (see below), or the last committed entry otherwise.
+  // NOTE: This can be nullptr if no entry has been committed!
   //
   // A pending entry is safe to display if it started in the browser process or
   // if it's a renderer-initiated navigation in a new tab which hasn't been
@@ -353,13 +354,12 @@ class NavigationController {
   // it is the pending_entry_index_.
   virtual int GetCurrentEntryIndex() = 0;
 
-  // Returns the last "committed" entry. Note that even when no navigation has
-  // actually committed, this will never return null as long as the FrameTree
-  // associated with the NavigationController is already initialized, as a
-  // FrameTree will always start with the initial NavigationEntry.
+  // Returns the last committed entry, which may be null if there are no
+  // committed entries.
   virtual NavigationEntry* GetLastCommittedEntry() = 0;
 
-  // Returns the index of the last committed entry.
+  // Returns the index of the last committed entry.  It will be -1 if there are
+  // no entries.
   virtual int GetLastCommittedEntryIndex() = 0;
 
   // Returns true if the source for the current entry can be viewed.
