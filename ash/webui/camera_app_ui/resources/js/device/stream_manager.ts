@@ -278,8 +278,8 @@ export class StreamManager {
    */
   async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
       Promise<void> {
-    assert(await DeviceOperator.isSupported());
     const deviceOperator = await DeviceOperator.getInstance();
+    assert(deviceOperator !== null);
 
     if (enabled) {
       const waitEvent = new WaitableEvent<string>();
