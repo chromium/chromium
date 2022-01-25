@@ -35,6 +35,12 @@ namespace {
 
 const char kHostName[] = "unresolvable.host.name";
 
+IPAddress ParseIP(const std::string& ip) {
+  IPAddress address;
+  CHECK(address.AssignFromIPLiteral(ip));
+  return address;
+}
+
 class TransportConnectJobTest : public WithTaskEnvironment,
                                 public testing::Test {
  public:
@@ -166,9 +172,8 @@ TEST_F(TransportConnectJobTest, ConnectionFailure) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
       client_socket_factory_.set_default_client_socket_type(
           connection_synchronous
-              ? MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET
-              : MockTransportClientSocketFactory::
-                    MOCK_PENDING_FAILING_CLIENT_SOCKET);
+              ? MockTransportClientSocketFactory::Type::kFailing
+              : MockTransportClientSocketFactory::Type::kPendingFailing);
       TestConnectJobDelegate test_delegate;
       TransportConnectJob transport_connect_job(
           DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
@@ -216,7 +221,7 @@ TEST_F(TransportConnectJobTest, ConnectionTimeout) {
 
   // Make connection attempts hang.
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kStalled);
 
   for (bool host_resolution_synchronous : {false, true}) {
     host_resolver_.set_ondemand_mode(!host_resolution_synchronous);
@@ -252,8 +257,8 @@ TEST_F(TransportConnectJobTest, ConnectionSuccess) {
       host_resolver_.set_synchronous_mode(host_resolution_synchronous);
       client_socket_factory_.set_default_client_socket_type(
           connection_synchronous
-              ? MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET
-              : MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+              ? MockTransportClientSocketFactory::Type::kSynchronous
+              : MockTransportClientSocketFactory::Type::kPending);
       TestConnectJobDelegate test_delegate;
       TransportConnectJob transport_connect_job(
           DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
@@ -314,14 +319,20 @@ TEST_F(TransportConnectJobTest, SecureDnsPolicy) {
 // Test the case of the IPv6 address stalling, and falling back to the IPv4
 // socket which finishes first.
 TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-      // This is the IPv6 socket. It stalls, but presents one failed connection
-      // attempt on GetConnectionAttempts.
-      MockTransportClientSocketFactory::MOCK_STALLED_FAILING_CLIENT_SOCKET,
-      // This is the IPv4 socket.
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET};
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // This is the IPv6-preferring socket. It stalls, but presents one failed
+      // connection attempt on GetConnectionAttempts.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalledFailing,
+          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80),
+                      IPEndPoint(ParseIP("2.2.2.2"), 80)}),
+      // This is the IPv4-preferring socket.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kPending,
+          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80),
+                      IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)})};
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with a IPv6 address first and then a IPv4 address.
   host_resolver_.rules()->AddIPLiteralRule(kHostName, "2:abcd::3:4:ff,2.2.2.2",
@@ -352,14 +363,20 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv4FinishesFirst) {
 // connect to the IPv4 address, but having the connect to the IPv6 address
 // finish first.
 TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
+  MockTransportClientSocketFactory::Rule rules[] = {
       // This is the IPv6 socket.
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed,
+          std::vector{IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80),
+                      IPEndPoint(ParseIP("2.2.2.2"), 80)}),
       // This is the IPv4 socket. It stalls, but presents one failed connection
       // attempt on GetConnectionAttempts.
-      MockTransportClientSocketFactory::MOCK_STALLED_FAILING_CLIENT_SOCKET};
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalledFailing,
+          std::vector{IPEndPoint(ParseIP("2.2.2.2"), 80),
+                      IPEndPoint(ParseIP("2:abcd::3:4:ff"), 80)})};
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
   client_socket_factory_.set_delay(
       base::Milliseconds(TransportConnectJob::kIPv6FallbackTimerInMs + 50));
 
@@ -391,7 +408,7 @@ TEST_F(TransportConnectJobTest, IPv6FallbackSocketIPv6FinishesFirst) {
 
 TEST_F(TransportConnectJobTest, IPv6NoIPv4AddressesToFallbackTo) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayed);
 
   // Resolve an AddressList with only IPv6 addresses.
   host_resolver_.rules()->AddIPLiteralRule(
@@ -415,7 +432,7 @@ TEST_F(TransportConnectJobTest, IPv6NoIPv4AddressesToFallbackTo) {
 
 TEST_F(TransportConnectJobTest, IPv4HasNoFallback) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kDelayed);
 
   // Resolve an AddressList with only IPv4 addresses.
   host_resolver_.rules()->AddIPLiteralRule(kHostName, "1.1.1.1", std::string());
@@ -439,7 +456,7 @@ TEST_F(TransportConnectJobTest, IPv4HasNoFallback) {
 TEST_F(TransportConnectJobTest, DnsAliases) {
   host_resolver_.set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
 
   // Resolve an AddressList with DNS aliases.
   std::vector<std::string> aliases({"alias1", "alias2", kHostName});
@@ -463,7 +480,7 @@ TEST_F(TransportConnectJobTest, DnsAliases) {
 TEST_F(TransportConnectJobTest, NoAdditionalDnsAliases) {
   host_resolver_.set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kSynchronous);
 
   // Resolve an AddressList without additional DNS aliases. (The parameter
   // is an empty vector.)

@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
@@ -22,6 +23,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/stream_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -49,26 +51,44 @@ void SetIPv6Address(IPEndPoint* address);
 // behaviours.
 class MockTransportClientSocketFactory : public ClientSocketFactory {
  public:
-  enum ClientSocketType {
+  // The type of socket to create.
+  enum class Type {
+    // An unexpected socket. Causes a test failure if run.
+    kUnexpected,
     // Connects successfully, synchronously.
-    MOCK_CLIENT_SOCKET,
+    kSynchronous,
     // Fails to connect, synchronously.
-    MOCK_FAILING_CLIENT_SOCKET,
+    kFailing,
     // Connects successfully, asynchronously.
-    MOCK_PENDING_CLIENT_SOCKET,
+    kPending,
     // Fails to connect, asynchronously.
-    MOCK_PENDING_FAILING_CLIENT_SOCKET,
+    kPendingFailing,
     // A delayed socket will pause before connecting through the message loop.
-    MOCK_DELAYED_CLIENT_SOCKET,
+    kDelayed,
     // A delayed socket that fails.
-    MOCK_DELAYED_FAILING_CLIENT_SOCKET,
+    kDelayedFailing,
     // A stalled socket that never connects at all.
-    MOCK_STALLED_CLIENT_SOCKET,
+    kStalled,
     // A stalled socket that never connects at all, but returns a failing
     // ConnectionAttempt in |GetConnectionAttempts|.
-    MOCK_STALLED_FAILING_CLIENT_SOCKET,
+    kStalledFailing,
     // A socket that can be triggered to connect explicitly, asynchronously.
-    MOCK_TRIGGERABLE_CLIENT_SOCKET,
+    kTriggerable,
+  };
+
+  // A rule describing a mock `TransportClientSocket` to create.
+  struct Rule {
+    explicit Rule(Type type,
+                  absl::optional<std::vector<IPEndPoint>> expected_addresses =
+                      absl::nullopt);
+    ~Rule();
+    Rule(const Rule&);
+    Rule& operator=(const Rule&);
+
+    Type type;
+    // If specified, the addresses that should be passed into
+    // `CreateTransportClientSocket`.
+    absl::optional<std::vector<IPEndPoint>> expected_addresses;
   };
 
   explicit MockTransportClientSocketFactory(NetLog* net_log);
@@ -101,31 +121,32 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
 
   int allocation_count() const { return allocation_count_; }
 
-  // Set the default ClientSocketType.
-  void set_default_client_socket_type(ClientSocketType type) {
-    client_socket_type_ = type;
-  }
+  // Set the default type for `CreateTransportClientSocket` calls, if all rules
+  // (see `SetRules`) are consumed.
+  void set_default_client_socket_type(Type type) { client_socket_type_ = type; }
 
-  // Set a list of ClientSocketTypes to be used.
-  void set_client_socket_types(ClientSocketType* type_list, int num_types);
+  // Configures a list of rules for `CreateTransportClientSocket`. `rules` must
+  // outlive the `MockTransportClientSocketFactory`. If
+  // `CreateTransportClientSocket` is called more than `rules.size()` times,
+  // excess calls will be treated as test failures, but this can be changed by
+  // calling `set_default_client_socket_type` after this method.
+  void SetRules(base::span<const Rule> rules);
 
   void set_delay(base::TimeDelta delay) { delay_ = delay; }
 
-  // If one or more MOCK_TRIGGERABLE_CLIENT_SOCKETs has already been created,
-  // then returns a Closure that can be called to cause the first
-  // not-yet-connected one to connect. If no MOCK_TRIGGERABLE_CLIENT_SOCKETs
-  // have been created yet, wait for one to be created before returning the
-  // Closure. This method should be called the same number of times as
-  // MOCK_TRIGGERABLE_CLIENT_SOCKETs are created in the test.
+  // If one or more `kTriggerable` socket has already been created, then returns
+  // a `OnceClosure` that can be called to cause the first not-yet-connected one
+  // to connect. If no `kTriggerable` sockets have been created yet, wait for
+  // one to be created before returning the `OnceClosure`. This method should be
+  // called the same number of times as `kTriggerable` sockets are created in
+  // the test.
   base::OnceClosure WaitForTriggerableSocketCreation();
 
  private:
   raw_ptr<NetLog> net_log_;
   int allocation_count_;
-  ClientSocketType client_socket_type_;
-  raw_ptr<ClientSocketType> client_socket_types_;
-  int client_socket_index_;
-  int client_socket_index_max_;
+  Type client_socket_type_;
+  base::span<const Rule> rules_;
   base::TimeDelta delay_;
   base::queue<base::OnceClosure> triggerable_sockets_;
   base::OnceClosure run_loop_quit_closure_;

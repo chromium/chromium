@@ -582,7 +582,7 @@ TEST_F(TransportClientSocketPoolTest, InitHostResolutionFailure) {
 
 TEST_F(TransportClientSocketPoolTest, InitConnectionFailure) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kFailing);
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   EXPECT_EQ(
@@ -756,7 +756,7 @@ TEST_F(TransportClientSocketPoolTest, TwoRequestsCancelOne) {
 
 TEST_F(TransportClientSocketPoolTest, ConnectCancelConnect) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_EQ(
@@ -927,7 +927,7 @@ TEST_F(TransportClientSocketPoolTest, RequestTwice) {
 // cancelled.
 TEST_F(TransportClientSocketPoolTest, CancelActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPending);
 
   // Queue up all the requests
   EXPECT_THAT(StartRequest("a", kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -957,7 +957,7 @@ TEST_F(TransportClientSocketPoolTest, CancelActiveRequestWithPendingRequests) {
 // Make sure that pending requests get serviced after active requests fail.
 TEST_F(TransportClientSocketPoolTest, FailingActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_PENDING_FAILING_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kPendingFailing);
 
   const int kNumRequests = 2 * kMaxSocketsPerGroup + 1;
   ASSERT_LE(kNumRequests, kMaxSockets);  // Otherwise the test will hang.
@@ -1100,30 +1100,32 @@ TEST_F(TransportClientSocketPoolTest, CloseIdleSocketsOnSSLConfigChange) {
 
 TEST_F(TransportClientSocketPoolTest, BackupSocketConnect) {
   // Case 1 tests the first socket stalling, and the backup connecting.
-  MockTransportClientSocketFactory::ClientSocketType case1_types[] = {
-    // The first socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
-    // The second socket will connect more quickly.
-    MockTransportClientSocketFactory::MOCK_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules1[] = {
+      // The first socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
+      // The second socket will connect more quickly.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous),
   };
 
   // Case 2 tests the first socket being slow, so that we start the
   // second connect, but the second connect stalls, and we still
   // complete the first.
-  MockTransportClientSocketFactory::ClientSocketType case2_types[] = {
-    // The first socket will connect, although delayed.
-    MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
-    // The second socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules2[] = {
+      // The first socket will connect, although delayed.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed),
+      // The second socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
   };
 
-  MockTransportClientSocketFactory::ClientSocketType* cases[2] = {
-    case1_types,
-    case2_types
-  };
+  base::span<const MockTransportClientSocketFactory::Rule> cases[2] = {rules1,
+                                                                       rules2};
 
-  for (size_t index = 0; index < base::size(cases); ++index) {
-    client_socket_factory_.set_client_socket_types(cases[index], 2);
+  for (auto rules : cases) {
+    client_socket_factory_.SetRules(rules);
 
     EXPECT_EQ(0, pool_->IdleSocketCount());
 
@@ -1165,7 +1167,7 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketConnect) {
 // of the backup socket, but then we cancelled the request after that.
 TEST_F(TransportClientSocketPoolTest, BackupSocketCancel) {
   client_socket_factory_.set_default_client_socket_type(
-      MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET);
+      MockTransportClientSocketFactory::Type::kStalled);
 
   enum { CANCEL_BEFORE_WAIT, CANCEL_AFTER_WAIT };
 
@@ -1210,14 +1212,16 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketCancel) {
 // of the backup socket and never completes, and then the backup
 // connection fails.
 TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterStall) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-    // The first socket will not connect.
-    MockTransportClientSocketFactory::MOCK_STALLED_CLIENT_SOCKET,
-    // The second socket will fail immediately.
-    MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // The first socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kStalled),
+      // The second socket will fail immediately.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
   };
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
 
   EXPECT_EQ(0, pool_->IdleSocketCount());
 
@@ -1260,14 +1264,16 @@ TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterStall) {
 // of the backup socket and eventually completes, but the backup socket
 // fails.
 TEST_F(TransportClientSocketPoolTest, BackupSocketFailAfterDelay) {
-  MockTransportClientSocketFactory::ClientSocketType case_types[] = {
-    // The first socket will connect, although delayed.
-    MockTransportClientSocketFactory::MOCK_DELAYED_CLIENT_SOCKET,
-    // The second socket will not connect.
-    MockTransportClientSocketFactory::MOCK_FAILING_CLIENT_SOCKET
+  MockTransportClientSocketFactory::Rule rules[] = {
+      // The first socket will connect, although delayed.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kDelayed),
+      // The second socket will not connect.
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing),
   };
 
-  client_socket_factory_.set_client_socket_types(case_types, 2);
+  client_socket_factory_.SetRules(rules);
   client_socket_factory_.set_delay(base::Seconds(5));
 
   EXPECT_EQ(0, pool_->IdleSocketCount());

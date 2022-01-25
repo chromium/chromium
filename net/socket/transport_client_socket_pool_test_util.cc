@@ -369,14 +369,23 @@ void SetIPv6Address(IPEndPoint* address) {
   *address = IPEndPoint(ParseIP("1:abcd::3:4:ff"), 80);
 }
 
+MockTransportClientSocketFactory::Rule::Rule(
+    Type type,
+    absl::optional<std::vector<IPEndPoint>> expected_addresses)
+    : type(type), expected_addresses(expected_addresses) {}
+
+MockTransportClientSocketFactory::Rule::~Rule() = default;
+
+MockTransportClientSocketFactory::Rule::Rule(const Rule&) = default;
+
+MockTransportClientSocketFactory::Rule&
+MockTransportClientSocketFactory::Rule::operator=(const Rule&) = default;
+
 MockTransportClientSocketFactory::MockTransportClientSocketFactory(
     NetLog* net_log)
     : net_log_(net_log),
       allocation_count_(0),
-      client_socket_type_(MOCK_CLIENT_SOCKET),
-      client_socket_types_(nullptr),
-      client_socket_index_(0),
-      client_socket_index_max_(0),
+      client_socket_type_(Type::kSynchronous),
       delay_(base::Milliseconds(ClientSocketPool::kMaxConnectRetryIntervalMs)) {
 }
 
@@ -400,35 +409,43 @@ MockTransportClientSocketFactory::CreateTransportClientSocket(
     const NetLogSource& /* source */) {
   allocation_count_++;
 
-  ClientSocketType type = client_socket_type_;
-  if (client_socket_types_ && client_socket_index_ < client_socket_index_max_) {
-    type = client_socket_types_[client_socket_index_++];
+  Type type = client_socket_type_;
+  if (!rules_.empty()) {
+    type = rules_.front().type;
+    if (rules_.front().expected_addresses) {
+      EXPECT_EQ(addresses.endpoints(), *rules_.front().expected_addresses);
+    }
+
+    rules_ = rules_.subspan(1);
   }
 
   switch (type) {
-    case MOCK_CLIENT_SOCKET:
+    case Type::kUnexpected:
+      ADD_FAILURE() << "Unexpectedly created socket";
       return std::make_unique<MockConnectClientSocket>(addresses, net_log_);
-    case MOCK_FAILING_CLIENT_SOCKET:
+    case Type::kSynchronous:
+      return std::make_unique<MockConnectClientSocket>(addresses, net_log_);
+    case Type::kFailing:
       return std::make_unique<MockFailingClientSocket>(addresses, net_log_);
-    case MOCK_PENDING_CLIENT_SOCKET:
+    case Type::kPending:
       return MockTriggerableClientSocket::MakeMockPendingClientSocket(
           addresses, true, net_log_);
-    case MOCK_PENDING_FAILING_CLIENT_SOCKET:
+    case Type::kPendingFailing:
       return MockTriggerableClientSocket::MakeMockPendingClientSocket(
           addresses, false, net_log_);
-    case MOCK_DELAYED_CLIENT_SOCKET:
+    case Type::kDelayed:
       return MockTriggerableClientSocket::MakeMockDelayedClientSocket(
           addresses, true, delay_, net_log_);
-    case MOCK_DELAYED_FAILING_CLIENT_SOCKET:
+    case Type::kDelayedFailing:
       return MockTriggerableClientSocket::MakeMockDelayedClientSocket(
           addresses, false, delay_, net_log_);
-    case MOCK_STALLED_CLIENT_SOCKET:
+    case Type::kStalled:
       return MockTriggerableClientSocket::MakeMockStalledClientSocket(
           addresses, net_log_, false);
-    case MOCK_STALLED_FAILING_CLIENT_SOCKET:
+    case Type::kStalledFailing:
       return MockTriggerableClientSocket::MakeMockStalledClientSocket(
           addresses, net_log_, true);
-    case MOCK_TRIGGERABLE_CLIENT_SOCKET: {
+    case Type::kTriggerable: {
       std::unique_ptr<MockTriggerableClientSocket> rv(
           new MockTriggerableClientSocket(addresses, true, net_log_));
       triggerable_sockets_.push(rv->GetConnectCallback());
@@ -456,13 +473,10 @@ MockTransportClientSocketFactory::CreateSSLClientSocket(
   return nullptr;
 }
 
-void MockTransportClientSocketFactory::set_client_socket_types(
-    ClientSocketType* type_list,
-    int num_types) {
-  DCHECK_GT(num_types, 0);
-  client_socket_types_ = type_list;
-  client_socket_index_ = 0;
-  client_socket_index_max_ = num_types;
+void MockTransportClientSocketFactory::SetRules(base::span<const Rule> rules) {
+  DCHECK(rules_.empty());
+  client_socket_type_ = Type::kUnexpected;
+  rules_ = rules;
 }
 
 base::OnceClosure
