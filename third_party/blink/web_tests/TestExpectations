@@ -7591,3 +7591,4 @@ crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipb
 
 # Sheriff 2022-01-25
 crbug.com/1290670 [ Mac ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Skip ]
+crbug.com/1289992 virtual/document-transition/document-transition/paint-order.html [ Skip ]
