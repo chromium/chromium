@@ -23,7 +23,7 @@ class CustomHelpAction(argparse.Action):
                           help='What this helps with')
   '''
   # Derived from argparse._HelpAction from
-  # https://github.com/python/cpython/blob/master/Lib/argparse.py
+  # https://github.com/python/cpython/blob/main/Lib/argparse.py
 
   # pylint: disable=redefined-builtin
   # (complains about 'help' being redefined)
