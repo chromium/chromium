@@ -97,25 +97,15 @@ void PSIMemoryMetrics::CollectEvents() {
       metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
 }
 
-void PSIMemoryMetrics::CollectEventsAndReschedule() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-  CollectEvents();
-  ScheduleCollector();
-}
-
 void PSIMemoryMetrics::ScheduleCollector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-  last_timer_ = runner_->PostCancelableDelayedTask(
-      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
-      base::BindOnce(&PSIMemoryMetrics::CollectEventsAndReschedule, this),
-      collection_interval_);
+  timer_.Start(FROM_HERE, collection_interval_,
+               base::BindRepeating(&PSIMemoryMetrics::CollectEvents, this));
 }
 
 void PSIMemoryMetrics::CancelTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
-  if (last_timer_.IsValid()) {
-    last_timer_.CancelTask();
-  }
+  timer_.AbandonAndStop();
 }
 
 }  // namespace ash
