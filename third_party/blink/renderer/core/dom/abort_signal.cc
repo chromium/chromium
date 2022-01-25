@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -84,13 +85,20 @@ AbortSignal* AbortSignal::abort(ScriptState* script_state, ScriptValue reason) {
   return signal;
 }
 
-ScriptValue AbortSignal::reason(ScriptState* script_state) {
+ScriptValue AbortSignal::reason(ScriptState* script_state) const {
   DCHECK(script_state->GetIsolate()->InContext());
   if (abort_reason_.IsEmpty()) {
     return ScriptValue(script_state->GetIsolate(),
                        v8::Undefined(script_state->GetIsolate()));
   }
   return abort_reason_;
+}
+
+void AbortSignal::throwIfAborted(ScriptState* script_state,
+                                 ExceptionState& exception_state) const {
+  if (!aborted())
+    return;
+  exception_state.RethrowV8Exception(reason(script_state).V8Value());
 }
 
 const AtomicString& AbortSignal::InterfaceName() const {

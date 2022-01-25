@@ -15,6 +15,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ExecutionContext;
 class ScriptState;
 
@@ -43,8 +44,9 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // abort_signal.idl
   static AbortSignal* abort(ScriptState*);
   static AbortSignal* abort(ScriptState*, ScriptValue reason);
-  ScriptValue reason(ScriptState*);
+  ScriptValue reason(ScriptState*) const;
   bool aborted() const { return !abort_reason_.IsEmpty(); }
+  void throwIfAborted(ScriptState*, ExceptionState&) const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
 
   const AtomicString& InterfaceName() const override;
