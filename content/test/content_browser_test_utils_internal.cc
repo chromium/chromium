@@ -200,9 +200,15 @@ Shell* OpenBlankWindow(WebContentsImpl* web_contents) {
   EXPECT_TRUE(ExecJs(root, "last_opened_window = window.open()"));
   Shell* new_shell = new_shell_observer.GetShell();
   EXPECT_NE(new_shell->web_contents(), web_contents);
-  EXPECT_TRUE(
-      new_shell->web_contents()->GetController().GetLastCommittedEntry());
-  EXPECT_EQ(1, new_shell->web_contents()->GetController().GetEntryCount());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_TRUE(new_shell->web_contents()
+                    ->GetController()
+                    .GetLastCommittedEntry()
+                    ->IsInitialEntry());
+    EXPECT_EQ(1, new_shell->web_contents()->GetController().GetEntryCount());
+  } else {
+    EXPECT_EQ(0, new_shell->web_contents()->GetController().GetEntryCount());
+  }
   return new_shell;
 }
 

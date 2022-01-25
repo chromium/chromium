@@ -73,6 +73,13 @@ enum NavigationType {
   // These two cases are actually pretty different, they just happen to
   // require almost the same code to handle.
   NAVIGATION_TYPE_AUTO_SUBFRAME,
+
+  // Nothing happened. This happens when we get information about a page we
+  // don't know anything about. It can also happen when an iframe in a popup
+  // navigated to about:blank is navigated. Nothing needs to be done. This
+  // can only happen when we don't create initial NavigationEntries, and should
+  // be removed once we always create initial NavigationEntries.
+  NAVIGATION_TYPE_NAV_IGNORE,
 };
 
 }  // namespace content

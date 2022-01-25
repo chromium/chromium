@@ -1511,7 +1511,7 @@ TEST_F(WebContentsImplTest, NavigationEntryContentState) {
       NavigationSimulator::CreateBrowserInitiated(url, contents());
   navigation->ReadyToCommit();
   NavigationEntry* entry = controller().GetLastCommittedEntry();
-  EXPECT_TRUE(entry->IsInitialEntry());
+  EXPECT_TRUE(!entry || entry->IsInitialEntry());
 
   // Committed entry should have page state.
   navigation->Commit();

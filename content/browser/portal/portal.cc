@@ -496,7 +496,8 @@ std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
 
   // If no navigation has yet committed in the portal, it cannot be activated as
   // this would lead to an empty tab contents (without even an about:blank).
-  if (portal_controller.GetLastCommittedEntry()->IsInitialEntry()) {
+  if (!portal_controller.GetLastCommittedEntry() ||
+      portal_controller.GetLastCommittedEntry()->IsInitialEntry()) {
     return std::make_pair(
         false,
         blink::mojom::PortalActivateResult::kRejectedDueToPortalNotReady);

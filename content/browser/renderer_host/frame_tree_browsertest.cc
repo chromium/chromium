@@ -1632,8 +1632,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
       blink::features::FencedFramesImplementationType::kShadowDOM) {
     EXPECT_EQ(root->navigator().controller().GetEntryCount(),
               fenced_frame->navigator().controller().GetEntryCount());
-  } else {
+  } else if (blink::features::IsInitialNavigationEntryEnabled()) {
     EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  } else {
+    EXPECT_EQ(0, fenced_frame->navigator().controller().GetEntryCount());
   }
 
   // 1. Navigate the fenced frame: both cross-document and fragment navigation.

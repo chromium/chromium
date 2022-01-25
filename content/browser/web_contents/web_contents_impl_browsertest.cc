@@ -3469,10 +3469,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     new_shell = new_shell_observer.GetShell();
     new_contents = new_shell->web_contents();
     // Delaying popup holds the initial load of |url|.
-    EXPECT_TRUE(WaitForLoadStop(new_contents));
-    EXPECT_TRUE(new_contents->GetController()
-                    .GetLastCommittedEntry()
-                    ->IsInitialEntry());
+    if (blink::features::IsInitialNavigationEntryEnabled()) {
+      EXPECT_TRUE(WaitForLoadStop(new_contents));
+      EXPECT_TRUE(new_contents->GetController()
+                      .GetLastCommittedEntry()
+                      ->IsInitialEntry());
+    } else {
+      // If we don't have the initial NavigationEntry, WaitForLoadStop() will
+      // return false because there's no NavigationEntry.
+      EXPECT_FALSE(WaitForLoadStop(new_contents));
+      EXPECT_FALSE(new_contents->GetController().GetLastCommittedEntry());
+    }
     EXPECT_NE(url, new_contents->GetLastCommittedURL());
   }
 

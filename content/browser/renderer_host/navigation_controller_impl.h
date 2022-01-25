@@ -561,8 +561,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   NavigationType ClassifyNavigation(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
-      NavigationRequest* navigation_request,
-      LoadCommittedDetails* load_committed_details);
+      NavigationRequest* navigation_request);
 
   // Handlers for the different types of navigation types. They will actually
   // handle the navigations corresponding to the different NavClasses above.

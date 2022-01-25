@@ -50502,6 +50502,7 @@ from previous Chrome versions.
   <int value="-1390331361"
       label="SyncPseudoUSSHistoryDeleteDirectives:enabled"/>
   <int value="-1390005994" label="AppCache:disabled"/>
+  <int value="-1389948505" label="InitialNavigationEntry:disabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
   <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
   <int value="-1387498034"
@@ -51651,6 +51652,7 @@ from previous Chrome versions.
   <int value="-548082154" label="protect-sync-credential:disabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
+  <int value="-546188357" label="InitialNavigationEntry:enabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>

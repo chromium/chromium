@@ -1913,9 +1913,10 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // https://crbug.com/766630.
   NavigationEntry* current_entry =
       GetNavigationController().GetLastCommittedEntry();
-  bool current_is_view_source_mode = !current_entry->IsInitialEntry()
-                                         ? current_entry->IsViewSourceMode()
-                                         : dest_is_view_source_mode;
+  bool current_is_view_source_mode =
+      (current_entry && !current_entry->IsInitialEntry())
+          ? current_entry->IsViewSourceMode()
+          : dest_is_view_source_mode;
 
   SiteInstanceImpl* current_instance_impl =
       static_cast<SiteInstanceImpl*>(current_instance);

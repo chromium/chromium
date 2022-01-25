@@ -203,10 +203,10 @@ class CONTENT_EXPORT FrameTree {
 
   // Initializes the main frame for this FrameTree. That is it creates the
   // initial RenderFrameHost in the root node's RenderFrameHostManager, and also
-  // creates an initial NavigationEntry that potentially inherits `opener`'s
-  // origin in its NavigationController. This method will call back into the
-  // delegates so it should only be called once they have completed their
-  // initialization.
+  // creates an initial NavigationEntry (if the InitialNavigationEntry feature
+  // is enabled) that potentially inherits `opener`'s origin in its
+  // NavigationController. This method will call back into the delegates so it
+  // should only be called once they have completed their initialization.
   // TODO(carlscab): It would be great if initialization could happened in the
   // constructor so we do not leave objects in a half initialized state.
   void Init(SiteInstance* main_frame_site_instance,

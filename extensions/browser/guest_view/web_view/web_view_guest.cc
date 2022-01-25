@@ -900,9 +900,10 @@ void WebViewGuest::UserAgentOverrideSet(
   content::NavigationController& controller = web_contents()->GetController();
   content::NavigationEntry* entry = controller.GetVisibleEntry();
   // If we're on the initial NavigationEntry and no navigation had committed,
-  // return early. This preserves previous behavior when the initial
-  // NavigationEntry used to not exist.
-  if (controller.IsInitialNavigation())
+  // return early. This preserves legacy behavior when the initial
+  // NavigationEntry used to not exist (which might still happen if the
+  // InitialNavigationEntry is disabled).
+  if (!entry || controller.IsInitialNavigation())
     return;
   entry->SetIsOverridingUserAgent(!ua_override.ua_string_override.empty());
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);

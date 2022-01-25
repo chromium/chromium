@@ -10,6 +10,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
@@ -190,7 +191,11 @@ IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, MAYBE_Overflow) {
 
   TabImpl* restored_tab = tab_;
   EXPECT_EQ(restored_tab, browser_->GetActiveTab());
-  EXPECT_EQ(1, restored_tab->web_contents()->GetController().GetEntryCount());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(1, restored_tab->web_contents()->GetController().GetEntryCount());
+  } else {
+    EXPECT_EQ(0, restored_tab->web_contents()->GetController().GetEntryCount());
+  }
   EXPECT_TRUE(restored_tab->web_contents()->GetController().GetPendingEntry() ==
               nullptr);
 }

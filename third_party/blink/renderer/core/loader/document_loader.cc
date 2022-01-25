@@ -360,11 +360,6 @@ DocumentLoader::DocumentLoader(
       response_(params_->response.ToResourceResponse()),
       load_type_(params_->frame_load_type),
       is_client_redirect_(params_->is_client_redirect),
-      // TODO(dgozman): we should get rid of this boolean field, and make client
-      // responsible for it's own view of "replaces current item", based on the
-      // frame load type.
-      replaces_current_history_item_(load_type_ ==
-                                     WebFrameLoadType::kReplaceCurrentItem),
       data_received_(false),
       is_error_page_for_failed_navigation_(
           SchemeRegistry::ShouldTreatURLSchemeAsError(
@@ -417,6 +412,20 @@ DocumentLoader::DocumentLoader(
       app_history_back_entries_(params_->app_history_back_entries),
       app_history_forward_entries_(params_->app_history_forward_entries) {
   DCHECK(frame_);
+
+  // TODO(dgozman): we should get rid of this boolean field, and make client
+  // responsible for it's own view of "replaces current item", based on the
+  // frame load type.
+  replaces_current_history_item_ =
+      (load_type_ == WebFrameLoadType::kReplaceCurrentItem);
+  if (!features::IsInitialNavigationEntryEnabled()) {
+    // TODO(https://crbug.com/524208): This is needed because the browser
+    // process DCHECKs if the first entry we commit in a new frame has
+    // replacement set. It's unclear whether the DCHECK is right. Once we always
+    // have initial NavigationEntries, we can remove this check.
+    replaces_current_history_item_ &=
+        (!frame_->Loader().Opener() || !url_.IsEmpty());
+  }
 
   // See `archive_` attribute documentation.
   if (!frame_->IsMainFrame()) {

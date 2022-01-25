@@ -226,5 +226,7 @@ public final class ProductionSupportedFlagList {
                     "Enables prefetching Android fonts on renderer startup."),
             Flag.baseFeature(AwFeatures.WEBVIEW_LEGACY_TLS_SUPPORT,
                     "Whether legacy TLS versions (TLS 1.0/1.1) conections are allowed."),
+            Flag.baseFeature(BlinkFeatures.INITIAL_NAVIGATION_ENTRY,
+                    "Enables creation of initial NavigationEntries on WebContents creation."),
     };
 }

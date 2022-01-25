@@ -100,6 +100,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
 
@@ -867,8 +868,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
                                       base::NullCallback());
   WebContents* new_tab_contents = web_contents_added_observer.GetWebContents();
   content::RenderFrameHost* new_tab_rfh = new_tab_contents->GetMainFrame();
-  // A fresh WebContents should be on the initial NavigationEntry.
-  EXPECT_TRUE(new_tab_contents->GetController()
+  // A fresh WebContents should be on the initial NavigationEntry, or have
+  // no NavigationEntry (if InitialNavigationEntry is disabled).
+  EXPECT_TRUE(!new_tab_contents->GetController().GetLastCommittedEntry() ||
+              new_tab_contents->GetController()
                   .GetLastCommittedEntry()
                   ->IsInitialEntry());
   EXPECT_EQ(nullptr, new_tab_contents->GetController().GetPendingEntry());
@@ -876,10 +879,15 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   // Run javascript in the blank new tab to load the malware image.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(img_url)))
       .Times(1);
-  // Wait for 2 navigations to finish: the synchronous about:blank commit
-  // triggered by the window.open() above, and the interstitial page navigation
-  // triggered by Safe Browsing code for the image load below.
-  content::TestNavigationObserver observer(new_tab_contents, 2);
+  // When InitialNavigationEntry is enabled, wait for 2 navigations to finish:
+  // the synchronous about:blank commit triggered by the window.open() above,
+  // and the interstitial page navigation triggered by Safe Browsing code for
+  // the image load below. When InitialNavigationEntry is disabled, the
+  // synchronous about:blank commit will be ignored (won't create
+  // NavigationEntry).
+  content::TestNavigationObserver observer(
+      new_tab_contents,
+      blink::features::IsInitialNavigationEntryEnabled() ? 2 : 1);
   new_tab_rfh->ExecuteJavaScriptForTests(
       u"var img=new Image();"
       u"img.src=\"" +
@@ -894,9 +902,14 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   EXPECT_TRUE(got_hit_report());
   EXPECT_EQ(img_url, hit_report().malicious_url);
   EXPECT_TRUE(hit_report().is_subresource);
-  // Page report URLs should be about:blank, as the last committed navigation is
-  // the synchronous about:blank commit.
-  EXPECT_EQ(GURL(url::kAboutBlankURL), hit_report().page_url);
+  // When InitialNavigationEntry is enabled, the page report URL should be
+  // about:blank, as the last committed entry is the synchronous about:blank
+  // commit. When InitialNavigationEntry is disabled, it should be empty as the
+  // synchronous about:blank commit was ignored (didn't create NavigationEntry).
+  EXPECT_EQ(blink::features::IsInitialNavigationEntryEnabled()
+                ? GURL(url::kAboutBlankURL)
+                : GURL(),
+            hit_report().page_url);
   EXPECT_EQ(GURL(), hit_report().referrer_url);
 
   // Proceed through it.

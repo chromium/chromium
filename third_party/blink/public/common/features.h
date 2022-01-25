@@ -93,6 +93,12 @@ BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 BLINK_COMMON_EXPORT bool IsFencedFramesMPArchBased();
 
+// Whether we will create initial NavigationEntry or not on FrameTree creation,
+// which also impacts the session history replacement decisions made in the
+// renderer.
+BLINK_COMMON_EXPORT extern const base::Feature kInitialNavigationEntry;
+BLINK_COMMON_EXPORT bool IsInitialNavigationEntryEnabled();
+
 BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;
 BLINK_COMMON_EXPORT extern const base::Feature
