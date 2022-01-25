@@ -1818,7 +1818,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R100-14474.0.0",
+        "cros_img": "atlas-release/R100-14475.0.0",
         "name": "lacros_all_tast_tests_ATLAS_LKGM",
         "resultdb": {
           "enable": true,
@@ -1878,7 +1878,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R100-14474.0.0",
+        "cros_img": "eve-release/R100-14475.0.0",
         "name": "lacros_all_tast_tests_EVE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1983,7 +1983,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14474.0.0",
+        "cros_img": "kevin-release/R100-14475.0.0",
         "name": "lacros_all_tast_tests_KEVIN_LKGM",
         "resultdb": {
           "enable": true,
@@ -1998,7 +1998,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14474.0.0",
+        "cros_img": "hana-release/R100-14475.0.0",
         "name": "lacros_all_tast_tests_HANA_LKGM",
         "resultdb": {
           "enable": true,
@@ -2013,7 +2013,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14474.0.0",
+        "cros_img": "kevin-release/R100-14475.0.0",
         "name": "ozone_unittests_KEVIN_LKGM",
         "resultdb": {
           "enable": true,
@@ -2027,7 +2027,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14474.0.0",
+        "cros_img": "hana-release/R100-14475.0.0",
         "name": "ozone_unittests_HANA_LKGM",
         "resultdb": {
           "enable": true,
@@ -2041,7 +2041,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R100-14474.0.0",
+        "cros_img": "kevin-release/R100-14475.0.0",
         "name": "viz_unittests_KEVIN_LKGM",
         "resultdb": {
           "enable": true,
@@ -2055,7 +2055,7 @@
       {
         "args": [],
         "cros_board": "hana",
-        "cros_img": "hana-release/R100-14474.0.0",
+        "cros_img": "hana-release/R100-14475.0.0",
         "name": "viz_unittests_HANA_LKGM",
         "resultdb": {
           "enable": true,
