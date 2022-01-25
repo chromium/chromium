@@ -305,6 +305,9 @@ class DesksTemplatesTest : public OverviewTestBase {
     ASSERT_TRUE(save_template->IsVisible());
     ClickOnView(save_template->GetContentsView());
     WaitForDesksTemplatesUI();
+    // Clicking the save template button selects the newly created template's
+    // name field. We can press enter or escape or click to select out of it.
+    SendKey(ui::VKEY_RETURN);
     for (auto& overview_grid : GetOverviewGridList())
       ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
   }
@@ -738,6 +741,38 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
 
   // Expect that the Desk Templates grid is visible.
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+}
+
+// Tests that saving a template nudges the correct name view.
+TEST_F(DesksTemplatesTest, SaveTemplateNudgesNameView) {
+  // Other templates were added earlier.
+  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
+
+  DesksController* desks_controller = DesksController::Get();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  auto test_window = CreateAppWindow();
+
+  // Capture the current desk as a template, which is by default named "Desk 1".
+  // We open overview and save template without clicking out of the newly
+  // created template name view.
+  ToggleOverview();
+  ClickOnView(
+      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->GetContentsView());
+  WaitForDesksTemplatesUI();
+  ASSERT_EQ(3ul, GetAllEntries().size());
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Expect that the last added template item name view has focus.
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(name_view->HasFocus());
+  EXPECT_TRUE(name_view->HasSelection());
+  EXPECT_EQ(u"Desk 1", name_view->GetText());
 }
 
 // Tests that launching templates from the templates grid functions correctly.

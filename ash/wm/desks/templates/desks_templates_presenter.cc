@@ -15,7 +15,9 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
@@ -128,6 +130,7 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
   GetDeskModel()->DeleteEntry(
       template_uuid, base::BindOnce(&DesksTemplatesPresenter::OnDeleteEntry,
                                     weak_ptr_factory_.GetWeakPtr()));
+  cached_saved_template_uuid_.reset();
 }
 
 void DesksTemplatesPresenter::LaunchDeskTemplate(
@@ -170,8 +173,12 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (!is_update)
+  if (!is_update) {
     RecordWindowAndTabCountHistogram(desk_template.get());
+    cached_saved_template_uuid_ = desk_template->uuid();
+  } else {
+    cached_saved_template_uuid_.reset();
+  }
 
   // Save or update `desk_template` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
@@ -211,8 +218,22 @@ void DesksTemplatesPresenter::OnGetAllEntries(
     // Populate `DesksTemplatesGridView` with the desk template entries.
     if (views::Widget* grid_widget =
             overview_grid->desks_templates_grid_widget()) {
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+      auto* grid_view =
+          static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+      grid_view->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+      if (cached_saved_template_uuid_) {
+        for (auto* item_view : grid_view->grid_items()) {
+          if (cached_saved_template_uuid_ ==
+              item_view->desk_template()->uuid()) {
+            // If a template was newly added, set focus on that template item's
+            // name view.
+            DCHECK(!item_view->name_view()->GetReadOnly());
+            item_view->name_view()->RequestFocus();
+            cached_saved_template_uuid_.reset();
+            break;
+          }
+        }
+      }
     }
   }
 

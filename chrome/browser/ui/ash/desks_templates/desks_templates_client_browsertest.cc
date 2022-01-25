@@ -226,6 +226,9 @@ void ClickSaveDeskAsTemplateButton(bool wait_for_ui) {
   ClickButton(save_desk_as_template_button);
   if (wait_for_ui)
     ash::WaitForDesksTemplatesUI();
+  // Clicking the save template button selects the newly created template's name
+  // field. We can press enter or escape or click to select out of it.
+  ash::SendKey(ui::VKEY_RETURN);
 }
 
 void ClickSaveDeskAsTemplateButton() {
