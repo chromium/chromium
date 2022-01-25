@@ -69,43 +69,6 @@ android_resources("java_resources") {
   ]
 }
 
-android_library("javatests") {
-  testonly = true
-  sources = [
-    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadActivityTest.java",
-    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPageTest.java",
-    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadTestUtils.java",
-  ]
-
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/browser/android/browserservices/intents:java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/ui/messages/android:java",
-    "//chrome/test/android:chrome_java_test_support",
-    "//components/browser_ui/site_settings/android:java",
-    "//components/browser_ui/widget/android:java",
-    "//components/content_settings/android:content_settings_enums_java",
-    "//components/embedder_support/android:util_java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:espresso_java",
-    "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-    "//ui/android:ui_full_java",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 android_library("junit_tests") {
   # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
   bypass_platform_checks = true
