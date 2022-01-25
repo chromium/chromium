@@ -579,6 +579,13 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // <img> creation, but probably such users should be using ImageDecoder
     // directly.
     sk_image = paint_image.GetSwSkImage();
+    if (!sk_image) {
+      // Can happen if, for example, |paint_image| is texture-backed and the
+      // context was lost.
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "Failed to create video frame");
+      return nullptr;
+    }
     if (sk_image->isLazyGenerated())
       sk_image = sk_image->makeRasterImage();
 
