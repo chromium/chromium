@@ -650,7 +650,8 @@ def main():
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
       '-DLLVM_ENABLE_PROJECTS=' + projects,
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
-      '-DLLVM_ENABLE_PIC=OFF',
+      # PIC needed for Rust build (links LLVM into shared object)
+      '-DLLVM_ENABLE_PIC=ON',
       '-DLLVM_ENABLE_UNWIND_TABLES=OFF',
       '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',

@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Suppress x.py warning about configuration changes
+changelog-seen = 2
+
+[llvm]
+download-ci-llvm = false
+
+[rust]
+download-rustc = false
+channel = "dev"
+description = "chromium"
+
+[build]
+target = ["x86_64-unknown-linux-gnu"]
+
+[install]
+prefix = "$INSTALL_DIR"
+sysconfdir = "etc"
+
+[target.x86_64-unknown-linux-gnu]
+cc = "$LLVM_ROOT/bin/clang"
+cxx = "$LLVM_ROOT/bin/clang++"
+ar = "$LLVM_ROOT/bin/llvm-ar"
+ranlib = "$LLVM_ROOT/bin/llvm-ranlib"
+linker = "$LLVM_ROOT/bin/clang"
+llvm-config = "$LLVM_ROOT/bin/llvm-config"
