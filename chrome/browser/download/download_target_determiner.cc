@@ -668,7 +668,6 @@ enum ActionOnStalePluginList {
 };
 
 void IsHandledBySafePlugin(int render_process_id,
-                           int routing_id,
                            const GURL& url,
                            const std::string& mime_type,
                            ActionOnStalePluginList stale_plugin_action,
@@ -692,8 +691,8 @@ void IsHandledBySafePlugin(int render_process_id,
     // after a single retry in order to avoid retrying indefinitely.
     plugin_service->GetPlugins(base::BindOnce(
         &InvokeClosureAfterGetPluginCallback,
-        base::BindOnce(&IsHandledBySafePlugin, render_process_id, routing_id,
-                       url, mime_type, IGNORE_IF_STALE_PLUGIN_LIST,
+        base::BindOnce(&IsHandledBySafePlugin, render_process_id, url,
+                       mime_type, IGNORE_IF_STALE_PLUGIN_LIST,
                        std::move(callback))));
     return;
   }
@@ -730,16 +729,13 @@ DownloadTargetDeterminer::Result
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   int render_process_id = -1;
-  int routing_id = -1;
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(download_);
-  if (web_contents) {
+  if (web_contents)
     render_process_id = web_contents->GetMainFrame()->GetProcess()->GetID();
-    routing_id = web_contents->GetMainFrame()->GetRoutingID();
-  }
   IsHandledBySafePlugin(
-      render_process_id, routing_id, net::FilePathToFileURL(local_path_),
-      mime_type_, RETRY_IF_STALE_PLUGIN_LIST,
+      render_process_id, net::FilePathToFileURL(local_path_), mime_type_,
+      RETRY_IF_STALE_PLUGIN_LIST,
       base::BindOnce(&DownloadTargetDeterminer::DetermineIfHandledSafelyDone,
                      weak_ptr_factory_.GetWeakPtr()));
   return QUIT_DOLOOP;
