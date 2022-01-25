@@ -1415,9 +1415,17 @@ class ChromeSitePerProcessTestWithVerifiedUserActivation
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1290823): Test failed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  DISABLED_UserActivationBrowserVerificationSameOriginSite
+#else
+#define MAYBE_UserActivationBrowserVerificationSameOriginSite \
+  UserActivationBrowserVerificationSameOriginSite
+#endif
 // Test mouse down activation notification with browser verification.
 IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTestWithVerifiedUserActivation,
-                       UserActivationBrowserVerificationSameOriginSite) {
+                       MAYBE_UserActivationBrowserVerificationSameOriginSite) {
   // Start on a page a.com with same-origin iframe on a.com and cross-origin
   // iframe b.com.
   GURL main_url(embedded_test_server()->GetURL(
