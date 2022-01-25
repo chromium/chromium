@@ -135,7 +135,13 @@ bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
   absl::optional<bool> predictive_writing_setting =
       input_method_settings->FindBoolPath(
           engine_id + ".physicalKeyboardEnablePredictiveWriting");
-  return predictive_writing_setting && *predictive_writing_setting;
+  if (predictive_writing_setting == absl::nullopt) {
+    // If no preference has been set yet by the user then we can assume the
+    // default preference as enabled.
+    return true;
+  }
+  // Otherwise take whatever preference the user has set.
+  return *predictive_writing_setting;
 }
 
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
