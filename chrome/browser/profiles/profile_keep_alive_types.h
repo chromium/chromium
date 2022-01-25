@@ -100,7 +100,14 @@ enum class ProfileKeepAliveOrigin {
   // A web app is being updated.
   kWebAppUpdate = 22,
 
-  kMaxValue = kWebAppUpdate,
+  // Getting web app info for this profile. This is specifically for handling
+  // --list-apps switch.
+  kGettingWebAppInfo = 23,
+
+  // An extension .crx is being installed.
+  kCrxInstaller = 24,
+
+  kMaxValue = kCrxInstaller,
 };
 
 std::ostream& operator<<(std::ostream& out,
