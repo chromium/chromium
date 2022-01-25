@@ -32,7 +32,7 @@
     <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       [[i18n('onboardingUpdateConnectToInternet')]]
     </p>
-    <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
+    <cr-button id="performUpdateButton" disabled="[[allButtonsDisabled]]"
         hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
         [[updateVersionText_]]
       <iron-icon id="restartIcon" icon="shimless-icon:update"

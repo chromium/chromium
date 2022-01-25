@@ -344,6 +344,15 @@ export class ShimlessRma extends ShimlessRmaBase {
     };
 
     /**
+     * The disableAllButtons callback is used by page elements to control the
+     * disabled state of all buttons.
+     * @private {?Function}
+     */
+    this.disableAllButtonsCallback_ = (e) => {
+      this.setAllButtonsDisabled_(e.detail);
+    };
+
+    /**
      * The setNextButtonLabelCallback callback is used by page elements to set
      * the text label for the 'Next' button.
      * @private {?Function}
@@ -362,6 +371,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-next-button', this.disableNextButtonCallback_);
     window.addEventListener(
         'set-next-button-label', this.setNextButtonLabelCallback_);
+    window.addEventListener(
+        'disable-all-buttons', this.disableAllButtonsCallback_);
   }
 
   /** @override */
@@ -372,6 +383,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'disable-next-button', this.disableNextButtonCallback_);
     window.removeEventListener(
         'set-next-button-label', this.setNextButtonLabelCallback_);
+    window.removeEventListener(
+        'disable-all-buttons', this.disableAllButtonsCallback_);
   }
 
   /** @override */

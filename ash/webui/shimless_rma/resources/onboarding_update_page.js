@@ -57,6 +57,12 @@ export class OnboardingUpdatePageElement extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       currentVersionText_: {
         type: String,
@@ -92,6 +98,7 @@ export class OnboardingUpdatePageElement extends
       updateInProgress_: {
         type: Boolean,
         value: false,
+        observer: 'onUpdateInProgressChange_',
       },
 
       /** @protected */
@@ -197,18 +204,10 @@ export class OnboardingUpdatePageElement extends
   /** @protected */
   onUpdateButtonClicked_() {
     this.updateInProgress_ = true;
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: false},
-        ));
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
         this.updateProgressMessage_ = this.i18n('osUpdateFailedToStartText');
         this.updateInProgress_ = false;
-        this.dispatchEvent(new CustomEvent(
-            'disable-next-button',
-            {bubbles: true, composed: true, detail: false},
-            ));
       }
     });
   }
@@ -246,10 +245,6 @@ export class OnboardingUpdatePageElement extends
         operation === OsUpdateOperation.kNeedPermissionToUpdate ||
         operation === OsUpdateOperation.kDisabled) {
       this.updateInProgress_ = false;
-      this.dispatchEvent(new CustomEvent(
-          'disable-next-button',
-          {bubbles: true, composed: true, detail: false},
-          ));
     }
     this.updateProgressMessage_ = this.i18n(
         'onboardingUpdateProgress', this.i18n(operationNameKeys[operation]),
@@ -312,6 +307,15 @@ export class OnboardingUpdatePageElement extends
   /** @private */
   closeDialog_() {
     this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
+  }
+
+  /** @private */
+  onUpdateInProgressChange_() {
+    const shouldDisableAllButtons = this.updateInProgress_;
+    this.dispatchEvent(new CustomEvent(
+        'disable-all-buttons',
+        {bubbles: true, composed: true, detail: shouldDisableAllButtons},
+        ));
   }
 }
 

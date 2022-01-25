@@ -396,4 +396,32 @@ export function shimlessRMAAppTest() {
     assertTrue(backButtonSpinner.hidden);
     assertTrue(cancelButtonSpinner.hidden);
   });
+
+  test('AllButtonsDisabled', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    const nextButton = component.shadowRoot.querySelector('#next');
+    const backButton = component.shadowRoot.querySelector('#back');
+    const cancelButton = component.shadowRoot.querySelector('#cancel');
+
+    assertFalse(nextButton.disabled);
+    assertFalse(backButton.disabled);
+    assertFalse(cancelButton.disabled);
+
+    component.dispatchEvent(new CustomEvent(
+        'disable-all-buttons',
+        {bubbles: true, composed: true, detail: true},
+        ));
+    assertTrue(nextButton.disabled);
+    assertTrue(backButton.disabled);
+    assertTrue(cancelButton.disabled);
+
+    component.dispatchEvent(new CustomEvent(
+        'disable-all-buttons',
+        {bubbles: true, composed: true, detail: false},
+        ));
+    assertFalse(nextButton.disabled);
+    assertFalse(backButton.disabled);
+    assertFalse(cancelButton.disabled);
+  });
 }
