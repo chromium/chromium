@@ -236,9 +236,6 @@ void GbmSurfacelessWayland::PostSubBufferAsync(
     int height,
     SwapCompletionCallback completion_callback,
     PresentationCallback presentation_callback) {
-  PendingFrame* frame = unsubmitted_frames_.back().get();
-  frame->damage_region_ = gfx::Rect(x, y, width, height);
-
   SwapBuffersAsync(std::move(completion_callback),
                    std::move(presentation_callback));
 }
@@ -373,15 +370,6 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
       // The current scale factor of the surface, which is used to determine
       // the size in pixels of resources allocated by the GPU process.
       overlay_configs.back()->surface_scale_factor = surface_scale_factor_;
-      // TODO(petermcneeley): For the primary plane, we receive damage via
-      // PostSubBufferAsync. Damage sent via overlay information is currently
-      // always a full damage. Take the intersection until we send correct
-      // damage via overlay information.
-      if (plane.second.overlay_plane_data.z_order == 0 &&
-          submitted_frame->damage_region_.has_value()) {
-        overlay_configs.back()->damage_region.Intersect(
-            submitted_frame->damage_region_.value());
-      }
 #if DCHECK_IS_ON()
       if (plane.second.overlay_plane_data.z_order == INT32_MIN)
         background_buffer_id_ = plane.first;

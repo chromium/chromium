@@ -1799,8 +1799,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 
     if (output_surface_plane_)
       DCHECK(output_device_->IsPrimaryPlaneOverlay());
-    output_device_->SchedulePrimaryPlane(output_surface_plane_);
-    output_surface_plane_.reset();
 
     if (frame->sub_buffer_rect) {
       if (capabilities().supports_post_sub_buffer) {
@@ -1810,6 +1808,17 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                                         frame->sub_buffer_rect->y() -
                                         frame->sub_buffer_rect->height());
         }
+      }
+
+      if (output_surface_plane_)
+        output_surface_plane_->damage_rect = frame->sub_buffer_rect;
+    }
+
+    output_device_->SchedulePrimaryPlane(output_surface_plane_);
+    output_surface_plane_.reset();
+
+    if (frame->sub_buffer_rect) {
+      if (capabilities().supports_post_sub_buffer) {
         output_device_->PostSubBuffer(*frame->sub_buffer_rect,
                                       buffer_presented_callback_,
                                       std::move(*frame));

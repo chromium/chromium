@@ -104,6 +104,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
     gfx::OverlayPriorityHint priority_hint;
     // Specifies the rounded corners.
     gfx::RRectF rounded_corners;
+    // Optional damage rect. If none is provided the damage is assumed to be
+    // |resource_size| (full damage).
+    absl::optional<gfx::Rect> damage_rect;
   };
 
   // TODO(weiliangc): Eventually the asymmetry between primary plane and

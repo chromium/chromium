@@ -360,12 +360,13 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   // here.
   gl_surface_->ScheduleOverlayPlane(
       gl_image, std::move(fence),
-      gfx::OverlayPlaneData(kPlaneZOrder, plane.transform, plane.display_rect,
-                            plane.uv_rect, plane.enable_blending,
-                            gfx::Rect(plane.resource_size), plane.opacity,
-                            plane.priority_hint, plane.rounded_corners,
-                            presenter_image->color_space(),
-                            /*hdr_metadata=*/absl::nullopt));
+      gfx::OverlayPlaneData(
+          kPlaneZOrder, plane.transform, plane.display_rect, plane.uv_rect,
+          plane.enable_blending,
+          plane.damage_rect.value_or(gfx::Rect(plane.resource_size)),
+          plane.opacity, plane.priority_hint, plane.rounded_corners,
+          presenter_image->color_space(),
+          /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
