@@ -32,8 +32,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
   // Starts a window dragging session for the owning platform window, if
   // it is not running yet. Under Wayland, window dragging is backed by a
-  // platform drag-and-drop session.
-  virtual void StartWindowDraggingSessionIfNeeded() = 0;
+  // platform drag-and-drop session. `allow_system_drag` indicates whether it is
+  // allowed to use a regular drag-and-drop session if the compositor does not
+  // support the extended drag protocol needed to implement all window dragging
+  // features.
+  virtual void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) = 0;
 
   // Signals the underneath platform that browser is entering (or exiting)
   // 'immersive fullscreen mode'.

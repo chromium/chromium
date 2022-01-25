@@ -303,6 +303,7 @@ class WaylandWindow : public PlatformWindow,
                 WaylandConnection* connection);
 
   WaylandConnection* connection() { return connection_; }
+  const WaylandConnection* connection() const { return connection_; }
   PlatformWindowDelegate* delegate() { return delegate_; }
 
   // Sets bounds in dip.

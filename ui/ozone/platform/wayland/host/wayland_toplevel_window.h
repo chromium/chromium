@@ -98,6 +98,12 @@ class WaylandToplevelWindow : public WaylandWindow,
   void AckConfigure(uint32_t serial) override;
   void UpdateDecorations() override;
 
+  // PlatformWindow overrides:
+  bool IsClientControlledWindowMovementSupported() const override;
+
+  // WmDragHandler overrides:
+  bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;
+
   // zaura_surface listeners
   static void OcclusionChanged(void* data,
                                zaura_surface* surface,
@@ -123,7 +129,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void EndMoveLoop() override;
 
   // WaylandExtension:
-  void StartWindowDraggingSessionIfNeeded() override;
+  void StartWindowDraggingSessionIfNeeded(bool allow_system_drag) override;
   void SetImmersiveFullscreenStatus(bool status) override;
   void ShowSnapPreview(WaylandWindowSnapDirection snap,
                        bool allow_haptic_feedback) override;

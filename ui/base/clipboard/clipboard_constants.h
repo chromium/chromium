@@ -23,7 +23,7 @@ namespace ui {
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeText[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeTextUtf8[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeURIList[];
-// Unstandardized format for downloading files  after drop events. Now only
+// Unstandardized format for downloading files after drop events. Now only
 // works in Windows, but used to also work in Linux and MacOS.
 // See https://crbug.com/860557 and https://crbug.com/425170.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
@@ -36,6 +36,8 @@ COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypeRTF[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) extern const char kMimeTypePNG[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeOctetStream[];
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern const char kMimeTypeWindowDrag[];
 
 // Chrome OS-specific MIME type constants.
 #if BUILDFLAG(IS_CHROMEOS)

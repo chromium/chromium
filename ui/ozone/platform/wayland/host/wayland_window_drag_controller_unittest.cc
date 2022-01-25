@@ -52,6 +52,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 
   void SetUp() override {
     WaylandDragDropTest::SetUp();
+    drag_controller()->SetExtendedDragAvailableForTesting();
 
     EXPECT_FALSE(window_->has_pointer_focus());
     EXPECT_EQ(State::kIdle, drag_controller()->state());
@@ -171,7 +172,8 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
   //  - At each event, emulates a new event at server side and proceeds to the
   //  next test step.
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -261,7 +263,8 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   //  - Event dispatching and bounds changes are monitored
   //  - At each event, emulates a new event at server side and proceeds to the
   //  next test step.
-  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded();
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
 
   // While in |kAttached| state, motion events are expected to be dispatched
   // plain ET_TOUCH_MOVED events.
@@ -344,7 +347,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
   //  - At each event, emulates a new event on server side and proceeds to the
   //  next test step.
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -449,7 +453,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   //  - At each event, emulates a new event on server side and proceeds to the
   //  next test step.
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -600,7 +605,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   //  - Event dispatching and bounds changes are monitored
   //  - At each event, emulates a new event on server side and proceeds to the
   //  next test step.
-  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded();
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   Sync();
   EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
@@ -717,7 +723,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
   Sync();
   Sync();
@@ -769,7 +776,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   Sync();
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
@@ -816,7 +824,8 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(WaylandWindowDragController::State::kAttached,
             connection_->window_drag_controller()->state());
 
@@ -850,7 +859,8 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   //  - At each event, emulates a new event at server side and proceeds to the
   //  next test step.
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -944,7 +954,8 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   SendPointerMotion(dragged_window, &delegate_, {10, 10});
 
   // Start the drag session.
-  GetWaylandExtension(*dragged_window)->StartWindowDraggingSessionIfNeeded();
+  GetWaylandExtension(*dragged_window)
+      ->StartWindowDraggingSessionIfNeeded(/*allow_system_drag=*/false);
 
   // Ensure the controller's state is updated accordingly and a MOUSE_ENTERED
   // event is dispatched in response to wl_data_device.enter.
@@ -1026,7 +1037,8 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   EXPECT_EQ(p0, screen_->GetCursorScreenPoint());
 
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
@@ -1093,7 +1105,8 @@ TEST_P(WaylandWindowDragControllerTest, HandleDraggedWindowDestruction) {
 
   // 2. Start the window drag session.
   auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);

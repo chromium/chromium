@@ -79,6 +79,14 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   void OnToplevelWindowCreated(WaylandToplevelWindow* window);
 
+  // Tells if "extended drag" extension is available.
+  bool IsExtendedDragAvailable() const;
+
+  // Makes IsExtendedDragAvailable() always return true.
+  void SetExtendedDragAvailableForTesting() {
+    set_extended_drag_available_for_testing_ = true;
+  }
+
  private:
   class ExtendedDragSource;
 
@@ -124,8 +132,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // extended-drag extension is available.
   void SetDraggedWindow(WaylandToplevelWindow* window,
                         const gfx::Vector2d& offset);
-  // Tells if "extended drag" extension is available.
-  bool IsExtendedDragAvailable() const;
+  // Tells if "extended drag" extension is available, ignoring
+  // |set_extended_drag_available_for_testing_|.
+  bool IsExtendedDragAvailableInternal() const;
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
@@ -171,6 +180,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // in progress, which leads to issues in window dragging sessions, this flag
   // is used to make window drag controller resistant to such scenarios.
   bool should_process_drag_event_ = false;
+
+  bool set_extended_drag_available_for_testing_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
 };

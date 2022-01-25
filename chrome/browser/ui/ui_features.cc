@@ -11,6 +11,11 @@
 
 namespace features {
 
+// Enables the tab dragging fallback when full window dragging is not supported
+// by the platform (e.g. Wayland). See https://crbug.com/896640
+const base::Feature kAllowWindowDragUsingSystemDragDrop{
+    "AllowWindowDragUsingSystemDragDrop", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 const base::Feature kChromeLabs{"ChromeLabs",
                                 base::FEATURE_DISABLED_BY_DEFAULT};

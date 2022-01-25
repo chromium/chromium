@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
 
   // Cancels the drag.
   virtual void CancelDrag() = 0;
+
+  // Returns whether capture should be released before a StartDrag() call.
+  virtual bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
 };
 
 COMPONENT_EXPORT(WM)

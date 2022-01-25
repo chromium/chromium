@@ -20,6 +20,10 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
+// TODO(https://crbug.com/896640): Remove this when the tab dragging
+// interactive_ui_tests pass on Wayland.
+extern const base::Feature kAllowWindowDragUsingSystemDragDrop;
+
 extern const base::Feature kChromeLabs;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

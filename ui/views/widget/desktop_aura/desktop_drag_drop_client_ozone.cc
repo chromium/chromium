@@ -123,11 +123,13 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   DCHECK(!drag_context_);
   drag_context_ = std::make_unique<DragContext>();
 
-  // Chrome expects starting drag and drop to release capture.
-  aura::Window* capture_window =
-      aura::client::GetCaptureClient(root_window)->GetGlobalCaptureWindow();
-  if (capture_window)
-    capture_window->ReleaseCapture();
+  if (drag_handler_->ShouldReleaseCaptureForDrag(data.get())) {
+    aura::Window* capture_window =
+        aura::client::GetCaptureClient(root_window)->GetGlobalCaptureWindow();
+    if (capture_window) {
+      capture_window->ReleaseCapture();
+    }
+  }
 
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window);
@@ -238,7 +240,7 @@ void DesktopDragDropClientOzone::OnDragDrop(
   // If we didn't have |data_to_drop_|, then |drag_drop_delegate_| had never
   // been updated, and now it needs to receive deferred enter and update events
   // before handling the actual drop.
-  const bool posponed_enter_and_update = !data_to_drop_;
+  const bool postponed_enter_and_update = !data_to_drop_;
 
   // If we didn't have |data_to_drop_| already since the drag had entered the
   // window, take the new data that comes now.
@@ -250,7 +252,7 @@ void DesktopDragDropClientOzone::OnDragDrop(
     // This will call the delegate's OnDragEntered if needed.
     auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
     if (drag_drop_delegate_ && event) {
-      if (posponed_enter_and_update) {
+      if (postponed_enter_and_update) {
         // TODO(https://crbug.com/1014860): deal with drop refusals.
         // The delegate's OnDragUpdated returns an operation that the delegate
         // would accept.  Normally the accepted operation would be propagated
