@@ -318,9 +318,8 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOmniboxTriggerForPrerender2,
-        {{"SupportSearchSuggestion", "true"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSupportSearchSuggestionForPrerender2);
   }
 
   void SetUpOnMainThread() override {

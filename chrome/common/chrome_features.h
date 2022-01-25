@@ -827,11 +827,12 @@ bool IsParentAccessCodeForOnlineLoginEnabled();
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kOmniboxTriggerForPrerender2;
 
-// This param controls whether to trigger prerendering when the default search
-// engine suggests to prerender a search result. This parameter works iff
-// kOmniboxTriggerForPrerender2 and blink::features::Prerender2 is enabled.
+// This flag controls whether to trigger prerendering when the default search
+// engine suggests to prerender a search result. It also enables
+// Prerender2-related features on the blink side. This flag takes effect only
+// when blink::features::Prerender2 is enabled.
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kSupportSearchSuggestionForPrerender2;
+extern const base::Feature kSupportSearchSuggestionForPrerender2;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kOmniboxTriggerForNoStatePrefetch;

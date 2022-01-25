@@ -1576,8 +1576,15 @@ void ChromeContentRendererClient::
   if (base::FeatureList::IsEnabled(subresource_filter::kAdTagging))
     blink::WebRuntimeFeatures::EnableAdTagging(true);
 
+  // Prerender2 should be enabled for supporting the basic infrastructure on the
+  // browser side.
+  // One of the features of kOmniboxTriggerForPrerender2 and
+  // kSupportSearchSuggestionForPrerender2 should be enabled before telling the
+  // blink side that chrome is enrolling the experinment.
   if (blink::features::IsPrerender2Enabled() &&
-      base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2)) {
+      (base::FeatureList::IsEnabled(features::kOmniboxTriggerForPrerender2) ||
+       base::FeatureList::IsEnabled(
+           features::kSupportSearchSuggestionForPrerender2))) {
     blink::WebRuntimeFeatures::EnablePrerender2RelatedFeatures(true);
   }
 }

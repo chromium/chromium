@@ -1208,8 +1208,8 @@ bool IsParentAccessCodeForOnlineLoginEnabled() {
 const base::Feature kOmniboxTriggerForPrerender2{
     "OmniboxTriggerForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<bool> kSupportSearchSuggestionForPrerender2{
-    &kOmniboxTriggerForPrerender2, "SupportSearchSuggestion", false};
+const base::Feature kSupportSearchSuggestionForPrerender2{
+    "SupportSearchSuggestionForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables omnibox trigger no state prefetch. Only one of
 // kOmniboxTriggerForPrerender2 or kOmniboxTriggerForNoStatePrefetch can be
