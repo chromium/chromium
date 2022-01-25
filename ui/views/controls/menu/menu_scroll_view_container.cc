@@ -392,15 +392,15 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   const MenuConfig& menu_config = MenuConfig::instance();
   const int border_radius = menu_config.CornerRadiusForMenu(
       content_view_->GetMenuItem()->GetMenuController());
+  const bool use_touchable_layout =
+      content_view_->GetMenuItem()->GetMenuController()->use_touchable_layout();
+  ui::ColorId id = use_touchable_layout ? ui::kColorTouchableMenuBackground
+                                        : ui::kColorMenuBackground;
   const SkColor color =
-      GetWidget() ? GetColorProvider()->GetColor(ui::kColorMenuBackground)
-                  : gfx::kPlaceholderColor;
+      GetWidget() ? GetColorProvider()->GetColor(id) : gfx::kPlaceholderColor;
   auto bubble_border = std::make_unique<BubbleBorder>(
       arrow_, BubbleBorder::STANDARD_SHADOW, color);
-  if (content_view_->GetMenuItem()
-          ->GetMenuController()
-          ->use_touchable_layout() ||
-      border_radius > 0) {
+  if (use_touchable_layout || border_radius > 0) {
     bubble_border->SetCornerRadius(border_radius);
     bubble_border->set_md_shadow_elevation(
         menu_config.touchable_menu_shadow_elevation);

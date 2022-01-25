@@ -81,6 +81,7 @@
   E_CPONLY(kColorLinkForegroundDisabled) \
   E_CPONLY(kColorLinkForegroundPressed) \
   E(kColorMenuBackground, NativeTheme::kColorId_MenuBackgroundColor) \
+  E(kColorTouchableMenuBackground, NativeTheme::kColorId_MenuBackgroundColor) \
   E_CPONLY(kColorMenuBorder) \
   E_CPONLY(kColorMenuDropmarker) \
   E(kColorMenuIcon, NativeTheme::kColorId_MenuIconColor) \

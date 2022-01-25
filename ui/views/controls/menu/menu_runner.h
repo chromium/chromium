@@ -97,7 +97,14 @@ class VIEWS_EXPORT MenuRunner {
     // finger after the context menu of the item is opened.
     SEND_GESTURE_EVENTS_TO_OWNER = 1 << 7,
 
-    // Whether to use the touchable layout for this context menu.
+    // Whether to use the touchable layout for this context menu. This will be
+    // set by context menu inside system UI only (e.g, the context menu while
+    // right clicking the wallpaper of a ChromeBook). Thus, this can be used to
+    // differentiate the context menu inside system UI from others. It is useful
+    // if we want to customize some attributes of the context menu inside system
+    // UI, e.g, colors.
+    // TODO(minch): Rename this to USE_ASH_SYS_UI_LAYOUT. Rename related
+    // functions/variables as well.
     USE_TOUCHABLE_LAYOUT = 1 << 8,
 
     // Similar to COMBOBOX, but does not capture the mouse and lets some keys
