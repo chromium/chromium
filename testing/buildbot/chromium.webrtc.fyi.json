@@ -6,7 +6,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -122,7 +121,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -243,24 +241,6 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-16.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "jingle_unittests",
-        "test_id_prefix": "ninja://jingle:jingle_unittests/"
-      },
-      {
         "args": [
           "--gtest_filter=Webrtc*"
         ],
@@ -289,7 +269,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -410,24 +389,6 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-10.12.6"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "jingle_unittests",
-        "test_id_prefix": "ninja://jingle:jingle_unittests/"
-      },
-      {
         "args": [
           "--gtest_filter=Webrtc*"
         ],
@@ -456,7 +417,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -575,24 +535,6 @@
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19042"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "jingle_unittests",
-        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [
@@ -732,24 +674,6 @@
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-7-SP1"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "jingle_unittests",
-        "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
         "args": [

@@ -7,7 +7,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -18,7 +17,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -29,7 +27,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -40,7 +37,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -51,7 +47,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   },
@@ -62,7 +57,6 @@
       "capture_unittests",
       "content_browsertests",
       "content_unittests",
-      "jingle_unittests",
       "remoting_unittests"
     ]
   }

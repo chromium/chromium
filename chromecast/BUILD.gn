@@ -176,7 +176,6 @@ cast_test_group("cast_tests") {
       ":cast_shell_browsertests",
       ":cast_shell_unittests",
       "//ipc:ipc_tests",
-      "//jingle:jingle_unittests",
       "//url:url_unittests",
     ]
 

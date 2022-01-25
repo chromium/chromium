@@ -43,7 +43,6 @@ headless_browsertests
 headless_unittests
 interactive_ui_tests
 ipc_tests
-jingle_unittests
 latency_unittests
 libjingle_xmpp_unittests
 media_mojo_unittests

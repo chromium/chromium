@@ -198,7 +198,6 @@ group("gn_all") {
       "//gpu:gpu_benchmark",
       "//gpu:gpu_unittests",
       "//ipc:ipc_tests",
-      "//jingle:jingle_unittests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
       "//media/midi:midi_unittests",

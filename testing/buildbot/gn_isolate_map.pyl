@@ -1124,10 +1124,6 @@
     "label": "//ipc:ipc_tests",
     "type": "console_test_launcher",
   },
-  "jingle_unittests": {
-    "label": "//jingle:jingle_unittests",
-    "type": "console_test_launcher",
-  },
   "junit_unit_tests": {
     "label": "//testing/android/junit:junit_unit_tests",
     "type": "junit_test",

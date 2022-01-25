@@ -1866,7 +1866,6 @@
       "gpu_unittests",
       "interactive_ui_tests",
       "ipc_tests",
-      "jingle_unittests",
       "media_unittests",
       "mojo_unittests",
       "nacl_loader_unittests",
