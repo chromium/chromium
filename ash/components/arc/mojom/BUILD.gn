@@ -22,7 +22,6 @@ mojom("mojom") {
     "bluetooth.mojom",
     "boot_phase_monitor.mojom",
     "camera.mojom",
-    "cast_receiver.mojom",
     "cert_store.mojom",
     "clipboard.mojom",
     "compatibility_mode.mojom",

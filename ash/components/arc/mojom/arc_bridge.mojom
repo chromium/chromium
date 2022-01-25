@@ -15,7 +15,6 @@ import "ash/components/arc/mojom/backup_settings.mojom";
 import "ash/components/arc/mojom/bluetooth.mojom";
 import "ash/components/arc/mojom/boot_phase_monitor.mojom";
 import "ash/components/arc/mojom/camera.mojom";
-import "ash/components/arc/mojom/cast_receiver.mojom";
 import "ash/components/arc/mojom/cert_store.mojom";
 import "ash/components/arc/mojom/clipboard.mojom";
 import "ash/components/arc/mojom/compatibility_mode.mojom";
@@ -66,7 +65,7 @@ import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 
 // Next MinVersion: 62
-// Deprecated method IDs: 101, 105, 121
+// Deprecated method IDs: 101, 105, 121, 132
 // Next method ID: 167
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -115,10 +114,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the CameraInstance is ready.
   [MinVersion=46] OnCameraInstanceReady@151(
       pending_remote<CameraInstance> instance_remote);
-
-  // Notifies Chrome that the CastReceiverInstance interface is ready.
-  [MinVersion=27] OnCastReceiverInstanceReady@132(
-      pending_remote<CastReceiverInstance> instance_remote);
 
   // Notifies Chrome that the CertStoreInstance interface is ready.
   [MinVersion=31] OnCertStoreInstanceReady@136(

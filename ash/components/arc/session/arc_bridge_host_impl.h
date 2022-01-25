@@ -69,9 +69,6 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
           boot_phase_monitor_remote) override;
   void OnCameraInstanceReady(
       mojo::PendingRemote<mojom::CameraInstance> camera_remote) override;
-  void OnCastReceiverInstanceReady(
-      mojo::PendingRemote<mojom::CastReceiverInstance> cast_receiver_remote)
-      override;
   void OnCertStoreInstanceReady(
       mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) override;
   void OnClipboardInstanceReady(

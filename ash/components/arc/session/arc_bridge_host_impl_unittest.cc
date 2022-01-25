@@ -118,7 +118,6 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Bluetooth);
     MAKE_INSTANCE_READY(BootPhaseMonitor);
     MAKE_INSTANCE_READY(Camera);
-    MAKE_INSTANCE_READY(CastReceiver);
     MAKE_INSTANCE_READY(CertStore);
     MAKE_INSTANCE_READY(Clipboard);
     MAKE_INSTANCE_READY(CompatibilityMode);
