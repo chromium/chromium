@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_anchor_manager.h"
+
+#include <tuple>
+
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_util.h"
 
@@ -114,8 +117,9 @@ AnchorId OpenXrAnchorManager::CreateAnchor(XrPosef pose,
   if (FAILED(
           extension_helper_.ExtensionMethods().xrCreateSpatialAnchorSpaceMSFT(
               session_, &space_create_info, &anchor_space))) {
-    (void)extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
-        xr_anchor);
+    std::ignore =
+        extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
+            xr_anchor);
     return kInvalidAnchorId;
   }
 
@@ -136,8 +140,8 @@ XrSpace OpenXrAnchorManager::GetAnchorSpace(AnchorId anchor_id) const {
 
 void OpenXrAnchorManager::DestroyAnchorData(
     const AnchorData& anchor_data) const {
-  (void)xrDestroySpace(anchor_data.space);
-  (void)extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
+  std::ignore = xrDestroySpace(anchor_data.space);
+  std::ignore = extension_helper_.ExtensionMethods().xrDestroySpatialAnchorMSFT(
       anchor_data.anchor);
 }
 

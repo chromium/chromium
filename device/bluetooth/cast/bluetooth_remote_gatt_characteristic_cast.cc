@@ -178,15 +178,14 @@ void BluetoothRemoteGattCharacteristicCast::DeprecatedWriteRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicCast::SubscribeToNotifications(
-    BluetoothRemoteGattDescriptor* ccc_descriptor,
+    [[maybe_unused]] BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   DVLOG(2) << __func__ << " " << GetIdentifier();
 
   // |remote_characteristic_| exposes a method which writes the CCCD after
   // subscribing the GATT client to the notification. This is syntactically
-  // nicer and saves us a thread-hop, so we can ignore |ccc_descriptor|.
-  (void)ccc_descriptor;
+  // nicer and saves us a thread-hop, so we ignore |ccc_descriptor|.
 
   remote_characteristic_->SetRegisterNotification(
       true, base::BindOnce(&OnSubscribeOrUnsubscribe, std::move(callback),
@@ -194,15 +193,14 @@ void BluetoothRemoteGattCharacteristicCast::SubscribeToNotifications(
 }
 
 void BluetoothRemoteGattCharacteristicCast::UnsubscribeFromNotifications(
-    BluetoothRemoteGattDescriptor* ccc_descriptor,
+    [[maybe_unused]] BluetoothRemoteGattDescriptor* ccc_descriptor,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   DVLOG(2) << __func__ << " " << GetIdentifier();
 
   // |remote_characteristic_| exposes a method which writes the CCCD after
   // unsubscribing the GATT client from the notification. This is syntactically
-  // nicer and saves us a thread-hop, so we can ignore |ccc_descriptor|.
-  (void)ccc_descriptor;
+  // nicer and saves us a thread-hop, so we ignore |ccc_descriptor|.
 
   remote_characteristic_->SetRegisterNotification(
       false, base::BindOnce(&OnSubscribeOrUnsubscribe, std::move(callback),

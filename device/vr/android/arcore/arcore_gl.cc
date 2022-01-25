@@ -1374,10 +1374,11 @@ void ArCoreGl::SubmitVizFrame(int16_t frame_index,
   TryRunPendingGetFrameData();
 }
 
-void ArCoreGl::UpdateLayerBounds(int16_t frame_index,
-                                 const gfx::RectF& left_bounds,
-                                 const gfx::RectF& right_bounds,
-                                 const gfx::Size& source_size) {
+void ArCoreGl::UpdateLayerBounds(
+    int16_t frame_index,
+    const gfx::RectF& left_bounds,
+    [[maybe_unused]] const gfx::RectF& right_bounds,
+    const gfx::Size& source_size) {
   DVLOG(2) << __func__ << " source_size=" << source_size.ToString()
            << " left_bounds=" << left_bounds.ToString();
 
@@ -1385,9 +1386,9 @@ void ArCoreGl::UpdateLayerBounds(int16_t frame_index,
   // no animating frame yet. In that case, just save it in viewport_bounds_
   // so that it's applied to the next animating frame.
   if (webxr_->HaveAnimatingFrame()) {
-    // Handheld AR mode is monoscopic and only uses the left bounds.
+    // Handheld AR mode is monoscopic and only uses the left bounds, thus the
+    // [[maybe_unused]] on `right_bounds`.
     webxr_->GetAnimatingFrame()->bounds_left = left_bounds;
-    (void)right_bounds;
   }
   viewport_bounds_ = left_bounds;
 

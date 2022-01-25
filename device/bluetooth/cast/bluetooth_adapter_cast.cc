@@ -214,14 +214,15 @@ bool BluetoothAdapterCast::SetPoweredImpl(bool powered) {
 }
 
 void BluetoothAdapterCast::StartScanWithFilter(
-    std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+    [[maybe_unused]] std::unique_ptr<device::BluetoothDiscoveryFilter>
+        discovery_filter,
     DiscoverySessionResultCallback callback) {
   // The discovery filter is unused for now, as the Cast bluetooth stack does
   // not expose scan filters yet. However, implementation of filtering would
   // save numerous UI<->IO threadhops by eliminating unnecessary calls to
   // GetDevice().
-  // TODO(bcf|slan): Wire this up once scan filters are implemented.
-  (void)discovery_filter;
+  // TODO(bcf|slan): Wire this up once scan filters are implemented and remove
+  // the [[maybe_unused]].
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 
