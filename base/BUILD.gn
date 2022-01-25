@@ -350,7 +350,6 @@ mixed_component("base") {
     "hash/hash.h",
     "hash/legacy_hash.cc",
     "hash/legacy_hash.h",
-    "ignore_result.h",
     "immediate_crash.h",
     "json/json_common.h",
     "json/json_file_value_serializer.cc",
