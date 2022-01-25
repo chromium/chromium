@@ -79,27 +79,18 @@ std::unique_ptr<views::Slider> CreateSlider(UnifiedSliderListener* listener,
 
 }  // namespace
 
-UnifiedSliderButton::UnifiedSliderButton(PressedCallback callback,
-                                         const gfx::VectorIcon& icon,
-                                         int accessible_name_id)
-    : IconButton(std::move(callback),
-                 IconButton::Type::kSmall,
-                 &icon,
-                 accessible_name_id,
-                 /*is_togglable=*/true,
-                 /*has_border=*/true) {}
-
-UnifiedSliderButton::~UnifiedSliderButton() = default;
-
 UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      UnifiedSliderListener* listener,
                                      const gfx::VectorIcon& icon,
                                      int accessible_name_id,
                                      bool readonly)
-    : button_(AddChildView(
-          std::make_unique<UnifiedSliderButton>(std::move(callback),
-                                                icon,
-                                                accessible_name_id))),
+    : button_(
+          AddChildView(std::make_unique<IconButton>(std::move(callback),
+                                                    IconButton::Type::kSmall,
+                                                    &icon,
+                                                    accessible_name_id,
+                                                    /*is_togglable=*/true,
+                                                    /*has_border=*/true))),
       slider_(AddChildView(CreateSlider(listener, readonly))) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kUnifiedSliderRowPadding,

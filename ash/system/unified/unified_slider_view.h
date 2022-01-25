@@ -28,18 +28,6 @@ class UnifiedSliderListener : public views::SliderListener {
   ~UnifiedSliderListener() override = default;
 };
 
-// TODO(crbug/1276545): Remove UnifiedSliderButton after the migration.
-// A button used in a slider row of UnifiedSystemTray. The button is togglable.
-class UnifiedSliderButton : public IconButton {
- public:
-  UnifiedSliderButton(PressedCallback callback,
-                      const gfx::VectorIcon& icon,
-                      int accessible_name_id);
-  UnifiedSliderButton(const UnifiedSliderButton&) = delete;
-  UnifiedSliderButton& operator=(const UnifiedSliderButton&) = delete;
-  ~UnifiedSliderButton() override;
-};
-
 // Base view class of a slider row in UnifiedSystemTray. It has a button on the
 // left side and a slider on the right side.
 class UnifiedSliderView : public views::View {
@@ -56,7 +44,7 @@ class UnifiedSliderView : public views::View {
 
   ~UnifiedSliderView() override;
 
-  UnifiedSliderButton* button() { return button_; }
+  IconButton* button() { return button_; }
   views::Slider* slider() { return slider_; }
   views::Label* toast_label() { return toast_label_; }
 
@@ -73,7 +61,7 @@ class UnifiedSliderView : public views::View {
 
  private:
   // Unowned. Owned by views hierarchy.
-  UnifiedSliderButton* const button_;
+  IconButton* const button_;
   views::Slider* const slider_;
   views::Label* toast_label_ = nullptr;
 };
