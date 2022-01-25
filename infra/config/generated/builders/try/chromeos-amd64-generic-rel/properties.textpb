@@ -3,12 +3,6 @@
     "compilator": "chromeos-amd64-generic-rel-compilator",
     "compilator_watcher_git_revision": "5fd7f4ae276865742fe632642ec4633dd9f81649"
   },
-  "$build/goma": {
-    "enable_ats": true,
-    "rpc_extra_params": "?prod",
-    "server_host": "goma.chromium.org",
-    "use_luci_auth": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
