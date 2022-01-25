@@ -335,6 +335,12 @@ const base::Feature kDisableHttpDiskCache{"DisableHttpDiskCache",
 const base::FeatureParam<int> kDisableHttpDiskCacheMemoryCacheSizeParam{
     &kDisableHttpDiskCache, "MemoryCacheSize", 0};
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Serves web app settings at chrome://app-settings/<app-id>.
+const base::Feature kDesktopPWAsWebAppSettingsPage{
+    "DesktopPWAsWebAppSettingsPage", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

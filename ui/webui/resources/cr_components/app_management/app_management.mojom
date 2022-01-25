@@ -47,6 +47,8 @@ interface PageHandlerFactory {
 // Browser interface.
 interface PageHandler {
   GetApps() => (array<App> apps);
+  // Returns null if the app is not found.
+  GetApp(string app_id) => (App? app);
   GetExtensionAppPermissionMessages(string app_id) =>
       (array<ExtensionAppPermissionMessage> messages);
   SetPinned(string app_id, apps.mojom.OptionalBool pinned);

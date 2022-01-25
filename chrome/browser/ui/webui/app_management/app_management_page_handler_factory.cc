@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_page_handler_factory.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 
 #include <memory>
 #include <utility>
@@ -25,9 +25,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
-namespace ash {
-namespace settings {
-
 AppManagementPageHandlerFactory::AppManagementPageHandlerFactory(
     Profile* profile)
     : profile_(profile) {}
@@ -49,6 +46,3 @@ void AppManagementPageHandlerFactory::CreatePageHandler(
   page_handler_ = std::make_unique<AppManagementPageHandler>(
       std::move(receiver), std::move(page), profile_);
 }
-
-}  // namespace settings
-}  // namespace ash

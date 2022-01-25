@@ -405,4 +405,18 @@ void RegisterFileHandlersWithOs(WebAppProvider* provider,
                                 const AppId& app_id,
                                 absl::optional<ApiApprovalState> approval_state,
                                 base::OnceClosure finished_closure) {}
+
+bool HasAppSettingsPage(Profile* profile, const GURL& url) {
+  // App Settings page is served under chrome://app-settings/<app-id>.
+  // url.path() returns "/<app-id>" with a leading slash.
+  std::string path = url.path();
+  if (path.size() <= 1)
+    return false;
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  if (!provider)
+    return false;
+  const AppId app_id = path.substr(1);
+  return provider->registrar().IsLocallyInstalled(app_id);
+}
+
 }  // namespace web_app

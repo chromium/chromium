@@ -387,6 +387,11 @@ extern const char kChromeUIDiscardsHost[];
 extern const char kChromeUIDiscardsURL[];
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+extern const char kChromeUIWebAppSettingsURL[];
+extern const char kChromeUIWebAppSettingsHost[];
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kChromeUINearbyShareHost[];
 extern const char kChromeUINearbyShareURL[];

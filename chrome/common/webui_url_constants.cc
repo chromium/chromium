@@ -546,6 +546,11 @@ const char kPeopleSubPage[] = "people";
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kChromeUIWebAppSettingsURL[] = "chrome://app-settings/";
+const char kChromeUIWebAppSettingsHost[] = "app-settings";
+#endif
+
 #if BUILDFLAG(IS_WIN)
 const char kCleanupSubPage[] = "cleanup";
 #endif  // BUILDFLAG(IS_WIN)
@@ -674,6 +679,9 @@ const char* const kChromeHostURLs[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     kChromeUIDiscardsHost,
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    kChromeUIWebAppSettingsHost,
 #endif
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
     kChromeUILinuxProxyConfigHost,

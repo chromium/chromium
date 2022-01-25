@@ -180,6 +180,20 @@ void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(std::move(apps));
 }
 
+void AppManagementPageHandler::GetApp(const std::string& app_id,
+                                      GetAppCallback callback) {
+  app_management::mojom::AppPtr app;
+
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+        if (update.Readiness() == apps::mojom::Readiness::kReady)
+          app = CreateUIAppPtr(update);
+      });
+
+  std::move(callback).Run(std::move(app));
+}
+
 void AppManagementPageHandler::GetExtensionAppPermissionMessages(
     const std::string& app_id,
     GetExtensionAppPermissionMessagesCallback callback) {

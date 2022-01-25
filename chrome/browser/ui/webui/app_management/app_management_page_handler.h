@@ -38,6 +38,7 @@ class AppManagementPageHandler
 
   // app_management::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
+  void GetApp(const std::string& app_id, GetAppCallback callback) override;
   void GetExtensionAppPermissionMessages(
       const std::string& app_id,
       GetExtensionAppPermissionMessagesCallback callback) override;

@@ -144,6 +144,9 @@ bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
 // Check if all types of |sources| are uninstallable by the user.
 bool CanUserUninstallWebApp(WebAppSources sources);
 
+// Check if |url|'s path is an installed web app.
+bool HasAppSettingsPage(Profile* profile, const GURL& url);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The kLacrosPrimary and kWebAppsCrosapi features are each independently
 // sufficient to enable the web apps Crosapi (used for Lacros web app

@@ -195,6 +195,14 @@ export class FakePageHandler {
 
   /**
    * @param {!string} appId
+   * @return {!Promise<{app: appManagement.mojom.App}>}
+   */
+  async getApp(appId) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {!string} appId
    * @return {!Promise<{messages:
    *     !Array<!appManagement.mojom.ExtensionAppPermissionMessage>}>}
    */

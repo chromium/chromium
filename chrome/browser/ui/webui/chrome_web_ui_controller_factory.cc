@@ -322,6 +322,11 @@
 #include "chrome/browser/ui/webui/connectors_internals/connectors_internals_ui.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
 #if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
@@ -1135,6 +1140,12 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (url.host_piece() == chrome::kChromeUIBrowserSwitchHost)
     return &NewWebUI<BrowserSwitchUI>;
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
+      url.host_piece() == chrome::kChromeUIWebAppSettingsHost) {
+    if (web_app::HasAppSettingsPage(profile, url)) {
+      return &NewWebUI<WebAppSettingsUI>;
+    }
+  }
 #endif
   if (IsAboutUI(url))
     return &NewWebUI<AboutUI>;
