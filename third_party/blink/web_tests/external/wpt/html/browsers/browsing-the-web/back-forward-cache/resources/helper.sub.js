@@ -67,7 +67,8 @@ const waitForPageShow = () => window.pageShowPromise;
 
 // Run a test that navigates A->B->A:
 // 1. Page A is opened by `params.openFunc(url)`.
-// 2. `params.funcBeforeNavigation` is executed on page A.
+// 2. `params.funcBeforeNavigation(params.argsBeforeNavigation)` is executed
+//    on page A.
 // 3. The window is navigated to page B on `params.targetOrigin`.
 // 4. The window is back navigated to page A (expecting BFCached).
 //
@@ -104,7 +105,7 @@ function runEventTest(params, description) {
   runBfcacheTest(params, description);
 }
 
-async function navigateAndThenBack(pageA, pageB, urlB) {
+async function navigateAndThenBack(pageA, pageB, urlB, funcBeforeBackNavigation) {
   await pageA.execute_script(
     (url) => {
       prepareNavigation(() => {
@@ -115,6 +116,9 @@ async function navigateAndThenBack(pageA, pageB, urlB) {
   );
 
   await pageB.execute_script(waitForPageShow);
+  if (funcBeforeBackNavigation) {
+    await pageB.execute_script(funcBeforeBackNavigation);
+  }
   await pageB.execute_script(
     () => {
       prepareNavigation(() => { history.back(); });
@@ -129,7 +133,9 @@ function runBfcacheTest(params, description) {
     openFunc: url => window.open(url, '_blank', 'noopener'),
     scripts: [],
     funcBeforeNavigation: () => {},
+    argsBeforeNavigation: [],
     targetOrigin: originCrossSite,
+    funcBeforeBackNavigation: () => {},
     shouldBeCached: true,
     funcAfterAssertion: () => {},
   }
@@ -156,8 +162,10 @@ function runBfcacheTest(params, description) {
       }, [src]);
     }
 
-    await pageA.execute_script(params.funcBeforeNavigation);
-    await navigateAndThenBack(pageA, pageB, urlB);
+    await pageA.execute_script(params.funcBeforeNavigation,
+                               params.argsBeforeNavigation);
+    await navigateAndThenBack(pageA, pageB, urlB,
+                              params.funcBeforeBackNavigation);
 
     if (params.shouldBeCached) {
       await assert_bfcached(pageA);
@@ -166,7 +174,7 @@ function runBfcacheTest(params, description) {
     }
 
     if (params.funcAfterAssertion) {
-      await params.funcAfterAssertion(pageA, pageB);
+      await params.funcAfterAssertion(pageA, pageB, t);
     }
   }, description);
 }
