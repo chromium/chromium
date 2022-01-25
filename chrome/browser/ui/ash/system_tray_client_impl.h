@@ -95,6 +95,9 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
   void ShowAccessCodeCastingDialog() override;
+  void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                         bool& opened_pwa,
+                         GURL& finalized_event_url) override;
 
  protected:
   // Used by mocks in tests.

@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/actionable_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -49,6 +50,9 @@ class ASH_EXPORT CalendarEventListItemView : public ActionableView {
 
   // The start time and end time of a meeting event.
   views::Label* const time_range_;
+
+  // The URL for the meeting event.
+  const GURL event_url_;
 };
 
 }  // namespace ash

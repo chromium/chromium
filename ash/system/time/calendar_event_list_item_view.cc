@@ -5,7 +5,10 @@
 #include "ash/system/time/calendar_event_list_item_view.h"
 
 #include "ash/public/cpp/ash_typography.h"
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
@@ -97,7 +100,8 @@ CalendarEventListItemView::CalendarEventListItemView(
     google_apis::calendar::CalendarEvent event)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       summary_(new views::Label()),
-      time_range_(new views::Label()) {
+      time_range_(new views::Label()),
+      event_url_(event.html_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto start_time = event.start_time().date_time();
@@ -155,7 +159,11 @@ void CalendarEventListItemView::OnThemeChanged() {
 }
 
 bool CalendarEventListItemView::PerformAction(const ui::Event& event) {
-  // TODO(https://crbug.com/1270938): Launch web app implementation.
+  DCHECK(event_url_.is_empty() || event_url_.is_valid());
+  GURL finalized_url;
+  bool opened_pwa = false;
+  Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+      event_url_, opened_pwa, finalized_url);
   return true;
 }
 

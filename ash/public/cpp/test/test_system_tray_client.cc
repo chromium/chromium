@@ -103,4 +103,9 @@ void TestSystemTrayClient::SetLocaleAndExit(
 
 void TestSystemTrayClient::ShowAccessCodeCastingDialog() {}
 
+void TestSystemTrayClient::ShowCalendarEvent(
+    const absl::optional<GURL>& event_url,
+    bool& opened_pwa,
+    GURL& final_event_url) {}
+
 }  // namespace ash
