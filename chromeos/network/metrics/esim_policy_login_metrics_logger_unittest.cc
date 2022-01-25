@@ -4,8 +4,10 @@
 
 #include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -125,6 +127,8 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
 };
 
 TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
   // Perform this test as though this "device" is enterprise managed.
   esim_policy_login_metrics_logger_->SetIsEnterpriseManaged(
       /*is_enterprise_managed=*/true);
@@ -206,7 +210,7 @@ TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
       ESimPolicyLoginMetricsLogger::kInitializationTimeout);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyBlockNonManagedCellularHistogram,
-      2);
+      3);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyStatusAtLoginHistogram, 2);
   histogram_tester_.ExpectBucketCount(
@@ -223,7 +227,7 @@ TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
       ESimPolicyLoginMetricsLogger::kESimPolicyBlockNonManagedCellularHistogram,
       ESimPolicyLoginMetricsLogger::BlockNonManagedCellularBehavior::
           kAllowManagedOnly,
-      1);
+      2);
 
   // Verify that no metrics should be logged if the device is not enterprise
   // enrolled.
@@ -234,7 +238,7 @@ TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
       ESimPolicyLoginMetricsLogger::kInitializationTimeout);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyBlockNonManagedCellularHistogram,
-      2);
+      3);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyStatusAtLoginHistogram, 2);
 
@@ -247,7 +251,7 @@ TEST_F(ESimPolicyLoginMetricsLoggerTest, LoginMetricsTest) {
       ESimPolicyLoginMetricsLogger::kInitializationTimeout);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyBlockNonManagedCellularHistogram,
-      2);
+      3);
   histogram_tester_.ExpectTotalCount(
       ESimPolicyLoginMetricsLogger::kESimPolicyStatusAtLoginHistogram, 2);
 }
