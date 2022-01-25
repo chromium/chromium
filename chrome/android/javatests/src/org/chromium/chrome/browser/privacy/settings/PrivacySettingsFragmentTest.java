@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.privacy.settings;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.Build;
 import android.text.TextUtils;
@@ -29,6 +32,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -36,7 +40,9 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
@@ -116,6 +122,48 @@ public class PrivacySettingsFragmentTest {
                             .findViewById(android.R.id.content)
                             .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_settings_bottom_view");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    public void testRenderPrivacySandboxView() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Sandbox page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        onView(withText("Privacy Sandbox")).perform(click());
+
+        // Verify that the right view is shown depending on feature state.
+        View[] view = {null};
+        onViewWaiting(withText("Privacy Sandbox trials"))
+                .check(((v, e) -> view[0] = v.getRootView()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
+        mRenderTestRule.render(view[0], "privacy_sandbox_view");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testRenderPrivacySandboxViewV3() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Sandbox page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        onView(withText("Privacy Sandbox")).perform(click());
+
+        // Verify that the right view is shown depending on feature state.
+        View[] view = {null};
+        onViewWaiting(withText("Ad personalization")).check(((v, e) -> view[0] = v.getRootView()));
+        TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
+        mRenderTestRule.render(view[0], "privacy_sandbox_view_v3");
     }
 
     @Test
