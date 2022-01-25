@@ -792,24 +792,35 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
         (!builder || !builder->HasEarlyBreak() ||
          appeal_inside >= builder->EarlyBreak().BreakAppeal()))
       return true;
-  } else if (refuse_break_before ||
-             (appeal_before == kBreakAppealLastResort && builder &&
-              builder->RequiresContentBeforeBreaking()) ||
-             BlockSizeForFragmentation(
-                 layout_result, space.GetWritingDirection()) <= space_left) {
-    // The child either fits, or we are not allowed to break. So we can move
-    // past this breakpoint.
-    if (child.IsBlock() && builder) {
-      // We're tentatively not going to break before or inside this child, but
-      // we'll check the appeal of breaking there anyway. It may be the best
-      // breakpoint we'll ever find. (Note that we only do this for block
-      // children, since, when it comes to inline layout, we first need to lay
-      // out all the line boxes, so that we know what do to in order to honor
-      // orphans and widows, if at all possible.)
-      UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child), layout_result,
-                                   appeal_before, builder);
+  } else {
+    bool move_past = refuse_break_before;
+    if (!move_past) {
+      if (BlockSizeForFragmentation(
+              layout_result, space.GetWritingDirection()) <= space_left) {
+        // The fragment fits! We can move past.
+        move_past = true;
+      } else if (appeal_before == kBreakAppealLastResort && builder &&
+                 builder->RequiresContentBeforeBreaking()) {
+        // The fragment doesn't fit, but we need to force to stay here anyway.
+        builder->SetIsBlockSizeForFragmentationClamped();
+        move_past = true;
+      }
     }
-    return true;
+    if (move_past) {
+      // The child either fits, or we are not allowed to break. So we can move
+      // past this breakpoint.
+      if (child.IsBlock() && builder) {
+        // We're tentatively not going to break before or inside this child, but
+        // we'll check the appeal of breaking there anyway. It may be the best
+        // breakpoint we'll ever find. (Note that we only do this for block
+        // children, since, when it comes to inline layout, we first need to lay
+        // out all the line boxes, so that we know what do to in order to honor
+        // orphans and widows, if at all possible.)
+        UpdateEarlyBreakAtBlockChild(space, To<NGBlockNode>(child),
+                                     layout_result, appeal_before, builder);
+      }
+      return true;
+    }
   }
 
   // We don't want to break inside, so we should attempt to break before.

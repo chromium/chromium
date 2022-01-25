@@ -875,9 +875,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     bool MaySkipLayout(const RareData& other) const {
-      if (fragmentainer_block_size != other.fragmentainer_block_size ||
-          fragmentainer_offset_at_bfc != other.fragmentainer_offset_at_bfc ||
-          data_union_type != other.data_union_type ||
+      if (data_union_type != other.data_union_type ||
           is_line_clamp_context != other.is_line_clamp_context ||
           is_restricted_block_size_table_cell !=
               other.is_restricted_block_size_table_cell ||

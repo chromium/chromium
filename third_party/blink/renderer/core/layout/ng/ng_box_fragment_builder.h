@@ -255,6 +255,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return requires_content_before_breaking_;
   }
 
+  void SetIsBlockSizeForFragmentationClamped() {
+    is_block_size_for_fragmentation_clamped_ = true;
+  }
+
   // If a node fits in one fragmentainer due to restricted block-size, it must
   // stay there, even if the first piece of child content should require more
   // space than that (which would normally push the entire node into the next
@@ -678,6 +682,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_inline_formatting_context_;
   bool is_known_to_fit_in_fragmentainer_ = false;
   bool requires_content_before_breaking_ = false;
+  bool is_block_size_for_fragmentation_clamped_ = false;
   bool is_first_for_node_ = true;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;

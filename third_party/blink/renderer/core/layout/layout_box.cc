@@ -3671,14 +3671,6 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
             old_space.ExpectedBfcBlockOffset() &&
         new_space.ForcedBfcBlockOffset() == old_space.ForcedBfcBlockOffset();
 
-    // Even for the first fragment, when block fragmentation is enabled, block
-    // offset changes should cause re-layout, since we will fragment at other
-    // locations than before.
-    if (UNLIKELY(!are_bfc_offsets_equal && new_space.HasBlockFragmentation())) {
-      DCHECK(old_space.HasBlockFragmentation());
-      return nullptr;
-    }
-
     is_margin_strut_equal = new_space.MarginStrut() == old_space.MarginStrut();
     is_exclusion_space_equal =
         new_space.ExclusionSpace() == old_space.ExclusionSpace();
@@ -3715,6 +3707,113 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
               *cached_layout_result, new_space, &bfc_block_offset,
               &block_offset_delta, &end_margin_strut))
         return nullptr;
+    }
+
+    if (UNLIKELY(new_space.HasBlockFragmentation())) {
+      DCHECK(old_space.HasBlockFragmentation());
+      // We're should currently be checking if the node is unfragmented before
+      // we get here.
+      DCHECK(physical_fragment.IsOnlyForNode());
+
+      // If the node didn't break into multiple fragments, we might be able to
+      // re-use the result. If the fragmentainer block-size has changed, or if
+      // the fragment's block-offset within the fragmentainer has changed, we
+      // need to check if the node will still fit as one fragment. If we cannot
+      // be sure that this is the case, we need to miss the cache.
+      if (new_space.IsInitialColumnBalancingPass()) {
+        if (!old_space.IsInitialColumnBalancingPass()) {
+          // If the previous result was generated with a known fragmentainer
+          // size (i.e. not in the initial column balancing pass),
+          // TallestUnbreakableBlockSize() won't be stored in the layout result,
+          // because we currently only calculate this in the initial column
+          // balancing pass. Since we're now in an initial column balancing pass
+          // again, we cannot re-use the result, because not propagating the
+          // tallest unbreakable block-size might cause incorrect layout.
+          //
+          // Another problem is OOF descendants. In the initial column balancing
+          // pass, they affect FragmentainerBlockSize() (because OOFs are
+          // supposed to affect column balancing), while in actual layout
+          // passes, OOFs will escape their actual containing block and become
+          // direct children of some fragmentainer. In other words, any relevant
+          // information about OOFs and how they might affect balancing has been
+          // lost.
+          return nullptr;
+        }
+        // (On the other hand, if the previous result was also generated in the
+        // initial column balancing pass, we don't need to perform any
+        // additional checks.)
+      } else if (new_space.FragmentainerBlockSize() !=
+                     old_space.FragmentainerBlockSize() ||
+                 new_space.FragmentainerOffsetAtBfc() !=
+                     old_space.FragmentainerOffsetAtBfc()) {
+        // If the fragment was forced to stay in a fragmentainer (even if it
+        // overflowed), BlockSizeForFragmentation() cannot be used for cache
+        // testing.
+        if (cached_layout_result->IsBlockSizeForFragmentationClamped())
+          return nullptr;
+
+        bool check_exclusion_space = false;
+        if (!bfc_block_offset) {
+          // This happens for self-collapsing nodes, and also when the node
+          // isn't a regular block container (e.g. fieldset, flex, grid, table
+          // or multicol).
+          //
+          // Self-collapsing blocks may have floats and OOF descendants.
+          // Checking if floats cross the fragmentation line is easy enough
+          // (check the exclusion space), but we currently have no way of
+          // checking OOF descendants. OOFs are included in
+          // BlockSizeForFragmentation() in the initial column balancing pass
+          // only, but since we don't know the start offset of this node,
+          // there's nothing we can do about it. Give up if this is the case.
+          if (old_space.IsInitialColumnBalancingPass())
+            return nullptr;
+
+          // If we're self-collapsing, we may continue, and just check the
+          // exclusion space for floats. Otherwise (the algorithm type probably
+          // didn't set a BFC block-offset), we need to give up, as we have no
+          // idea where we are.
+          //
+          // TODO(mstensho): Could we just fix it so that all algorithms set a
+          // BFC block-offset on the result, and change this test into a DCHECK?
+          if (!cached_layout_result->IsSelfCollapsing())
+            return nullptr;
+
+          check_exclusion_space = true;
+        } else {
+          if (physical_fragment.IsInlineFormattingContext() &&
+              !physical_fragment.IsFormattingContextRoot()) {
+            // If floats were added inside an inline formatting context, they
+            // might extrude.
+            if (cached_layout_result->ExclusionSpace() !=
+                old_space.ExclusionSpace())
+              check_exclusion_space = true;
+          }
+
+          // Note: It should be fine to use NGLayoutResult::
+          // BlockSizeForFragmentation() directly here, rather than the helper
+          // function BlockSizeForFragmentation() in ng_fragmentation_utils.cc,
+          // since what the latter does shouldn't matter, since we're not
+          // monolithic content (HasBlockFragmentation() is true), and we're not
+          // a line box.
+          LayoutUnit block_size_for_fragmentation =
+              cached_layout_result->BlockSizeForFragmentation();
+
+          LayoutUnit block_end_offset = new_space.FragmentainerOffsetAtBfc() +
+                                        *bfc_block_offset +
+                                        block_size_for_fragmentation;
+          if (block_end_offset > new_space.FragmentainerBlockSize())
+            return nullptr;
+        }
+
+        if (check_exclusion_space) {
+          const auto& exclusion_space = cached_layout_result->ExclusionSpace();
+          LayoutUnit block_end_offset =
+              new_space.FragmentainerOffsetAtBfc() +
+              exclusion_space.ClearanceOffset(EClear::kBoth);
+          if (block_end_offset > new_space.FragmentainerBlockSize())
+            return nullptr;
+        }
+      }
     }
   }
 

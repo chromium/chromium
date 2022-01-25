@@ -87,6 +87,9 @@ NGLayoutResult::NGLayoutResult(
     rare_data->block_size_for_fragmentation =
         builder->block_size_for_fragmentation_;
 
+    bitfields_.is_block_size_for_fragmentation_clamped =
+        builder->is_block_size_for_fragmentation_clamped_;
+
     bitfields_.break_appeal = builder->break_appeal_;
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));

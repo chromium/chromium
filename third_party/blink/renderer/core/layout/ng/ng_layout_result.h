@@ -252,6 +252,13 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return rare_data_->block_size_for_fragmentation;
   }
 
+  // Return true if the block-size for fragmentation (see
+  // BlockSizeForFragmentation()) got clamped. If this is the case, we cannot
+  // use BlockSizeForFragmentation() for cache testing.
+  bool IsBlockSizeForFragmentationClamped() const {
+    return bitfields_.is_block_size_for_fragmentation_clamped;
+  }
+
   // Return the (lowest) appeal among any unforced breaks inside the resulting
   // fragment (or kBreakAppealPerfect if there are no such breaks).
   //
@@ -579,6 +586,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           has_forced_break(false),
           break_appeal(kBreakAppealPerfect),
           is_empty_spanner_parent(false),
+          is_block_size_for_fragmentation_clamped(false),
           is_self_collapsing(is_self_collapsing),
           is_pushed_by_floats(is_pushed_by_floats),
           adjoining_object_types(static_cast<unsigned>(adjoining_object_types)),
@@ -599,6 +607,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     unsigned has_forced_break : 1;
     unsigned break_appeal : kNGBreakAppealBitsNeeded;
     unsigned is_empty_spanner_parent : 1;
+    unsigned is_block_size_for_fragmentation_clamped : 1;
 
     unsigned is_self_collapsing : 1;
     unsigned is_pushed_by_floats : 1;
