@@ -35,9 +35,10 @@ class DictationBubbleControllerTest : public AshTestBase {
         ->GetDictationBubbleControllerForTest();
   }
 
-  void Show(const std::u16string& text) {
+  void Show(DictationBubbleIconType icon,
+            const absl::optional<std::u16string>& text) {
     GetController()->UpdateBubble(
-        /*visible=*/true, /*icon=*/DictationBubbleIconType::kHidden, text);
+        /*visible=*/true, /*icon=*/icon, /*text=*/text);
   }
 
   void Hide() {
@@ -56,24 +57,85 @@ class DictationBubbleControllerTest : public AshTestBase {
     return GetController()->dictation_bubble_view_->GetTextForTesting();
   }
 
+  bool IsStandbyViewVisible() {
+    return GetView()->IsStandbyViewVisibleForTesting();
+  }
+
+  bool IsMacroSucceededImageVisible() {
+    return GetView()->IsMacroSucceededImageVisibleForTesting();
+  }
+
+  bool IsMacroFailedImageVisible() {
+    return GetView()->IsMacroFailedImageVisibleForTesting();
+  }
+
+  void HideAndCheckExpectations() {
+    Hide();
+    EXPECT_TRUE(GetView());
+    EXPECT_FALSE(IsBubbleVisible());
+    EXPECT_EQ(std::u16string(), GetBubbleText());
+    EXPECT_FALSE(IsStandbyViewVisible());
+    EXPECT_FALSE(IsMacroSucceededImageVisible());
+    EXPECT_FALSE(IsMacroFailedImageVisible());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DictationBubbleControllerTest, ShowAndHide) {
+TEST_F(DictationBubbleControllerTest, ShowText) {
   EXPECT_FALSE(GetView());
-  Show(u"Testing");
+  Show(DictationBubbleIconType::kHidden,
+       absl::optional<std::u16string>(u"Testing"));
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
-  Hide();
-  EXPECT_TRUE(GetView());
-  EXPECT_FALSE(IsBubbleVisible());
+  EXPECT_EQ(u"Testing", GetBubbleText());
+  EXPECT_FALSE(IsStandbyViewVisible());
+  EXPECT_FALSE(IsMacroSucceededImageVisible());
+  EXPECT_FALSE(IsMacroFailedImageVisible());
+
+  HideAndCheckExpectations();
 }
 
-TEST_F(DictationBubbleControllerTest, LabelText) {
+TEST_F(DictationBubbleControllerTest, ShowStandbyImage) {
   EXPECT_FALSE(GetView());
-  Show(u"Testing");
-  EXPECT_EQ(u"Testing", GetBubbleText());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>());
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(std::u16string(), GetBubbleText());
+  EXPECT_TRUE(IsStandbyViewVisible());
+  EXPECT_FALSE(IsMacroSucceededImageVisible());
+  EXPECT_FALSE(IsMacroFailedImageVisible());
+
+  HideAndCheckExpectations();
+}
+
+TEST_F(DictationBubbleControllerTest, ShowMacroSuccessImage) {
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kMacroSuccess,
+       absl::optional<std::u16string>(u"Macro successfull"));
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(u"Macro successfull", GetBubbleText());
+  EXPECT_FALSE(IsStandbyViewVisible());
+  EXPECT_TRUE(IsMacroSucceededImageVisible());
+  EXPECT_FALSE(IsMacroFailedImageVisible());
+
+  HideAndCheckExpectations();
+}
+
+TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kMacroFail,
+       absl::optional<std::u16string>(u"Macro failed"));
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(u"Macro failed", GetBubbleText());
+  EXPECT_FALSE(IsStandbyViewVisible());
+  EXPECT_FALSE(IsMacroSucceededImageVisible());
+  EXPECT_TRUE(IsMacroFailedImageVisible());
+
+  HideAndCheckExpectations();
 }
 
 }  // namespace ash
