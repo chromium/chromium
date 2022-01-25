@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from './assert.js';
 import {reportError} from './error.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {
@@ -80,6 +81,7 @@ export class PerfLogger {
     }
 
     const startTime = this.startTimeMap.get(event);
+    assert(startTime !== undefined);
     this.startTimeMap.delete(event);
 
     // If there is error during performance measurement, drop it since it might
