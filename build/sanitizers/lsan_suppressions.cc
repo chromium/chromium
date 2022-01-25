@@ -81,6 +81,9 @@ char kLSanDefaultSuppressions[] =
     "leak:ash::LockStateController::StartPostLockAnimation\n"
     // Suppress leak in SurfaceDrawContext. crbug.com/1265033
     "leak:skgpu::v1::SurfaceDrawContext::drawGlyphRunList\n"
+    // Suppress leak in BluetoothServerSocket. crbug.com/1278970
+    "leak:location::nearby::chrome::BluetoothServerSocket::"
+    "BluetoothServerSocket\n"
 #endif
 
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
