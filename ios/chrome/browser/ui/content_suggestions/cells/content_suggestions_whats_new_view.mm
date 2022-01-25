@@ -78,6 +78,7 @@ const CGFloat kIconTopMargin = 10;
   if (self) {
     [_iconView setImage:config.icon];
     [self configureLabelWithText:config.text];
+    self.isAccessibilityElement = YES;
     self.accessibilityIdentifier = kContentSuggestionsWhatsNewIdentifier;
   }
   return self;

@@ -99,6 +99,7 @@ const CGFloat kIconWidth = 32.0f;
   if (self) {
     self.titleLabel.text = config.title;
     self.subtitleLabel.text = config.subtitle;
+    self.isAccessibilityElement = YES;
     self.accessibilityLabel = config.title;
     self.iconImageView.image = config.icon;
     if (!config.icon) {
