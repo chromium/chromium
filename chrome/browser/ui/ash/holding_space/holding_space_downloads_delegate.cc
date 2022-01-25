@@ -762,11 +762,6 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
       std::make_unique<InProgressAshDownload>(this, manager, download_item));
 }
 
-bool HoldingSpaceDownloadsDelegate::ShouldObserveProfile(Profile* profile) {
-  return !profile->IsIncognitoProfile() ||
-         features::IsHoldingSpaceIncognitoProfileIntegrationEnabled();
-}
-
 void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
     const base::FilePath& relative_path,
     const std::string& owner_package_name) {
@@ -795,10 +790,6 @@ void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
 
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
     const crosapi::mojom::DownloadItem& mojo_download_item) {
-  if (mojo_download_item.is_from_incognito_profile &&
-      !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
-    return;
-  }
   // NOTE: If ineligible for in-progress download handling, the download will
   // still be added to holding space on completion.
   if (IsInProgress(&mojo_download_item) &&
@@ -810,10 +801,6 @@ void HoldingSpaceDownloadsDelegate::OnLacrosDownloadCreated(
 
 void HoldingSpaceDownloadsDelegate::OnLacrosDownloadUpdated(
     const crosapi::mojom::DownloadItem& mojo_download_item) {
-  if (mojo_download_item.is_from_incognito_profile &&
-      !features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
-    return;
-  }
   // NOTE: It is only necessary to add a holding space item on completion here
   // if the download was ineligible for in-progress download handling.
   if (IsComplete(&mojo_download_item) &&

@@ -72,7 +72,6 @@ class HoldingSpaceDownloadsDelegate
                          download::DownloadItem* item) override;
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
-  bool ShouldObserveProfile(Profile* profile) override;
 
   // arc::ArcIntentHelperObserver:
   void OnArcDownloadAdded(const base::FilePath& relative_path,

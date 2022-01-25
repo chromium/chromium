@@ -135,10 +135,7 @@ void HoldingSpaceKeyedService::BindReceiver(
 void HoldingSpaceKeyedService::AddPrintedPdf(
     const base::FilePath& printed_pdf_path,
     bool from_incognito_profile) {
-  if (!from_incognito_profile ||
-      features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
-    AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
-  }
+  AddItemOfType(HoldingSpaceItem::Type::kPrintedPdf, printed_pdf_path);
 }
 
 void HoldingSpaceKeyedService::AddPinnedFiles(

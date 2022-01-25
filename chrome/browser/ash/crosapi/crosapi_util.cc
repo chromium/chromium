@@ -378,8 +378,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
           ->GetListOfAcceptableURLs();
 
   // Pass holding space feature flag state to lacros.
-  params->is_holding_space_incognito_profile_integration_enabled =
-      ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled();
+  params->is_holding_space_incognito_profile_integration_enabled = true;
   params
       ->is_holding_space_in_progress_downloads_notification_suppression_enabled =
       ash::features::

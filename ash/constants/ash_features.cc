@@ -750,13 +750,6 @@ const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
     "HoldingSpaceInProgressNotificationSuppression",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables incognito profile integration with the productivity feature that
-// aims to reduce context switching by enabling users to collect content and
-// transfer or access it later.
-const base::Feature kHoldingSpaceIncognitoProfileIntegration{
-    "HoldingSpaceIncognitoProfileIntegration",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether the snooping protection prototype is enabled.
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1594,10 +1587,6 @@ bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsNotificationSuppression);
-}
-
-bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceIncognitoProfileIntegration);
 }
 
 bool IsHostnameSettingEnabled() {

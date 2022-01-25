@@ -287,8 +287,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature
     kHoldingSpaceInProgressDownloadsNotificationSuppression;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kHoldingSpaceIncognitoProfileIntegration;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardDarkMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
@@ -575,8 +573,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIdleInhibitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImprovedDesksKeyboardShortcutsEnabled();
