@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -51,10 +50,6 @@ class DocumentTransitionTest : public testing::Test,
     web_view_helper_->Initialize(nullptr, nullptr,
                                  &ConfigureCompositingWebView);
     web_view_helper_->Resize(gfx::Size(200, 200));
-
-    task_runner_ = base::MakeRefCounted<scheduler::FakeTaskRunner>();
-    DocumentTransitionSupplement::documentTransition(GetDocument())
-        ->task_runner_for_testing_ = task_runner_;
   }
 
   void TearDown() override { web_view_helper_.reset(); }
@@ -115,6 +110,12 @@ class DocumentTransitionTest : public testing::Test,
     return transition->state_;
   }
 
+  void FinishTransition() {
+    auto* transition =
+        DocumentTransitionSupplement::documentTransition(GetDocument());
+    transition->NotifyStartFinished(transition->last_start_sequence_id_);
+  }
+
   void ValidatePseudoElementTree(
       const Vector<WTF::AtomicString>& document_transition_tags,
       bool has_new_content) {
@@ -161,7 +162,6 @@ class DocumentTransitionTest : public testing::Test,
  protected:
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   base::test::ScopedFeatureList feature_list_;
-  scoped_refptr<scheduler::FakeTaskRunner> task_runner_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(DocumentTransitionTest);
@@ -244,7 +244,7 @@ TEST_P(DocumentTransitionTest, EffectParsing) {
   ASSERT_TRUE(request);
 
   auto directive = request->ConstructDirective({});
-  EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kNone);
+  EXPECT_EQ(directive.effect(), DocumentTransitionRequest::Effect::kNone);
 
   // Test "explode" effect parsing.
   DocumentTransitionPrepareOptions explode_options;
@@ -256,7 +256,7 @@ TEST_P(DocumentTransitionTest, EffectParsing) {
   ASSERT_TRUE(request);
 
   directive = request->ConstructDirective({});
-  EXPECT_EQ(directive.effect(), DocumentTransition::Request::Effect::kExplode);
+  EXPECT_EQ(directive.effect(), DocumentTransitionRequest::Effect::kExplode);
 }
 
 TEST_P(DocumentTransitionTest, PrepareSharedElementsWantToBeComposited) {
@@ -544,8 +544,7 @@ TEST_P(DocumentTransitionTest, StartAfterPrepare) {
   EXPECT_FALSE(transition->TakePendingRequest());
 
   start_request->TakeFinishedCallback().Run();
-  task_runner_->RunUntilIdle();
-  EXPECT_EQ(GetState(transition), State::kIdle);
+  FinishTransition();
   start_tester.WaitUntilSettled();
   EXPECT_TRUE(start_tester.IsFulfilled());
 }
@@ -582,7 +581,7 @@ TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
 
   EXPECT_EQ(GetState(transition), State::kStarted);
   UpdateAllLifecyclePhasesAndFinishDirectives();
-  task_runner_->RunUntilIdle();
+  FinishTransition();
 
   // Visual updates are restored on start.
   EXPECT_FALSE(LayerTreeHost()->IsDeferringCommits());
@@ -672,7 +671,7 @@ TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
   ValidatePseudoElementTree(document_transition_tags, true);
 
   // Finish the animations which should remove the pseudo element tree.
-  task_runner_->RunUntilIdle();
+  FinishTransition();
   UpdateAllLifecyclePhasesAndFinishDirectives();
   EXPECT_FALSE(
       GetDocument().documentElement()->GetPseudoElement(kPseudoIdTransition));

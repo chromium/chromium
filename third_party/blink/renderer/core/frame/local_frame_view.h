@@ -36,7 +36,7 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/layout_subtree_root_list.h"
@@ -983,7 +983,7 @@ class CORE_EXPORT LocalFrameView final
   void VerifySharedElementsForDocumentTransition();
   // Append document transition requests from this view into the given vector.
   void AppendDocumentTransitionRequests(
-      WTF::Vector<std::unique_ptr<DocumentTransition::Request>>&);
+      WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>&);
 
   bool AnyFrameIsPrintingOrPaintingPreview();
 

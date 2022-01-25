@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 
 #include "third_party/blink/public/resources/grit/blink_resources.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -313,6 +314,26 @@ void DocumentTransitionStyleTracker::RunPostLayoutSteps() {
 
   if (needs_style_invalidation)
     InvalidateStyle();
+}
+
+bool DocumentTransitionStyleTracker::HasActiveAnimations() const {
+  bool has_animations = false;
+  auto accumulate_pseudo = [&has_animations](PseudoElement* pseudo_element) {
+    if (has_animations)
+      return;
+
+    auto* animations = pseudo_element->GetElementAnimations();
+    if (!animations)
+      return;
+
+    for (auto& animation_pair : animations->Animations()) {
+      if (auto* effect = animation_pair.key->effect())
+        has_animations = has_animations || effect->IsCurrent();
+    }
+  };
+  DocumentTransitionUtils::ForEachTransitionPseudo(*document_,
+                                                   accumulate_pseudo);
+  return has_animations;
 }
 
 void DocumentTransitionStyleTracker::InvalidateStyle() {

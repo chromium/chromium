@@ -78,6 +78,10 @@ class DocumentTransitionStyleTracker
 
   void Trace(Visitor* visitor) const;
 
+  // Returns true if any of the pseudo elements are currently participating in
+  // an animation.
+  bool HasActiveAnimations() const;
+
  private:
   class ContainerPseudoElement;
 

@@ -38,35 +38,33 @@ namespace {
 const char kAbortedFromPrepare[] = "Aborted due to prepare() call";
 const char kAbortedFromSignal[] = "Aborted due to abortSignal";
 
-constexpr base::TimeDelta kDefaultTransitionDuration = base::Milliseconds(250);
-
-DocumentTransition::Request::Effect ParseEffect(const String& input) {
-  using MapType = HashMap<String, DocumentTransition::Request::Effect>;
+DocumentTransitionRequest::Effect ParseEffect(const String& input) {
+  using MapType = HashMap<String, DocumentTransitionRequest::Effect>;
   DEFINE_STATIC_LOCAL(
       MapType*, lookup_map,
       (new MapType{
-          {"cover-down", DocumentTransition::Request::Effect::kCoverDown},
-          {"cover-left", DocumentTransition::Request::Effect::kCoverLeft},
-          {"cover-right", DocumentTransition::Request::Effect::kCoverRight},
-          {"cover-up", DocumentTransition::Request::Effect::kCoverUp},
-          {"explode", DocumentTransition::Request::Effect::kExplode},
-          {"fade", DocumentTransition::Request::Effect::kFade},
-          {"implode", DocumentTransition::Request::Effect::kImplode},
-          {"reveal-down", DocumentTransition::Request::Effect::kRevealDown},
-          {"reveal-left", DocumentTransition::Request::Effect::kRevealLeft},
-          {"reveal-right", DocumentTransition::Request::Effect::kRevealRight},
-          {"reveal-up", DocumentTransition::Request::Effect::kRevealUp}}));
+          {"cover-down", DocumentTransitionRequest::Effect::kCoverDown},
+          {"cover-left", DocumentTransitionRequest::Effect::kCoverLeft},
+          {"cover-right", DocumentTransitionRequest::Effect::kCoverRight},
+          {"cover-up", DocumentTransitionRequest::Effect::kCoverUp},
+          {"explode", DocumentTransitionRequest::Effect::kExplode},
+          {"fade", DocumentTransitionRequest::Effect::kFade},
+          {"implode", DocumentTransitionRequest::Effect::kImplode},
+          {"reveal-down", DocumentTransitionRequest::Effect::kRevealDown},
+          {"reveal-left", DocumentTransitionRequest::Effect::kRevealLeft},
+          {"reveal-right", DocumentTransitionRequest::Effect::kRevealRight},
+          {"reveal-up", DocumentTransitionRequest::Effect::kRevealUp}}));
 
   auto it = lookup_map->find(input);
   return it != lookup_map->end() ? it->value
-                                 : DocumentTransition::Request::Effect::kNone;
+                                 : DocumentTransitionRequest::Effect::kNone;
 }
 
-DocumentTransition::Request::Effect ParseRootTransition(
+DocumentTransitionRequest::Effect ParseRootTransition(
     const DocumentTransitionPrepareOptions* options) {
   return options->hasRootTransition()
              ? ParseEffect(options->rootTransition())
-             : DocumentTransition::Request::Effect::kNone;
+             : DocumentTransitionRequest::Effect::kNone;
 }
 
 uint32_t NextDocumentTag() {
@@ -74,9 +72,9 @@ uint32_t NextDocumentTag() {
   return next_document_tag++;
 }
 
-DocumentTransition::Request::TransitionConfig ParseTransitionConfig(
+DocumentTransitionRequest::TransitionConfig ParseTransitionConfig(
     const DocumentTransitionConfig& config) {
-  DocumentTransition::Request::TransitionConfig transition_config;
+  DocumentTransitionRequest::TransitionConfig transition_config;
 
   if (config.hasDuration()) {
     transition_config.duration = base::Milliseconds(config.duration());
@@ -160,7 +158,7 @@ ScriptPromise DocumentTransition::prepare(
   }
 
   std::string error;
-  DocumentTransition::Request::TransitionConfig root_config;
+  DocumentTransitionRequest::TransitionConfig root_config;
   if (options->hasRootConfig())
     root_config = ParseTransitionConfig(*options->rootConfig());
   if (!root_config.IsValid(&error)) {
@@ -169,7 +167,7 @@ ScriptPromise DocumentTransition::prepare(
     return ScriptPromise();
   }
 
-  std::vector<DocumentTransition::Request::TransitionConfig>
+  std::vector<DocumentTransitionRequest::TransitionConfig>
       shared_elements_config;
   if (options->hasSharedElements()) {
     shared_elements_config.resize(options->sharedElements().size());
@@ -222,7 +220,7 @@ ScriptPromise DocumentTransition::prepare(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   state_ = State::kPreparing;
-  pending_request_ = Request::CreatePrepare(
+  pending_request_ = DocumentTransitionRequest::CreatePrepare(
       effect, document_tag_, root_config, std::move(shared_elements_config),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
@@ -288,23 +286,11 @@ ScriptPromise DocumentTransition::start(
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
-    pending_request_ = Request::CreateAnimateRenderer(document_tag_);
+    pending_request_ =
+        DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
     style_tracker_->Start(active_shared_elements_);
-
-    // TODO(khushalsagar) : Update this once its clear how transition end should
-    // be defined. See crbug.com/1266488.
-    auto task_runner = task_runner_for_testing_
-                           ? task_runner_for_testing_
-                           : document_->GetTaskRunner(
-                                 TaskType::kInternalFrameLifecycleControl);
-    task_runner->PostDelayedTask(
-        FROM_HERE,
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            &DocumentTransition::NotifyStartFinished,
-            WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)),
-        kDefaultTransitionDuration);
   } else {
-    pending_request_ = Request::CreateStart(
+    pending_request_ = DocumentTransitionRequest::CreateStart(
         document_tag_, prepare_shared_element_count_,
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             &DocumentTransition::NotifyStartFinished,
@@ -320,7 +306,7 @@ void DocumentTransition::NotifyHasChangesToCommit() {
     return;
 
   // Schedule a new frame.
-  document_->GetPage()->Animator().ScheduleVisualUpdate(document_->GetFrame());
+  document_->View()->ScheduleAnimation();
 
   // Ensure paint artifact compositor does an update, since that's the mechanism
   // we use to pass transition requests to the compositor.
@@ -375,12 +361,12 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
     style_tracker_->StartFinished();
     style_tracker_ = nullptr;
-    pending_request_ = Request::CreateRelease(document_tag_);
+    pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
     NotifyHasChangesToCommit();
   }
 }
 
-std::unique_ptr<DocumentTransition::Request>
+std::unique_ptr<DocumentTransitionRequest>
 DocumentTransition::TakePendingRequest() {
   return std::move(pending_request_);
 }
@@ -453,8 +439,34 @@ void DocumentTransition::RunPostLayoutSteps() {
   DCHECK(document_->Lifecycle().GetState() >=
          DocumentLifecycle::LifecycleState::kLayoutClean);
 
-  if (style_tracker_)
+  if (style_tracker_) {
     style_tracker_->RunPostLayoutSteps();
+    // If we don't have active animations, schedule a frame to end the
+    // transition. Note that if `disable_end_transition_` is set, then we don't
+    // need to register for lifecycle notifications since we're not ending this
+    // transition.
+    //
+    // TODO(vmpstr): Note that RunPostLayoutSteps can happen multiple times
+    // during a lifecycle update. These checks don't have to happen here, and
+    // could perhaps be moved to DidFinishLifecycleUpdate.
+    if (state_ == State::kStarted && !style_tracker_->HasActiveAnimations() &&
+        !disable_end_transition_) {
+      DCHECK(document_->View());
+      document_->View()->RegisterForLifecycleNotifications(this);
+      document_->View()->ScheduleAnimation();
+    }
+  }
+}
+
+void DocumentTransition::WillStartLifecycleUpdate(const LocalFrameView&) {
+  DCHECK_EQ(state_, State::kStarted);
+  DCHECK(document_);
+  DCHECK(document_->View());
+  DCHECK(style_tracker_);
+
+  if (!style_tracker_->HasActiveAnimations())
+    NotifyStartFinished(last_start_sequence_id_);
+  document_->View()->UnregisterFromLifecycleNotifications(this);
 }
 
 PseudoElement* DocumentTransition::CreatePseudoElement(

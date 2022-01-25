@@ -11,15 +11,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_request.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-
-namespace cc {
-class DocumentTransitionRequest;
-}
 
 namespace viz {
 class SharedElementResourceId;
@@ -41,12 +39,11 @@ class ScriptState;
 class CORE_EXPORT DocumentTransition
     : public ScriptWrappable,
       public ActiveScriptWrappable<DocumentTransition>,
-      public ExecutionContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver,
+      public LocalFrameView::LifecycleNotificationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using Request = cc::DocumentTransitionRequest;
-
   explicit DocumentTransition(Document*);
 
   // GC functionality.
@@ -67,7 +64,7 @@ class CORE_EXPORT DocumentTransition
                       ExceptionState&);
 
   // This uses std::move semantics to take the request from this object.
-  std::unique_ptr<Request> TakePendingRequest();
+  std::unique_ptr<DocumentTransitionRequest> TakePendingRequest();
 
   // Returns true if the given element is active in this transition.
   bool IsActiveElement(const Element*) const;
@@ -102,6 +99,9 @@ class CORE_EXPORT DocumentTransition
   // DocumentTransition finishes. This is used to capture a static version of
   // the last rendered frame.
   void DisableEndTransition() { disable_end_transition_ = true; }
+
+  // LifecycleNotificationObserver overrides.
+  void WillStartLifecycleUpdate(const LocalFrameView&) override;
 
  private:
   friend class DocumentTransitionTest;
@@ -152,7 +152,7 @@ class CORE_EXPORT DocumentTransition
   // enabled.
   Member<DocumentTransitionStyleTracker> style_tracker_;
 
-  std::unique_ptr<Request> pending_request_;
+  std::unique_ptr<DocumentTransitionRequest> pending_request_;
 
   uint32_t last_prepare_sequence_id_ = 0u;
   uint32_t last_start_sequence_id_ = 0u;
@@ -169,7 +169,6 @@ class CORE_EXPORT DocumentTransition
   bool deferring_commits_ = false;
 
   // Set only for tests.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing_;
   bool disable_end_transition_ = false;
 };
 

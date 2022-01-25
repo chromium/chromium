@@ -3001,7 +3001,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
         });
   }
 
-  WTF::Vector<std::unique_ptr<DocumentTransition::Request>>
+  WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>
       document_transition_requests;
   // TODO(vmpstr): We should make this work for subframes as well.
   AppendDocumentTransitionRequests(document_transition_requests);
@@ -3014,7 +3014,7 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 }
 
 void LocalFrameView::AppendDocumentTransitionRequests(
-    WTF::Vector<std::unique_ptr<DocumentTransition::Request>>& requests) {
+    WTF::Vector<std::unique_ptr<DocumentTransitionRequest>>& requests) {
   DCHECK(frame_ && frame_->GetDocument());
   auto* document_transition_supplement =
       DocumentTransitionSupplement::FromIfExists(*frame_->GetDocument());

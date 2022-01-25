@@ -9,6 +9,7 @@ blink_core_sources_document_transition = [
   "document_transition_content_element.h",
   "document_transition_pseudo_element_base.cc",
   "document_transition_pseudo_element_base.h",
+  "document_transition_request.h",
   "document_transition_style_tracker.cc",
   "document_transition_style_tracker.h",
   "document_transition_supplement.cc",

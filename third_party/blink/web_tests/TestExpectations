@@ -268,6 +268,7 @@ crbug.com/1225630 fast/multicol/nested-very-tall-inside-short-crash.html [ Skip 
 
 # Document transition tests
 crbug.com/1276999 document-transition/* [ Skip ]
+crbug.com/1276999 wpt_internal/document-transition/* [ Skip ]
 crbug.com/1276999 virtual/document-transition/* [ Pass ]
 
 ########## Ref tests can't be rebaselined ##########
