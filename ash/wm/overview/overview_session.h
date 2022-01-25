@@ -224,6 +224,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
       aura::Window* gained_active,
       aura::Window* lost_active);
 
+  // Returns true when either the `DesksTemplatesGridWidget` or
+  // `DesksTemplatesDialog` is the window that is losing activation.
+  bool IsTemplatesUiLosingActivation(aura::Window* lost_active);
+
   // Gets the window which keeps focus for the duration of overview mode.
   aura::Window* GetOverviewFocusWindow();
 
