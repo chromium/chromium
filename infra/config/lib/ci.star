@@ -104,12 +104,10 @@ def ci_builder(
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.gpu_ci_test_results",
             predicate = resultdb.test_result_predicate(
-                # Only match the telemetry_gpu_integration_test and
-                # fuchsia_telemetry_gpu_integration_test targets.
-                # Android Telemetry targets also have a suffix added to the end
-                # denoting the binary that's included, so also catch those with
-                # [^/]*.
-                test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test[^/]*/.+",
+                # Only match the telemetry_gpu_integration_test target and its
+                # Fuchsia and Android variants that have a suffix added to the
+                # end. Those are caught with [^/]*.
+                test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test[^/]*/.+",
             ),
         ),
         resultdb.export_test_results(
