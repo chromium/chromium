@@ -7,7 +7,9 @@
 #include <math.h>
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace media {
 namespace {
@@ -36,6 +38,18 @@ std::string VideoRotationToString(VideoRotation rotation) {
 bool operator==(const struct VideoTransformation& first,
                 const struct VideoTransformation& second) {
   return first.rotation == second.rotation && first.mirrored == second.mirrored;
+}
+
+// static
+VideoTransformation VideoTransformation::FromFFmpegDisplayMatrix(
+    int32_t* matrix3x3) {
+  int32_t matrix2x2[4] = {
+      matrix3x3[0],
+      matrix3x3[1],
+      matrix3x3[3],
+      matrix3x3[4],
+  };
+  return VideoTransformation(matrix2x2);
 }
 
 VideoTransformation::VideoTransformation(int32_t matrix[4]) {

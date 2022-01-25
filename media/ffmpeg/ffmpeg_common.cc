@@ -583,28 +583,13 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   auto* alpha_mode = av_dict_get(stream->metadata, "alpha_mode", nullptr, 0);
   const bool has_alpha = alpha_mode && !strcmp(alpha_mode->value, "1");
 
-  VideoRotation video_rotation = VIDEO_ROTATION_0;
-  int rotation = 0;
-  AVDictionaryEntry* rotation_entry = NULL;
-  rotation_entry = av_dict_get(stream->metadata, "rotate", nullptr, 0);
-  if (rotation_entry && rotation_entry->value && rotation_entry->value[0])
-    base::StringToInt(rotation_entry->value, &rotation);
+  void* display_matrix =
+      av_stream_get_side_data(stream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
 
-  switch (rotation) {
-    case 0:
-      break;
-    case 90:
-      video_rotation = VIDEO_ROTATION_90;
-      break;
-    case 180:
-      video_rotation = VIDEO_ROTATION_180;
-      break;
-    case 270:
-      video_rotation = VIDEO_ROTATION_270;
-      break;
-    default:
-      DLOG(ERROR) << "Unsupported video rotation metadata: " << rotation;
-      break;
+  VideoTransformation video_transformation = VideoTransformation();
+  if (display_matrix) {
+    video_transformation = VideoTransformation::FromFFmpegDisplayMatrix(
+        static_cast<int32_t*>(display_matrix));
   }
 
   // Prefer the color space found by libavcodec if available.
@@ -660,8 +645,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   config->Initialize(codec, profile,
                      has_alpha ? VideoDecoderConfig::AlphaMode::kHasAlpha
                                : VideoDecoderConfig::AlphaMode::kIsOpaque,
-                     color_space, VideoTransformation(video_rotation),
-                     coded_size, visible_rect, natural_size, extra_data,
+                     color_space, video_transformation, coded_size,
+                     visible_rect, natural_size, extra_data,
                      GetEncryptionScheme(stream));
   // Set the aspect ratio explicitly since our version hasn't been rounded.
   config->set_aspect_ratio(aspect_ratio);
