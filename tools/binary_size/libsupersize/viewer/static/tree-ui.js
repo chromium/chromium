@@ -487,11 +487,18 @@ const newTreeElement = (() => {
       errorModal.style.display = '';
   }
 
-  window.supersize.treeReady.then((message) => {
+  async function performInitialLoad() {
+    let accessToken = null;
+    if (requiresAuthentication()) {
+      accessToken = await fetchAccessToken();
+    }
+    let worker = restartWorker(displayTree);
+    let message = await worker.loadTree('from-url://', accessToken);
+
     if (message.isMultiContainer) {
       document.getElementById('group-by-container').checked = true;
-      // Fire a change event manually, to reload the tree otherwise it does not
-      // fire on its own. No need to display the tree since it is going to get
+      // Fire a change event manually to reload the tree (it does not fire on
+      // its own). No need to display the tree since it is going to be
       // reloaded anyways.
       document.getElementById('options').dispatchEvent(new Event('change'));
     } else {
@@ -500,22 +507,22 @@ const newTreeElement = (() => {
       displayTree(message);
     }
     displayOrHideDownloadButton(message.beforeBlobUrl, message.loadBlobUrl);
-  });
-  window.supersize.worker.setOnProgressHandler(displayTree);
+  }
 
-  _fileUpload.addEventListener('change', event => {
+  _fileUpload.addEventListener('change', async (event) => {
     const input = /** @type {HTMLInputElement} */ (event.currentTarget);
     const file = input.files.item(0);
     const fileUrl = URL.createObjectURL(file);
-    restartWorker()
 
     _dataUrlInput.value = '';
     _dataUrlInput.dispatchEvent(new Event('change'));
 
     displayOrHideDownloadButton();
 
-    window.supersize.worker.loadTree(fileUrl).then(displayTree);
-    // Clean up afterwards so new files trigger event
+    let worker = restartWorker(displayTree);
+    let message = await worker.loadTree(fileUrl);
+    displayTree(message);
+    // Clean up afterwards so new files trigger event.
     input.value = '';
   });
 
@@ -533,4 +540,8 @@ const newTreeElement = (() => {
     _progress.setValue(0);
     window.supersize.worker.loadTree().then(displayTree);
   });
+
+  if (new URLSearchParams(location.search).has('load_url')) {
+    performInitialLoad();
+  }
 }

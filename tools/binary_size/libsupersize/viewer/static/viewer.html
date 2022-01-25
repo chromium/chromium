@@ -8,9 +8,6 @@
 
 <head>
   <title>Super Size Tiger View</title>
-  <script src="auth-consts.js"></script>
-  <script src="auth.js"></script>
-  <script src="start-worker.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#4285f4">
   <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" rel="stylesheet">
@@ -18,15 +15,19 @@
   <link rel="stylesheet" href="options.css">
   <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256" type="image/x-icon">
   <link rel="manifest" href="manifest.json">
+  <script defer src="auth-consts.js"></script>
+  <script defer src="auth.js"></script>
+  <script defer src="start-worker.js"></script>
   <script defer src="shared.js"></script>
   <script defer src="state.js"></script>
   <script defer src="infocard-ui.js"></script>
   <script defer src="tree-ui.js"></script>
-  <script async defer src="https://apis.google.com/js/api.js"
-     onload="this.onload=function(){};handleClientLoad()"
-     onreadystatechange="if (this.readyState === 'complete') this.onload()">
+  <!-- Async so that it does not slow down loads that do not require it. -->
+  <script defer async src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};onAuthScriptLoaded()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
   </script>
-  <script defer async>
+  <script async>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
           .catch(() => console.warn('ServiceWorker not loaded.'));

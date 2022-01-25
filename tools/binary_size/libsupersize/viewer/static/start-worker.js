@@ -5,6 +5,9 @@
 // @ts-check
 'use strict';
 
+window.supersize = window.supersize || {};
+window.supersize.worker = null;
+
 /**
  * We use a worker to keep large tree creation logic off the UI thread.
  * This class is used to interact with the worker.
@@ -13,17 +16,15 @@ class TreeWorker {
   /**
    * @param {Worker} worker Web worker to wrap
    */
-  constructor(worker) {
+  constructor(worker, onProgressHandler) {
     this._worker = worker;
     /** ID counter used by `waitForResponse` */
     this._requestId = 1;
 
-    /** @type {(data: TreeProgress) => void | null} callback for `loadTree` */
-    this._loadTreeCallback = null;
-
     this._worker.addEventListener('message', event => {
-      if (this._loadTreeCallback && event.data.id === 0) {
-        this._loadTreeCallback(event.data);
+      // An ID of 0 means it's a progress event.
+      if (event.data.id === 0) {
+        onProgressHandler(event.data);
       }
     });
   }
@@ -64,15 +65,6 @@ class TreeWorker {
   }
 
   /**
-   * Set callback used after `loadTree` is first called.
-   * @param {(data: TreeProgress) => void} callback Called when the worker
-   * has some data to display. Complete when `progress` is 1.
-   */
-  setOnProgressHandler(callback) {
-    this._loadTreeCallback = callback;
-  }
-
-  /**
    * Loads the tree data given on a worker thread and replaces the tree view in
    * the UI once complete. Uses query string as state for the options.
    * Use `onProgress` before calling `loadTree`.
@@ -89,26 +81,8 @@ class TreeWorker {
   }
 }
 
-window.supersize = {
-  worker: null,
-  treeReady: null,
-};
-
-function restartWorker() {
-  window.supersize.worker = null;
+function restartWorker(onProgressHandler) {
   let innerWorker = new Worker('tree-worker-wasm.js');
-  window.supersize.worker = new TreeWorker(innerWorker);
+  window.supersize.worker = new TreeWorker(innerWorker, onProgressHandler);
+  return window.supersize.worker;
 }
-
-(function() {
-  restartWorker();
-
-  if (requiresAuthentication()) {
-    window.supersize.treeReady = window.googleAuthPromise.then((authResponse) =>
-        window.supersize.worker.loadTree('from-url://',
-          authResponse.access_token));
-  } else {
-    window.supersize.treeReady = window.supersize.worker.loadTree(
-        'from-url://');
-  }
-})()

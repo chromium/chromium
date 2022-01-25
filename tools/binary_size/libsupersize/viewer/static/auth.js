@@ -5,46 +5,67 @@
 // @ts-check
 'use strict';
 
-let _googleAuthPromiseResolve = null;
-window.googleAuth = null;
-window.googleAuthPromise = new Promise((resolve, reject) => {
-  _googleAuthPromiseResolve = resolve;
+// Resolves when gapi.js is loaded.
+const g_authScriptPromise = new Promise((resolve, reject) => {
+  window.onAuthScriptLoaded = resolve;
 });
+// Resolves when auth has completed.
+let g_doAuthPromise = null;
 
-function handleClientLoad() {
-  if (requiresAuthentication()) {
-    gapi.load('client:auth2', initClient);
+async function initAuthApi() {
+  await g_authScriptPromise;
+  await new Promise((resolve, reject) => {
+    gapi.load('client:auth2', resolve);
+  });
+  await gapi.client.init({
+      'clientId': AUTH_CLIENT_ID,
+      'discoveryDocs': [AUTH_DISCOVERY_URL],
+      'scope': AUTH_SCOPE,
+  })
+  return gapi.auth2.getAuthInstance();
+}
+
+async function doAuthFetch() {
+  let googleAuth = await initAuthApi();
+
+  // See if already signed in.
+  if (googleAuth.isSignedIn.get()) {
+    return googleAuth.currentUser.get();
   }
+
+  // Show a "Please sign in" dialog.
+  toggleSigninModal(true /*show*/);
+
+  // Loop in case the pop-up dialog is closed without signing in.
+  while (true) {
+    await new Promise((resolve, reject) => {
+      let signinButton = document.querySelector('#signin-modal button.signin');
+      signinButton.addEventListener('click', resolve, {once: true});
+    });
+
+    try {
+      await googleAuth.signIn();
+      break;
+    } catch {
+      // Allow them to click dialog button again.
+    }
+  }
+  toggleSigninModal(false /*show*/);
+
+  return googleAuth.currentUser.get();
+}
+
+async function fetchAccessToken() {
+  if (!g_doAuthPromise) {
+    g_doAuthPromise = doAuthFetch();
+  }
+  let user = await g_doAuthPromise;
+  return user.getAuthResponse().access_token;
 }
 
 function toggleSigninModal(show) {
   const modal = document.getElementById('signin-modal');
   modal.style.display = show ? '': 'none';
-}
-
-function initClient() {
-  const signin_button = document.querySelector('#signin-modal button.signin')
-  signin_button.addEventListener('click', () => {
-    window.googleAuth.signIn().then(setSigninStatus);
-    toggleSigninModal(false /*show*/);
-  });
-  return gapi.client.init({
-      'clientId': AUTH_CLIENT_ID,
-      'discoveryDocs': [AUTH_DISCOVERY_URL],
-      'scope': AUTH_SCOPE,
-  }).then(function () {
-    window.googleAuth = gapi.auth2.getAuthInstance();
-    if (!window.googleAuth.isSignedIn.get() && requiresAuthentication()) {
-      toggleSigninModal(true /*show*/);
-    } else {
-      setSigninStatus();
-    }
-  });
-}
-
-function setSigninStatus() {
-  let user = window.googleAuth.currentUser.get();
-  _googleAuthPromiseResolve(user.getAuthResponse());
 }
 
 function requiresAuthentication() {
