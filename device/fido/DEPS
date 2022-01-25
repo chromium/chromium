@@ -10,6 +10,7 @@ include_rules = [
   "+net/http",
   "+net/traffic_annotation",
   "+services/network",
+  "+third_party/blink/public/mojom/webauthn",
   "+third_party/boringssl/src/include",
   "+third_party/cros_system_api",
   "+third_party/microsoft_webauthn",

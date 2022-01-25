@@ -22,6 +22,7 @@
 #include "device/fido/cable/v2_registration.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -386,37 +387,37 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   ~AndroidPlatform() override = default;
 
   // Platform:
-  void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
+  void MakeCredential(
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr params,
+      MakeCredentialCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_make_credential_callback);
-    global_data.pending_make_credential_callback = std::move(params->callback);
+    global_data.pending_make_credential_callback = std::move(callback);
 
-    Java_CableAuthenticator_makeCredential(
-        env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->client_data_hash),
-        ToJavaByteArray(env_, params->user_id),
-        ToJavaIntArray(env_, params->algorithms),
-        ToJavaArrayOfByteArray(env_, params->excluded_cred_ids),
-        params->resident_key_required);
+    std::vector<uint8_t> params_bytes =
+        blink::mojom::PublicKeyCredentialCreationOptions::Serialize(&params);
+
+    Java_CableAuthenticator_makeCredential(env_, cable_authenticator_,
+                                           ToJavaByteArray(env_, params_bytes));
   }
 
-  void GetAssertion(std::unique_ptr<GetAssertionParams> params) override {
+  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr params,
+                    GetAssertionCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_get_assertion_callback);
-    global_data.pending_get_assertion_callback = std::move(params->callback);
+    global_data.pending_get_assertion_callback = std::move(callback);
     global_data.get_assertion_start_time = base::TimeTicks::Now();
 
+    std::vector<uint8_t> params_bytes =
+        blink::mojom::PublicKeyCredentialRequestOptions::Serialize(&params);
+
     RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionStarted);
-    Java_CableAuthenticator_getAssertion(
-        env_, cable_authenticator_,
-        ConvertUTF8ToJavaString(env_, params->rp_id),
-        ToJavaByteArray(env_, params->client_data_hash),
-        ToJavaArrayOfByteArray(env_, params->allowed_cred_ids));
+    Java_CableAuthenticator_getAssertion(env_, cable_authenticator_,
+                                         ToJavaByteArray(env_, params_bytes));
   }
 
   void OnStatus(Status status) override {
@@ -851,9 +852,7 @@ static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(
 static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
     JNIEnv* env,
     jint ctap_status,
-    const JavaParamRef<jbyteArray>& jcredential_id,
-    const JavaParamRef<jbyteArray>& jauthenticator_data,
-    const JavaParamRef<jbyteArray>& jsignature) {
+    const JavaParamRef<jbyteArray>& jresponse_bytes) {
   GlobalData& global_data = GetGlobalData();
   RecordEvent(&global_data, CableV2MobileEvent::kGetAssertionComplete);
 
@@ -878,10 +877,22 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   auto callback = std::move(*global_data.pending_get_assertion_callback);
   global_data.pending_get_assertion_callback.reset();
 
-  std::move(callback).Run(ctap_status,
-                          JavaByteArrayToSpan(env, jcredential_id),
-                          JavaByteArrayToSpan(env, jauthenticator_data),
-                          JavaByteArrayToSpan(env, jsignature));
+  if (ctap_status ==
+      static_cast<jint>(device::CtapDeviceResponseCode::kSuccess)) {
+    base::span<const uint8_t> response_bytes =
+        JavaByteArrayToSpan(env, jresponse_bytes);
+    auto response = blink::mojom::GetAssertionAuthenticatorResponse::New();
+    if (blink::mojom::GetAssertionAuthenticatorResponse::Deserialize(
+            response_bytes.data(), response_bytes.size(), &response)) {
+      std::move(callback).Run(ctap_status, std::move(response));
+      return;
+    }
+
+    ctap_status =
+        static_cast<jint>(device::CtapDeviceResponseCode::kCtap2ErrOther);
+  }
+
+  std::move(callback).Run(ctap_status, nullptr);
 }
 
 static void JNI_USBHandler_OnUSBData(JNIEnv* env,

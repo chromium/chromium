@@ -4,6 +4,7 @@ include_rules = [
   "+components/webauthn",
   "+device/fido",
   "+third_party/boringssl",
+  "+third_party/blink/public/mojom/webauthn",
   "-content/public/android",
   "+content/public/android/java/src/org/chromium/content_public",
 ]

@@ -24,25 +24,15 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SingleThreadTaskRunner;
-import org.chromium.blink.mojom.AttestationConveyancePreference;
-import org.chromium.blink.mojom.AuthenticatorAttachment;
-import org.chromium.blink.mojom.AuthenticatorSelectionCriteria;
-import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
-import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
-import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.blink.mojom.PublicKeyCredentialRpEntity;
-import org.chromium.blink.mojom.PublicKeyCredentialType;
-import org.chromium.blink.mojom.PublicKeyCredentialUserEntity;
-import org.chromium.blink.mojom.UserVerificationRequirement;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCall;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.mojo_base.mojom.TimeDelta;
 
+import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -143,38 +133,9 @@ class CableAuthenticator {
     }
 
     @CalledByNative
-    public void makeCredential(String rpId, byte[] clientDataHash, byte[] userId, int[] algorithms,
-            byte[][] excludedCredentialIds, boolean residentKeyRequired) {
-        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
-        options.attestation = AttestationConveyancePreference.NONE;
-        options.excludeCredentials = makeCredentialList(excludedCredentialIds);
-
-        options.relyingParty = new PublicKeyCredentialRpEntity();
-        options.relyingParty.id = rpId;
-        options.relyingParty.name = "";
-
-        options.user = new PublicKeyCredentialUserEntity();
-        options.user.id = userId;
-        options.user.name = "";
-        options.user.displayName = "";
-
-        options.challenge = clientDataHash;
-
-        options.publicKeyParameters = new PublicKeyCredentialParameters[algorithms.length];
-        for (int i = 0; i < algorithms.length; i++) {
-            PublicKeyCredentialParameters algo = new PublicKeyCredentialParameters();
-            algo.type = PublicKeyCredentialType.PUBLIC_KEY;
-            algo.algorithmIdentifier = algorithms[i];
-
-            options.publicKeyParameters[i] = algo;
-        }
-
-        options.timeout = new TimeDelta();
-        options.timeout.microseconds = TIMEOUT_SECONDS * 1000000;
-
-        options.authenticatorSelection = new AuthenticatorSelectionCriteria();
-        options.authenticatorSelection.authenticatorAttachment = AuthenticatorAttachment.PLATFORM;
-        options.authenticatorSelection.userVerification = UserVerificationRequirement.REQUIRED;
+    public void makeCredential(byte[] serializedParams) {
+        PublicKeyCredentialCreationOptions params =
+                PublicKeyCredentialCreationOptions.deserialize(ByteBuffer.wrap(serializedParams));
 
         Fido2ApiCall call = new Fido2ApiCall(mContext, /* appMode= */ false);
         Parcel args = call.start();
@@ -184,7 +145,7 @@ class CableAuthenticator {
 
         try {
             Fido2Api.appendBrowserMakeCredentialOptionsToParcel(
-                    options, Uri.parse("https://" + rpId), clientDataHash, args);
+                    params, Uri.parse("https://" + params.relyingParty.id), params.challenge, args);
         } catch (NoSuchAlgorithmException e) {
             onAuthenticatorAttestationResponse(CTAP2_ERR_UNSUPPORTED_ALGORITHM, null);
             return;
@@ -196,15 +157,9 @@ class CableAuthenticator {
     }
 
     @CalledByNative
-    public void getAssertion(String rpId, byte[] clientDataHash, byte[][] allowedCredentialIds) {
-        PublicKeyCredentialRequestOptions options = new PublicKeyCredentialRequestOptions();
-        options.allowCredentials = makeCredentialList(allowedCredentialIds);
-        options.challenge = clientDataHash;
-        options.relyingPartyId = rpId;
-        options.userVerification = UserVerificationRequirement.REQUIRED;
-
-        options.timeout = new TimeDelta();
-        options.timeout.microseconds = TIMEOUT_SECONDS * 1000000;
+    public void getAssertion(byte[] serializedParams) {
+        PublicKeyCredentialRequestOptions params =
+                PublicKeyCredentialRequestOptions.deserialize(ByteBuffer.wrap(serializedParams));
 
         Fido2ApiCall call = new Fido2ApiCall(mContext, /* appMode= */ false);
         Parcel args = call.start();
@@ -212,7 +167,7 @@ class CableAuthenticator {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
         Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options, Uri.parse("https://" + rpId), clientDataHash, args);
+                params, Uri.parse("https://" + params.relyingPartyId), params.challenge, args);
 
         Task<PendingIntent> task = call.run(
                 Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
@@ -232,26 +187,6 @@ class CableAuthenticator {
                     Log.e(TAG, "SendIntentException", e);
                 }
             }).addOnFailureListener(exception -> { Log.e(TAG, "FIDO2 call failed", exception); });
-    }
-
-    /**
-     * Convert a list of credential IDs into the Mojo structure.
-     */
-    private static PublicKeyCredentialDescriptor[] makeCredentialList(byte[][] credIds) {
-        PublicKeyCredentialDescriptor[] ret = new PublicKeyCredentialDescriptor[credIds.length];
-        int[] transports = new int[1];
-        transports[0] = AuthenticatorTransport.INTERNAL;
-
-        for (int i = 0; i < credIds.length; i++) {
-            PublicKeyCredentialDescriptor cred = new PublicKeyCredentialDescriptor();
-            cred.type = PublicKeyCredentialType.PUBLIC_KEY;
-            cred.id = credIds[i];
-            cred.transports = transports;
-
-            ret[i] = cred;
-        }
-
-        return ret;
     }
 
     /**
@@ -349,8 +284,10 @@ class CableAuthenticator {
             if (response instanceof GetAssertionAuthenticatorResponse) {
                 GetAssertionAuthenticatorResponse gaResponse =
                         (GetAssertionAuthenticatorResponse) response;
-                onAuthenticatorAssertionResponse(CTAP2_OK, gaResponse.info.rawId,
-                        gaResponse.info.authenticatorData, gaResponse.signature);
+                ByteBuffer buffer = gaResponse.serialize();
+                byte[] serialized = new byte[buffer.remaining()];
+                buffer.get(serialized);
+                onAuthenticatorAssertionResponse(CTAP2_OK, serialized);
                 result = Result.SIGN_OK;
             }
         }
@@ -359,7 +296,7 @@ class CableAuthenticator {
             if (isMakeCredential) {
                 onAuthenticatorAttestationResponse(ctapStatus, null);
             } else {
-                onAuthenticatorAssertionResponse(ctapStatus, null, null, null);
+                onAuthenticatorAssertionResponse(ctapStatus, null);
             }
         }
 
@@ -373,12 +310,11 @@ class CableAuthenticator {
                                 ctapStatus, attestationObject));
     }
 
-    private void onAuthenticatorAssertionResponse(
-            int ctapStatus, byte[] credentialID, byte[] authenticatorData, byte[] signature) {
+    private void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes) {
         mTaskRunner.postTask(
                 ()
                         -> CableAuthenticatorJni.get().onAuthenticatorAssertionResponse(
-                                ctapStatus, credentialID, authenticatorData, signature));
+                                ctapStatus, responseBytes));
     }
 
     // Calls from UI.
@@ -502,7 +438,6 @@ class CableAuthenticator {
         /**
          * Called to alert native code of a response to a getAssertion request.
          */
-        void onAuthenticatorAssertionResponse(
-                int ctapStatus, byte[] credentialID, byte[] authenticatorData, byte[] signature);
+        void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes);
     }
 }

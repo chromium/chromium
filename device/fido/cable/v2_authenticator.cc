@@ -9,6 +9,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -20,10 +21,15 @@
 #include "device/fido/cbor_extract.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public_key_credential_rp_entity.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
@@ -42,6 +48,10 @@ using device::cbor_extract::Stop;
 using device::cbor_extract::StringKey;
 
 namespace {
+
+// kTimeoutSeconds is the timeout that is put into the parameters that are
+// passed up to the platform.
+const int kTimeoutSeconds = 60;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("cablev2_websocket_from_authenticator",
@@ -76,9 +86,13 @@ struct MakeCredRequest {
   // ref-counting mismatch.
   const std::vector<uint8_t>* client_data_hash;
   const std::string* rp_id;
+  const std::string* rp_name;
   const std::vector<uint8_t>* user_id;
+  const std::string* user_name;
+  const std::string* user_display_name;
   const cbor::Value::ArrayValue* cred_params;
   const cbor::Value::ArrayValue* excluded_credentials;
+  const bool* resident_key;
 };
 
 static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
@@ -90,18 +104,34 @@ static constexpr StepOrByte<MakeCredRequest> kMakeCredParseSteps[] = {
     IntKey<MakeCredRequest>(2),
       ELEMENT(Is::kRequired, MakeCredRequest, rp_id),
       StringKey<MakeCredRequest>(), 'i', 'd', '\0',
+
+      ELEMENT(Is::kRequired, MakeCredRequest, rp_name),
+      StringKey<MakeCredRequest>(), 'n', 'a', 'm', 'e', '\0',
     Stop<MakeCredRequest>(),
 
     Map<MakeCredRequest>(),
     IntKey<MakeCredRequest>(3),
       ELEMENT(Is::kRequired, MakeCredRequest, user_id),
       StringKey<MakeCredRequest>(), 'i', 'd', '\0',
+
+      ELEMENT(Is::kRequired, MakeCredRequest, user_name),
+      StringKey<MakeCredRequest>(), 'n', 'a', 'm', 'e', '\0',
+
+      ELEMENT(Is::kRequired, MakeCredRequest, user_display_name),
+      StringKey<MakeCredRequest>(), 'd', 'i', 's', 'p', 'l', 'a', 'y',
+                                    'N', 'a', 'm', 'e', '\0',
     Stop<MakeCredRequest>(),
 
     ELEMENT(Is::kRequired, MakeCredRequest, cred_params),
     IntKey<MakeCredRequest>(4),
     ELEMENT(Is::kOptional, MakeCredRequest, excluded_credentials),
     IntKey<MakeCredRequest>(5),
+
+    Map<MakeCredRequest>(Is::kOptional),
+    IntKey<MakeCredRequest>(7),
+      ELEMENT(Is::kOptional, MakeCredRequest, resident_key),
+      StringKey<MakeCredRequest>(), 'r', 'k', '\0',
+    Stop<MakeCredRequest>(),
 
     Stop<MakeCredRequest>(),
     // clang-format on
@@ -554,55 +584,59 @@ class CTAP2Processor : public Transaction {
           return absl::nullopt;
         }
 
-        auto params = std::make_unique<Platform::MakeCredentialParams>();
-        params->client_data_hash = *make_cred_request.client_data_hash;
-        params->rp_id = *make_cred_request.rp_id;
-        params->user_id = *make_cred_request.user_id;
-        params->callback =
-            base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
-                           weak_factory_.GetWeakPtr());
+        auto params = blink::mojom::PublicKeyCredentialCreationOptions::New();
+        params->challenge = *make_cred_request.client_data_hash;
+        params->timeout = base::Seconds(kTimeoutSeconds);
+
+        params->relying_party.id = *make_cred_request.rp_id;
+        params->relying_party.name = *make_cred_request.rp_name;
+
+        params->user.id = *make_cred_request.user_id;
+        params->user.name = *make_cred_request.user_name;
+        params->user.display_name = *make_cred_request.user_display_name;
+
+        params->authenticator_selection.emplace(
+            device::AuthenticatorAttachment::kPlatform,
+            (make_cred_request.resident_key && *make_cred_request.resident_key)
+                ? device::ResidentKeyRequirement::kRequired
+                : device::ResidentKeyRequirement::kDiscouraged,
+            device::UserVerificationRequirement::kRequired);
+
+        if (!CopyCredIds(make_cred_request.excluded_credentials,
+                         &params->exclude_credentials)) {
+          return absl::nullopt;
+        }
 
         if (!device::cbor_extract::ForEachPublicKeyEntry(
                 *make_cred_request.cred_params, cbor::Value("alg"),
                 base::BindRepeating(
-                    [](std::vector<int>* out,
+                    [](std::vector<
+                           device::PublicKeyCredentialParams::CredentialInfo>*
+                           out,
                        const cbor::Value& value) -> bool {
                       if (!value.is_integer()) {
                         return false;
                       }
                       const int64_t alg = value.GetInteger();
 
-                      if (alg > std::numeric_limits<int>::max() ||
-                          alg < std::numeric_limits<int>::min()) {
+                      if (alg > std::numeric_limits<int32_t>::max() ||
+                          alg < std::numeric_limits<int32_t>::min()) {
                         return false;
                       }
-                      out->push_back(static_cast<int>(alg));
+                      device::PublicKeyCredentialParams::CredentialInfo info;
+                      info.algorithm = static_cast<int32_t>(alg);
+                      out->push_back(info);
                       return true;
                     },
-                    base::Unretained(&params->algorithms)))) {
+                    base::Unretained(&params->public_key_parameters)))) {
           return absl::nullopt;
         }
 
-        if (make_cred_request.excluded_credentials &&
-            !device::cbor_extract::ForEachPublicKeyEntry(
-                *make_cred_request.excluded_credentials, cbor::Value("id"),
-                base::BindRepeating(
-                    [](std::vector<std::vector<uint8_t>>* out,
-                       const cbor::Value& value) -> bool {
-                      if (!value.is_bytestring()) {
-                        return false;
-                      }
-                      out->push_back(value.GetBytestring());
-                      return true;
-                    },
-                    base::Unretained(&params->excluded_cred_ids)))) {
-          return absl::nullopt;
-        }
-
-        // TODO: plumb the rk flag through once GmsCore supports resident
-        // keys. This will require support for optional maps in |Extract|.
         transaction_received_ = true;
-        platform_->MakeCredential(std::move(params));
+        platform_->MakeCredential(
+            std::move(params),
+            base::BindOnce(&CTAP2Processor::OnMakeCredentialResponse,
+                           weak_factory_.GetWeakPtr()));
         return std::vector<uint8_t>();
       }
 
@@ -621,31 +655,24 @@ class CTAP2Processor : public Transaction {
           return absl::nullopt;
         }
 
-        auto params = std::make_unique<Platform::GetAssertionParams>();
-        params->client_data_hash = *get_assertion_request.client_data_hash;
-        params->rp_id = *get_assertion_request.rp_id;
-        params->callback =
-            base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
-                           weak_factory_.GetWeakPtr());
+        auto params = blink::mojom::PublicKeyCredentialRequestOptions::New();
+        params->challenge = *get_assertion_request.client_data_hash;
+        params->relying_party_id = *get_assertion_request.rp_id;
+        params->user_verification =
+            device::UserVerificationRequirement::kRequired;
+        params->timeout = base::Seconds(kTimeoutSeconds);
 
-        if (get_assertion_request.allowed_credentials &&
-            !device::cbor_extract::ForEachPublicKeyEntry(
-                *get_assertion_request.allowed_credentials, cbor::Value("id"),
-                base::BindRepeating(
-                    [](std::vector<std::vector<uint8_t>>* out,
-                       const cbor::Value& value) -> bool {
-                      if (!value.is_bytestring()) {
-                        return false;
-                      }
-                      out->push_back(value.GetBytestring());
-                      return true;
-                    },
-                    base::Unretained(&params->allowed_cred_ids)))) {
+        if (!CopyCredIds(get_assertion_request.allowed_credentials,
+                         &params->allow_credentials)) {
           return absl::nullopt;
         }
 
         transaction_received_ = true;
-        platform_->GetAssertion(std::move(params));
+        get_assertion_had_empty_allowlist_ = params->allow_credentials.empty();
+        platform_->GetAssertion(
+            std::move(params),
+            base::BindOnce(&CTAP2Processor::OnGetAssertionResponse,
+                           weak_factory_.GetWeakPtr()));
         return std::vector<uint8_t>();
       }
 
@@ -704,27 +731,54 @@ class CTAP2Processor : public Transaction {
     transport_->Write(std::move(response));
   }
 
-  void OnGetAssertionResponse(uint32_t ctap_status,
-                              base::span<const uint8_t> credential_id,
-                              base::span<const uint8_t> authenticator_data,
-                              base::span<const uint8_t> signature) {
+  void OnGetAssertionResponse(
+      uint32_t ctap_status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr auth_response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_LE(ctap_status, 0xFFu);
-    std::vector<uint8_t> response = {base::checked_cast<uint8_t>(ctap_status)};
 
+    if (auth_response && get_assertion_had_empty_allowlist_ &&
+        !auth_response->user_handle) {
+      FIDO_LOG(ERROR)
+          << "missing user id in response to discoverable credential assertion";
+      ctap_status =
+          static_cast<uint32_t>(CtapDeviceResponseCode::kCtap2ErrOther);
+    }
+
+    std::vector<uint8_t> response = {base::checked_cast<uint8_t>(ctap_status)};
     if (ctap_status == static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess)) {
       cbor::Value::MapValue credential_descriptor;
       credential_descriptor.emplace("type", device::kPublicKey);
-      credential_descriptor.emplace("id", credential_id);
+      credential_descriptor.emplace("id",
+                                    std::move(auth_response->info->raw_id));
       cbor::Value::ArrayValue transports;
       transports.emplace_back("internal");
       transports.emplace_back("cable");
       credential_descriptor.emplace("transports", std::move(transports));
       cbor::Value::MapValue response_map;
       response_map.emplace(1, std::move(credential_descriptor));
-      response_map.emplace(2, authenticator_data);
-      response_map.emplace(3, signature);
-      // TODO: add user entity to support resident keys.
+      response_map.emplace(2,
+                           std::move(auth_response->info->authenticator_data));
+      response_map.emplace(3, std::move(auth_response->signature));
+
+      if (get_assertion_had_empty_allowlist_) {
+        cbor::Value::MapValue user_map;
+        user_map.emplace("id", std::move(*auth_response->user_handle));
+        // The `name` and `displayName` fields are not present in
+        // `GetAssertionAuthenticatorResponse` because they aren't returned
+        // at the WebAuthn level. CTAP 2.1 says that fields other than `id` are
+        // only applicable "For multiple accounts per RP case, where the
+        // authenticator does not have a display". But we assume that caBLE
+        // devices do have a display and don't handle multiple GetAssertion
+        // responses anyway.
+        user_map.emplace("name", "");
+        user_map.emplace("displayName", "");
+        response_map.emplace(4, std::move(user_map));
+
+        // This is the `userSelected` field, which indicates that additional
+        // confirmation of the account selection isn't needed.
+        response_map.emplace(6, true);
+      }
 
       absl::optional<std::vector<uint8_t>> response_payload =
           cbor::Writer::Write(cbor::Value(std::move(response_map)));
@@ -744,8 +798,32 @@ class CTAP2Processor : public Transaction {
     transport_->Write(std::move(response));
   }
 
+  // CopyCredIds parses a series of `PublicKeyCredentialDescriptor`s from `in`
+  // and appends them to `out`, returning true on success or false on error.
+  static bool CopyCredIds(const cbor::Value::ArrayValue* in,
+                          std::vector<PublicKeyCredentialDescriptor>* out) {
+    if (!in) {
+      return true;
+    }
+
+    return device::cbor_extract::ForEachPublicKeyEntry(
+        *in, cbor::Value("id"),
+        base::BindRepeating(
+            [](std::vector<PublicKeyCredentialDescriptor>* out,
+               const cbor::Value& value) -> bool {
+              if (!value.is_bytestring()) {
+                return false;
+              }
+              out->emplace_back(device::CredentialType::kPublicKey,
+                                value.GetBytestring());
+              return true;
+            },
+            base::Unretained(out)));
+  }
+
   bool transaction_received_ = false;
   bool transaction_done_ = false;
+  bool get_assertion_had_empty_allowlist_ = false;
   const std::unique_ptr<Transport> transport_;
   const std::unique_ptr<Platform> platform_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -843,10 +921,6 @@ class PairingDataGenerator {
 }  // namespace
 
 Platform::BLEAdvert::~BLEAdvert() = default;
-Platform::MakeCredentialParams::MakeCredentialParams() = default;
-Platform::MakeCredentialParams::~MakeCredentialParams() = default;
-Platform::GetAssertionParams::GetAssertionParams() = default;
-Platform::GetAssertionParams::~GetAssertionParams() = default;
 Platform::~Platform() = default;
 Transport::~Transport() = default;
 Transaction::~Transaction() = default;
