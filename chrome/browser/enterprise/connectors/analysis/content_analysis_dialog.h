@@ -106,6 +106,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.

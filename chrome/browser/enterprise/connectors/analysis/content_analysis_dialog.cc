@@ -390,6 +390,19 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
   CancelDialog();
 }
 
+void ContentAnalysisDialog::PrimaryPageChanged(content::Page& page) {
+  // If the primary page is changed, the scan results would be stale. So the
+  // delegate should be reset and dialog should be cancelled.
+  // TODO(https://crbug.com/1289334): Currently, Chrome Enterprise Connectors
+  // supports the primary page only. Once we support non-primary pages for
+  // fenced frames and portals, we need to track multiple delegates and dialogs
+  // per page. There, we should revisit if we should keep scanning if it runs
+  // against a portals page, and the portals page is activated to be the primary
+  // page.
+  delegate_.reset(nullptr);
+  CancelDialog();
+}
+
 void ContentAnalysisDialog::ShowResult(
     ContentAnalysisDelegateBase::FinalResult result) {
   DCHECK(is_pending());
