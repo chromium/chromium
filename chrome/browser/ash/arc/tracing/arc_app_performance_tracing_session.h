@@ -17,6 +17,7 @@ class Window;
 }  // namespace aura
 
 namespace exo {
+class ScopedSurface;
 class Surface;
 }  // namespace exo
 
@@ -94,6 +95,9 @@ class ArcAppPerformanceTracingSession : public exo::SurfaceObserver {
   // Unowned pointers.
   ArcAppPerformanceTracing* const owner_;
   aura::Window* const window_;
+
+  // Used for automatic observer adding/removing.
+  std::unique_ptr<exo::ScopedSurface> scoped_surface_;
 
   // Timer to start Surface commit tracing delayed.
   base::OneShotTimer tracing_timer_;
