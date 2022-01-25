@@ -74,7 +74,7 @@ bool IsDefaultImageUrl(const std::string& url, int* image_id);
 const gfx::ImageSkia& GetDefaultImage(int index);
 
 // Returns ID of default user image with specified index.
-const int GetDefaultImageResourceId(int index);
+int GetDefaultImageResourceId(int index);
 
 // Returns a random default image index.
 int GetRandomDefaultImageIndex();

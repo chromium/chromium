@@ -342,7 +342,7 @@ const gfx::ImageSkia& GetDefaultImage(int index) {
       kDefaultImageInfo[index].resource_id);
 }
 
-const int GetDefaultImageResourceId(int index) {
+int GetDefaultImageResourceId(int index) {
   return kDefaultImageInfo[index].resource_id;
 }
 
