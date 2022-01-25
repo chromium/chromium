@@ -2927,6 +2927,11 @@ be describing additional metrics about the same event.
       First Contentful Paint, in microseconds.
     </summary>
   </metric>
+  <metric name="ParseStyleSheet">
+    <summary>
+      The time spent parsing style sheets.
+    </summary>
+  </metric>
   <metric name="PrePaint">
     <summary>
       The time spent in pre-paint document lifecycle work, between navigation
@@ -3953,6 +3958,16 @@ be describing additional metrics about the same event.
     <summary>
       The percentage of the main frame time used in paint. An int in the range
       [0,100].
+    </summary>
+  </metric>
+  <metric name="ParseStyleSheet">
+    <summary>
+      The time spent parsing style sheets.
+    </summary>
+  </metric>
+  <metric name="ParseStyleSheetBeginMainFrame">
+    <summary>
+      The total main frame time spent parsing style sheets.
     </summary>
   </metric>
   <metric name="PrePaint">
