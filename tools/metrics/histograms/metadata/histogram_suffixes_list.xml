@@ -2951,18 +2951,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="DownloadHome" label="Download home."/>
   <suffix name="Infobar" label="Download infobar."/>
   <suffix name="Main" label="Main download later dialog."/>
-  <suffix name="Main.DataSaverOff"
-      label="Main download later dialog with data saver off.">
-    <obsolete>
-      Obsoleted Jan 2022.
-    </obsolete>
-  </suffix>
-  <suffix name="Main.DataSaverOn"
-      label="Main download later dialog with data saver on.">
-    <obsolete>
-      Obsoleted Jan 2022.
-    </obsolete>
-  </suffix>
   <affected-histogram name="Download.Later.UI.DialogChoice"/>
 </histogram_suffixes>
 

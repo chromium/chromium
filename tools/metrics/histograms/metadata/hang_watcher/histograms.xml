@@ -49,31 +49,6 @@ chromium-metrics-reviews@google.com.
   <token key="ThreadType" variants="ThreadType"/>
 </histogram>
 
-<histogram
-    name="HangWatcher.NumberOfHungThreadsDuringWatchWindow.{ProcessType}.{ThreadType}"
-    units="threads" expires_after="2021-10-23">
-  <obsolete>
-    Replaced by HangWatcher.IsThreadHung on 11-2020.
-  </obsolete>
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    HangWatcher is a class that periodically watches threads to see if they are
-    making progress or if they are hung. This metric is recorded when the
-    HangWatcher checks for hangs. It counts the number of threads of type
-    {ThreadType} that were hung or became hung during the monitoring period in
-    processes of type {ProcessType}. The primary purpose of HangWatcher to
-    upload crash reports on hang. Hangs that last for N monitoring periods do
-    not produce N crash reports. Every subsequent report after the first one is
-    ignored if it pertains to a subset of the same hangs. In contrast this
-    metric is recorded after every single monitoring period. This gives more
-    weight to hangs that last for longer and also accounts for cascading hangs
-    that start as a side-effect of the first recorded one.
-  </summary>
-  <token key="ProcessType" variants="ProcessType"/>
-  <token key="ThreadType" variants="ThreadType"/>
-</histogram>
-
 <histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"
     expires_after="2021-10-23">
   <owner>olivierli@chromium.org</owner>

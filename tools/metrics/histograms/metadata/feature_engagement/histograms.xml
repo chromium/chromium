@@ -62,37 +62,16 @@ chromium-metrics-reviews@google.com.
                bottom of the screen"/>
   <variant name="IPH_ChromeHomeExpand"
       summary="Chrome Home shown on cold start"/>
-  <variant name="IPH_ChromeHomeMenuHeader"
-      summary="Chrome Home shown as a header in the app menu">
-    <obsolete>
-      Unused as of 03/2018
-    </obsolete>
-  </variant>
   <variant name="IPH_ChromeHomePullToRefresh"
       summary="Chrome Home shown after a pull-to-refresh"/>
-  <variant name="IPH_ContextualSearch" summary="">
-    <obsolete>
-      Replaced with IPH_ContextualSearchWebSearch.
-    </obsolete>
-  </variant>
   <variant name="IPH_ContextualSearchInPanelHelp"
       summary="promoting longpress from within the panel"/>
   <variant name="IPH_ContextualSearchOptIn"
       summary="opting-in to contextual search"/>
-  <variant name="IPH_ContextualSearchPanel" summary="">
-    <obsolete>
-      Replaced with IPH_ContextualSearchPromotePanelOpen.
-    </obsolete>
-  </variant>
   <variant name="IPH_ContextualSearchPromotePanelOpen"
       summary="opening the contextual search panel"/>
   <variant name="IPH_ContextualSearchPromoteTap"
       summary="tap trigger for contextual search"/>
-  <variant name="IPH_ContextualSearchTap" summary="">
-    <obsolete>
-      Replaced with IPH_ContextualSearchPromoteTap.
-    </obsolete>
-  </variant>
   <variant name="IPH_ContextualSearchTappedButShouldLongpress"
       summary="contextual search to help users that try to trigger the
                feature with a tap to long-press instead"/>
@@ -101,11 +80,6 @@ chromium-metrics-reviews@google.com.
                order to get better translations"/>
   <variant name="IPH_ContextualSearchWebSearch"
       summary="contextual search for users who use web search"/>
-  <variant name="IPH_ContextualSuggestions" summary="contextual suggestions">
-    <obsolete>
-      This feature was deprecated in M74
-    </obsolete>
-  </variant>
   <variant name="IPH_DataSaverDetail" summary="data saver detail"/>
   <variant name="IPH_DataSaverMilestonePromo"
       summary="data saver milestone promo"/>
@@ -157,22 +131,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_GlobalMediaControls" summary="the Global Media Controls"/>
   <variant name="IPH_GMCCastStartStop"
       summary="Cast start stop in the Zenith dialog"/>
-  <variant name="IPH_HomePageButton" summary="home page button">
-    <obsolete>
-      This feature was deprecated in M79
-    </obsolete>
-  </variant>
-  <variant name="IPH_HomepagePromoCard"
-      summary="homepage promo card displayed on new tab page">
-    <obsolete>
-      Feature was deprecated in January 2021.
-    </obsolete>
-  </variant>
-  <variant name="IPH_HomepageTile" summary="homepage tile">
-    <obsolete>
-      This feature was deprecated in M79
-    </obsolete>
-  </variant>
   <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
@@ -191,11 +149,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_MicToolbar" summary="the mic button in the toolbar"/>
   <variant name="IPH_NewIncognitoTabTip" summary="new incognito tab tip"/>
   <variant name="IPH_NewTab" summary="new tab"/>
-  <variant name="IPH_NewTabPageButton" summary="NewTabPageButton feature">
-    <obsolete>
-      This feature was deprecated in M79
-    </obsolete>
-  </variant>
   <variant name="IPH_NewTabPageHomeButton" summary="new tab page button"/>
   <variant name="IPH_NewTabTip" summary="new tab tip"/>
   <variant name="IPH_PageInfo" summary="opening PageInfo"/>
@@ -289,20 +242,6 @@ chromium-metrics-reviews@google.com.
     help.
   </summary>
   <token key="IPHDatabase" variants="IPHDatabase"/>
-</histogram>
-
-<histogram name="InProductHelp.Db.Load" enum="BooleanSuccess"
-    expires_after="2022-07-28">
-  <obsolete>
-    Deleted on 2021-07-28. Use InProductHelp.Db.Load.AvailabilityStore or
-    InProductHelp.Db.Load.EventStore instead.
-  </obsolete>
-  <owner>nyquist@chromium.org</owner>
-  <owner>xingliu@chromium.org</owner>
-  <summary>
-    Records if either the availability store or event store databases
-    successfully loads the data for in-product help.
-  </summary>
 </histogram>
 
 <histogram name="InProductHelp.Db.Load.{IPHDatabase}" enum="BooleanSuccess"

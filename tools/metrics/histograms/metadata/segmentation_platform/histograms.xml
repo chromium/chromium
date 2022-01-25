@@ -99,20 +99,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Startup"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2022-08-01">
-  <obsolete>
-    Removed 09/2021 in favor of
-    SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup.
-  </obsolete>
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>chrome-segmentation-platform@google.com</owner>
-  <summary>
-    Records the selected segment to be shown for the adaptive toolbar button.
-    Recorded on chrome startup.
-  </summary>
-</histogram>
-
 <histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSwitched"
     enum="AdaptiveToolbarSegmentSwitch" expires_after="2022-06-12">
   <owner>shaktisahu@chromium.org</owner>
