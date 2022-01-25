@@ -237,65 +237,6 @@ TestAggregationServiceStorageContext::GetKeyStorage() {
   return storage_;
 }
 
-TestAggregationServiceKeyFetcher::TestAggregationServiceKeyFetcher()
-    : AggregationServiceKeyFetcher(/*storage_context=*/nullptr,
-                                   /*network_fetcher=*/nullptr) {}
-
-TestAggregationServiceKeyFetcher::~TestAggregationServiceKeyFetcher() = default;
-
-void TestAggregationServiceKeyFetcher::GetPublicKey(const url::Origin& origin,
-                                                    FetchCallback callback) {
-  callbacks_[origin].push_back(std::move(callback));
-}
-
-void TestAggregationServiceKeyFetcher::TriggerPublicKeyResponse(
-    const url::Origin& origin,
-    absl::optional<PublicKey> key,
-    PublicKeyFetchStatus status) {
-  ASSERT_TRUE(base::Contains(callbacks_, origin))
-      << "No corresponding GetPublicKeys call for origin " << origin;
-  ASSERT_EQ(key.has_value(), status == PublicKeyFetchStatus::kOk)
-      << "Key must be returned if and only if status is kOk";
-
-  std::vector<FetchCallback> callbacks = std::move(callbacks_[origin]);
-  callbacks_.erase(origin);
-  for (FetchCallback& callback : callbacks) {
-    std::move(callback).Run(key, status);
-  }
-}
-
-void TestAggregationServiceKeyFetcher::TriggerPublicKeyResponseForAllOrigins(
-    absl::optional<PublicKey> key,
-    PublicKeyFetchStatus status) {
-  std::vector<url::Origin> all_origins_;
-  for (const auto& elem : callbacks_) {
-    all_origins_.push_back(elem.first);
-  }
-  for (auto& origin : all_origins_) {
-    TriggerPublicKeyResponse(std::move(origin), key, status);
-  }
-}
-
-bool TestAggregationServiceKeyFetcher::HasPendingCallbacks() {
-  return !callbacks_.empty();
-}
-
-TestAggregatableReportProvider::TestAggregatableReportProvider() = default;
-TestAggregatableReportProvider::~TestAggregatableReportProvider() = default;
-
-absl::optional<AggregatableReport>
-TestAggregatableReportProvider::CreateFromRequestAndPublicKeys(
-    AggregatableReportRequest report_request,
-    std::vector<PublicKey> public_keys) const {
-  ++num_calls_;
-  previous_request_ = aggregation_service::CloneReportRequest(report_request);
-  previous_public_keys_ = public_keys;
-
-  EXPECT_TRUE(report_to_return_.has_value());
-  return aggregation_service::CloneAggregatableReport(
-      report_to_return_.value());
-}
-
 std::ostream& operator<<(
     std::ostream& out,
     const AggregationServicePayloadContents::Operation& operation) {
@@ -314,6 +255,17 @@ std::ostream& operator<<(
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
       return out << "kSingleServer";
   }
+}
+
+bool operator==(const PublicKey& a, const PublicKey& b) {
+  const auto tie = [](const PublicKey& public_key) {
+    return std::make_tuple(public_key.id, public_key.key);
+  };
+  return tie(a) == tie(b);
+}
+
+bool operator==(const AggregatableReport& a, const AggregatableReport& b) {
+  return aggregation_service::AggregatableReportsEqual(a, b);
 }
 
 }  // namespace content

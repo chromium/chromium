@@ -49,13 +49,6 @@ class MockNetworkFetcher : public AggregationServiceKeyFetcher::NetworkFetcher {
 
 }  // namespace
 
-bool operator==(const PublicKey& a, const PublicKey& b) {
-  const auto tie = [](const PublicKey& public_key) {
-    return std::make_tuple(public_key.id, public_key.key);
-  };
-  return tie(a) == tie(b);
-}
-
 class AggregationServiceKeyFetcherTest : public testing::Test {
  public:
   AggregationServiceKeyFetcherTest()

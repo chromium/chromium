@@ -147,20 +147,11 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
   DCHECK_EQ(key.has_value(),
             status == AggregationServiceKeyFetcher::PublicKeyFetchStatus::kOk);
   auto pending_request_it = pending_requests_.find(report_id);
-
-  // This should only be possible if we have already thrown an error.
-  if (pending_request_it == pending_requests_.end())
-    return;
+  DCHECK(pending_request_it != pending_requests_.end());
 
   PendingRequest& pending_request = pending_request_it->second;
 
   // TODO(crbug.com/1254792): Consider implementing some retry logic.
-  if (!key.has_value()) {
-    std::move(pending_request.callback)
-        .Run(absl::nullopt, AssemblyStatus::kPublicKeyFetchFailed);
-    pending_requests_.erase(pending_request_it);
-    return;
-  }
 
   ++pending_request.num_returned_key_fetches;
   pending_request.processing_origin_keys[processing_origin_index] =
@@ -178,7 +169,13 @@ void AggregatableReportAssembler::OnAllPublicKeysFetched(
   std::vector<PublicKey> public_keys;
   for (absl::optional<PublicKey> elem :
        pending_request.processing_origin_keys) {
-    DCHECK(elem.has_value());
+    if (!elem.has_value()) {
+      std::move(pending_request.callback)
+          .Run(absl::nullopt, AssemblyStatus::kPublicKeyFetchFailed);
+      pending_requests_.erase(report_id);
+      return;
+    }
+
     public_keys.push_back(std::move(elem.value()));
   }
 

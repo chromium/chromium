@@ -7,14 +7,12 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/threading/sequence_bound.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
 #include "content/browser/aggregation_service/aggregation_service_key_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_context.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -101,71 +99,6 @@ class TestAggregationServiceStorageContext
   base::SequenceBound<content::AggregationServiceKeyStorage> storage_;
 };
 
-class TestAggregationServiceKeyFetcher : public AggregationServiceKeyFetcher {
- public:
-  TestAggregationServiceKeyFetcher();
-  ~TestAggregationServiceKeyFetcher() override;
-
-  // AggregationServiceKeyFetcher:
-  void GetPublicKey(const url::Origin& origin, FetchCallback callback) override;
-
-  // Triggers a response for each fetch for `origin`, throwing an error if no
-  // such fetches exist.
-  void TriggerPublicKeyResponse(const url::Origin& origin,
-                                absl::optional<PublicKey> key,
-                                PublicKeyFetchStatus status);
-
-  void TriggerPublicKeyResponseForAllOrigins(absl::optional<PublicKey> key,
-                                             PublicKeyFetchStatus status);
-
-  bool HasPendingCallbacks();
-
- private:
-  std::map<url::Origin, std::vector<FetchCallback>> callbacks_;
-};
-
-// A simple class for mocking CreateFromRequestAndPublicKeys().
-class TestAggregatableReportProvider : public AggregatableReport::Provider {
- public:
-  TestAggregatableReportProvider();
-  ~TestAggregatableReportProvider() override;
-
-  absl::optional<AggregatableReport> CreateFromRequestAndPublicKeys(
-      AggregatableReportRequest report_request,
-      std::vector<PublicKey> public_keys) const override;
-
-  int num_calls() const { return num_calls_; }
-
-  const AggregatableReportRequest& PreviousRequest() const {
-    EXPECT_TRUE(previous_request_.has_value());
-    return previous_request_.value();
-  }
-  const std::vector<PublicKey>& PreviousPublicKeys() const {
-    EXPECT_TRUE(previous_request_.has_value());
-    return previous_public_keys_;
-  }
-
-  void set_report_to_return(
-      absl::optional<AggregatableReport> report_to_return) {
-    report_to_return_ = std::move(report_to_return);
-  }
-
- private:
-  absl::optional<AggregatableReport> report_to_return_;
-
-  // The following are mutable to allow `CreateFromRequestAndPublicKeys()` to be
-  // const.
-
-  // Number of times `CreateFromRequestAndPublicKeys()` is called.
-  mutable int num_calls_ = 0;
-
-  // `absl::nullopt` iff `num_calls_` is 0.
-  mutable absl::optional<AggregatableReportRequest> previous_request_;
-
-  // Empty if `num_calls_` is 0.
-  mutable std::vector<PublicKey> previous_public_keys_;
-};
-
 // Only used for logging in tests.
 std::ostream& operator<<(
     std::ostream& out,
@@ -173,6 +106,10 @@ std::ostream& operator<<(
 std::ostream& operator<<(
     std::ostream& out,
     const AggregationServicePayloadContents::ProcessingType& processing_type);
+
+bool operator==(const PublicKey& a, const PublicKey& b);
+
+bool operator==(const AggregatableReport& a, const AggregatableReport& b);
 
 }  // namespace content
 
