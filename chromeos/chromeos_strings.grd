@@ -1207,8 +1207,8 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_TYPE_VPN" desc="Label for VPN networks.">
         VPN
       </message>
-      <message name="IDS_NETWORK_TYPE_VPN_BUILTIN" desc="The built-in VPN types (Open VPN and L2TP/IPSec).">
-        OpenVPN / L2TP
+      <message name="IDS_NETWORK_TYPE_VPN_BUILTIN" desc="Label for the built-in VPN types.">
+        Built-in VPN
       </message>
       <message name="IDS_NETWORK_TYPE_WIRELESS" desc="Label for wireless networks (Cellular, Tether, and WiFi.).">
         Wireless
