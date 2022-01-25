@@ -376,8 +376,12 @@ void InterestGroupManager::NotifyInterestGroupAccessed(
     InterestGroupObserverInterface::AccessType type,
     const std::string& owner_origin,
     const std::string& name) {
+  // Don't bother getting the time if there are no observers.
+  if (observers_.empty())
+    return;
+  base::Time now = base::Time::Now();
   for (InterestGroupObserverInterface& observer : observers_) {
-    observer.OnInterestGroupAccessed(type, owner_origin, name);
+    observer.OnInterestGroupAccessed(now, type, owner_origin, name);
   }
 }
 

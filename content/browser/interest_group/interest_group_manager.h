@@ -65,7 +65,8 @@ class CONTENT_EXPORT InterestGroupManager {
       : public base::CheckedObserver {
    public:
     enum AccessType { kJoin, kLeave, kUpdate, kBid, kWin };
-    virtual void OnInterestGroupAccessed(AccessType type,
+    virtual void OnInterestGroupAccessed(const base::Time& access_time,
+                                         AccessType type,
                                          const std::string& owner_origin,
                                          const std::string& name) = 0;
   };

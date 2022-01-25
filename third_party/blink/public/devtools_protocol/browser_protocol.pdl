@@ -8658,7 +8658,7 @@ experimental domain Storage
     properties
       string ownerOrigin
       string name
-      number expirationTime
+      Network.TimeSinceEpoch expirationTime
       string joiningOrigin
       optional string biddingUrl
       optional string biddingWasmHelperUrl
@@ -8814,6 +8814,7 @@ experimental domain Storage
   # One of the interest groups was accessed by the associated page.
   event interestGroupAccessed
     parameters
+      Network.TimeSinceEpoch accessTime
       InterestGroupAccessType type
       string ownerOrigin
       string name

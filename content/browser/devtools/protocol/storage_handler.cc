@@ -642,6 +642,7 @@ void StorageHandler::ClearTrustTokens(
 }
 
 void StorageHandler::OnInterestGroupAccessed(
+    const base::Time& access_time,
     InterestGroupManager::InterestGroupObserverInterface::AccessType type,
     const std::string& owner_origin,
     const std::string& name) {
@@ -666,7 +667,8 @@ void StorageHandler::OnInterestGroupAccessed(
       type_enum = Storage::InterestGroupAccessTypeEnum::Win;
       break;
   };
-  frontend_->InterestGroupAccessed(type_enum, owner_origin, name);
+  frontend_->InterestGroupAccessed(access_time.ToDoubleT(), type_enum,
+                                   owner_origin, name);
 }
 
 namespace {
@@ -713,7 +715,7 @@ void SendGetInterestGroup(
       protocol::Storage::InterestGroupDetails::Create()
           .SetOwnerOrigin(group.owner.Serialize())
           .SetName(group.name)
-          .SetExpirationTime(group.expiry.ToJsTimeIgnoringNull())
+          .SetExpirationTime(group.expiry.ToDoubleT())
           .SetJoiningOrigin(storage_group->joining_origin.Serialize())
           .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
           .SetAds(std::move(ads))

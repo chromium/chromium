@@ -101,6 +101,7 @@ class StorageHandler
 
   // content::InterestGroupManager::InterestGroupObserverInterface
   void OnInterestGroupAccessed(
+      const base::Time& accessTime,
       InterestGroupManager::InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name) override;

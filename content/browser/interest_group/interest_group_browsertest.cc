@@ -204,6 +204,7 @@ class InterestGroupTestObserver
       std::string,
       std::string>;
   void OnInterestGroupAccessed(
+      const base::Time& access_time,
       InterestGroupManager::InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name) override {
@@ -249,7 +250,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                                                ->GetDefaultStoragePartition())
             ->GetInterestGroupManager();
     observer_ = std::make_unique<InterestGroupTestObserver>();
-    manager_->AddInterestGroupObserver(observer_.get());
     content_browser_client_.SetAllowList(
         {url::Origin::Create(https_server_->GetURL("a.test", "/")),
          url::Origin::Create(https_server_->GetURL("b.test", "/")),
@@ -749,6 +749,10 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return GURL(result.ExtractString());
   }
 
+  void AttachInterestGroupObserver() {
+    manager_->AddInterestGroupObserver(observer_.get());
+  }
+
   void ExpectAccessObserved(
       const std::vector<InterestGroupTestObserver::Entry>& expected) {
     EXPECT_EQ(expected, observer_->accesses);
@@ -1136,6 +1140,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   url::Origin test_origin_a = url::Origin::Create(test_url_a);
   ASSERT_TRUE(test_url_a.SchemeIs(url::kHttpsScheme));
   ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
+
+  AttachInterestGroupObserver();
 
   // This join should succeed and be added to the database.
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(test_origin_a, "cars"));
@@ -1642,6 +1648,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
+  AttachInterestGroupObserver();
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
@@ -1781,6 +1788,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
+  AttachInterestGroupObserver();
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
@@ -1832,6 +1840,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionBuyersNoInterestGroup) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  AttachInterestGroupObserver();
 
   EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(
                          R"({
@@ -1851,6 +1860,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL test_url_a = https_server_->GetURL("a.test", "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), test_url_a));
   url::Origin test_origin_a = url::Origin::Create(test_url_a);
+  AttachInterestGroupObserver();
+
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
       /*owner=*/test_origin_a,
@@ -1909,6 +1920,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // try to remove it.
   GURL disabled_domain = https_server_->GetURL("d.test", "/");
   url::Origin disabled_origin = url::Origin::Create(disabled_domain);
+  AttachInterestGroupObserver();
+
   blink::InterestGroup disabled_group;
   disabled_group.expiry = base::Time::Now() + base::Seconds(300);
   disabled_group.owner = disabled_origin;
@@ -2011,11 +2024,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
 
-  ExpectAccessObserved({
-      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
-  });
+  // InterestGroupAccessObserver never was activated, so nothing was observed.
+  ExpectAccessObserved({});
 
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
@@ -2184,11 +2194,8 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
                   https_server_->GetURL("a.test",
                                         "/interest_group/decision_logic.js"))));
 
-  ExpectAccessObserved({
-      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kBid, test_origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kWin, test_origin.Serialize(), "cars"},
-  });
+  // InterestGroupAccessObserver never was activated, so nothing was observed.
+  ExpectAccessObserved({});
 
   // Check ResourceRequest structs of requests issued by the worklet process.
   const struct ExpectedRequest {
@@ -2287,6 +2294,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
   const char kBidder[] = "b.test";
   const char kSeller[] = "c.test";
 
+  AttachInterestGroupObserver();
+
   // Navigate to bidder site, and add an interest group.
   GURL bidder_url = https_server_->GetURL(kBidder, "/echo");
   ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
@@ -2378,6 +2387,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   GURL ad_url =
       https_server_->GetURL("c.test", "/fenced_frames/ad_with_components.html");
   GURL component_url = https_server_->GetURL("c.test", "/echo?component");
+  AttachInterestGroupObserver();
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
       /*expiry=*/base::Time(),
@@ -2739,6 +2749,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             1);
 
+  // Start observer in the middle.
+  AttachInterestGroupObserver();
+
   // Run auction again. Interest group shoes of owner `test_url2` wins.
   RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad2_url);
   // `test_url2`'s interest group shoes has one `prev_wins` in storage.
@@ -2788,12 +2801,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
             1);
   EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             3);
+  // Observer was not active for joins and first auction.
   ExpectAccessObserved({
-      {InterestGroupTestObserver::kJoin, origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kJoin, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
-      {InterestGroupTestObserver::kBid, origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kWin, origin.Serialize(), "cars"},
       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
       {InterestGroupTestObserver::kWin, origin2.Serialize(), "shoes"},
       {InterestGroupTestObserver::kBid, origin2.Serialize(), "shoes"},
@@ -3655,10 +3664,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
                        "/new_ad_render_url" &&
                    group.ads.value()[0].metadata == "{\"new_a\":\"b\"}";
           }));
-  ExpectAccessObserved({
-      {InterestGroupTestObserver::kJoin, test_origin.Serialize(), "cars"},
-      {InterestGroupTestObserver::kUpdate, test_origin.Serialize(), "cars"},
-  });
 }
 
 // Updates can proceed even if the page that started the update isn't running
