@@ -105,6 +105,20 @@ public final class LightweightReactionsMetrics {
     }
 
     /**
+     * Records metrics related to the user cancelling GIF generation.
+     *
+     * @param generationDuration The duration between generation start and cancellation.
+     * @param progress The generation progress, in %, at time of cancellation.
+     */
+    public static void recordGifGenerationCancelled(long generationDuration, int progress) {
+        RecordHistogram.recordBooleanHistogram("LightweightReactions.GifGenerationCancelled", true);
+        RecordHistogram.recordMediumTimesHistogram(
+                "LightweightReactions.GifGenerationCancelled.Duration", generationDuration);
+        RecordHistogram.recordCount100Histogram(
+                "LightweightReactions.GifGenerationCancelled.Progress", progress);
+    }
+
+    /**
      * Records metrics related to GIF generation.
      *
      * @param duration The time elapsed between the dialog being opened and the GIF being fully
@@ -116,6 +130,9 @@ public final class LightweightReactionsMetrics {
         RecordHistogram.recordCustomTimesHistogram("LightweightReactions.TimeTo.GenerateGif",
                 duration, DURATION_HISTOGRAM_MIN_TIME, DURATION_HISTOGRAM_MAX_TIME,
                 DURATION_HISTOGRAM_BUCKETS);
+        recordFunnel(LightweightReactionsFunnel.GIF_GENERATED);
+        RecordHistogram.recordBooleanHistogram(
+                "LightweightReactions.GifGenerationCancelled", false);
         RecordHistogram.recordBooleanHistogram(
                 "LightweightReactions.GifGenerationSuccess", success);
         RecordHistogram.recordMediumTimesHistogram(
