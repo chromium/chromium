@@ -1926,21 +1926,6 @@
             ]
         }
     ],
-    "ClipboardContextMenuNewNudgeStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClipboardHistoryContextMenuNudge"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClipboardHistoryScreenshotNudgeStudy": [
         {
             "platforms": [
