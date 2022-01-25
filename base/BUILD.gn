@@ -1502,10 +1502,7 @@ mixed_component("base") {
       ]
     }
 
-    if (use_allocator == "tcmalloc") {
-      sources += [ "allocator/allocator_shim_default_dispatch_to_tcmalloc.cc" ]
-      deps += [ "//base/allocator:tcmalloc" ]
-    } else if (use_allocator == "none") {
+    if (use_allocator == "none") {
       if (is_android) {
         sources += [ "allocator/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
       }
@@ -3020,7 +3017,6 @@ source_set("arm_bti_testfunctions") {
 
 test("base_unittests") {
   sources = [
-    "allocator/tcmalloc_unittest.cc",
     "as_const_unittest.cc",
     "at_exit_unittest.cc",
     "atomicops_unittest.cc",

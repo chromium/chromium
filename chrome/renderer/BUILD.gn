@@ -125,7 +125,6 @@ static_library("renderer") {
     "//chrome/common",
     "//chrome/common:mojo_bindings",
     "//chrome/common/net",
-    "//chrome/common/performance_manager/mojom",
     "//chrome/common/search:mojo_bindings",
     "//components/autofill/content/renderer",
     "//components/autofill_assistant/content/renderer",
@@ -422,13 +421,6 @@ static_library("renderer") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "performance_manager/mechanisms/tcmalloc_tunables_impl.cc",
-      "performance_manager/mechanisms/tcmalloc_tunables_impl.h",
-    ]
-
-    deps += [ "//chrome/common/performance_manager/mojom" ]
-
     if (target_cpu == "x64") {
       sources += [
         "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",

@@ -358,11 +358,6 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_libc_symbols.h"
 #endif
 
-// In the case of tcmalloc we also want to plumb into the glibc hooks
-// to avoid that allocations made in glibc itself (e.g., strdup()) get
-// accidentally performed on the glibc heap.
-//
-// More details:
 // Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
 // incorrectly call __libc_memalign() to allocate memory (see elf/dl-tls.c in
 // glibc 2.23 for instance), and free() to free it. This causes issues for us,
@@ -374,12 +369,10 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // the allocation and the free() are caught by the shim.
 //
 // This seems fragile, and is, but there is ample precedent for it, making it
-// quite likely to keep working in the future. For instance, both tcmalloc (in
-// libc_override_glibc.h, see in third_party/tcmalloc) and LLVM for LSAN use the
-// same mechanism.
+// quite likely to keep working in the future. For instance, LLVM for LSAN uses
+// this mechanism.
 
-#if defined(LIBC_GLIBC) && \
-    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 

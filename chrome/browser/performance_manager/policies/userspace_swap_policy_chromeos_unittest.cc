@@ -8,7 +8,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
-#include "chrome/common/performance_manager/mojom/tcmalloc.mojom.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"

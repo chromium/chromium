@@ -6,71 +6,31 @@
 #include "base/allocator/buildflags.h"
 #include "base/check.h"
 
-#if BUILDFLAG(USE_TCMALLOC)
-#include "third_party/tcmalloc/chromium/src/gperftools/heap-profiler.h"
-#include "third_party/tcmalloc/chromium/src/gperftools/malloc_extension.h"
-#include "third_party/tcmalloc/chromium/src/gperftools/malloc_hook.h"
-#endif
-
 namespace base {
 namespace allocator {
 
-void ReleaseFreeMemory() {
-#if BUILDFLAG(USE_TCMALLOC)
-  ::MallocExtension::instance()->ReleaseFreeMemory();
-#endif
-}
+void ReleaseFreeMemory() {}
 
+// TODO(crbug.com/1257213): Remove the functions below, since they only existed
+// for tcmalloc.
 bool GetNumericProperty(const char* name, size_t* value) {
-#if BUILDFLAG(USE_TCMALLOC)
-  return ::MallocExtension::instance()->GetNumericProperty(name, value);
-#else
   return false;
-#endif
 }
 
 bool SetNumericProperty(const char* name, size_t value) {
-#if BUILDFLAG(USE_TCMALLOC)
-  return ::MallocExtension::instance()->SetNumericProperty(name, value);
-#else
   return false;
-#endif
 }
 
-void GetHeapSample(std::string* writer) {
-#if BUILDFLAG(USE_TCMALLOC)
-  ::MallocExtension::instance()->GetHeapSample(writer);
-#endif
-}
+void GetHeapSample(std::string* writer) {}
 
 bool IsHeapProfilerRunning() {
-#if BUILDFLAG(USE_TCMALLOC) && defined(ENABLE_PROFILING)
-  return ::IsHeapProfilerRunning();
-#else
   return false;
-#endif
 }
 
-void SetHooks(AllocHookFunc alloc_hook, FreeHookFunc free_hook) {
-// TODO(sque): Use allocator shim layer instead.
-#if BUILDFLAG(USE_TCMALLOC)
-  // Make sure no hooks get overwritten.
-  auto prev_alloc_hook = MallocHook::SetNewHook(alloc_hook);
-  if (alloc_hook)
-    DCHECK(!prev_alloc_hook);
-
-  auto prev_free_hook = MallocHook::SetDeleteHook(free_hook);
-  if (free_hook)
-    DCHECK(!prev_free_hook);
-#endif
-}
+void SetHooks(AllocHookFunc alloc_hook, FreeHookFunc free_hook) {}
 
 int GetCallStack(void** stack, int max_stack_size) {
-#if BUILDFLAG(USE_TCMALLOC)
-  return MallocHook::GetCallerStackTrace(stack, max_stack_size, 0);
-#else
   return 0;
-#endif
 }
 
 }  // namespace allocator

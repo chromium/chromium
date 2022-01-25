@@ -2006,7 +2006,6 @@ static_library("browser") {
     "//chrome/common:version_header",
     "//chrome/common/net",
     "//chrome/common/notifications",
-    "//chrome/common/performance_manager/mojom",
     "//chrome/installer/util:with_no_strings",
     "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/assist_ranker",
@@ -5014,15 +5013,6 @@ static_library("browser") {
       deps += [
         "//chromeos/memory/userspace_swap",
         "//chromeos/memory/userspace_swap:mojom",
-      ]
-    }
-
-    if (use_allocator == "tcmalloc") {
-      deps += [ "//chrome/common/performance_manager/mojom" ]
-
-      sources += [
-        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.cc",
-        "performance_manager/policies/dynamic_tcmalloc_policy_chromeos.h",
       ]
     }
   } else {  # Non - Ash.

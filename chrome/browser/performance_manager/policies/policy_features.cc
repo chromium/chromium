@@ -123,22 +123,6 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   return params;
 }
 
-#if BUILDFLAG(USE_TCMALLOC)
-// This flag will allow the browser process to adjust the tcmalloc tunables to
-// balance performance and memory utilization.
-const base::Feature kDynamicTcmallocTuning{"DynamicTcmallocTuning",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
-// The time between attempting to update tcmalloc tunables.
-const base::FeatureParam<int> kDynamicTuningTimeSec = {
-    &kDynamicTcmallocTuning, "DynamicTcmallocTuneTimeSec", 120};
-
-// The time a frame must be invisible before being additionally scaled. -1 will
-// disable invisible scaling.
-const base::FeatureParam<int> kDynamicTuningScaleInvisibleTimeSec = {
-    &kDynamicTcmallocTuning, "DynamicTcmallocScaleInvisibleTimeSec", -1};
-#endif  // BUILDFLAG(USE_TCMALLOC)
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features

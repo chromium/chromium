@@ -27,13 +27,6 @@ bool IsAllocatorInitialized() {
   // Set by allocator_shim_override_ucrt_symbols_win.h when the
   // shimmed _set_new_mode() is called.
   return g_is_win_shim_layer_initialized;
-#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-    BUILDFLAG(USE_TCMALLOC) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-// From third_party/tcmalloc/chromium/src/gperftools/tcmalloc.h.
-// TODO(primiano): replace with an include once base can depend on allocator.
-#define TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC 0xbeef42
-  return (mallopt(TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC, 0) ==
-          TC_MALLOPT_IS_OVERRIDDEN_BY_TCMALLOC);
 #elif BUILDFLAG(IS_APPLE) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) && \
     !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // From allocator_interception_mac.mm.
