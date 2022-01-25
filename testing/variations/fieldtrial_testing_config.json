@@ -6700,21 +6700,6 @@
             ]
         }
     ],
-    "ToolbarUseHardwareBitmapDraw": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDefault",
-                    "enable_features": [
-                        "ToolbarUseHardwareBitmapDraw"
-                    ]
-                }
-            ]
-        }
-    ],
     "TopCat": [
         {
             "platforms": [
