@@ -68,8 +68,9 @@ class ServiceProcessLauncherDelegateImpl
   size_t adjust_count_ = 0;
 };
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 // TODO(qsr): Multiprocess service manager tests are not supported on android.
+// TODO(crbug.com/1288830): Flakes on macOS.
 #define MAYBE_StartJoin DISABLED_StartJoin
 #else
 #define MAYBE_StartJoin StartJoin
