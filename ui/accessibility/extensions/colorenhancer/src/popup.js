@@ -253,10 +253,9 @@
   function onDeltaChange(value) {
     debugPrint('onDeltaChange: ' + value + ' for ' + site);
     if (site) {
-      setSiteDelta(site, value);
+      setSiteDelta(site, value).then(update);
     }
-    setDefaultDelta(value);
-    update();
+    setDefaultDelta(value).then(update);
   }
 
   /**
@@ -266,14 +265,15 @@
    */
   function onSeverityChange(value) {
     debugPrint('onSeverityChange: ' + value + ' for ' + site);
-    setDefaultSeverity(value);
-    update();
-    // Apply filter to popup swatches.
-    var filter = window.getDefaultCvdCorrectionFilter(
-        getCvdTypeSelection(), value);
-    injectColorEnhancementFilter(filter);
-    // Force a refresh.
-    window.getComputedStyle(document.documentElement, null);
+    setDefaultSeverity(value).then(() => {
+      update();
+      // Apply filter to popup swatches.
+      var filter = window.getDefaultCvdCorrectionFilter(
+          getCvdTypeSelection(), value);
+      injectColorEnhancementFilter(filter);
+      // Force a refresh.
+      window.getComputedStyle(document.documentElement, null);
+    });
   }
 
   /**
@@ -283,12 +283,13 @@
    */
   function onTypeChange(value) {
     debugPrint('onTypeChange: ' + value + ' for ' + site);
-    setDefaultType(value);
-    update();
-    // TODO(kevers): reset severity to effectively disable filter.
-    activeFilterType = value;
-    $('severity').value = 0;
-    updateControls();
+    setDefaultType(value).then(() => {
+      update();
+      // TODO(kevers): reset severity to effectively disable filter.
+      activeFilterType = value;
+      $('severity').value = 0;
+      updateControls();
+    });
   }
 
   /**
@@ -298,11 +299,12 @@
   */
   function onEnableChange(value) {
     debugPrint('onEnableChange: ' + value + ' for ' + site);
-    setDefaultEnable(value);
-    if (!update()) {
-      // Settings are not valid for a reconfiguration.
-      $('setup').onclick();
-    }
+    setDefaultEnable(value).then(() => {
+      if (!update()) {
+        // Settings are not valid for a reconfiguration.
+        $('setup').onclick();
+      }
+    });
   }
 
   /**
@@ -310,8 +312,7 @@
    */
   function onReset() {
     debugPrint('onReset');
-    resetSiteDeltas();
-    update();
+    resetSiteDeltas().then(update);
   }
 
   /**

@@ -8,10 +8,10 @@ function validBoolean(b) {
   return b == true || b == false;
 }
 
-function store_(key, val) {
+function store_(key, val, callback) {
   const newVals = {};
   newVals[key] = val;
-  chrome.storage.local.set(newVals);
+  chrome.storage.local.set(newVals, callback);
 }
 
 // ======= Delta setting =======
@@ -20,11 +20,9 @@ function store_(key, val) {
 /** @const {string} */ var LOCAL_STORAGE_TAG_DELTA = 'cvd_delta';
 /** @const {string} */ var LOCAL_STORAGE_TAG_SITE_DELTA = 'cvd_site_delta';
 
-
 function validDelta(delta) {
   return delta >= 0 && delta <= 1;
 }
-
 
 function getDefaultDelta() {
   return new Promise(resolve => {
@@ -35,20 +33,18 @@ function getDefaultDelta() {
         return;
       }
       delta = DEFAULT_DELTA;
-      store_(LOCAL_STORAGE_TAG_DELTA, delta);
-      resolve(delta);
+      store_(LOCAL_STORAGE_TAG_DELTA, delta, () => resolve(delta));
     });
   });
 }
-
 
 function setDefaultDelta(delta) {
   if (!validDelta(delta)) {
     delta = DEFAULT_DELTA;
   }
-  store_(LOCAL_STORAGE_TAG_DELTA, delta);
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_DELTA, delta, resolve));
 }
-
 
 function getSiteDelta(site) {
   return new Promise(resolve => {
@@ -70,28 +66,28 @@ function getSiteDelta(site) {
   });
 }
 
-
-async function setSiteDelta(site, delta) {
-  if (!validDelta(delta)) {
-    delta = await getDefaultDelta();
-  }
-  chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
-    var siteDeltas = {};
-    try {
-      siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
-    } catch (e) {
-      siteDeltas = {};
+function setSiteDelta(site, delta) {
+  return new Promise(async resolve => {
+    if (!validDelta(delta)) {
+      delta = await getDefaultDelta();
     }
-    siteDeltas[site] = delta;
-    store_(LOCAL_STORAGE_TAG_SITE_DELTA, siteDeltas);
+    chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
+      var siteDeltas = {};
+      try {
+        siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
+      } catch (e) {
+        siteDeltas = {};
+      }
+      siteDeltas[site] = delta;
+      store_(LOCAL_STORAGE_TAG_SITE_DELTA, siteDeltas, resolve);
+    });
   });
 }
 
-
 function resetSiteDeltas() {
-  store_(LOCAL_STORAGE_TAG_SITE_DELTA, {});
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_SITE_DELTA, {}, resolve));
 }
-
 
 // ======= Severity setting =======
 
@@ -103,7 +99,6 @@ function validSeverity(severity) {
   return severity >= 0 && severity <= 1;
 }
 
-
 function getDefaultSeverity() {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SEVERITY], (result) => {
@@ -113,33 +108,29 @@ function getDefaultSeverity() {
         return;
       }
       severity = DEFAULT_SEVERITY;
-      store_(LOCAL_STORAGE_TAG_SEVERITY, severity);
-      resolve(severity);
+      store_(LOCAL_STORAGE_TAG_SEVERITY, severity, () => resolve(severity));
     });
   });
 }
-
 
 function setDefaultSeverity(severity) {
   if (!validSeverity(severity)) {
     severity = DEFAULT_SEVERITY;
   }
-  store_(LOCAL_STORAGE_TAG_SEVERITY, severity);
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_SEVERITY, severity, resolve));
 }
-
 
 // ======= Type setting =======
 
 /** @const {string} */ var INVALID_TYPE_PLACEHOLDER = '';
 /** @const {string} */ var LOCAL_STORAGE_TAG_TYPE = 'cvd_type';
 
-
 function validType(type) {
   return type === 'PROTANOMALY' ||
       type === 'DEUTERANOMALY' ||
       type === 'TRITANOMALY';
 }
-
 
 function getDefaultType() {
   return new Promise(resolve => {
@@ -155,20 +146,18 @@ function getDefaultType() {
   });
 }
 
-
 function setDefaultType(type) {
   if (!validType(type)) {
     type = INVALID_TYPE_PLACEHOLDER;
   }
-  store_(LOCAL_STORAGE_TAG_TYPE, type);
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_TYPE, type, resolve));
 }
-
 
 // ======= Simulate setting =======
 
 /** @const {boolean} */ var DEFAULT_SIMULATE = false;
 /** @const {string} */ var LOCAL_STORAGE_TAG_SIMULATE = 'cvd_simulate';
-
 
 function getDefaultSimulate() {
   return new Promise(resolve => {
@@ -180,26 +169,23 @@ function getDefaultSimulate() {
         return;
       }
       simulate = DEFAULT_SIMULATE;
-      store_(LOCAL_STORAGE_TAG_SIMULATE, simulate);
-      resolve(simulate);
+      store_(LOCAL_STORAGE_TAG_SIMULATE, simulate, () => resolve(simulate));
     });
   });
 }
-
 
 function setDefaultSimulate(simulate) {
   if (!validBoolean(simulate)) {
     simulate = DEFAULT_SIMULATE;
   }
-  store_(LOCAL_STORAGE_TAG_SIMULATE, simulate);
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_SIMULATE, simulate, resolve));
 }
-
 
 // ======= Enable setting =======
 
 /** @const {boolean} */ var DEFAULT_ENABLE = false;
 /** @const {string} */ var LOCAL_STORAGE_TAG_ENABLE = 'cvd_enable';
-
 
 function getDefaultEnable() {
   return new Promise(resolve => {
@@ -211,16 +197,15 @@ function getDefaultEnable() {
         return;
       }
       enable = DEFAULT_ENABLE;
-      store_(LOCAL_STORAGE_TAG_ENABLE, enable);
-      resolve(enable);
+      store_(LOCAL_STORAGE_TAG_ENABLE, enable, () => resolve(enable));
     });
   });
 }
-
 
 function setDefaultEnable(enable) {
   if (!validBoolean(enable)) {
     enable = DEFAULT_ENABLE;
   }
-  store_(LOCAL_STORAGE_TAG_ENABLE, enable);
+  return new Promise(
+      resolve => store_(LOCAL_STORAGE_TAG_ENABLE, enable, resolve));
 }
