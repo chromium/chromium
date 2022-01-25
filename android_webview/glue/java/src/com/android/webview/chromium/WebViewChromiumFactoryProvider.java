@@ -859,4 +859,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     public PacProcessor createPacProcessor() {
         return GlueApiHelperForR.createPacProcessor();
     }
+
+    boolean shouldEnableSimplifiedDarkMode() {
+        // TODO: Put the downstream implementation inline and remove this method.
+        return false;
+    }
 }

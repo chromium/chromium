@@ -12,7 +12,9 @@ import android.webkit.WebSettings.PluginState;
 import android.webkit.WebSettings.RenderPriority;
 import android.webkit.WebSettings.ZoomDensity;
 
+import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.base.Log;
 
 /**
  * Type adaptation layer between {@link android.webkit.WebSettings} and
@@ -20,6 +22,7 @@ import org.chromium.android_webview.AwSettings;
  */
 @SuppressWarnings({"deprecation", "NoSynchronizedMethodCheck"})
 public class ContentSettingsAdapter extends android.webkit.WebSettings {
+    private static final String TAG = "WebSettings";
     private AwSettings mAwSettings;
     private PluginState mPluginState = PluginState.OFF;
 
@@ -611,6 +614,10 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     @SuppressLint("Override")
     public void setForceDark(int forceDarkMode) {
+        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG, "setForceDark() is a no-op in an app with targetSdkVersion>=T");
+            return;
+        }
         switch (forceDarkMode) {
             case WebSettings.FORCE_DARK_OFF:
                 getAwSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
@@ -630,6 +637,10 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     @SuppressLint("Override")
     public int getForceDark() {
+        if (AwDarkMode.isSimplifiedDarkModeEnabled()) {
+            Log.w(TAG, "getForceDark() is a no-op in an app with targetSdkVersion>=T");
+            return WebSettings.FORCE_DARK_AUTO;
+        }
         switch (getAwSettings().getForceDarkMode()) {
             case AwSettings.FORCE_DARK_OFF:
                 return WebSettings.FORCE_DARK_OFF;
