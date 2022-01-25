@@ -1220,9 +1220,4 @@
   self.enterprisePromptCoordinator = nil;
 }
 
-- (void)enterprisePromptCoordinatorDidDismiss {
-  [self.enterprisePromptCoordinator stop];
-  self.enterprisePromptCoordinator = nil;
-}
-
 @end

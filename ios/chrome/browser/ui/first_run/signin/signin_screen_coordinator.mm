@@ -251,10 +251,6 @@
   [self dismissSignedOutModalAndSkipScreens:learnMore];
 }
 
-- (void)enterprisePromptCoordinatorDidDismiss {
-  [self dismissSignedOutModalAndSkipScreens:NO];
-}
-
 #pragma mark - Private
 
 // Dismisses the Signed Out modal if it is still present and |skipScreens|.

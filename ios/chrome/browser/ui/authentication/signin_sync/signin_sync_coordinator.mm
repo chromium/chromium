@@ -334,10 +334,6 @@
   [self dismissSignedOutModalAndSkipScreens:learnMore];
 }
 
-- (void)enterprisePromptCoordinatorDidDismiss {
-  [self dismissSignedOutModalAndSkipScreens:NO];
-}
-
 #pragma mark - SigninSyncMediatorDelegate
 
 - (void)signinSyncMediatorDidSuccessfulyFinishSignin:

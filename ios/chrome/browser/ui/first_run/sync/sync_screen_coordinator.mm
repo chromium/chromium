@@ -252,10 +252,6 @@
   [self dismissSignedOutModalAndSkipScreens:learnMore];
 }
 
-- (void)enterprisePromptCoordinatorDidDismiss {
-  [self dismissSignedOutModalAndSkipScreens:NO];
-}
-
 #pragma mark - InterruptibleChromeCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterruptAction)action

@@ -87,27 +87,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  switch (self.promptType) {
-    case EnterprisePromptTypeRestrictAccountSignedOut:
-    case EnterprisePromptTypeSyncDisabled:
-      [self.delegate enterprisePromptCoordinatorDidDismiss];
-      break;
-    case EnterprisePromptTypeForceSignOut:
-      [self.delegate hideEnterprisePrompForLearnMore:NO];
-      break;
-  }
+  [self.delegate hideEnterprisePrompForLearnMore:NO];
 }
 
 - (void)confirmationAlertSecondaryAction {
-  switch (self.promptType) {
-    case EnterprisePromptTypeRestrictAccountSignedOut:
-    case EnterprisePromptTypeSyncDisabled:
-      [self.delegate enterprisePromptCoordinatorDidDismiss];
-      break;
-    case EnterprisePromptTypeForceSignOut:
-      [self.delegate hideEnterprisePrompForLearnMore:YES];
-      break;
-  }
+  [self.delegate hideEnterprisePrompForLearnMore:YES];
   [self openManagementPage];
 }
 
@@ -115,7 +99,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate enterprisePromptCoordinatorDidDismiss];
+  [self.delegate hideEnterprisePrompForLearnMore:NO];
 }
 
 #pragma mark - Private
