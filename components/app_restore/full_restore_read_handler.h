@@ -72,6 +72,7 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void OnWindowInitialized(aura::Window* window) override;
 
   // aura::WindowObserver:
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
   // app_restore::ArcReadHandler::Delegate:

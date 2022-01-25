@@ -168,8 +168,6 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
-  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
-
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
     if (arc_save_handler_)
@@ -184,6 +182,7 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
     return;
   }
 
+  int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   DCHECK(SessionID::IsValidValue(window_id));
 
   RemoveAppRestoreData(window_id);

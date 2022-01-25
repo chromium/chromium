@@ -71,12 +71,36 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::LACROS)) {
+    // If the Lacros `window` is added to the hidden container, observe `window`
+    // to restore and remove it from the hidden container in
+    // OnWindowAddedToRootWindow callback.
+    if (lacros_read_handler_ &&
+        window_id == app_restore::kParentToHiddenContainer) {
+      observed_windows_.AddObservation(window);
+    }
+    return;
+  }
+
   if (!SessionID::IsValidValue(window_id)) {
     return;
   }
 
   observed_windows_.AddObservation(window);
   FullRestoreInfo::GetInstance()->OnWindowInitialized(window);
+}
+
+void FullRestoreReadHandler::OnWindowAddedToRootWindow(aura::Window* window) {
+  // If the Lacros `window` is added to the hidden container, call
+  // OnWindowAddedToRootWindow to restore and remove it from the hidden
+  // container.
+  if (window->GetProperty(aura::client::kAppType) ==
+          static_cast<int>(ash::AppType::LACROS) &&
+      lacros_read_handler_ &&
+      window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
+    lacros_read_handler_->OnWindowAddedToRootWindow(window);
+  }
 }
 
 void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {

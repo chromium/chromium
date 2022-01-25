@@ -6,6 +6,7 @@
 #define COMPONENTS_APP_RESTORE_LACROS_READ_HANDLER_H_
 
 #include <map>
+#include <set>
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
@@ -18,6 +19,27 @@ namespace app_restore {
 
 // LacrosSaveHandler is a helper class for FullRestoreReadHandler to restore
 // Lacros windows.
+//
+// For Lacros browser window, the restored browser session id is used as the
+// restore window id. So only when the restored browser session id is received
+// via mojom calls, the window can be restored. OnLacrosBrowserWindowAdded is
+// called when both `window` is initialized, and the restored browser session id
+// is received. So there could be 2 scenarios:
+//
+// 1. `window` is initialized first, then `window` is added to the hidden
+// container, and OnWindowAddedToRootWindow is called to save `window` in
+// `window_candidates_` to wait for the restored browser session id. When
+// OnLacrosBrowserWindowAdded is called, call UpdateWindow to apply the restore
+// window properties, and remove `window` from the hidden container.
+//
+// 2. The restored browser session id is received first, then
+// OnLacrosBrowserWindowAdded is called when `window` is initialized. We have to
+// wait for the OnWindowAddedToRootWindow callback, because `window`'s root is
+// not set yet in the OnWindowInitialized/OnLacrosBrowserWindowAdded callback,
+// and we can't remove `window` from the hidden container. When
+// OnWindowAddedToRootWindow is called, `window` can be restored and removed
+// from the hidden container.
+//
 // TODO(crbug.com/1239984): Restore Lacros windows.
 class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
  public:
@@ -33,22 +55,43 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
   // Invoked when Lacros window is created. `restored_browser_session_id` is the
   // restored browser session id.
   void OnLacrosBrowserWindowAdded(aura::Window* const window,
-                                  uint32_t restored_browser_session_id);
+                                  int32_t restored_browser_session_id);
+
+  // Invoked when `window` is added to the root window.
+  void OnWindowAddedToRootWindow(aura::Window* window);
+
+  // Invoked when `window` is destroyed.
+  void OnWindowDestroyed(aura::Window* window);
 
   // Returns the restore window id for the Lacros window with
   // `lacros_window_id`.
   int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) const;
 
  private:
+  struct WindowData {
+    std::string app_id;
+    int32_t restore_window_id = -1;
+  };
+
+  // Set `kRestoreWindowIdKey` and `kWindowInfoKey` to restore and remove
+  // `window from the hidden container`.
+  void UpdateWindow(aura::Window* const window);
+
   // The user profile path for Lacros windows.
   base::FilePath profile_path_;
 
   // The map from the restore window id to the app id for Lacros windows.
   std::map<int32_t, std::string> restore_window_id_to_app_id_;
 
-  // The map from the lacros window id to the restore window id for browser
-  // windows.
-  std::map<std::string, int32_t> lacros_window_id_to_restore_window_id_;
+  // The map from the window to the app id and the restore window id.
+  std::map<aura::Window*, WindowData> window_to_window_data_;
+
+  // The mojom call to forward the restore window id could be received later
+  // than the OnWindowAddedToRootWindow callback. So add windows to
+  // `window_candidates_` to record window candidates. Once the restore window
+  // id is received, the window can be restored and removed from the hidden
+  // container.
+  std::set<aura::Window*> window_candidates_;
 };
 
 }  // namespace app_restore
