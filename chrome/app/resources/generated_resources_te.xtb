@@ -35,7 +35,7 @@
 <translation id="1034484273907870301">టాబ్లెట్ మోడ్ కోసం థంబ్‌నెయిల్ ట్యాబ్‌ల బార్</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
 <translation id="1036511912703768636">ఈ USB పరికరాల్లో వేటికైనా యాక్సెస్</translation>
-<translation id="1036982837258183574">పూర్తి స్క్రీన్‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
+<translation id="1036982837258183574">ఫుల్-స్క్రీన్‌‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="1038168778161626396">కోడ్ మాత్రమే</translation>
 <translation id="1038462104119736705">Linux కోసం కనీసం <ph name="INSTALL_SIZE" /> స్పేస్ సిఫార్సు చేయబడింది. ఖాళీ స్పేస్‌ను పెంచడానికి, మీ పరికరం నుండి ఫైల్స్‌ను తొలగించండి.</translation>
 <translation id="1039337018183941703">ఫైల్ చెల్లదు లేదా పాడైంది</translation>
@@ -522,7 +522,7 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1535228823998016251">బిగ్గరగా</translation>
 <translation id="1536754031901697553">డిస్‌కనెక్ట్ చేస్తోంది...</translation>
-<translation id="1537254971476575106">పూర్తి స్క్రీన్‌ మాగ్నిఫైయర్</translation>
+<translation id="1537254971476575106">ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్</translation>
 <translation id="15373452373711364">పెద్ద మౌస్ కర్సర్</translation>
 <translation id="1540605929960647700">డెమో మోడ్‌ని ప్రారంభించండి</translation>
 <translation id="1541346352678737112">నెట్‌వర్క్ ఏదీ కనుగొనబడలేదు</translation>
@@ -765,7 +765,7 @@
 <translation id="1763808908432309942">కొత్త ట్యాబ్‌లో తెరవబడుతుంది</translation>
 <translation id="1764226536771329714">బీటా</translation>
 <translation id="176587472219019965">&amp;కొత్త విండో</translation>
-<translation id="1766575458646819543">పూర్తి స్క్రీన్ నుండి నిష్క్రమించారు</translation>
+<translation id="1766575458646819543">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించారు</translation>
 <translation id="1766957085594317166">పాస్‌వర్డ్‌లను మీ Google ఖాతాలో సురక్షితంగా సేవ్ చేయండి, మీరు ఇంకెప్పుడూ మళ్లీ టైప్ చేయవలసిన అవసరం ఉండదు</translation>
 <translation id="1768212860412467516"><ph name="EXPERIMENT_NAME" /> కోసం ఫీడ్‌బ్యాక్‌ను పంపండి.</translation>
 <translation id="1768278914020124551">అయ్యో!  లాగాన్ సర్వర్‌ను సంప్రదించడంలో సమస్య ఉంది. దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను మరియు డొమైన్ పేరును తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
@@ -905,7 +905,7 @@
 <translation id="189035593835762169">నియమాలు, షరతులు</translation>
 <translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">డిస్క్ స్పేస్ చాలా తక్కువగా ఉంది. దయచేసి డిస్క్ స్పేస్‌ను ఖాళీ చేయండి.</translation>
-<translation id="189210018541388520">పూర్తి స్క్రీన్‌ని తెరువు</translation>
+<translation id="189210018541388520">ఫుల్-స్క్రీన్‌ను తెరువు</translation>
 <translation id="1892341345406963517">హాయ్ <ph name="PARENT_NAME" /></translation>
 <translation id="189358972401248634">ఇతర భాషలు</translation>
 <translation id="1895658205118569222">షట్‌డౌన్</translation>
@@ -1126,7 +1126,7 @@
 <translation id="214169863967063661">ప్రదర్శన సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2142328300403846845">లింక్‌ను దీని తరపున తెరువు</translation>
 <translation id="2142582065325732898">ఇటీవలి Chrome ట్యాబ్‌లను చూడటానికి, <ph name="LINK1_BEGIN" />Chrome సింక్<ph name="LINK1_END" />ను ఆన్ చేయండి. <ph name="LINK2_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK2_END" /></translation>
-<translation id="2143765403545170146">పూర్తి స్క్రీన్‌లో ఎల్లప్పుడూ సాధన పట్టీని చూపు</translation>
+<translation id="2143765403545170146">ఫుల్-స్క్రీన్‌లో ఎల్లప్పుడూ సాధన పట్టీని చూపు</translation>
 <translation id="2143778271340628265">మాన్యువల్ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
 <translation id="2144536955299248197">సర్టిఫికెట్ వ్యూవర్: <ph name="CERTIFICATE_NAME" /></translation>
 <translation id="2144557304298909478">Linux Android యాప్ డెవలప్‌మెంట్</translation>
@@ -1150,8 +1150,8 @@
 <ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">భద్రతా తనిఖీని మళ్లీ రన్ చేయండి</translation>
 <translation id="2157474325782140681">ఈ Chromebookకు అనుగుణంగా పని చేయడానికి రూపొందించబడిన డెల్ డాకింగ్ స్టేషన్‌ను ఉపయోగించి, అదనపు ఫీచర్‌లను పొందండి.</translation>
-<translation id="215753907730220065">పూర్తి స్క్రీన్‌ను నిష్క్రమించు</translation>
-<translation id="2157875535253991059">ఈ పేజీ ఇప్పుడు పూర్తి స్క్రీన్‌లో ఉంది.</translation>
+<translation id="215753907730220065">ఫుల్-స్క్రీన్‌ను నిష్క్రమించు</translation>
+<translation id="2157875535253991059">ఈ పేజీ ఇప్పుడు ఫుల్-స్క్రీన్‌లో ఉంది.</translation>
 <translation id="2158475082070321257">హైలైట్ చేసిన టెక్స్ట్‌కు లింక్‌ను కాపీ చేయండి</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fiని జోడించండి...</translation>
@@ -1648,7 +1648,7 @@
 <translation id="2663302507110284145">భాష</translation>
 <translation id="2665394472441560184">కొత్త పదాన్ని జోడించు</translation>
 <translation id="2665647207431876759">గడువు ముగిసింది</translation>
-<translation id="2665717534925640469">ఇప్పుడు ఈ పేజీ పూర్తి స్క్రీన్ మరియు మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
+<translation id="2665717534925640469">ఇప్పుడు ఈ పేజీ ఫుల్-స్క్రీన్‌ మరియు మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
 <translation id="2665919335226618153">అయ్యో! ఫార్మాటింగ్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="2667144577800272420">ఇతర యాప్‌లు, <ph name="APP_NAME" /> తెరిచిన అవే లింక్‌లను తెరవడానికి సిద్ధంగా ఉన్నాయి. ఇది సపోర్ట్ చేయబడిన లింక్‌లను తెరవకుండా <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />ను డిజేబుల్ చేస్తుంది.</translation>
 <translation id="2667463864537187133">స్పెల్ చెక్‌ను మేనేజ్ చేయండి</translation>
@@ -1946,7 +1946,7 @@
 <translation id="2950666755714083615">నన్ను సైన్ అప్ చేయనివ్వు</translation>
 <translation id="2953019166882260872">మీ ఫోన్‌ను కేబుల్‌తో కనెక్ట్ చేయండి</translation>
 <translation id="2956070239128776395">విభాగం సమూహంలో ఉంది: <ph name="ERROR_LINE" /></translation>
-<translation id="2957117904572187936">మీ పరికరంలోని ఫైళ్లు లేదా ఫోల్డర్‌లను సవరించడానికి ఏ సైట్‌లనూ అనుమతించవద్దు</translation>
+<translation id="2957117904572187936">మీ పరికరంలోని ఫైళ్లు లేదా ఫోల్డర్‌లను ఎడిట్ చేయడానికి ఏ సైట్‌లనూ అనుమతించవద్దు</translation>
 <translation id="2958721676848865875">ప్యాక్ ఎక్స్‌టెన్షన్‌ హెచ్చరిక</translation>
 <translation id="2959127025785722291">ఏదో తప్పు జరిగింది. స్కానింగ్ పూర్తి కాలేకపోయింది. దయచేసి మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="2959842337402130152">నిల్వ స్థలం లేని కారణంగా పునరుద్ధరించడం సాధ్యపడలేదు. పరికరంలో <ph name="SPACE_REQUIRED" /> స్థలం ఖాళీ చేసి, ఆపై మళ్లీ ప్రయత్నించండి.</translation>
@@ -2224,7 +2224,7 @@
 <translation id="326999365752735949">డిఫ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="3270965368676314374">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాని చదవడం, మార్చడం మరియు తొలగించడం</translation>
 <translation id="327147043223061465">మొత్తం కుక్కీలు మరియు సైట్ డేటాను చూడండి</translation>
-<translation id="3274763671541996799">మీరు పూర్తి స్క్రీన్‌కు వెళ్ళారు.</translation>
+<translation id="3274763671541996799">మీరు ఫుల్-స్క్రీన్‌కు వెళ్ళారు.</translation>
 <translation id="3275778809241512831">మీ అంతర్గత సెక్యూరిటీ కీ ప్రస్తుతం అసురక్షితంగా ఉంది. మీరు ఏవైనా సేవల కోసం దీనిని ఉపయోగించి ఉంటేే, వెంటనే వాటి నుండి తీసివేయండి. సమస్యను పరిష్కరించడానికి, దయచేసి సెక్యూరిటీ కీని రీసెట్ చేయండి.</translation>
 <translation id="3275778913554317645">విండో లాగా తెరవండి</translation>
 <translation id="3277691515294482687">Linuxను అప్‌గ్రేడ్ చేసే ముందు నా యాప్‌లు, ఫైళ్లను 'నా ఫైల్స్' ఫోల్డర్‌కు బ్యాకప్ చేయి.</translation>
@@ -2253,7 +2253,7 @@
 <translation id="32991397311664836">పరికరాలు</translation>
 <translation id="33022249435934718">GDI నిర్వహించేవి</translation>
 <translation id="3302388252085547855">సర్దుబాటును ఎంటర్ చేయండి...</translation>
-<translation id="3303260552072730022">ఎక్స్‌టెన్షన్‌ పూర్తి స్క్రీన్‌ని ట్రిగ్గర్ చేసింది.</translation>
+<translation id="3303260552072730022">ఎక్స్‌టెన్షన్‌ ఫుల్-స్క్రీన్‌ను ట్రిగ్గర్ చేసింది.</translation>
 <translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవడానికి యాప్‌ను అనుమతించాలా?</translation>
 <translation id="3303818374450886607">కాపీలు</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
@@ -3974,7 +3974,7 @@
 <translation id="5142793792982256885">టచ్‌ప్యాడ్ స్క్రోల్ వేగం</translation>
 <translation id="5143374789336132547">"<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్ష‌న్‌, మీరు హోమ్ బటన్‌ను క్లిక్ చేసినప్పుడు చూపబడే పేజీని మార్చింది.</translation>
 <translation id="5143612243342258355">ఈ ఫైల్ హానికరమైనది</translation>
-<translation id="5143712164865402236">పూర్తి స్క్రీన్‌ను ఎంటర్ చేయండి</translation>
+<translation id="5143712164865402236">ఫుల్-స్క్రీన్‌ను ఎంటర్ చేయండి</translation>
 <translation id="514575469079499857">స్థానాన్ని (డిఫాల్ట్) గుర్తించడానికి మీ IP అడ్రస్‌ను ఉపయోగించండి</translation>
 <translation id="5147103632304200977">HID పరికరాలను సైట్ యాక్సెస్ చేయాలనుకున్నప్పుడు అడుగు (సిఫార్సు చేయబడింది)</translation>
 <translation id="5148277445782867161">మీ పరికరం లొకేషన్‌ను అంచనా వేయడంలో సహాయపడటానికి Wi-Fi, మొబైల్ నెట్‌వర్క్‌లు, సెన్సార్‌ల లాంటి సోర్సులను Google లొకేషన్ సర్వీస్ ఉపయోగిస్తుంది.</translation>
@@ -4777,7 +4777,7 @@
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
 <translation id="6019851026059441029">అద్భుతం - HD</translation>
 <translation id="6020431688553761150">మీకు ఈ వనరుని యాక్సెస్‌ చేయడానికి సర్వర్ అధికారం ఇవ్వలేదు.</translation>
-<translation id="6022526133015258832">పూర్తి స్క్రీన్‌ని తెరువు</translation>
+<translation id="6022526133015258832">ఫుల్-స్క్రీన్‌ను తెరువు</translation>
 <translation id="6022659036123304283">Chromeని మీకు నచ్చినట్లు తయారు చేసుకోండి</translation>
 <translation id="6023643151125006053">ఈ (SN: <ph name="SERIAL_NUMBER" />) పరికరం <ph name="SAML_DOMAIN" /> నిర్వాహకుడిచే లాక్ చేయబడింది.</translation>
 <translation id="6025215716629925253">స్టాక్ ట్రేస్</translation>
@@ -4793,7 +4793,7 @@
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6041046205544295907"><ph name="BEGIN_PARAGRAPH1" />మీ పరికర స్థానాన్ని అంచనా వేయడంలో సహాయపడటానికి Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వంటి మూలాధారాలను Google స్థాన సేవ ఉపయోగిస్తుంది.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />మీరు మీ పరికరంలో ప్రధాన స్థాన సెట్టింగ్‌ని ఆఫ్ చేయడం ద్వారా స్థానాన్ని ఆఫ్ చేయవచ్చు. మీరు స్థాన సెట్టింగ్‌లలో స్థానం కోసం Wi‑Fi, మొబైల్ నెట్‌వర్క్‌లు మరియు సెన్సార్‌ల వినియోగాన్ని కూడా ఆఫ్ చేయవచ్చు.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="6041155700700864984">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="6041155700700864984">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="6042308850641462728">మరింత చూపించు</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> ఒక Chrome ట్యాబ్‌ను <ph name="TAB_NAME" />తో షేర్ చేస్తోంది.</translation>
 <translation id="604388835206766544">కాన్ఫిగరేషన్ అన్వయింపు విఫలమైంది</translation>
@@ -5127,7 +5127,7 @@
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />సిస్టమ్ సమాచారం<ph name="END_LINK1" /> మరియు <ph name="BEGIN_LINK2" />గణాంకాలు<ph name="END_LINK2" /> పంపు</translation>
 <translation id="6396988158856674517">మోషన్ సెన్సార్‌లను ఉపయోగించకుండా సైట్‌లను బ్లాక్ చేయి</translation>
 <translation id="6398715114293939307">Google Play Storeను తీసివేయండి</translation>
-<translation id="6398765197997659313">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="6399774419735315745">గూఢచారి</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను సవరించు</translation>
 <translation id="6406303162637086258">బ్రౌజర్ పునఃప్రారంభాన్ని ప్రారంభించు</translation>
@@ -5199,7 +5199,7 @@
 <translation id="6465841119675156448">ఇంటర్నెట్ లేకుండా</translation>
 <translation id="6466258437571594570">నోటిఫికేషన్‌లు పంపమని సైట్‌లు అడిగినప్పుడు అవి మీకు అంతరాయం కలిగించకుండా బ్లాక్ చేయబడతాయి</translation>
 <translation id="6466988389784393586">&amp;అన్ని బుక్‌మార్క్‌లను తెరువు</translation>
-<translation id="6467304607960172345">పూర్తి స్క్రీన్ వీడియోలను ఆప్టిమైజ్ చేయండి</translation>
+<translation id="6467304607960172345">ఫుల్-స్క్రీన్‌ వీడియోలను ఆప్టిమైజ్ చేయండి</translation>
 <translation id="6468485451923838994">ఫాంట్‌లు</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ఫైళ్లు</translation>
 <translation id="6469557521904094793">సెల్యూలార్ నెట్‌వర్క్ ఆన్ చేయడం</translation>
@@ -5516,7 +5516,7 @@
 <translation id="6811332638216701903">DHCP హోస్ట్‌పేరు</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> రూట్‌గా రన్ చేయలేదు.</translation>
 <translation id="6812841287760418429">మార్పులను ఉంచు</translation>
-<translation id="6813907279658683733">పూర్తి స్క్రీన్</translation>
+<translation id="6813907279658683733">ఫుల్-స్క్రీన్‌</translation>
 <translation id="6814033694018386318">మీరు Google తో ఏమి షేర్ చేస్తారు</translation>
 <translation id="6817174620439930047">MIDI పరికరాలను యాక్సెస్ చేయడానికి సిస్టమ్ విశిష్ట మెసేజ్‌లను సైట్ ఉపయోగించాలనుకున్నప్పుడు అడుగు (సిఫార్సు చేయబడింది)</translation>
 <translation id="6818198425579322765">పేజీని అనువదించాల్సిన భాష</translation>
@@ -5996,7 +5996,7 @@
 <translation id="7339763383339757376">PKCS #7, ఒకే సర్టిఫికెట్</translation>
 <translation id="7339785458027436441">టైప్ చేసేటప్పుడు స్పెల్ చెక్ చేయి</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
-<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> ఇప్పుడు పూర్తి స్క్రీన్‌లో కనిపిస్తుంది.</translation>
+<translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> ఇప్పుడు ఫుల్-స్క్రీన్‌లో కనిపిస్తుంది.</translation>
 <translation id="7340650977506865820">సైట్ మీ స్క్రీన్‌ను షేర్ చేస్తోంది</translation>
 <translation id="7341834142292923918">ఈ సైట్‌కు యాక్సెస్ కోరుతోంది</translation>
 <translation id="7343372807593926528">ఫీడ్‌బ్యాక్‌ను పంపేముందు దయచేసి సమస్యను వివరించండి.</translation>
@@ -6050,7 +6050,7 @@
 <translation id="7392118418926456391">వైరస్‌ను స్కాన్ చేయడంలో విఫలమైంది</translation>
 <translation id="7392915005464253525">మూసివేయబడిన విండోను మ&amp;ళ్లీ తెరువు</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 ఐటెమ్ కాపీ చేయబడింది}other{{COUNT} ఐటెమ్‌లు కాపీ చేయబడ్డాయి}}</translation>
-<translation id="7395774987022469191">పూర్తి స్క్రీన్</translation>
+<translation id="7395774987022469191">ఫుల్-స్క్రీన్‌</translation>
 <translation id="7396017167185131589">షేర్ చేసిన ఫోల్డర్‌లు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> సిస్టమ్ ప్రారంభంలో ప్రారంభమవ్వడమే కాక, అన్ని ఇతర <ph name="PRODUCT_NAME" /> విండోలను మీరు మూసివేసిన తర్వాత కూడా నేపథ్యంలో అమలవడం కొనసాగుతుంది.</translation>
 <translation id="7397270852490618635">లేత రంగు రూపాన్ని ఆఫ్ చేయండి</translation>
@@ -6939,7 +6939,7 @@
 <translation id="8263336784344783289">ఈ సమూహానికి పేరు పెట్టండి</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
 <translation id="8264024885325823677">ఈ సెట్టింగ్ మీ నిర్వాహకుడి ద్వారా నిర్వహించబడుతుంది.</translation>
-<translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> పూర్తి స్క్రీన్‌ని ప్రారంభించింది.</translation>
+<translation id="8264718194193514834"><ph name="EXTENSION_NAME" /> ఫుల్-స్క్రీన్‌ను ప్రారంభించింది.</translation>
 <translation id="826511437356419340">విండో ఓవర్‌వ్యూ మోడ్‌లోకి ప్రవేశించారు. నావిగేట్ చేయడానికి స్వైప్ చేయండి లేదా కీబోర్డ్‌ను ఉపయోగిస్తున్నట్లయితే ట్యాబ్‌ను నొక్కండి.</translation>
 <translation id="8266947622852630193">అన్ని ఇన్‌పుట్ విధానాలు</translation>
 <translation id="8267539814046467575">ప్రింటర్‌ను జోడించండి</translation>
@@ -7158,7 +7158,7 @@
 <translation id="8523493869875972733">మార్పులను అలాగే ఉంచు</translation>
 <translation id="8523849605371521713">విధానం ద్వారా జోడించబడింది</translation>
 <translation id="8524783101666974011">కార్డ్‌లను మీ Google ఖాతాలో సేవ్ చేయండి</translation>
-<translation id="8525306231823319788">పూర్తి స్క్రీన్</translation>
+<translation id="8525306231823319788">ఫుల్-స్క్రీన్‌</translation>
 <translation id="8526666462501866815">Linux అప్‌గ్రేడ్‌ను రద్దు చేస్తోంది</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8528074251912154910">భాషలను జోడించు</translation>
@@ -7179,7 +7179,7 @@
 <translation id="8546186510985480118">పరికరంలో తక్కువ స్థలం ఉంది</translation>
 <translation id="8546306075665861288">చిత్రం కాష్</translation>
 <translation id="8546930481464505581">టచ్ బార్‌ని అనుకూలీకరించండి</translation>
-<translation id="8547013269961688403">పూర్తి స్క్రీన్ మాగ్నిఫయర్‌ను ప్రారంభించండి</translation>
+<translation id="8547013269961688403">ఫుల్-స్క్రీన్‌ మాగ్నిఫయర్‌ను ప్రారంభించండి</translation>
 <translation id="85486688517848470">ఎగువ-అడ్డు వరుసలోని కీల ప్రవర్తనను మార్చడానికి శోధన కీని నొక్కి ఉంచండి</translation>
 <translation id="8549316893834449916">మీ Chromebookకు సైన్ ఇన్ చేయడానికి మీరు మీ Google ఖాతాను ఉపయోగిస్తారు – Gmail, Drive, YouTube మరిన్నింటి కోసం మీరు ఉపయోగించే అదే ఖాతా.</translation>
 <translation id="8551388862522347954">లైసెన్స్‌లు</translation>
@@ -7235,7 +7235,7 @@
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620436878122366504">మీ తల్లిదండ్రులు దీన్ని ఇంకా ఆమోదించలేదు</translation>
 <translation id="8621866727807194849">మీ కంప్యూటర్‌లో మీ భద్రతకు హాని కలిగించే సాఫ్ట్‌వేర్‌ ఉంది. కనుక Chrome దానిని తీసివేసి, మీ సెట్టింగ్‌లను పునరుద్ధరించి, ఎక్స్‌టెన్షన్‌లను నిలిపివేస్తోంది. ఆపై మీ బ్రౌజర్ మళ్లీ ఎప్పటిలాగే సాధారణంగా పని చేస్తుంది.</translation>
-<translation id="8621979332865976405">మీ పూర్తి స్క్రీన్‌ను షేర్ చేయండి</translation>
+<translation id="8621979332865976405">మీ ఫుల్-స్క్రీన్‌ను షేర్ చేయండి</translation>
 <translation id="8624354461147303341">డిస్కౌంట్‌లను పొందండి</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">&amp;పొడిగింపులు</translation>
@@ -7288,7 +7288,7 @@
 <translation id="8665180165765946056">బ్యాకప్ పూర్తయింది</translation>
 <translation id="866611985033792019">ఈమెయిల్‌ వినియోగదారులను గుర్తించడానికి ఈ ప్రమాణపత్రాన్ని విశ్వసిస్తుంది</translation>
 <translation id="8666584013686199826">సైట్ USB పరికరాలను యాక్సెస్ చేయాలనుకున్నప్పుడు అడుగు</translation>
-<translation id="8667328578593601900">ఇప్పుడు <ph name="FULLSCREEN_ORIGIN" /> పూర్తి స్క్రీన్‌లో ఉంది, అది మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
+<translation id="8667328578593601900">ఇప్పుడు <ph name="FULLSCREEN_ORIGIN" /> ఫుల్-స్క్రీన్‌లో ఉంది, అది మీ మౌస్ కర్సర్‌ను నిలిపివేసింది.</translation>
 <translation id="8668052347555487755">రంగు మోడ్</translation>
 <translation id="8669284339312441707">తీక్షణమైనది</translation>
 <translation id="8670537393737592796">ఇక్కడికి త్వరగా తిరిగి రావడానికి, ఇన్‌స్టాల్ బటన్‌ను క్లిక్ చేయడం ద్వారా <ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి</translation>
@@ -7753,7 +7753,7 @@
 <translation id="9113469270512809735">ఇటీవల మూసివేసిన ఐటెమ్‌లను టోగుల్ చేయండి</translation>
 <translation id="9114663181201435112">సులభంగా సైన్ ఇన్ చేయండి</translation>
 <translation id="9115675100829699941">&amp;బుక్‌మార్క్‌లు</translation>
-<translation id="9116465289595958864">చివరిగా సవరించినది</translation>
+<translation id="9116465289595958864">చివరిగా ఎడిట్ చేసినది</translation>
 <translation id="9116799625073598554">నోట్స్ రాసుకునే యాప్‌</translation>
 <translation id="9117030152748022724">మీ యాప్‌లను నిర్వహించండి</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ఉత్తమ అనుభూతిని పొందడానికి, మీ అంతర్గత డిస్క్‌కు <ph name="DEVICE_OS" />‌ను ఇన్‌స్టాల్ చేయండి. మీరు దీన్ని తర్వాత లాగిన్ స్క్రీన్ నుండి కూడా ఇన్‌స్టాల్ చేయవచ్చు.<ph name="END_PARAGRAPH1" />
