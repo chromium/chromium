@@ -137,6 +137,10 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
     return;
   }
 
+  // Do not unmute if we're muted due to audio indicator.
+  if (!mute && reason == TabMutedReason::AUDIO_INDICATOR)
+    return;
+
   chrome::SetTabAudioMuted(web_contents(), mute,
                            TabMutedReason::CONTENT_SETTING, std::string());
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/alert_indicator.h"
+#include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
@@ -224,7 +224,8 @@ Tab::Tab(TabController* controller)
 
   icon_ = AddChildView(std::make_unique<TabIcon>());
 
-  alert_indicator_ = AddChildView(std::make_unique<AlertIndicator>(this));
+  alert_indicator_button_ =
+      AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
@@ -352,7 +353,7 @@ void Tab::Layout() {
       if (extra_alert_indicator_padding_)
         right -= ui::TouchUiController::Get()->touch_ui() ? 8 : 6;
     }
-    const gfx::Size image_size = alert_indicator_->GetPreferredSize();
+    const gfx::Size image_size = alert_indicator_button_->GetPreferredSize();
     gfx::Rect bounds(
         std::max(contents_rect.x(), right - image_size.width()),
         contents_rect.y() + Center(contents_rect.height(), image_size.height()),
@@ -364,9 +365,9 @@ void Tab::Layout() {
     } else {
       MaybeAdjustLeftForPinnedTab(&bounds, bounds.width());
     }
-    alert_indicator_->SetBoundsRect(bounds);
+    alert_indicator_button_->SetBoundsRect(bounds);
   }
-  alert_indicator_->SetVisible(showing_alert_indicator_);
+  alert_indicator_button_->SetVisible(showing_alert_indicator_);
 
   // Size the title to fill the remaining width and use all available height.
   bool show_title = ShouldRenderAsNormalTab();
@@ -384,7 +385,7 @@ void Tab::Layout() {
     }
     int title_right = contents_rect.right();
     if (showing_alert_indicator_) {
-      title_right = alert_indicator_->x() - after_title_padding;
+      title_right = alert_indicator_button_->x() - after_title_padding;
     } else if (showing_close_button_) {
       // Allow the title to overlay the close button's empty border padding.
       title_right = close_x - after_title_padding;
@@ -774,7 +775,7 @@ bool Tab::IsActive() const {
 void Tab::ActiveStateChanged() {
   UpdateTabIconNeedsAttentionBlocked();
   UpdateForegroundColors();
-  alert_indicator_->OnParentTabButtonColorChanged();
+  alert_indicator_button_->OnParentTabButtonColorChanged();
   title_->SetFontList(tab_style_->GetFontList());
   Layout();
 }
@@ -824,7 +825,7 @@ void Tab::SetData(TabRendererData data) {
   const auto new_alert_state = GetAlertStateToShow(data_.alert_state);
   const auto old_alert_state = GetAlertStateToShow(old.alert_state);
   if (new_alert_state != old_alert_state)
-    alert_indicator_->TransitionToAlertState(new_alert_state);
+    alert_indicator_button_->TransitionToAlertState(new_alert_state);
   if (old.pinned != data_.pinned)
     showing_alert_indicator_ = false;
   if (!data_.pinned && old.pinned) {
@@ -931,8 +932,8 @@ void Tab::UpdateIconVisibility() {
 
   const bool has_favicon = data().show_icon;
   const bool has_alert_icon =
-      (alert_indicator_ ? alert_indicator_->showing_alert_state()
-                        : GetAlertStateToShow(data().alert_state))
+      (alert_indicator_button_ ? alert_indicator_button_->showing_alert_state()
+                               : GetAlertStateToShow(data().alert_state))
           .has_value();
 
   is_animating_from_pinned_ &= animating();
@@ -956,7 +957,8 @@ void Tab::UpdateIconVisibility() {
 
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   const int favicon_width = gfx::kFaviconSize;
-  const int alert_icon_width = alert_indicator_->GetPreferredSize().width();
+  const int alert_icon_width =
+      alert_indicator_button_->GetPreferredSize().width();
   // In case of touch optimized UI, the close button has an extra padding on the
   // left that needs to be considered.
   const int close_button_width =
@@ -1039,6 +1041,18 @@ void Tab::UpdateTabIconNeedsAttentionBlocked() {
   }
 }
 
+int Tab::GetWidthOfLargestSelectableRegion() const {
+  // Assume the entire region to the left of the alert indicator and/or close
+  // buttons is available for click-to-select.  If neither are visible, the
+  // entire tab region is available.
+  const int indicator_left = alert_indicator_button_->GetVisible()
+                                 ? alert_indicator_button_->x()
+                                 : width();
+  const int close_button_left =
+      close_button_->GetVisible() ? close_button_->x() : width();
+  return std::min(indicator_left, close_button_left);
+}
+
 void Tab::UpdateForegroundColors() {
   TabStyle::TabColors colors = tab_style_->CalculateColors();
 
@@ -1048,14 +1062,14 @@ void Tab::UpdateForegroundColors() {
 
   if (foreground_color_ != colors.foreground_color) {
     foreground_color_ = colors.foreground_color;
-    alert_indicator_->OnParentTabButtonColorChanged();
+    alert_indicator_button_->OnParentTabButtonColorChanged();
   }
 
   SchedulePaint();
 }
 
 void Tab::CloseButtonPressed(const ui::Event& event) {
-  if (!alert_indicator_ || !alert_indicator_->GetVisible())
+  if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible())
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
   else if (GetAlertStateToShow(data_.alert_state) ==
            TabAlertState::AUDIO_PLAYING)

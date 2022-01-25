@@ -231,6 +231,8 @@ bool FakeBaseTabStripController::BeforeCloseTab(int index,
   return true;
 }
 
+void FakeBaseTabStripController::ToggleTabAudioMute(int index) {}
+
 void FakeBaseTabStripController::CloseTab(int index) {
   RemoveTab(index);
 }

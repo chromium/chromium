@@ -1671,6 +1671,12 @@ void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   CloseTabInternal(GetModelIndexOf(tab), source);
 }
 
+void TabStrip::ToggleTabAudioMute(Tab* tab) {
+  int model_index = GetModelIndexOf(tab);
+  if (IsValidModelIndex(model_index))
+    controller_->ToggleTabAudioMute(model_index);
+}
+
 void TabStrip::ShiftTabNext(Tab* tab) {
   ShiftTabRelative(tab, 1);
 }

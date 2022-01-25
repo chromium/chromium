@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
-#include "chrome/browser/ui/views/tabs/alert_indicator.h"
+#include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab_controller.h"
@@ -60,6 +60,7 @@ class FakeTabController : public TabController {
   void ToggleSelected(Tab* tab) override {}
   void AddSelectionFromAnchorTo(Tab* tab) override {}
   void CloseTab(Tab* tab, CloseTabSource source) override {}
+  void ToggleTabAudioMute(Tab* tab) override {}
   void ShiftTabNext(Tab* tab) override {}
   void ShiftTabPrevious(Tab* tab) override {}
   void MoveTabFirst(Tab* tab) override {}
@@ -171,8 +172,8 @@ class TabTest : public ChromeViewsTestBase {
 
   static views::Label* GetTabTitle(Tab* tab) { return tab->title_; }
 
-  static views::ImageView* GetAlertIndicator(Tab* tab) {
-    return tab->alert_indicator_;
+  static views::ImageButton* GetAlertIndicator(Tab* tab) {
+    return tab->alert_indicator_button_;
   }
 
   static views::ImageButton* GetCloseButton(Tab* tab) {
@@ -319,33 +320,33 @@ class TabTest : public ChromeViewsTestBase {
   static void StopFadeAnimationIfNecessary(const Tab& tab) {
     // Stop the fade animation directly instead of waiting an unknown number of
     // seconds.
-    gfx::Animation* fade_animation =
-        tab.alert_indicator_->fade_animation_.get();
-    if (fade_animation)
+    if (gfx::Animation* fade_animation =
+            tab.alert_indicator_button_->fade_animation_.get()) {
       fade_animation->Stop();
+    }
   }
 
   void SetupFakeClock(TabIcon* icon) { icon->clock_ = &fake_clock_; }
 
  private:
   static gfx::Rect GetAlertIndicatorBounds(const Tab& tab) {
-    if (!tab.alert_indicator_) {
+    if (!tab.alert_indicator_button_) {
       ADD_FAILURE();
       return gfx::Rect();
     }
-    return tab.alert_indicator_->bounds();
+    return tab.alert_indicator_button_->bounds();
   }
 
   std::string original_locale_;
   base::SimpleTestTickClock fake_clock_;
 };
 
-class AlertIndicatorTest : public ChromeViewsTestBase {
+class AlertIndicatorButtonTest : public ChromeViewsTestBase {
  public:
-  AlertIndicatorTest() = default;
-  AlertIndicatorTest(const AlertIndicatorTest&) = delete;
-  AlertIndicatorTest& operator=(const AlertIndicatorTest&) = delete;
-  ~AlertIndicatorTest() override = default;
+  AlertIndicatorButtonTest() = default;
+  AlertIndicatorButtonTest(const AlertIndicatorButtonTest&) = delete;
+  AlertIndicatorButtonTest& operator=(const AlertIndicatorButtonTest&) = delete;
+  ~AlertIndicatorButtonTest() override = default;
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -387,8 +388,8 @@ class AlertIndicatorTest : public ChromeViewsTestBase {
   }
 
   void StopAnimation(Tab* tab) {
-    ASSERT_TRUE(tab->alert_indicator_->fade_animation_);
-    tab->alert_indicator_->fade_animation_->Stop();
+    ASSERT_TRUE(tab->alert_indicator_button_->fade_animation_);
+    tab->alert_indicator_button_->fade_animation_->Stop();
   }
 
   // Owned by TabStrip.
@@ -768,7 +769,7 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
 
 // This test verifies that the tab has its icon state updated when the alert
 // animation fade-out finishes.
-TEST_F(AlertIndicatorTest, ShowsAndHidesAlertIndicator) {
+TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
   controller_->AddPinnedTab(0, false);
   controller_->AddTab(1, true);
   Tab* media_tab = tab_strip_->tab_at(0);

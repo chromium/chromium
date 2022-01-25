@@ -265,6 +265,7 @@ class TabStrip : public views::View,
   void ToggleSelected(Tab* tab) override;
   void AddSelectionFromAnchorTo(Tab* tab) override;
   void CloseTab(Tab* tab, CloseTabSource source) override;
+  void ToggleTabAudioMute(Tab* tab) override;
   void ShiftTabNext(Tab* tab) override;
   void ShiftTabPrevious(Tab* tab) override;
   void MoveTabFirst(Tab* tab) override;

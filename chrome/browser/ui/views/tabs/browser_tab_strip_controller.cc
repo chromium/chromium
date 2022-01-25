@@ -348,6 +348,12 @@ void BrowserTabStripController::CloseTab(int model_index) {
   }
 }
 
+void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
+  content::WebContents* const contents = model_->GetWebContentsAt(model_index);
+  chrome::SetTabAudioMuted(contents, !contents->IsAudioMuted(),
+                           TabMutedReason::AUDIO_INDICATOR, std::string());
+}
+
 void BrowserTabStripController::AddTabToGroup(
     int model_index,
     const tab_groups::TabGroupId& group) {

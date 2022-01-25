@@ -49,6 +49,7 @@ class FakeBaseTabStripController : public TabStripController {
   void AddSelectionFromAnchorTo(int index) override;
   bool BeforeCloseTab(int index, CloseTabSource source) override;
   void CloseTab(int index) override;
+  void ToggleTabAudioMute(int index) override;
   void MoveTab(int from_index, int to_index) override;
   void MoveGroup(const tab_groups::TabGroupId&, int to_index) override;
   bool ToggleTabGroupCollapsedState(

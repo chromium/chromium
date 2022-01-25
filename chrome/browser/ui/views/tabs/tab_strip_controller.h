@@ -84,6 +84,9 @@ class TabStripController {
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index) = 0;
 
+  // Toggles audio muting for the tab at the specified index in the model.
+  virtual void ToggleTabAudioMute(int index) = 0;
+
   // Adds a tab to an existing tab group.
   virtual void AddTabToGroup(int model_index,
                              const tab_groups::TabGroupId& group) = 0;

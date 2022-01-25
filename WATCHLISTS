@@ -1817,7 +1817,7 @@
     'tab_alert_indicators': {
       'filepath': 'content/browser/media/audio_stream_monitor'\
         '|chrome/browser/ui/tabs/tab_utils'\
-        '|chrome/browser/ui/views/tabs/alert_indicator'\
+        '|chrome/browser/ui/views/tabs/alert_indicator_button'\
         '|chrome/browser/ui/views/tabs/tab\.cc'\
         '|chrome/browser/ui/views/tabs/tab_renderer_data'\
         '|media/audio/audio_(output_controller|power_monitor)',
