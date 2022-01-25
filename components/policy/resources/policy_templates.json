@@ -194,9 +194,6 @@
 #   that a policy can reference, in bytes. This annotation is compulsory for
 #   policies of type 'external'. It is ignored for all other policy types.
 #
-#   The 'future' key has been deprecated, please use 'future_on' instead for
-#   unreleased policies.
-#
 # Schemas:
 #   All policies have a key 'schema' which describes the schema of the policy.
 #   This schema supports a subset of the JSON Schema standard

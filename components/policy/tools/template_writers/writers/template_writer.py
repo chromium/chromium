@@ -8,7 +8,6 @@ class TemplateWriter(object):
   '''Abstract base class for writing policy templates in various formats.
   The methods of this class will be called by PolicyTemplateGenerator.
   '''
-
   def __init__(self, platforms, config):
     '''Initializes a TemplateWriter object.
 
@@ -84,12 +83,8 @@ class TemplateWriter(object):
     Returns:
       True if the writer chooses to include 'policy' in its output.
     '''
-    if ('deprecated' in policy and policy['deprecated'] is True and
-        not self.IsDeprecatedPolicySupported(policy)):
-      return False
-
-    if ('future' in policy and policy['future'] is True and
-        not self.IsFuturePolicySupported(policy)):
+    if ('deprecated' in policy and policy['deprecated'] is True
+        and not self.IsDeprecatedPolicySupported(policy)):
       return False
 
     if (self.IsCloudOnlyPolicy(policy)
@@ -181,8 +176,8 @@ class TemplateWriter(object):
       product: Optional product to check; one of
         'chrome', 'chrome_frame', 'chrome_os', 'webview'
     '''
-    return (self.IsPolicyOrItemSupportedOnPlatform(policy, 'win', product) or
-            self.IsPolicyOrItemSupportedOnPlatform(policy, 'win7', product))
+    return (self.IsPolicyOrItemSupportedOnPlatform(policy, 'win', product)
+            or self.IsPolicyOrItemSupportedOnPlatform(policy, 'win7', product))
 
   def IsCrOSManagementSupported(self, policy, management):
     '''Checks whether |policy| supports the Chrome OS |management| type.
@@ -206,8 +201,8 @@ class TemplateWriter(object):
     since_version = supported_on.get('since_version', None)
     until_version = supported_on.get('until_version', None)
 
-    return ((not since_version or int(since_version) <= major_version) and
-            (not until_version or int(until_version) >= major_version))
+    return ((not since_version or int(since_version) <= major_version)
+            and (not until_version or int(until_version) >= major_version))
 
   def _GetChromiumVersionString(self):
     '''Returns the Chromium version string stored in the environment variable
@@ -453,8 +448,8 @@ class TemplateWriter(object):
     '''Returns whether the policy has expanded documentation containing the link
     to the documentation with schema and formatting.
     '''
-    return (policy['type'] in ('dict', 'external') or 'url_schema' in policy or
-            'validation_schema' in policy or 'description_schema' in policy)
+    return (policy['type'] in ('dict', 'external') or 'url_schema' in policy
+            or 'validation_schema' in policy or 'description_schema' in policy)
 
   def GetExpandedPolicyDescription(self, policy):
     '''Returns the expanded description of the policy containing the link to the
@@ -465,8 +460,9 @@ class TemplateWriter(object):
     url = None
     if 'url_schema' in policy:
       url = policy['url_schema']
-    if (policy['type'] in ('dict', 'external') or
-        'validation_schema' in policy or 'description_schema' in policy):
-      url = ('https://cloud.google.com/docs/chrome-enterprise/policies/?policy='
-             + policy['name'])
+    if (policy['type'] in ('dict', 'external') or 'validation_schema' in policy
+        or 'description_schema' in policy):
+      url = (
+          'https://cloud.google.com/docs/chrome-enterprise/policies/?policy=' +
+          policy['name'])
     return schema_description_link_text.replace('$6', url) if url else ''
