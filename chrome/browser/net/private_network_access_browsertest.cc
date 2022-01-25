@@ -47,6 +47,7 @@
 #include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace {
@@ -253,6 +254,7 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
   PrivateNetworkAccessWithFeatureEnabledBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kBlockInsecurePrivateNetworkRequestsFromPrivate,
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
@@ -285,6 +287,7 @@ class PrivateNetworkAccessRespectPreflightResultsBrowserTest
   PrivateNetworkAccessRespectPreflightResultsBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
                 features::kPrivateNetworkAccessRespectPreflightResults,

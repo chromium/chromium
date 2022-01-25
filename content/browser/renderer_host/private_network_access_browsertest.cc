@@ -28,6 +28,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -319,6 +320,7 @@ class PrivateNetworkAccessBrowserTest
   PrivateNetworkAccessBrowserTest()
       : PrivateNetworkAccessBrowserTestBase(
             {
+                blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
             },
             {}) {}
