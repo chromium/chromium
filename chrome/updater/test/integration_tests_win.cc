@@ -20,6 +20,7 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -37,6 +38,7 @@
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
@@ -841,11 +843,68 @@ void RunUninstallCmdLine(UpdaterScope scope) {
 }
 
 void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
-  // TODO(crbug.com/1288681).
+  HKEY root =
+      (scope == UpdaterScope::kSystem) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(root, GetAppClientsKey(kLegacyGoogleUpdaterAppID).c_str(),
+                 Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"1.1.1.1"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GOOG"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
+          GetAppClientsKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"99.0.0.1"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
+          GetAppClientsKey(L"{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+  key.Close();
 }
 
 void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
-  // TODO(crbug.com/1288681).
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+
+  // Legacy updater itself should not be migrated.
+  const std::string kLegacyUpdaterAppId =
+      base::SysWideToUTF8(kLegacyGoogleUpdaterAppID);
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion(kLegacyUpdaterAppId).IsValid());
+  EXPECT_TRUE(persisted_data->GetAP(kLegacyUpdaterAppId).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kLegacyUpdaterAppId).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kLegacyUpdaterAppId).empty());
+
+  // App without 'pv' should not be migrated.
+  const std::string kNoPVAppId("{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}");
+  EXPECT_FALSE(persisted_data->GetProductVersion(kNoPVAppId).IsValid());
+  EXPECT_TRUE(persisted_data->GetAP(kNoPVAppId).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kNoPVAppId).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kNoPVAppId).empty());
+
+  const std::string kChromeAppId = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
+  EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
+            base::Version("99.0.0.1"));
+  EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
+  EXPECT_EQ(persisted_data->GetBrandCode(kChromeAppId), "GGLS");
+  EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
 }
 
 }  // namespace test

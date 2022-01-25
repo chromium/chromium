@@ -376,10 +376,12 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
       base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
 
   // Keystone should not be migrated.
-  persisted_data->GetProductVersion("com.google.keystone");
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion("com.google.keystone").IsValid());
 
   // Uninstalled app should not be migrated.
-  persisted_data->GetProductVersion("com.chromium.NonExistApp");
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion("com.chromium.NonExistApp").IsValid());
 
   // App Kipple.
   const std::string kKippleApp = "com.chromium.kipple";

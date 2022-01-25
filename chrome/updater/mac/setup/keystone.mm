@@ -190,6 +190,7 @@ void MigrateKeystoneTickets(
       // Skip migration for incomplete ticket or Keystone itself.
       if (registration.app_id.empty() ||
           registration.existence_checker_path.empty() ||
+          !base::PathExists(registration.existence_checker_path) ||
           !registration.version.IsValid() ||
           base::EqualsCaseInsensitiveASCII(registration.app_id,
                                            "com.google.Keystone")) {

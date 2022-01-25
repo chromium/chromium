@@ -305,8 +305,10 @@ bool ComServerApp::MigrateLegacyUpdaters(
     RegistrationRequest registration;
     registration.app_id = base::SysWideToUTF8(app_id);
     std::wstring pv;
-    if (key.ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS)
-      registration.version = base::Version(base::SysWideToUTF8(pv));
+    if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS)
+      continue;
+
+    registration.version = base::Version(base::SysWideToUTF8(pv));
     if (!registration.version.IsValid())
       continue;
 
