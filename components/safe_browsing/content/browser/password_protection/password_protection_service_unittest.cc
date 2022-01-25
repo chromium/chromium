@@ -1386,8 +1386,8 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
     reused_password_account_type.set_account_type(
         ReusedPasswordAccountType::GMAIL);
     reused_password_account_type.set_is_account_syncing(false);
-// Currently password reuse warnings are only supported for saved passwords on
-// Android.
+// Currently password reuse warnings are not supported for non-sync gaia
+// passwords on Android.
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
@@ -1421,6 +1421,11 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   }
 
   {
+    // TODO(crbug.com/1237388): Remove it once the flag is completed removed.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        safe_browsing::kPasswordProtectionForSignedInUsers);
+
     reused_password_account_type.set_account_type(
         ReusedPasswordAccountType::GMAIL);
     reused_password_account_type.set_is_account_syncing(true);
@@ -1455,7 +1460,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       PHISHING_REUSE,
       password_protection_service_->GetPasswordProtectionWarningTriggerPref(
           reused_password_account_type));
-// Currently password reuse warnings are only supported for saved passwords on
+// Currently password reuse warnings are not supported for GSUITE passwords on
 // Android.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
@@ -1466,7 +1471,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 
   // Modal dialog warning is also shown on LOW_REPUTATION verdict.
-// Currently password reuse warnings are only supported for saved passwords on
+// Currently password reuse warnings are not supported for GSUITE passwords on
 // Android.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
@@ -1493,8 +1498,8 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   EXPECT_CALL(*password_protection_service_,
               GetPasswordProtectionWarningTriggerPref(_))
       .WillRepeatedly(Return(PHISHING_REUSE));
-// Currently password reuse warnings are only supported for saved passwords on
-// Android.
+// Currently password reuse warnings are not supported for enterprise passwords
+// on Android.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
 #else
@@ -1540,13 +1545,8 @@ TEST_P(PasswordProtectionServiceBaseTest,
 
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::PRIMARY_ACCOUNT_PASSWORD));
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_FALSE(password_protection_service_->IsSupportedPasswordTypeForPinging(
-      PasswordType::OTHER_GAIA_PASSWORD));
-#else
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::OTHER_GAIA_PASSWORD));
-#endif
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
       PasswordType::ENTERPRISE_PASSWORD));
   EXPECT_TRUE(password_protection_service_->IsSupportedPasswordTypeForPinging(
