@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -76,6 +75,10 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
 using content::WebContents;
