@@ -113,7 +113,8 @@ class MockNetwork {
       client->OnReceiveRedirect(net::RedirectInfo(), std::move(response_head));
       return true;
     }
-    client->OnReceiveResponse(std::move(response_head));
+    client->OnReceiveResponse(std::move(response_head),
+                              mojo::ScopedDataPipeConsumerHandle());
 
     uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;

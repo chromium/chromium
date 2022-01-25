@@ -20,6 +20,7 @@
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -81,11 +82,12 @@ class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
     url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     DCHECK(url_loader_client_.is_bound());
     url_loader_client_->OnReceiveResponse(
-        rewrite_header_callback_.Run(std::move(response_head)));
+        rewrite_header_callback_.Run(std::move(response_head)),
+        std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -593,14 +595,23 @@ void ServiceWorkerSubresourceLoader::StartResponse(
 void ServiceWorkerSubresourceLoader::CommitResponseHeaders() {
   TransitionToStatus(Status::kSentHeader);
   DCHECK(url_loader_client_.is_bound());
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
+    return;  // Will be sent in CommitResponseBody.
+
   // TODO(kinuko): Fill the ssl_info.
-  url_loader_client_->OnReceiveResponse(response_head_.Clone());
+  url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                        mojo::ScopedDataPipeConsumerHandle());
 }
 
 void ServiceWorkerSubresourceLoader::CommitResponseBody(
     mojo::ScopedDataPipeConsumerHandle response_body) {
   TransitionToStatus(Status::kSentBody);
-  url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody)) {
+    url_loader_client_->OnReceiveResponse(response_head_.Clone(),
+                                          std::move(response_body));
+  } else {
+    url_loader_client_->OnStartLoadingResponseBody(std::move(response_body));
+  }
 }
 
 void ServiceWorkerSubresourceLoader::CommitEmptyResponseAndComplete() {

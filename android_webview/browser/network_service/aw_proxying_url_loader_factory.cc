@@ -76,7 +76,8 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -491,7 +492,8 @@ void InterceptedRequest::OnReceiveEarlyHints(
 }
 
 void InterceptedRequest::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // intercept response headers here
   // pause/resume |proxied_client_receiver_| if necessary
 
@@ -525,7 +527,7 @@ void InterceptedRequest::OnReceiveResponse(
     }
   }
 
-  target_client_->OnReceiveResponse(std::move(head));
+  target_client_->OnReceiveResponse(std::move(head), std::move(body));
 }
 
 void InterceptedRequest::OnReceiveRedirect(

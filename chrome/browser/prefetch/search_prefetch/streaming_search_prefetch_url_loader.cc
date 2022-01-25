@@ -91,7 +91,8 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
     status_->completion_time = base::TimeTicks::Now();
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(resource_response_));
+  forwarding_client_->OnReceiveResponse(std::move(resource_response_),
+                                        mojo::ScopedDataPipeConsumerHandle());
   RunEventQueue();
 }
 
@@ -101,7 +102,8 @@ void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
 }
 
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(!forwarding_client_);
   DCHECK(streaming_prefetch_request_);
 
@@ -121,6 +123,9 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   }
 
   streaming_prefetch_request_->MarkPrefetchAsServable();
+
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 void StreamingSearchPrefetchURLLoader::OnReceiveRedirect(

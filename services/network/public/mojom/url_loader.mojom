@@ -97,7 +97,8 @@ interface URLLoaderClient {
   OnReceiveEarlyHints(EarlyHints early_hints);
 
   // Called when the response head is received.
-  OnReceiveResponse(URLResponseHead head);
+  OnReceiveResponse(URLResponseHead head,
+                    handle<data_pipe_consumer>? body);
 
   // Called when the request has been redirected. The receiver is expected to
   // call FollowRedirect or cancel the request.

@@ -385,7 +385,8 @@ class RequestInterceptor {
     // Tell the |original_client_| that the request has completed (and that it
     // can release its URLLoaderClient.
     if (status.error_code == net::OK) {
-      original_client_->OnReceiveResponse(std::move(response_head));
+      original_client_->OnReceiveResponse(std::move(response_head),
+                                          mojo::ScopedDataPipeConsumerHandle());
 
       mojo::ScopedDataPipeProducerHandle producer_handle;
       mojo::ScopedDataPipeConsumerHandle consumer_handle;

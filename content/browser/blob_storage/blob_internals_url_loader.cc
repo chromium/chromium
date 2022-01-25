@@ -24,7 +24,8 @@ void StartBlobInternalsURLLoader(
 
   mojo::Remote<network::mojom::URLLoaderClient> client(
       std::move(client_remote));
-  client->OnReceiveResponse(std::move(resource_response));
+  client->OnReceiveResponse(std::move(resource_response),
+                            mojo::ScopedDataPipeConsumerHandle());
 
   std::string output = storage::ViewBlobInternalsJob::GenerateHTML(
       blob_storage_context->context());

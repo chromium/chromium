@@ -256,7 +256,7 @@ class SignedExchangeCertFetcherTest : public testing::Test {
                                       "application/cert-chain+cbor");
     response_head->mime_type = "application/cert-chain+cbor";
     mock_loader_factory_.client_remote()->OnReceiveResponse(
-        std::move(response_head));
+        std::move(response_head), mojo::ScopedDataPipeConsumerHandle());
   }
 
   DeferringURLLoaderThrottle* InitializeDeferringURLLoaderThrottle() {
@@ -467,7 +467,7 @@ TEST_F(SignedExchangeCertFetcherTest, MaxCertSize_ContentLengthCheck) {
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   response_head->content_length = message.size();
   mock_loader_factory_.client_remote()->OnReceiveResponse(
-      std::move(response_head));
+      std::move(response_head), mojo::ScopedDataPipeConsumerHandle());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(
@@ -506,7 +506,7 @@ TEST_F(SignedExchangeCertFetcherTest, Abort_404) {
   response_head->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 404 Not Found");
   mock_loader_factory_.client_remote()->OnReceiveResponse(
-      std::move(response_head));
+      std::move(response_head), mojo::ScopedDataPipeConsumerHandle());
   RunUntilIdle();
 
   EXPECT_TRUE(callback_called_);
@@ -523,7 +523,7 @@ TEST_F(SignedExchangeCertFetcherTest, WrongMimeType) {
   response_head->headers->SetHeader("Content-Type", "application/octet-stream");
   response_head->mime_type = "application/octet-stream";
   mock_loader_factory_.client_remote()->OnReceiveResponse(
-      std::move(response_head));
+      std::move(response_head), mojo::ScopedDataPipeConsumerHandle());
   RunUntilIdle();
 
   EXPECT_TRUE(callback_called_);

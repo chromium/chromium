@@ -753,10 +753,13 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
 }
 
 void NavigationURLLoaderImpl::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_main_frame);
   head_ = std::move(head);
+  if (response_body)
+    OnStartLoadingResponseBody(std::move(response_body));
 }
 
 void NavigationURLLoaderImpl::OnStartLoadingResponseBody(

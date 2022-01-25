@@ -72,13 +72,37 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
       : factory_(factory), wrapped_(std::move(wrapped)) {}
 
  private:
+  mojo::ScopedDataPipeConsumerHandle HandleReceiveBody(
+      mojo::ScopedDataPipeConsumerHandle body) {
+    if (factory_)
+      factory_->SetBundleStream(std::move(body));
+
+    // Send empty body to the wrapped URLLoaderClient.
+    MojoCreateDataPipeOptions options;
+    options.struct_size = sizeof(MojoCreateDataPipeOptions);
+    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+    options.element_num_bytes = 1;
+    options.capacity_num_bytes = kBlockedBodyAllocationSize;
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
+    if (result != MOJO_RESULT_OK) {
+      wrapped_->OnComplete(
+          URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      completed_ = true;
+      return mojo::ScopedDataPipeConsumerHandle();
+    }
+
+    return consumer;
+  }
+
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     wrapped_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     std::string error_message;
     if (!CheckWebBundleServingConstraints(*response_head, error_message)) {
       if (factory_) {
@@ -94,7 +118,10 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
         "SubresourceWebBundles.ContentLength",
         response_head->content_length < 0 ? 0 : response_head->content_length,
         1, 50000000, 50);
-    wrapped_->OnReceiveResponse(std::move(response_head));
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    if (body)
+      consumer = HandleReceiveBody(std::move(body));
+    wrapped_->OnReceiveResponse(std::move(response_head), std::move(consumer));
   }
 
   void OnReceiveRedirect(
@@ -131,25 +158,10 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
 
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override {
-    if (factory_)
-      factory_->SetBundleStream(std::move(body));
-
-    // Send empty body to the wrapped URLLoaderClient.
-    MojoCreateDataPipeOptions options;
-    options.struct_size = sizeof(MojoCreateDataPipeOptions);
-    options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-    options.element_num_bytes = 1;
-    options.capacity_num_bytes = kBlockedBodyAllocationSize;
-    mojo::ScopedDataPipeProducerHandle producer;
-    mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
-    if (result != MOJO_RESULT_OK) {
-      wrapped_->OnComplete(
-          URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
-      completed_ = true;
-      return;
-    }
-    wrapped_->OnStartLoadingResponseBody(std::move(consumer));
+    mojo::ScopedDataPipeConsumerHandle consumer =
+        HandleReceiveBody(std::move(body));
+    if (consumer)
+      wrapped_->OnStartLoadingResponseBody(std::move(consumer));
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
@@ -220,7 +232,8 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
   }
 
   void OnResponse(mojom::URLResponseHeadPtr response) {
-    client_->OnReceiveResponse(std::move(response));
+    client_->OnReceiveResponse(std::move(response),
+                               mojo::ScopedDataPipeConsumerHandle());
   }
 
   void OnData(mojo::ScopedDataPipeConsumerHandle consumer) {
@@ -252,7 +265,8 @@ class WebBundleURLLoaderFactory::URLLoader : public mojom::URLLoader {
     // essential parts from there, so that the two implementations won't
     // diverge further. That requires non-trivial refactoring.
     corb::SanitizeBlockedResponseHeaders(*response_head);
-    client_->OnReceiveResponse(std::move(response_head));
+    client_->OnReceiveResponse(std::move(response_head),
+                               mojo::ScopedDataPipeConsumerHandle());
 
     // Send empty body to the URLLoaderClient.
     mojo::ScopedDataPipeProducerHandle producer;

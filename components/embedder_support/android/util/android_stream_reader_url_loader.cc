@@ -315,7 +315,8 @@ void AndroidStreamReaderURLLoader::SendResponseToClient() {
   DCHECK(client_.is_bound());
   cache_response_ =
       response_delegate_->ShouldCacheResponse(response_head_.get());
-  client_->OnReceiveResponse(std::move(response_head_));
+  client_->OnReceiveResponse(std::move(response_head_),
+                             mojo::ScopedDataPipeConsumerHandle());
   client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
 }
 

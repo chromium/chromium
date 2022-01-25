@@ -265,5 +265,9 @@ const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
 const base::Feature kOptimizeUpdateLoadInfo{"OptimizeUpdateLoadInfo",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
+const base::Feature kCombineResponseBody{"CombineResponseBody",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network

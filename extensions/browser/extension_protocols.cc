@@ -89,6 +89,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -130,9 +131,9 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
     real_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
-    real_client_->OnReceiveResponse(std::move(response_head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    real_client_->OnReceiveResponse(std::move(response_head), std::move(body));
   }
 
   void OnReceiveRedirect(
@@ -736,8 +737,16 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
         return;
       }
 
-      client_remote->OnReceiveResponse(std::move(head));
-      client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
+      if (base::FeatureList::IsEnabled(
+              network::features::kCombineResponseBody)) {
+        client_remote->OnReceiveResponse(std::move(head),
+                                         std::move(consumer_handle));
+      } else {
+        client_remote->OnReceiveResponse(std::move(head),
+                                         mojo::ScopedDataPipeConsumerHandle());
+        client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
+      }
+
       client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       return;
     }

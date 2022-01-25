@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -89,7 +90,8 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
             new_client_receiver,
         mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
         mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-            original_client_receiver);
+            original_client_receiver,
+        mojo::ScopedDataPipeConsumerHandle* body);
 
     // Restarts the URL loader using |additional_load_flags|.
     //

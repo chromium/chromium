@@ -182,8 +182,9 @@ class URLLoaderClientInterceptor : public network::mojom::URLLoaderClient {
     original_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    original_client_->OnReceiveResponse(std::move(head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    original_client_->OnReceiveResponse(std::move(head), std::move(body));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -588,7 +589,8 @@ void URLLoaderInterceptor::WriteResponse(
         network::PopulateParsedHeaders(response->headers.get(), *url);
   }
   response->ssl_info = std::move(ssl_info);
-  client->OnReceiveResponse(std::move(response));
+  client->OnReceiveResponse(std::move(response),
+                            mojo::ScopedDataPipeConsumerHandle());
 
   CHECK_EQ(WriteResponseBody(body, client), MOJO_RESULT_OK);
 }

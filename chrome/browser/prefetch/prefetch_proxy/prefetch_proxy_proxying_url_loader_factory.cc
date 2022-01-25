@@ -178,11 +178,12 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
-    OnReceiveResponse(network::mojom::URLResponseHeadPtr head) {
+    OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                      mojo::ScopedDataPipeConsumerHandle body) {
   if (head) {
     head_ = head->Clone();
   }
-  target_client_->OnReceiveResponse(std::move(head));
+  target_client_->OnReceiveResponse(std::move(head), std::move(body));
 }
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::

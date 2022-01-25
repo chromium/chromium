@@ -45,13 +45,15 @@ void NavigationPreloadRequest::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void NavigationPreloadRequest::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(!response_);
   response_ = std::make_unique<WebURLResponse>();
   // TODO(horo): Set report_security_info to true when DevTools is attached.
   const bool report_security_info = false;
   WebURLLoader::PopulateURLResponse(url_, *response_head, response_.get(),
                                     report_security_info, -1 /* request_id */);
+  body_ = std::move(body);
   MaybeReportResponseToOwner();
 }
 

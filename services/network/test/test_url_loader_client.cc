@@ -26,7 +26,8 @@ void TestURLLoaderClient::OnReceiveEarlyHints(
 }
 
 void TestURLLoaderClient::OnReceiveResponse(
-    mojom::URLResponseHeadPtr response_head) {
+    mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   EXPECT_FALSE(has_received_response_);
   EXPECT_FALSE(has_received_cached_metadata_);
   EXPECT_FALSE(has_received_completion_);
@@ -34,6 +35,8 @@ void TestURLLoaderClient::OnReceiveResponse(
   response_head_ = std::move(response_head);
   if (quit_closure_for_on_receive_response_)
     std::move(quit_closure_for_on_receive_response_).Run();
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 void TestURLLoaderClient::OnReceiveRedirect(

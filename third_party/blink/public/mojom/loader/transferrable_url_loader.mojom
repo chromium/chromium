@@ -15,4 +15,5 @@ struct TransferrableURLLoader {
   pending_remote<network.mojom.URLLoader> url_loader;
   pending_receiver<network.mojom.URLLoaderClient> url_loader_client;
   network.mojom.URLResponseHead head;
+  handle<data_pipe_consumer>? body;
 };

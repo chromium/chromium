@@ -282,7 +282,8 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->mime_type = "multipart/related";
   response_head->content_length = file_size;
 
-  client_->OnReceiveResponse(std::move(response_head));
+  client_->OnReceiveResponse(std::move(response_head),
+                             mojo::ScopedDataPipeConsumerHandle());
   client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(

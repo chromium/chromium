@@ -297,7 +297,8 @@ void ObjectNavigationFallbackBodyLoader::OnReceiveEarlyHints(
 }
 
 void ObjectNavigationFallbackBodyLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr) {
+    network::mojom::URLResponseHeadPtr,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // Should have already happened.
   NOTREACHED();
 }

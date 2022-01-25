@@ -121,8 +121,9 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
     original_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
 
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
-    original_client_->OnReceiveResponse(std::move(head));
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
+    original_client_->OnReceiveResponse(std::move(head), std::move(body));
   }
 
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
