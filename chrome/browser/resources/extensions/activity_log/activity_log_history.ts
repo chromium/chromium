@@ -168,7 +168,7 @@ declare global {
   }
 }
 
-class ActivityLogHistoryElement extends PolymerElement {
+export class ActivityLogHistoryElement extends PolymerElement {
   static get is() {
     return 'activity-log-history';
   }
@@ -233,6 +233,10 @@ class ActivityLogHistoryElement extends PolymerElement {
   ready() {
     super.ready();
     this.addEventListener('delete-activity-log-item', e => this.deleteItem_(e));
+  }
+
+  setPageStateForTest(state: ActivityLogPageState) {
+    this.pageState_ = state;
   }
 
   /**
@@ -360,6 +364,12 @@ class ActivityLogHistoryElement extends PolymerElement {
 
     this.lastSearch_ = searchTerm;
     this.refreshActivities_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-history': ActivityLogHistoryElement;
   }
 }
 

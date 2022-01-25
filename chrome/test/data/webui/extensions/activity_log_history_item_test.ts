@@ -4,29 +4,25 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {ActivityGroup, ActivityLogHistoryItemElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {testVisible} from './test_util.js';
 
 /** @fileoverview Suite of tests for activity-log-history-item. */
 suite('ExtensionsActivityLogHistoryItemTest', function() {
-  /**
-   * Extension activityLogHistoryItem created before each test.
-   * @type {extensions.ActivityLogHistoryItem}
-   */
-  let activityLogHistoryItem;
-  let boundTestVisible;
+  let activityLogHistoryItem: ActivityLogHistoryItemElement;
+  let boundTestVisible: (selector: string, expectedVisible: boolean) => void;
 
-  /**
-   * ActivityGroup data for the activityLogHistoryItem
-   * @type {extensions.ActivityGroup}
-   */
-  let testActivityGroup;
+  /** ActivityGroup data for the activityLogHistoryItem */
+  let testActivityGroup: ActivityGroup;
 
   // Initialize an extension activity log item before each test.
   setup(function() {
     document.body.innerHTML = '';
     testActivityGroup = {
-      activityIds: ['1'],
+      activityIds: new Set(['1']),
       key: 'i18n.getUILanguage',
       count: 1,
       activityType: chrome.activityLogPrivate.ExtensionActivityFilter.API_CALL,
@@ -57,7 +53,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     const countsByUrl = new Map([['google.com', 1]]);
 
     testActivityGroup = {
-      activityIds: ['2'],
+      activityIds: new Set(['2']),
+      expanded: false,
       key: 'Storage.getItem',
       count: 3,
       activityType:
@@ -71,8 +68,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     boundTestVisible('#activity-item-main-row', true);
     boundTestVisible('#page-url-list', false);
 
-    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
-        .click();
+    activityLogHistoryItem.shadowRoot!
+        .querySelector<HTMLElement>('#activity-item-main-row')!.click();
     boundTestVisible('#page-url-list', true);
   });
 
@@ -80,7 +77,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     const countsByUrl = new Map([['google.com', 1]]);
 
     testActivityGroup = {
-      activityIds: ['3'],
+      activityIds: new Set(['3']),
+      expanded: false,
       key: 'Storage.getItem',
       count: 3,
       activityType:
@@ -89,8 +87,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     };
 
     activityLogHistoryItem.set('data', testActivityGroup);
-    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
-        .click();
+    activityLogHistoryItem.shadowRoot!
+        .querySelector<HTMLElement>('#activity-item-main-row')!.click();
 
     flush();
 
@@ -104,7 +102,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
         new Map([['google.com', 5], ['chrome://extensions', 10]]);
 
     testActivityGroup = {
-      activityIds: ['1'],
+      activityIds: new Set(['1']),
+      expanded: false,
       key: 'Storage.getItem',
       count: 15,
       activityType:
@@ -112,8 +111,8 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       countsByUrl
     };
     activityLogHistoryItem.set('data', testActivityGroup);
-    activityLogHistoryItem.shadowRoot.querySelector('#activity-item-main-row')
-        .click();
+    activityLogHistoryItem.shadowRoot!
+        .querySelector<HTMLElement>('#activity-item-main-row')!.click();
 
     flush();
 
@@ -122,20 +121,23 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     boundTestVisible('.page-url-count', true);
 
     const pageUrls =
-        activityLogHistoryItem.shadowRoot.querySelectorAll('.page-url');
-    expectEquals(pageUrls.length, 2);
+        activityLogHistoryItem.shadowRoot!.querySelectorAll('.page-url');
+    assertEquals(pageUrls.length, 2);
 
     // Test the order of the page URLs and activity count for the activity
     // log item here. Apparently a space is added at the end of the innerText,
     // hence the use of .includes.
-    expectTrue(pageUrls[0]
-                   .querySelector('.page-url-link')
-                   .innerText.includes('chrome://extensions'));
-    expectEquals(pageUrls[0].querySelector('.page-url-count').innerText, '10');
+    assertTrue(pageUrls[0]!.querySelector<HTMLElement>('.page-url-link')!
+                   .innerText!.includes('chrome://extensions'));
+    assertEquals(
+        pageUrls[0]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        '10');
 
-    expectTrue(pageUrls[1]
-                   .querySelector('.page-url-link')
-                   .innerText.includes('google.com'));
-    expectEquals(pageUrls[1].querySelector('.page-url-count').innerText, '5');
+    assertTrue(
+        pageUrls[1]!.querySelector<HTMLElement>(
+                        '.page-url-link')!.innerText!.includes('google.com'));
+    assertEquals(
+        pageUrls[1]!.querySelector<HTMLElement>('.page-url-count')!.innerText!,
+        '5');
   });
 });

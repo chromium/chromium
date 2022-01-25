@@ -16,8 +16,8 @@ preprocessed_files = [ "toolbar_test.ts" ]
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
 non_preprocessed_files = [
-  "activity_log_history_item_test.js",
-  "activity_log_history_test.js",
+  "activity_log_history_item_test.ts",
+  "activity_log_history_test.ts",
   "activity_log_stream_item_test.js",
   "activity_log_stream_test.js",
   "activity_log_test.js",
