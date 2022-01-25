@@ -50,7 +50,7 @@ async function createGifVideoProcessor(
 }
 
 function createWriterForIntent(intent: Intent): AsyncWriter {
-  const write = async (blob) => {
+  const write = async (blob: Blob) => {
     await intent.appendData(new Uint8Array(await blob.arrayBuffer()));
   };
   // TODO(crbug.com/1140852): Supports seek.
@@ -137,7 +137,7 @@ export class GifSaver {
    * Creates video saver for the given file.
    */
   static async create(resolution: Resolution): Promise<GifSaver> {
-    const blobs = [];
+    const blobs: Blob[] = [];
     const writer = new AsyncWriter({
       async write(blob) {
         blobs.push(blob);
