@@ -84,8 +84,6 @@ public class CastWebContentsActivity extends Activity {
     private final Controller<Intent> mGotIntentState = new Controller<>();
     // Set this to cause the Activity to finish.
     private final Controller<String> mIsFinishingState = new Controller<>();
-    // Set this to provide the Activity with a CastAudioManager.
-    private final Controller<CastAudioManager> mAudioManagerState = new Controller<>();
     // Set in unittests to skip some behavior.
     private final Controller<Unit> mIsTestingState = new Controller<>();
     // Set at creation. Handles destroying SurfaceHelper.
@@ -137,11 +135,6 @@ public class CastWebContentsActivity extends Activity {
                 // Turn the screen on only if the launching Intent asks to.
                 .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
                 .subscribe(Observers.onEnter(x -> turnScreenOn()));
-
-        // Initialize the audio manager in onCreate() if tests haven't already.
-        mCreatedState.and(Observable.not(mAudioManagerState)).subscribe(Observers.onEnter(x -> {
-            mAudioManagerState.set(CastAudioManager.getAudioManager(this));
-        }));
 
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
@@ -317,10 +310,6 @@ public class CastWebContentsActivity extends Activity {
 
     public void testingModeForTesting() {
         mIsTestingState.set(Unit.unit());
-    }
-
-    public void setAudioManagerForTesting(CastAudioManager audioManager) {
-        mAudioManagerState.set(audioManager);
     }
 
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
