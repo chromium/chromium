@@ -45,6 +45,9 @@ TEST(JSONReaderTest, Whitespace) {
 }
 
 TEST(JSONReaderTest, InvalidString) {
+  // These are invalid because they do not represent a JSON value,
+  // see https://tools.ietf.org/rfc/rfc8259.txt
+  EXPECT_FALSE(JSONReader::Read(""));
   EXPECT_FALSE(JSONReader::Read("nu"));
 }
 
