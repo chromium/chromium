@@ -942,10 +942,6 @@ bool UserSessionManager::RestartToApplyPerSessionFlagsIfNeed(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kLoginUser))
     return false;
 
-  // We can't restart if that's a second user sign in that is happening.
-  if (user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1)
-    return false;
-
   // Don't restart browser if it is not the first profile in the session.
   if (user_manager::UserManager::Get()->GetLoggedInUsers().size() != 1)
     return false;
