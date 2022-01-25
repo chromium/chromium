@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertExists} from '../assert.js';
 import {bitmapToJpegBlob} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -27,7 +28,7 @@ export class CrosImageCapture {
    * @param videoTrack A video track whose still images will be taken.
    */
   constructor(videoTrack: MediaStreamTrack) {
-    this.deviceId = videoTrack.getSettings().deviceId;
+    this.deviceId = assertExists(videoTrack.getSettings().deviceId);
     this.capture = new ImageCapture(videoTrack);
   }
 
@@ -52,26 +53,25 @@ export class CrosImageCapture {
   async takePhoto(photoSettings: PhotoSettings, photoEffects: Effect[] = []):
       Promise<Array<Promise<Blob>>> {
     const deviceOperator = await DeviceOperator.getInstance();
-    if (deviceOperator === null && photoEffects.length > 0) {
-      throw new Error('Applying effects is not supported on this device');
+
+    if (deviceOperator === null) {
+      if (photoEffects.length > 0) {
+        throw new Error('Applying effects is not supported on this device');
+      }
+      return [this.capture.takePhoto(photoSettings)];
     }
 
     const takes =
         await deviceOperator.setReprocessOptions(this.deviceId, photoEffects);
-    if (deviceOperator !== null) {
-      const onShutterDone = new WaitableEvent();
-      const shutterObserver =
-          await deviceOperator.addShutterObserver(this.deviceId, () => {
-            onShutterDone.signal();
-          });
-      takes.unshift(this.capture.takePhoto(photoSettings));
-      await onShutterDone.wait();
-      closeEndpoint(shutterObserver);
-      return takes;
-    } else {
-      takes.unshift(this.capture.takePhoto(photoSettings));
-      return takes;
-    }
+    const onShutterDone = new WaitableEvent();
+    const shutterObserver =
+        await deviceOperator.addShutterObserver(this.deviceId, () => {
+          onShutterDone.signal();
+        });
+    takes.unshift(this.capture.takePhoto(photoSettings));
+    await onShutterDone.wait();
+    closeEndpoint(shutterObserver);
+    return takes;
   }
 
   grabFrame(): Promise<ImageBitmap> {
