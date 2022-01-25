@@ -33,6 +33,20 @@
 #include "base/win/windows_types.h"
 #endif
 
+namespace cc {
+class Scheduler;
+}
+namespace base {
+namespace internal {
+class TimerBase;
+}
+}  // namespace base
+namespace content {
+namespace responsiveness {
+class Calculator;
+}
+}  // namespace content
+
 namespace base {
 
 // NOTE: All methods should be `ALWAYS_INLINE NO_STACK_PROTECTOR`.
@@ -311,6 +325,22 @@ struct IsSupportedType {
 // even need the raw_ptr protection, because they don't point on heap.
 template <typename T>
 struct IsSupportedType<T, std::enable_if_t<std::is_function<T>::value>> {
+  static constexpr bool value = false;
+};
+
+// This section excludes some types from raw_ptr<T> to avoid them from being
+// used inside base::Unretained in performance sensitive places. These were
+// identified from sampling profiler data. See crbug.com/1287151 for more info.
+template <>
+struct IsSupportedType<cc::Scheduler> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<base::internal::TimerBase> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<content::responsiveness::Calculator> {
   static constexpr bool value = false;
 };
 

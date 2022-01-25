@@ -343,6 +343,10 @@ tracing::(anonymous namespace)::LazyLegacyEventInitializer::legacy_event_
 tracing::(anonymous namespace)::LazyLegacyEventInitializer::track_event_
 url::StdStringCanonOutput::str_
 
+# Populated manually - type is unsupported by raw_ptr to avoid being used in
+# performance sensitive base::Unretained
+content::responsiveness::Watcher::calculator_io_
+
 #######
 # End of performance-related exclusions
 #######
