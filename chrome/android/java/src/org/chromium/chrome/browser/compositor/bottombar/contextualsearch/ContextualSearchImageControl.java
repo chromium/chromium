@@ -56,7 +56,7 @@ public class ContextualSearchImageControl {
                 == (toState == OverlayPanel.PanelState.MAXIMIZED)) {
             if (mCardIconVisible || mThumbnailVisible) {
                 mCustomImageVisibilityPercentage = 1.f - percentage;
-                mVisibilityPercentageBasedOnPanelPosition = mCustomImageVisibilityPercentage;
+                mVisibilityPercentageBasedOnPanelPosition = percentage;
             }
         }
     }
