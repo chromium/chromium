@@ -7564,3 +7564,4 @@ crbug.com/1289992 virtual/document-transition/document-transition/paint-order.ht
 # Temporarily disable test to land branded types related changes.
 crbug.com/1253323 [ Win ] http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Skip ]
 crbug.com/1290780 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-012.https.html [ Failure ]
+crbug.com/1290978 [ Mac11 ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Failure Pass ]
