@@ -415,17 +415,17 @@ void CastActivityManager::TerminateSession(
     const MediaRoute::Id& route_id,
     mojom::MediaRouteProvider::TerminateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string source_id =
+      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id);
+  const std::string presentation_id =
+      MediaRoute::GetPresentationIdFromMediaRouteId(route_id);
   logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                   "Terminating a session.", "",
-                   MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                   MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+                   "Terminating a session.", "", source_id, presentation_id);
   auto activity_it = activities_.find(route_id);
   if (activity_it == activities_.end()) {
-    logger_->LogWarning(
-        mojom::LogCategory::kRoute, kLoggerComponent,
-        "Cannot find the activity to terminate with route id.", "",
-        MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-        MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+    logger_->LogWarning(mojom::LogCategory::kRoute, kLoggerComponent,
+                        "Cannot find the activity to terminate with route id.",
+                        "", source_id, presentation_id);
     std::move(callback).Run("Activity not found",
                             RouteRequestResult::ROUTE_NOT_FOUND);
     return;
@@ -438,12 +438,14 @@ void CastActivityManager::TerminateSession(
   // There is no session associated with the route, e.g. the launch request is
   // still pending.
   if (!session_id) {
+    // |route_id| might be a reference to the item in |routes_by_tab_|.
+    // RemoveActivity() deletes this item in |routes_by_tab_| and invalidates
+    // |route_id|.
     RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
                    PresentationConnectionCloseReason::CLOSED);
     logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
-                     "Terminated session has no session ID.", "",
-                     MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                     MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+                     "Terminated session has no session ID.", "", source_id,
+                     presentation_id);
     std::move(callback).Run(absl::nullopt, RouteRequestResult::OK);
     return;
   }
@@ -873,7 +875,15 @@ void CastActivityManager::HandleStopSessionResponse(
     return;
   }
 
+  const std::string source_id =
+      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id);
+  const std::string presentation_id =
+      MediaRoute::GetPresentationIdFromMediaRouteId(route_id);
+
   if (result == cast_channel::Result::kOk) {
+    // |route_id| might be a reference to the item in |routes_by_tab_|.
+    // RemoveActivity() deletes this item in |routes_by_tab_| and invalidates
+    // |route_id|.
     RemoveActivity(activity_it, PresentationConnectionState::TERMINATED,
                    PresentationConnectionCloseReason::CLOSED);
     std::move(callback).Run(absl::nullopt, RouteRequestResult::OK);
@@ -881,16 +891,13 @@ void CastActivityManager::HandleStopSessionResponse(
     logger_->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent,
                      "Terminated a route successfully after receiving "
                      "StopSession response OK.",
-                     "", MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                     MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+                     "", source_id, presentation_id);
   } else {
     std::string error_msg =
         "StopSession response is not OK. Failed to terminate route.";
     std::move(callback).Run(error_msg, RouteRequestResult::UNKNOWN_ERROR);
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent, error_msg,
-                      "",
-                      MediaRoute::GetMediaSourceIdFromMediaRouteId(route_id),
-                      MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
+                      "", source_id, presentation_id);
   }
 }
 
