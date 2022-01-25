@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/test/mock_active_session_permission_delegate.h"
@@ -47,6 +48,7 @@ using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
+using IdTokenStatus = content::FedCmRequestIdTokenStatus;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -1141,8 +1143,7 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
   EXPECT_EQ(RevokeStatus::kError, status);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
-       TimingMetricsForSuccessfulSignUpCase) {
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
   base::HistogramTester histogram_tester;
 
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
@@ -1164,10 +1165,13 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                     IdTokenStatus::kSuccess, 1);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest,
-       TimingMetricsForSuccessfulSignInCase) {
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   base::HistogramTester histogram_tester;
 
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
@@ -1194,9 +1198,13 @@ TEST_F(BasicFederatedAuthRequestImplTest,
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                     IdTokenStatus::kSuccess, 1);
 }
 
-TEST_F(BasicFederatedAuthRequestImplTest, TimingMetricsForNotSelectingAccount) {
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   base::HistogramTester histogram_tester;
 
   AccountList displayed_accounts;
@@ -1252,6 +1260,10 @@ TEST_F(BasicFederatedAuthRequestImplTest, TimingMetricsForNotSelectingAccount) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                     IdTokenStatus::kNotSelectAccount, 1);
 }
 
 }  // namespace content

@@ -31,4 +31,8 @@ void RecordIdTokenResponseAndTurnaroundTime(
                              turnaround_time);
 }
 
+void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.RequestIdToken", status);
+}
+
 }  // namespace content

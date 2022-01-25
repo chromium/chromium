@@ -32,6 +32,7 @@ using blink::mojom::RevokeStatus;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
+using IdTokenStatus = content::FedCmRequestIdTokenStatus;
 
 namespace content {
 
@@ -91,6 +92,7 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHost* host,
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
   // pending promise.
+  RecordRequestIdTokenStatus(IdTokenStatus::kUnhandledRequest);
   CompleteRequest(RequestIdTokenStatus::kError, "");
 }
 
@@ -102,6 +104,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
     bool prefer_auto_sign_in,
     blink::mojom::FederatedAuthRequest::RequestIdTokenCallback callback) {
   if (HasPendingRequest()) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kTooManyRequests);
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
     return;
   }
@@ -116,6 +119,7 @@ void FederatedAuthRequestImpl::RequestIdToken(
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
+    RecordRequestIdTokenStatus(IdTokenStatus::kNoNetworkManager);
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
@@ -154,6 +158,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 
   // Dialog will be hidden by the destructor for request_dialog_controller_,
   // triggered by CompleteRequest.
+  RecordRequestIdTokenStatus(IdTokenStatus::kAborted);
   CompleteRequest(RequestIdTokenStatus::kErrorCanceled, "");
 }
 
@@ -256,16 +261,19 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::Endpoints endpoints) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownHttpNotFound);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownNoResponse);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse);
       CompleteRequest(
           RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
       return;
@@ -290,6 +298,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       // For Mediated mode we require accounts, token and client ID endpoints.
       if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty() ||
           endpoints_.client_id_metadata.is_empty()) {
+        RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse);
         CompleteRequest(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
@@ -299,6 +308,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       if (!IdpUrlIsValid(endpoints_.token) ||
           !IdpUrlIsValid(endpoints_.accounts) ||
           !IdpUrlIsValid(endpoints_.client_id_metadata)) {
+        RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse);
         CompleteRequest(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
@@ -558,16 +568,19 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdentityProviderMetadata idp_metadata) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kAccountsHttpNotFound);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingAccountsHttpNotFound,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kAccountsNoResponse);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingAccountsNoResponse,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kAccountsInvalidResponse);
       CompleteRequest(
           RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse, "");
       return;
@@ -627,6 +640,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   if (account_id.empty()) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
     RecordCancelOnDialogTime(dismiss_dialog_time - show_accounts_dialog_time_);
+    RecordRequestIdTokenStatus(IdTokenStatus::kNotSelectAccount);
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
@@ -677,21 +691,25 @@ void FederatedAuthRequestImpl::CompleteIdTokenRequest(
   DCHECK(!start_time_.is_null());
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kIdTokenHttpNotFound);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenHttpNotFound,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kIdTokenNoResponse);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenNoResponse,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kIdTokenInvalidRequest);
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenInvalidRequest,
                       "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      RecordRequestIdTokenStatus(IdTokenStatus::kIdTokenInvalidResponse);
       CompleteRequest(
           RequestIdTokenStatus::kErrorFetchingIdTokenInvalidResponse, "");
       return;
@@ -725,6 +743,7 @@ void FederatedAuthRequestImpl::CompleteIdTokenRequest(
           id_token_response_time_ - select_account_time_,
           id_token_response_time_ - start_time_);
       id_token_ = id_token;
+      RecordRequestIdTokenStatus(IdTokenStatus::kSuccess);
       CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
       return;
     }
@@ -790,10 +809,8 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   CleanUp();
 
-  if (auth_request_callback_) {
-    RecordMetrics(status);
+  if (auth_request_callback_)
     std::move(auth_request_callback_).Run(status, id_token);
-  }
 }
 
 void FederatedAuthRequestImpl::CleanUp() {
@@ -889,11 +906,6 @@ FederatedAuthRequestImpl::GetSharingPermissionContext() {
             ->GetFederatedIdentitySharingPermissionContext();
   }
   return sharing_permission_delegate_;
-}
-
-void FederatedAuthRequestImpl::RecordMetrics(
-    blink::mojom::RequestIdTokenStatus status) {
-  // TODO(yigu): Record id token fetching status.
 }
 
 }  // namespace content

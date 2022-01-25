@@ -36998,6 +36998,28 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FedCmRequestIdTokenStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="TooManyRequests"/>
+  <int value="2" label="Aborted"/>
+  <int value="3" label="UnhandledRequest"/>
+  <int value="4" label="NoNetworkManager"/>
+  <int value="5" label="NotSelectAccount"/>
+  <int value="6" label="WellKnownHttpNotFound"/>
+  <int value="7" label="WellKnownNoResponse"/>
+  <int value="8" label="WellKnownInvalidResponse"/>
+  <int value="9" label="ClientMetadataHttpNotFound"/>
+  <int value="10" label="ClientMetadataNoResponse"/>
+  <int value="11" label="ClientMetadataInvalidResponse"/>
+  <int value="12" label="AccountsHttpNotFound"/>
+  <int value="13" label="AccountsNoResponse"/>
+  <int value="14" label="AccountsInvalidResponse"/>
+  <int value="15" label="IdTokenHttpNotFound"/>
+  <int value="16" label="IdTokenNoResponse"/>
+  <int value="17" label="IdTokenInvalidResponse"/>
+  <int value="18" label="IdTokenInvalidRequest"/>
+</enum>
+
 <enum name="FeedAutoplayEvent">
   <obsolete>
     Removed as of 05/2021. Replaced by FeedVideoPlayEvent.

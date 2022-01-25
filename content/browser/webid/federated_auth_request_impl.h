@@ -107,7 +107,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void CompleteRevokeRequest(blink::mojom::RevokeStatus status);
 
   void CleanUp();
-  void RecordMetrics(blink::mojom::RequestIdTokenStatus status);
 
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
       const GURL& provider);
