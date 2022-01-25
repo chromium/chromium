@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -22,11 +23,14 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/base_window.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
@@ -41,7 +45,6 @@ struct SharingDialogData;
 class DownloadShelf;
 class ExclusiveAccessContext;
 class ExtensionsContainer;
-class FeaturePromoController;
 class FindBar;
 class GURL;
 class LocationBar;
@@ -50,6 +53,10 @@ class StatusBubble;
 namespace autofill {
 class AutofillBubbleHandler;
 }  // namespace autofill
+
+namespace base {
+struct Feature;
+}
 
 namespace content {
 class WebContents;
@@ -195,6 +202,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the ColorProvider associated with the frame.
   virtual const ui::ColorProvider* GetColorProvider() const = 0;
+
+  // Returns the context for use with ElementTracker, InteractionSequence, etc.
+  virtual ui::ElementContext GetElementContext() = 0;
 
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to
@@ -552,8 +562,32 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void CloseTabSearchBubble() = 0;
 
   // Gets the windows's FeaturePromoController which manages display of
-  // in-product help.
+  // in-product help. Will return null in incognito and guest profiles.
   virtual FeaturePromoController* GetFeaturePromoController() = 0;
+
+  // Maybe shows an in-product help promo. Returns true if the promo is shown.
+  // In cases where there is no promo controller, immediately returns false.
+  virtual bool MaybeShowFeaturePromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      FeaturePromoController::BubbleCloseCallback close_callback =
+          base::DoNothing()) = 0;
+
+  // Closes the in-product help promo for `iph_feature` if it is showing;
+  // returns true if the promo was closed, false if it was not showing.
+  virtual bool CloseFeaturePromo(const base::Feature& iph_feature) = 0;
+
+  // Closes the bubble for a feature promo but continues the promo; returns a
+  // handle that can be used to end the promo when it is destructed. The handle
+  // will be valid (i.e. have a true boolean value) if the promo was showing,
+  // invalid otherwise.
+  virtual FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) = 0;
+
+  // Records that the user has engaged with a particular feature that has an
+  // associated promo; this information is used to determine whether to show
+  // specific promos in the future.
+  virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
 
   // Shows an Incognito clear browsing data dialog.
   virtual void ShowIncognitoClearBrowsingDataDialog() = 0;

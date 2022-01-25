@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -51,7 +50,6 @@ MediaToolbarButtonView::MediaToolbarButtonView(
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),
-      feature_promo_controller_(browser_view->feature_promo_controller()),
       context_menu_(std::move(context_menu)) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
@@ -109,7 +107,7 @@ void MediaToolbarButtonView::Enable() {
   if (media::IsLiveCaptionFeatureEnabled()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
     if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-      feature_promo_controller_->MaybeShowPromo(
+      browser_->window()->MaybeShowFeaturePromo(
           feature_engagement::kIPHLiveCaptionFeature);
     } else {
       // Live Caption only works for English-language speech for now, so we only
@@ -120,7 +118,7 @@ void MediaToolbarButtonView::Enable() {
               ->GetPrimaryModel();
       for (const auto& lang : language_model->GetLanguages()) {
         if (base::MatchPattern(lang.lang_code, "en*")) {
-          feature_promo_controller_->MaybeShowPromo(
+          browser_->window()->MaybeShowFeaturePromo(
               feature_engagement::kIPHLiveCaptionFeature);
           break;
         }
@@ -145,7 +143,7 @@ void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
   if (media_router::GlobalMediaControlsCastStartStopEnabled(
           browser_->profile()) &&
       service_->HasLocalCastNotifications()) {
-    feature_promo_controller_->MaybeShowPromo(
+    browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }
 }
@@ -163,9 +161,9 @@ void MediaToolbarButtonView::ButtonPressed() {
 }
 
 void MediaToolbarButtonView::ClosePromoBubble() {
-  feature_promo_controller_->CloseBubble(
+  browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHLiveCaptionFeature);
-  feature_promo_controller_->CloseBubble(
+  browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHGMCCastStartStopFeature);
 }
 

@@ -46,8 +46,7 @@ ui::Accelerator FeaturePromoSpecification::AcceleratorInfo::GetAccelerator(
 }
 
 // static
-constexpr FeaturePromoSpecification::BubbleArrow
-    FeaturePromoSpecification::kDefaultBubbleArrow;
+constexpr HelpBubbleArrow FeaturePromoSpecification::kDefaultBubbleArrow;
 
 FeaturePromoSpecification::FeaturePromoSpecification() = default;
 
@@ -150,7 +149,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
-    BubbleArrow bubble_arrow) {
+    HelpBubbleArrow bubble_arrow) {
   bubble_arrow_ = bubble_arrow;
   return *this;
 }

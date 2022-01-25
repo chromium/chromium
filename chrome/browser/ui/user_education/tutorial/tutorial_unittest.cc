@@ -5,12 +5,13 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
+#include "chrome/browser/ui/user_education/test_help_bubble.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -26,15 +27,11 @@ const char kTestElementName1[] = "ELEMENT_NAME_1";
 
 const ui::ElementContext kTestContext1(1);
 
-std::unique_ptr<TutorialBubbleFactoryRegistry>
+std::unique_ptr<HelpBubbleFactoryRegistry>
 CreateTestTutorialBubbleFactoryRegistry() {
-  std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
-      std::make_unique<TutorialBubbleFactoryRegistry>();
-  std::unique_ptr<TestTutorialBubbleFactory> test_bubble_factory =
-      std::make_unique<TestTutorialBubbleFactory>();
-  bubble_factory_registry->RegisterBubbleFactory(
-      std::move(test_bubble_factory));
-
+  std::unique_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry =
+      std::make_unique<HelpBubbleFactoryRegistry>();
+  bubble_factory_registry->MaybeRegister<TestHelpBubbleFactory>();
   return bubble_factory_registry;
 }
 
@@ -42,11 +39,10 @@ const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
 }  // namespace
 
 TEST(TutorialTest, TutorialBuilder) {
-  std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
-      std::make_unique<TutorialBubbleFactoryRegistry>();
-
-  std::unique_ptr<TutorialService> service =
-      std::make_unique<TutorialService>();
+  const auto bubble_factory_registry =
+      CreateTestTutorialBubbleFactoryRegistry();
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
 
   Tutorial::Builder builder;
 
@@ -54,7 +50,7 @@ TEST(TutorialTest, TutorialBuilder) {
   std::unique_ptr<ui::InteractionSequence::Step> step1 =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
-          .Build(service.get(), bubble_factory_registry.get());
+          .Build(&service, bubble_factory_registry.get());
 
   // build a step that names an element
   std::unique_ptr<ui::InteractionSequence::Step> step2 =
@@ -66,20 +62,20 @@ TEST(TutorialTest, TutorialBuilder) {
                 sequence->NameElement(element, "TEST ELEMENT");
                 return true;
               }))
-          .Build(service.get(), bubble_factory_registry.get());
+          .Build(&service, bubble_factory_registry.get());
 
   // build a step with a named element
   std::unique_ptr<ui::InteractionSequence::Step> step3 =
       Tutorial::StepBuilder()
           .SetAnchorElementName(std::string(kTestElementName1))
-          .Build(service.get(), bubble_factory_registry.get());
+          .Build(&service, bubble_factory_registry.get());
 
   // transition event
   std::unique_ptr<ui::InteractionSequence::Step> step4 =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
           .SetTransitionOnlyOnEvent(true)
-          .Build(service.get(), bubble_factory_registry.get());
+          .Build(&service, bubble_factory_registry.get());
 
   builder.SetContext(kTestContext1)
       .AddStep(std::move(step1))
@@ -97,13 +93,12 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
     TutorialDescription description;
     description.steps.emplace_back(TutorialDescription::Step(
         u"title", u"description", ui::InteractionSequence::StepType::kShown,
-        kTestIdentifier1, std::string(),
-        TutorialDescription::Step::Arrow::NONE));
+        kTestIdentifier1, std::string(), HelpBubbleArrow::kNone));
     registry->AddTutorial(kTestTutorial1, std::move(description));
   }
 
-  std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
-      std::make_unique<TutorialBubbleFactoryRegistry>();
+  std::unique_ptr<HelpBubbleFactoryRegistry> bubble_factory_registry =
+      std::make_unique<HelpBubbleFactoryRegistry>();
 
   registry->GetTutorialIdentifiers();
 }
@@ -111,15 +106,11 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
 TEST(TutorialTest, SingleInteractionTutorialRuns) {
   UNCALLED_MOCK_CALLBACK(TutorialService::CompletedCallback, completed);
 
-  std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
+  const auto bubble_factory_registry =
       CreateTestTutorialBubbleFactoryRegistry();
-
-  std::unique_ptr<TutorialRegistry> tutorial_registry =
-      std::make_unique<TutorialRegistry>();
-
-  std::unique_ptr<TutorialService> service =
-      std::make_unique<TutorialService>();
-  service->SetOnCompleteTutorial(completed.Get());
+  TutorialRegistry registry;
+  TutorialService service(&registry, bubble_factory_registry.get());
+  service.SetOnCompleteTutorial(completed.Get());
 
   // build elements and keep them for triggering show/hide
   ui::TestElement element_1(kTestIdentifier1, kTestContext1);
@@ -127,16 +118,13 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
 
   // Build the tutorial Description
   TutorialDescription description;
-  description.steps.emplace_back(TutorialDescription::Step(
-      u"step 1 title", u"step 1 description",
-      ui::InteractionSequence::StepType::kShown, kTestIdentifier1, "",
-      TutorialDescription::Step::Arrow::NONE));
-
-  tutorial_registry->AddTutorial(kTestTutorial1, std::move(description));
+  description.steps.emplace_back(
+      TutorialDescription::Step(u"step 1 title", u"step 1 description",
+                                ui::InteractionSequence::StepType::kShown,
+                                kTestIdentifier1, "", HelpBubbleArrow::kNone));
+  registry.AddTutorial(kTestTutorial1, std::move(description));
 
   EXPECT_CALL_IN_SCOPE(
       completed, Run,
-      service->StartTutorial(kTestTutorial1, element_1.context(),
-                             bubble_factory_registry.get(),
-                             tutorial_registry.get()));
+      service.StartTutorial(kTestTutorial1, element_1.context()));
 }

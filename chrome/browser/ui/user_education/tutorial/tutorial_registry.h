@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_REGISTRY_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_REGISTRY_H_
 
+#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 
 class Tutorial;
@@ -21,6 +21,9 @@ class TutorialRegistry {
   TutorialRegistry(const TutorialRegistry&) = delete;
   TutorialRegistry& operator=(const TutorialRegistry&) = delete;
 
+  // Determines whether the given tutorial is registered.
+  bool IsTutorialRegistered(TutorialIdentifier id) const;
+
   // Returns a list of Tutorial Identifiers if the tutorial registry exists.
   // If RegisterTutorials has not been called this returns an empty vector.
   const std::vector<TutorialIdentifier> GetTutorialIdentifiers();
@@ -32,7 +35,7 @@ class TutorialRegistry {
   std::unique_ptr<Tutorial> CreateTutorial(
       TutorialIdentifier id,
       TutorialService* tutorial_service,
-      TutorialBubbleFactoryRegistry* bubble_factory_registry,
+      HelpBubbleFactoryRegistry* bubble_factory_registry,
       ui::ElementContext context);
 
   // Adds a TutorialID, TutorialDescription Pair to the Registry. This should

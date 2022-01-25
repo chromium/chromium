@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -13,10 +12,10 @@ namespace base {
 struct Feature;
 }  // namespace base
 
-class Profile;
-class PrefRegistrySimple;
-
 // This service manages snooze and dismiss of snoozable in-product help promo.
+// It is an abstract base class in order to support multiple frameworks/
+// platforms and potentially to migrate the backing to the new snooze feature
+// of the feature engagement tracker.
 //
 // Before showing an IPH, the IPH controller should ask if the IPH is blocked.
 // The controller should also notify after the IPH is shown and after the user
@@ -35,7 +34,12 @@ class FeaturePromoSnoozeService {
   // Snooze counts that are equal or larger than this value will be conflated.
   static constexpr int kUmaMaxSnoozeCount = 10;
 
-  explicit FeaturePromoSnoozeService(Profile* profile);
+  // The snooze duration defaults to 1 day plus 2 additional hours in hope to
+  // stagger busy hours in the days.
+  static constexpr base::TimeDelta kDefaultSnoozeDuration = base::Hours(26);
+
+  FeaturePromoSnoozeService();
+  virtual ~FeaturePromoSnoozeService();
 
   // Disallow copy and assign.
   FeaturePromoSnoozeService(const FeaturePromoSnoozeService&) = delete;
@@ -43,10 +47,8 @@ class FeaturePromoSnoozeService {
       delete;
 
   // The IPH controller must call this method when the user snoozes an IPH.
-  // The snooze duration defaults to 1 day plus 2 additional hours in hope to
-  // stagger busy hours in the days.
   void OnUserSnooze(const base::Feature& iph_feature,
-                    base::TimeDelta snooze_duration = base::Hours(26));
+                    base::TimeDelta snooze_duration = kDefaultSnoozeDuration);
 
   // The IPH controller must call this method when the user actively dismiss an
   // IPH. Don't call this method in case of a passive dismiss, i.e. auto dismiss
@@ -62,18 +64,12 @@ class FeaturePromoSnoozeService {
   bool IsBlocked(const base::Feature& iph_feature);
 
   // Reset the state of |iph_feature|.
-  void Reset(const base::Feature& iph_feature);
+  virtual void Reset(const base::Feature& iph_feature) = 0;
 
   // Read the count of previous snoozes for |iph_feature| from profile.
   int GetSnoozeCount(const base::Feature& iph_feature);
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
- private:
-  // TODO(crbug.com/1121399): refactor prefs code so friending tests
-  // isn't necessary.
-  friend class FeaturePromoSnoozeInteractiveTest;
-
+ protected:
   // Snooze information dictionary saved under path
   // in_product_help.snoozed_feature.[iph_name] in PerfService.
   struct SnoozeData {
@@ -85,11 +81,13 @@ class FeaturePromoSnoozeService {
     int show_count = 0;
   };
 
-  absl::optional<SnoozeData> ReadSnoozeData(const base::Feature& iph_feature);
-  void SaveSnoozeData(const base::Feature& iph_feature,
-                      const SnoozeData& snooze_data);
+  virtual absl::optional<SnoozeData> ReadSnoozeData(
+      const base::Feature& iph_feature) = 0;
+  virtual void SaveSnoozeData(const base::Feature& iph_feature,
+                              const SnoozeData& snooze_data) = 0;
 
-  const raw_ptr<Profile> profile_;
+ private:
+  friend class FeaturePromoSnoozeInteractiveTest;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_

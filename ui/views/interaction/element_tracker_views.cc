@@ -47,7 +47,7 @@ TrackedElementViews::TrackedElementViews(View* view,
 
 TrackedElementViews::~TrackedElementViews() = default;
 
-DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementViews)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementViews)
 
 class ElementTrackerViews::ElementDataViews : public ViewObserver,
                                               public WidgetObserver {

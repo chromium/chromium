@@ -29,7 +29,10 @@ class MockFeaturePromoController : public FeaturePromoController {
               CloseBubbleAndContinuePromo,
               (const base::Feature&),
               (override));
-  MOCK_METHOD(void, FinishContinuedPromo, (), (override));
+  MOCK_METHOD(void,
+              FinishContinuedPromo,
+              (const base::Feature* iph_feature),
+              (override));
 
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
 

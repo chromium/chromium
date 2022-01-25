@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_USER_EDUCATION_HELP_BUBBLE_FACTORY_REGISTRY_H_
+#define CHROME_BROWSER_UI_USER_EDUCATION_HELP_BUBBLE_FACTORY_REGISTRY_H_
+
+#include <map>
+#include <vector>
+
+#include "base/callback_list.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
+
+// HelpBubbleFactoryRegistry provides access to framework specific bubble
+// factory implementations. HelpBubbleFactoryRegistry is not a strict singleton
+// that instances can be created multiple times in a test environment.
+class HelpBubbleFactoryRegistry {
+ public:
+  HelpBubbleFactoryRegistry();
+  ~HelpBubbleFactoryRegistry();
+  HelpBubbleFactoryRegistry(const HelpBubbleFactoryRegistry&) = delete;
+  HelpBubbleFactoryRegistry& operator=(const HelpBubbleFactoryRegistry&) =
+      delete;
+
+  // Finds the appropriate factory and creates a bubble, or returns null if the
+  // bubble cannot be created.
+  std::unique_ptr<HelpBubble> CreateHelpBubble(ui::TrackedElement* element,
+                                               HelpBubbleParams params);
+
+  // Returns true if any bubble is showing in any framework.
+  bool is_any_bubble_showing() const { return !help_bubbles_.empty(); }
+
+  // Notifies frameworks that the anchor bounds for a bubble in the given
+  // context might have changed. For frameworks which automatically reposition
+  // bubbles, this will be a no-op.
+  void NotifyAnchorBoundsChanged(ui::ElementContext context);
+
+  // Sets focus on a help bubble if there is one in the given context (or
+  // toggles between help) bubble and its anchor; returns false if there is no
+  // bubble or nothing can be focused.
+  bool ToggleFocusForAccessibility(ui::ElementContext context);
+
+  // Adds a bubble factory of type `T` to the list of bubble factories, if it
+  // is not already present.
+  template <class T>
+  void MaybeRegister() {
+    factories_.MaybeRegister<T>();
+  }
+
+ private:
+  void OnHelpBubbleClosed(HelpBubble* help_bubble);
+
+  // The list of known factories.
+  ui::FrameworkSpecificRegistrationList<HelpBubbleFactory> factories_;
+
+  // The list of known help bubbles.
+  std::map<HelpBubble*, base::CallbackListSubscription> help_bubbles_;
+};
+
+#endif  // CHROME_BROWSER_UI_USER_EDUCATION_HELP_BUBBLE_FACTORY_REGISTRY_H_

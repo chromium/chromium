@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
@@ -674,8 +673,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, DISABLED_PwaIntallIphSiteEngag
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the site is not highly engaged.
   EXPECT_FALSE(controller->BubbleIsShowing(
       feature_engagement::kIPHDesktopPwaInstallFeature));
@@ -702,8 +701,8 @@ IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(pwa_install_view_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the IPH is ignored recently.
   EXPECT_FALSE(controller->BubbleIsShowing(
       feature_engagement::kIPHDesktopPwaInstallFeature));

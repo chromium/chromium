@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_H_
 
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -20,7 +21,7 @@ class TutorialService;
 // interactions with tracked elements.
 //
 // Each tutorial consists of a list of InteractionSequence steps which, in the
-// default case, create a TutorialBubble which is implementation specific to
+// default case, create a HelpBubble which is implementation specific to
 // the platform the tutorial is written for. It is possible to create custom
 // InteractionSequenceSteps when using the traditional constructor and not
 // using the TutorialStepBuilder.
@@ -64,14 +65,14 @@ class Tutorial {
         absl::optional<std::pair<int, int>> progress,
         bool is_last_step,
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+        HelpBubbleFactoryRegistry* bubble_factory_registry);
 
     StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
     StepBuilder& SetAnchorElementName(std::string anchor_element_name);
     StepBuilder& SetTitleText(absl::optional<std::u16string> title_text_);
-    StepBuilder& SetBodyText(absl::optional<std::u16string> body_text_);
+    StepBuilder& SetBodyText(std::u16string body_text_);
     StepBuilder& SetStepType(ui::InteractionSequence::StepType step_type_);
-    StepBuilder& SetArrow(TutorialDescription::Step::Arrow arrow_);
+    StepBuilder& SetArrow(HelpBubbleArrow arrow_);
     StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
     StepBuilder& SetIsLastStep(bool is_last_step_);
     StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
@@ -81,7 +82,7 @@ class Tutorial {
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+        HelpBubbleFactoryRegistry* bubble_factory_registry);
 
    private:
     absl::optional<std::pair<int, int>> progress;
@@ -89,11 +90,11 @@ class Tutorial {
 
     ui::InteractionSequence::StepStartCallback BuildStartCallback(
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+        HelpBubbleFactoryRegistry* bubble_factory_registry);
 
     ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry);
+        HelpBubbleFactoryRegistry* bubble_factory_registry);
 
     ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
         TutorialService* tutorial_service);
@@ -108,7 +109,7 @@ class Tutorial {
     static std::unique_ptr<Tutorial> BuildFromDescription(
         const TutorialDescription& description,
         TutorialService* tutorial_service,
-        TutorialBubbleFactoryRegistry* bubble_factory_registry,
+        HelpBubbleFactoryRegistry* bubble_factory_registry,
         ui::ElementContext context);
 
     Builder(const Builder& other) = delete;

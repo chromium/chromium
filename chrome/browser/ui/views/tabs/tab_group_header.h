@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
@@ -31,8 +30,6 @@ class TabGroupHeader : public TabSlotView,
                        public views::ViewTargeterDelegate {
  public:
   METADATA_HEADER(TabGroupHeader);
-
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroupHeaderIdentifier);
 
   TabGroupHeader(TabStrip* tab_strip, const tab_groups::TabGroupId& group);
   TabGroupHeader(const TabGroupHeader&) = delete;

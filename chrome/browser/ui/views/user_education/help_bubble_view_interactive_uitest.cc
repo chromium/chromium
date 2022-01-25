@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -13,29 +13,33 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 
-class FeaturePromoBubbleViewInteractiveTest : public InProcessBrowserTest {
+class HelpBubbleViewInteractiveTest : public InProcessBrowserTest {
  public:
-  FeaturePromoBubbleViewInteractiveTest() = default;
-  ~FeaturePromoBubbleViewInteractiveTest() override = default;
+  HelpBubbleViewInteractiveTest() = default;
+  ~HelpBubbleViewInteractiveTest() override = default;
 
  protected:
-  FeaturePromoBubbleView::CreateParams GetBubbleParams() {
-    FeaturePromoBubbleView::CreateParams params;
+  views::TrackedElementViews* GetAnchorElement() {
+    return views::ElementTrackerViews::GetInstance()->GetElementForView(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->app_menu_button());
+  }
+
+  HelpBubbleParams GetBubbleParams() {
+    HelpBubbleParams params;
     params.body_text = u"To X, do Y";
-    params.anchor_view = BrowserView::GetBrowserViewForBrowser(browser())
-                             ->toolbar()
-                             ->app_menu_button();
-    params.arrow = views::BubbleBorder::TOP_RIGHT;
+    params.arrow = HelpBubbleArrow::kTopRight;
     return params;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveTest,
                        WidgetNotActivatedByDefault) {
   auto params = GetBubbleParams();
-  params.focus_on_create = false;
 
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* const focus_manager = browser_view->GetWidget()->GetFocusManager();
@@ -45,26 +49,11 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
   views::View* const initial_focused_view = focus_manager->GetFocusedView();
   EXPECT_NE(nullptr, initial_focused_view);
 
-  auto* const bubble = FeaturePromoBubbleView::Create(std::move(params));
+  auto* const bubble =
+      new HelpBubbleView(GetAnchorElement()->view(), std::move(params));
   views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
 
   EXPECT_TRUE(browser_view->GetWidget()->IsActive());
   EXPECT_FALSE(bubble->GetWidget()->IsActive());
-}
-
-IN_PROC_BROWSER_TEST_F(FeaturePromoBubbleViewInteractiveTest,
-                       WidgetActivatedWhenRequested) {
-  auto params = GetBubbleParams();
-  params.focus_on_create = true;
-
-  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  EXPECT_TRUE(browser_view->GetWidget()->IsActive());
-
-  auto* const bubble = FeaturePromoBubbleView::Create(std::move(params));
-  views::test::WidgetVisibleWaiter(bubble->GetWidget()).Wait();
-
-  EXPECT_TRUE(bubble->GetWidget()->IsActive());
-
-  // Browser view should lose activation.
-  EXPECT_FALSE(browser_view->GetWidget()->IsActive());
+  bubble->Close();
 }

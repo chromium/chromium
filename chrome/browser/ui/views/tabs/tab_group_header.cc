@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -116,7 +117,7 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   // to contrast with the solid color.
   SetProperty(views::kDrawFocusRingBackgroundOutline, true);
 
-  SetProperty(views::kElementIdentifierKey, kTabGroupHeaderIdentifier);
+  SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -510,6 +511,3 @@ void TabGroupHeader::EditorBubbleTracker::OnWidgetDestroyed(
     views::Widget* widget) {
   is_open_ = false;
 }
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
-                                      kTabGroupHeaderIdentifier);

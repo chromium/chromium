@@ -28,8 +28,8 @@ class UserEducationInternalsPageHandlerImpl
   void StartTutorial(const std::string& tutorial_id) override;
 
  private:
-  raw_ptr<TutorialService> tutorial_service_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<TutorialService> tutorial_service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_USER_EDUCATION_USER_EDUCATION_INTERNALS_PAGE_HANDLER_IMPL_H_

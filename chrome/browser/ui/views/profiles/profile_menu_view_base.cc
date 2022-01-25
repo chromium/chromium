@@ -507,9 +507,8 @@ void ProfileMenuViewBase::ShowBubble(profiles::BubbleViewMode view_mode,
 
   signin_ui_util::RecordProfileMenuViewShown(browser->profile());
   // Close any existing IPH bubble for the profile menu.
-  FeaturePromoController* promo_controller =
-      browser->window()->GetFeaturePromoController();
-  promo_controller->CloseBubble(feature_engagement::kIPHProfileSwitchFeature);
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHProfileSwitchFeature);
 
   ProfileMenuViewBase* bubble = nullptr;
   if (view_mode == profiles::BUBBLE_VIEW_MODE_INCOGNITO) {

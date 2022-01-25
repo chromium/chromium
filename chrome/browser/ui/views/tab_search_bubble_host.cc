@@ -9,7 +9,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -101,8 +101,8 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
     return false;
 
   // Close the Tab Search IPH if it is showing.
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(button_);
+  BrowserFeaturePromoController* controller =
+      BrowserFeaturePromoController::GetForView(button_);
   if (controller)
     controller->CloseBubble(feature_engagement::kIPHTabSearchFeature);
 

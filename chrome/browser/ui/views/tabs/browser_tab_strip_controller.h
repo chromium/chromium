@@ -30,10 +30,6 @@ namespace content {
 class WebContents;
 }
 
-namespace feature_engagement {
-class Tracker;
-}
-
 namespace ui {
 class ListSelectionModel;
 }
@@ -162,8 +158,6 @@ class BrowserTabStripController : public TabStripController,
   raw_ptr<TabStrip> tabstrip_;
 
   raw_ptr<BrowserView> browser_view_;
-
-  const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
 
   // If non-NULL it means we're showing a menu for the tab.
   std::unique_ptr<TabContextMenuContents> context_menu_contents_;

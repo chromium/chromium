@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,10 +56,7 @@ void ReadLaterSidePanelWebView::SetVisible(bool visible) {
         ->NotifyEvent("side_panel_shown");
 
     // Close IPH for side panel if shown.
-    FeaturePromoControllerViews* const feature_promo_controller =
-        BrowserView::GetBrowserViewForBrowser(browser_)
-            ->feature_promo_controller();
-    feature_promo_controller->CloseBubble(
+    browser_->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
 }

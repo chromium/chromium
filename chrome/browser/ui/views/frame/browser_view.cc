@@ -77,9 +77,12 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
+#include "chrome/browser/ui/user_education/user_education_service.h"
+#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -141,8 +144,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/common/channel_info.h"
@@ -218,6 +222,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/native_widget.h"
@@ -700,6 +705,26 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
     SetCanMinimize(true);
   }
 
+  // Create user education resources.
+  UserEducationService* const user_education_service =
+      UserEducationServiceFactory::GetForProfile(GetProfile());
+  if (user_education_service) {
+    RegisterChromeHelpBubbleFactories(
+        user_education_service->help_bubble_factory_registry());
+    MaybeRegisterChromeFeaturePromos(
+        user_education_service->feature_promo_registry());
+    MaybeRegisterChromeTutorials(user_education_service->tutorial_registry());
+    feature_promo_snooze_service_ =
+        std::make_unique<BrowserFeaturePromoSnoozeService>(GetProfile());
+    feature_promo_controller_ = std::make_unique<BrowserFeaturePromoController>(
+        this,
+        feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile()),
+        &user_education_service->feature_promo_registry(),
+        &user_education_service->help_bubble_factory_registry(),
+        feature_promo_snooze_service_.get(),
+        &user_education_service->tutorial_service());
+  }
+
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController();
 
@@ -724,11 +749,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
   tab_strip_region_view_ = top_container_->AddChildView(
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
-
-  feature_promo_controller_ = std::make_unique<FeaturePromoControllerViews>(
-      this, FeaturePromoBubbleOwnerImpl::GetInstance(),
-      TutorialServiceManager::GetInstance()->GetTutorialServiceForProfile(
-          GetProfile()));
 
   // Create WebViews early so |webui_tab_strip_| can observe their size.
   auto devtools_web_view =
@@ -1177,6 +1197,10 @@ const ui::ColorProvider* BrowserView::GetColorProvider() const {
   return views::ClientView::GetColorProvider();
 }
 
+ui::ElementContext BrowserView::GetElementContext() {
+  return views::ElementTrackerViews::GetContextForView(this);
+}
+
 int BrowserView::GetTopControlsHeight() const {
   if (top_controls_slide_controller_ &&
       top_controls_slide_controller_->IsEnabled()) {
@@ -1414,8 +1438,10 @@ void BrowserView::OnTabRestored(int command_id) {
   if (command_id != AppMenuModel::kMinRecentTabsCommandId &&
       command_id != IDC_RESTORE_TAB)
     return;
-  feature_promo_controller_->CloseBubble(
-      feature_engagement::kIPHReopenTabFeature);
+  if (feature_promo_controller_) {
+    feature_promo_controller_->CloseBubble(
+        feature_engagement::kIPHReopenTabFeature);
+  }
 }
 
 void BrowserView::ZoomChangedForActiveTab(bool can_show_bubble) {
@@ -1894,8 +1920,9 @@ void BrowserView::FocusWebContentsPane() {
 }
 
 bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
-  auto* const feature_bubble_owner = FeaturePromoBubbleOwnerImpl::GetInstance();
-  if (feature_bubble_owner->ToggleFocusForAccessibility()) {
+  if (feature_promo_controller_ &&
+      feature_promo_controller_->bubble_factory_registry()
+          ->ToggleFocusForAccessibility(GetElementContext())) {
     // Record that the user successfully used the accelerator to focus the
     // bubble, reducing the need to describe the accelerator the next time a
     // help bubble is shown.
@@ -1914,17 +1941,17 @@ bool BrowserView::ActivateFirstInactiveBubbleForAccessibility() {
   if (toolbar_ && toolbar_->app_menu_button()) {
     views::DialogDelegate* bubble =
         toolbar_->app_menu_button()->GetProperty(views::kAnchoredDialogKey);
-    if ((!bubble || feature_bubble_owner->IsPromoBubble(bubble)) &&
+    if ((!bubble || HelpBubbleView::IsHelpBubble(bubble)) &&
         GetLocationBarView())
       bubble = GetLocationBarView()->GetProperty(views::kAnchoredDialogKey);
-    if ((!bubble || feature_bubble_owner->IsPromoBubble(bubble)) &&
+    if ((!bubble || HelpBubbleView::IsHelpBubble(bubble)) &&
         toolbar_button_provider_ &&
         toolbar_button_provider_->GetAvatarToolbarButton()) {
       bubble = toolbar_button_provider_->GetAvatarToolbarButton()->GetProperty(
           views::kAnchoredDialogKey);
     }
 
-    if (bubble && !feature_bubble_owner->IsPromoBubble(bubble)) {
+    if (bubble && !HelpBubbleView::IsHelpBubble(bubble)) {
       View* focusable = bubble->GetInitiallyFocusedView();
 
       // A PermissionPromptBubbleView will explicitly return nullptr due to
@@ -1974,7 +2001,7 @@ void BrowserView::OnFeatureEngagementTrackerInitialized(bool initialized) {
 }
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
-  if (!webui_tab_strip_)
+  if (!webui_tab_strip_ || !feature_promo_controller_)
     return;
 
   feature_promo_controller_->MaybeShowPromo(
@@ -1982,9 +2009,13 @@ void BrowserView::MaybeShowWebUITabStripIPH() {
 }
 
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
+  if (!feature_promo_controller_)
+    return;
+
   if (!base::FeatureList::IsEnabled(features::kSidePanel) ||
       !(browser_->window()->IsActive() ||
-        FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting()))
+        BrowserFeaturePromoController::
+            active_window_check_blocked_for_testing()))
     return;
 
   PrefService* pref_service = browser()->profile()->GetPrefs();
@@ -3237,7 +3268,10 @@ void BrowserView::Layout() {
         ->UpdateAnchor();
   }
 
-  feature_promo_controller_->UpdateBubbleForAnchorBoundsChange();
+  if (feature_promo_controller_) {
+    feature_promo_controller_->bubble_factory_registry()
+        ->NotifyAnchorBoundsChanged(GetElementContext());
+  }
 }
 
 void BrowserView::OnGestureEvent(ui::GestureEvent* event) {
@@ -3347,10 +3381,12 @@ void BrowserView::AddedToWidget() {
 
   MaybeInitializeWebUITabStrip();
 
-  feature_promo_controller_->feature_engagement_tracker()
-      ->AddOnInitializedCallback(
-          base::BindOnce(&BrowserView::OnFeatureEngagementTrackerInitialized,
-                         weak_ptr_factory_.GetWeakPtr()));
+  if (feature_promo_controller_) {
+    feature_promo_controller_->feature_engagement_tracker()
+        ->AddOnInitializedCallback(
+            base::BindOnce(&BrowserView::OnFeatureEngagementTrackerInitialized,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
 
   initialized_ = true;
 }
@@ -3990,8 +4026,39 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-FeaturePromoController* BrowserView::GetFeaturePromoController() {
+BrowserFeaturePromoController* BrowserView::GetFeaturePromoController() {
   return feature_promo_controller_.get();
+}
+
+bool BrowserView::MaybeShowFeaturePromo(
+    const base::Feature& iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    FeaturePromoController::BubbleCloseCallback close_callback) {
+  if (!feature_promo_controller_)
+    return false;
+  return feature_promo_controller_->MaybeShowPromo(
+      iph_feature, body_text_replacements, std::move(close_callback));
+}
+
+bool BrowserView::CloseFeaturePromo(const base::Feature& iph_feature) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->CloseBubble(iph_feature);
+}
+
+FeaturePromoController::PromoHandle BrowserView::CloseFeaturePromoAndContinue(
+    const base::Feature& iph_feature) {
+  if (!feature_promo_controller_ ||
+      !feature_promo_controller_->BubbleIsShowing(iph_feature)) {
+    return FeaturePromoController::PromoHandle();
+  }
+  return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
+}
+
+void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
+  if (!feature_promo_controller_)
+    return;
+  feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
+      event_name);
 }
 
 bool BrowserView::DoCutCopyPasteForWebContents(

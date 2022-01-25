@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -436,8 +436,12 @@ void OmniboxPopupContentsView::UpdatePopupAppearance() {
     // It's not great for promos to overlap the omnibox if the user opens the
     // drop-down after showing the promo. This especially causes issues on Mac
     // due to z-order/rendering issues, see crbug.com/1225046 for examples.
-    FeaturePromoControllerViews::GetForView(omnibox_view_)
-        ->DismissNonCriticalBubbleInRegion(omnibox_view_->GetBoundsInScreen());
+    auto* const promo_controller =
+        BrowserFeaturePromoController::GetForView(omnibox_view_);
+    if (promo_controller) {
+      promo_controller->DismissNonCriticalBubbleInRegion(
+          omnibox_view_->GetBoundsInScreen());
+    }
 #endif
   }
   InvalidateLayout();

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
@@ -117,6 +118,10 @@ const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
   return nullptr;
 }
 
+ui::ElementContext TestBrowserWindow::GetElementContext() {
+  return ui::ElementContext();
+}
+
 int TestBrowserWindow::GetTopControlsHeight() const {
   return 0;
 }
@@ -125,7 +130,7 @@ void TestBrowserWindow::SetTopControlsGestureScrollInProgress(
     bool in_progress) {}
 
 StatusBubble* TestBrowserWindow::GetStatusBubble() {
-  return NULL;
+  return nullptr;
 }
 
 gfx::Rect TestBrowserWindow::GetRestoredBounds() const {
@@ -328,6 +333,31 @@ void TestBrowserWindow::MaybeRestoreSideSearchStatePerWindow(
 FeaturePromoController* TestBrowserWindow::GetFeaturePromoController() {
   return feature_promo_controller_.get();
 }
+
+bool TestBrowserWindow::MaybeShowFeaturePromo(
+    const base::Feature& iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    FeaturePromoController::BubbleCloseCallback close_callback) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->MaybeShowPromo(
+             iph_feature, body_text_replacements, std::move(close_callback));
+}
+
+bool TestBrowserWindow::CloseFeaturePromo(const base::Feature& iph_feature) {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->CloseBubble(iph_feature);
+}
+
+FeaturePromoController::PromoHandle
+TestBrowserWindow::CloseFeaturePromoAndContinue(
+    const base::Feature& iph_feature) {
+  return feature_promo_controller_
+             ? feature_promo_controller_->CloseBubbleAndContinuePromo(
+                   iph_feature)
+             : FeaturePromoController::PromoHandle();
+}
+
+void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
 
 FeaturePromoController* TestBrowserWindow::SetFeaturePromoController(
     std::unique_ptr<FeaturePromoController> feature_promo_controller) {

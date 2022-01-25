@@ -12,7 +12,6 @@
 
 class Browser;
 class BrowserView;
-class FeaturePromoControllerViews;
 class MediaNotificationService;
 class MediaToolbarButtonController;
 class MediaToolbarButtonObserver;
@@ -53,9 +52,6 @@ class MediaToolbarButtonView : public ToolbarButton,
   const raw_ptr<const Browser> browser_;
 
   const raw_ptr<MediaNotificationService> service_;
-
-  // The window's IPH promo controller.
-  const raw_ptr<FeaturePromoControllerViews> feature_promo_controller_;
 
   std::unique_ptr<MediaToolbarButtonController> controller_;
 

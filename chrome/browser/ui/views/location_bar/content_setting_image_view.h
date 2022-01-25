@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/user_education/help_bubble.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -31,10 +32,6 @@ class FontList;
 
 namespace views {
 class BubbleDialogDelegateView;
-}
-
-namespace base {
-class Token;
 }
 
 // The ContentSettingImageView displays an icon and optional text label for
@@ -97,8 +94,8 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);
   }
-  absl::optional<base::Token> get_critical_promo_id_for_testing() {
-    return current_iph_id_for_testing_;
+  HelpBubble* critical_promo_bubble_for_testing() {
+    return critical_promo_bubble_.get();
   }
 
  private:
@@ -108,9 +105,9 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Updates the image and tooltip to match the current model state.
   void UpdateImage();
 
-  raw_ptr<Delegate> delegate_;  // Weak.
+  raw_ptr<Delegate> delegate_ = nullptr;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
-  raw_ptr<views::BubbleDialogDelegateView> bubble_view_;
+  raw_ptr<views::BubbleDialogDelegateView> bubble_view_ = nullptr;
   absl::optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
@@ -121,7 +118,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Has a value that is not is_zero() if a promo is showing, or has an
   // is_zero() value if the promo was considered but it was decided not to show
   // it.
-  absl::optional<base::Token> current_iph_id_for_testing_;
+  std::unique_ptr<HelpBubble> critical_promo_bubble_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

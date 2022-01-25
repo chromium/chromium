@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_impl.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -430,7 +429,7 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   EXPECT_FALSE(quiet_ui_icon.GetVisible());
   // `ContentSettingImageView::AnimationEnded()` was not triggered and IPH is
   // not shown.
-  EXPECT_FALSE(quiet_ui_icon.get_critical_promo_id_for_testing().has_value());
+  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
 
   GURL notification("http://www.notification1.com/");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), notification));
@@ -454,23 +453,21 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   EXPECT_FALSE(quiet_ui_icon.is_animating_label());
 
   // The IPH is showing.
-  ASSERT_TRUE(quiet_ui_icon.get_critical_promo_id_for_testing().has_value());
-  FeaturePromoControllerViews* iph_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->feature_promo_controller();
+  auto* help_bubble = quiet_ui_icon.critical_promo_bubble_for_testing();
+  ASSERT_TRUE(help_bubble && help_bubble->is_open());
+  auto* const iph_controller = BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->GetFeaturePromoController();
   // The critical promo that is currently showing is the one created by a quiet
   // permission prompt.
-  EXPECT_TRUE(iph_controller->CriticalPromoIsShowing(
-      quiet_ui_icon.get_critical_promo_id_for_testing().value()));
+  EXPECT_EQ(help_bubble, iph_controller->critical_promo_bubble_for_testing());
 
-  iph_controller->CloseBubbleForCriticalPromo(
-      quiet_ui_icon.get_critical_promo_id_for_testing().value());
+  help_bubble->Close();
 
   test_api_->manager()->Deny();
   base::RunLoop().RunUntilIdle();
 
   // After quiet permission prompt was resolved, the critical promo is reset.
-  EXPECT_FALSE(quiet_ui_icon.get_critical_promo_id_for_testing().has_value());
+  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
 
   EXPECT_FALSE(quiet_ui_icon.GetVisible());
 
@@ -494,12 +491,9 @@ IN_PROC_BROWSER_TEST_P(QuietUIPromoBrowserTest, InvokeUi_QuietUIPromo) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(quiet_ui_icon.is_animating_label());
 
-  // The IPH id is not empty because `ContentSettingImageView::AnimationEnded()`
-  // was triggered.
-  EXPECT_TRUE(quiet_ui_icon.get_critical_promo_id_for_testing().has_value());
   // The critical promo is not shown.
-  EXPECT_FALSE(iph_controller->CriticalPromoIsShowing(
-      quiet_ui_icon.get_critical_promo_id_for_testing().value()));
+  EXPECT_FALSE(quiet_ui_icon.critical_promo_bubble_for_testing());
+  EXPECT_FALSE(iph_controller->critical_promo_bubble_for_testing());
 
   test_api_->manager()->Deny();
   base::RunLoop().RunUntilIdle();

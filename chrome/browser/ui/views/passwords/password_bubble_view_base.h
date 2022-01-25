@@ -22,7 +22,6 @@ namespace views {
 class Label;
 }
 
-class FeaturePromoControllerViews;
 class PasswordBubbleControllerBase;
 
 // Base class for all manage-passwords bubbles. Provides static methods for
@@ -53,8 +52,7 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   static PasswordBubbleViewBase* CreateBubble(
       content::WebContents* web_contents,
       views::View* anchor_view,
-      DisplayReason reason,
-      FeaturePromoControllerViews* promo_controller);
+      DisplayReason reason);
 
   // Closes the existing bubble.
   static void CloseCurrentBubble();

@@ -35,7 +35,7 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
   View* view() { return view_; }
   const View* view() const { return view_; }
 
-  DECLARE_ELEMENT_TRACKER_METADATA()
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
  private:
   const raw_ptr<View> view_;

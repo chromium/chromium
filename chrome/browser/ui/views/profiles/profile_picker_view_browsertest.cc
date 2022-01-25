@@ -43,7 +43,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_handler.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -519,9 +518,8 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   // Returns true if the profile switch IPH has been shown.
   bool ProfileSwitchPromoHasBeenShown(Browser* browser) {
     feature_engagement::Tracker* tracker =
-        BrowserView::GetBrowserViewForBrowser(browser)
-            ->feature_promo_controller()
-            ->feature_engagement_tracker();
+        feature_engagement::TrackerFactory::GetForBrowserContext(
+            browser->profile());
 
     base::RunLoop loop;
     tracker->AddOnInitializedCallback(
@@ -1083,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   base::HistogramTester histogram_tester;
 
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
-  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();

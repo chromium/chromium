@@ -14,12 +14,12 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -368,10 +368,7 @@ void SideSearchBrowserController::OpenSidePanel() {
   RecordSideSearchOpenAction(
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
   // Close the Side Search IPH if it is showing.
-  FeaturePromoControllerViews* controller =
-      FeaturePromoControllerViews::GetForView(toolbar_button_);
-  if (controller)
-    controller->CloseBubble(feature_engagement::kIPHSideSearchFeature);
+  browser_view_->CloseFeaturePromo(feature_engagement::kIPHSideSearchFeature);
   auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
       browser_view_->GetProfile());
   if (tracker)
@@ -482,7 +479,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
   // Once the anchor element is visible, maybe show promo.
   if (can_show_side_panel_for_page &&
       tab_contents_helper->returned_to_previous_srp()) {
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
+    browser_view_->MaybeShowFeaturePromo(
         feature_engagement::kIPHSideSearchFeature);
   }
 

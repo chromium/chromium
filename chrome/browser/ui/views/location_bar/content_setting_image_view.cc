@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -33,6 +33,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -91,7 +92,7 @@ ContentSettingImageView::ContentSettingImageView(
     SetID(*view_id);
 }
 
-ContentSettingImageView::~ContentSettingImageView() {}
+ContentSettingImageView::~ContentSettingImageView() = default;
 
 void ContentSettingImageView::Update() {
   content::WebContents* web_contents =
@@ -104,7 +105,7 @@ void ContentSettingImageView::Update() {
 
   if (!content_setting_image_model_->is_visible()) {
     SetVisible(false);
-    current_iph_id_for_testing_.reset();
+    critical_promo_bubble_.reset();
     return;
   }
   DCHECK(web_contents);
@@ -279,16 +280,14 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   // directly after the animation is shown.
   if (web_contents &&
       content_setting_image_model_->ShouldShowPromo(web_contents)) {
-    current_iph_id_for_testing_ =
-        FeaturePromoControllerViews::GetForView(this)->ShowCriticalPromo(
+    critical_promo_bubble_ =
+        BrowserFeaturePromoController::GetForView(this)->ShowCriticalPromo(
             FeaturePromoSpecification::CreateForLegacyPromo(
                 /* feature =*/nullptr, ui::ElementIdentifier(),
                 IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
-            this);
+            views::ElementTrackerViews::GetInstance()->GetElementForView(this,
+                                                                         true));
     content_setting_image_model_->SetPromoWasShown(web_contents);
-  } else {
-    // Set a token that is is_zero() to make it not empty for testing.
-    current_iph_id_for_testing_.emplace(0, 0);
   }
 }
 

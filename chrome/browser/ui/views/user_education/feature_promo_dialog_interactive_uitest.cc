@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -87,9 +86,9 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
             browser()->profile()));
     ASSERT_TRUE(mock_tracker);
 
-    FeaturePromoControllerViews* promo_controller =
+    auto* const promo_controller =
         BrowserView::GetBrowserViewForBrowser(browser())
-            ->feature_promo_controller();
+            ->GetFeaturePromoController();
     ASSERT_TRUE(promo_controller);
 
     // Look up the IPH name and get the base::Feature.

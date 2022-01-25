@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -54,25 +55,6 @@ class FeaturePromoSpecification {
     // A simple promo that acts like a toast but without the required
     // accessibility data.
     kLegacy,
-  };
-
-  // Mirrors most values of views::BubbleBorder::Arrow.
-  // All values except kNone show a visible arrow between the bubble and the
-  // anchor element.
-  enum class BubbleArrow {
-    kNone,  // Positions the bubble directly beneath the anchor with no arrow.
-    kTopLeft,
-    kTopRight,
-    kBottomLeft,
-    kBottomRight,
-    kLeftTop,
-    kRightTop,
-    kLeftBottom,
-    kRightBottom,
-    kTopCenter,
-    kBottomCenter,
-    kLeftCenter,
-    kRightCenter,
   };
 
   // Represents a command or command accelerator. Can be valueless (falsy) if
@@ -147,7 +129,7 @@ class FeaturePromoSpecification {
   FeaturePromoSpecification& SetBubbleIcon(const gfx::VectorIcon* bubble_icon);
 
   // Set the bubble arrow. Default is top-left.
-  FeaturePromoSpecification& SetBubbleArrow(BubbleArrow bubble_arrow);
+  FeaturePromoSpecification& SetBubbleArrow(HelpBubbleArrow bubble_arrow);
 
   // Set the anchor element filter.
   FeaturePromoSpecification& SetAnchorElementFilter(
@@ -166,7 +148,7 @@ class FeaturePromoSpecification {
   int bubble_body_string_id() const { return bubble_body_string_id_; }
   const std::u16string& bubble_title_text() const { return bubble_title_text_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
-  BubbleArrow bubble_arrow() const { return bubble_arrow_; }
+  HelpBubbleArrow bubble_arrow() const { return bubble_arrow_; }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
   const AcceleratorInfo& screen_reader_accelerator() const {
     return screen_reader_accelerator_;
@@ -174,7 +156,8 @@ class FeaturePromoSpecification {
   const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
 
  private:
-  static constexpr BubbleArrow kDefaultBubbleArrow = BubbleArrow::kTopRight;
+  static constexpr HelpBubbleArrow kDefaultBubbleArrow =
+      HelpBubbleArrow::kTopRight;
 
   FeaturePromoSpecification(const base::Feature* feature,
                             PromoType promo_type,
@@ -207,7 +190,7 @@ class FeaturePromoSpecification {
   raw_ptr<const gfx::VectorIcon> bubble_icon_ = nullptr;
 
   // Optional arrow pointing to the promo'd element. Defaults to top left.
-  BubbleArrow bubble_arrow_ = kDefaultBubbleArrow;
+  HelpBubbleArrow bubble_arrow_ = kDefaultBubbleArrow;
 
   // Optional screen reader announcement that replaces bubble text when the
   // bubble is first announced.

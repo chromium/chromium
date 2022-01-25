@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
+#include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
 
 #include <memory>
 
@@ -21,6 +21,7 @@ base::Feature kTestIPHFeature{"TestIPHFeature",
                               base::FEATURE_ENABLED_BY_DEFAULT};
 base::Feature kTestIPHFeature2{"TestIPHFeature2",
                                base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace
 
 class FeaturePromoSnoozeServiceTest : public testing::Test {
@@ -44,7 +45,7 @@ class FeaturePromoSnoozeServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  FeaturePromoSnoozeService service_;
+  BrowserFeaturePromoSnoozeService service_;
 };
 
 TEST_F(FeaturePromoSnoozeServiceTest, AllowFirstTimeIPH) {
@@ -96,22 +97,9 @@ TEST_F(FeaturePromoSnoozeServiceTest, MultipleIPH) {
 
 TEST_F(FeaturePromoSnoozeServiceTest, SnoozeNonClicker) {
   base::test::ScopedFeatureList feature_list;
-  SetNonClickerPolicy(feature_list,
-                      FeaturePromoSnoozeService::NonClickerPolicy::kLongSnooze);
   service_.Reset(kTestIPHFeature);
   service_.OnPromoShown(kTestIPHFeature);
   EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
   task_environment_.FastForwardBy(base::Days(15));
   EXPECT_FALSE(service_.IsBlocked(kTestIPHFeature));
-}
-
-TEST_F(FeaturePromoSnoozeServiceTest, DismissNonClicker) {
-  base::test::ScopedFeatureList feature_list;
-  SetNonClickerPolicy(feature_list,
-                      FeaturePromoSnoozeService::NonClickerPolicy::kDismiss);
-  service_.Reset(kTestIPHFeature);
-  service_.OnPromoShown(kTestIPHFeature);
-  EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
-  task_environment_.FastForwardBy(base::Days(15));
-  EXPECT_TRUE(service_.IsBlocked(kTestIPHFeature));
 }

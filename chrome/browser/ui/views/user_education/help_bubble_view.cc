@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 
 #include <initializer_list>
 #include <memory>
@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,6 +60,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -84,6 +85,38 @@ constexpr SkColor kBubbleButtonBorderColor = gfx::kGoogleGrey300;
 
 // The background color of the button when highlighted.
 constexpr SkColor kBubbleButtonHighlightColor = gfx::kGoogleBlue300;
+
+// Translates from HelpBubbleArrow to the Views equivalent.
+views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
+  switch (arrow) {
+    case HelpBubbleArrow::kNone:
+      return views::BubbleBorder::NONE;
+    case HelpBubbleArrow::kTopLeft:
+      return views::BubbleBorder::TOP_LEFT;
+    case HelpBubbleArrow::kTopRight:
+      return views::BubbleBorder::TOP_RIGHT;
+    case HelpBubbleArrow::kBottomLeft:
+      return views::BubbleBorder::BOTTOM_LEFT;
+    case HelpBubbleArrow::kBottomRight:
+      return views::BubbleBorder::BOTTOM_RIGHT;
+    case HelpBubbleArrow::kLeftTop:
+      return views::BubbleBorder::LEFT_TOP;
+    case HelpBubbleArrow::kRightTop:
+      return views::BubbleBorder::RIGHT_TOP;
+    case HelpBubbleArrow::kLeftBottom:
+      return views::BubbleBorder::LEFT_BOTTOM;
+    case HelpBubbleArrow::kRightBottom:
+      return views::BubbleBorder::RIGHT_BOTTOM;
+    case HelpBubbleArrow::kTopCenter:
+      return views::BubbleBorder::TOP_CENTER;
+    case HelpBubbleArrow::kBottomCenter:
+      return views::BubbleBorder::BOTTOM_CENTER;
+    case HelpBubbleArrow::kLeftCenter:
+      return views::BubbleBorder::LEFT_CENTER;
+    case HelpBubbleArrow::kRightCenter:
+      return views::BubbleBorder::RIGHT_CENTER;
+  }
+}
 
 class MdIPHBubbleButton : public views::MdTextButton {
  public:
@@ -236,13 +269,12 @@ END_METADATA
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
-FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
-    : BubbleDialogDelegateView(params.anchor_view,
-                               params.arrow,
-                               views::BubbleBorder::STANDARD_SHADOW),
-      preferred_width_(params.preferred_width) {
-  DCHECK(params.anchor_view);
-  DCHECK(params.persist_on_blur || params.focus_on_create)
+HelpBubbleView::HelpBubbleView(views::View* anchor_view,
+                               HelpBubbleParams params)
+    : BubbleDialogDelegateView(anchor_view,
+                               TranslateArrow(params.arrow),
+                               views::BubbleBorder::STANDARD_SHADOW) {
+  DCHECK(anchor_view)
       << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();
 
@@ -252,6 +284,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
                                          : kDefaultTimeoutWithButtons);
   if (!timeout_.is_zero())
     timeout_callback_ = std::move(params.timeout_callback);
+  SetCancelCallback(std::move(params.dismiss_callback));
 
   accessible_name_ = params.screenreader_text.empty()
                          ? params.body_text
@@ -264,8 +297,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // We get the theme provider from the anchor view since our widget hasn't been
   // created yet.
-  const ui::ThemeProvider* theme_provider =
-      params.anchor_view->GetThemeProvider();
+  const ui::ThemeProvider* theme_provider = anchor_view->GetThemeProvider();
   const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   DCHECK(theme_provider);
   DCHECK(layout_provider);
@@ -298,11 +330,11 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       AddChildView(std::make_unique<views::View>());
 
   // Add progress indicator (optional) and its container.
-  if (params.tutorial_progress_current) {
-    DCHECK(params.tutorial_progress_max);
+  if (params.tutorial_progress) {
+    DCHECK(params.tutorial_progress->second);
     // TODO(crbug.com/1197208): surface progress information in a11y tree
-    for (int i = 0; i < params.tutorial_progress_max; ++i) {
-      SkColor fill_color = i < params.tutorial_progress_current
+    for (int i = 0; i < params.tutorial_progress->second; ++i) {
+      SkColor fill_color = i < params.tutorial_progress->first
                                ? SK_ColorWHITE
                                : SK_ColorTRANSPARENT;
       // TODO(crbug.com/1197208): formalize dot size
@@ -328,16 +360,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
         text_color, kBodyIconBackgroundSize / 2));
     icon_view->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
   }
-
-  // This callback is used by both the close button and additional buttons.
-  auto close_bubble_and_run_callback = [](FeaturePromoBubbleView* view,
-                                          base::RepeatingClosure callback,
-                                          const ui::Event& event) {
-    if (view->GetWidget())
-      view->CloseBubble();
-    if (callback)
-      callback.Run();
-  };
 
   std::vector<views::Label*> labels;
   // Add title (optional) and body label.
@@ -366,32 +388,39 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
 
   // Add close button (optional).
   ClosePromoButton* close_button = nullptr;
-  if (params.has_close_button) {
+  if (params.buttons.empty() || params.force_close_button) {
     int close_string_id =
-        params.tutorial_progress_current ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
+        params.tutorial_progress ? IDS_CLOSE_TUTORIAL : IDS_CLOSE_PROMO;
+    // Since we set the cancel callback, we will use CancelDialog() to dismiss.
     close_button =
-        (params.tutorial_progress_max ? progress_container : top_text_container)
+        (params.tutorial_progress ? progress_container : top_text_container)
             ->AddChildView(std::make_unique<ClosePromoButton>(
                 close_string_id,
-                base::BindRepeating(close_bubble_and_run_callback,
-                                    base::Unretained(this),
-                                    std::move(params.dismiss_callback))));
+                base::BindRepeating(&DialogDelegate::CancelDialog,
+                                    base::Unretained(this))));
   }
 
   // Add other buttons.
-  for (ButtonParams& button_params : params.buttons) {
-    MdIPHBubbleButton* const button =
-        button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
-            base::BindRepeating(close_bubble_and_run_callback,
-                                base::Unretained(this),
-                                std::move(button_params.callback)),
-            button_params.text, button_params.has_border));
-    buttons_.push_back(button);
-    button->SetMinSize(gfx::Size(0, 0));
-    button->SetCustomPadding(kBubbleButtonPadding);
-  }
-  if (params.buttons.empty())
+  if (!params.buttons.empty()) {
+    auto close_bubble_and_run_callback = [](HelpBubbleView* view,
+                                            base::OnceClosure callback) {
+      view->GetWidget()->Close();
+      std::move(callback).Run();
+    };
+    for (HelpBubbleButtonParams& button_params : params.buttons) {
+      MdIPHBubbleButton* const button =
+          button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
+              base::BindRepeating(
+                  close_bubble_and_run_callback, base::Unretained(this),
+                  base::Passed(std::move(button_params.callback))),
+              button_params.text, button_params.is_default));
+      buttons_.push_back(button);
+      button->SetMinSize(gfx::Size(0, 0));
+      button->SetCustomPadding(kBubbleButtonPadding);
+    }
+  } else {
     button_container->SetVisible(false);
+  }
 
   // Set up layouts. This is the default vertical spacing that is also used to
   // separate progress indicators for symmetry.
@@ -498,10 +527,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
       views::kFlexBehaviorKey,
       views::FlexSpecification(button_layout.GetDefaultFlexRule()));
 
-  // Set up the bubble itself.
-
-  set_close_on_deactivate(!params.persist_on_blur);
-
   // Want a consistent initial focused view if one is available.
   if (close_button)
     SetInitiallyFocusedView(close_button);
@@ -520,66 +545,35 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   frame_view->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(params.arrow !=
-                                     views::BubbleBorder::Arrow::NONE);
+  frame_view->SetDisplayVisibleArrow(params.arrow != HelpBubbleArrow::kNone);
   SizeToContents();
 
-  if (params.focus_on_create) {
-    widget->Show();
-  } else {
-    widget->ShowInactive();
-    MaybeStartAutoCloseTimer();
-  }
+  widget->ShowInactive();
+  MaybeStartAutoCloseTimer();
 }
 
-FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
+HelpBubbleView::~HelpBubbleView() = default;
 
-FeaturePromoBubbleView::ButtonParams::ButtonParams() = default;
-FeaturePromoBubbleView::ButtonParams::ButtonParams(ButtonParams&&) = default;
-FeaturePromoBubbleView::ButtonParams::~ButtonParams() = default;
-
-FeaturePromoBubbleView::ButtonParams&
-FeaturePromoBubbleView::ButtonParams::operator=(
-    FeaturePromoBubbleView::ButtonParams&&) = default;
-
-FeaturePromoBubbleView::CreateParams::CreateParams() = default;
-FeaturePromoBubbleView::CreateParams::CreateParams(CreateParams&&) = default;
-FeaturePromoBubbleView::CreateParams::~CreateParams() = default;
-
-FeaturePromoBubbleView::CreateParams&
-FeaturePromoBubbleView::CreateParams::operator=(
-    FeaturePromoBubbleView::CreateParams&&) = default;
-
-// static
-FeaturePromoBubbleView* FeaturePromoBubbleView::Create(CreateParams params) {
-  return new FeaturePromoBubbleView(std::move(params));
-}
-
-void FeaturePromoBubbleView::MaybeStartAutoCloseTimer() {
+void HelpBubbleView::MaybeStartAutoCloseTimer() {
   if (timeout_.is_zero())
     return;
 
   auto_close_timer_.Start(FROM_HERE, timeout_, this,
-                          &FeaturePromoBubbleView::OnTimeout);
+                          &HelpBubbleView::OnTimeout);
 }
 
-void FeaturePromoBubbleView::OnTimeout() {
-  if (timeout_callback_)
-    timeout_callback_.Run();
-  CloseBubble();
-}
-
-void FeaturePromoBubbleView::CloseBubble() {
+void HelpBubbleView::OnTimeout() {
+  std::move(timeout_callback_).Run();
   GetWidget()->Close();
 }
 
-bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
+bool HelpBubbleView::OnMousePressed(const ui::MouseEvent& event) {
   base::RecordAction(
       base::UserMetricsAction("InProductHelp.Promos.BubbleClicked"));
   return false;
 }
 
-std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
+std::u16string HelpBubbleView::GetAccessibleWindowTitle() const {
   std::u16string result = accessible_name_;
 
   // If there's a keyboard navigation hint, append it after a full stop.
@@ -589,8 +583,8 @@ std::u16string FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
   return result;
 }
 
-void FeaturePromoBubbleView::OnWidgetActivationChanged(views::Widget* widget,
-                                                       bool active) {
+void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
+                                               bool active) {
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
@@ -601,12 +595,7 @@ void FeaturePromoBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
-  if (preferred_width_.has_value()) {
-    return gfx::Size(preferred_width_.value(),
-                     GetHeightForWidth(preferred_width_.value()));
-  }
-
+gfx::Size HelpBubbleView::CalculatePreferredSize() const {
   const gfx::Size layout_manager_preferred_size =
       View::CalculatePreferredSize();
 
@@ -618,9 +607,15 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
   return layout_manager_preferred_size;
 }
 
-views::Button* FeaturePromoBubbleView::GetButtonForTesting(int index) const {
+// static
+bool HelpBubbleView::IsHelpBubble(views::DialogDelegate* dialog) {
+  auto* const contents = dialog->GetContentsView();
+  return contents && views::IsViewClass<HelpBubbleView>(contents);
+}
+
+views::Button* HelpBubbleView::GetButtonForTesting(int index) const {
   return buttons_[index];
 }
 
-BEGIN_METADATA(FeaturePromoBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HelpBubbleView, views::BubbleDialogDelegateView)
 END_METADATA

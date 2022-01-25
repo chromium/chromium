@@ -17,11 +17,11 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -79,20 +79,11 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
 
   Browser* browser = toolbar_view_->browser();
 
-  FeaturePromoControllerViews* const feature_promo_controller =
-      BrowserView::GetBrowserViewForBrowser(toolbar_view_->browser())
-          ->feature_promo_controller();
-
   // If the menu was opened while reopen tab in-product help was
   // showing, we continue the IPH into the menu. Notify the promo
   // controller we are taking control of the promo.
-  DCHECK(!reopen_tab_promo_handle_);
-  if (feature_promo_controller->BubbleIsShowing(
-          feature_engagement::kIPHReopenTabFeature)) {
-    reopen_tab_promo_handle_ =
-        feature_promo_controller->CloseBubbleAndContinuePromo(
-            feature_engagement::kIPHReopenTabFeature);
-  }
+  browser->window()->CloseFeaturePromo(
+      feature_engagement::kIPHReopenTabFeature);
 
   bool alert_reopen_tab_items = reopen_tab_promo_handle_.has_value();
 

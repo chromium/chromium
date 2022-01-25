@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/common/buildflags.h"
+#include "ui/base/interaction/element_identifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -74,6 +75,7 @@ class TestBrowserWindow : public BrowserWindow {
       const content::WebContents* contents) const override;
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ColorProvider* GetColorProvider() const override;
+  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   StatusBubble* GetStatusBubble() override;
@@ -235,6 +237,15 @@ class TestBrowserWindow : public BrowserWindow {
 #endif
 
   FeaturePromoController* GetFeaturePromoController() override;
+  bool MaybeShowFeaturePromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      FeaturePromoController::BubbleCloseCallback close_callback =
+          base::DoNothing()) override;
+  bool CloseFeaturePromo(const base::Feature& iph_feature) override;
+  FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) override;
+  void NotifyFeatureEngagementEvent(const char* event_name) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/user_education/browser_feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/frame/web_contents_close_handler.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -64,7 +66,6 @@ class BookmarkBarView;
 class Browser;
 class ContentsLayoutManager;
 class ExclusiveAccessBubbleViews;
-class FeaturePromoControllerViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
 class LocationBarView;
@@ -353,10 +354,6 @@ class BrowserView : public BrowserWindow,
     return toolbar_button_provider_;
   }
 
-  FeaturePromoControllerViews* feature_promo_controller() {
-    return feature_promo_controller_.get();
-  }
-
   // Callback for listening for link-opening-from-gesture events (i.e. only
   // those resulting from direct user action).
   using OnLinkOpeningFromGestureCallback =
@@ -404,6 +401,7 @@ class BrowserView : public BrowserWindow,
       const content::WebContents* contents) const override;
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ColorProvider* GetColorProvider() const override;
+  ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
   StatusBubble* GetStatusBubble() override;
@@ -560,7 +558,16 @@ class BrowserView : public BrowserWindow,
   BookmarkBarView* GetBookmarkBarView() const;
   LocationBarView* GetLocationBarView() const;
 
-  FeaturePromoController* GetFeaturePromoController() override;
+  BrowserFeaturePromoController* GetFeaturePromoController() override;
+  bool MaybeShowFeaturePromo(
+      const base::Feature& iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      FeaturePromoController::BubbleCloseCallback close_callback =
+          base::DoNothing()) override;
+  bool CloseFeaturePromo(const base::Feature& iph_feature) override;
+  FeaturePromoController::PromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) override;
+  void NotifyFeatureEngagementEvent(const char* event_name) override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;
 
@@ -1079,7 +1086,10 @@ class BrowserView : public BrowserWindow,
 
   std::unique_ptr<AccessibilityFocusHighlight> accessibility_focus_highlight_;
 
-  std::unique_ptr<FeaturePromoControllerViews> feature_promo_controller_;
+  std::unique_ptr<BrowserFeaturePromoSnoozeService>
+      feature_promo_snooze_service_ = nullptr;
+  std::unique_ptr<BrowserFeaturePromoController> feature_promo_controller_ =
+      nullptr;
 
   OnLinkOpeningFromGestureCallbackList link_opened_from_gesture_callbacks_;
 

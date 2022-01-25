@@ -7,16 +7,22 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_description.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 
 TutorialRegistry::TutorialRegistry() = default;
 TutorialRegistry::~TutorialRegistry() = default;
 
+bool TutorialRegistry::IsTutorialRegistered(TutorialIdentifier id) const {
+  return base::Contains(tutorial_registry_, id);
+}
+
 std::unique_ptr<Tutorial> TutorialRegistry::CreateTutorial(
     TutorialIdentifier id,
     TutorialService* tutorial_service,
-    TutorialBubbleFactoryRegistry* bubble_factory_registry,
+    HelpBubbleFactoryRegistry* bubble_factory_registry,
     ui::ElementContext context) {
   DCHECK(tutorial_registry_.size() > 0);
   auto pair = tutorial_registry_.find(id);

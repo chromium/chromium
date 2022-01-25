@@ -18,7 +18,6 @@
 class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
-class FeaturePromoControllerViews;
 
 class AvatarToolbarButton : public ToolbarButton,
                             ToolbarIconContainerView::Observer {
@@ -107,8 +106,6 @@ class AvatarToolbarButton : public ToolbarButton,
   // Do not show the IPH right when creating the window, so that the IPH has a
   // separate animation.
   static base::TimeDelta g_iph_min_delay_after_creation;
-
-  const raw_ptr<FeaturePromoControllerViews> feature_promo_controller_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

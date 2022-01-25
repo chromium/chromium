@@ -91,8 +91,7 @@ void PasswordSaveUpdateViewTest::CreateViewAndShow() {
   CreateAnchorViewAndShow();
 
   view_ = new PasswordSaveUpdateView(web_contents(), anchor_view(),
-                                     LocationBarBubbleDelegateView::AUTOMATIC,
-                                     /*promo_controller=*/nullptr);
+                                     LocationBarBubbleDelegateView::AUTOMATIC);
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

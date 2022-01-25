@@ -17,18 +17,19 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,6 +57,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -271,6 +273,8 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
 
   combobox->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME));
+  combobox->SetProperty(views::kElementIdentifierKey,
+                        kSavePasswordComboboxElementId);
   return combobox;
 }
 
@@ -298,8 +302,7 @@ class PasswordSaveUpdateView::AutoResizingLayout : public views::FillLayout {
 PasswordSaveUpdateView::PasswordSaveUpdateView(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    DisplayReason reason,
-    FeaturePromoControllerViews* promo_controller)
+    DisplayReason reason)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/reason == USER_GESTURE),
@@ -311,8 +314,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       is_update_bubble_(controller_.state() ==
                         password_manager::ui::PENDING_PASSWORD_UPDATE_STATE),
       are_passwords_revealed_(
-          controller_.are_passwords_revealed_when_bubble_is_opened()),
-      promo_controller_(promo_controller) {
+          controller_.are_passwords_revealed_when_bubble_is_opened()) {
   DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
          controller_.state() ==
              password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
@@ -478,14 +480,16 @@ void PasswordSaveUpdateView::DestinationChanged() {
   // If the user explicitly switched to "save on this device only",
   // record this with the IPH tracker (so it can decide not to show the
   // IPH again). It may be null in tests, so handle that case.
-  if (!is_account_store_selected && promo_controller_) {
-    promo_controller_->feature_engagement_tracker()->NotifyEvent(
+  auto* const promo_controller =
+      BrowserFeaturePromoController::GetForView(GetAnchorView());
+  if (!is_account_store_selected && promo_controller) {
+    promo_controller->feature_engagement_tracker()->NotifyEvent(
         "passwords_account_storage_unselected");
   }
   // The IPH shown upon failure in reauth is used to informs the user that the
   // password will be stored on device. This is why it's important to close it
   // if the user changes the destination to account.
-  if (failed_reauth_promo_id_)
+  if (failed_reauth_promo_bubble_)
     CloseIPHBubbleIfOpen();
 }
 
@@ -624,73 +628,61 @@ bool PasswordSaveUpdateView::ShouldShowFailedReauthIPH() {
 }
 
 void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
-  DCHECK_NE(IPHType::kNone, type);
-
   // IPH is shown only where the destination dropdown is shown (i.e. only for
   // Save bubble).
   if (!destination_dropdown_ || controller_.IsCurrentStateUpdate())
     return;
 
   // The promo controller may not exist in tests.
-  if (!promo_controller_)
+  auto* const promo_controller =
+      BrowserFeaturePromoController::GetForView(GetAnchorView());
+  if (!promo_controller)
     return;
 
   // Make sure the Save/Update bubble doesn't get closed when the IPH bubble is
   // opened.
-  bool close_save_bubble_on_deactivate_original_value = close_on_deactivate();
+  const bool old_close_on_deactivate = close_on_deactivate();
   set_close_on_deactivate(false);
 
-  constexpr FeaturePromoSpecification::BubbleArrow kPromoArrow =
-      FeaturePromoSpecification::BubbleArrow::kRightCenter;
+  switch (type) {
+    case IPHType::kRegular:
+      if (promo_controller->MaybeShowPromo(
+              feature_engagement::kIPHPasswordsAccountStorageFeature)) {
+        // If the regular promo was shown, the failed reauth promo is
+        // definitely finished. If not, we can't be confident it hasn't
+        // finished.
+        failed_reauth_promo_bubble_.reset();
+      }
+      break;
+    case IPHType::kFailedReauth: {
+      FeaturePromoSpecification promo_spec =
+          FeaturePromoSpecification::CreateForLegacyPromo(
+              /* feature =*/nullptr, ui::ElementIdentifier(),
+              IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
+      promo_spec.SetBubbleArrow(HelpBubbleArrow::kRightCenter);
 
-  if (type == IPHType::kRegular) {
-    FeaturePromoSpecification promo_spec =
-        FeaturePromoSpecification::CreateForLegacyPromo(
-            &feature_engagement::kIPHPasswordsAccountStorageFeature,
-            ui::ElementIdentifier(),
-            IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT);
-    promo_spec.SetBubbleTitleText(
-        IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT);
-    promo_spec.SetBubbleArrow(kPromoArrow);
-
-    if (promo_controller_->MaybeShowPromoFromSpecification(
-            promo_spec, destination_dropdown_)) {
-      // If the regular promo was shown, the failed reauth promo is
-      // definitely finished. If not, we can't be confident it hasn't
-      // finished.
-      failed_reauth_promo_id_ = absl::nullopt;
+      failed_reauth_promo_bubble_ = promo_controller->ShowCriticalPromo(
+          promo_spec,
+          views::ElementTrackerViews::GetInstance()->GetElementForView(
+              destination_dropdown_, true));
+      break;
     }
-  } else {
-    FeaturePromoSpecification promo_spec =
-        FeaturePromoSpecification::CreateForLegacyPromo(
-            /* feature =*/nullptr, ui::ElementIdentifier(),
-            IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
-    promo_spec.SetBubbleArrow(kPromoArrow);
-
-    failed_reauth_promo_id_ =
-        promo_controller_->ShowCriticalPromo(promo_spec, destination_dropdown_);
   }
 
-  set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);
+  set_close_on_deactivate(old_close_on_deactivate);
 }
 
 void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
+  failed_reauth_promo_bubble_.reset();
+
   // The promo controller may not exist in tests.
-  if (!promo_controller_)
+  auto* const promo_controller =
+      BrowserFeaturePromoController::GetForView(GetAnchorView());
+  if (!promo_controller)
     return;
 
-  if (!failed_reauth_promo_id_) {
-    promo_controller_->CloseBubble(
-        feature_engagement::kIPHPasswordsAccountStorageFeature);
-    return;
-  }
-
-  // |failed_reauth_promo_id_| may have a value if it closed on its
-  // own. This is fine; CloseBubbleForCriticalPromo() handles expired
-  // IDs, and we reset ours when showing a normal IPH bubble.
-  promo_controller_->CloseBubbleForCriticalPromo(
-      failed_reauth_promo_id_.value());
-  failed_reauth_promo_id_ = absl::nullopt;
+  promo_controller->CloseBubble(
+      feature_engagement::kIPHPasswordsAccountStorageFeature);
 }
 
 void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {

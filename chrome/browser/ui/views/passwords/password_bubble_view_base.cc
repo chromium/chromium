@@ -49,8 +49,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
       button_provider->GetAnchorView(PageActionIconType::kManagePasswords);
 
   PasswordBubbleViewBase* bubble =
-      CreateBubble(web_contents, anchor_view, reason,
-                   browser_view->feature_promo_controller());
+      CreateBubble(web_contents, anchor_view, reason);
   DCHECK(bubble);
   DCHECK_EQ(bubble, g_manage_passwords_bubble_);
 
@@ -67,8 +66,7 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
 PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    DisplayReason reason,
-    FeaturePromoControllerViews* promo_controller) {
+    DisplayReason reason) {
   PasswordBubbleViewBase* view = nullptr;
   password_manager::ui::State model_state =
       PasswordsModelDelegateFromWebContents(web_contents)->GetState();
@@ -82,8 +80,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state ==
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
-    view = new PasswordSaveUpdateView(web_contents, anchor_view, reason,
-                                      promo_controller);
+    view = new PasswordSaveUpdateView(web_contents, anchor_view, reason);
   } else if (model_state == password_manager::ui::
                                 WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE) {
     view = new PasswordSaveUnsyncedCredentialsLocallyView(web_contents,

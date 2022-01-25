@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
-  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
   // Create the customization bubble, owned by the view hierarchy.
   ProfileCustomizationBubbleView* bubble =
       ProfileCustomizationBubbleView::CreateBubble(browser()->profile(),
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
 
   feature_engagement::Tracker* tracker =
       BrowserView::GetBrowserViewForBrowser(browser())
-          ->feature_promo_controller()
+          ->GetFeaturePromoController()
           ->feature_engagement_tracker();
 
   EXPECT_NE(

@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -58,8 +58,8 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(mock_tracker_);
 
     promo_controller_ = BrowserView::GetBrowserViewForBrowser(browser())
-                            ->feature_promo_controller();
-    snooze_service_ = promo_controller_->snooze_service_for_testing();
+                            ->GetFeaturePromoController();
+    snooze_service_ = promo_controller_->snooze_service();
   }
 
  protected:
@@ -167,18 +167,24 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     }
   }
 
-  views::Button* GetSnoozeButtonForTesting(FeaturePromoBubbleView* promo) {
-    return promo->GetButtonForTesting(
+  HelpBubbleView* GetPromoBubbleView() {
+    return promo_controller_->promo_bubble_for_testing()
+        ->AsA<HelpBubbleViews>()
+        ->bubble_view();
+  }
+
+  views::Button* GetSnoozeButtonForTesting() {
+    return GetPromoBubbleView()->GetButtonForTesting(
         views::PlatformStyle::kIsOkButtonLeading ? 1 : 0);
   }
 
-  views::Button* GetDismissButtonForTesting(FeaturePromoBubbleView* promo) {
-    return promo->GetButtonForTesting(
+  views::Button* GetDismissButtonForTesting() {
+    return GetPromoBubbleView()->GetButtonForTesting(
         views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
   }
 
   raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
-  raw_ptr<FeaturePromoControllerViews> promo_controller_;
+  raw_ptr<BrowserFeaturePromoController> promo_controller_;
   raw_ptr<FeaturePromoSnoozeService> snooze_service_;
 
  private:
@@ -211,9 +217,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  FeaturePromoBubbleView* promo =
-      FeaturePromoBubbleOwnerImpl::GetInstance()->bubble_for_testing();
-  ClickButton(GetDismissButtonForTesting(promo));
+  ClickButton(GetDismissButtonForTesting());
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                    /* is_dismiss */ true,
                    /* show_count */ 1,
@@ -230,11 +234,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  FeaturePromoBubbleView* promo =
-      FeaturePromoBubbleOwnerImpl::GetInstance()->bubble_for_testing();
-
   base::Time snooze_time_min = base::Time::Now();
-  ClickButton(GetSnoozeButtonForTesting(promo));
+  ClickButton(GetSnoozeButtonForTesting());
   base::Time snooze_time_max = base::Time::Now();
 
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
@@ -264,11 +265,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  FeaturePromoBubbleView* promo =
-      FeaturePromoBubbleOwnerImpl::GetInstance()->bubble_for_testing();
-
   base::Time snooze_time_min = base::Time::Now();
-  ClickButton(GetSnoozeButtonForTesting(promo));
+  ClickButton(GetSnoozeButtonForTesting());
   base::Time snooze_time_max = base::Time::Now();
 
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
@@ -337,9 +335,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  FeaturePromoBubbleView* promo =
-      FeaturePromoBubbleOwnerImpl::GetInstance()->bubble_for_testing();
-  promo->GetWidget()->CloseWithReason(
+  auto* const bubble = GetPromoBubbleView();
+  bubble->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                    /* is_dismiss */ false,

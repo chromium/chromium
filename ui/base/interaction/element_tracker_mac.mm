@@ -12,7 +12,7 @@
 
 namespace ui {
 
-DEFINE_ELEMENT_TRACKER_METADATA(TrackedElementMac)
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementMac)
 
 TrackedElementMac::TrackedElementMac(ElementIdentifier identifier,
                                      ElementContext context,

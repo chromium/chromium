@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -355,7 +356,7 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
   title_field_->set_controller(&title_field_controller_);
   title_field_->SetProperty(views::kElementIdentifierKey,
-                            kEditorBubbleIdentifier);
+                            kTabGroupEditorBubbleId);
 
   const tab_groups::TabGroupColorId initial_color_id = InitColorSet();
   color_selector_ = AddChildView(std::make_unique<ColorPickerView>(
@@ -629,6 +630,3 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
 
 BEGIN_METADATA(TabGroupEditorBubbleView, TitleField, views::Textfield)
 END_METADATA
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupEditorBubbleView,
-                                      kEditorBubbleIdentifier);

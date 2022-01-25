@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
+#include "chrome/browser/ui/views/user_education/help_bubble_view.h"
 
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/help_bubble_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/test/data/grit/chrome_test_resources.h"
@@ -22,34 +25,40 @@
 #include "ui/events/types/event_type.h"
 #include "ui/views/widget/widget_observer.h"
 
-class FeaturePromoBubbleViewTest : public TestWithBrowserView {
+class HelpBubbleViewTest : public TestWithBrowserView {
  public:
-  FeaturePromoBubbleViewTest()
+  HelpBubbleViewTest()
       : TestWithBrowserView(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
   // If |button_callback| is non-nil, creates the bubble with one button calling
   // that callback. Otherwise has no buttons.
-  FeaturePromoBubbleView::CreateParams GetBubbleParams(
-      base::RepeatingClosure button_callback) {
-    FeaturePromoBubbleView::CreateParams params;
+  HelpBubbleParams GetBubbleParams(
+      base::RepeatingClosure button_callback = base::DoNothing()) {
+    HelpBubbleParams params;
     params.body_text = u"To X, do Y";
-    params.anchor_view = browser_view()->contents_container();
-    params.arrow = views::BubbleBorder::TOP_RIGHT;
+    params.arrow = HelpBubbleArrow::kTopRight;
 
     if (button_callback) {
-      params.focus_on_create = true;
-      params.persist_on_blur = true;
-
-      FeaturePromoBubbleView::ButtonParams button_params;
+      HelpBubbleButtonParams button_params;
       button_params.text = u"Go away";
-      button_params.has_border = true;
+      button_params.is_default = true;
       button_params.callback = std::move(button_callback);
       params.buttons.push_back(std::move(button_params));
     }
 
     return params;
+  }
+
+  HelpBubbleView* CreateHelpBubbleView(HelpBubbleParams params) {
+    return new HelpBubbleView(browser_view()->contents_container(),
+                              std::move(params));
+  }
+
+  HelpBubbleView* CreateHelpBubbleView(
+      base::RepeatingClosure button_callback = base::DoNothing()) {
+    return CreateHelpBubbleView(GetBubbleParams(button_callback));
   }
 };
 
@@ -58,13 +67,12 @@ class MockWidgetObserver : public views::WidgetObserver {
   MOCK_METHOD(void, OnWidgetClosing, (views::Widget*), ());
 };
 
-TEST_F(FeaturePromoBubbleViewTest, CallButtonCallback) {
+TEST_F(HelpBubbleViewTest, CallButtonCallback) {
   base::MockRepeatingClosure mock_callback;
 
   EXPECT_CALL(mock_callback, Run()).Times(1);
 
-  FeaturePromoBubbleView* bubble =
-      FeaturePromoBubbleView::Create(GetBubbleParams(mock_callback.Get()));
+  HelpBubbleView* const bubble = CreateHelpBubbleView(mock_callback.Get());
 
   // Simulate clicks on dismiss button.
   ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
@@ -79,9 +87,10 @@ TEST_F(FeaturePromoBubbleViewTest, CallButtonCallback) {
   bubble->GetWidget()->Close();
 }
 
-TEST_F(FeaturePromoBubbleViewTest, AutoDismissIfNoButtons) {
-  FeaturePromoBubbleView* bubble =
-      FeaturePromoBubbleView::Create(GetBubbleParams(base::RepeatingClosure()));
+TEST_F(HelpBubbleViewTest, DismissOnTimeout) {
+  HelpBubbleParams params = GetBubbleParams();
+  params.timeout = base::Seconds(30);
+  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(1);
   bubble->GetWidget()->AddObserver(&dismiss_observer);
@@ -89,9 +98,8 @@ TEST_F(FeaturePromoBubbleViewTest, AutoDismissIfNoButtons) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(FeaturePromoBubbleViewTest, NoAutoDismissWithButtons) {
-  FeaturePromoBubbleView* bubble =
-      FeaturePromoBubbleView::Create(GetBubbleParams(base::DoNothing()));
+TEST_F(HelpBubbleViewTest, NoAutoDismissWithoutTimeout) {
+  HelpBubbleView* const bubble = CreateHelpBubbleView();
   MockWidgetObserver dismiss_observer;
   EXPECT_CALL(dismiss_observer, OnWidgetClosing(testing::_)).Times(0);
   bubble->GetWidget()->AddObserver(&dismiss_observer);
@@ -102,29 +110,27 @@ TEST_F(FeaturePromoBubbleViewTest, NoAutoDismissWithButtons) {
   bubble->GetWidget()->RemoveObserver(&dismiss_observer);
 }
 
-TEST_F(FeaturePromoBubbleViewTest, TimeoutCallback) {
+TEST_F(HelpBubbleViewTest, TimeoutCallback) {
   base::MockRepeatingClosure timeout_callback;
 
-  FeaturePromoBubbleView::CreateParams params =
-      GetBubbleParams(base::RepeatingClosure());
+  HelpBubbleParams params = GetBubbleParams();
   params.timeout = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
 
-  FeaturePromoBubbleView::Create(std::move(params));
+  CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(1);
   task_environment()->FastForwardBy(base::Seconds(10));
 }
 
-TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
+TEST_F(HelpBubbleViewTest, NoTimeoutIfSetToZero) {
   base::MockRepeatingClosure timeout_callback;
 
-  FeaturePromoBubbleView::CreateParams params =
-      GetBubbleParams(base::RepeatingClosure());
+  HelpBubbleParams params = GetBubbleParams(base::RepeatingClosure());
   params.timeout = base::TimeDelta();
   params.timeout_callback = timeout_callback.Get();
 
-  FeaturePromoBubbleView::Create(std::move(params));
+  CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
 
@@ -132,15 +138,14 @@ TEST_F(FeaturePromoBubbleViewTest, NoTimeoutIfSetToZero) {
   task_environment()->FastForwardBy(base::Hours(1));
 }
 
-TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeActivate) {
+TEST_F(HelpBubbleViewTest, RespectsProvidedTimeoutBeforeActivate) {
   base::MockRepeatingClosure timeout_callback;
 
-  FeaturePromoBubbleView::CreateParams params =
-      GetBubbleParams(base::RepeatingClosure());
+  HelpBubbleParams params = GetBubbleParams(base::RepeatingClosure());
   params.timeout = base::Seconds(20);
   params.timeout_callback = timeout_callback.Get();
 
-  FeaturePromoBubbleView::Create(std::move(params));
+  CreateHelpBubbleView(std::move(params));
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
   task_environment()->FastForwardBy(base::Seconds(19));
@@ -149,20 +154,16 @@ TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutBeforeActivate) {
   task_environment()->FastForwardBy(base::Seconds(1));
 }
 
-TEST_F(FeaturePromoBubbleViewTest, RespectsProvidedTimeoutAfterActivate) {
+TEST_F(HelpBubbleViewTest, RespectsProvidedTimeoutAfterActivate) {
   base::MockRepeatingClosure timeout_callback;
 
-  FeaturePromoBubbleView::CreateParams params =
-      GetBubbleParams(base::RepeatingClosure());
+  HelpBubbleParams params = GetBubbleParams(base::RepeatingClosure());
   params.timeout = base::Seconds(10);
   params.timeout_callback = timeout_callback.Get();
-  params.focus_on_create = false;
-  params.persist_on_blur = true;
 
   EXPECT_CALL(timeout_callback, Run()).Times(0);
 
-  FeaturePromoBubbleView* bubble =
-      FeaturePromoBubbleView::Create(std::move(params));
+  HelpBubbleView* const bubble = CreateHelpBubbleView(std::move(params));
 
   task_environment()->FastForwardBy(base::Seconds(9));
 

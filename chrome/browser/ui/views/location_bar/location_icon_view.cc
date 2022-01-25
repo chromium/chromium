@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -285,8 +285,8 @@ void LocationIconView::Update(bool suppress_animations) {
       feature_engagement_tracker_->NotifyEvent(
           feature_engagement::events::
               kUpdatedConnectionSecurityIndicatorDisplayed);
-      FeaturePromoControllerViews* controller =
-          FeaturePromoControllerViews::GetForView(this);
+      BrowserFeaturePromoController* controller =
+          BrowserFeaturePromoController::GetForView(this);
       if (controller) {
         controller->MaybeShowPromo(
             feature_engagement::kIPHUpdatedConnectionSecurityIndicatorsFeature);

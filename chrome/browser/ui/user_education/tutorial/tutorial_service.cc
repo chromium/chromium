@@ -7,35 +7,23 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ui/user_education/help_bubble.h"
+#include "chrome/browser/ui/user_education/help_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_bubble_factory_registry.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
-#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_registry.h"
 
-TutorialService::TutorialService() = default;
+TutorialService::TutorialService(
+    TutorialRegistry* tutorial_registry,
+    HelpBubbleFactoryRegistry* help_bubble_factory_registry)
+    : tutorial_registry_(tutorial_registry),
+      help_bubble_factory_registry_(help_bubble_factory_registry) {}
 TutorialService::~TutorialService() = default;
 
-bool TutorialService::StartTutorial(
-    TutorialIdentifier id,
-    ui::ElementContext context,
-    TutorialBubbleFactoryRegistry* bubble_factory_registry,
-    TutorialRegistry* tutorial_registry) {
-  if (!bubble_factory_registry || !tutorial_registry) {
-    TutorialServiceManager* tutorial_service_manager =
-        TutorialServiceManager::GetInstance();
-
-    bubble_factory_registry =
-        tutorial_service_manager->bubble_factory_registry();
-
-    tutorial_registry = tutorial_service_manager->tutorial_registry();
-  }
-
-  auto tutorial = tutorial_registry->CreateTutorial(
-      id, this, bubble_factory_registry, context);
-  if (!tutorial)
-    return false;
-  return StartTutorialImpl(std::move(tutorial));
+bool TutorialService::StartTutorial(TutorialIdentifier id,
+                                    ui::ElementContext context) {
+  return StartTutorialImpl(tutorial_registry_->CreateTutorial(
+      id, this, help_bubble_factory_registry_, context));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
@@ -74,7 +62,7 @@ void TutorialService::CompleteTutorial() {
   // tutorial at some point.
 }
 
-void TutorialService::SetCurrentBubble(std::unique_ptr<TutorialBubble> bubble) {
+void TutorialService::SetCurrentBubble(std::unique_ptr<HelpBubble> bubble) {
   currently_displayed_bubble_ = std::move(bubble);
 }
 
@@ -86,13 +74,4 @@ void TutorialService::HideCurrentBubbleIfShowing() {
 
 bool TutorialService::IsRunningTutorial() const {
   return running_tutorial_ != nullptr;
-}
-
-std::vector<TutorialIdentifier> TutorialService::GetTutorialIdentifiers()
-    const {
-  TutorialServiceManager* tutorial_service_manager =
-      TutorialServiceManager::GetInstance();
-
-  return tutorial_service_manager->tutorial_registry()
-      ->GetTutorialIdentifiers();
 }
