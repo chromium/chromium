@@ -5473,6 +5473,7 @@ test("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//testing/perf:unit_tests",
+    "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/common/privacy_budget:test_support",
     "//third_party/icu",
     "//third_party/leveldatabase",
@@ -7586,8 +7587,6 @@ test("unit_tests") {
         "../browser/ui/webui/print_preview/print_preview_ui_unittest.cc",
         "../browser/ui/webui/print_preview/print_preview_utils_unittest.cc",
       ]
-
-      deps += [ "//ipc" ]
 
       if (is_win) {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_win_unittest.cc" ]
