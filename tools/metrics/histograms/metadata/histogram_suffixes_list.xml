@@ -53,13 +53,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Signin.IsShared"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AccountManagerMigrationSteps" separator=".">
-  <suffix name="ArcAccountsMigration" label=""/>
-  <suffix name="ContentAreaAccountsMigration" label=""/>
-  <suffix name="DeviceAccountMigration" label=""/>
-  <affected-histogram name="AccountManager.Migrations.StepResult"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AccuracyTipInteraction" separator=".">
   <suffix name="Closed"
       label="The Accuracy Tip was closed by close button or pressing ESC"/>

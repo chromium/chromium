@@ -34,6 +34,7 @@ template("generate_expired_histograms_array") {
     inputs = [
       "//tools/metrics/histograms/histograms.xml",
       "//tools/metrics/histograms/metadata/accessibility/histograms.xml",
+      "//tools/metrics/histograms/metadata/account_manager/histograms.xml",
       "//tools/metrics/histograms/metadata/android/histograms.xml",
       "//tools/metrics/histograms/metadata/apps/histograms.xml",
       "//tools/metrics/histograms/metadata/arc/histograms.xml",
