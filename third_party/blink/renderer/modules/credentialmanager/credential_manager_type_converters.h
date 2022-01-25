@@ -49,13 +49,6 @@ struct TypeConverter<blink::Credential*,
 
 // blink::mojom::blink::Authenticator ---------------------------------------
 template <>
-struct TypeConverter<blink::mojom::blink::CredentialManagerError,
-                     blink::mojom::blink::AuthenticatorStatus> {
-  static blink::mojom::blink::CredentialManagerError Convert(
-      const blink::mojom::blink::AuthenticatorStatus&);
-};
-
-template <>
 struct TypeConverter<Vector<uint8_t>,
                      blink::V8UnionArrayBufferOrArrayBufferView*> {
   static Vector<uint8_t> Convert(

@@ -351,119 +351,129 @@ DOMException* CredentialManagerErrorToDOMException(
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "A request is already pending.");
-    case CredentialManagerError::PENDING_REQUEST_WEBAUTHN:
-      // WebAuthn's PENDING_REQUEST is mapped to a different
-      // |CredentialManagerError| because WebAuthn wants kInvalidStateError to
-      // be distinctive so that sites can recognise it as
-      // |CREDENTIAL_EXCLUDED|.
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "A request is already pending.");
     case CredentialManagerError::PASSWORD_STORE_UNAVAILABLE:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "The password store is unavailable.");
-    case CredentialManagerError::NOT_ALLOWED:
+    case CredentialManagerError::UNKNOWN:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotReadableError,
+          "An unknown error occurred while talking "
+          "to the credential manager.");
+    case CredentialManagerError::SUCCESS:
+      NOTREACHED();
+      break;
+  }
+  return nullptr;
+}
+
+DOMException* AuthenticatorStatusToDOMException(AuthenticatorStatus status) {
+  switch (status) {
+    case AuthenticatorStatus::SUCCESS:
+      NOTREACHED();
+      break;
+    case AuthenticatorStatus::PENDING_REQUEST:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "A request is already pending.");
+    case AuthenticatorStatus::NOT_ALLOWED_ERROR:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "The operation either timed out or was not allowed. See: "
           "https://www.w3.org/TR/webauthn-2/"
           "#sctn-privacy-considerations-client.");
-    case CredentialManagerError::INVALID_DOMAIN:
+    case AuthenticatorStatus::INVALID_DOMAIN:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "This is an invalid domain.");
-    case CredentialManagerError::INVALID_ICON_URL:
+    case AuthenticatorStatus::INVALID_ICON_URL:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError, "The icon should be a secure URL");
-    case CredentialManagerError::CREDENTIAL_EXCLUDED:
+    case AuthenticatorStatus::CREDENTIAL_EXCLUDED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "The user attempted to register an authenticator that contains one "
           "of the credentials already registered with the relying party.");
-    case CredentialManagerError::NOT_IMPLEMENTED:
+    case AuthenticatorStatus::NOT_IMPLEMENTED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "Not implemented");
-    case CredentialManagerError::NOT_FOCUSED:
+    case AuthenticatorStatus::NOT_FOCUSED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "The operation is not allowed at this time "
           "because the page does not have focus.");
-    case CredentialManagerError::RESIDENT_CREDENTIALS_UNSUPPORTED:
+    case AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Resident credentials or empty "
           "'allowCredentials' lists are not supported "
           "at this time.");
-    case CredentialManagerError::PROTECTION_POLICY_INCONSISTENT:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Requested protection policy is inconsistent or incongruent with "
-          "other requested parameters.");
-    case CredentialManagerError::ANDROID_ALGORITHM_UNSUPPORTED:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "None of the algorithms specified in "
-          "`pubKeyCredParams` are supported by "
-          "this device.");
-    case CredentialManagerError::ANDROID_EMPTY_ALLOW_CREDENTIALS:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Use of an empty `allowCredentials` list is "
-          "not supported on this device.");
-    case CredentialManagerError::ANDROID_NOT_SUPPORTED_ERROR:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Either the device has received unexpected "
-          "request parameters, or the device "
-          "cannot support this request.");
-    case CredentialManagerError::ANDROID_USER_VERIFICATION_UNSUPPORTED:
+    case AuthenticatorStatus::USER_VERIFICATION_UNSUPPORTED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "The specified `userVerification` "
           "requirement cannot be fulfilled by "
           "this device unless the device is secured "
           "with a screen lock.");
-    case CredentialManagerError::ABORT:
+    case AuthenticatorStatus::ALGORITHM_UNSUPPORTED:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "None of the algorithms specified in "
+          "`pubKeyCredParams` are supported by "
+          "this device.");
+    case AuthenticatorStatus::EMPTY_ALLOW_CREDENTIALS:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Use of an empty `allowCredentials` list is "
+          "not supported on this device.");
+    case AuthenticatorStatus::ANDROID_NOT_SUPPORTED_ERROR:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Either the device has received unexpected "
+          "request parameters, or the device "
+          "cannot support this request.");
+    case AuthenticatorStatus::PROTECTION_POLICY_INCONSISTENT:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "Requested protection policy is inconsistent or incongruent with "
+          "other requested parameters.");
+    case AuthenticatorStatus::ABORT_ERROR:
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
                                                 "Request has been aborted.");
-    case CredentialManagerError::OPAQUE_DOMAIN:
+    case AuthenticatorStatus::OPAQUE_DOMAIN:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "The current origin is an opaque origin and hence not allowed to "
           "access 'PublicKeyCredential' objects.");
-    case CredentialManagerError::INVALID_PROTOCOL:
+    case AuthenticatorStatus::INVALID_PROTOCOL:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "Public-key credentials are only available to HTTPS origin or HTTP "
           "origins that fall under 'localhost'. See https://crbug.com/824383");
-    case CredentialManagerError::BAD_RELYING_PARTY_ID:
+    case AuthenticatorStatus::BAD_RELYING_PARTY_ID:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSecurityError,
           "The relying party ID is not a registrable domain suffix of, nor "
           "equal to the current domain.");
-    case CredentialManagerError::CANNOT_READ_AND_WRITE_LARGE_BLOB:
+    case AuthenticatorStatus::CANNOT_READ_AND_WRITE_LARGE_BLOB:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "Only one of the 'largeBlob' extension's 'read' and 'write' "
           "parameters is allowed at a time");
-    case CredentialManagerError::INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
+    case AuthenticatorStatus::INVALID_ALLOW_CREDENTIALS_FOR_LARGE_BLOB:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
           "The 'largeBlob' extension's 'write' parameter can only be used "
           "with a single credential present on 'allowCredentials'");
-    case CredentialManagerError::UNKNOWN:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotReadableError,
-          "An unknown error occurred while talking "
-          "to the credential manager.");
-    case CredentialManagerError::
+    case AuthenticatorStatus::
         FAILED_TO_SAVE_CREDENTIAL_ID_FOR_PAYMENT_EXTENSION:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotReadableError,
           "Failed to save the credential identifier for the 'payment' "
           "extension.");
-    case CredentialManagerError::SUCCESS:
-      NOTREACHED();
-      break;
+    case AuthenticatorStatus::UNKNOWN_ERROR:
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotReadableError,
+          "An unknown error occurred while talking "
+          "to the credential manager.");
   }
   return nullptr;
 }
@@ -560,8 +570,7 @@ void OnMakePublicKeyCredentialComplete(
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
-    resolver->Reject(CredentialManagerErrorToDOMException(
-        mojo::ConvertTo<CredentialManagerError>(status)));
+    resolver->Reject(AuthenticatorStatusToDOMException(status));
     return;
   }
   DCHECK(credential);
@@ -656,8 +665,7 @@ void OnMakePublicKeyCredentialWithPaymentExtensionComplete(
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
   if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
-    resolver->Reject(CredentialManagerErrorToDOMException(
-        mojo::ConvertTo<CredentialManagerError>(status)));
+    resolver->Reject(AuthenticatorStatusToDOMException(status));
     return;
   }
 
@@ -737,8 +745,7 @@ void OnGetAssertionComplete(
     return;
   }
   DCHECK(!credential);
-  resolver->Reject(CredentialManagerErrorToDOMException(
-      mojo::ConvertTo<CredentialManagerError>(status)));
+  resolver->Reject(AuthenticatorStatusToDOMException(status));
 }
 
 void OnSmsReceive(ScriptPromiseResolver* resolver,
