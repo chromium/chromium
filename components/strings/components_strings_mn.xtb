@@ -1229,6 +1229,7 @@
           <ph name="LIST_ITEM" />Ажил олгогч эсвэл сургууль хөтчийн үйл ажиллагааг хянах боломжтой<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернэт үйлчилгээ нийлүүлэгч вебийн ачааллыг хянаж магадгүй<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Бодлогыг зөвхөн үүлний хэрэглэгчийн бодлогоор тохируулах боломжтой тул үл хэрэгссэн.</translation>
 <translation id="483241715238664915">Сануулгыг асаах</translation>
 <translation id="4838327282952368871">Зүүд шиг</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
@@ -1332,6 +1333,7 @@
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
 <translation id="5145883236150621069">удирдамжийн хариулт дахь алдааны код</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" />-н мэдэгдлийг хориглосон</translation>
+<translation id="514704532284964975"><ph name="URL" /> таны утсаараа товшсон NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг хүсэж байна</translation>
 <translation id="5148809049217731050">Нүүрээр нь дээш харуулсан</translation>
 <translation id="515292512908731282">C4 (Дугтуй)</translation>
 <translation id="5158275234811857234">Ковер</translation>

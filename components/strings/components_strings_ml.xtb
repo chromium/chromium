@@ -1224,6 +1224,7 @@
           <ph name="LIST_ITEM" />തൊഴിലുടമകൾക്കോ സ്കൂളുകൾക്കോ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി ട്രാക്ക് ചെയ്യാനാകും<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ഇന്റർനെറ്റ് സേവന ദാതാക്കൾ വെബ് ട്രാഫിക് നിരീക്ഷിച്ചേക്കാം<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">ക്ലൗഡ് ഉപയോക്തൃ നയം അനുസരിച്ച് മാത്രമേ നയം സജ്ജീകരിക്കാനാകൂ എന്നതിനാൽ അവഗണിച്ചു.</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
 <translation id="4838327282952368871">മനോരാജ്യത്തിൽ മുഴുകിയത്</translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
@@ -1327,6 +1328,7 @@
 <translation id="5138227688689900538">കുറച്ച് കാണിക്കുക</translation>
 <translation id="5145883236150621069">നയ പ്രതികരണത്തിൽ പിശക് കോഡ് ഉണ്ട്</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> എന്നതിന്റെ അറിയിപ്പുകൾ ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="514704532284964975">നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് ടാപ്പ് ചെയ്യുന്ന NFC ഉപകരണങ്ങളിലെ വിവരങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്താനും <ph name="URL" /> താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="5148809049217731050">ഫേസ് അപ്പ്</translation>
 <translation id="515292512908731282">C4 (എൻവലപ്പ്)</translation>
 <translation id="5158275234811857234">കവർ</translation>

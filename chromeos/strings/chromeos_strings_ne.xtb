@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">स्क्यानरमा अर्को पेज राख्नुहोस्</translation>
 <translation id="2872961005593481000">बन्द गर्नुहोस्</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकेन्डमा <ph name="RATE" /> घट्यो।</translation>
+<translation id="291142119251986300">अयोग्य कम्पोनेन्टहरू</translation>
+<translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -170,6 +172,7 @@
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="3583278742022654445">सिग्नल कमजोर छ। Wi-Fi सिग्नलको स्रोतको नजिक गई हेर्नुहोस्।</translation>
 <translation id="3595596368722241419">ब्यटरी पूर्ण</translation>
+<translation id="3603829704940252505">अवतार</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> परीक्षण</translation>
@@ -420,6 +423,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> मा फर्कनुहोस्</translation>
 <translation id="6910312834584889076">स्क्यानरको कभर खुला छ। कभर लगाउनुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6911383237894364323">मिडिया सर्भरहरूमा कनेक्ट गर्न सकिएन</translation>
+<translation id="6935486296377631201">स्क्रिनसेभर</translation>
 <translation id="6957231940976260713">सेवाको नाम</translation>
 <translation id="6961170852793647506">कागजात स्क्यान गर्ने कार्य सुरु गर्न उक्त कागजात स्क्यानरमा राख्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>

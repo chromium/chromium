@@ -208,6 +208,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Չհաջողվեց մասնավոր կապակցում հաստատել <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> տիրույթի հետ, քանի որ ձեր սարքի ամսաթիվը և ժամը (<ph name="DATE_AND_TIME" />) սխալ են:&lt;/p&gt;
 
       &lt;p&gt;Ուղղեք ամսաթիվը և ժամը &lt;strong&gt;Կարգավորումներ&lt;/strong&gt; հավելվածի &lt;strong&gt;Ընդհանուր&lt;/strong&gt; բաժնում:&lt;/p&gt;</translation>
+<translation id="156703335097561114">Ցանցային տեղեկությունները, օրինակ՝ հասցեները, միջերեսի կարգավորումները և կապի որակը</translation>
 <translation id="1567040042588613346">Այս կանոնը պատշաճ կերպով աշխատում է, սակայն միևնույն արժեքը սահմանված է այլ տեղում և փոխարինվում է կանոնի կողմից։</translation>
 <translation id="1569487616857761740">Մուտքագրեք գործողության ժամկետը</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -704,6 +705,7 @@
 <translation id="3234666976984236645">Միշտ հատկորոշել կարևոր բովանդակությունը այս կայքում</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Դիտարկիչի տեսքը կարգավորելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="3240791268468473923">Բացվել է պատուհան, որը ցուցադրում է անվտանգ վճարման տվյալների անհամապատասխանությունը տվյալների աղյուսակի հետ</translation>
+<translation id="324180406144491771">«<ph name="HOST_NAME" />» հղումներն արգելափակված են</translation>
 <translation id="3249845759089040423">Նորաձև</translation>
 <translation id="3252266817569339921">Ֆրանսիական</translation>
 <translation id="3257954757204451555">Ո՞վ է տրամադրել այս տեղեկությունները</translation>

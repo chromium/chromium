@@ -208,6 +208,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1559572115229829303">&lt;p&gt;'n Private verbinding aan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kon nie gevestig word nie omdat jou toestel se datum en tyd (<ph name="DATE_AND_TIME" />) verkeerd is.&lt;/p&gt;
 
           &lt;p&gt;Stel asseblief die datum en tyd reg in die &lt;strong&gt;Algemeen&lt;/strong&gt;-afdeling van die &lt;strong&gt;Instellings&lt;/strong&gt;-program.&lt;/p&gt;</translation>
+<translation id="156703335097561114">Netwerkinligting soos adresse, koppelvlakopstelling en verbindinggehalte</translation>
 <translation id="1567040042588613346">Hierdie beleid werk soos bedoel, maar dieselfde waarde is elders gestel en word deur hierdie beleid vervang.</translation>
 <translation id="1569487616857761740">Voer vervaldatum in</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -704,6 +705,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3234666976984236645">Bespeur altyd belangrike inhoud op hierdie werf</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om die voorkoms van jou blaaier te pasmaak</translation>
 <translation id="3240791268468473923">Blad vir geen passende eiebewys vir veilige betalingeiebewys is oopgemaak</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />”-skakels word geblokkeer</translation>
 <translation id="3249845759089040423">Fantasties</translation>
 <translation id="3252266817569339921">Frans</translation>
 <translation id="3257954757204451555">Wie is verantwoordelik vir hierdie inligting?</translation>
@@ -1329,6 +1331,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5138227688689900538">Wys minder</translation>
 <translation id="5145883236150621069">Foutkode kom voor in die beleidantwoord</translation>
 <translation id="5146995429444047494">Kennisgewings vir <ph name="ORIGIN" /> word geblokkeer</translation>
+<translation id="514704532284964975"><ph name="URL" /> wil inligting op NFC-toestelle sien en verander wanneer jy op jou foon tik</translation>
 <translation id="5148809049217731050">Voorkant na bo</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Omslag</translation>

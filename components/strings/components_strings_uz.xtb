@@ -1223,6 +1223,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
           <ph name="LIST_ITEM" />Ishxona va maktablarda brauzer tarixi kuzatilishi mumkin<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internet provayderlari ham trafikni kuzatishi mumkin<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Parametr faqat bulutdagi foydalanuvchilar siyosati tomonidan belgilanishi mumkinligi uchun inkor etildi</translation>
 <translation id="483241715238664915">Ogohlantiruvlarni yoqish</translation>
 <translation id="4838327282952368871">Xayolparast</translation>
 <translation id="4840250757394056958">Chrome tarixini koʻrish</translation>
@@ -1326,6 +1327,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5138227688689900538">Kamroq chiqsin</translation>
 <translation id="5145883236150621069">Siyosat javobida xato kodi bor</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> bildirishnomalari bloklandi</translation>
+<translation id="514704532284964975">Telefonga teginganingizda <ph name="URL" /> sayti NFC qurilmalarni koʻrmoqchi va ulardagi axborotni oʻzgartirmoqchi</translation>
 <translation id="5148809049217731050">Old tomonida</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Muqova</translation>

@@ -208,6 +208,7 @@
 <translation id="1559572115229829303">&lt;p&gt;உங்கள் சாதனத்தின் தேதி மற்றும் நேரம் (<ph name="DATE_AND_TIME" />) தவறாக இருப்பதால் <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> என்கிற டொமைனிற்குத் தனிப்பட்ட இணைப்பை ஏற்படுத்த முடியவில்லை.&lt;/p&gt;
 
       &lt;p&gt;தேதி மற்றும் நேரத்தை &lt;strong&gt;அமைப்புகள்&lt;/strong&gt; ஆப்ஸின் &lt;strong&gt;பொது&lt;/strong&gt; என்கிற பகுதியில் மாற்றவும்.&lt;/p&gt;</translation>
+<translation id="156703335097561114">முகவரிகள், இடைமுக உள்ளமைவு, இணைப்பின் தரம் போன்ற நெட்வொர்க்கிங் தகவல்கள்</translation>
 <translation id="1567040042588613346">இந்தக் கொள்கை எதிர்பார்த்த வகையில் வேலை செய்கிறது. ஆனால் இதே மதிப்பு வேறு எங்கோ அமைக்கப்பட்டுள்ளதோடு இந்தக் கொள்கையின் மூலம் மாற்றியமைக்கப்படுகிறது.</translation>
 <translation id="1569487616857761740">காலாவதித் தேதியை உள்ளிடவும்</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -701,6 +702,7 @@
 <translation id="3234666976984236645">இந்தத் தளத்தின் முக்கிய உள்ளடக்கத்தை எப்போதும் இயக்கவும்</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3240791268468473923">பாதுகாப்பான பேமெண்ட் அனுமதிச் சான்றுகள் பொருந்தவில்லை என்பதற்கான தாள் திறக்கப்பட்டது</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />” இணைப்புகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="3249845759089040423">க்ரூவி</translation>
 <translation id="3252266817569339921">பிரெஞ்ச்</translation>
 <translation id="3257954757204451555">இந்தத் தகவல்களை வழங்குவது யார்?</translation>

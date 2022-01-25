@@ -208,6 +208,7 @@
 <translation id="1559572115229829303">&lt;p&gt;သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်ကန်သောကြောင့် <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> သို့ ကိုယ်ပိုင် ချိတ်ဆက်မှုကို ပြုလုပ်မရနိုင်ပါ။&lt;/p&gt;
 
       &lt;p&gt;ကျေးဇူးပြုပြီး ရက်စွဲ နှင့် အချိန်ကို &lt;strong&gt;ဆက်တင်များ&lt;/strong&gt; အက်ပ်၏ &lt;strong&gt;အထွေထွေ&lt;/strong&gt; ကဏ္ဍထဲတွင် ညှိပါ။&lt;/p&gt;</translation>
+<translation id="156703335097561114">ဝဘ်လိပ်စာများ၊ အင်တာဖေ့စ် စီစဉ်သတ်မှတ်ချက်နှင့် ချိတ်ဆက်မှု အရည်အသွေးကဲ့သို့ ကွန်ရက်အချက်အလက်များ</translation>
 <translation id="1567040042588613346">ဤမူဝါဒသည် သတ်မှတ်ထားသည့်အတိုင်း အလုပ်လုပ်နေသော်လည်း တူညီသောတန်ဖိုးကို တစ်နေရာတွင် သတ်မှတ်ထားပြီး ဤမူဝါဒက အစားထိုးထားသည်။</translation>
 <translation id="1569487616857761740">သက်တမ်းကုန်ဆုံးရက် ထည့်ပါ</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -706,6 +707,7 @@
 <translation id="3234666976984236645">ဤအင်တာနက်စာမျက်နှာ‌ပေါ်တွင် အရေးကြီး‌သော မာတိကာများကို အစဉ် ထောက်လှမ်းပါ</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="3240791268468473923">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မဖွင့်ထားပါ</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />” လင့်ခ်များကို ပိတ်ထားသည်</translation>
 <translation id="3249845759089040423">မိမိမိုက်မိုက်</translation>
 <translation id="3252266817569339921">ပြင်သစ်</translation>
 <translation id="3257954757204451555">ဤအချက်အလက်ကို ဘယ်ကရသလဲ။</translation>

@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">કોઈ ચોક્કસ સાઇટ માટે કુકીને મંજૂરી આપો.</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
+<translation id="4194328954146351878">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાની અને બદલવાની મંજૂરી આપતા પહેલાં પૂછો (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="4200726100658658164">સ્થાન સેટિંગ ખોલો</translation>
 <translation id="4226663524361240545">સૂચનાઓ ઉપકરણને વાઇબ્રેટ કરી શકે છે</translation>
 <translation id="4259722352634471385">નેવિગેશન અવરોધિત છે: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">આ ડિવાઇસ માટે NFC સેવા બંધ કરેલી છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
+<translation id="8928445016601307354">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાથી અને બદલવાથી બ્લૉક કરો</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">કોઈ ચોક્કસ સાઇટ માટે કુકીને બ્લૉક કરો.</translation>
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>

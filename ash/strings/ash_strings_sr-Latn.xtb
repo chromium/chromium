@@ -82,6 +82,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
 <translation id="1364382257761975320">Da biste otključali Chromebook, koristite otisak prsta</translation>
+<translation id="1364618750746929654">Generisanje transkripcije nije uspelo</translation>
 <translation id="1383597849754832576">Preuzimanje fajlova govora nije uspelo. Probajte kasnije.</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
@@ -577,6 +578,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (leva)</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4735498845456076464">Tasterska prečica <ph name="LAUNCHER_KEY_NAME" /> + broj je promenjena. Da biste koristili funkcijske tastere, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + taster u gornjem redu.</translation>
+<translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lozinka za <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -678,6 +680,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5465662442746197494">Potrebna vam je pomoć?</translation>
 <translation id="547979256943495781">Polica na desnoj strani</translation>
+<translation id="5491186829646618080">Dostupna su ažuriranja firmvera</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administrator je uklonio sve eSIM profile. Dodatne informacije potražite od administratora.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> se povezuje.</translation>
@@ -1176,6 +1179,7 @@ Novo instaliranje</translation>
 <translation id="8876661425082386199">Proverite vezu</translation>
 <translation id="8877788021141246043">Podesi podsetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>
+<translation id="888982883502837004">Dostupna su ažuriranja firmvera za uređaj. Kliknite da biste ih pregledali i ažurirali.</translation>
 <translation id="8896630965521842259">Šablon <ph name="DESK_TEMPLATE_NAME" /> će biti trajno izbrisan</translation>
 <translation id="890616557918890486">Promeni izvor</translation>
 <translation id="8909138438987180327">Baterija je na <ph name="PERCENTAGE" />%.</translation>

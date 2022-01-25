@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1364382257761975320">તમારી Chromebook અનલૉક કરવા માટે, તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરો</translation>
+<translation id="1364618750746929654">ટ્રાન્સક્રિપ્શન જનરેટ કરી શકતા નથી</translation>
 <translation id="1383597849754832576">સ્પીચ ફાઇલો ડાઉનલોડ કરી શકાતી નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1391102559483454063">ચાલુ</translation>
@@ -577,6 +578,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
 <translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. ફંક્શન કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ઉપરની પંક્તિ પરની કોઈ એક કી દબાવો.</translation>
+<translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4774338217796918551">આવતી કાલે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> માટેનો પાસવર્ડ </translation>
@@ -678,6 +680,7 @@
 <translation id="54609108002486618">મેનેજ કરેલું</translation>
 <translation id="5465662442746197494">સહાયની જરૂર છે?</translation>
 <translation id="547979256943495781">શેલ્ફ જમણી બાજુએ છે</translation>
+<translation id="5491186829646618080">ફર્મવેયર અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">તમારા વ્યવસ્થાપકે બધી ઇ-સિમ પ્રોફાઇલ કાઢી નાખી છે. વધુ માહિતી માટે તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> કનેક્ટ થઈ રહ્યું છે.</translation>
@@ -1176,6 +1179,7 @@
 <translation id="8876661425082386199">તમારું કનેક્શન ચેક કરો</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
+<translation id="888982883502837004">તમારા ડિવાઇસ માટે ફર્મવેયર અપડેટ ઉપલબ્ધ છે. રિવ્યૂ અને અપડેટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />ને કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>

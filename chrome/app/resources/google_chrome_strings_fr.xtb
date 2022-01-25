@@ -89,6 +89,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2926952073016206995">Chrome a besoin de l'autorisation d'accéder à la caméra pour ce site</translation>
 <translation id="2929907241665500097">Échec de la mise à jour de Chrome en raison d'une erreur. <ph name="BEGIN_LINK" />Découvrez comment résoudre ce type de problème.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chrome</translation>
+<translation id="303514781271618814">Chrome développe de nouvelles fonctionnalités qui permettent aux sites de proposer la même expérience de navigation en utilisant moins de données</translation>
 <translation id="3037838751736561277">Google Chrome est exécuté en mode arrière-plan.</translation>
 <translation id="3059710691562604940">La navigation sécurisée étant désactivée, Chrome vous recommande de l'activer.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
@@ -160,6 +161,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Chrome a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
+<translation id="4873783916118289636">Examinez les paramètres clés de confidentialité et de sécurité dans Chrome</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="4895437082222824641">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="4953650215774548573">Définir Google Chrome en tant que navigateur par défaut</translation>

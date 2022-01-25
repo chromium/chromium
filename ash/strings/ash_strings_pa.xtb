@@ -577,6 +577,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ਖੱਬੇ ਪਾਸੇ)</translation>
 <translation id="4734965478015604180">ਲੇਟਵਾਂ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + ਨੰਬਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਫੰਕਸ਼ਨ ਕੁੰਜੀਆਂ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰਲੀ ਕਤਾਰ 'ਤੇ ਦਿੱਤੀ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾਓ।</translation>
+<translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
 <translation id="4774338217796918551">ਕੱਲ੍ਹ <ph name="COME_BACK_TIME" /> ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> ਲਈ ਪਾਸਵਰਡ</translation>
@@ -700,7 +701,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ਨੂੰ ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="5662709761327382534">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ <ph name="CURRENT_STATE" />, ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਰਿਕਾਰਡਿੰਗ ਚਾਲੂ ਕਰਨ ਲਈ Enter ਦਬਾਓ <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">ਸਕਿਰਿਆ ਕਰ ਰਿਹਾ ਹੈ</translation>
-<translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਮਕਾਲੀਕਿਰਤ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
+<translation id="5673434351075758678">ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਤੋਂ ਬਾਅਦ ਭਾਸ਼ਾ "<ph name="FROM_LOCALE" />" ਤੋਂ "<ph name="TO_LOCALE" />" ਹੋਈ।</translation>
 <translation id="5675363643668471212">ਸ਼ੈਲਫ ਆਈਟਮ</translation>
 <translation id="5677928146339483299">ਬਲੌਕ ਕੀਤਾ</translation>
 <translation id="5679050765726761783">ਘੱਟ-ਪਾਵਰ ਦਾ ਅਡਾਪਟਰ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>

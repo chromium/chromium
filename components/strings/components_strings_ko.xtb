@@ -208,6 +208,7 @@
 <translation id="1559572115229829303">&lt;p&gt;기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 비공개로 연결할 수 없습니다.&lt;/p&gt;
 
       &lt;p&gt;&lt;strong&gt;설정&lt;/strong&gt; 앱의 &lt;strong&gt;일반&lt;/strong&gt; 섹션에서 날짜와 시간을 맞추세요.&lt;/p&gt;</translation>
+<translation id="156703335097561114">주소, 인터페이스 구성, 연결 품질 등의 네트워킹 정보</translation>
 <translation id="1567040042588613346">이 정책은 정상 작동 중이나 다른 위치에 같은 값이 설정되었으므로 이 정책에 의해 대체되었습니다.</translation>
 <translation id="1569487616857761740">만료일 입력</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -700,6 +701,7 @@
 <translation id="3234666976984236645">이 사이트에서 중요한 콘텐츠 항상 감지</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />” 링크가 차단되었습니다</translation>
 <translation id="3249845759089040423">그루브</translation>
 <translation id="3252266817569339921">프랑스어</translation>
 <translation id="3257954757204451555">이 정보는 누가 제공했나요?</translation>

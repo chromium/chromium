@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
 <translation id="1364382257761975320">Chromebook'тун кулпусун ачуу үчүн манжаңыздын изин колдонуңуз</translation>
+<translation id="1364618750746929654">Транскрипция түзүлгөн жок</translation>
 <translation id="1383597849754832576">Кеп файлдары жүктөлүп алынган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1391102559483454063">Күйүк</translation>
@@ -577,6 +578,7 @@
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (cол)</translation>
 <translation id="4734965478015604180">Туурасынан</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Номер ыкчам баскычы өзгөртүлдү. Функциялык баскычтарды колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + жогорку саптагы баскычты басыңыз.</translation>
+<translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4774338217796918551">Эртең саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> үчүн сырсөз</translation>
@@ -678,6 +680,7 @@
 <translation id="54609108002486618">Башкарылуучу</translation>
 <translation id="5465662442746197494">Жардам керекпи?</translation>
 <translation id="547979256943495781">Текче экрандын оң жагында</translation>
+<translation id="5491186829646618080">Орнотулган программанын жаңы версиясы чыкты</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администраторуңуз бардык eSIM профилдерин өчүрүп койгон. Көбүрөөк маалымат алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> туташууда.</translation>
@@ -1176,6 +1179,7 @@
 <translation id="8876661425082386199">Туташууңузду текшериңиз</translation>
 <translation id="8877788021141246043">Эстеткич коюу</translation>
 <translation id="8878886163241303700">Кеңейтилген экран</translation>
+<translation id="888982883502837004">Түзмөгүңүздө орнотулган программаны жаңыртууга болот. Жаңыртууну көрүү үчүн басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> биротоло өчүрүлөт</translation>
 <translation id="890616557918890486">Булагын өзгөртүү</translation>
 <translation id="8909138438987180327">Батареянын кубаты – <ph name="PERCENTAGE" /> пайыз.</translation>

@@ -208,6 +208,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1559572115229829303">&lt;p&gt;Non se pode establecer unha conexión privada con <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque a data e a hora do dispositivo (<ph name="DATE_AND_TIME" />) son incorrectas.&lt;/p&gt;
 
       &lt;p&gt;Axusta a data e a hora na sección &lt;strong&gt;Xeral&lt;/strong&gt; da aplicación &lt;strong&gt;Configuración&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="156703335097561114">Información das redes como enderezos, configuración de interfaces e calidade das conexións</translation>
 <translation id="1567040042588613346">Esta política funciona segundo o previsto, pero substitúe un valor equivalente que está definido noutro lugar.</translation>
 <translation id="1569487616857761740">Introduce unha data de vencemento</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -703,6 +704,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3234666976984236645">Detectar sempre contido importante neste sitio</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
+<translation id="324180406144491771">As ligazóns de “<ph name="HOST_NAME" />” están bloqueadas</translation>
 <translation id="3249845759089040423">Moderno</translation>
 <translation id="3252266817569339921">Francés</translation>
 <translation id="3257954757204451555">Quen ofrece esta información?</translation>

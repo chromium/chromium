@@ -1156,6 +1156,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">เพิ่ม WiFi...</translation>
 <translation id="2162155940152307086">การซิงค์จะเริ่มขึ้นเมื่อคุณออกจากการตั้งค่า</translation>
+<translation id="2162926944953615670">ไม่มีโปรไฟล์ eSIM ที่ใช้ได้</translation>
 <translation id="2163470535490402084">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่อลงชื่อเข้าใช้ <ph name="DEVICE_TYPE" /></translation>
 <translation id="2163937499206714165">เปิดโหมดมืด</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
@@ -1844,6 +1845,7 @@
 <translation id="2828650939514476812">เชื่อมต่อเครือข่าย Wi-Fi</translation>
 <translation id="2831430281393059038">รองรับอุปกรณ์นี้</translation>
 <translation id="2832124733806557606">บุตรหลานจะใช้ PIN เพื่อลงชื่อเข้าใช้หรือปลดล็อกอุปกรณ์ได้</translation>
+<translation id="2835177225987815960">ระบบจะรีเซ็ตการตั้งค่าการสแกนในปัจจุบัน ซึ่งรวมถึงสวิตช์ที่กำหนดไว้และค่ากำหนดความเร็วในการสแกนอัตโนมัติ</translation>
 <translation id="2835547721736623118">บริการการรู้จำคำพูด</translation>
 <translation id="2836269494620652131">ขัดข้อง</translation>
 <translation id="2836635946302913370">ผู้ดูแลระบบของคุณปิดใช้งานการลงชื่อเข้าใช้ด้วยชื่อผู้ใช้นี้</translation>
@@ -2020,7 +2022,6 @@
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
 <translation id="3010279545267083280">ลบรหัสผ่านแล้ว</translation>
-<translation id="301080557829842765">คู่มือความเป็นส่วนตัว</translation>
 <translation id="3011384993885886186">สีเทาโทนอุ่น</translation>
 <translation id="3011488081941333749">คุกกี้จาก <ph name="DOMAIN" /> จะถูกล้างเมื่อออก</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -4897,7 +4898,6 @@
 <translation id="6072442788591997866">อุปกรณ์นี้ไม่อนุญาตให้ใช้ <ph name="APP_NAME" /> โปรดติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
 <translation id="6073903501322152803">เพิ่มฟีเจอร์การสามารถเข้าถึงได้ง่าย</translation>
-<translation id="6075418785668063462">ตรวจสอบดูคู่มือความเป็นส่วนตัว</translation>
 <translation id="6075731018162044558">อ๊ะ!  ระบบล้มเหลวในการรับโทเค็นการเข้าถึง API ในระยะยาวสำหรับอุปกรณ์นี้</translation>
 <translation id="6075907793831890935">แลกเปลี่ยนข้อมูลกับอุปกรณ์ชื่อ <ph name="HOSTNAME" /></translation>
 <translation id="6076175485108489240">ใช้ตำแหน่ง อนุญาตแอปและบริการที่มีสิทธิ์เข้าถึงตำแหน่งให้ใช้ตำแหน่งอุปกรณ์ของคุณ Google อาจรวบรวมข้อมูลตำแหน่งเป็นระยะและใช้ข้อมูลนี้ในแบบไม่ระบุตัวตนเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการที่อ้างอิงตำแหน่ง <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
@@ -6937,7 +6937,6 @@
 <translation id="8155676038687609779">{COUNT,plural, =0{ไม่พบรหัสผ่านที่ไม่รัดกุม}=1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รายการ}}</translation>
 <translation id="8157248655669507702">เปิดอินเทอร์เน็ตมือถือเพื่อติดตั้งโปรไฟล์ eSIM</translation>
 <translation id="8157704005178149728">กำลังตั้งค่าการควบคุมดูแล</translation>
-<translation id="8157954703669743215">ดู <ph name="RELATIVE_TIME" /></translation>
 <translation id="8158117992543756526">อุปกรณ์นี้จะไม่ได้รับการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัตินับตั้งแต่เดือน<ph name="MONTH_AND_YEAR" /> เป็นต้นไป <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ข้อผิดพลาดในการตั้งค่าความเชื่อถือใบรับรอง</translation>
 <translation id="8160775796528709999">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายสดในการตั้งค่า</translation>
@@ -7509,7 +7508,6 @@
 คุณต้องเสียบสมาร์ทการ์ดไว้ตลอดเพื่อให้ใช้งาน <ph name="DOMAIN" /> ได้}}</translation>
 <translation id="8777259617149177596">ระดับแบตเตอรี่ของกล่อง <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="8777628254805677039">รหัสผ่านระดับรูท</translation>
-<translation id="8778328560035799409">ระบบจะล้างสวิตช์ที่กำหนดไว้ในขณะนี้</translation>
 <translation id="8779944680596936487">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณเฉพาะในเว็บไซต์นั้นๆ</translation>
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>

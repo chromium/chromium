@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">স্ক্যানারে অন্য একটি পৃষ্ঠা রাখুন</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> সেকেন্ডে <ph name="RATE" /> চার্জ শেষ হয়েছে।</translation>
+<translation id="291142119251986300">অযোগ্য উপাদান</translation>
+<translation id="2926057806159140518">আপনার ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন বা আপনার QR কোড স্ক্যান করুন</translation>
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -170,6 +172,7 @@
 <translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="3583278742022654445">দুর্বল সিগন্যাল। ওয়াই-ফাই সিগন্যাল সোর্সের কাছাকাছি যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
+<translation id="3603829704940252505">অবতার</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> টেস্ট</translation>
@@ -420,6 +423,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> এ ফিরুন</translation>
 <translation id="6910312834584889076">স্ক্যানারের কভার খোলা আছে। কভার বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="6911383237894364323">মিডিয়া সার্ভারে কানেক্ট করা যায়নি</translation>
+<translation id="6935486296377631201">স্ক্রিন-সেভার</translation>
 <translation id="6957231940976260713">পরিষেবার নাম</translation>
 <translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>

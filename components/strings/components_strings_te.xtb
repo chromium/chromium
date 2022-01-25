@@ -15,7 +15,7 @@
 <translation id="1030706264415084469">డేటాను మీ పరికరంలో అధిక మొత్తంలో, శాశ్వతంగా నిల్వ చేయాలని <ph name="URL" /> అనుకుంటోంది</translation>
 <translation id="1032854598605920125">సవ్యదిశలో తిప్పు</translation>
 <translation id="1036348656032585052">ఆఫ్ చేయి</translation>
-<translation id="1036982837258183574">పూర్తి స్క్రీన్‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
+<translation id="1036982837258183574">ఫుల్-స్క్రీన్‌‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
 <translation id="1038106730571050514">సూచనలను చూపు</translation>
 <translation id="1038842779957582377">తెలియని పేరు</translation>
 <translation id="1041998700806130099">జాబ్ షీట్ మెసేజ్‌</translation>
@@ -203,13 +203,14 @@
 <translation id="154408704832528245">బట్వాడా అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="1549470594296187301">ఈ ఫీచర్‌ను ఉపయోగించడానికి జావాస్క్రిప్ట్ తప్పనిసరిగా ప్రారంభించాలి.</translation>
 <translation id="155039086686388498">ఇంజనీరింగ్-D</translation>
-<translation id="1553358976309200471">Chromeని నవీకరించు</translation>
+<translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1559447966090556585">నోటిఫికేషన్‌లను పొందాలనుకుంటున్నారా?</translation>
 <translation id="1559528461873125649">అటువంటి ఫైల్ లేదా డైరెక్టరీ లేదు</translation>
 <translation id="1559572115229829303">&lt;p&gt;మీ పరికరం తేదీ మరియు సమయం తప్పుగా (<ph name="DATE_AND_TIME" />) ఉన్నందున, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />కు ప్రైవేట్ కనెక్షన్ ఏర్పాటు చేయడం సాధ్యపడలేదు.&lt;/p&gt;
 
       &lt;p&gt;&lt;strong&gt;సెట్టింగ్‌లు&lt;/strong&gt; యాప్ యొక్క &lt;strong&gt;సాధారణం&lt;/strong&gt; విభాగంలో తేదీ మరియు సమయాన్ని దయచేసి సర్దుబాటు చేయండి.&lt;/p&gt;</translation>
+<translation id="156703335097561114">అడ్రస్‌లు, ఇంటర్‌ఫేస్ కాన్ఫిగరేషన్, కనెక్షన్ క్వాలిటీ వంటి నెట్‌వర్కింగ్ సమాచారం</translation>
 <translation id="1567040042588613346">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ అదే విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా అధిగమించబడింది.</translation>
 <translation id="1569487616857761740">గడువు ముగింపు తేదీని నమోదు చేయండి</translation>
 <translation id="1581080074034554886">CVC</translation>
@@ -706,6 +707,7 @@
 <translation id="3234666976984236645">ఈ సైట్‌లో ఎప్పుడూ ముఖ్యమైన కంటెంట్‌ను గుర్తించు</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ బ్రౌజర్ రూపాన్ని అనుకూలీకరించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="3240791268468473923">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ తెరవబడలేదు</translation>
+<translation id="324180406144491771">“<ph name="HOST_NAME" />” లింక్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="3249845759089040423">సొగసైనది</translation>
 <translation id="3252266817569339921">ఫ్రెంచ్</translation>
 <translation id="3257954757204451555">ఈ సమాచారాన్ని ఎవరు అందించారు?</translation>
@@ -1228,6 +1230,7 @@
           <ph name="LIST_ITEM" />యాజమాన్య సంస్థలు లేదా పాఠశాలలు బ్రౌజింగ్ యాక్టివిటీని ట్రాక్ చేయగలవు<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ఇంటర్నెట్ సర్వీస్ ప్రొవైడర్‌లు వెబ్ ట్రాఫిక్‌ను మానిటర్ చేయగలవు<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">క్లౌడ్ యూజర్ పాలసీ ద్వారా మాత్రమే పాలసీని సెట్ చేయాలి కాబట్టి ఇది విస్మరించబడింది.</translation>
 <translation id="483241715238664915">హెచ్చరికలను ఆన్ చేయండి</translation>
 <translation id="4838327282952368871">స్వప్నం లాంటిది</translation>
 <translation id="4840250757394056958">మీ Chrome హిస్టరీని చూడండి</translation>
@@ -1277,7 +1280,7 @@
 <translation id="4989809363548539747">ఈ ప్లగ్ఇన్‌‌కు మద్దతు లేదు</translation>
 <translation id="4992066212339426712">అన్‌మ్యూట్ చేయి</translation>
 <translation id="4995216769782533993">మీ కార్డ్ వివరాలను ఈ సైట్‌తో షేర్ చేయడానికి, సెక్యూరిటీ కోడ్‌ను ధృవీకరించండి</translation>
-<translation id="4995474875135717171">సవరించిన సమయం:</translation>
+<translation id="4995474875135717171">ఎడిట్ చేసిన సమయం:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌ను, సైట్ సెర్చ్‌ను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="5002932099480077015">ప్రారంభిస్తే, వేగవంతమైన ఫారమ్ పూరింపు కోసం ఈ పరికరంలో మీ కార్డ్ కాపీని నిల్వ చేస్తుంది.</translation>
 <translation id="5011561501798487822">గుర్తించబడిన భాష</translation>
@@ -1331,6 +1334,7 @@
 <translation id="5138227688689900538">తక్కువ చూపు</translation>
 <translation id="5145883236150621069">విధాన ప్రతిస్పందనలో ఎర్రర్ కోడ్ ఉంది</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> కోసం నోటిఫికేషన్‌లు బ్లాక్ చేయబడ్డాయి</translation>
+<translation id="514704532284964975">మీరు మీ ఫోన్‌తో ట్యాప్ చేసే NFC పరికరాలలోని సమాచారాన్ని <ph name="URL" /> చూడాలని, మార్చాలనుకుంటోంది</translation>
 <translation id="5148809049217731050">ఫేస్ అప్</translation>
 <translation id="515292512908731282">C4 (ఎన్వలప్)</translation>
 <translation id="5158275234811857234">ముఖచిత్రం</translation>
@@ -1595,7 +1599,7 @@
 <translation id="6045164183059402045">ఇంపోజిషన్ టెంప్లేట్</translation>
 <translation id="6047233362582046994">మీ భద్రతకు వాటిల్లే ఆపదల గురించి మీకు అర్థం అయ్యి ఉంటే, హానికర యాప్‌లు తీసివేయబడటానికి ముందే మీరు <ph name="BEGIN_LINK" />ఈ సైట్‌ను సందర్శించవచ్చు<ph name="END_LINK" />.</translation>
 <translation id="6047927260846328439">ఈ కంటెంట్ సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి లేదా వ్యక్తిగత సమాచారాన్ని బహిర్గతం చేయడానికి పురిగొల్పేలా మిమ్మల్ని మాయ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏది ఏమైనా చూపు<ph name="END_LINK" /></translation>
-<translation id="6049004884579590341">పూర్తి స్క్రీన్ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />|ని నొక్కి, పట్టుకోండి</translation>
+<translation id="6049004884579590341">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించడానికి |<ph name="ACCELERATOR" />|ని నొక్కి, పట్టుకోండి</translation>
 <translation id="6049488691372270142">పేజీ డెలివరీ</translation>
 <translation id="6051221802930200923">స‌ర్టిఫికెట్‌ను పిన్ చేసే పద్ధతిని వెబ్‌సైట్ ఉపయోగిస్తుంది. కనుక మీరు ప్రస్తుతానికి <ph name="SITE" />‌ను సందర్శించలేరు. నెట్‌వర్క్ ఎర్ర‌ర్‌లు మరియు దాడులు సాధారణంగా తాత్కాలికమే, కనుక ఈ పేజీ తర్వాత పని చేయవచ్చు.</translation>
 <translation id="6051898664905071243">పేజీల సంఖ్య:</translation>
@@ -1691,7 +1695,7 @@
 <translation id="6391700400718590966">సురక్షితమైన పేమెంట్ ఆధారానికి సంబంధించిన మ్యాచ్ అయ్యే ఆధారాల షీట్ ఏదీ మూసివేయబడలేదు</translation>
 <translation id="6393956493820063117"><ph name="ORIGIN_NAME" /> నుండి ఈ లొకేషన్‌లో పేస్ట్ చేయడం అడ్మినిస్ట్రేటర్ పాలసీ ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="6398277657359595425">బిగ్గరగా ఏడవడం</translation>
-<translation id="6398765197997659313">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="6398765197997659313">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="6401136357288658127">ఈ విధానం విస్మరించబడింది. దానికి బదులుగా, మీరు <ph name="NEW_POLICY" /> విధానాన్ని ఉపయోగించాలి.</translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను సవరించు</translation>
 <translation id="6406765186087300643">C0 (ఎన్వలప్)</translation>

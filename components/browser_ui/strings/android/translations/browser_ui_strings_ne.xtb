@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">कुनै खास साइटमा कुकीहरूलाई अनुमति दिनुहोस्।</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
+<translation id="4194328954146351878">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्ने र ती जानकारी परिवर्तन गर्ने अनुमति दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
 <translation id="4200726100658658164">स्थानसम्बन्धी सेटिङ खोल्नुहोस्</translation>
 <translation id="4226663524361240545">सूचनाहरूले गर्दा यन्त्र कम्पन गर्न सक्छ</translation>
 <translation id="4259722352634471385">नेभिगेशन रोकियो: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">जुम इन</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">यो डिभाइसमा NFC निष्क्रिय पारिएको छ। <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
+<translation id="8928445016601307354">साइटहरूलाई NFC डिभाइसमा भएका जानकारी हेर्न र ती जानकारी परिवर्तन गर्नबाट ब्लक गरियोस्</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">कुनै खास साइटमा कुकीहरूलाई रोक लगाउनुहोस्।</translation>
 <translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>
