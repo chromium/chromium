@@ -7,6 +7,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -26,7 +27,25 @@ namespace ash {
 namespace {
 constexpr int kIconSizeDip = 15;
 constexpr int kSpaceBetweenIconAndTextDip = 10;
-constexpr SkColor kIconAndLabelColor = SK_ColorBLACK;
+
+std::unique_ptr<views::ImageView> CreateImageView(
+    views::ImageView** destination_view,
+    const gfx::VectorIcon& icon) {
+  return views::Builder<views::ImageView>()
+      .CopyAddressTo(destination_view)
+      .SetImage(gfx::CreateVectorIcon(
+          icon, kIconSizeDip,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)))
+      .Build();
+}
+
+void SetImageHelper(views::ImageView* image_view,
+                    const gfx::VectorIcon& icon,
+                    SkColor color) {
+  image_view->SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, color));
+}
+
 }  // namespace
 
 DictationBubbleView::DictationBubbleView() {
@@ -54,6 +73,24 @@ void DictationBubbleView::Update(DictationBubbleIconType icon,
   label_->SetVisible(text.has_value());
   label_->SetText(text.has_value() ? text.value() : std::u16string());
   SizeToContents();
+}
+
+void DictationBubbleView::OnColorModeChanged(bool dark_mode_enabled) {
+  AshColorProvider* color_provider = AshColorProvider::Get();
+  if (!color_provider)
+    return;
+
+  SkColor icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  SkColor text_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  if (!use_standby_animation_)
+    SetImageHelper(standby_image_, kDictationBubbleIcon, icon_color);
+  SetImageHelper(macro_succeeded_image_, kDictationBubbleMacroSucceededIcon,
+                 icon_color);
+  SetImageHelper(macro_failed_image_, kDictationBubbleMacroFailedIcon,
+                 icon_color);
+  label_->SetEnabledColor(text_color);
 }
 
 void DictationBubbleView::Init() {
@@ -105,6 +142,14 @@ bool DictationBubbleView::IsMacroFailedImageVisibleForTesting() {
   return macro_failed_image_->GetVisible();
 }
 
+SkColor DictationBubbleView::GetLabelBackgroundColorForTesting() {
+  return label_->GetBackgroundColor();
+}
+
+SkColor DictationBubbleView::GetLabelTextColorForTesting() {
+  return label_->GetEnabledColor();
+}
+
 std::unique_ptr<views::View> DictationBubbleView::CreateStandbyView() {
   absl::optional<std::string> json =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -124,21 +169,13 @@ std::unique_ptr<views::View> DictationBubbleView::CreateStandbyView() {
   return CreateImageView(&standby_image_, kDictationBubbleIcon);
 }
 
-std::unique_ptr<views::ImageView> DictationBubbleView::CreateImageView(
-    views::ImageView** destination_view,
-    const gfx::VectorIcon& icon) {
-  return views::Builder<views::ImageView>()
-      .CopyAddressTo(destination_view)
-      .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, kIconAndLabelColor))
-      .Build();
-}
-
 std::unique_ptr<views::Label> DictationBubbleView::CreateLabel(
     const std::u16string& text) {
   return views::Builder<views::Label>()
       .CopyAddressTo(&label_)
       .SetText(text)
-      .SetEnabledColor(kIconAndLabelColor)
+      .SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary))
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
       .Build();

@@ -5,10 +5,14 @@
 #include "ash/system/accessibility/dictation_bubble_controller.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace ash {
@@ -79,6 +83,14 @@ class DictationBubbleControllerTest : public AshTestBase {
     EXPECT_FALSE(IsMacroFailedImageVisible());
   }
 
+  SkColor GetLabelBackgroundColor() {
+    return GetView()->GetLabelBackgroundColorForTesting();
+  }
+
+  SkColor GetLabelTextColor() {
+    return GetView()->GetLabelTextColorForTesting();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -135,6 +147,42 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
   EXPECT_FALSE(IsMacroSucceededImageVisible());
   EXPECT_TRUE(IsMacroFailedImageVisible());
 
+  HideAndCheckExpectations();
+}
+
+// Verifies that the bubble UI respects the dark mode setting. For convenience
+// purposes, we perform checks on the label's text and background color.
+TEST_F(DictationBubbleControllerTest, DarkMode) {
+  // Enable dark mode feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
+  AshColorProvider* color_provider = AshColorProvider::Get();
+  color_provider->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService());
+
+  // Show bubble UI.
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kHidden,
+       absl::optional<std::u16string>(u"Testing"));
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+  EXPECT_EQ(u"Testing", GetBubbleText());
+  EXPECT_FALSE(color_provider->IsDarkModeEnabled());
+  SkColor initial_color = GetLabelTextColor();
+  EXPECT_EQ(initial_color,
+            color_provider->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary));
+  EXPECT_EQ(SK_ColorWHITE, GetLabelBackgroundColor());
+
+  // Enable dark mode.
+  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+  EXPECT_TRUE(color_provider->IsDarkModeEnabled());
+
+  // Verify that the text and background colors changed.
+  EXPECT_NE(initial_color, GetLabelTextColor());
+  EXPECT_NE(SK_ColorWHITE, GetLabelBackgroundColor());
   HideAndCheckExpectations();
 }
 

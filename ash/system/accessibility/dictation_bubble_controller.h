@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method.h"
@@ -28,7 +30,8 @@ enum class DictationBubbleIconType;
 class DictationBubbleView;
 
 // Manages the Dictation bubble view.
-class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver {
+class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
+                                             public ColorModeObserver {
  public:
   DictationBubbleController();
   DictationBubbleController(const DictationBubbleController&) = delete;
@@ -48,6 +51,10 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver {
   void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
 
+  // ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+  void OnColorModeThemed(bool is_themed) override {}
+
  private:
   friend class AccessibilityPrivateApiTest;
   friend class DictationBubbleControllerTest;
@@ -65,6 +72,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver {
 
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       input_method_observer_{this};
+  base::ScopedObservation<AshColorProvider, ColorModeObserver>
+      color_mode_observer_{this};
 };
 
 }  // namespace ash

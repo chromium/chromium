@@ -43,6 +43,8 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   void Update(DictationBubbleIconType icon,
               const absl::optional<std::u16string>& text);
 
+  void OnColorModeChanged(bool dark_mode_enabled);
+
   // views::BubbleDialogDelegateView:
   void Init() override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
@@ -55,15 +57,14 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   bool IsStandbyViewVisibleForTesting();
   bool IsMacroSucceededImageVisibleForTesting();
   bool IsMacroFailedImageVisibleForTesting();
+  SkColor GetLabelBackgroundColorForTesting();
+  SkColor GetLabelTextColorForTesting();
 
  private:
   // Returns a std::unique_ptr<AnimatedImageView> if the standby animation
   // can successfully be loaded. Otherwise, returns a std::unique_ptr<ImageView>
   // as a fallback.
   std::unique_ptr<views::View> CreateStandbyView();
-  std::unique_ptr<views::ImageView> CreateImageView(
-      views::ImageView** destination_view,
-      const gfx::VectorIcon& icon);
   std::unique_ptr<views::Label> CreateLabel(const std::u16string& text);
 
   // Owned by the views hierarchy.
