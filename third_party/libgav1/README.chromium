@@ -6,7 +6,7 @@ Date: Friday October 29 2021
 Branch: master
 Commit: 58d08dbd45a3ee707e76f32a9c04d770c3d22e38
 License: Apache 2.0
-License File: libgav1/LICENSE
+License File: src/LICENSE
 Security Critical: yes
 Source: https://chromium.googlesource.com/codecs/libgav1/
 
