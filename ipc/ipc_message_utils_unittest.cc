@@ -156,9 +156,7 @@ TYPED_TEST_SUITE(SharedMemoryRegionTypedTest, AllSharedMemoryRegionTypes);
 
 TYPED_TEST(SharedMemoryRegionTypedTest, WriteAndRead) {
   const size_t size = 2314;
-  TypeParam pre_pickle;
-  base::WritableSharedMemoryMapping pre_mapping;
-  std::tie(pre_pickle, pre_mapping) = base::CreateMappedRegion<TypeParam>(size);
+  auto [pre_pickle, pre_mapping] = base::CreateMappedRegion<TypeParam>(size);
   const size_t pre_size = pre_pickle.GetSize();
 
   const std::string content = "Hello, world!";
