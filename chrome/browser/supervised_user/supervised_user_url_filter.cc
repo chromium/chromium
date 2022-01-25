@@ -77,30 +77,79 @@ bool SetFilteringBehaviorResult(
 
   return true;
 }
+
+bool IsNonStandardUrlScheme(const GURL& effective_url) {
+  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
+  return !effective_url.SchemeIsHTTPOrHTTPS() &&
+         !effective_url.SchemeIsWSOrWSS() &&
+         !effective_url.SchemeIs(url::kFtpScheme);
+}
+
+bool IsAlwaysAllowedHost(const GURL& effective_url) {
+  // Allow navigations to allowed origins.
+  static const char* const kAllowedUrls[] = {"families.google.com",
+                                             "accounts.google.com"};
+
+  for (const char* allowedUrl : kAllowedUrls) {
+    if (allowedUrl == effective_url.host_piece())
+      return true;
+  }
+  return false;
+}
+
+bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
+  // Play Store terms of service path:
+  static const char* kPlayStoreHost = "play.google.com";
+  static const char* kPlayTermsPath = "/about/play-terms";
+  // Check Play Store terms of service.
+  // path_piece is checked separately from the host to match international pages
+  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
+  return effective_url.SchemeIs(url::kHttpsScheme) &&
+         effective_url.host_piece() == kPlayStoreHost &&
+         (effective_url.path_piece().find(kPlayTermsPath) !=
+          base::StringPiece::npos);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool IsCrxWebstoreOrDownloadUrl(const GURL& effective_url) {
+  static const char* const kCrxDownloadUrls[] = {
+      "https://clients2.googleusercontent.com/crx/blobs/",
+      "https://chrome.google.com/webstore/download/"};
+
+  // Chrome Webstore.
+  if (extension_urls::GetWebstoreLaunchURL().host() ==
+      url_matcher::util::Normalize(effective_url).host()) {
+    return true;
+  }
+
+  // Allow webstore crx downloads. This applies to both extension installation
+  // and updates.
+  if (extension_urls::GetWebstoreUpdateUrl() ==
+      url_matcher::util::Normalize(effective_url)) {
+    return true;
+  }
+
+  // The actual CRX files are downloaded from other URLs. Allow them too.
+  // These URLs have https scheme.
+  if (!effective_url.SchemeIs(url::kHttpsScheme))
+    return false;
+
+  for (const char* crx_download_url_str : kCrxDownloadUrls) {
+    GURL crx_download_url(crx_download_url_str);
+    if (crx_download_url.host_piece() == effective_url.host_piece() &&
+        base::StartsWith(effective_url.path_piece(),
+                         crx_download_url.path_piece(),
+                         base::CompareCase::SENSITIVE)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
 namespace {
-
-// URL schemes not in this list (e.g., file:// and chrome://) will always be
-// allowed.
-const char* const kFilteredSchemes[] = {"http", "https", "ftp", "ws", "wss"};
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char* const kCrxDownloadUrls[] = {
-    "https://clients2.googleusercontent.com/crx/blobs/",
-    "https://chrome.google.com/webstore/download/"};
-#endif
-
-// Allowed origins:
-const char kFamiliesSecureUrl[] = "https://families.google.com/";
-const char kFamiliesUrl[] = "http://families.google.com/";
-
-// Play Store terms of service path:
-const char kPlayStoreHost[] = "play.google.com";
-const char kPlayTermsPath[] = "/about/play-terms";
-
-// accounts.google.com used for login:
-const char kAccountsGoogleUrl[] = "https://accounts.google.com";
 
 // UMA histogram FamilyUser.ManagedSiteList.Conflict
 // Reports conflict when the user tries to access a url that has a match in
@@ -196,15 +245,6 @@ SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
 }
 
 // static
-bool SupervisedUserURLFilter::HasFilteredScheme(const GURL& url) {
-  for (const char* scheme : kFilteredSchemes) {
-    if (url.scheme() == scheme)
-      return true;
-  }
-  return false;
-}
-
-// static
 bool SupervisedUserURLFilter::HostMatchesPattern(
     const std::string& canonical_host,
     const std::string& pattern) {
@@ -274,6 +314,19 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) const {
   return GetFilteringBehaviorForURL(url, false, &reason);
 }
 
+bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
+    const GURL& effective_url) const {
+  bool exempted_from_guardian_approval =
+      IsNonStandardUrlScheme(effective_url) ||
+      IsAlwaysAllowedHost(effective_url) ||
+      IsPlayStoreTermsOfServiceUrl(effective_url);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  exempted_from_guardian_approval |= IsCrxWebstoreOrDownloadUrl(effective_url);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return exempted_from_guardian_approval;
+}
+
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url, FilteringBehavior* behavior) const {
   supervised_user_error_page::FilteringBehaviorReason reason;
@@ -294,51 +347,8 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
 
   *reason = supervised_user_error_page::MANUAL;
 
-  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
-  if (!HasFilteredScheme(effective_url))
+  if (IsExemptedFromGuardianApproval(effective_url))
     return ALLOW;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Allow webstore crx downloads. This applies to both extension installation
-  // and updates.
-  if (extension_urls::GetWebstoreUpdateUrl() ==
-      url_matcher::util::Normalize(effective_url)) {
-    return ALLOW;
-  }
-
-  // The actual CRX files are downloaded from other URLs. Allow them too.
-  for (const char* crx_download_url_str : kCrxDownloadUrls) {
-    GURL crx_download_url(crx_download_url_str);
-    if (effective_url.SchemeIs(url::kHttpsScheme) &&
-        crx_download_url.host_piece() == effective_url.host_piece() &&
-        base::StartsWith(effective_url.path_piece(),
-                         crx_download_url.path_piece(),
-                         base::CompareCase::SENSITIVE)) {
-      return ALLOW;
-    }
-  }
-#endif
-
-  // Allow navigations to allowed origins (currently families.google.com and
-  // accounts.google.com).
-  static const base::NoDestructor<base::flat_set<GURL>> kAllowedOrigins(
-      base::flat_set<GURL>(
-          {GURL(kFamiliesUrl).DeprecatedGetOriginAsURL(),
-           GURL(kFamiliesSecureUrl).DeprecatedGetOriginAsURL(),
-           GURL(kAccountsGoogleUrl).DeprecatedGetOriginAsURL()}));
-  if (base::Contains(*kAllowedOrigins,
-                     effective_url.DeprecatedGetOriginAsURL()))
-    return ALLOW;
-
-  // Check Play Store terms of service.
-  // path_piece is checked separetly from the host to match international pages
-  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
-  if (effective_url.SchemeIs(url::kHttpsScheme) &&
-      effective_url.host_piece() == kPlayStoreHost &&
-      effective_url.path_piece().find(kPlayTermsPath) !=
-          base::StringPiece::npos) {
-    return ALLOW;
-  }
 
   // Check manual denylists and allowlists.
   FilteringBehavior manual_result =
@@ -352,15 +362,6 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     *reason = supervised_user_error_page::DENYLIST;
     return BLOCK;
   }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // The user requested the Chrome Webstore, and it
-  // hasn't specifically been blocked above, so allow.
-  if (url_matcher::util::Normalize(effective_url).host() ==
-      extension_urls::GetWebstoreLaunchURL().host()) {
-    return ALLOW;
-  }
-#endif
 
   // Fall back to the default behavior.
   *reason = supervised_user_error_page::DEFAULT;
