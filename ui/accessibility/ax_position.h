@@ -144,6 +144,7 @@ enum class AXEmbeddedObjectBehavior {
 // character and a word boundary. For example, an empty text field should act as
 // a character and a word boundary when a screen reader user tries to navigate
 // through it, otherwise the text field would be missed by the user.
+//
 // Tests should use ScopedAXEmbeddedObjectBehaviorSetter to change this.
 // TODO(crbug.com/1204592) Don't export this so tests can't change it.
 extern AX_EXPORT AXEmbeddedObjectBehavior g_ax_embedded_object_behavior;
@@ -502,7 +503,7 @@ class AXPosition {
     // containers.
     if (IsUnignoredTextListMarker())
       return true;
-    return !AnchorChildCount() || IsEmptyObjectReplacedByCharacter();
+    return !AnchorChildCount() || IsInEmptyObject();
   }
 
   // Returns true if this is a valid position, e.g. the child_index_ or
@@ -516,9 +517,18 @@ class AXPosition {
                text_offset_ == INVALID_OFFSET &&
                affinity_ == ax::mojom::TextAffinity::kDownstream;
       case AXPositionKind::TREE_POSITION:
-        return GetAnchor() &&
-               (child_index_ == BEFORE_TEXT ||
-                (child_index_ >= 0 && child_index_ <= AnchorChildCount()));
+        if (!GetAnchor())
+          return false;
+
+        // The `BEFORE_TEXT` constant is only needed on leaf positions because
+        // on any other position a `child_index_` of 0 could be used. On leaf
+        // positions, however, often there are no child nodes and so a
+        // `child_index_` of 0 would confusingly indicate both a "before text"
+        // as well as an "after text" position. Note that some leaf positions,
+        // e.g. positions in empty objects, do have children.
+        if (child_index_ == BEFORE_TEXT)
+          return IsLeaf();
+        return child_index_ >= 0 && child_index_ <= AnchorChildCount();
       case AXPositionKind::TEXT_POSITION:
         if (!GetAnchor())
           return false;
@@ -532,8 +542,6 @@ class AXPosition {
     }
   }
 
-  // TODO(nektar): Update logic of AtStartOfAnchor() for text_offset_ == 0 and
-  // fix related bug.
   bool AtStartOfAnchor() const {
     if (!GetAnchor())
       return false;
@@ -555,21 +563,13 @@ class AXPosition {
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
         return false;
-      case AXPositionKind::TREE_POSITION: {
-        // Some element that can be exposed as an "object replacement
-        // character", can still have children (e.g. <select> element,
-        // role::kPopupButton). For such "object replacement character" tree
-        // position, we can only have a position before the anchor or at the end
-        // of the anchor. So if the |child_index_| is not BEFORE_TEXT (-1), we
-        // want to treat it as at the end of anchor. This also mirrors the
-        // definition in `CreatePositionAtEndOfAnchor`.
-        if (IsEmptyObjectReplacedByCharacter() && child_index_ != BEFORE_TEXT) {
-          DCHECK_EQ(child_index_, 0);
-          return true;
-        }
-
+      case AXPositionKind::TREE_POSITION:
+        // A few positions are anchored to nodes that have children but we want
+        // to treat them as leaf positions. An example is an empty text field;
+        // it often has empty unignored divs coming from Blink inside it.
+        if (IsLeaf())
+          return child_index_ == 0;
         return child_index_ == AnchorChildCount();
-      }
       case AXPositionKind::TEXT_POSITION:
         return text_offset_ == MaxTextOffset();
     }
@@ -1229,26 +1229,28 @@ class AXPosition {
           return CreateNullPosition();
 
         if (const AXNode* empty_object_node = GetEmptyObjectAncestorNode()) {
-          // In this class, (but only on certain platforms), we define the empty
-          // node as a leaf node (see `AXNode::IsLeaf()`) that doesn't have any
-          // content. So that such nodes will act as a character and a word
-          // boundary, we insert an "embedded object replacement character" in
-          // their text contents. This character is a string of length
-          // `AXNode::kEmbeddedCharacterLength`. For example, an empty text
-          // field should act as a character and a word boundary when a screen
-          // reader user tries to navigate through it, otherwise the text field
-          // would be missed by the user.
+          // In this class, we define the empty node as a leaf node (see
+          // `AXNode::IsLeaf()`) that doesn't have any content. On certain
+          // platforms, and so that such nodes will act as a character and a
+          // word boundary, we insert an "embedded object replacement character"
+          // in their text contents. This character is a string of length
+          // `AXNode::kEmbeddedObjectCharacterLengthUTF16`. For example, an
+          // empty text field should act as a character and a word boundary when
+          // a screen reader user tries to navigate through it, otherwise the
+          // text field would be missed by the user.
           //
-          // Since we just explained that empty leaf nodes expose the "embedded
-          // object replacement character" in their text contents, and since we
-          // assume that all text is found only on leaf nodes, we should hide
-          // any descendants. Thus, a position on a descendant of an empty
-          // object is defined as invalid. To make it valid we move the position
-          // from the descendant to the empty leaf node itself. Otherwise,
-          // character and word navigation won't work properly.
+          // Since we just explained that on certain platforms empty leaf nodes
+          // expose the "embedded object replacement character" in their text
+          // contents, and since we assume that all text is found only on leaf
+          // nodes, we should hide any descendants. Thus, a position on a
+          // descendant of an empty object is defined as invalid. To make it
+          // valid we move the position from the descendant to the empty leaf
+          // node itself. Otherwise, character and word navigation won't work
+          // properly.
           return CreateTreePosition(
               position->tree_id(), empty_object_node->id(),
-              position->child_index() == BEFORE_TEXT ? BEFORE_TEXT : 0);
+              position->child_index() == BEFORE_TEXT ? BEFORE_TEXT
+                                                     : AnchorChildCount());
         }
 
         if (position->child_index_ == BEFORE_TEXT)
@@ -1265,20 +1267,21 @@ class AXPosition {
           return CreateNullPosition();
 
         if (const AXNode* empty_object_node = GetEmptyObjectAncestorNode()) {
-          // This is needed because an empty object as defined in this class and
-          // on certain platforms can have descendants that should not be
-          // exposed. See comment above in similar implementation for
-          // AXPositionKind::TREE_POSITION.
+          // This is needed because an empty object as defined in this class can
+          // have descendants that should not be exposed. See comment above in
+          // similar implementation for AXPositionKind::TREE_POSITION.
           //
-          // We set the |text_offset_| to either 0 or the length of the embedded
-          // object character here because the MaxTextOffset of an empty object
-          // is `AXNode::kEmbeddedCharacterLength`. If the invalid position was
-          // already at the start of the node, we set it to 0.
-          return CreateTextPosition(
-              position->tree_id(), empty_object_node->id(),
-              position->text_offset() > 0 ? AXNode::kEmbeddedCharacterLength
-                                          : 0,
+          // We set the |text_offset_| to either 0 or (on certain platforms) the
+          // length of the embedded object character here because the
+          // `MaxTextOffset()` of an empty object on those platforms is
+          // `AXNode::kEmbeddedObjectCharacterLengthUTF16`. If the invalid
+          // position was already at the start of the node, we set it to 0.
+          AXPositionInstance valid_position = CreateTextPosition(
+              position->tree_id(), empty_object_node->id(), /* text_offset */ 0,
               ax::mojom::TextAffinity::kDownstream);
+          if (position->text_offset() > 0)
+            return valid_position->CreatePositionAtEndOfAnchor();
+          return std::move(valid_position);
         }
 
         if (position->text_offset_ <= 0) {
@@ -1422,7 +1425,7 @@ class AXPosition {
 
     AXPositionInstance tree_position = AsTreePosition();
     do {
-      if (tree_position->child_index_ == tree_position->AnchorChildCount()) {
+      if (tree_position->AtEndOfAnchor()) {
         tree_position =
             tree_position
                 ->CreateChildPositionAt(tree_position->child_index_ - 1)
@@ -1470,8 +1473,7 @@ class AXPosition {
     // Leaf nodes might have descendants that should be hidden for text
     // navigation purposes, thus we can't rely solely on `AnchorChildCount()`.
     // Any child index that is not `BEFORE_TEXT` should be treated as indicating
-    // an "after text" position. (See `IsEmptyObjectReplacedByCharacter()` for
-    // more information.)
+    // an "after text" position. (See `IsInEmptyObject()` for more information.)
     // ++kButton "<embedded_object_character>" (empty)
     // ++++kGenericContainer ignored (Might sometimes be added by Blink.)
     if (copy->IsLeaf() || copy->child_index_ == copy->AnchorChildCount()) {
@@ -1526,12 +1528,42 @@ class AXPosition {
     if (IsNullPosition() || IsLeaf())
       return AsTextPosition();
 
-    // Adjust the text offset.
-    // No need to check for "before text" positions here because they are only
-    // present on leaf anchor nodes.
-    AXPositionInstance text_position = AsTextPosition();
+    AXPositionInstance text_position = Clone();
+    if (IsTreePosition()) {
+      DCHECK_NE(child_index(), BEFORE_TEXT)
+          << "Before text positions should only be present on leaf anchor "
+             "nodes.";
+      DCHECK_GT(AnchorChildCount(), 0)
+          << "Non-leaf positions should be anchored to nodes that have "
+             "children.";
+
+      // We can't go directly to a text position if we are initially dealing
+      // with a tree position, because empty child objects contribute no text to
+      // the tree's text representation and thus the existing child index
+      // information would be lost.
+      //
+      // ++kRootWebArea
+      // ++++kGenericContainer (empty object)
+      // ++++kGenericContainer (empty object)
+      // TreePosition anchor=kRootWebArea child_index=1 would turn into a text
+      // position on the same anchor but with a text offset of 0 if we call
+      // `AsTextPosition()` immediately before first anchoring ourselves to the
+      // selected child node.
+      if (child_index() > 0 && child_index() == AnchorChildCount()) {
+        text_position = CreateChildPositionAt(child_index() - 1)
+                            ->CreatePositionAtEndOfAnchor();
+      } else {
+        text_position = CreateChildPositionAt(child_index());
+      }
+    }
+    text_position = text_position->AsTextPosition();
+    DCHECK(!text_position->IsNullPosition());
+
     int offset_in_parent = text_position->text_offset_;
-    do {
+    // Determine the anchor and text offset of the leaf equivalent position by
+    // counting characters that are previous in tree order than
+    // `offset_in_parent`.
+    while (!text_position->IsLeaf()) {
       AXPositionInstance child = text_position->CreateChildPositionAt(0);
       DCHECK(!child->IsNullPosition());
 
@@ -1591,7 +1623,7 @@ class AXPosition {
       }
 
       text_position = std::move(child);
-    } while (!text_position->IsLeaf());
+    }
 
     DCHECK(text_position->IsLeafTextPosition());
     text_position->text_offset_ = offset_in_parent;
@@ -2131,7 +2163,6 @@ class AXPosition {
         return CreateTextPosition(tree_id_, anchor_id_, 0 /* text_offset */,
                                   ax::mojom::TextAffinity::kDownstream);
     }
-    return CreateNullPosition();
   }
 
   AXPositionInstance CreatePositionAtEndOfAnchor() const {
@@ -2139,16 +2170,13 @@ class AXPosition {
       case AXPositionKind::NULL_POSITION:
         return CreateNullPosition();
       case AXPositionKind::TREE_POSITION:
-        return CreateTreePosition(
-            tree_id_, anchor_id_,
-            IsEmptyObjectReplacedByCharacter() || IsUnignoredTextListMarker()
-                ? 0
-                : AnchorChildCount());
+        if (IsLeaf())
+          return CreateTreePosition(tree_id_, anchor_id_, /* child_index */ 0);
+        return CreateTreePosition(tree_id_, anchor_id_, AnchorChildCount());
       case AXPositionKind::TEXT_POSITION:
         return CreateTextPosition(tree_id_, anchor_id_, MaxTextOffset(),
                                   ax::mojom::TextAffinity::kDownstream);
     }
-    return CreateNullPosition();
   }
 
   // Creates a position at the start of this position's accessibility tree, e.g.
@@ -2385,8 +2413,9 @@ class AXPosition {
         const int max_text_offset = MaxTextOffset();
         DCHECK_LE(text_offset_, max_text_offset);
         const int max_text_offset_in_parent =
-            IsEmbeddedObjectInParent() ? AXNode::kEmbeddedCharacterLength
-                                       : max_text_offset;
+            IsEmbeddedObjectInParent()
+                ? AXNode::kEmbeddedObjectCharacterLengthUTF16
+                : max_text_offset;
         int parent_offset = AnchorTextOffsetInParent();
         ax::mojom::TextAffinity parent_affinity = affinity_;
 
@@ -3840,77 +3869,83 @@ class AXPosition {
       text_offset_ = max_text_offset;
   }
 
-  // Returns true if this position is on an empty control that needs to be
-  // represented by an "object replacement character". This feature is only
-  // enabled on some platforms.
-  //
-  // This is purely for navigational purposes. We need to expose an "object
-  // replacement character" in empty controls, such as in an empty text field or
-  // a collapsed popup menu. The presence or the absence of accessible content
-  // inside a control might alter whether an "object replacement character"
-  // would be exposed in that control, in contrast to ordinary text such as in
-  // the case of a non-empty text field which should only have textual nodes
-  // inside it. This is because empty controls need to act as a word and
-  // character boundary.
-  bool IsEmptyObjectReplacedByCharacter() const {
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kSuppressCharacter ||
-        IsNullPosition()) {
+  // Returns true if this position is within an "empty object", i.e. within a
+  // node that should contribute no text to the accessibility tree's text
+  // representation. For example, returns true if this position is within an
+  // empty control, such as an empty text field or (on Windows) a collapsed
+  // popup menu. On some platforms, such nodes need to be represented by an
+  // "object replacement character". This character is inserted purely for
+  // navigational purposes. This is because empty controls still need to act as
+  // a word and character boundary on those platforms.
+  bool IsInEmptyObject() const {
+    if (IsNullPosition())
       return false;
-    }
 
     // A collapsed popup button that contains a menu list popup (i.e, the exact
     // subtree representation we get from a collapsed <select> element on
-    // Windows) should not expose its children even though they are not ignored.
+    // Windows) should not expose its descendants even though they are not
+    // ignored.
     if (GetAnchor()->IsCollapsedMenuListPopUpButton())
       return true;
 
     // All anchor nodes that are empty leaf nodes should be treated as empty
-    // objects. Empty leaf nodes do not expose their descendants to platform
-    // accessibility APIs, but may have unignored descendants. They do not have
-    // any inner text, hence they are empty from our perspective. For example,
-    // an empty text field may still have an unignored generic container inside
-    // it.
+    // objects. Empty leaf nodes are defined as nodes whose descendants are (A)
+    // not exposed to any platform accessibility APIs and (B) do not contribute
+    // any text to the tree's text representation. They may have unignored
+    // descendants however. They do not have any text content, hence they are
+    // empty from our perspective. For example, an empty text field may still
+    // have an unignored generic container inside it.
     if (!GetAnchor()->IsEmptyLeaf())
       return false;
 
-    // <embed> and <object> elements with non empty children should not be
-    // treated as empty objects.
+    // One exception to the above rule that all empty leaf nodes are empty
+    // objects in AXPosition are <embed> and <object> elements that have
+    // children. They should not be treated as empty objects even when their
+    // descendants are all ignored so that text navigation won't stop on such
+    // nodes.
     if ((GetAnchorRole() == ax::mojom::Role::kEmbeddedObject ||
          GetAnchorRole() == ax::mojom::Role::kPluginObject) &&
         AnchorChildCount() > 0) {
       return false;
     }
 
-    // All unignored leaf nodes in the accessibility tree except kRootWebArea,
-    // kPdfRoot, text nodes and nodes that are skipped during text navigation,
-    // should be replaced by the embedded object character. (See
-    // `AXNode::IsIgnoredForTextNavigation()`.) Also, nodes that only have
-    // ignored children (e.g., a button that contains only an empty div) need to
-    // be treated as leaf nodes.
+    // Nodes that are skipped during text navigation should also be "empty
+    // objects".
     //
-    // Calling AXPosition::IsIgnored here is not possible as it would create an
-    // infinite loop. However, GetAnchor()->IsIgnored() is sufficient here
-    // because we know that the anchor at this position doesn't have an
-    // unignored child, making this a leaf tree or text position, or a leaf's
-    // descendant.
-    return !GetAnchor()->IsIgnored() &&
-           !IsPlatformDocument(GetAnchorRole()) && !IsInTextObject() &&
-           !IsIframe(GetAnchorRole());
+    // Note that nodes that are skipped during text navigation could still have
+    // positions anchored to them, e.g. for determining if a paragraph boundary
+    // should be reported before or after such a node. Descending into the
+    // children of such objects could add unnecessary extra text boundaries.
+    if (GetAnchor()->IsIgnoredForTextNavigation())
+      return true;
+
+    // Another exception to the rule that all leaf nodes in the accessibility
+    // tree should be "empty objects" are kRootWebArea, kPdfRoot, kIframe,
+    // kIframePresentational, and text nodes. We don't want text navigation to
+    // stop on any of the above roles. On the other hand, nodes that only have
+    // ignored children (e.g., a button that contains only an empty ignored div)
+    // need to be treated as leaf nodes.
+    //
+    // Note that we have already determined that the anchor at this position
+    // doesn't have an unignored child, making this a leaf tree or text
+    // position, or a leaf's descendant.
+    return (!IsPlatformDocument(GetAnchorRole()) &&
+            !IsIframe(GetAnchorRole()) && !IsInTextObject());
+  }
+
+  bool IsInUnignoredEmptyObject() const {
+    return GetAnchor() && !GetAnchor()->IsIgnored() && IsInEmptyObject();
   }
 
   AXNode* GetEmptyObjectAncestorNode() const {
-    if (g_ax_embedded_object_behavior ==
-            AXEmbeddedObjectBehavior::kSuppressCharacter ||
-        !GetAnchor()) {
+    if (!GetAnchor())
       return nullptr;
-    }
 
     if (!GetAnchor()->IsIgnored()) {
       // The only cases where a descendant of an empty object can be unignored
-      // is when we are inside of a collapsed popup button which is the parent
-      // of a menu list popup, or inside a generic container that is the child
-      // of an empty text field.
+      // is when on Windows we are inside of a collapsed popup button which is
+      // the parent of a menu list popup, or on all platforms inside a generic
+      // container that is the child of an empty text field.
       if (AXNode* popup_button =
               GetAnchor()->GetCollapsedMenuListPopUpButtonAncestor()) {
         return popup_button;
@@ -3933,7 +3968,7 @@ class AXPosition {
     AXPositionInstance position =
         CreateTextPosition(tree_id_, ancestor_node->id(), 0 /* text_offset */,
                            ax::mojom::TextAffinity::kDownstream);
-    if (position && position->IsEmptyObjectReplacedByCharacter())
+    if (position->IsInUnignoredEmptyObject())
       return ancestor_node;
 
     return nullptr;
@@ -3954,8 +3989,11 @@ class AXPosition {
   // Returns the text (in UTF16 format) that is present inside the anchor node,
   // including any text found in descendant text nodes, based on the platform's
   // text representation. Some platforms use an embedded object replacement
-  // character that replaces the text coming from most child nodes.
-  const std::u16string& GetText() const {
+  // character that replaces the text coming from most child nodes and empty
+  // objects.
+  const std::u16string& GetText(
+      const AXEmbeddedObjectBehavior embedded_object_behavior =
+          g_ax_embedded_object_behavior) const {
     // Note that the use of `base::EmptyString16()` is a special case here. For
     // performance reasons `base::EmptyString16()` should only be used when
     // returning a const reference to a string and there is an error condition,
@@ -3963,21 +4001,21 @@ class AXPosition {
     if (IsNullPosition())
       return base::EmptyString16();
 
-    // Special case, if a position's anchor node has only ignored descendants,
-    // i.e., it appears to be empty to assistive software, on some platforms we
-    // need to still treat it as a character and a word boundary. We achieve
-    // this by adding an embedded object character in the text representation
-    // used by this class, but we don't expose that character to assistive
-    // software that tries to retrieve the node's text content.
-    static const base::NoDestructor<std::u16string> embedded_character_str(
-        AXNode::kEmbeddedCharacter);
-    if (IsEmptyObjectReplacedByCharacter())
-      return *embedded_character_str;
-
-    switch (g_ax_embedded_object_behavior) {
+    switch (embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         return GetAnchor()->GetTextContentUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
+        // Special case, if a position's anchor node has only ignored
+        // descendants, i.e., it appears to be empty to assistive software, on
+        // some platforms we need to still treat it as a character and a word
+        // boundary. We achieve this by adding an embedded object character in
+        // the text representation used by this class, but we don't expose that
+        // character to assistive software that tries to retrieve the node's
+        // text content.
+        static const base::NoDestructor<std::u16string> embedded_character_str(
+            AXNode::kEmbeddedObjectCharacterUTF16);
+        if (IsInUnignoredEmptyObject())
+          return *embedded_character_str;
         return GetAnchor()->GetHypertext();
     }
   }
@@ -4030,36 +4068,44 @@ class AXPosition {
   bool IsInWhiteSpace() const {
     if (IsNullPosition())
       return false;
-    return GetAnchor()->IsLineBreak() ||
-           base::ContainsOnlyChars(GetText(), base::kWhitespaceUTF16);
+    if (GetAnchor()->IsLineBreak())
+      return true;  // A <br> or a text node whose contents is a single '\n'.
+    std::u16string text = GetText();
+    // `base::ContainsOnlyChars` returns true if the text is empty, which is not
+    // what we want here because the empty text is not the same as text with
+    // only whitespace characters. So, we explicitly exclude that possibility.
+    return !text.empty() &&
+           base::ContainsOnlyChars(text, base::kWhitespaceUTF16);
   }
 
   // Returns the length of the text that is present inside the anchor node,
   // including any text found in descendant text nodes. This is based on the
   // platform's text representation. Some platforms use an embedded object
-  // character that replaces the text coming from most child nodes.
+  // character that replaces the text coming from most child nodes and empty
+  // objects.
   //
   // Similar to "text_offset_", the length of the text is in UTF16 code units,
   // not in grapheme clusters.
-  int MaxTextOffset() const {
+  int MaxTextOffset(const AXEmbeddedObjectBehavior embedded_object_behavior =
+                        g_ax_embedded_object_behavior) const {
     if (IsNullPosition())
       return INVALID_OFFSET;
 
-    // Special case: If a node has only ignored descendants, i.e., it appears to
-    // be empty to assistive software, on some platforms we need to still treat
-    // it as a character and a word boundary. We achieve this by adding an
-    // "object replacement character" in the accessibility tree's text
-    // representation, but we don't expose that character to assistive software
-    // that tries to retrieve the node's text content or hypertext.
-    if (IsEmptyObjectReplacedByCharacter())
-      return AXNode::kEmbeddedCharacterLength;
-
-    switch (g_ax_embedded_object_behavior) {
+    switch (embedded_object_behavior) {
       case AXEmbeddedObjectBehavior::kSuppressCharacter:
         // TODO(nektar): Switch to anchor->GetTextContentLengthUTF8() after
         // AXPosition switches to using UTF8.
         return GetAnchor()->GetTextContentLengthUTF16();
       case AXEmbeddedObjectBehavior::kExposeCharacter:
+        // Special case: If a node has only ignored descendants, i.e., it
+        // appears to be empty to assistive software, on some platforms we need
+        // to still treat it as a character and a word boundary. We achieve this
+        // by adding an "object replacement character" in the accessibility
+        // tree's text representation, but we don't expose that character to
+        // assistive software that tries to retrieve the node's text content or
+        // hypertext.
+        if (IsInUnignoredEmptyObject())
+          return AXNode::kEmbeddedObjectCharacterLengthUTF16;
         return static_cast<int>(GetAnchor()->GetHypertext().length());
     }
   }
@@ -4226,7 +4272,7 @@ class AXPosition {
     // `AXNode::GetHypertext()` for the meaning of "hypertext" in this context.
     if (!GetAnchor()->IsIgnored()) {
       if (IsEmbeddedObjectInParent())
-        return AXNode::kEmbeddedCharacterLength;
+        return AXNode::kEmbeddedObjectCharacterLengthUTF16;
     } else {
       // Ignored leaf (text) nodes might contain text content or hypertext, but
       // it should not be exposed in their parent.
@@ -4269,7 +4315,7 @@ class AXPosition {
         //
         // Please note that there is one more method that controls whether an
         // "object replacement character" would be exposed. See
-        // `AXPosition::IsEmptyObjectReplacedByCharacter()`.
+        // `AXPosition::IsInUnignoredEmptyObject()`.
         return !IsNullPosition() && !GetAnchor()->IsIgnored() &&
                !GetAnchor()->IsText() && !GetAnchor()->IsChildOfLeaf();
     }
@@ -4320,7 +4366,9 @@ class AXPosition {
     // control has no text, no word start offsets are present in the
     // `ax::mojom::IntListAttribute::kWordStarts` attribute, so we need to
     // special case them here.
-    if (IsEmptyObjectReplacedByCharacter()) {
+    if (g_ax_embedded_object_behavior ==
+            AXEmbeddedObjectBehavior::kExposeCharacter &&
+        IsInUnignoredEmptyObject()) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 0.
       static const base::NoDestructor<std::vector<int32_t>>
@@ -4350,7 +4398,9 @@ class AXPosition {
     // is positioned at 1. Because we want to treat embedded object replacement
     // characters as ordinary characters, it wouldn't be consistent to assume
     // they have no length and return 0 instead of 1.
-    if (IsEmptyObjectReplacedByCharacter()) {
+    if (g_ax_embedded_object_behavior ==
+            AXEmbeddedObjectBehavior::kExposeCharacter &&
+        IsInUnignoredEmptyObject()) {
       // Using braces ensures that the vector will contain the given value, and
       // not create a vector of size 1.
       static const base::NoDestructor<std::vector<int32_t>> embedded_word_ends{
@@ -4502,9 +4552,8 @@ class AXPosition {
 
     // If there is no previous sibling, or the parent itself is a leaf, move up
     // to the parent. The parent can be a leaf if we start with a tree position
-    // that is a descendant of a node that is an empty control represented by
-    // an "object replacement character" (see
-    // `IsEmptyObjectReplacedByCharacter()`).
+    // that is a descendant of a node that is an empty control represented by an
+    // "object replacement character" (see `IsInUnignoredEmptyObject()`).
     const int index_in_parent = current_position->AnchorIndexInParent();
     if (index_in_parent <= 0 || parent_position->IsLeaf()) {
       if (abort_predicate.Run(*current_position, *parent_position,
@@ -4732,8 +4781,8 @@ class AXPosition {
                                         const AXMoveType move_type,
                                         const AXMoveDirection direction) {
     if (move_from.IsNullPosition() || move_to.IsNullPosition() ||
-        move_from.IsEmptyObjectReplacedByCharacter() ||
-        move_to.IsEmptyObjectReplacedByCharacter()) {
+        move_from.IsInUnignoredEmptyObject() ||
+        move_to.IsInUnignoredEmptyObject()) {
       return true;
     }
 
@@ -4801,8 +4850,8 @@ class AXPosition {
       const AXMoveType move_type,
       const AXMoveDirection direction) {
     if (move_from.IsNullPosition() || move_to.IsNullPosition() ||
-        move_from.IsEmptyObjectReplacedByCharacter() ||
-        move_to.IsEmptyObjectReplacedByCharacter()) {
+        move_from.IsInUnignoredEmptyObject() ||
+        move_to.IsInUnignoredEmptyObject()) {
       // We deliberately put empty objects, such as empty text fields, in their
       // own paragraph for easier navigation. Otherwise, they could easily be
       // missed by screen reader users.
@@ -5249,7 +5298,11 @@ template <class AXPositionType, class AXNodeType>
 bool operator!=(const AXPosition<AXPositionType, AXNodeType>& first,
                 const AXPosition<AXPositionType, AXNodeType>& second) {
   const absl::optional<int> compare_to_optional = first.CompareTo(second);
-  return compare_to_optional.has_value() && compare_to_optional.value() != 0;
+  // It makes sense to also return false if the positions are not comparable,
+  // because by definition non-comparable positions are uniqual. Positions are
+  // not comparable when one position is null and the other is not or if the
+  // positions do not have any common ancestor.
+  return !compare_to_optional.has_value() || compare_to_optional.value() != 0;
 }
 
 template <class AXPositionType, class AXNodeType>

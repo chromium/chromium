@@ -393,7 +393,7 @@ TEST(AXNodeTest, TreeWalkingCrossingTreeBoundary) {
   EXPECT_EQ(root_node_1, root_node_2->GetUnignoredParentCrossingTreeBoundary());
 }
 
-TEST(AXNodeTest, GetValueForControlTextField) {
+TEST(AXNodeTest, DISABLED_GetValueForControlTextField) {
   // kRootWebArea
   // ++kTextField (contenteditable)
   // ++++kGenericContainer

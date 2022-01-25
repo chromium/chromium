@@ -1070,7 +1070,8 @@ std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
     size_t* appended_newlines_count) {
   AXNodeRange range(start()->Clone(), end()->Clone());
   return range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
-                       max_count, false, appended_newlines_count);
+                       AXEmbeddedObjectBehavior::kExposeCharacter, max_count,
+                       false, appended_newlines_count);
 }
 
 AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {
