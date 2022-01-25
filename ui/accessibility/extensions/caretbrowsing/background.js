@@ -19,7 +19,7 @@ CONTENT_SCRIPTS = [
  * is first loaded.
  * @constructor
  */
-var CaretBkgnd = function() {};
+const CaretBkgnd = function() {};
 
 /**
  * Flag indicating whether caret browsing is enabled. Global, applies to
@@ -50,10 +50,10 @@ CaretBkgnd.setIcon = function() {
  */
 CaretBkgnd.injectContentScripts = function() {
   chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        for (var k = 0; k < CONTENT_SCRIPTS.length; k++) {
+    for (let i = 0; i < windows.length; i++) {
+      const tabs = windows[i].tabs;
+      for (let j = 0; j < tabs.length; j++) {
+        for (let k = 0; k < CONTENT_SCRIPTS.length; k++) {
           chrome.tabs.executeScript(
               tabs[j].id,
               {file: CONTENT_SCRIPTS[k], allFrames: true},

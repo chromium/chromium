@@ -117,7 +117,7 @@ function isDescendantOfNode(node, ancestor) {
  * caret using a DIV because there's no native caret available.
  * @constructor
  */
-var CaretBrowsing = function() {};
+const CaretBrowsing = function() {};
 
 /**
  * Is caret browsing enabled?
@@ -285,7 +285,7 @@ CaretBrowsing.isControlThatNeedsArrowKeys = function(node) {
 
   // Handle focusable ARIA controls.
   if (node.getAttribute && isFocusable(node)) {
-    var role = node.getAttribute('role');
+    const role = node.getAttribute('role');
     switch (role) {
       case 'combobox':
       case 'grid':
@@ -319,15 +319,15 @@ CaretBrowsing.isControlThatNeedsArrowKeys = function(node) {
  * first text character in the document.
  */
 CaretBrowsing.setInitialCursor = function() {
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (sel.rangeCount > 0) {
     return;
   }
 
-  var start = new Cursor(document.body, 0, '');
-  var end = new Cursor(document.body, 0, '');
-  var nodesCrossed = [];
-  var result = TraverseUtil.getNextChar(start, end, nodesCrossed, true);
+  const start = new Cursor(document.body, 0, '');
+  const end = new Cursor(document.body, 0, '');
+  const nodesCrossed = [];
+  const result = TraverseUtil.getNextChar(start, end, nodesCrossed, true);
   if (result == null) {
     return;
   }
@@ -364,7 +364,7 @@ CaretBrowsing.setFocusToNode = function(node) {
  * @return {boolean} True if the node was focused.
  */
 CaretBrowsing.setFocusToFirstFocusable = function(nodeList) {
-  for (var i = 0; i < nodeList.length; i++) {
+  for (let i = 0; i < nodeList.length; i++) {
     if (CaretBrowsing.setFocusToNode(nodeList[i])) {
       return true;
     }
@@ -376,7 +376,7 @@ CaretBrowsing.setFocusToFirstFocusable = function(nodeList) {
  * Set the caret element's normal style, i.e. not when animating.
  */
 CaretBrowsing.setCaretElementNormalStyle = function() {
-  var element = CaretBrowsing.caretElement;
+  const element = CaretBrowsing.caretElement;
   element.className = 'CaretBrowsing_Caret';
   element.style.opacity = CaretBrowsing.isSelectionCollapsed ? '1.0' : '0.0';
   element.style.left = CaretBrowsing.caretX + 'px';
@@ -390,7 +390,7 @@ CaretBrowsing.setCaretElementNormalStyle = function() {
  * Animate the caret element into the normal style.
  */
 CaretBrowsing.animateCaretElement = function() {
-  var element = CaretBrowsing.caretElement;
+  const element = CaretBrowsing.caretElement;
   element.style.left = (CaretBrowsing.caretX - 50) + 'px';
   element.style.top = (CaretBrowsing.caretY - 100) + 'px';
   element.style.width = (CaretBrowsing.caretWidth + 100) + 'px';
@@ -419,11 +419,11 @@ CaretBrowsing.animateCaretElement = function() {
  * Quick flash and then show the normal caret style.
  */
 CaretBrowsing.flashCaretElement = function() {
-  var x = CaretBrowsing.caretX;
-  var y = CaretBrowsing.caretY;
-  var height = CaretBrowsing.caretHeight;
+  const x = CaretBrowsing.caretX;
+  const y = CaretBrowsing.caretY;
+  const height = CaretBrowsing.caretHeight;
 
-  var vert = document.createElement('div');
+  const vert = document.createElement('div');
   vert.className = 'CaretBrowsing_FlashVert';
   vert.style.left = (x - 6) + 'px';
   vert.style.top = (y - 100) + 'px';
@@ -445,7 +445,7 @@ CaretBrowsing.flashCaretElement = function() {
  * animated in so the user can find it when it first appears.
  */
 CaretBrowsing.createCaretElement = function() {
-  var element = document.createElement('div');
+  const element = document.createElement('div');
   element.className = 'CaretBrowsing_Caret';
   document.body.appendChild(element);
   CaretBrowsing.caretElement = element;
@@ -482,25 +482,25 @@ CaretBrowsing.recreateCaretElement = function() {
  *     The bounding rectangle of the cursor.
  */
 CaretBrowsing.getCursorRect = function(cursor) {
-  var node = cursor.node;
-  var index = cursor.index;
-  var rect = {
+  let node = cursor.node;
+  const index = cursor.index;
+  const rect = {
     left: 0,
     top: 0,
     width: 1,
     height: 0
   };
   if (node.constructor == Text) {
-    var left = index;
-    var right = index;
-    var max = node.data.length;
-    var newRange = document.createRange();
+    let left = index;
+    let right = index;
+    const max = node.data.length;
+    const newRange = document.createRange();
     while (left > 0 || right < max) {
       if (left > 0) {
         left--;
         newRange.setStart(node, left);
         newRange.setEnd(node, index);
-        var rangeRect = newRange.getBoundingClientRect();
+        const rangeRect = newRange.getBoundingClientRect();
         if (rangeRect && rangeRect.width && rangeRect.height) {
           rect.left = rangeRect.right;
           rect.top = rangeRect.top;
@@ -512,7 +512,7 @@ CaretBrowsing.getCursorRect = function(cursor) {
         right++;
         newRange.setStart(node, index);
         newRange.setEnd(node, right);
-        var rangeRect = newRange.getBoundingClientRect();
+        const rangeRect = newRange.getBoundingClientRect();
         if (rangeRect && rangeRect.width && rangeRect.height) {
           rect.left = rangeRect.left;
           rect.top = rangeRect.top;
@@ -541,10 +541,10 @@ CaretBrowsing.getCursorRect = function(cursor) {
  *     to the caret / selection location.
  */
 CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
-  var previousX = CaretBrowsing.caretX;
-  var previousY = CaretBrowsing.caretY;
+  const previousX = CaretBrowsing.caretX;
+  const previousY = CaretBrowsing.caretY;
 
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (sel.rangeCount == 0) {
     if (CaretBrowsing.caretElement) {
       CaretBrowsing.isSelectionCollapsed = false;
@@ -553,7 +553,7 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
     return;
   }
 
-  var range = sel.getRangeAt(0);
+  const range = sel.getRangeAt(0);
   if (!range) {
     if (CaretBrowsing.caretElement) {
       CaretBrowsing.isSelectionCollapsed = false;
@@ -563,7 +563,7 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
   }
 
   if (CaretBrowsing.isControlThatNeedsArrowKeys(document.activeElement)) {
-    var node = document.activeElement;
+    let node = document.activeElement;
     CaretBrowsing.caretWidth = node.offsetWidth;
     CaretBrowsing.caretHeight = node.offsetHeight;
     CaretBrowsing.caretX = 0;
@@ -576,7 +576,7 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
     CaretBrowsing.isSelectionCollapsed = false;
   } else if (range.startOffset != range.endOffset ||
              range.startContainer != range.endContainer) {
-    var rect = range.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
     if (!rect) {
       return;
     }
@@ -586,7 +586,7 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
     CaretBrowsing.caretHeight = rect.height;
     CaretBrowsing.isSelectionCollapsed = false;
   } else {
-    var rect = CaretBrowsing.getCursorRect(
+    const rect = CaretBrowsing.getCursorRect(
         new Cursor(range.startContainer,
                    range.startOffset,
                    TraverseUtil.getNodeText(range.startContainer)));
@@ -600,7 +600,7 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
   if (!CaretBrowsing.caretElement) {
     CaretBrowsing.createCaretElement();
   } else {
-    var element = CaretBrowsing.caretElement;
+    const element = CaretBrowsing.caretElement;
     if (CaretBrowsing.isSelectionCollapsed) {
       element.style.opacity = '1.0';
       element.style.left = CaretBrowsing.caretX + 'px';
@@ -612,26 +612,26 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
     }
   }
 
-  var elem = range.startContainer;
+  let elem = range.startContainer;
   if (elem.constructor == Text)
     elem = elem.parentElement;
-  var style = window.getComputedStyle(elem);
-  var bg = axs.utils.getBgColor(style, elem);
-  var fg = axs.utils.getFgColor(style, elem, bg);
+  const style = window.getComputedStyle(elem);
+  const bg = axs.utils.getBgColor(style, elem);
+  const fg = axs.utils.getFgColor(style, elem, bg);
   CaretBrowsing.caretBackground = axs.color.colorToString(bg);
   CaretBrowsing.caretForeground = axs.color.colorToString(fg);
 
   if (scrollToSelection) {
     // Scroll just to the "focus" position of the selection,
     // the part the user is manipulating.
-    var rect = CaretBrowsing.getCursorRect(
+    const rect = CaretBrowsing.getCursorRect(
         new Cursor(sel.focusNode, sel.focusOffset,
                    TraverseUtil.getNodeText(sel.focusNode)));
 
-    var yscroll = window.pageYOffset;
-    var pageHeight = window.innerHeight;
-    var caretY = rect.top;
-    var caretHeight = Math.min(rect.height, 30);
+    const yscroll = window.pageYOffset;
+    const pageHeight = window.innerHeight;
+    const caretY = rect.top;
+    const caretHeight = Math.min(rect.height, 30);
     if (yscroll + pageHeight < caretY + caretHeight) {
       window.scroll(0, (caretY + caretHeight - pageHeight + 100));
     } else if (caretY < yscroll) {
@@ -692,7 +692,7 @@ CaretBrowsing.makeFocusCursor = function(sel) {
  * @return {Cursor} A cursor pointing to the selection's left boundary.
  */
 CaretBrowsing.makeLeftCursor = function(sel) {
-  var range = sel.rangeCount == 1 ? sel.getRangeAt(0) : null;
+  const range = sel.rangeCount == 1 ? sel.getRangeAt(0) : null;
   if (range &&
       range.endContainer == sel.anchorNode &&
       range.endOffset == sel.anchorOffset) {
@@ -709,7 +709,7 @@ CaretBrowsing.makeLeftCursor = function(sel) {
  * @return {Cursor} A cursor pointing to the selection's right boundary.
  */
 CaretBrowsing.makeRightCursor = function(sel) {
-  var range = sel.rangeCount == 1 ? sel.getRangeAt(0) : null;
+  const range = sel.rangeCount == 1 ? sel.getRangeAt(0) : null;
   if (range &&
       range.endContainer == sel.anchorNode &&
       range.endOffset == sel.anchorOffset) {
@@ -727,7 +727,7 @@ CaretBrowsing.makeRightCursor = function(sel) {
  * @return {boolean} True if the selection was successfully set.
  */
 CaretBrowsing.setAndValidateSelection = function(start, end) {
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   sel.setBaseAndExtent(start.node, start.index, end.node, end.index);
 
   if (sel.rangeCount != 1) {
@@ -774,8 +774,8 @@ CaretBrowsing.isMoveByWordEvent = function(evt) {
  *     document has been reached.
  */
 CaretBrowsing.forwards = function(cursor, nodesCrossed) {
-  var previousCursor = cursor.clone();
-  var result = TraverseUtil.forwardsChar(cursor, nodesCrossed);
+  const previousCursor = cursor.clone();
+  const result = TraverseUtil.forwardsChar(cursor, nodesCrossed);
 
   // Work around the fact that TraverseUtil.forwardsChar returns once per
   // char in a block of text, rather than once per possible selection
@@ -797,8 +797,8 @@ CaretBrowsing.forwards = function(cursor, nodesCrossed) {
  *     document has been reached.
  */
 CaretBrowsing.backwards = function(cursor, nodesCrossed) {
-  var previousCursor = cursor.clone();
-  var result = TraverseUtil.backwardsChar(cursor, nodesCrossed);
+  const previousCursor = cursor.clone();
+  const result = TraverseUtil.backwardsChar(cursor, nodesCrossed);
 
   // Work around the fact that TraverseUtil.backwardsChar returns once per
   // char in a block of text, rather than once per possible selection
@@ -822,23 +822,23 @@ CaretBrowsing.backwards = function(cursor, nodesCrossed) {
 CaretBrowsing.moveRight = function(evt) {
   CaretBrowsing.targetX = null;
 
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (!evt.shiftKey && !CaretBrowsing.isCollapsed(sel)) {
-    var right = CaretBrowsing.makeRightCursor(sel);
+    const right = CaretBrowsing.makeRightCursor(sel);
     CaretBrowsing.setAndValidateSelection(right, right);
     return false;
   }
 
-  var start = CaretBrowsing.isAmbiguous(sel) ?
+  const start = CaretBrowsing.isAmbiguous(sel) ?
               CaretBrowsing.makeLeftCursor(sel) :
               CaretBrowsing.makeAnchorCursor(sel);
-  var end = CaretBrowsing.isAmbiguous(sel) ?
+  const end = CaretBrowsing.isAmbiguous(sel) ?
             CaretBrowsing.makeRightCursor(sel) :
             CaretBrowsing.makeFocusCursor(sel);
-  var previousEnd = end.clone();
-  var nodesCrossed = [];
+  let previousEnd = end.clone();
+  const nodesCrossed = [];
   while (true) {
-    var result;
+    let result;
     if (CaretBrowsing.isMoveByWordEvent(evt)) {
       result = TraverseUtil.getNextWord(previousEnd, end, nodesCrossed);
     } else {
@@ -874,23 +874,23 @@ CaretBrowsing.moveRight = function(evt) {
 CaretBrowsing.moveLeft = function(evt) {
   CaretBrowsing.targetX = null;
 
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (!evt.shiftKey && !CaretBrowsing.isCollapsed(sel)) {
-    var left = CaretBrowsing.makeLeftCursor(sel);
+    const left = CaretBrowsing.makeLeftCursor(sel);
     CaretBrowsing.setAndValidateSelection(left, left);
     return false;
   }
 
-  var start = CaretBrowsing.isAmbiguous(sel) ?
+  const start = CaretBrowsing.isAmbiguous(sel) ?
               CaretBrowsing.makeLeftCursor(sel) :
               CaretBrowsing.makeFocusCursor(sel);
-  var end = CaretBrowsing.isAmbiguous(sel) ?
+  const end = CaretBrowsing.isAmbiguous(sel) ?
             CaretBrowsing.makeRightCursor(sel) :
             CaretBrowsing.makeAnchorCursor(sel);
-  var previousStart = start.clone();
-  var nodesCrossed = [];
+  let previousStart = start.clone();
+  const nodesCrossed = [];
   while (true) {
-    var result;
+    let result;
     if (CaretBrowsing.isMoveByWordEvent(evt)) {
       result = TraverseUtil.getPreviousWord(
           start, previousStart, nodesCrossed);
@@ -928,32 +928,32 @@ CaretBrowsing.moveLeft = function(evt) {
  * @return {boolean} True if the default action should be performed.
  */
 CaretBrowsing.moveDown = function(evt) {
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (!evt.shiftKey && !CaretBrowsing.isCollapsed(sel)) {
-    var right = CaretBrowsing.makeRightCursor(sel);
+    const right = CaretBrowsing.makeRightCursor(sel);
     CaretBrowsing.setAndValidateSelection(right, right);
     return false;
   }
 
-  var start = CaretBrowsing.isAmbiguous(sel) ?
+  const start = CaretBrowsing.isAmbiguous(sel) ?
               CaretBrowsing.makeLeftCursor(sel) :
               CaretBrowsing.makeAnchorCursor(sel);
-  var end = CaretBrowsing.isAmbiguous(sel) ?
+  const end = CaretBrowsing.isAmbiguous(sel) ?
             CaretBrowsing.makeRightCursor(sel) :
             CaretBrowsing.makeFocusCursor(sel);
-  var endRect = CaretBrowsing.getCursorRect(end);
+  const endRect = CaretBrowsing.getCursorRect(end);
   if (CaretBrowsing.targetX === null) {
     CaretBrowsing.targetX = endRect.left;
   }
-  var previousEnd = end.clone();
-  var leftPos = end.clone();
-  var rightPos = end.clone();
-  var bestPos = null;
-  var bestY = null;
-  var bestDelta = null;
-  var bestHeight = null;
-  var nodesCrossed = [];
-  var y = -1;
+  const previousEnd = end.clone();
+  let leftPos = end.clone();
+  const rightPos = end.clone();
+  let bestPos = null;
+  let bestY = null;
+  let bestDelta = null;
+  let bestHeight = null;
+  const nodesCrossed = [];
+  let y = -1;
   while (true) {
     if (null === CaretBrowsing.forwards(rightPos, nodesCrossed)) {
       if (CaretBrowsing.setAndValidateSelection(
@@ -964,10 +964,10 @@ CaretBrowsing.moveDown = function(evt) {
       }
       break;
     }
-    var range = document.createRange();
+    const range = document.createRange();
     range.setStart(leftPos.node, leftPos.index);
     range.setEnd(rightPos.node, rightPos.index);
-    var rect = range.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
     if (rect && rect.width < rect.height) {
       y = rect.top + window.pageYOffset;
 
@@ -993,7 +993,7 @@ CaretBrowsing.moveDown = function(evt) {
       // Otherwise look to see if this current position is on the
       // next line and better than the previous best match, if any.
       if (y >= endRect.top + endRect.height) {
-        var deltaLeft = Math.abs(CaretBrowsing.targetX - rect.left);
+        const deltaLeft = Math.abs(CaretBrowsing.targetX - rect.left);
         if ((bestDelta == null || deltaLeft < bestDelta) &&
             (leftPos.node != end.node || leftPos.index != end.index)) {
           bestPos = leftPos.clone();
@@ -1001,7 +1001,7 @@ CaretBrowsing.moveDown = function(evt) {
           bestDelta = deltaLeft;
           bestHeight = rect.height;
         }
-        var deltaRight = Math.abs(CaretBrowsing.targetX - rect.right);
+        const deltaRight = Math.abs(CaretBrowsing.targetX - rect.right);
         if (bestDelta == null || deltaRight < bestDelta) {
           bestPos = rightPos.clone();
           bestY = y;
@@ -1043,42 +1043,42 @@ CaretBrowsing.moveDown = function(evt) {
  * @return {boolean} True if the default action should be performed.
  */
 CaretBrowsing.moveUp = function(evt) {
-  var sel = window.getSelection();
+  const sel = window.getSelection();
   if (!evt.shiftKey && !CaretBrowsing.isCollapsed(sel)) {
-    var left = CaretBrowsing.makeLeftCursor(sel);
+    const left = CaretBrowsing.makeLeftCursor(sel);
     CaretBrowsing.setAndValidateSelection(left, left);
     return false;
   }
 
-  var start = CaretBrowsing.isAmbiguous(sel) ?
+  const start = CaretBrowsing.isAmbiguous(sel) ?
               CaretBrowsing.makeLeftCursor(sel) :
               CaretBrowsing.makeFocusCursor(sel);
-  var end = CaretBrowsing.isAmbiguous(sel) ?
+  const end = CaretBrowsing.isAmbiguous(sel) ?
             CaretBrowsing.makeRightCursor(sel) :
             CaretBrowsing.makeAnchorCursor(sel);
-  var startRect = CaretBrowsing.getCursorRect(start);
+  const startRect = CaretBrowsing.getCursorRect(start);
   if (CaretBrowsing.targetX === null) {
     CaretBrowsing.targetX = startRect.left;
   }
-  var previousStart = start.clone();
-  var leftPos = start.clone();
-  var rightPos = start.clone();
-  var bestPos = null;
-  var bestY = null;
-  var bestDelta = null;
-  var bestHeight = null;
-  var nodesCrossed = [];
-  var y = 999999;
+  const previousStart = start.clone();
+  const leftPos = start.clone();
+  let rightPos = start.clone();
+  let bestPos = null;
+  let bestY = null;
+  let bestDelta = null;
+  let bestHeight = null;
+  const nodesCrossed = [];
+  let y = 999999;
   while (true) {
     if (null === CaretBrowsing.backwards(leftPos, nodesCrossed)) {
       CaretBrowsing.setAndValidateSelection(
           evt.shiftKey ? end : rightPos, rightPos);
       break;
     }
-    var range = document.createRange();
+    const range = document.createRange();
     range.setStart(leftPos.node, leftPos.index);
     range.setEnd(rightPos.node, rightPos.index);
-    var rect = range.getBoundingClientRect();
+    const rect = range.getBoundingClientRect();
     if (rect && rect.width < rect.height) {
       y = rect.top + window.pageYOffset;
 
@@ -1104,14 +1104,14 @@ CaretBrowsing.moveUp = function(evt) {
       // Otherwise look to see if this current position is on the
       // next line and better than the previous best match, if any.
       if (y <= startRect.top - startRect.height) {
-        var deltaLeft = Math.abs(CaretBrowsing.targetX - rect.left);
+        const deltaLeft = Math.abs(CaretBrowsing.targetX - rect.left);
         if (bestDelta == null || deltaLeft < bestDelta) {
           bestPos = leftPos.clone();
           bestY = y;
           bestDelta = deltaLeft;
           bestHeight = rect.height;
         }
-        var deltaRight = Math.abs(CaretBrowsing.targetX - rect.right);
+        const deltaRight = Math.abs(CaretBrowsing.targetX - rect.right);
         if ((bestDelta == null || deltaRight < bestDelta) &&
             (rightPos.node != start.node || rightPos.index != start.index)) {
           bestPos = rightPos.clone();
@@ -1153,18 +1153,18 @@ CaretBrowsing.moveUp = function(evt) {
 CaretBrowsing.escapeFromControl = function(control) {
   control.blur();
 
-  var start = new Cursor(control, 0, '');
-  var previousStart = start.clone();
-  var end = new Cursor(control, 0, '');
-  var previousEnd = end.clone();
+  let start = new Cursor(control, 0, '');
+  let previousStart = start.clone();
+  let end = new Cursor(control, 0, '');
+  let previousEnd = end.clone();
 
-  var nodesCrossed = [];
+  const nodesCrossed = [];
   while (true) {
     if (null === CaretBrowsing.backwards(start, nodesCrossed)) {
       break;
     }
 
-    var r = document.createRange();
+    const r = document.createRange();
     r.setStart(start.node, start.index);
     r.setEnd(previousStart.node, previousStart.index);
     if (r.getBoundingClientRect()) {
@@ -1181,7 +1181,7 @@ CaretBrowsing.escapeFromControl = function(control) {
       continue;
     }
 
-    var r = document.createRange();
+    const r = document.createRange();
     r.setStart(previousEnd.node, previousEnd.index);
     r.setEnd(end.node, end.index);
     if (r.getBoundingClientRect()) {
@@ -1214,7 +1214,7 @@ CaretBrowsing.toggle = function() {
   }
 
   CaretBrowsing.isEnabled = !CaretBrowsing.isEnabled;
-  var obj = {};
+  const obj = {};
   obj['enabled'] = CaretBrowsing.isEnabled;
   chrome.storage.sync.set(obj);
   CaretBrowsing.updateIsCaretVisible();
@@ -1253,7 +1253,7 @@ CaretBrowsing.onKeyDown = function(evt) {
   // If the current selection doesn't have a range, try to escape out of
   // the current control. If that fails, return so we don't fail whe
   // trying to move the cursor or selection.
-  var sel = window.getSelection();
+  let sel = window.getSelection();
   if (sel.rangeCount == 0) {
     if (document.activeElement) {
       CaretBrowsing.escapeFromControl(document.activeElement);
@@ -1270,7 +1270,7 @@ CaretBrowsing.onKeyDown = function(evt) {
     CaretBrowsing.blinkFlag = true;
   }
 
-  var result = true;
+  let result = true;
   switch (evt.keyCode) {
     case 37:
       result = CaretBrowsing.moveLeft(evt);
