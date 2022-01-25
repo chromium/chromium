@@ -732,7 +732,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.FrameCount" units="frames"
-    expires_after="2021-08-01">
+    expires_after="2023-01-20">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -743,7 +743,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.MaxFrameCount" units="frames"
-    expires_after="2021-10-04">
+    expires_after="2023-01-20">
   <owner>michaelpg@chromium.org</owner>
   <owner>yilkal@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>

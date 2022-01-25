@@ -373,10 +373,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfManagedProfiles" units="profiles"
-    expires_after="2022-05-25">
+    expires_after="2023-01-20">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     Counts the number of locally managed profiles on a user's machine every 24
     hours while Chrome is running, among cases with at least one profile.
@@ -435,10 +435,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2022-04-17">
+    expires_after="2023-01-20">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
-  <owner>cros-families@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
   <summary>
     Tracks the percentage (0-100) of profiles that are locally managed, recorded
     when Chrome starts up.
