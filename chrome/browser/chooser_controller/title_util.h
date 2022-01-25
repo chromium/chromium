@@ -12,7 +12,8 @@ class RenderFrameHost;
 }
 
 // Creates a title for a chooser. For extensions the extension name is used if
-// possible. In all other cases the origin is used.
+// possible. In all other cases the origin of the main frame for
+// `render_frame_host` is used.
 std::u16string CreateExtensionAwareChooserTitle(
     content::RenderFrameHost* render_frame_host,
     int title_string_id_origin,

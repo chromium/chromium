@@ -15,11 +15,10 @@ std::u16string CreateChooserTitle(content::RenderFrameHost* render_frame_host,
                                   int title_string_id_origin) {
   if (!render_frame_host)
     return u"";
-
   return l10n_util::GetStringFUTF16(
       title_string_id_origin,
       url_formatter::FormatOriginForSecurityDisplay(
-          render_frame_host->GetLastCommittedOrigin(),
+          render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
