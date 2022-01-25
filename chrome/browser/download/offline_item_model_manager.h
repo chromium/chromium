@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_H_
 #define CHROME_BROWSER_DOWNLOAD_OFFLINE_ITEM_MODEL_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

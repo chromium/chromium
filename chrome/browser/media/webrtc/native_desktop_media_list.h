@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_NATIVE_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_NATIVE_DESKTOP_MEDIA_LIST_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"

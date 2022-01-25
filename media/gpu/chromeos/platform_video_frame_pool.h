@@ -6,6 +6,8 @@
 #define MEDIA_GPU_CHROMEOS_PLATFORM_VIDEO_FRAME_POOL_H_
 
 #include <stddef.h>
+
+#include <map>
 #include <vector>
 
 #include "base/bind.h"

@@ -5,6 +5,7 @@
 #include "ui/gfx/image/image.h"
 
 #include <algorithm>
+#include <map>
 #include <utility>
 #include <vector>
 
