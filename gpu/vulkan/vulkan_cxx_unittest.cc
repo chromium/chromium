@@ -66,9 +66,7 @@ TEST_F(VulkanCXXTest, CreateInstanceUnique) {
   auto* vulkan_function_pointers = GetVulkanFunctionPointers();
   EXPECT_TRUE(vulkan_function_pointers->BindUnassociatedFunctionPointers());
 
-  vk::Result result;
-  uint32_t api_version;
-  std::tie(result, api_version) = vk::enumerateInstanceVersion();
+  auto [result, api_version] = vk::enumerateInstanceVersion();
   EXPECT_EQ(result, vk::Result::eSuccess);
   EXPECT_GE(api_version, kVulkanRequiredApiVersion);
 
