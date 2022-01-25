@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_COOKIES_VIEW_HANDLER_H_
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <utility>
 #include <vector>

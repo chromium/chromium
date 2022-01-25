@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 #define CHROMEOS_SERVICES_TTS_TTS_PLAYER_H_
 
+#include <queue>
+
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"

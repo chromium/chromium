@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/prefetched_signed_exchange_manager.h"
 
+#include <queue>
 #include <utility>
 
 #include "base/callback.h"

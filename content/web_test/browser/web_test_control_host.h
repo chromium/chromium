@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <queue>
 #include <set>
 #include <string>
 #include <utility>
