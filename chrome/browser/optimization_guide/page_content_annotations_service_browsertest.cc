@@ -536,8 +536,9 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
 }
 
+// TODO(https://crbug.com/1289586): Flakes on multiple platforms.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       QueueFullAndVisitBatchActive) {
+                       DISABLED_QueueFullAndVisitBatchActive) {
   base::HistogramTester histogram_tester;
   HistoryVisit history_visit(base::Time::Now(),
                              GURL("https://probablynotarealurl.com/"), 0);
