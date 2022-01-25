@@ -744,7 +744,8 @@ cr.define('cr.login', function() {
         url = appendParam(url, 'devicemanager', data.enterpriseDomainManager);
       }
       if (data.clientVersion) {
-        url = appendParam(url, 'client_version', data.clientVersion);
+        // Hardcode version while b/216314238 is not fixed.
+        url = appendParam(url, 'client_version', '99.0.4844.0');
       }
       if (data.platformVersion) {
         url = appendParam(url, 'platform_version', data.platformVersion);
