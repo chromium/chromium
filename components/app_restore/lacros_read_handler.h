@@ -35,6 +35,10 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosReadHandler {
   void OnLacrosBrowserWindowAdded(aura::Window* const window,
                                   uint32_t restored_browser_session_id);
 
+  // Returns the restore window id for the Lacros window with
+  // `lacros_window_id`.
+  int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) const;
+
  private:
   // The user profile path for Lacros windows.
   base::FilePath profile_path_;

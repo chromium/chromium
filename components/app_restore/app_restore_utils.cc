@@ -189,6 +189,11 @@ const std::string GetLacrosWindowId(aura::Window* window) {
   return *lacros_window_id;
 }
 
+int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->GetLacrosRestoreWindowId(lacros_window_id);
+}
+
 void OnLacrosWindowAdded(aura::Window* const window,
                          uint32_t browser_session_id,
                          uint32_t restored_browser_session_id) {

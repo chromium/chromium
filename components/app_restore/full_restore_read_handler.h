@@ -161,6 +161,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // apps.
   int32_t GetArcSessionId();
 
+  // Returns the restore window id for the Lacros window with
+  // `lacros_window_id`.
+  int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) const;
+
   // Sets |arc session id| for |window_id| to |arc_session_id_to_window_id_|.
   // |arc session id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);

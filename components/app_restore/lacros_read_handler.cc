@@ -31,4 +31,11 @@ void LacrosReadHandler::OnLacrosBrowserWindowAdded(
   }
 }
 
+int32_t LacrosReadHandler::GetLacrosRestoreWindowId(
+    const std::string& lacros_window_id) const {
+  // TODO(crbug.com/1239984): Get restore window id for Lacros Chrome app
+  // windows.
+  return kParentToHiddenContainer;
+}
+
 }  // namespace app_restore
