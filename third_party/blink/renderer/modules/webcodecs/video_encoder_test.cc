@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -92,7 +94,7 @@ VideoEncoder* CreateEncoder(ScriptState* script_state,
 }
 
 FakeVideoEncoder* CreateFakeEncoder(ScriptState* script_state,
-                                    const VideoEncoderInit* init,
+                                    VideoEncoderInit* init,
                                     ExceptionState& exception_state) {
   return MakeGarbageCollected<FakeVideoEncoder>(script_state, init,
                                                 exception_state);
@@ -180,6 +182,14 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
 
   MockFunctionScope mock_function(script_state);
 
+  auto& pressure_manager_provider =
+      CodecPressureManagerProvider::From(*v8_scope.GetExecutionContext());
+
+  auto* decoder_pressure_manager =
+      pressure_manager_provider.GetDecoderPressureManager();
+  auto* encoder_pressure_manager =
+      pressure_manager_provider.GetEncoderPressureManager();
+
   // Create a video encoder.
   auto* init =
       CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
@@ -195,6 +205,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
 
   // Make sure VideoEncoder doesn't apply pressure by default.
   EXPECT_FALSE(encoder->is_applying_codec_pressure());
+  ASSERT_EQ(0u, encoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 
   auto* config = CreateConfig();
   {
@@ -208,6 +220,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
 
   // Make sure VideoEncoders apply pressure when configured with a HW encoder.
   EXPECT_TRUE(encoder->is_applying_codec_pressure());
+  ASSERT_EQ(1u, encoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 
   // Change codec to avoid a pure reconfigure.
   config->setCodec("avc1.42001E");
@@ -222,6 +236,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
 
   // Make sure the pressure is released when reconfigured with a SW encoder.
   EXPECT_FALSE(encoder->is_applying_codec_pressure());
+  ASSERT_EQ(0u, encoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 }
 
 }  // namespace

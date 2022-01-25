@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 // For FakeVideoDecoder.
@@ -114,6 +116,14 @@ TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {
   V8TestingScope v8_scope;
   MockFunctionScope mock_functions(v8_scope.GetScriptState());
 
+  auto& pressure_manager_provider =
+      CodecPressureManagerProvider::From(*v8_scope.GetExecutionContext());
+
+  auto* decoder_pressure_manager =
+      pressure_manager_provider.GetDecoderPressureManager();
+  auto* encoder_pressure_manager =
+      pressure_manager_provider.GetEncoderPressureManager();
+
   auto* fake_decoder = CreateFakeDecoder(v8_scope.GetScriptState(),
                                          CreateVideoDecoderInit(mock_functions),
                                          v8_scope.GetExceptionState());
@@ -122,6 +132,8 @@ TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
   ASSERT_FALSE(fake_decoder->is_applying_codec_pressure());
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, encoder_pressure_manager->pressure_for_testing());
 
   {
     base::RunLoop run_loop;
@@ -134,6 +146,8 @@ TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {
 
   // Make sure VideoDecoders apply pressure when configured with a HW decoder.
   ASSERT_TRUE(fake_decoder->is_applying_codec_pressure());
+  ASSERT_EQ(1u, decoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, encoder_pressure_manager->pressure_for_testing());
 
   {
     base::RunLoop run_loop;
@@ -146,6 +160,8 @@ TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {
 
   // Make sure the pressure is released when reconfigured with a SW decoder.
   ASSERT_FALSE(fake_decoder->is_applying_codec_pressure());
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
+  ASSERT_EQ(0u, encoder_pressure_manager->pressure_for_testing());
 }
 
 TEST_F(VideoDecoderTest, ResetReleasesPressure) {
@@ -175,6 +191,7 @@ TEST_F(VideoDecoderTest, ResetReleasesPressure) {
   // Satisfy reclamation preconditions.
   fake_decoder->SimulateLifecycleStateForTesting(
       scheduler::SchedulingLifecycleState::kHidden);
+  fake_decoder->SetGlobalPressureExceededFlag(true);
 
   // The reclamation timer should be running.
   EXPECT_TRUE(fake_decoder->IsReclamationTimerActiveForTesting());

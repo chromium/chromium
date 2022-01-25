@@ -24,6 +24,10 @@ blink_modules_sources("webcodecs") {
     "codec_config_eval.h",
     "codec_logger.cc",
     "codec_logger.h",
+    "codec_pressure_manager.cc",
+    "codec_pressure_manager.h",
+    "codec_pressure_manager_provider.cc",
+    "codec_pressure_manager_provider.h",
     "codec_state_helper.cc",
     "codec_state_helper.h",
     "codec_trace_names.h",
@@ -81,6 +85,7 @@ blink_modules_sources("webcodecs") {
     "webcodecs_logger.h",
   ]
   deps = [
+    "//build:chromeos_buildflags",
     "//media",
     "//media/mojo:buildflags",
     "//media/mojo/clients",
@@ -106,6 +111,7 @@ source_set("unit_tests") {
   sources = [
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
+    "codec_pressure_manager_test.cc",
     "decoder_selector_test.cc",
     "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",

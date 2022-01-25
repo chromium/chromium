@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -173,6 +175,12 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_NoPressureByDefault) {
 
   // Codecs shouldn't apply pressure by default.
   ASSERT_FALSE(decoder->is_applying_codec_pressure());
+
+  auto* decoder_pressure_manager =
+      CodecPressureManagerProvider::From(*v8_scope.GetExecutionContext())
+          .GetDecoderPressureManager();
+
+  ASSERT_EQ(0u, decoder_pressure_manager->pressure_for_testing());
 }
 
 }  // namespace

@@ -8,6 +8,8 @@
 #include "base/location.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -24,6 +26,7 @@ constexpr base::TimeDelta ReclaimableCodec::kInactivityReclamationThreshold;
 
 ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
+      codec_type_(type),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       inactivity_threshold_(kInactivityReclamationThreshold),
       last_activity_(tick_clock_->NowTicks()),
@@ -54,7 +57,8 @@ void ReclaimableCodec::ApplyCodecPressure() {
 
   is_applying_pressure_ = true;
 
-  OnReclamationPreconditionsUpdated();
+  if (auto* pressure_manager = PressureManager())
+    pressure_manager->AddCodec(this);
 }
 
 void ReclaimableCodec::ReleaseCodecPressure() {
@@ -63,7 +67,31 @@ void ReclaimableCodec::ReleaseCodecPressure() {
     return;
   }
 
+  if (auto* pressure_manager = PressureManager())
+    pressure_manager->RemoveCodec(this);
+
   is_applying_pressure_ = false;
+
+  // We might still exceed global codec pressure at this point, but this codec
+  // isn't contributing to it, and needs to reset its own flag.
+  SetGlobalPressureExceededFlag(false);
+}
+
+void ReclaimableCodec::Dispose() {
+  if (!is_applying_pressure_)
+    return;
+
+  if (auto* pressure_manager = PressureManager())
+    pressure_manager->OnCodecDisposed(this);
+}
+
+void ReclaimableCodec::SetGlobalPressureExceededFlag(
+    bool global_pressure_exceeded) {
+  if (global_pressure_exceeded_ == global_pressure_exceeded)
+    return;
+
+  global_pressure_exceeded_ = global_pressure_exceeded;
+
   OnReclamationPreconditionsUpdated();
 }
 
@@ -116,7 +144,11 @@ void ReclaimableCodec::OnReclamationPreconditionsUpdated() {
 }
 
 bool ReclaimableCodec::AreReclamationPreconditionsMet() {
-  return is_applying_pressure_ && is_backgrounded_;
+  // If |global_pressure_exceeded_| is true, so should |is_applying_pressure_|.
+  DCHECK_EQ(global_pressure_exceeded_,
+            global_pressure_exceeded_ && is_applying_pressure_);
+
+  return is_applying_pressure_ && global_pressure_exceeded_ && is_backgrounded_;
 }
 
 void ReclaimableCodec::StartIdleReclamationTimer() {
@@ -155,6 +187,23 @@ void ReclaimableCodec::OnActivityTimerFired(TimerBase*) {
   }
 
   last_tick_was_inactive_ = time_inactive >= (inactivity_threshold_ / 2);
+}
+
+CodecPressureManager* ReclaimableCodec::PressureManager() {
+  auto* execution_context = GetExecutionContext();
+
+  if (!execution_context || execution_context->IsContextDestroyed())
+    return nullptr;
+
+  auto& manager_provider =
+      CodecPressureManagerProvider::From(*execution_context);
+
+  switch (codec_type_) {
+    case CodecType::kDecoder:
+      return manager_provider.GetDecoderPressureManager();
+    case CodecType::kEncoder:
+      return manager_provider.GetEncoderPressureManager();
+  }
 }
 
 }  // namespace blink

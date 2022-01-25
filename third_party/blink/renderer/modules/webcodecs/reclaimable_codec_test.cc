@@ -11,9 +11,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
+
+// Set a high theshold, so we can fake pressure threshold notifications.
+static constexpr size_t kTestPressureThreshold = 100;
 
 namespace {
 
@@ -35,7 +40,16 @@ class FakeReclaimableCodec final
 
   void SimulateReset() { ReleaseCodecPressure(); }
 
+  void SimulatePressureExceeded() {
+    ApplyCodecPressure();
+    SetGlobalPressureExceededFlag(true);
+  }
+
   void OnCodecReclaimed(DOMException* ex) final { reclaimed_ = true; }
+
+  bool is_global_pressure_exceeded() {
+    return global_pressure_exceeded_for_testing();
+  }
 
   // GarbageCollected override.
   void Trace(Visitor* visitor) const override {
@@ -57,8 +71,30 @@ class BaseReclaimableCodecTest
     : public testing::TestWithParam<ReclaimableCodec::CodecType> {
  public:
   FakeReclaimableCodec* CreateCodec(ExecutionContext* context) {
+    if (!is_manager_threshold_set_) {
+      GetManagerFromContext(context)->set_pressure_threshold_for_testing(
+          kTestPressureThreshold);
+
+      is_manager_threshold_set_ = true;
+    }
+
     return MakeGarbageCollected<FakeReclaimableCodec>(GetParam(), context);
   }
+
+ protected:
+  CodecPressureManager* GetManagerFromContext(ExecutionContext* context) {
+    auto& provider = CodecPressureManagerProvider::From(*context);
+
+    switch (GetParam()) {
+      case ReclaimableCodec::CodecType::kDecoder:
+        return provider.GetDecoderPressureManager();
+      case ReclaimableCodec::CodecType::kEncoder:
+        return provider.GetEncoderPressureManager();
+    }
+  }
+
+ private:
+  bool is_manager_threshold_set_ = false;
 };
 
 // Testing w/ flags allowing only reclamation of background codecs.
@@ -124,14 +160,14 @@ void TestBackgroundInactivityTimerStartStops(TestParam background_type,
     EXPECT_TRUE(codec->is_backgrounded_for_testing());
   }
 
-  // Codecs should not be reclaimable for inactivity until pressure is applied.
+  // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   codec->SimulateReset();
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
-  // Applying pressure should start the timer.
-  codec->ApplyCodecPressure();
+  // Exceeding pressure should start the timer.
+  codec->SimulatePressureExceeded();
   EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
 
   // Activity should not stop the timer.
@@ -143,7 +179,7 @@ void TestBackgroundInactivityTimerStartStops(TestParam background_type,
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   // It should be possible to restart the timer after stopping it.
-  codec->ApplyCodecPressure();
+  codec->SimulatePressureExceeded();
   EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
 }
 
@@ -158,14 +194,14 @@ void TestBackgroundInactivityTimerWorks(TestParam background_type,
     EXPECT_TRUE(codec->is_backgrounded_for_testing());
   }
 
-  // Codecs should not be reclaimable for inactivity until pressure is applied.
+  // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   base::SimpleTestTickClock tick_clock;
   codec->set_tick_clock_for_testing(&tick_clock);
 
-  // Applying pressure should start the timer.
-  codec->ApplyCodecPressure();
+  // Exceeding pressure should start the timer.
+  codec->SimulatePressureExceeded();
   EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
   EXPECT_FALSE(codec->reclaimed());
 
@@ -236,14 +272,14 @@ TEST_P(ReclaimBackgroundOnlyTest, ForegroundInactivityTimerNeverStarts) {
   // enabled.
   EXPECT_FALSE(codec->is_backgrounded_for_testing());
 
-  // Codecs should not be reclaimable for inactivity until pressure is applied.
+  // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   base::SimpleTestTickClock tick_clock;
   codec->set_tick_clock_for_testing(&tick_clock);
 
-  // Applying pressure should not start timer while we remain in foreground.
-  codec->ApplyCodecPressure();
+  // Exceeded pressure should not start timer while we remain in foreground.
+  codec->SimulatePressureExceeded();
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
   EXPECT_FALSE(codec->is_backgrounded_for_testing());
   EXPECT_FALSE(codec->reclaimed());
@@ -280,14 +316,14 @@ TEST_P(ReclaimBackgroundOnlyTest, ForegroundCodecReclaimedOnceBackgrounded) {
   // enabled.
   EXPECT_FALSE(codec->is_backgrounded_for_testing());
 
-  // Codecs should not be reclaimable for inactivity until pressure is applied.
+  // Codecs should not be reclaimable for inactivity until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   base::SimpleTestTickClock tick_clock;
   codec->set_tick_clock_for_testing(&tick_clock);
 
   // Pressure should not start the timer while we are still in the foreground.
-  codec->ApplyCodecPressure();
+  codec->SimulatePressureExceeded();
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
   EXPECT_FALSE(codec->is_backgrounded_for_testing());
   EXPECT_FALSE(codec->reclaimed());
@@ -367,7 +403,7 @@ TEST_P(ReclaimBackgroundOnlyTest, RepeatLifecycleEventsDontBreakState) {
 
   // Applying pressure should not start the timer while we remain in the
   // foreground.
-  codec->ApplyCodecPressure();
+  codec->SimulatePressureExceeded();
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
   EXPECT_FALSE(codec->is_backgrounded_for_testing());
   EXPECT_FALSE(codec->reclaimed());
@@ -418,14 +454,14 @@ TEST_P(ReclaimDisabledTest, ReclamationKillSwitch) {
   // is disabled.
   EXPECT_TRUE(codec->is_backgrounded_for_testing());
 
-  // Codecs should not be reclaimable until pressure is applied.
+  // Codecs should not be reclaimable until pressure is exceeded.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
   base::SimpleTestTickClock tick_clock;
   codec->set_tick_clock_for_testing(&tick_clock);
 
-  // Reclamation disabled, so applying pressure should not start the timer.
-  codec->ApplyCodecPressure();
+  // Reclamation disabled, so pressure should not start the timer.
+  codec->SimulatePressureExceeded();
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
   EXPECT_FALSE(codec->reclaimed());
 
@@ -453,31 +489,47 @@ TEST_P(ReclaimBackgroundOnlyTest, PressureChangesUpdateTimer) {
   // Codecs should not be reclaimable by default.
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
-  // The codec must be backgrounded for the timer to be active.
+  // Pressure must be exceeded for the timer to be active.
   codec->SimulateLifecycleStateForTesting(
       scheduler::SchedulingLifecycleState::kHidden);
   EXPECT_TRUE(codec->is_backgrounded_for_testing());
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
-  // Applying codec pressure should start the timer.
+  // Applying pressure isn't enough to start reclamation, global pressure must
+  // be exceeded.
   codec->ApplyCodecPressure();
+  EXPECT_TRUE(codec->is_applying_codec_pressure());
+  EXPECT_FALSE(codec->is_global_pressure_exceeded());
+  EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
+
+  // Setting/unsetting global pressure should start/stop idle reclamation.
+  codec->SetGlobalPressureExceededFlag(true);
+  EXPECT_TRUE(codec->is_applying_codec_pressure());
+  EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
+
+  codec->SetGlobalPressureExceededFlag(false);
+  EXPECT_TRUE(codec->is_applying_codec_pressure());
+  EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
+
+  codec->SetGlobalPressureExceededFlag(true);
   EXPECT_TRUE(codec->is_applying_codec_pressure());
   EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
 
   // Releasing codec pressure should stop the timer.
   codec->ReleaseCodecPressure();
   EXPECT_FALSE(codec->is_applying_codec_pressure());
+  EXPECT_FALSE(codec->is_global_pressure_exceeded());
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
 
-  // Re-applying codec pressure should start the timer.
+  // Re-applying codec pressure should not start the timer: the global pressure
+  // flag must be set again.
   codec->ApplyCodecPressure();
   EXPECT_TRUE(codec->is_applying_codec_pressure());
-  EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
-
-  // Re-releasing codec pressure should stop the timer.
-  codec->ReleaseCodecPressure();
-  EXPECT_FALSE(codec->is_applying_codec_pressure());
   EXPECT_FALSE(codec->IsReclamationTimerActiveForTesting());
+
+  codec->SetGlobalPressureExceededFlag(true);
+  EXPECT_TRUE(codec->is_applying_codec_pressure());
+  EXPECT_TRUE(codec->IsReclamationTimerActiveForTesting());
 }
 
 INSTANTIATE_TEST_SUITE_P(
