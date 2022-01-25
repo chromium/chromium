@@ -1431,7 +1431,6 @@ void SurfaceAggregator::ProcessAddedAndRemovedSurfaces() {
 gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     ResolvedFrameData& resolved_frame,
     ResolvedPassData& resolved_pass,
-    bool will_draw,
     const gfx::Rect& damage_from_parent,
     const gfx::Transform& target_to_root_transform,
     const ResolvedPassData* parent_pass,
@@ -1441,6 +1440,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
   if (render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
     has_pixel_moving_backdrop_filter_ = true;
   }
+
+  if (parent_pass && parent_pass->aggregation().will_draw)
+    resolved_pass.aggregation().will_draw = true;
 
   // Populate state for about cached render passes and pixel moving filters.
   // These attributes apply transitively to all child render passes embedded by
@@ -1544,7 +1546,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           }
         }
         gfx::Rect child_rect =
-            PrewalkSurface(*child_resolved_frame, &resolved_pass, will_draw,
+            PrewalkSurface(*child_resolved_frame, &resolved_pass,
                            accumulated_damage_in_child_space, result);
         child_rect = gfx::ScaleToEnclosingRect(child_rect, x_scale, y_scale);
         quad_damage_rect.Union(child_rect);
@@ -1633,9 +1635,9 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       const gfx::Transform child_to_root_transform(
           target_to_root_transform,
           quad->shared_quad_state->quad_to_target_transform);
-      quad_damage_rect = PrewalkRenderPass(
-          resolved_frame, child_resolved_pass, will_draw, gfx::Rect(),
-          child_to_root_transform, &resolved_pass, result);
+      quad_damage_rect =
+          PrewalkRenderPass(resolved_frame, child_resolved_pass, gfx::Rect(),
+                            child_to_root_transform, &resolved_pass, result);
 
       if (child_resolved_pass.aggregation()
               .has_damage_from_contributing_content) {
@@ -1727,12 +1729,10 @@ bool SurfaceAggregator::CheckFrameSinksChanged(const Surface* surface) {
 
 gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
                                             ResolvedPassData* parent_pass,
-                                            bool will_draw,
                                             const gfx::Rect& damage_from_parent,
                                             PrewalkResult& result) {
   Surface* surface = resolved_frame.surface();
   DCHECK(surface->HasActiveFrame());
-  DebugLogSurface(surface, will_draw);
 
   if (referenced_surfaces_.count(surface->surface_id()))
     return gfx::Rect();
@@ -1741,6 +1741,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
 
   if (!resolved_frame.is_valid())
     return gfx::Rect();
+
+  DebugLogSurface(surface, resolved_frame.WillDraw());
   ++stats_->prewalked_surface_count;
 
   auto& root_resolved_pass = resolved_frame.GetRootRenderPassData();
@@ -1755,8 +1757,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   referenced_surfaces_.insert(surface->surface_id());
 
   damage_rect.Union(PrewalkRenderPass(resolved_frame, root_resolved_pass,
-                                      will_draw, damage_from_parent,
-                                      gfx::Transform(), parent_pass, result));
+                                      damage_from_parent, gfx::Transform(),
+                                      parent_pass, result));
 
   // If this surface has damage from contributing content, then the render pass
   // embedding this surface does as well.
@@ -1797,7 +1799,7 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   if (de_jelly_enabled_ && surface->HasUndrawnActiveFrame())
     new_surfaces_.insert(surface->surface_id());
 
-  if (will_draw)
+  if (root_resolved_pass.aggregation().will_draw)
     surface->OnWillBeDrawn();
 
   const CompositorFrame& frame = surface->GetActiveOrInterpolatedFrame();
@@ -1815,8 +1817,8 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
       result.undrawn_surfaces.insert(surface_id);
       ResolvedFrameData* undrawn_surface = GetResolvedFrame(surface_id);
       if (undrawn_surface) {
-        PrewalkSurface(*undrawn_surface, /*parent_pass=*/nullptr,
-                       /*will_draw=*/false, gfx::Rect(), result);
+        PrewalkSurface(*undrawn_surface, /*parent_pass=*/nullptr, gfx::Rect(),
+                       result);
       }
     }
   }
@@ -1906,11 +1908,15 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   CheckFrameSinksChanged(surface);
 
-  if (!surface->HasActiveFrame())
-    return {};
-
   // Start recording new stats for this aggregation.
   stats_.emplace();
+
+  base::ElapsedTimer prewalk_timer;
+  ResolvedFrameData* resolved_frame =
+      GetResolvedFrame(surface, /*inside_aggregation=*/true);
+
+  if (!resolved_frame || !resolved_frame->is_valid())
+    return {};
 
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
@@ -1944,16 +1950,14 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   DCHECK(referenced_surfaces_.empty());
 
-  base::ElapsedTimer prewalk_timer;
+  // The root surface root render pass is the start of the embedding tree.
+  resolved_frame->GetRootRenderPassData().aggregation().will_draw = true;
+
   PrewalkResult prewalk_result;
-  // Get the resolved frame for the root surface after `prewalk_timer` is
-  // started so the work is counted in the same histograms as before.
-  ResolvedFrameData& resolved_frame =
-      *GetResolvedFrame(surface, /*inside_aggregation=*/true);
-  gfx::Rect prewalk_damage_rect = PrewalkSurface(
-      resolved_frame,
-      /*parent_pass=*/nullptr,
-      /*will_draw=*/true, /*damage_from_parent=*/gfx::Rect(), prewalk_result);
+  gfx::Rect prewalk_damage_rect =
+      PrewalkSurface(*resolved_frame,
+                     /*parent_pass=*/nullptr,
+                     /*damage_from_parent=*/gfx::Rect(), prewalk_result);
   stats_->prewalk_time = prewalk_timer.Elapsed();
 
   root_damage_rect_ = prewalk_damage_rect;
@@ -1984,7 +1988,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   base::ElapsedTimer copy_timer;
   CopyUndrawnSurfaces(&prewalk_result);
   referenced_surfaces_.insert(surface_id);
-  CopyPasses(resolved_frame);
+  CopyPasses(*resolved_frame);
   referenced_surfaces_.erase(surface_id);
   DCHECK(referenced_surfaces_.empty());
   stats_->copy_time = copy_timer.Elapsed();
@@ -2008,7 +2012,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   auto* last_pass = dest_pass_list_->back().get();
 
   if (!color_usage_changed && !last_frame_had_delegated_ink_ &&
-      !RenderPassNeedsFullDamage(resolved_frame.GetRootRenderPassData())) {
+      !RenderPassNeedsFullDamage(resolved_frame->GetRootRenderPassData())) {
     last_pass->damage_rect.Intersect(prewalk_damage_rect);
   }
 

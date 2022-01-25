@@ -192,6 +192,10 @@ bool ResolvedFrameData::CheckIfUsedAndReset() {
   return std::exchange(used_, false);
 }
 
+bool ResolvedFrameData::WillDraw() const {
+  return GetRootRenderPassData().aggregation().will_draw;
+}
+
 ResolvedPassData& ResolvedFrameData::GetRenderPassDataById(
     CompositorRenderPassId render_pass_id) {
   return const_cast<ResolvedPassData&>(

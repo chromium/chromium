@@ -84,6 +84,12 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // True if there is accumulated damage from contributing render pass or
   // surface quads.
   bool has_damage_from_contributing_content = false;
+
+  // Indicates that the render pass is embedded from the root surface root
+  // render pass and will contribute pixels to framebuffer. Render passes this
+  // is false for may still be drawn but they won't contribute pixels to
+  // framebuffer.
+  bool will_draw = false;
 };
 
 // Data associated with a CompositorRenderPass in a resolved frame. Has fixed
@@ -167,6 +173,10 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // All functions after this point are accessors for the resolved frame and
   // should only be called if is_valid() returns true.
+
+  // Returns true if the root render pass is embedded from the the root surface
+  // root render pass.
+  bool WillDraw() const;
 
   // RenderPassData accessors.
   ResolvedPassData& GetRenderPassDataById(
