@@ -35,7 +35,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST428_1;
       case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST431_2;
-      case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+      case gfx::ColorSpace::PrimaryID::P3:
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST432_1;
       case gfx::ColorSpace::PrimaryID::XYZ_D50:
         return media::stable::mojom::ColorSpacePrimaryID::kXYZ_D50;
@@ -89,7 +89,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         *output = gfx::ColorSpace::PrimaryID::SMPTEST431_2;
         return true;
       case media::stable::mojom::ColorSpacePrimaryID::kSMPTEST432_1:
-        *output = gfx::ColorSpace::PrimaryID::SMPTEST432_1;
+        *output = gfx::ColorSpace::PrimaryID::P3;
         return true;
       case media::stable::mojom::ColorSpacePrimaryID::kXYZ_D50:
         *output = gfx::ColorSpace::PrimaryID::XYZ_D50;
@@ -147,19 +147,19 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_4;
       case gfx::ColorSpace::TransferID::BT1361_ECG:
         return media::stable::mojom::ColorSpaceTransferID::kBT1361_ECG;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1:
+      case gfx::ColorSpace::TransferID::SRGB:
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1;
       case gfx::ColorSpace::TransferID::BT2020_10:
         return media::stable::mojom::ColorSpaceTransferID::kBT2020_10;
       case gfx::ColorSpace::TransferID::BT2020_12:
         return media::stable::mojom::ColorSpaceTransferID::kBT2020_12;
-      case gfx::ColorSpace::TransferID::SMPTEST2084:
+      case gfx::ColorSpace::TransferID::PQ:
         return media::stable::mojom::ColorSpaceTransferID::kSMPTEST2084;
       case gfx::ColorSpace::TransferID::SMPTEST428_1:
         return media::stable::mojom::ColorSpaceTransferID::kSMPTEST428_1;
-      case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+      case gfx::ColorSpace::TransferID::HLG:
         return media::stable::mojom::ColorSpaceTransferID::kARIB_STD_B67;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
+      case gfx::ColorSpace::TransferID::SRGB_HDR:
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1_HDR;
       case gfx::ColorSpace::TransferID::LINEAR_HDR:
         return media::stable::mojom::ColorSpaceTransferID::kLinearHDR;
@@ -223,7 +223,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         *output = gfx::ColorSpace::TransferID::BT1361_ECG;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1:
-        *output = gfx::ColorSpace::TransferID::IEC61966_2_1;
+        *output = gfx::ColorSpace::TransferID::SRGB;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kBT2020_10:
         *output = gfx::ColorSpace::TransferID::BT2020_10;
@@ -232,16 +232,16 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         *output = gfx::ColorSpace::TransferID::BT2020_12;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kSMPTEST2084:
-        *output = gfx::ColorSpace::TransferID::SMPTEST2084;
+        *output = gfx::ColorSpace::TransferID::PQ;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kSMPTEST428_1:
         *output = gfx::ColorSpace::TransferID::SMPTEST428_1;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kARIB_STD_B67:
-        *output = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+        *output = gfx::ColorSpace::TransferID::HLG;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1_HDR:
-        *output = gfx::ColorSpace::TransferID::IEC61966_2_1_HDR;
+        *output = gfx::ColorSpace::TransferID::SRGB_HDR;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kLinearHDR:
         *output = gfx::ColorSpace::TransferID::LINEAR_HDR;

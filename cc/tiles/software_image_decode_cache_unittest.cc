@@ -892,9 +892,9 @@ TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   gfx::ColorSpace color_space_a(gfx::ColorSpace::PrimaryID::XYZ_D50,
-                                gfx::ColorSpace::TransferID::IEC61966_2_1);
+                                gfx::ColorSpace::TransferID::SRGB);
   gfx::ColorSpace color_space_b(gfx::ColorSpace::PrimaryID::SMPTE170M,
-                                gfx::ColorSpace::TransferID::IEC61966_2_1);
+                                gfx::ColorSpace::TransferID::SRGB);
   gfx::ColorSpace color_space_c = gfx::ColorSpace::CreateSRGB();
 
   PaintImage paint_image = CreatePaintImage(100, 100, color_space_a);

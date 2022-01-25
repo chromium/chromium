@@ -118,7 +118,7 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
       primary_id = gfx::ColorSpace::PrimaryID::SMPTEST431_2;
       break;
     case PrimaryID::SMPTEST432_1:
-      primary_id = gfx::ColorSpace::PrimaryID::SMPTEST432_1;
+      primary_id = gfx::ColorSpace::PrimaryID::P3;
       break;
     case PrimaryID::EBU_3213_E:
       // TODO(uzair.jaleel) Need to check this once.
@@ -164,7 +164,7 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
       transfer_id = gfx::ColorSpace::TransferID::BT1361_ECG;
       break;
     case TransferID::IEC61966_2_1:
-      transfer_id = gfx::ColorSpace::TransferID::IEC61966_2_1;
+      transfer_id = gfx::ColorSpace::TransferID::SRGB;
       break;
     case TransferID::BT2020_10:
       transfer_id = gfx::ColorSpace::TransferID::BT2020_10;
@@ -173,13 +173,13 @@ gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
       transfer_id = gfx::ColorSpace::TransferID::BT2020_12;
       break;
     case TransferID::SMPTEST2084:
-      transfer_id = gfx::ColorSpace::TransferID::SMPTEST2084;
+      transfer_id = gfx::ColorSpace::TransferID::PQ;
       break;
     case TransferID::SMPTEST428_1:
       transfer_id = gfx::ColorSpace::TransferID::SMPTEST428_1;
       break;
     case TransferID::ARIB_STD_B67:
-      transfer_id = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+      transfer_id = gfx::ColorSpace::TransferID::HLG;
       break;
     case TransferID::INVALID:
     case TransferID::UNSPECIFIED:
@@ -338,7 +338,7 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
       primaries = media::VideoColorSpace::PrimaryID::SMPTEST431_2;
       break;
-    case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+    case gfx::ColorSpace::PrimaryID::P3:
       primaries = media::VideoColorSpace::PrimaryID::SMPTEST432_1;
       break;
     default:
@@ -378,7 +378,7 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::TransferID::BT1361_ECG:
       transfer = media::VideoColorSpace::TransferID::BT1361_ECG;
       break;
-    case gfx::ColorSpace::TransferID::IEC61966_2_1:
+    case gfx::ColorSpace::TransferID::SRGB:
       transfer = media::VideoColorSpace::TransferID::IEC61966_2_1;
       break;
     case gfx::ColorSpace::TransferID::BT2020_10:
@@ -387,13 +387,13 @@ VideoColorSpace VideoColorSpace::FromGfxColorSpace(
     case gfx::ColorSpace::TransferID::BT2020_12:
       transfer = media::VideoColorSpace::TransferID::BT2020_12;
       break;
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
+    case gfx::ColorSpace::TransferID::PQ:
       transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
       break;
     case gfx::ColorSpace::TransferID::SMPTEST428_1:
       transfer = media::VideoColorSpace::TransferID::SMPTEST428_1;
       break;
-    case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+    case gfx::ColorSpace::TransferID::HLG:
       transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
       break;
     default:

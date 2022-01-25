@@ -262,7 +262,7 @@ gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
           gfx::ColorSpace::kDefaultScrgbLinearSdrWhiteLevel);
   auto display_color_spaces = CreateDisplayColorSpaces(color_space);
   // Use the forced color profile's buffer format for all content usages.
-  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SMPTEST2084) {
+  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ) {
     display_color_spaces.SetOutputBufferFormats(
         gfx::BufferFormat::RGBA_1010102, gfx::BufferFormat::RGBA_1010102);
   } else if (color_space.IsHDR()) {

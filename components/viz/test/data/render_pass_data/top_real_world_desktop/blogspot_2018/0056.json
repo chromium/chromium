@@ -12,7 +12,7 @@
          "matrix": "RGB",
          "primaries": "BT709",
          "range": "FULL",
-         "transfer": "IEC61966_2_1"
+         "transfer": "SRGB"
       },
       "damage_rect": {
          "height": 1249,

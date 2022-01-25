@@ -28,30 +28,23 @@ ColorSpace::PrimaryID all_primaries[] = {
     ColorSpace::PrimaryID::BT470BG,      ColorSpace::PrimaryID::SMPTE170M,
     ColorSpace::PrimaryID::SMPTE240M,    ColorSpace::PrimaryID::FILM,
     ColorSpace::PrimaryID::BT2020,       ColorSpace::PrimaryID::SMPTEST428_1,
-    ColorSpace::PrimaryID::SMPTEST431_2, ColorSpace::PrimaryID::SMPTEST432_1,
+    ColorSpace::PrimaryID::SMPTEST431_2, ColorSpace::PrimaryID::P3,
 };
 
 ColorSpace::TransferID simple_transfers[] = {
-    ColorSpace::TransferID::BT709,
-    ColorSpace::TransferID::GAMMA22,
-    ColorSpace::TransferID::GAMMA28,
-    ColorSpace::TransferID::SMPTE170M,
-    ColorSpace::TransferID::SMPTE240M,
-    ColorSpace::TransferID::SMPTEST428_1,
-    ColorSpace::TransferID::LINEAR,
-    ColorSpace::TransferID::LOG,
-    ColorSpace::TransferID::LOG_SQRT,
-    ColorSpace::TransferID::IEC61966_2_4,
-    ColorSpace::TransferID::BT1361_ECG,
-    ColorSpace::TransferID::IEC61966_2_1,
-    ColorSpace::TransferID::BT2020_10,
-    ColorSpace::TransferID::BT2020_12,
-    ColorSpace::TransferID::IEC61966_2_1_HDR,
+    ColorSpace::TransferID::BT709,      ColorSpace::TransferID::GAMMA22,
+    ColorSpace::TransferID::GAMMA28,    ColorSpace::TransferID::SMPTE170M,
+    ColorSpace::TransferID::SMPTE240M,  ColorSpace::TransferID::SMPTEST428_1,
+    ColorSpace::TransferID::LINEAR,     ColorSpace::TransferID::LOG,
+    ColorSpace::TransferID::LOG_SQRT,   ColorSpace::TransferID::IEC61966_2_4,
+    ColorSpace::TransferID::BT1361_ECG, ColorSpace::TransferID::SRGB,
+    ColorSpace::TransferID::BT2020_10,  ColorSpace::TransferID::BT2020_12,
+    ColorSpace::TransferID::SRGB_HDR,
 };
 
 ColorSpace::TransferID extended_transfers[] = {
     ColorSpace::TransferID::LINEAR_HDR,
-    ColorSpace::TransferID::IEC61966_2_1_HDR,
+    ColorSpace::TransferID::SRGB_HDR,
 };
 
 ColorSpace::MatrixID all_matrices[] = {
@@ -123,8 +116,7 @@ TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
 }
 
 TEST(SimpleColorSpace, YCOCGLimitedToSRGB) {
-  ColorSpace ycocg(ColorSpace::PrimaryID::BT709,
-                   ColorSpace::TransferID::IEC61966_2_1,
+  ColorSpace ycocg(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB,
                    ColorSpace::MatrixID::YCOCG, ColorSpace::RangeID::LIMITED);
   ColorSpace sRGB = ColorSpace::CreateSRGB();
   std::unique_ptr<ColorTransform> t(
@@ -173,7 +165,7 @@ TEST(SimpleColorSpace, TransferFnCancel) {
   ColorSpace bt709(primary, ColorSpace::TransferID::BT709, matrix, range);
 
   // IEC61966_2_1 has the sRGB gamma of 2.4 (with some adjustments)
-  ColorSpace srgb(primary, ColorSpace::TransferID::IEC61966_2_1, matrix, range);
+  ColorSpace srgb(primary, ColorSpace::TransferID::SRGB, matrix, range);
 
   // gamma28 is a simple exponential
   ColorSpace gamma28(primary, ColorSpace::TransferID::GAMMA28, matrix, range);
@@ -913,8 +905,7 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
 }
 
 TEST(ColorSpaceTest, HLGHDRToSDR) {
-  ColorSpace hlg_cs(ColorSpace::PrimaryID::BT709,
-                    ColorSpace::TransferID::ARIB_STD_B67);
+  ColorSpace hlg_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::HLG);
   ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR);
   gfx::ColorTransform::Options sdr_options;
@@ -942,8 +933,7 @@ TEST(ColorSpaceTest, HLGHDRToSDR) {
 }
 
 TEST(ColorSpaceTest, PQHDRToSDR) {
-  ColorSpace pq_cs(ColorSpace::PrimaryID::BT709,
-                   ColorSpace::TransferID::SMPTEST2084);
+  ColorSpace pq_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::PQ);
   ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
                          ColorSpace::TransferID::LINEAR);
   gfx::ColorTransform::Options sdr_options;

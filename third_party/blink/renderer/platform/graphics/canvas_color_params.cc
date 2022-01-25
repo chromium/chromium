@@ -31,10 +31,10 @@ gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
       return gfx::ColorSpace::CreateDisplayP3D65();
     case PredefinedColorSpace::kRec2100HLG:
       return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                             gfx::ColorSpace::TransferID::ARIB_STD_B67);
+                             gfx::ColorSpace::TransferID::HLG);
     case PredefinedColorSpace::kRec2100PQ:
       return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                             gfx::ColorSpace::TransferID::SMPTEST2084);
+                             gfx::ColorSpace::TransferID::PQ);
     case PredefinedColorSpace::kSRGBLinear:
       return gfx::ColorSpace::CreateSCRGBLinear();
   }

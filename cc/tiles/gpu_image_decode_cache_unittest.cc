@@ -486,7 +486,7 @@ class GpuImageDecodeCacheTest
   gfx::ColorSpace DefaultColorSpace() {
     if (color_type_ != kRGBA_F16_SkColorType)
       return gfx::ColorSpace::CreateSRGB();
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTEST432_1,  // P3
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::P3,
                            gfx::ColorSpace::TransferID::LINEAR);
   }
 

@@ -323,10 +323,9 @@ TEST_P(WebmMuxerTest, ColorSpaceREC709IsPropagatedToTrack) {
 TEST_P(WebmMuxerTest, ColorSpaceExtendedSRGBIsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::IEC61966_2_1,
-                      gfx::ColorSpace::MatrixID::BT709,
-                      gfx::ColorSpace::RangeID::LIMITED));
+      gfx::ColorSpace(
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+          gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED));
   webm_muxer_->OnEncodedVideo(params, "banana", {}, base::TimeTicks::Now(),
                               true /* keyframe */);
   mkvmuxer::Colour* colour = GetVideoTrackColor();
@@ -340,7 +339,7 @@ TEST_P(WebmMuxerTest, ColorSpaceHDR10IsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                      gfx::ColorSpace::TransferID::SMPTEST2084,
+                      gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::LIMITED));
   webm_muxer_->OnEncodedVideo(params, "cafebabe", {}, base::TimeTicks::Now(),
@@ -357,7 +356,7 @@ TEST_P(WebmMuxerTest, ColorSpaceFullRangeHDR10IsPropagatedToTrack) {
   WebmMuxer::VideoParameters params(
       gfx::Size(1, 1), 0, media::VideoCodec::kVP9,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                      gfx::ColorSpace::TransferID::SMPTEST2084,
+                      gfx::ColorSpace::TransferID::PQ,
                       gfx::ColorSpace::MatrixID::BT2020_NCL,
                       gfx::ColorSpace::RangeID::FULL));
   webm_muxer_->OnEncodedVideo(params, "beatles", {}, base::TimeTicks::Now(),

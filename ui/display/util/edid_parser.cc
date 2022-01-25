@@ -528,9 +528,9 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr gfx::ColorSpace::TransferID kTransferIDMap[] = {
       gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::TransferID::GAMMA24,
-      gfx::ColorSpace::TransferID::SMPTEST2084,
+      gfx::ColorSpace::TransferID::PQ,
       // STD B67 is also known as Hybrid-log Gamma (HLG).
-      gfx::ColorSpace::TransferID::ARIB_STD_B67,
+      gfx::ColorSpace::TransferID::HLG,
   };
   constexpr uint8_t kHDRStaticMetadataDataBlockLengthMask = 0x1F;
 

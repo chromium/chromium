@@ -49,7 +49,7 @@ constexpr auto kChromaticityMap =
          {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_SRGB,
           gfx::ColorSpace::PrimaryID::BT709},
          {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_DISPLAYP3,
-          gfx::ColorSpace::PrimaryID::SMPTEST432_1},
+          gfx::ColorSpace::PrimaryID::P3},
          {ZCR_COLOR_MANAGER_V1_CHROMATICITY_NAMES_ADOBERGB,
           gfx::ColorSpace::PrimaryID::ADOBE_RGB}});
 

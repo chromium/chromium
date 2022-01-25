@@ -120,12 +120,12 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
   if (__builtin_available(macos 11.0, *)) {
     if (io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::SMPTEST2084,
+                            gfx::ColorSpace::TransferID::PQ,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED) ||
         io_surface_color_space ==
             gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::ARIB_STD_B67,
+                            gfx::ColorSpace::TransferID::HLG,
                             gfx::ColorSpace::MatrixID::BT2020_NCL,
                             gfx::ColorSpace::RangeID::LIMITED)) {
       CVBufferSetAttachment(cv_pixel_buffer, kCVImageBufferColorPrimariesKey,
@@ -137,7 +137,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       CVBufferSetAttachment(
           cv_pixel_buffer, kCVImageBufferTransferFunctionKey,
           io_surface_color_space.GetTransferID() ==
-                  gfx::ColorSpace::TransferID::ARIB_STD_B67
+                  gfx::ColorSpace::TransferID::HLG
               ? kCVImageBufferTransferFunction_ITU_R_2100_HLG
               : kCVImageBufferTransferFunction_SMPTE_ST_2084_PQ,
           kCVAttachmentMode_ShouldPropagate);

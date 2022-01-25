@@ -737,8 +737,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // has different (non-sRGB) primaries.
       // https://crbug.com/1258245
       constexpr gfx::ColorSpace dst_color_space(
-          gfx::ColorSpace::PrimaryID::BT709,
-          gfx::ColorSpace::TransferID::IEC61966_2_1,
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
           gfx::ColorSpace::MatrixID::SMPTE170M,
           gfx::ColorSpace::RangeID::LIMITED);
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(

@@ -1093,7 +1093,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     return;
 
   switch (src.GetTransferID()) {
-    case ColorSpace::TransferID::ARIB_STD_B67:
+    case ColorSpace::TransferID::HLG:
       if (options.tone_map_pq_and_hlg_to_sdr) {
         // HLG is designed such that treating it as 2.2 gamma content works
         // well.
@@ -1105,7 +1105,7 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
             options.sdr_max_luminance_nits));
       }
       break;
-    case ColorSpace::TransferID::SMPTEST2084:
+    case ColorSpace::TransferID::PQ:
       if (options.tone_map_pq_and_hlg_to_sdr) {
         steps_.push_back(std::make_unique<ColorTransformPQToneMapToLinear>());
       } else {
@@ -1150,11 +1150,11 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   }
 
   switch (dst.GetTransferID()) {
-    case ColorSpace::TransferID::ARIB_STD_B67:
+    case ColorSpace::TransferID::HLG:
       steps_.push_back(std::make_unique<ColorTransformHLGFromLinear>(
           options.sdr_max_luminance_nits));
       break;
-    case ColorSpace::TransferID::SMPTEST2084:
+    case ColorSpace::TransferID::PQ:
       steps_.push_back(std::make_unique<ColorTransformPQFromLinear>(
           options.sdr_max_luminance_nits));
       break;

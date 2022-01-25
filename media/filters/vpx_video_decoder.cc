@@ -404,7 +404,7 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
       break;
     case VPX_CS_SRGB:
       primaries = gfx::ColorSpace::PrimaryID::BT709;
-      transfer = gfx::ColorSpace::TransferID::IEC61966_2_1;
+      transfer = gfx::ColorSpace::TransferID::SRGB;
       matrix = gfx::ColorSpace::MatrixID::GBR;
       break;
     default:

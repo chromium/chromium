@@ -419,10 +419,10 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
       transfer_id = gfx::ColorSpace::TransferID::SMPTE170M;
       break;
     case 6:  // MediaFormat.COLOR_TRANSFER_ST2084
-      transfer_id = gfx::ColorSpace::TransferID::SMPTEST2084;
+      transfer_id = gfx::ColorSpace::TransferID::PQ;
       break;
     case 7:  // MediaFormat.COLOR_TRANSFER_HLG
-      transfer_id = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+      transfer_id = gfx::ColorSpace::TransferID::HLG;
       break;
     default:
       DVLOG(3) << __func__ << ": unsupported transfer in p: " << standard

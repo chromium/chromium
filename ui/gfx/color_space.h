@@ -63,6 +63,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
  public:
   enum class PrimaryID : uint8_t {
     INVALID,
+    // BT709 is also the primaries for SRGB.
     BT709,
     BT470M,
     BT470BG,
@@ -72,7 +73,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
     BT2020,
     SMPTEST428_1,
     SMPTEST431_2,
-    SMPTEST432_1,
+    P3,
     XYZ_D50,
     ADOBE_RGB,
     // Corresponds the the primaries of the "Generic RGB" profile used in the
@@ -102,15 +103,17 @@ class COLOR_SPACE_EXPORT ColorSpace {
     LOG_SQRT,
     IEC61966_2_4,
     BT1361_ECG,
-    IEC61966_2_1,
+    SRGB,
     BT2020_10,
     BT2020_12,
-    SMPTEST2084,
+    // Perceptual quantizer, also known as SMPTEST2084.
+    PQ,
     SMPTEST428_1,
-    ARIB_STD_B67,  // AKA hybrid-log gamma, HLG.
-    // The same as IEC61966_2_1 on the interval [0, 1], with the nonlinear
-    // segment continuing beyond 1 and point symmetry defining values below 0.
-    IEC61966_2_1_HDR,
+    // Hybrid-log gamma, also known as ARIB_STD_B67.
+    HLG,
+    // The same as SRGB on the interval [0, 1], with the nonlinear segment
+    // continuing beyond 1 and point symmetry defining values below 0.
+    SRGB_HDR,
     // The same as LINEAR but is defined for all real values.
     LINEAR_HDR,
     // A parametric transfer function defined by |transfer_params_|.
@@ -173,13 +176,13 @@ class COLOR_SPACE_EXPORT ColorSpace {
   bool IsValid() const;
 
   static constexpr ColorSpace CreateSRGB() {
-    return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1, MatrixID::RGB,
+    return ColorSpace(PrimaryID::BT709, TransferID::SRGB, MatrixID::RGB,
                       RangeID::FULL);
   }
 
   static constexpr ColorSpace CreateDisplayP3D65() {
-    return ColorSpace(PrimaryID::SMPTEST432_1, TransferID::IEC61966_2_1,
-                      MatrixID::RGB, RangeID::FULL);
+    return ColorSpace(PrimaryID::P3, TransferID::SRGB, MatrixID::RGB,
+                      RangeID::FULL);
   }
   static ColorSpace CreateCustom(const skcms_Matrix3x3& to_XYZD50,
                                  const skcms_TransferFunction& fn);
@@ -193,8 +196,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Extended sRGB matches sRGB for values in [0, 1], and extends the transfer
   // function to all real values.
   static constexpr ColorSpace CreateExtendedSRGB() {
-    return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR,
-                      MatrixID::RGB, RangeID::FULL);
+    return ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR, MatrixID::RGB,
+                      RangeID::FULL);
   }
 
   // scRGB uses the same primaries as sRGB but has a linear transfer function
@@ -208,7 +211,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
 
   // HDR10 uses BT.2020 primaries with SMPTE ST 2084 PQ transfer function.
   static constexpr ColorSpace CreateHDR10() {
-    return ColorSpace(PrimaryID::BT2020, TransferID::SMPTEST2084, MatrixID::RGB,
+    return ColorSpace(PrimaryID::BT2020, TransferID::PQ, MatrixID::RGB,
                       RangeID::FULL);
   }
   // Allows specifying a custom SDR white level.  Only used on Windows.
@@ -236,8 +239,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
   static constexpr ColorSpace CreateJpeg() {
     // TODO(ccameron): Determine which primaries and transfer function were
     // intended here.
-    return ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1,
-                      MatrixID::SMPTE170M, RangeID::FULL);
+    return ColorSpace(PrimaryID::BT709, TransferID::SRGB, MatrixID::SMPTE170M,
+                      RangeID::FULL);
   }
   static constexpr ColorSpace CreateREC601() {
     return ColorSpace(PrimaryID::SMPTE170M, TransferID::SMPTE170M,

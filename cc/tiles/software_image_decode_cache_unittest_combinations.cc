@@ -174,14 +174,14 @@ class ExoticColorSpace : public virtual BaseTest {
  protected:
   gfx::ColorSpace GetColorSpace() override {
     return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::XYZ_D50,
-                           gfx::ColorSpace::TransferID::IEC61966_2_1);
+                           gfx::ColorSpace::TransferID::SRGB);
   }
 };
 
 class WideGamutCanvasColorSpace : public virtual BaseTest {
  protected:
   gfx::ColorSpace GetColorSpace() override {
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTEST432_1,  // P3
+    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::P3,
                            gfx::ColorSpace::TransferID::LINEAR);
   }
 };

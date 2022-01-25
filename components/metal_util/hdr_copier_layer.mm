@@ -126,11 +126,11 @@ const char* tonemapping_shader_source =
 // unsupported.
 uint32_t GetTransferFunctionIndex(const gfx::ColorSpace& color_space) {
   switch (color_space.GetTransferID()) {
-    case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
       return 1;
-    case gfx::ColorSpace::TransferID::SMPTEST2084:
+    case gfx::ColorSpace::TransferID::PQ:
       return 2;
-    case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+    case gfx::ColorSpace::TransferID::HLG:
       return 3;
     default:
       return 0;

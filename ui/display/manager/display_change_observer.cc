@@ -102,10 +102,10 @@ gfx::DisplayColorSpaces FillDisplayColorSpaces(
   gfx::ColorSpace sdr_color_space;
   if (primary_id == gfx::ColorSpace::PrimaryID::CUSTOM) {
     sdr_color_space = gfx::ColorSpace::CreateCustom(
-        primary_matrix, gfx::ColorSpace::TransferID::IEC61966_2_1);
+        primary_matrix, gfx::ColorSpace::TransferID::SRGB);
   } else {
     sdr_color_space =
-        gfx::ColorSpace(primary_id, gfx::ColorSpace::TransferID::IEC61966_2_1);
+        gfx::ColorSpace(primary_id, gfx::ColorSpace::TransferID::SRGB);
   }
   gfx::DisplayColorSpaces display_color_spaces = gfx::DisplayColorSpaces(
       sdr_color_space, DisplaySnapshot::PrimaryFormat());

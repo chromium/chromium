@@ -3043,8 +3043,7 @@ bool DXVAVideoDecodeAccelerator::InitializeID3D11VideoProcessor(
   // conversion and let the output color space be HLG. This won't work well
   // unless color management is on, but if color management is off we don't
   // support HLG anyways. See https://crbug.com/1144260#c6.
-  if (color_space.GetTransferID() ==
-      gfx::ColorSpace::TransferID::ARIB_STD_B67) {
+  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG) {
     video_context1->VideoProcessorSetStreamColorSpace1(
         d3d11_processor_.Get(), 0,
         DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020);

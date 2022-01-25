@@ -353,7 +353,7 @@ TEST_P(LayerTreeHostTilesTestRasterColorSpace, CustomColorSpace) {
   primaries.fWY = 0.3290f;
   primaries.toXYZD50(&to_XYZD50);
   SetColorSpace(gfx::ColorSpace::CreateCustom(
-      to_XYZD50, gfx::ColorSpace::TransferID::IEC61966_2_1));
+      to_XYZD50, gfx::ColorSpace::TransferID::SRGB));
 
   RunPixelTest(picture_layer_,
                base::FilePath(FILE_PATH_LITERAL("primary_colors.png")));

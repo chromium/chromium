@@ -399,8 +399,7 @@ TEST_P(DisplayChangeObserverTest, SDRDisplayColorSpaces) {
   const auto color_space = display_color_spaces.GetRasterColorSpace();
   EXPECT_TRUE(color_space.IsValid());
   EXPECT_EQ(color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::BT709);
-  EXPECT_EQ(color_space.GetTransferID(),
-            gfx::ColorSpace::TransferID::IEC61966_2_1);
+  EXPECT_EQ(color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
 }
 
 TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
@@ -431,10 +430,8 @@ TEST_P(DisplayChangeObserverTest, WCGDisplayColorSpaces) {
 
   const auto color_space = display_color_spaces.GetRasterColorSpace();
   EXPECT_TRUE(color_space.IsValid());
-  EXPECT_EQ(color_space.GetPrimaryID(),
-            gfx::ColorSpace::PrimaryID::SMPTEST432_1);
-  EXPECT_EQ(color_space.GetTransferID(),
-            gfx::ColorSpace::TransferID::IEC61966_2_1);
+  EXPECT_EQ(color_space.GetPrimaryID(), gfx::ColorSpace::PrimaryID::P3);
+  EXPECT_EQ(color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -478,8 +475,7 @@ TEST_P(DisplayChangeObserverTest, HDRDisplayColorSpaces) {
                                                /*needs_alpha=*/true);
   EXPECT_TRUE(sdr_color_space.IsValid());
   EXPECT_EQ(sdr_color_space.GetPrimaryID(), display_color_space.GetPrimaryID());
-  EXPECT_EQ(sdr_color_space.GetTransferID(),
-            gfx::ColorSpace::TransferID::IEC61966_2_1);
+  EXPECT_EQ(sdr_color_space.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
 
   EXPECT_EQ(
       display_color_spaces.GetOutputBufferFormat(gfx::ContentColorUsage::kHDR,

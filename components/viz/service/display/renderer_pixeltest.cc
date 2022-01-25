@@ -5137,7 +5137,7 @@ class ColorTransformPixelTest
       return;
     }
 
-    if (src_color_space_.GetTransferID() == TransferID::SMPTEST2084 &&
+    if (src_color_space_.GetTransferID() == TransferID::PQ &&
         !dst_color_space_.IsHDR()) {
       LOG(ERROR) << "Skipping tonemapped output";
       return;
@@ -5267,9 +5267,9 @@ gfx::ColorSpace src_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTEST428_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
     // Piecewise HDR transfer functions skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.5, 1.5),
@@ -5285,8 +5285,8 @@ gfx::ColorSpace dst_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::BT709, TransferID::GAMMA28),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::SMPTE240M),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1),
-    gfx::ColorSpace(PrimaryID::BT709, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB),
+    gfx::ColorSpace(PrimaryID::BT709, TransferID::SRGB_HDR),
     gfx::ColorSpace(PrimaryID::BT709, TransferID::LINEAR_HDR),
     // Piecewise HDR transfer functions are skipped with SkiaRenderer.
     gfx::ColorSpace::CreatePiecewiseHDR(PrimaryID::BT709, 0.25, 2.5),
@@ -5294,7 +5294,7 @@ gfx::ColorSpace dst_color_spaces[] = {
 
 gfx::ColorSpace intermediate_color_spaces[] = {
     gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::LINEAR),
-    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::IEC61966_2_1_HDR),
+    gfx::ColorSpace(PrimaryID::XYZ_D50, TransferID::SRGB_HDR),
 };
 
 INSTANTIATE_TEST_SUITE_P(

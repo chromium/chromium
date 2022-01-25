@@ -173,8 +173,7 @@ ColorSpace ICCProfile::GetPrimariesOnlyColorSpace() const {
   if (!internals_ || !internals_->is_valid_)
     return ColorSpace();
 
-  return ColorSpace(ColorSpace::PrimaryID::CUSTOM,
-                    ColorSpace::TransferID::IEC61966_2_1,
+  return ColorSpace(ColorSpace::PrimaryID::CUSTOM, ColorSpace::TransferID::SRGB,
                     ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL,
                     &internals_->to_XYZD50_, nullptr);
 }

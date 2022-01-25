@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <unordered_map>
 #include <vector>
 
 #include "base/bind.h"
@@ -95,9 +96,8 @@ TEST_F(DecodedImageTrackerTest, QueueImageLocksImages) {
 
 TEST_F(DecodedImageTrackerTest, Colorspace) {
   bool locked = false;
-  gfx::ColorSpace decoded_color_space(
-      gfx::ColorSpace::PrimaryID::XYZ_D50,
-      gfx::ColorSpace::TransferID::IEC61966_2_1);
+  gfx::ColorSpace decoded_color_space(gfx::ColorSpace::PrimaryID::XYZ_D50,
+                                      gfx::ColorSpace::TransferID::SRGB);
   gfx::ColorSpace srgb_color_space = gfx::ColorSpace::CreateSRGB();
   auto paint_image = CreateDiscardablePaintImage(gfx::Size(1, 1));
   decoded_image_tracker()->QueueImageDecode(

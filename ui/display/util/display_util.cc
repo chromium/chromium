@@ -140,11 +140,11 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
   if (base::Contains(edid_parser.supported_color_primary_ids(),
                      gfx::ColorSpace::PrimaryID::BT2020)) {
     if (base::Contains(edid_parser.supported_color_transfer_ids(),
-                       gfx::ColorSpace::TransferID::SMPTEST2084)) {
-      transfer_id = gfx::ColorSpace::TransferID::SMPTEST2084;
+                       gfx::ColorSpace::TransferID::PQ)) {
+      transfer_id = gfx::ColorSpace::TransferID::PQ;
     } else if (base::Contains(edid_parser.supported_color_transfer_ids(),
-                              gfx::ColorSpace::TransferID::ARIB_STD_B67)) {
-      transfer_id = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+                              gfx::ColorSpace::TransferID::HLG)) {
+      transfer_id = gfx::ColorSpace::TransferID::HLG;
     }
   } else if (gamma == 2.2f) {
     transfer_id = gfx::ColorSpace::TransferID::GAMMA22;

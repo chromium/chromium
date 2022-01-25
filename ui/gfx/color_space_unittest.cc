@@ -209,14 +209,11 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   skcms_TransferFunction transfer_fn = {2.1f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
 
   ColorSpace color_spaces[kNumTests] = {
-      ColorSpace(ColorSpace::PrimaryID::BT709,
-                 ColorSpace::TransferID::IEC61966_2_1),
+      ColorSpace(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB),
       ColorSpace(ColorSpace::PrimaryID::ADOBE_RGB,
-                 ColorSpace::TransferID::IEC61966_2_1),
-      ColorSpace(ColorSpace::PrimaryID::SMPTEST432_1,
-                 ColorSpace::TransferID::LINEAR),
-      ColorSpace(ColorSpace::PrimaryID::BT2020,
-                 ColorSpace::TransferID::IEC61966_2_1),
+                 ColorSpace::TransferID::SRGB),
+      ColorSpace(ColorSpace::PrimaryID::P3, ColorSpace::TransferID::LINEAR),
+      ColorSpace(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::SRGB),
       ColorSpace::CreateCustom(primary_matrix, transfer_fn),
   };
   sk_sp<SkColorSpace> sk_color_spaces[kNumTests] = {
@@ -262,8 +259,7 @@ TEST(ColorSpace, PQToSkColorSpace) {
   EXPECT_TRUE(
       roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
   EXPECT_NEAR(50.f, roundtrip_sdr_white_level, kEpsilon);
-  EXPECT_EQ(ColorSpace::TransferID::SMPTEST2084,
-            roundtrip_color_space.GetTransferID());
+  EXPECT_EQ(ColorSpace::TransferID::PQ, roundtrip_color_space.GetTransferID());
 
   // When no white level is specified, we should get an SkColorSpace that
   // specifies the default white level. Of note is that in the roundtrip, the
@@ -291,8 +287,7 @@ TEST(ColorSpace, HLGToSkColorSpace) {
   EXPECT_TRUE(
       roundtrip_color_space.GetSDRWhiteLevel(&roundtrip_sdr_white_level));
   EXPECT_FLOAT_EQ(kSDRWhiteLevel, roundtrip_sdr_white_level);
-  EXPECT_EQ(ColorSpace::TransferID::ARIB_STD_B67,
-            roundtrip_color_space.GetTransferID());
+  EXPECT_EQ(ColorSpace::TransferID::HLG, roundtrip_color_space.GetTransferID());
 
   // When no white level is specified, we should get an SkColorSpace that
   // specifies the default white level. Of note is that in the roundtrip, the
@@ -316,9 +311,9 @@ TEST(ColorSpace, MixedInvalid) {
 }
 
 TEST(ColorSpace, MixedSRGBWithRec601) {
-  const ColorSpace expected_color_space = ColorSpace(
-      ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::IEC61966_2_1,
-      ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
+  const ColorSpace expected_color_space =
+      ColorSpace(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB,
+                 ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
   ColorSpace color_space = ColorSpace::CreateSRGB();
   color_space = color_space.GetWithMatrixAndRange(
       ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
@@ -327,9 +322,9 @@ TEST(ColorSpace, MixedSRGBWithRec601) {
 }
 
 TEST(ColorSpace, MixedHDR10WithRec709) {
-  const ColorSpace expected_color_space = ColorSpace(
-      ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::SMPTEST2084,
-      ColorSpace::MatrixID::BT709, ColorSpace::RangeID::LIMITED);
+  const ColorSpace expected_color_space =
+      ColorSpace(ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::PQ,
+                 ColorSpace::MatrixID::BT709, ColorSpace::RangeID::LIMITED);
   ColorSpace color_space = ColorSpace::CreateHDR10();
   color_space = color_space.GetWithMatrixAndRange(ColorSpace::MatrixID::BT709,
                                                   ColorSpace::RangeID::LIMITED);
@@ -351,24 +346,24 @@ TEST(ColorSpace, PQWhiteLevel) {
   constexpr float kCustomWhiteLevel = 200.f;
 
   ColorSpace color_space = ColorSpace::CreateHDR10(kCustomWhiteLevel);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
+  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
   float sdr_white_level;
   EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   color_space = ColorSpace::CreateHDR10();
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
+  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
   EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, ColorSpace::kDefaultSDRWhiteLevel);
 
   color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
+  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
   EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel);
 
   constexpr float kCustomWhiteLevel2 = kCustomWhiteLevel * 2;
   color_space = color_space.GetWithSDRWhiteLevel(kCustomWhiteLevel2);
-  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::SMPTEST2084);
+  EXPECT_EQ(color_space.GetTransferID(), ColorSpace::TransferID::PQ);
   EXPECT_TRUE(color_space.GetSDRWhiteLevel(&sdr_white_level));
   EXPECT_EQ(sdr_white_level, kCustomWhiteLevel2);
 }
@@ -409,7 +404,7 @@ TEST(ColorSpace, ExpectationsMatchSRGB) {
       ColorSpace::PrimaryID::BT2020,
       ColorSpace::PrimaryID::SMPTEST428_1,
       ColorSpace::PrimaryID::SMPTEST431_2,
-      ColorSpace::PrimaryID::SMPTEST432_1,
+      ColorSpace::PrimaryID::P3,
       ColorSpace::PrimaryID::XYZ_D50,
       ColorSpace::PrimaryID::ADOBE_RGB,
       ColorSpace::PrimaryID::APPLE_GENERIC_RGB,
@@ -421,10 +416,10 @@ TEST(ColorSpace, ExpectationsMatchSRGB) {
   skcms_Matrix3x3 to_XYZD50;
   srgb.GetPrimaryMatrix(&to_XYZD50);
   ColorSpace custom_srgb =
-      ColorSpace::CreateCustom(to_XYZD50, ColorSpace::TransferID::IEC61966_2_1);
+      ColorSpace::CreateCustom(to_XYZD50, ColorSpace::TransferID::SRGB);
 
   for (auto id : primary_ids) {
-    ColorSpace color_space(id, ColorSpace::TransferID::IEC61966_2_1);
+    ColorSpace color_space(id, ColorSpace::TransferID::SRGB);
     // The precomputed results for Contains(sRGB) should match the calculation
     // performed on a custom color space with sRGB primaries.
     EXPECT_EQ(color_space.Contains(srgb), color_space.Contains(custom_srgb));
