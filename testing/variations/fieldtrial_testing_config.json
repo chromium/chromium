@@ -64,21 +64,6 @@
             ]
         }
     ],
-    "AmpBackgroundTab": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AmpBackgroundTab",
-                    "enable_features": [
-                        "CCTBackgroundTab"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidContextualSearchM95": [
         {
             "platforms": [
