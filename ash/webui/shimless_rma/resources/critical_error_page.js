@@ -35,6 +35,15 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   static get template() {
     return html`{__html_template__}`;
   }
+  static get properties() {
+    return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+    };
+  }
 
   constructor() {
     super();
@@ -43,14 +52,21 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   }
 
   /** @protected */
-  onRecoverFirmwareButtonClicked_() {
-    // TODO(swifton): Rename the method to match the action that it performs.
+  onExitToLoginButtonClicked_() {
     this.shimlessRmaService_.criticalErrorExitToLogin();
+    this.dispatchEvent(new CustomEvent(
+        'disable-all-buttons',
+        {bubbles: true, composed: true, detail: true},
+        ));
   }
 
   /** @protected */
   onRebootButtonClicked_() {
     this.shimlessRmaService_.criticalErrorReboot();
+    this.dispatchEvent(new CustomEvent(
+        'disable-all-buttons',
+        {bubbles: true, composed: true, detail: true},
+        ));
   }
 }
 

@@ -4,6 +4,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {criticalErrorPageTest} from './critical_error_page_test.js';
 import {fakeShimlessRmaServiceTestSuite} from './fake_shimless_rma_service_test.js';
 import {onboardingChooseDestinationPageTest} from './onboarding_choose_destination_page_test.js';
 import {onboardingChooseWpDisableMethodPageTest} from './onboarding_choose_wp_disable_method_page_test.js';
@@ -33,6 +34,7 @@ function runSuite(suiteName, testFn) {
   suite(suiteName, testFn);
 }
 
+runSuite('CriticalErrorPageTest', criticalErrorPageTest);
 runSuite('FakeShimlessRmaServiceTestSuite', fakeShimlessRmaServiceTestSuite);
 runSuite(
     'OnboardingChooseDestinationPageTest', onboardingChooseDestinationPageTest);

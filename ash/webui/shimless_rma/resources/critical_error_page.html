@@ -9,7 +9,7 @@
     width: 20px;
   }
 
-  #performUpdateButton {
+  #exitToLoginButton {
     border-color: var(--google-blue-600);
     border-radius: 12px;
   }
@@ -27,10 +27,12 @@
     <h1>[[i18n('criticalErrorTitleText')]]</h1>
     <div>[[i18n('criticalErrorMessageText')]]</div>
     <div id="writeProtectStatus">[[statusString_]]</div>
-    <cr-button id="performUpdateButton" on-click="onRebootButtonClicked_">
+    <cr-button id="exitToLoginButton" on-click="onExitToLoginButtonClicked_"
+        disabled="[[allButtonsDisabled]]">
       [[i18n('criticalErrorRebootText')]]
     </cr-button>
-    <cr-button id="recoverFirmwareButton" on-click="onRecoverFirmwareButtonClicked_">
+    <cr-button id="rebootButton" on-click="onRebootButtonClicked_"
+        disabled="[[allButtonsDisabled]]">
       [[i18n('criticalErrorRecoverFirmwareText')]]
     </cr-button>
   </div>
