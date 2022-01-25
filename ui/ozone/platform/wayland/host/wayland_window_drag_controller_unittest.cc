@@ -572,9 +572,7 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-// TODO(crbug.com/1285380): Reenable test when flakiness is fixed.
-TEST_P(WaylandWindowDragControllerTest,
-       DISABLED_DragToOtherWindowSnapDragDrop_TOUCH) {
+TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
@@ -602,12 +600,19 @@ TEST_P(WaylandWindowDragControllerTest,
   //  - Event dispatching and bounds changes are monitored
   //  - At each event, emulates a new event on server side and proceeds to the
   //  next test step.
-  auto* wayland_extension = GetWaylandExtension(*window_);
-  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded();
+  Sync();
   EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
+    EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
+  });
+  SendDndMotion({10, 10});
+  Sync();
+  Mock::VerifyAndClearExpectations(&delegate_);
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
-  DCHECK(move_loop_handler);
+  ASSERT_TRUE(move_loop_handler);
 
   enum {
     kStarted,
@@ -625,82 +630,74 @@ TEST_P(WaylandWindowDragControllerTest,
 
         // Exit |source_window| and enter the |target_window|.
         SendDndLeave();
-        SendDndEnter(target_window, {});
-        test_step = kEnteredTarget;
-        Sync();
-
-        EXPECT_EQ(State::kDetached, drag_controller()->state());
-        // Ensure PlatformScreen keeps consistent.
-        EXPECT_EQ(target_window->GetWidget(),
-                  screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
-
+        SendDndEnter(target_window, {20, 20});
         move_loop_handler->EndMoveLoop();
-        test_step = kSnapped;
+        test_step = kEnteredTarget;
       });
 
-  auto task_1 = base::BindLambdaForTesting([&]() {
-    move_loop_handler->RunMoveLoop({});
+  // While in |kDetached| state, motion events are expected to be propagated
+  // window bounds changed events.
+  SendDndMotion({50, 50});
+  test_step = kDragging;
 
-    window_.reset();
+  // RunMoveLoop() blocks until the window moving ends, so resume test server's
+  // message loop until it move loo returns.
+  server_.Resume();
+  move_loop_handler->RunMoveLoop({});
+  server_.Pause();
 
-    // Continue the dragging session after "snapping" the window. At this point,
-    // the DND session is expected to be still alive and responding normally to
-    // data object events.
-    EXPECT_EQ(State::kAttached, drag_controller()->state());
-    EXPECT_EQ(kSnapped, test_step);
+  // Checks |target_window| is now "focused" and the states keep consistent.
+  Sync();
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_EQ(kEnteredTarget, test_step);
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_EQ(target_window->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 
-    // Drag the pointer a bit more within |target_window| and then releases the
-    // mouse button and ensures drag controller delivers the events properly and
-    // exit gracefully.
-    SendDndMotion({30, 30});
-    SendDndMotion({30, 33});
-    SendDndMotion({30, 36});
-    SendDndMotion({30, 39});
-    SendDndMotion({30, 42});
-    EXPECT_CALL(delegate_, DispatchEvent(_)).Times(5);
-    Sync();
+  // Emulate |window_| snapping into |target_window|, and then continue the
+  // dragging session after "snapping" process. At this point, the DND session
+  // is expected to be still alive and responding normally to data object
+  // events.
+  window_.reset();
+  test_step = kSnapped;
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
 
-    EXPECT_EQ(gfx::Point(30, 42), screen_->GetCursorScreenPoint());
-    EXPECT_EQ(target_window->GetWidget(),
-              screen_->GetLocalProcessWidgetAtPoint({50, 50}, {}));
+  // Drag the pointer a bit more within |target_window| and then releases the
+  // mouse button and ensures drag controller delivers the events properly and
+  // exit gracefully.
+  SendDndMotion({30, 30});
+  SendDndMotion({30, 33});
+  SendDndMotion({30, 36});
+  SendDndMotion({30, 39});
+  SendDndMotion({30, 42});
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(5);
+  Sync();
 
-    SendDndDrop();
-    EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
-      EXPECT_TRUE(event->IsTouchEvent());
-      switch (test_step) {
-        case kSnapped:
-          EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
-          EXPECT_EQ(State::kDropped, drag_controller()->state());
-          EXPECT_EQ(target_window,
-                    window_manager()->GetCurrentPointerOrTouchFocusedWindow());
-          test_step = kDone;
-          break;
-        default:
-          FAIL() << " event=" << event->GetName()
-                 << " state=" << drag_controller()->state()
-                 << " step=" << static_cast<int>(test_step);
-      }
-    });
-    Sync();
+  EXPECT_EQ(gfx::Point(30, 42), screen_->GetCursorScreenPoint());
+  EXPECT_EQ(target_window->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({50, 50}, {}));
+
+  SendDndDrop();
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
+    EXPECT_TRUE(event->IsTouchEvent());
+    switch (test_step) {
+      case kSnapped:
+        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
+        EXPECT_EQ(State::kDropped, drag_controller()->state());
+        EXPECT_EQ(target_window,
+                  window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+        test_step = kDone;
+        break;
+      default:
+        FAIL() << " event=" << event->GetName()
+               << " state=" << drag_controller()->state()
+               << " step=" << static_cast<int>(test_step);
+    }
   });
+  Sync();
 
-  auto task_2 = base::BindLambdaForTesting([&]() {
-    // While in |kDetached| state, motion events are expected to be propagated
-    // by window drag controller as bounds changes.
-    EXPECT_EQ(State::kDetached, drag_controller()->state());
-    EXPECT_EQ(test_step, kStarted);
-    // Ensure PlatformScreen keeps consistent.
-    EXPECT_EQ(source_window->GetWidget(),
-              screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
-    SendDndMotion({50, 50});
-    test_step = kDragging;
-    Sync();
-  });
-
-  ScheduleTestTask(task_1);
-  ScheduleTestTask(task_2);
-  base::RunLoop().RunUntilIdle();
-
+  SendTouchUp(0 /*touch id*/);
+  Sync();
   EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
 }
 

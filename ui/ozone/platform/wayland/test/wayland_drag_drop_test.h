@@ -59,6 +59,7 @@ class WaylandDragDropTest : public WaylandTest,
                              MockPlatformWindowDelegate* delegate,
                              int id,
                              const gfx::Point& location);
+  virtual void SendTouchUp(int id);
   virtual void SendTouchMotion(WaylandWindow* window,
                                MockPlatformWindowDelegate* delegate,
                                int id,
