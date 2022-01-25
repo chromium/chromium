@@ -507,6 +507,7 @@
 <translation id="1521442365706402292">Управување со сертификати</translation>
 <translation id="1521774566618522728">Активен денес</translation>
 <translation id="152234381334907219">Никогаш не зачувувај лозинки</translation>
+<translation id="1523279371236772909">Прегледано во изминатиот месец</translation>
 <translation id="1523978563989812243">Екстензии за „Од текст во говор“</translation>
 <translation id="1524430321211440688">Тастатура</translation>
 <translation id="1524563461097350801">Не, благодарам</translation>
@@ -1029,6 +1030,7 @@
 <translation id="2022395138980869975">Вклучи/исклучи го страничното пребарување</translation>
 <translation id="2023167225947895179">PIN-кодот може да биде лесен за погодување</translation>
 <translation id="202352106777823113">Преземањето траеше предолго, па мрежата го запре.</translation>
+<translation id="2024195579772565064">Избришете го пребарувачот</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> падна. Кликнете на балонот за повторно да се вчита наставката.</translation>
 <translation id="2028449514182362831">Функциите на коишто им требаат сензорите за движење нема да работат</translation>
 <translation id="202918510990975568">Внесете ја лозинката за да ги конфигурирате безбедноста и најавувањето</translation>
@@ -1170,6 +1172,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Додај Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизацијата ќе започне откако ќе излезете од поставките за синхронизација</translation>
+<translation id="2162926944953615670">Нема достапни профили на eSIM</translation>
 <translation id="2163470535490402084">Поврзете се на интернет за да се најавите на <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Вклучи темен режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и уште 1 копче</translation>
@@ -1247,6 +1250,7 @@
 <translation id="2232876851878324699">Датотека што содржи еден сертификат кој не е увезен:</translation>
 <translation id="2233502537820838181">&amp;Повеќе информации</translation>
 <translation id="223356358902285214">Активност на веб и апликации</translation>
+<translation id="2234827758954819389">Водич за приватност</translation>
 <translation id="2234876718134438132">Синхронизација и услуги на Google</translation>
 <translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
 <translation id="2238379619048995541">Податоци за статусот на фреквенцијата</translation>
@@ -1861,6 +1865,7 @@
 <translation id="2828650939514476812">Поврзете се на Wi-Fi мрежа</translation>
 <translation id="2831430281393059038">Уредот е поддржан</translation>
 <translation id="2832124733806557606">Детето може да користи PIN за најавување или отклучување на уредот.</translation>
+<translation id="2835177225987815960">Вашето тековно поставување за скенирање ќе се ресетира, вклучително и сите доделени прекинувачи и поставките за брзината на автоматското скенирање.</translation>
 <translation id="2835547721736623118">Услуга за препознавање говор</translation>
 <translation id="2836269494620652131">Пад</translation>
 <translation id="2836635946302913370">Администраторот го оневозможи најавувањето со ова корисничко име.</translation>
@@ -3091,6 +3096,7 @@
 <translation id="4095264805865317199">Отвори го корисничкиот интерфејс за активирање мобилна мрежа</translation>
 <translation id="4095507791297118304">Примарен приказ</translation>
 <translation id="4096508467498758490">Оневозможува наставки во режим на развивач</translation>
+<translation id="4096797685681362305">Прегледано изминатата седмица</translation>
 <translation id="4097406557126260163">Апликации и екстензии</translation>
 <translation id="409742781329613461">Совети за Chrome</translation>
 <translation id="4097560579602855702">Пребарувајте на Google</translation>
@@ -3498,6 +3504,7 @@
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
 <translation id="4549791035683739768">Вашиот безбедносен клуч нема складирани отпечатоци</translation>
+<translation id="4550926046134589611">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Притиснете <ph name="MODIFIER_KEY_DESCRIPTION" /> за да се врати</translation>
 <translation id="4553526521109675518">Треба да го рестартирате вашиот Chromebook за да го промените јазикот на уредот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Повлечете преку сликите за да пребарате со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3646,6 +3653,7 @@
 <translation id="4699172675775169585">Кеширани слики и датотеки</translation>
 <translation id="4699357559218762027">(автоматско стартување)</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
+<translation id="4701335814944566468">Прегледано вчера</translation>
 <translation id="4708794300267213770">Прикажи заклучен екран при будење од режим на мирување</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Обнови поставки</translation>
@@ -3713,6 +3721,7 @@
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4796142525425001238">Секогаш враќај</translation>
 <translation id="4798236378408895261">Прикачи <ph name="BEGIN_LINK" />евиденција за Bluetooth<ph name="END_LINK" /> (интерно во Google)</translation>
+<translation id="479863874072008121">Управувајте со уредите</translation>
 <translation id="4800839971935185386">Прегледајте ги ажурирањата на имињата и иконите</translation>
 <translation id="4801448226354548035">Сокриј сметки</translation>
 <translation id="4801512016965057443">Дозволи роаминг на мобилен интернет</translation>
@@ -3786,6 +3795,7 @@
 <translation id="48704129375571883">Додајте дополнителни функции</translation>
 <translation id="4870758487381879312">Внесете лозинка што ви ја обезбедил администраторот за да добиете информации за конфигурацијата</translation>
 <translation id="4870903493621965035">Нема спарени уреди</translation>
+<translation id="4870995365819149457">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и 1 друга апликација.</translation>
 <translation id="4871308555310586478">Не од Веб-продавницата на Chrome.</translation>
 <translation id="4871322859485617074">PIN-кодот содржи неважечки знаци</translation>
 <translation id="4871370605780490696">Додајте обележувач</translation>
@@ -4818,6 +4828,7 @@
 <translation id="5969728632630673489">Известувањето за кратенка од тастатурата е отфрлено</translation>
 <translation id="5971037678316050792">Контрола на состојбата и спарувањето на адаптерот за Bluetooth</translation>
 <translation id="597235323114979258">Видете повеќе дестинации</translation>
+<translation id="5972543790327947908">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> или <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">Услугата не работи</translation>
 <translation id="5972708806901999743">Премести на врвот</translation>
 <translation id="5972826969634861500">Стартувај <ph name="PRODUCT_NAME" /></translation>
@@ -5189,6 +5200,7 @@
 <translation id="6355789186038748882">Експериментален прелистувач (со алфа квалитет)! Некои функции недостасуваат или се нецелосни. Пријавете ги проблемите преку: „Помош &gt; Пријавете проблем…“.</translation>
 <translation id="635609604405270300">Чувајте го уредот вклучен</translation>
 <translation id="63566973648609420">Само лицата што ја знаат вашата лозинка може да ги прочитаат шифрираните податоци. Лозинката не се испраќа до Google ниту пак се складира. Ако ја заборавите, ќе треба да ја <ph name="BEGIN_LINK" />ресетирате синхронизацијата<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" /> или <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Змеј</translation>
 <translation id="6359706544163531585">Оневозможи светла тема</translation>
 <translation id="6361850914223837199">Детали за грешка:</translation>
@@ -5702,6 +5714,7 @@
 <translation id="6900284862687837908">Апликација во заднина: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Подобрена заштита</translation>
 <translation id="6900651018461749106">Најавете се повторно за да ја ажурирате <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Дали сигурно сакате да го избришете овој пребарувач?</translation>
 <translation id="6902066522699286937">Глас за преглед</translation>
 <translation id="6902336033320348843">Делот не е поддржан: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Приклучете го уредот на домен</translation>
@@ -5972,6 +5985,7 @@
 <translation id="7189234443051076392">Уверете се дека има доволно простор на уредот</translation>
 <translation id="7189451821249468368">Немате доволно надградби за да го регистрирате уредов. Контактирајте со службата за продажбата за да купите уште. Ако сметате дека не треба да ја гледате оваа порака, контактирајте со службата за поддршката.</translation>
 <translation id="7189965711416741966">Отпечатокот е додаден.</translation>
+<translation id="7191063546666816478">Некои поддржани линкови сѐ уште ќе се отвораат во <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> и <ph name="NUMBER_OF_OTHER_APPS" /> други апликации.</translation>
 <translation id="7191159667348037">Непознат печатач (USB)</translation>
 <translation id="7193051357671784796">Вашата организација ја додаде апликацијава. Рестартирајте ја апликацијата за да завршите со инсталацијата.</translation>
 <translation id="7193374945610105795">Не се зачувани лозинки за <ph name="ORIGIN" /></translation>
@@ -6428,6 +6442,7 @@
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7659154729610375585">Сепак да се излезе од режимот „Инкогнито“?</translation>
 <translation id="7659297516559011665">Лозинки само на уредов</translation>
+<translation id="7659336857671800422">Прегледајте го водичот за приватност</translation>
 <translation id="7659584679870740384">Немате дозвола да го користите овој уред. Контактирајте го администраторот за дозвола за пријавување.</translation>
 <translation id="7661259717474717992">Дозволете сајтовите да зачувуваат и читаат податоци за колачињата</translation>
 <translation id="7661451191293163002">Не може да се добие сертификат за регистрација.</translation>
@@ -7948,6 +7963,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ќе може да ги изменува датотеките во <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Пребарај на <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Сите офлајн податоци ќе се избришат</translation>
+<translation id="9201117361710210082">Прегледано претходно</translation>
 <translation id="9201220332032049474">Опции за заклучување на екранот</translation>
 <translation id="9201842707396338580">Нешто тргна наопаку. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Профилирањето е овозможено</translation>

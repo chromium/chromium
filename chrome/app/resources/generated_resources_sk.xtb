@@ -510,6 +510,7 @@
 <translation id="1521442365706402292">Spravovať certifikáty</translation>
 <translation id="1521774566618522728">Aktívne dnes</translation>
 <translation id="152234381334907219">Nikdy neukladať</translation>
+<translation id="1523279371236772909">Zobrazené v uplynulom mesiaci</translation>
 <translation id="1523978563989812243">Nástroje prevodu textu na reč</translation>
 <translation id="1524430321211440688">Klávesnica</translation>
 <translation id="1524563461097350801">Nie, ďakujem</translation>
@@ -1241,6 +1242,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2232876851878324699">Súbor obsahoval jeden certifikát, ktorý nebol importovaný:</translation>
 <translation id="2233502537820838181">Ďalšie &amp;informácie</translation>
 <translation id="223356358902285214">Aktivita na internete a v aplikáciách</translation>
+<translation id="2234827758954819389">Sprievodca ochranou súkromia</translation>
 <translation id="2234876718134438132">Synchronizácia a služby Googlu</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2238379619048995541">Údaje stavu frekvencie</translation>
@@ -3094,6 +3096,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4095264805865317199">Otvoriť rozhranie aktivácie mobilnej siete</translation>
 <translation id="4095507791297118304">Primárna obrazovka</translation>
 <translation id="4096508467498758490">Zakázanie rozšírení spustených v režime vývojára</translation>
+<translation id="4096797685681362305">Zobrazené v uplynulom týždni</translation>
 <translation id="4097406557126260163">Aplikácie a rozšírenia</translation>
 <translation id="409742781329613461">Tip pre Chrome</translation>
 <translation id="4097560579602855702">Vyhľadať na Googli</translation>
@@ -3649,6 +3652,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4699172675775169585">Obrázky a súbory vo vyrovnávacej pamäti</translation>
 <translation id="4699357559218762027">(automaticky spustené)</translation>
 <translation id="4701025263201366865">Prihlásenie rodiča</translation>
+<translation id="4701335814944566468">Zobrazené včera</translation>
 <translation id="4708794300267213770">Pri prebúdzaní z režimu spánku spúšťať uzamknutú obrazovku</translation>
 <translation id="4708849949179781599">Ukončiť aplikáciu <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Obnoviť nastavenia</translation>
@@ -3716,6 +3720,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="479536056609751218">Webová stránka, len kód HTML</translation>
 <translation id="4796142525425001238">Vždy obnoviť</translation>
 <translation id="4798236378408895261">Priložiť <ph name="BEGIN_LINK" />denníky rozhrania Bluetooth<ph name="END_LINK" /> (interné informácie Google)</translation>
+<translation id="479863874072008121">Správa zariadení</translation>
 <translation id="4800839971935185386">Pozrite si aktualizácie názvu a ikony</translation>
 <translation id="4801448226354548035">Skryť účty</translation>
 <translation id="4801512016965057443">Povoliť roaming pre mobilné dáta</translation>
@@ -6439,6 +6444,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7659154729610375585">Naozaj chcete ukončiť režim inkognito?</translation>
 <translation id="7659297516559011665">Iba heslá v tomto zariadení</translation>
+<translation id="7659336857671800422">Prejsť na sprievodcu ochranou súkromia</translation>
 <translation id="7659584679870740384">Nemáte oprávnenie používať toto zariadenie. Ak chcete získať povolenie na prihlásenie sa, kontaktujte správcu.</translation>
 <translation id="7661259717474717992">Povoliť webom ukladať a čítať súbory cookie</translation>
 <translation id="7661451191293163002">Registračný certifikát sa nepodarilo získať.</translation>
@@ -7962,6 +7968,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9200339982498053969"><ph name="ORIGIN" /> bude môcť upraviť súbory v priečinku <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Hľadať vyhľadávačom <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Všetky offline dáta budú vymazané</translation>
+<translation id="9201117361710210082">Zobrazené v minulosti</translation>
 <translation id="9201220332032049474">Možnosti zámky obrazovky</translation>
 <translation id="9201842707396338580">Vyskytol sa problém. Kontaktujte vlastníka či správcu zariadenia. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilovanie povolené</translation>

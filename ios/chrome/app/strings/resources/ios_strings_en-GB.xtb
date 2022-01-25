@@ -521,6 +521,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5896576662943111387">Built for iOS</translation>
 <translation id="5897956970858271241">Visit copied link</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
+<translation id="5902639236448164449">Manage site permissions for <ph name="URL" />. These permissions will be reset when you close the tab.</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Options to translate the page</translation>
 <translation id="5938160824633642847">Your device is almost full. Free up space and try again.</translation>

@@ -513,6 +513,7 @@
 <translation id="1521442365706402292">ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
 <translation id="152234381334907219">ಎಂದಿಗೂ ಉಳಿಸಿಲ್ಲ</translation>
+<translation id="1523279371236772909">ಕಳೆದ ತಿಂಗಳಲ್ಲಿ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="1523978563989812243">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="1524430321211440688">ಕೀಬೋರ್ಡ್</translation>
 <translation id="1524563461097350801">ಬೇಡ</translation>
@@ -1244,6 +1245,7 @@
 <translation id="2232876851878324699">ಫೈಲ್ ಆಮದು ಮಾಡದೆ ಇರುವಂತಹ ಒಂದು ಪ್ರಮಾಣಪತ್ರವನ್ನು ಒಳಗೊಂಡಿದೆ:</translation>
 <translation id="2233502537820838181">&amp;ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
+<translation id="2234827758954819389">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
 <translation id="2234876718134438132">ಸಿಂಕ್ ಮತ್ತು Google ಸೇವೆಗಳು</translation>
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2238379619048995541">ಆವರ್ತನ ಸ್ಥಿತಿಯ ಡೇಟಾ</translation>
@@ -3100,6 +3102,7 @@
 <translation id="4095264805865317199">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ UI ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4095507791297118304">ಪ್ರಾಥಮಿಕ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="4096508467498758490">ವಿಸ್ತರಣೆಗಳ ಡೆವೆಲಪರ್ ಮೋಡ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="4096797685681362305">ಕಳೆದ ವಾರದಲ್ಲಿ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="4097406557126260163">ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳು</translation>
 <translation id="409742781329613461">Chrome ಗಾಗಿ ಸಲಹೆಗಳು</translation>
 <translation id="4097560579602855702">Google ನಲ್ಲಿ ಹುಡುಕಿ</translation>
@@ -3655,6 +3658,7 @@
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
 <translation id="4699357559218762027">(ಆಟೋ-ಲಾಂಚ್ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4701025263201366865">ಪೋಷಕರ ಸೈನ್ ಇನ್</translation>
+<translation id="4701335814944566468">ನಿನ್ನೆ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="4708794300267213770">ನಿದ್ರಾವಸ್ಥೆಯಿಂದ ಹೊರಬರುವಾಗ ಲಾಕ್ ಪರದೆ ತೋರಿಸು</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="4711638718396952945">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪುನಃಸ್ಥಾಪಿಸು</translation>
@@ -3722,6 +3726,7 @@
 <translation id="479536056609751218">ವೆಬ್‌ಪುಟ, HTML ಮಾತ್ರ</translation>
 <translation id="4796142525425001238">ಯಾವಾಗಲೂ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ಬ್ಲೂಟೂತ್ ಲಾಗ್‌ಗಳನ್ನು<ph name="END_LINK" /> (Google ಆಂತರಿಕ) ಲಗತ್ತಿಸಿ</translation>
+<translation id="479863874072008121">ಸಾಧನಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4800839971935185386">ಹೆಸರು ಮತ್ತು ಐಕಾನ್ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="4801448226354548035">ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="4801512016965057443">ಮೊಬೈಲ್ ಡೇಟಾ ರೋಮಿಂಗ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
@@ -6448,6 +6453,7 @@
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7659154729610375585">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="7659297516559011665">ಈ ಸಾಧನದಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮಾತ್ರ</translation>
+<translation id="7659336857671800422">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7659584679870740384">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="7661259717474717992">ಕುಕೀ ಡೇಟಾವನ್ನು ಉಳಿಸಲು ಮತ್ತು ಓದಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ</translation>
 <translation id="7661451191293163002">ನೋಂದಣಿ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಪಡೆದುಕೊಳ್ಳಲಾಗಲಿಲ್ಲ.</translation>
@@ -7967,6 +7973,7 @@
 <translation id="9200339982498053969"><ph name="FOLDERNAME" /> ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು <ph name="ORIGIN" /> ಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> ಹುಡುಕಾಟ</translation>
 <translation id="9201023452444595544">ಯಾವುದೇ ಆಫ್‌ಲೈನ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="9201117361710210082">ಈ ಹಿಂದೆ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="9201220332032049474">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="9201842707396338580">ಏನೋ ತಪ್ಪಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;ಪ್ರೊಫೈಲಿಂಗ್ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ

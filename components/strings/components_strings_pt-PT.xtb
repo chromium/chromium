@@ -1228,6 +1228,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
           <ph name="LIST_ITEM" />Os empregadores ou as escolas podem monitorizar a atividade de navegação<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Os fornecedores de serviços de Internet podem monitorizar o tráfego da Web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignorado porque a política só pode ser definida pela Política do Utilizador da nuvem.</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4838327282952368871">Sonhador</translation>
 <translation id="4840250757394056958">Ver o Histórico do Chrome</translation>
@@ -1331,6 +1332,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
 <translation id="5146995429444047494">As notificações de <ph name="ORIGIN" /> estão bloqueadas</translation>
+<translation id="514704532284964975"><ph name="URL" /> quer ver e alterar informações em dispositivos NFC nos quais toca com o telemóvel</translation>
 <translation id="5148809049217731050">Com orientação para cima</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Capa</translation>
