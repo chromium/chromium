@@ -59,6 +59,8 @@ const char kManagedDefaultInsecurePrivateNetworkSetting[] =
     "profile.managed_default_content_settings.insecure_private_network";
 const char kManagedDefaultJavaScriptJitSetting[] =
     "profile.managed_default_content_settings.javascript_jit";
+const char kManagedDefaultWebHidGuardSetting[] =
+    "profile.managed_default_content_settings.web_hid_guard";
 
 // Preferences that are exclusively used to store managed
 // content settings patterns.
@@ -122,6 +124,9 @@ const char kManagedJavaScriptJitAllowedForSites[] =
     "profile.managed_javascript_jit_allowed_for_sites";
 const char kManagedJavaScriptJitBlockedForSites[] =
     "profile.managed_javascript_jit_blocked_for_sites";
+const char kManagedWebHidAskForUrls[] = "profile.managed_web_hid_ask_for_urls";
+const char kManagedWebHidBlockedForUrls[] =
+    "profile.managed_web_hid_blocked_for_urls";
 
 // Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.

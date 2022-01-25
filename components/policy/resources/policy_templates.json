@@ -558,6 +558,7 @@
         'DefaultKeygenSetting',
         'DefaultWebUsbGuardSetting',
         'DefaultSerialGuardSetting',
+        'DefaultWebHidGuardSetting',
         'AutoSelectCertificateForUrls',
         'CookiesAllowedForUrls',
         'CookiesBlockedForUrls',
@@ -596,6 +597,8 @@
         'SerialBlockedForUrls',
         'SerialAllowAllPortsForUrls',
         'SerialAllowUsbDevicesForUrls',
+        'WebHidAskForUrls',
+        'WebHidBlockedForUrls',
       ],
     },
     {
@@ -7228,6 +7231,108 @@
       This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
 
       This policy only affects access to USB devices through the Web Serial API. To grant access to USB devices through the WebUSB API see the <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME">WebUsbAllowDevicesForUrls</ph> policy.''',
+    },
+    {
+      'name': 'DefaultWebHidGuardSetting',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 2, 3 ],
+      },
+      'items': [
+        {
+          'name': 'BlockWebHid',
+          'value': 2,
+          'caption': '''Do not allow any site to request access to HID devices via the WebHID API''',
+        },
+        {
+          'name': 'AskWebHid',
+          'value': 3,
+          'caption': '''Allow sites to ask the user to grant access to a HID device''',
+        },
+      ],
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': 2,
+      'default': None,
+      'id': 943,
+      'caption': '''Control use of the WebHID API''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy to 3 lets websites ask for access to HID devices. Setting the policy to 2 denies access to HID devices.
+
+      Leaving it unset lets websites ask for access, but users can change this setting.
+
+      This policy can be overridden for specific <ph name="URL_LABEL">url</ph> patterns using the <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph> and <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph> policies.''',
+    },
+    {
+      'name': 'WebHidAskForUrls',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://google.com', 'https://chromium.org'],
+      'id': 944,
+      'caption': '''Allow the WebHID API on these sites''',
+      'tags': ['website-sharing'],
+      'desc': '''Setting the policy lets you list the URL patterns that specify which sites can ask users to grant them access to a HID device.
+
+      Leaving the policy unset means <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> applies for all sites, if it's set. If not, users' personal settings apply.
+
+      For URL patterns which do not match the policy, the following take precedence, in this order:
+
+        * <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph> (if there is a match),
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> (if set), or
+
+        * Users' personal settings.
+
+      URL patterns must not conflict with <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME">WebHidBlockedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
+    },
+    {
+      'name': 'WebHidBlockedForUrls',
+      'owners': ['mattreynolds@chromium.org', 'file://third_party/blink/renderer/modules/hid/OWNERS'],
+      'type': 'list',
+      'schema': {
+        'type': 'array',
+        'items': { 'type': 'string' },
+      },
+      'future_on': ['chrome_os', 'chrome.*'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': ['https://google.com', 'https://chromium.org'],
+      'id': 945,
+      'caption': '''Block the WebHID API on these sites''',
+      'tags': [],
+      'desc': '''Setting the policy lets you list the URL patterns that specify which sites can't ask users to grant them access to a HID device.
+
+      Leaving the policy unset means <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> applies for all sites, if it's set. If not, users' personal settings apply.
+
+      For URL patterns which do not match the policy, the following take precedence, in this order:
+
+        * <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph> (if there is a match),
+
+        * <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME">DefaultWebHidGuardSetting</ph> (if set), or
+
+        * Users' personal settings.
+
+      URL patterns can't conflict with <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME">WebHidAskForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+      For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.''',
     },
     {
       'name': 'DefaultFileHandlingGuardSetting',
@@ -30383,6 +30488,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 942,
+  'highest_id_currently_used': 945,
   'highest_atomic_group_id_currently_used': 41
 }

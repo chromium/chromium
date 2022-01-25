@@ -28393,6 +28393,9 @@ Called by update_document_policy_enum.py.-->
   <int value="940" label="DeviceRunAutomaticCleanupOnLogin"/>
   <int value="941" label="NTPMiddleSlotAnnouncementVisible"/>
   <int value="942" label="CloudProfileReportingEnabled"/>
+  <int value="943" label="DefaultWebHidGuardSetting"/>
+  <int value="944" label="WebHidAskForUrls"/>
+  <int value="945" label="WebHidBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
