@@ -139,7 +139,7 @@ export class ChromeHelper {
         wrapEndpoint(new CameraUsageOwnershipMonitorCallbackRouter());
 
     usageCallbackRouter.onCameraUsageOwnershipChanged.addListener(
-        async (hasUsage) => {
+        async (hasUsage: boolean) => {
           if (hasUsage) {
             await exploitUsage();
           } else {
