@@ -686,7 +686,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerOneShot) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner1 =
       task_queue1->CreateTaskRunner(TaskType::kInternalTest);
   TaskObserver task_observer1(task_runner1, &run_order);
-  task_queue1->GetTaskQueue()->AddTaskObserver(&task_observer1);
+  task_queue1->AddTaskObserver(&task_observer1);
 
   scoped_refptr<MainThreadTaskQueue> task_queue2(
       platform_->GetMainThreadScheduler()->NewThrottleableTaskQueueForTest(
@@ -694,7 +694,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerOneShot) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner2 =
       task_queue2->CreateTaskRunner(TaskType::kInternalTest);
   TaskObserver task_observer2(task_runner2, &run_order);
-  task_queue2->GetTaskQueue()->AddTaskObserver(&task_observer2);
+  task_queue2->AddTaskObserver(&task_observer2);
 
   TimerForTest<TimerTest> timer(task_runner1, this, &TimerTest::CountingTask);
 
@@ -725,7 +725,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner1 =
       task_queue1->CreateTaskRunner(TaskType::kInternalTest);
   TaskObserver task_observer1(task_runner1, &run_order);
-  task_queue1->GetTaskQueue()->AddTaskObserver(&task_observer1);
+  task_queue1->AddTaskObserver(&task_observer1);
 
   scoped_refptr<MainThreadTaskQueue> task_queue2(
       platform_->GetMainThreadScheduler()->NewThrottleableTaskQueueForTest(
@@ -733,7 +733,7 @@ TEST_F(TimerTest, MoveToNewTaskRunnerRepeating) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner2 =
       task_queue2->CreateTaskRunner(TaskType::kInternalTest);
   TaskObserver task_observer2(task_runner2, &run_order);
-  task_queue2->GetTaskQueue()->AddTaskObserver(&task_observer2);
+  task_queue2->AddTaskObserver(&task_observer2);
 
   TimerForTest<TimerTest> timer(task_runner1, this, &TimerTest::CountingTask);
 

@@ -501,6 +501,17 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     task_queue_->SetShouldReportPostedTasksWhenDisabled(should_report);
   }
 
+  std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter() {
+    return task_queue_->CreateQueueEnabledVoter();
+  }
+
+  void AddTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->AddTaskObserver(task_observer);
+  }
+  void RemoveTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->RemoveTaskObserver(task_observer);
+  }
+
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

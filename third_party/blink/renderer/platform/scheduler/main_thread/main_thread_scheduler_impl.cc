@@ -253,9 +253,8 @@ MainThreadSchedulerImpl::MainThreadSchedulerImpl(
   // Compositor task queue and default task queue should be managed by
   // WebThreadScheduler. Control task queue should not.
   task_runners_.emplace(helper_.DefaultMainThreadTaskQueue(), nullptr);
-  task_runners_.emplace(
-      compositor_task_queue_,
-      compositor_task_queue_->GetTaskQueue()->CreateQueueEnabledVoter());
+  task_runners_.emplace(compositor_task_queue_,
+                        compositor_task_queue_->CreateQueueEnabledVoter());
   main_thread_only().idle_time_estimator.AddCompositorTaskQueue(
       compositor_task_queue_);
 
@@ -722,13 +721,13 @@ scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerImpl::NewTaskQueue(
   std::unique_ptr<TaskQueue::QueueEnabledVoter> voter;
   if (params.queue_traits.can_be_deferred ||
       params.queue_traits.can_be_paused || params.queue_traits.can_be_frozen) {
-    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+    voter = task_queue->CreateQueueEnabledVoter();
   }
 
   if (task_queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kCompositor) {
     DCHECK(!voter);
-    voter = task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+    voter = task_queue->CreateQueueEnabledVoter();
     main_thread_only().idle_time_estimator.AddCompositorTaskQueue(task_queue);
   }
 
