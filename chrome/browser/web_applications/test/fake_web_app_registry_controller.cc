@@ -21,7 +21,7 @@ FakeWebAppRegistryController::FakeWebAppRegistryController() = default;
 
 FakeWebAppRegistryController::~FakeWebAppRegistryController() = default;
 
-void FakeWebAppRegistryController::SetUp(Profile* profile) {
+void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
   database_factory_ = std::make_unique<FakeWebAppDatabaseFactory>();
   mutable_registrar_ = std::make_unique<WebAppRegistrarMutable>(profile);
 
@@ -34,6 +34,10 @@ void FakeWebAppRegistryController::SetUp(Profile* profile) {
   sync_bridge_ = std::make_unique<WebAppSyncBridge>(
       database_factory_.get(), mutable_registrar_.get(), this,
       mock_processor_.CreateForwardingProcessor());
+  os_integration_manager_->SetSubsystems(sync_bridge_.get(),
+                                         mutable_registrar_.get(),
+                                         /*ui_manager=*/nullptr,
+                                         /*icon_manager=*/nullptr);
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));

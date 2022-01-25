@@ -31,7 +31,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   FakeWebAppRegistryController();
   ~FakeWebAppRegistryController() override;
 
-  void SetUp(Profile* profile);
+  void SetUp(base::raw_ptr<Profile> profile);
 
   // Synchronously init the sync bridge: open database, read all data and
   // metadata.
