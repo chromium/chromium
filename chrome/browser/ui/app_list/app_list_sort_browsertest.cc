@@ -736,10 +736,25 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// These two transition tests are both flaky on CrOS ASAN: crbug.com/1290890
+#define MAYBE_TransitionToTabletModeDuringReorderAnimation \
+  DISABLED_TransitionToTabletModeDuringReorderAnimation
+#define MAYBE_TransitionToClamshellModeDuringReorderAnimation \
+  DISABLED_TransitionToClamshellModeDuringReorderAnimation
+#else
+#define MAYBE_TransitionToTabletModeDuringReorderAnimation \
+  TransitionToTabletModeDuringReorderAnimation
+#define MAYBE_TransitionToClamshellModeDuringReorderAnimation \
+  TransitionToClamshellModeDuringReorderAnimation
+#endif
+
+
+
 // Verify that switching to tablet mode when the app list reorder animation in
 // clamshell mode is running works as expected.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
-                       TransitionToTabletModeDuringReorderAnimation) {
+                       MAYBE_TransitionToTabletModeDuringReorderAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
@@ -782,7 +797,7 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 // Verify that switching to clamshell mode when the app list reorder animation
 // in tablet mode is running works as expected.
 IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
-                       TransitionToClamshellModeDuringReorderAnimation) {
+                       MAYBE_TransitionToClamshellModeDuringReorderAnimation) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
 
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
