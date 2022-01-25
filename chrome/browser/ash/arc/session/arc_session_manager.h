@@ -288,7 +288,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Invoking StartArc() only for testing, e.g., to emulate accepting Terms of
   // Service then passing Android management check successfully.
-  void StartArcForTesting() { StartArc(); }
+  void StartArcForTesting();
 
   // Invokes OnTermsOfServiceNegotiated as if negotiation is done for testing.
   void OnTermsOfServiceNegotiatedForTesting(bool accepted) {

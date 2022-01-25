@@ -432,6 +432,20 @@ TEST_F(ArcUtilTest, ArcStartModeWithoutPlayStore) {
   EXPECT_TRUE(ShouldArcAlwaysStartWithNoPlayStore());
 }
 
+// Verifies that ARC manual start is activated by switch.
+TEST_F(ArcUtilTest, ArcStartModeManually) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-start-mode=manual"});
+  EXPECT_FALSE(ShouldArcAlwaysStart());
+  EXPECT_TRUE(ShouldArcStartManually());
+}
+
+// Verifies that ARC manual start is disabled by default.
+TEST_F(ArcUtilTest, ArcStartModeManuallyDisabledByDefault) {
+  EXPECT_FALSE(ShouldArcAlwaysStart());
+  EXPECT_FALSE(ShouldArcStartManually());
+}
+
 TEST_F(ArcUtilTest, ScaleFactorToDensity) {
   // Test all standard scale factors
   EXPECT_EQ(160, GetLcdDensityForDeviceScaleFactor(1.0f));

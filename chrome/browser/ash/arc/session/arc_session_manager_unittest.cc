@@ -230,6 +230,21 @@ TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisible_NoOp) {
             arc_session_manager()->state());
 }
 
+// We expect mini instance is not started in manual mode.
+TEST_F(ArcSessionManagerInLoginScreenTest, EmitLoginPromptVisibleManualStart) {
+  EXPECT_FALSE(arc_session());
+
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
+                                                          "manual");
+
+  chromeos::SessionManagerClient::Get()->EmitLoginPromptVisible();
+  EXPECT_FALSE(arc_session());
+  EXPECT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
+            arc_session_manager()->state());
+}
+
 // We expect that StopMiniArcIfNecessary stops mini-ARC when it is running.
 TEST_F(ArcSessionManagerInLoginScreenTest, StopMiniArcIfNecessary) {
   EXPECT_FALSE(arc_session());

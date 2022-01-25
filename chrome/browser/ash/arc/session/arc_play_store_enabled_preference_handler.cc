@@ -168,10 +168,16 @@ void ArcPlayStoreEnabledPreferenceHandler::UpdateArcSessionManager() {
         IsArcPlayStoreEnabledPreferenceManagedForProfile(profile_));
   }
 
-  if (ShouldArcAlwaysStart() || IsArcPlayStoreEnabledForProfile(profile_))
+  if (ShouldArcAlwaysStart()) {
     arc_session_manager_->RequestEnable();
-  else
+  } else if (IsArcPlayStoreEnabledForProfile(profile_)) {
+    if (!ShouldArcStartManually())
+      arc_session_manager_->RequestEnable();
+    else
+      VLOG(1) << "ARC is not started automatically";
+  } else {
     arc_session_manager_->RequestDisableWithArcDataRemoval();
+  }
 }
 
 }  // namespace arc

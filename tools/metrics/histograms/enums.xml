@@ -31384,6 +31384,8 @@ Called by update_extension_histograms.py.-->
   <int value="1616" label="FILEMANAGERPRIVATE_GETFRAMECOLOR"/>
   <int value="1617" label="DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITE"/>
   <int value="1618" label="DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE"/>
+  <int value="1619" label="AUTOTESTPRIVATE_STARTARC"/>
+  <int value="1620" label="AUTOTESTPRIVATE_STOPARC"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -43,6 +43,7 @@ constexpr char kAvailabilityInstalled[] = "installed";
 constexpr char kAvailabilityOfficiallySupported[] = "officially-supported";
 constexpr char kAlwaysStartWithNoPlayStore[] =
     "always-start-with-no-play-store";
+constexpr char kManualStart[] = "manual";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 
@@ -173,16 +174,18 @@ ArcVmUreadaheadMode GetArcVmUreadaheadMode(SystemMemoryInfoCallback callback) {
 }
 
 bool ShouldArcAlwaysStart() {
-  const auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(ash::switches::kArcStartMode))
-    return false;
-  return command_line->GetSwitchValueASCII(ash::switches::kArcStartMode) ==
-         kAlwaysStartWithNoPlayStore;
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             ash::switches::kArcStartMode) == kAlwaysStartWithNoPlayStore;
 }
 
 bool ShouldArcAlwaysStartWithNoPlayStore() {
   return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
              ash::switches::kArcStartMode) == kAlwaysStartWithNoPlayStore;
+}
+
+bool ShouldArcStartManually() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+             ash::switches::kArcStartMode) == kManualStart;
 }
 
 bool ShouldShowOptInForTesting() {

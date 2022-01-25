@@ -1679,6 +1679,8 @@ enum HistogramValue {
   FILEMANAGERPRIVATE_GETFRAMECOLOR = 1616,
   DEVELOPERPRIVATE_ADDUSERSPECIFIEDSITE = 1617,
   DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE = 1618,
+  AUTOTESTPRIVATE_STARTARC = 1619,
+  AUTOTESTPRIVATE_STOPARC = 1620,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

@@ -767,6 +767,16 @@ namespace autotestPrivate {
     // Remove printer.
     static void removePrinter(DOMString printerId);
 
+    // Start ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void startArc(VoidCallback callback);
+
+    // Stop ARC directly, note this differs from |setPlayStoreEnabled|. It is
+    // used to restart ARC in tests. Note, this preserves ARC data.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void stopArc(VoidCallback callback);
+
     // Enable/disable the Play Store.
     // |enabled|: if set, enable the Play Store.
     // |callback|: Called when the operation has completed.

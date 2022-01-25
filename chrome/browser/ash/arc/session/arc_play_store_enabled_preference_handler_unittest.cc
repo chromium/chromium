@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
@@ -236,6 +237,86 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
             arc_session_manager()->state());
 
   SetArcPlayStoreEnabledForProfile(profile(), false);
+}
+
+// This verifies ARC start logic in case ARC manual start is activated.
+// It is expected that setting Play Store enabled preference does not
+// automatically start ARC as it is done by default.
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, ManualStart) {
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
+                                                          "manual");
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // ARC is neither enabled by preference nor by manual start.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  SetArcPlayStoreEnabledForProfile(profile(), true);
+
+  // ARC is enabled by preference but automatic ARC start is blocked by
+  // manual mode.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  arc_session_manager()->RequestEnable();
+
+  // Now ARC started by manual request.
+  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+            arc_session_manager()->state());
+}
+
+// Similar by |ManualStart| above but verifies that ARC manual start ignores
+// Play Store enabled preference.
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, ManualStartIgnorePreference) {
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
+                                                          "manual");
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // ARC is neither enabled by preference nor by manual start.
+  EXPECT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  arc_session_manager()->RequestEnable();
+
+  // Now ARC started by manual request even if Play Store enabled preference
+  // was not set.
+  EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
+  EXPECT_EQ(ArcSessionManager::State::NEGOTIATING_TERMS_OF_SERVICE,
+            arc_session_manager()->state());
+}
+
+// Verifies that ARC manual start disables ARC automatic start for already
+// provisioned state.
+TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest,
+       ManualStartAlreadyProvisioned) {
+  SetArcAvailableCommandLineForTesting(base::CommandLine::ForCurrentProcess());
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII("arc-start-mode",
+                                                          "manual");
+
+  profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
+
+  // Sets the Google Play Store preference at beginning.
+  SetArcPlayStoreEnabledForProfile(profile(), true);
+
+  arc_session_manager()->SetProfile(profile());
+  arc_session_manager()->Initialize();
+  preference_handler()->Start();
+
+  // ARC is enable and already provisoned by manual mode blocks the start.
+  ASSERT_EQ(ArcSessionManager::State::STOPPED, arc_session_manager()->state());
+
+  arc_session_manager()->RequestEnable();
+
+  // Now ARC started by manual request.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
 }
 
 TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, MiniStateUnmanaged) {

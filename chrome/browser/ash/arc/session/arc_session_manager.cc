@@ -1298,6 +1298,11 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ArcSessionManager::StartArcForTesting() {
+  enable_requested_ = true;
+  StartArc();
+}
+
 void ArcSessionManager::OnTermsOfServiceNegotiated(bool accepted) {
   DCHECK_EQ(state_, State::NEGOTIATING_TERMS_OF_SERVICE);
   DCHECK(profile_);
@@ -1590,6 +1595,7 @@ void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::REMOVING_DATA_DIR);
   DCHECK(profile_);
+
   state_ = State::STOPPED;
 
   if (result.has_value()) {
@@ -1774,7 +1780,8 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
     VLOG(1) << "Starting ARCVM on login screen is not supported.";
     return;
   }
-  StartMiniArc();
+  if (!ShouldArcStartManually())
+    StartMiniArc();
 }
 
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {

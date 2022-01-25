@@ -124,6 +124,10 @@ bool ShouldArcAlwaysStart();
 // mode such as guest and Kiosk mode.
 bool ShouldArcAlwaysStartWithNoPlayStore();
 
+// Returns true if ARC should ignore Play Store preference and be started
+// manually in tests using autotest API |startArc|.
+bool ShouldArcStartManually();
+
 // Returns true if ARC OptIn ui needs to be shown for testing.
 bool ShouldShowOptInForTesting();
 
