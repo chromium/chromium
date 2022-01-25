@@ -14,6 +14,7 @@ import errno
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -36,12 +37,30 @@ class FfxRunner():
     self._ffx = get_ffx_path()
     self._log_manager = log_manager
 
-  def run_ffx(self, args, check=True):
+  def _run_repair_command(self, output):
+    """Scans `output` for a self-repair command to run and, if found, runs it.
+
+    Returns:
+      True if a repair command was found and ran successfully. False otherwise.
+    """
+    # Check for a string along the lines of:
+    # "Run `ffx doctor --restart-daemon` for further diagnostics."
+    match = re.search('`ffx ([^`]+)`', output)
+    if not match or len(match.groups()) != 1:
+      return False  # No repair command found.
+    try:
+      self.run_ffx(match.groups()[0].split(), suppress_repair=True)
+    except subprocess.CalledProcessError as cpe:
+      return False  # Repair failed.
+    return True  # Repair succeeded.
+
+  def run_ffx(self, args, check=True, suppress_repair=False):
     """Runs `ffx` with the given arguments, waiting for it to exit.
     Args:
       args: A sequence of arguments to ffx.
       check: If True, CalledProcessError is raised if ffx returns a non-zero
         exit code.
+      suppress_repair: If True, do not attempt to find and run a repair command.
     Returns:
       A string containing combined stdout and stderr.
     Raises:
@@ -54,6 +73,7 @@ class FfxRunner():
     logging.debug(command)
     if log_file:
       print(command, file=log_file)
+    repair_succeeded = False
     try:
       # TODO(grt): Switch to subprocess.run() with encoding='utf-8' when p3 is
       # supported.
@@ -68,7 +88,16 @@ class FfxRunner():
       if log_file:
         log_file.write('Process exited with code %d. Output: %s\n' %
                        (cpe.returncode, cpe.output.strip()))
-      raise
+      # Let the exception fly unless a repair command is found and succeeds.
+      if suppress_repair or not self._run_repair_command(cpe.output):
+        raise
+      repair_succeeded = True
+
+    # If the original command failed but a repair command was found and
+    # succeeded, try one more time with the original command.
+    if repair_succeeded:
+      return self.run_ffx(args, check, suppress_repair=True)
+
     stripped_stdout = stdoutdata.strip()
     if log_file:
       if process.returncode != 0:
