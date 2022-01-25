@@ -115,6 +115,12 @@ class MonthHeaderView : public views::View {
   ~MonthHeaderView() override = default;
 };
 
+// Resets the `view`'s opacity and position.
+void ResetLayer(views::View* view) {
+  view->layer()->SetOpacity(1.0f);
+  view->layer()->SetTransform(gfx::Transform());
+}
+
 }  // namespace
 
 // The label for each month.
@@ -449,26 +455,20 @@ void CalendarView::RestoreHeadersStatus() {
     header_animation_restart_timer_.Reset();
 }
 
-void CalendarView::RestoreMonthStatus(bool is_scrolling_up) {
+void CalendarView::RestoreMonthStatus() {
   current_month_->layer()->GetAnimator()->StopAnimating();
-  current_month_->layer()->SetOpacity(1.0f);
-  current_month_->layer()->SetTransform(gfx::Transform());
+  current_label_->layer()->GetAnimator()->StopAnimating();
+  previous_month_->layer()->GetAnimator()->StopAnimating();
+  previous_label_->layer()->GetAnimator()->StopAnimating();
+  next_label_->layer()->GetAnimator()->StopAnimating();
+  next_month_->layer()->GetAnimator()->StopAnimating();
+  ResetLayer(current_month_);
+  ResetLayer(current_label_);
+  ResetLayer(previous_label_);
+  ResetLayer(previous_month_);
+  ResetLayer(next_label_);
+  ResetLayer(next_month_);
 
-  if (is_scrolling_up) {
-    current_label_->layer()->GetAnimator()->StopAnimating();
-    previous_month_->layer()->GetAnimator()->StopAnimating();
-    current_label_->layer()->SetOpacity(1.0f);
-    current_label_->layer()->SetTransform(gfx::Transform());
-    previous_month_->layer()->SetOpacity(1.0f);
-    previous_month_->layer()->SetTransform(gfx::Transform());
-  } else {
-    next_label_->layer()->GetAnimator()->StopAnimating();
-    next_month_->layer()->GetAnimator()->StopAnimating();
-    next_label_->layer()->SetOpacity(1.0f);
-    next_label_->layer()->SetTransform(gfx::Transform());
-    next_month_->layer()->SetOpacity(1.0f);
-    next_month_->layer()->SetTransform(gfx::Transform());
-  }
   if (!should_months_animate_)
     months_animation_restart_timer_.Reset();
 }
@@ -803,7 +803,7 @@ void CalendarView::ScrollUpOneMonthAndAutoScroll() {
     return;
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-  RestoreMonthStatus(/*is_scrolling_up=*/true);
+  RestoreMonthStatus();
   ScrollUpOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfCurrentMonth());
@@ -814,7 +814,7 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
     return;
 
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-  RestoreMonthStatus(/*is_scrolling_up=*/false);
+  RestoreMonthStatus();
   ScrollDownOneMonth();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfCurrentMonth());
@@ -849,32 +849,35 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
       0, -current_month_->GetPreferredSize().height() -
              next_label_->GetPreferredSize().height() +
              (scroll_view_->GetVisibleRect().y() - current_month_->y()));
+  gfx::Vector2dF moving_location =
+      is_scrolling_up ? moving_up_location : moving_down_location;
 
   gfx::Transform current_month_moving = gfx::TransformAboutPivot(
       current_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  current_month_moving.Translate(is_scrolling_up ? moving_up_location
-                                                 : moving_down_location);
+  current_month_moving.Translate(moving_location);
   gfx::Transform current_label_moving = gfx::TransformAboutPivot(
       current_label_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  current_label_moving.Translate(moving_up_location);
+  current_label_moving.Translate(moving_location);
   gfx::Transform previous_month_moving = gfx::TransformAboutPivot(
       previous_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  previous_month_moving.Translate(moving_up_location);
-
+  previous_month_moving.Translate(moving_location);
+  gfx::Transform previous_label_moving = gfx::TransformAboutPivot(
+      previous_label_->GetLocalBounds().CenterPoint(), gfx::Transform());
+  previous_label_moving.Translate(moving_location);
   gfx::Transform next_label_moving = gfx::TransformAboutPivot(
       next_label_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  next_label_moving.Translate(moving_down_location);
+  next_label_moving.Translate(moving_location);
   gfx::Transform next_month_moving = gfx::TransformAboutPivot(
       next_month_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  next_month_moving.Translate(moving_down_location);
+  next_month_moving.Translate(moving_location);
 
   const int header_height = header_->GetPreferredSize().height();
-  const gfx::Vector2dF moving_location = gfx::Vector2dF(
+  const gfx::Vector2dF header_moving_location = gfx::Vector2dF(
       0, calendar_view_controller_->was_on_later_month() ? header_height / 2
                                                          : -header_height / 2);
   gfx::Transform header_moving = gfx::TransformAboutPivot(
       header_->GetLocalBounds().CenterPoint(), gfx::Transform());
-  header_moving.Translate(moving_location);
+  header_moving.Translate(header_moving_location);
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -900,13 +903,15 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
       .SetDuration(calendar_utils::kAnimationDurationForMoving * 2)
       .SetTransform(current_month_, std::move(current_month_moving),
                     gfx::Tween::EASE_OUT_2)
-      .SetTransform(
-          is_scrolling_up ? current_label_ : next_label_,
-          std::move(is_scrolling_up ? current_label_moving : next_label_moving),
-          gfx::Tween::EASE_OUT_2)
-      .SetTransform(is_scrolling_up ? previous_month_ : next_month_,
-                    std::move(is_scrolling_up ? previous_month_moving
-                                              : next_month_moving),
+      .SetTransform(current_label_, std::move(current_label_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetTransform(previous_month_, std::move(previous_month_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetTransform(previous_label_, std::move(previous_label_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_month_, std::move(next_month_moving),
+                    gfx::Tween::EASE_OUT_2)
+      .SetTransform(next_label_, std::move(next_label_moving),
                     gfx::Tween::EASE_OUT_2)
       .At(calendar_utils::kAnimationDurationForMoving)
       .SetDuration(calendar_utils::kAnimationDurationForMoving)

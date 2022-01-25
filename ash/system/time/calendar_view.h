@@ -158,7 +158,7 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
 
   // Resets the the month views' opacity and position. In case the animation is
   // aborted in the middle and the view's are not in the original status.
-  void RestoreMonthStatus(bool is_scrolling_up);
+  void RestoreMonthStatus();
 
   // Auto scrolls to today. If the view is big enough we scroll to the first row
   // of today's month, otherwise we scroll to the position of today's row.

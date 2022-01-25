@@ -789,17 +789,16 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   // Scrolls to the next month.
   ScrollDownOneMonth();
 
-  // If scrolls down, the month views that will animate are `current_month_`,
-  // `next_month_` and 'next_label_`.
+  // If scrolls down, the month views and labels will be animating.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
   task_environment()->FastForwardBy(
       calendar_utils::kAnimationDurationForVisibility);
   EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(next_month()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(next_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(current_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(current_label()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(u"October", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
@@ -843,17 +842,16 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   // Scrolls to the previous month.
   ScrollUpOneMonth();
 
-  // If scrolls up, the month views that will animate are `current_month_`,
-  // `previous_month_` and 'current_label_`.
+  // If scrolls up, the month views and labels will be animating.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
   task_environment()->FastForwardBy(
       calendar_utils::kAnimationDurationForVisibility);
   EXPECT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(current_label()->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(previous_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(next_month()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(previous_label()->layer()->GetAnimator()->is_animating());
-  EXPECT_FALSE(next_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_month()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(previous_label()->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(next_label()->layer()->GetAnimator()->is_animating());
   EXPECT_EQ(u"November", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
 
