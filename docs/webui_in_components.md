@@ -16,7 +16,6 @@ To create a WebUI interface in `components/` you need to follow different steps 
 
 [TOC]
 
-<a name="creating_webui_page"></a>
 ## Creating the WebUI page
 
 WebUI resources in `components/` will be added in your specific project folder. Create a project folder `src/components/hello_world/`. When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
