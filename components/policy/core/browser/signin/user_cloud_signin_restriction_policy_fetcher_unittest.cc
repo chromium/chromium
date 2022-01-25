@@ -7,11 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+
 #include "components/policy/core/browser/browser_policy_connector.h"
-#include "components/policy/proto/secure_connect.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -48,11 +49,11 @@ class UserCloudSigninRestrictionPolicyFetcherTest : public ::testing::Test {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
   network::TestURLLoaderFactory url_loader_factory;
-  enterprise_management::GetManagedAccountsSigninRestrictionResponse
-      expected_response_proto;
+  base::Value expected_response(base::Value::Type::DICTIONARY);
+  expected_response.SetStringKey("policyValue", "primary_account");
   std::string response;
-  expected_response_proto.set_policy_value("primary_account");
-  expected_response_proto.SerializeToString(&response);
+  JSONStringValueSerializer serializer(&response);
+  ASSERT_TRUE(serializer.Serialize(expected_response));
   url_loader_factory.AddResponse(
       kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
       std::move(response));
@@ -70,36 +71,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(expected_response_proto.policy_value(), result);
-}
-
-TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,
-       ReturnsEmptyValueIfServerError) {
-  network::TestURLLoaderFactory url_loader_factory;
-  enterprise_management::GetManagedAccountsSigninRestrictionResponse
-      expected_response_proto;
-  std::string response;
-  expected_response_proto.set_policy_value("primary_account");
-  expected_response_proto.set_has_error(true);
-  expected_response_proto.SerializeToString(&response);
-  url_loader_factory.AddResponse(
-      kSecureConnectApiGetManagedAccountsSigninRestrictionsUrl,
-      std::move(response));
-
-  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable("alice@example.com");
-
-  std::string result;
-  policy_fetcher()->SetURLLoaderFactoryForTesting(&url_loader_factory);
-  policy_fetcher()->GetManagedAccountsSigninRestriction(
-      identity_test_env()->identity_manager(), account_info.account_id,
-      base::BindLambdaForTesting(
-          [&result](const std::string& res) { result = res; }));
-
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(std::string(), result);
+  EXPECT_EQ("primary_account", result);
 }
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest,

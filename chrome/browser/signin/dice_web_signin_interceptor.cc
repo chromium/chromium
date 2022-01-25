@@ -831,13 +831,13 @@ void DiceWebSigninInterceptor::
         bool timed_out,
         const AccountInfo& account_info,
         const std::string& signin_restriction) {
-#if DCHECK_IS_ON()
   if (timed_out) {
     DCHECK(signin_restriction.empty())
         << "There should be no signin restriction at the account level in case "
            "of a timeout";
+  } else {
+    on_intercepted_account_level_policy_value_timeout_.Cancel();
   }
-#endif
   intercepted_account_level_policy_value_ = signin_restriction;
   OnInterceptionReadyToBeProcessed(account_info);
 }
