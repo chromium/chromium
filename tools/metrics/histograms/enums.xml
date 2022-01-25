@@ -37042,6 +37042,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="18" label="IdTokenInvalidRequest"/>
 </enum>
 
+<enum name="FedCmRevokeStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="TooManyRequests"/>
+  <int value="2" label="UnhandledRequest"/>
+  <int value="3" label="NoNetworkManager"/>
+  <int value="4" label="NoAccountToRevoke"/>
+  <int value="5" label="RevokeUrlIsCrossOrigin"/>
+  <int value="6" label="RevocationFailedOnServer"/>
+  <int value="7" label="WellKnownHttpNotFound"/>
+  <int value="8" label="WellKnownNoResponse"/>
+  <int value="9" label="WellKnownInvalidResponse"/>
+</enum>
+
 <enum name="FeedAutoplayEvent">
   <obsolete>
     Removed as of 05/2021. Replaced by FeedVideoPlayEvent.

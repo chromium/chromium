@@ -33,6 +33,7 @@ using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using IdTokenStatus = content::FedCmRequestIdTokenStatus;
+using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 
 namespace content {
 
@@ -92,7 +93,16 @@ FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHost* host,
 FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // Ensures key data members are destructed in proper order and resolves any
   // pending promise.
-  RecordRequestIdTokenStatus(IdTokenStatus::kUnhandledRequest);
+  if (auth_request_callback_) {
+    DCHECK(!revoke_callback_);
+    DCHECK(!logout_callback_);
+    RecordRequestIdTokenStatus(IdTokenStatus::kUnhandledRequest);
+  }
+  if (revoke_callback_) {
+    DCHECK(!auth_request_callback_);
+    DCHECK(!logout_callback_);
+    RecordRevokeStatus(RevokeStatusForMetrics::kUnhandledRequest);
+  }
   CompleteRequest(RequestIdTokenStatus::kError, "");
 }
 
@@ -168,6 +178,7 @@ void FederatedAuthRequestImpl::Revoke(
     const std::string& account_id,
     blink::mojom::FederatedAuthRequest::RevokeCallback callback) {
   if (HasPendingRequest()) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kTooManyRequests);
     std::move(callback).Run(RevokeStatus::kError);
     return;
   }
@@ -179,6 +190,7 @@ void FederatedAuthRequestImpl::Revoke(
 
   network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kNoNetworkManager);
     CompleteRevokeRequest(RevokeStatus::kError);
     return;
   }
@@ -186,6 +198,7 @@ void FederatedAuthRequestImpl::Revoke(
   if (!GetRequestPermissionContext() ||
       !GetRequestPermissionContext()->HasRequestPermission(
           origin_, url::Origin::Create(provider_))) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kNoAccountToRevoke);
     CompleteRevokeRequest(RevokeStatus::kError);
     return;
   }
@@ -347,15 +360,36 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
 void FederatedAuthRequestImpl::OnWellKnownFetchedForRevoke(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints) {
-  if (status != IdpNetworkRequestManager::FetchStatus::kSuccess) {
-    CompleteRevokeRequest(RevokeStatus::kError);
-    return;
+  switch (status) {
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      RecordRevokeStatus(RevokeStatusForMetrics::kWellKnownHttpNotFound);
+      CompleteRevokeRequest(RevokeStatus::kError);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      RecordRevokeStatus(RevokeStatusForMetrics::kWellKnownNoResponse);
+      CompleteRevokeRequest(RevokeStatus::kError);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      RecordRevokeStatus(RevokeStatusForMetrics::kWellKnownInvalidResponse);
+      CompleteRevokeRequest(RevokeStatus::kError);
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      NOTREACHED();
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+      // Intentional fall-through.
+    }
   }
 
   GURL revoke_url = ResolveWellKnownUrl(endpoints.revoke);
   // TODO(kenrb): This has to be same-origin with the provider.
   // https://crbug.com/1141125
   if (!IdpUrlIsValid(revoke_url)) {
+    RecordRevokeStatus(RevokeStatusForMetrics::kRevokeUrlIsCrossOrigin);
     CompleteRevokeRequest(RevokeStatus::kError);
     return;
   }
@@ -386,6 +420,9 @@ void FederatedAuthRequestImpl::OnRevokeResponse(
       GetActiveSessionPermissionContext()->RevokeActiveSession(
           origin_, idp_origin, account_id_);
     }
+    RecordRevokeStatus(RevokeStatusForMetrics::kSuccess);
+  } else {
+    RecordRevokeStatus(RevokeStatusForMetrics::kRevocationFailedOnServer);
   }
   CompleteRevokeRequest(status);
 }

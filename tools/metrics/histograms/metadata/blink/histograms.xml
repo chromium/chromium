@@ -771,6 +771,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Status.Revoke" enum="FedCmRevokeStatus"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>webid-core@google.com</owner>
+  <summary>Records the status of a revoke call to the FedCM API.</summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Timing.CancelOnDialog" units="ms"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>

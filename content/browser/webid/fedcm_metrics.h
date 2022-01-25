@@ -38,6 +38,24 @@ enum class FedCmRequestIdTokenStatus {
   kMaxValue = kIdTokenInvalidRequest
 };
 
+// This enum describes the status of a revocation call to the FedCM API.
+enum class FedCmRevokeStatus {
+  // Don't change the meaning or the order of these values because they are
+  // being recorded in metrics and in sync with the counterpart in enums.xml.
+  kSuccess,
+  kTooManyRequests,
+  kUnhandledRequest,
+  kNoNetworkManager,
+  kNoAccountToRevoke,
+  kRevokeUrlIsCrossOrigin,
+  kRevocationFailedOnServer,
+  kWellKnownHttpNotFound,
+  kWellKnownNoResponse,
+  kWellKnownInvalidResponse,
+
+  kMaxValue = kWellKnownInvalidResponse
+};
+
 // Records the time from when a call to the API was made to when the accounts
 // dialog is shown.
 void RecordShowAccountsDialogTime(base::TimeDelta duration);
@@ -62,6 +80,10 @@ void RecordIdTokenResponseAndTurnaroundTime(
 // |RequestIdTokenStatus| is cleaned up.
 void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status);
 
+// Records the status of the |Revoke| call.
+// TODO(yigu): Call this function from |CompleteRevokeRequest| once the mojom
+// side |RevokeStatus| is cleaned up.
+void RecordRevokeStatus(FedCmRevokeStatus status);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_

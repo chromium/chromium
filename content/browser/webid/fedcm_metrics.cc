@@ -35,4 +35,8 @@ void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.RequestIdToken", status);
 }
 
+void RecordRevokeStatus(FedCmRevokeStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Revoke", status);
+}
+
 }  // namespace content

@@ -49,6 +49,7 @@ using AccountList = content::IdpNetworkRequestManager::AccountList;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
 using IdTokenStatus = content::FedCmRequestIdTokenStatus;
+using RevokeStatusForMetrics = content::FedCmRevokeStatus;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -1091,6 +1092,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, Revoke) {
+  base::HistogramTester histogram_tester;
   constexpr char kAccountId[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
@@ -1124,9 +1126,14 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
       }));
   auto status = PerformRevokeRequest(kAccountId);
   EXPECT_EQ(RevokeStatus::kSuccess, status);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
+                                     RevokeStatusForMetrics::kSuccess, 1);
 }
 
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
+  base::HistogramTester histogram_tester;
+
   constexpr char kAccountId[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
@@ -1141,6 +1148,10 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
 
   auto status = PerformRevokeRequest(kAccountId);
   EXPECT_EQ(RevokeStatus::kError, status);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
+  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
+                                     RevokeStatusForMetrics::kNoAccountToRevoke,
+                                     1);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
