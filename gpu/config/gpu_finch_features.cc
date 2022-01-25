@@ -121,12 +121,12 @@ const base::FeatureParam<std::string>
 
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
-// DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS, and
-// Android.
+// DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
+// Android and Linux.
 const base::Feature kDefaultEnableGpuRasterization{
   "DefaultEnableGpuRasterization",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
