@@ -125,4 +125,28 @@ ShadowValues ShadowValue::MakeMdShadowValues(int elevation, SkColor color) {
   return shadow_values;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(int elevation,
+                                                           SkColor color) {
+  ShadowValues shadow_values;
+  // To match the CSS notion of blur (spread outside the bounding box) to the
+  // Skia notion of blur (spread outside and inside the bounding box), we have
+  // to double the designer-provided blur values.
+  const int kBlurCorrection = 2;
+  // "Key shadow": y offset is elevation and blur value is equal to the
+  // elevation.
+  shadow_values.emplace_back(Vector2d(0, elevation),
+                             kBlurCorrection * elevation,
+                             SkColorSetA(color, 0x3d));
+  // "Ambient shadow": no offset and blur matches the elevation.
+  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
+                             SkColorSetA(color, 0x1a));
+  // To see what this looks like for elevation 24, try this CSS:
+  //   box-shadow: 0 24px 24px rgba(0, 0, 0, .24),
+  //               0 0 24px rgba(0, 0, 0, .10);
+  return shadow_values;
+}
+#endif
+
 }  // namespace gfx
