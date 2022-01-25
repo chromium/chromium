@@ -332,10 +332,6 @@ group("gn_all") {
     ]
   }
 
-  if (ozone_platform_x11) {
-    deps += [ "//ui/platform_window/x11:x11_unittests" ]
-  }
-
   if (is_win) {
     deps += [
       "//chrome/credential_provider",

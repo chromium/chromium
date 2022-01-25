@@ -585,6 +585,7 @@ TEST_F(EventsXTest, GetCharacter) {
   EXPECT_EQ(13, keyev4->GetCharacter());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(EventsXTest, NormalizeKeyEventFlags) {
   // Normalize flags when KeyEvent is created from XEvent.
   ScopedXI2Event event;
@@ -619,6 +620,7 @@ TEST_F(EventsXTest, NormalizeKeyEventFlags) {
     EXPECT_EQ(EF_NONE, keyev->flags());
   }
 }
+#endif
 
 TEST_F(EventsXTest, KeyEventCode) {
   const DomCode kDomCodeForSpace = DomCode::SPACE;

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_PLATFORM_WINDOW_X11_X11_WINDOW_MANAGER_H_
-#define UI_PLATFORM_WINDOW_X11_X11_WINDOW_MANAGER_H_
+#ifndef UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_
+#define UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_
 
 #include "base/containers/flat_map.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/platform_window/x11/x11_window_export.h"
 
 namespace ui {
 
 class X11Window;
 
-class X11_WINDOW_EXPORT X11WindowManager {
+class X11WindowManager {
  public:
   X11WindowManager();
 
@@ -59,4 +58,4 @@ class X11_WINDOW_EXPORT X11WindowManager {
 
 }  // namespace ui
 
-#endif  // UI_PLATFORM_WINDOW_X11_X11_WINDOW_MANAGER_H_
+#endif  // UI_OZONE_PLATFORM_X11_X11_WINDOW_MANAGER_H_

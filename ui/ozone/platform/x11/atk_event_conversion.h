@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_PLATFORM_WINDOW_X11_ATK_EVENT_CONVERSION_H_
-#define UI_PLATFORM_WINDOW_X11_ATK_EVENT_CONVERSION_H_
+#ifndef UI_OZONE_PLATFORM_X11_ATK_EVENT_CONVERSION_H_
+#define UI_OZONE_PLATFORM_X11_ATK_EVENT_CONVERSION_H_
 
 #include <atk/atk.h>
 
@@ -31,4 +31,4 @@ std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(const x11::Event& xev);
 
 }  // namespace ui
 
-#endif  // UI_PLATFORM_WINDOW_X11_ATK_EVENT_CONVERSION_H_
+#endif  // UI_OZONE_PLATFORM_X11_ATK_EVENT_CONVERSION_H_

@@ -191,7 +191,7 @@ An example of a composition test suite:
     },
 
     'linux_specific_gtests': {
-      'x11_unittests': {},
+      'ozone_x11_unittests': {},
     },
 
     # Composition test suite
@@ -201,7 +201,7 @@ An example of a composition test suite:
     ],
 
 A bot referring to `linux_gtests` will run both `base_unittests` and
-`x11_unittests`.
+`ozone_x11_unittests`.
 
 #### Matrix compound test suites
 

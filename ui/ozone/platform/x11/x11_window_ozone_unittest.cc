@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 #include <memory>
 #include <utility>
@@ -18,10 +18,10 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/x/event.h"
+#include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
 
 namespace ui {
 

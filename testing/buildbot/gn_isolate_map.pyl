@@ -2137,10 +2137,6 @@
       '--enable-pixel-output-in-tests',
     ],
   },
-  "x11_unittests": {
-    "label": "//ui/platform_window/x11:x11_unittests",
-    "type": "windowed_test_launcher",
-  },
   "zlib_unittests": {
     "python3": False,
     "label": "//third_party/zlib:zlib_unittests",

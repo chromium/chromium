@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_PLATFORM_WINDOW_X11_X11_WINDOW_H_
-#define UI_PLATFORM_WINDOW_X11_X11_WINDOW_H_
+#ifndef UI_OZONE_PLATFORM_X11_X11_WINDOW_H_
+#define UI_OZONE_PLATFORM_X11_X11_WINDOW_H_
 
 #include <array>
 #include <memory>
@@ -29,7 +29,6 @@
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "ui/platform_window/x11/x11_window_export.h"
 
 class SkPath;
 
@@ -41,17 +40,17 @@ class X11MoveLoop;
 class WorkspaceExtensionDelegate;
 
 // PlatformWindow implementation for X11.
-class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
-                                    public WmMoveResizeHandler,
-                                    public PlatformEventDispatcher,
-                                    public x11::EventObserver,
-                                    public WorkspaceExtension,
-                                    public X11Extension,
-                                    public WmDragHandler,
-                                    public XDragDropClient::Delegate,
-                                    public X11MoveLoopDelegate,
-                                    public WmMoveLoopHandler,
-                                    public X11DesktopWindowMoveClient::Delegate {
+class X11Window : public PlatformWindow,
+                  public WmMoveResizeHandler,
+                  public PlatformEventDispatcher,
+                  public x11::EventObserver,
+                  public WorkspaceExtension,
+                  public X11Extension,
+                  public WmDragHandler,
+                  public XDragDropClient::Delegate,
+                  public X11MoveLoopDelegate,
+                  public WmMoveLoopHandler,
+                  public X11DesktopWindowMoveClient::Delegate {
  public:
   explicit X11Window(PlatformWindowDelegate* platform_window_delegate);
 
@@ -501,4 +500,4 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
 
 }  // namespace ui
 
-#endif  // UI_PLATFORM_WINDOW_X11_X11_WINDOW_H_
+#endif  // UI_OZONE_PLATFORM_X11_X11_WINDOW_H_

@@ -43,20 +43,20 @@
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
 #include "ui/ozone/platform/x11/x11_user_input_monitor.h"
 #include "ui/ozone/platform/x11/x11_utils.h"
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #else
 #include "ui/base/ime/linux/input_method_auralinux.h"
-#include "ui/platform_window/x11/os_exchange_data_provider_x11.h"
+#include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
 #endif
 
 namespace ui {

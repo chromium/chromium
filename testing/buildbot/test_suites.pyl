@@ -1045,7 +1045,6 @@
 
     'chromium_gtests_for_linux_only': {
       'ozone_x11_unittests': {},
-      'x11_unittests': {},
     },
 
     'chromium_gtests_for_win_and_linux_only': {

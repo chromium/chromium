@@ -427,9 +427,6 @@ group("unittests") {
   ]
 
   if (ozone_platform_x11) {
-    deps += [
-      "//ui/ozone:ozone_x11_unittests",
-      "//ui/platform_window/x11:x11_unittests",
-    ]
+    deps += [ "//ui/ozone:ozone_x11_unittests" ]
   }
 }

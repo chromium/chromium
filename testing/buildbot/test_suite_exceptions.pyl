@@ -3716,13 +3716,6 @@
       'android-11-x86-rel', # crbug.com/1165280
     ],
   },
-  'x11_unittests': {
-    # Wayland bot uses chromium_linux_gtests that includes some x11 only
-    # test targets. To avoid maintaining a list of tests, remove them here.
-    'remove_from': [
-      'Linux Tests (Wayland)',
-    ],
-  },
   'xr_browser_tests': {
     'remove_from': [
       # Fails on the bot, http://crbug.com/868143

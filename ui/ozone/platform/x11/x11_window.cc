@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/platform_window/x11/x11_window.h"
+#include "ui/ozone/platform/x11/x11_window.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,16 +39,16 @@
 #include "ui/gfx/x/x11_window_event_manager.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
+#include "ui/ozone/platform/x11/hit_test_x11.h"
+#include "ui/ozone/platform/x11/x11_topmost_window_finder.h"
+#include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/platform_window/extensions/workspace_extension_delegate.h"
 #include "ui/platform_window/extensions/x11_extension_delegate.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
-#include "ui/platform_window/x11/hit_test_x11.h"
-#include "ui/platform_window/x11/x11_topmost_window_finder.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
 
 #if BUILDFLAG(USE_ATK)
-#include "ui/platform_window/x11/atk_event_conversion.h"
+#include "ui/ozone/platform/x11/atk_event_conversion.h"
 #endif
 
 namespace ui {

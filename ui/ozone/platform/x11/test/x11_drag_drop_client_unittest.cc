@@ -33,9 +33,9 @@
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
+#include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/os_exchange_data_provider_x11.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 namespace ui {
 namespace {

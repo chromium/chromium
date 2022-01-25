@@ -16,9 +16,9 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/platform_window/x11/x11_topmost_window_finder.h"
-#include "ui/platform_window/x11/x11_window.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
+#include "ui/ozone/platform/x11/x11_topmost_window_finder.h"
+#include "ui/ozone/platform/x11/x11_window.h"
+#include "ui/ozone/platform/x11/x11_window_manager.h"
 
 namespace ui {
 

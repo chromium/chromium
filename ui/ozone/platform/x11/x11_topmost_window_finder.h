@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_PLATFORM_WINDOW_X11_X11_TOPMOST_WINDOW_FINDER_H_
-#define UI_PLATFORM_WINDOW_X11_X11_TOPMOST_WINDOW_FINDER_H_
+#ifndef UI_OZONE_PLATFORM_X11_X11_TOPMOST_WINDOW_FINDER_H_
+#define UI_OZONE_PLATFORM_X11_X11_TOPMOST_WINDOW_FINDER_H_
 
 #include <set>
 
@@ -11,15 +11,13 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/platform_window/x11/x11_window_export.h"
 
 namespace ui {
 
 class X11Window;
 
 // Utility class for finding the topmost window at a given screen position.
-class X11_WINDOW_EXPORT X11TopmostWindowFinder
-    : public ui::XTopmostWindowFinder {
+class X11TopmostWindowFinder : public ui::XTopmostWindowFinder {
  public:
   // Create finder, specifying a set of windows to |ignore|.
   explicit X11TopmostWindowFinder(
@@ -51,4 +49,4 @@ class X11_WINDOW_EXPORT X11TopmostWindowFinder
 
 }  // namespace ui
 
-#endif  // UI_PLATFORM_WINDOW_X11_X11_TOPMOST_WINDOW_FINDER_H_
+#endif  // UI_OZONE_PLATFORM_X11_X11_TOPMOST_WINDOW_FINDER_H_

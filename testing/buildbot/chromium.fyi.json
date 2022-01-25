@@ -1522,23 +1522,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "x11_unittests",
-        "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
-      },
-      {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "xr_browser_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -77401,27 +77384,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "x11_unittests",
-        "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
-      },
-      {
-        "args": [
-          "--enable-features=PartitionAllocBackupRefPtr"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "xr_browser_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -84077,24 +84039,6 @@
         },
         "test": "wtf_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "x11_unittests",
-        "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
       },
       {
         "isolate_profile_data": true,

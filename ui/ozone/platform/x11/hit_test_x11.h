@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_PLATFORM_WINDOW_X11_HIT_TEST_X11_H_
-#define UI_PLATFORM_WINDOW_X11_HIT_TEST_X11_H_
+#ifndef UI_OZONE_PLATFORM_X11_HIT_TEST_X11_H_
+#define UI_OZONE_PLATFORM_X11_HIT_TEST_X11_H_
 
 namespace ui {
 
@@ -13,4 +13,4 @@ int HitTestToWmMoveResizeDirection(int hittest);
 
 }  // namespace ui
 
-#endif  // UI_PLATFORM_WINDOW_X11_HIT_TEST_X11_H_
+#endif  // UI_OZONE_PLATFORM_X11_HIT_TEST_X11_H_

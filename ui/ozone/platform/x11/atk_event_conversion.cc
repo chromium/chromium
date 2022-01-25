@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/platform_window/x11/atk_event_conversion.h"
+#include "ui/ozone/platform/x11/atk_event_conversion.h"
 
 #include "base/check.h"
 #include "base/notreached.h"

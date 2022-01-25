@@ -5,8 +5,8 @@
 #include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 
 #include "ui/gfx/x/xproto.h"
-#include "ui/platform_window/x11/x11_window.h"
-#include "ui/platform_window/x11/x11_window_manager.h"
+#include "ui/ozone/platform/x11/x11_window.h"
+#include "ui/ozone/platform/x11/x11_window_manager.h"
 
 namespace ui {
 
