@@ -3405,7 +3405,7 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
 
   if (layout_results_.size() > 1)
-    FragmentCountDidChange();
+    FragmentCountOrSizeDidChange();
 }
 
 void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
@@ -3416,12 +3416,17 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
   if (old_result == result.get())
     return;
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
-  bool got_new_fragment = &old_result->PhysicalFragment() != &fragment;
+  const auto& old_fragment = old_result->PhysicalFragment();
+  bool got_new_fragment = &old_fragment != &fragment;
   if (got_new_fragment) {
     if (HasFragmentItems()) {
       if (!index)
         InvalidateItems(*old_result);
       NGFragmentItems::ClearAssociatedFragments(this);
+    }
+    if (layout_results_.size() > 1) {
+      if (fragment.Size() != old_fragment.Size())
+        FragmentCountOrSizeDidChange();
     }
   }
   // |layout_results_| is particularly critical when side effects are disabled.
@@ -3483,7 +3488,7 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   if (layout_results_.size() > 1)
-    FragmentCountDidChange();
+    FragmentCountOrSizeDidChange();
   layout_results_.Shrink(results_to_keep);
 }
 
