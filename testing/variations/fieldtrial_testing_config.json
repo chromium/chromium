@@ -587,6 +587,21 @@
             ]
         }
     ],
+    "ArcUseDalvikMemoryProfile": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcUseDalvikMemoryProfile"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcVmBlockSize": [
         {
             "platforms": [
