@@ -63,9 +63,9 @@
     // feature to be enabled at runtime on a per-page basis through a signed
     // token for the corresponding feature name. Declaring the
     // origin_trial_feature_name will modify the generation of the static
-    // methods in runtime_enabled_features.h/cpp. The static method then allows
-    // the feature implementation to check if the trial is enabled for the
-    // current context.
+    // methods in runtime_enabled_features.h/cpp -- the no-parameter version
+    // will not be generated, so all callers have to use the version that takes
+    // a const FeatureContext* argument.
     origin_trial_feature_name: {
     },
     // origin_trial_os specifies the platforms where the trial is available.
