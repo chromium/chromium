@@ -784,6 +784,52 @@ TEST_F(UDPSocketTest, SetDSCP) {
   client.Close();
 }
 
+TEST_F(UDPSocketTest, ConnectUsingNetwork) {
+  // The specific value of this address doesn't really matter, and no
+  // server needs to be running here. The test only needs to call
+  // ConnectUsingNetwork() and won't send any datagrams.
+  const IPEndPoint fake_server_address(IPAddress::IPv4Localhost(), 8080);
+  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+#if BUILDFLAG(IS_ANDROID)
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
+    GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
+
+  {
+    // Connecting using a not existing network should fail but not report
+    // ERR_NOT_IMPLEMENTED when network handles are supported.
+    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
+                           NetLogSource());
+    int rv =
+        socket.ConnectUsingNetwork(wrong_network_handle, fake_server_address);
+    EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
+    EXPECT_NE(OK, rv);
+    EXPECT_NE(wrong_network_handle, socket.GetBoundNetwork());
+  }
+
+  {
+    // Connecting using an existing network should succeed when
+    // NetworkChangeNotifier returns a valid default network.
+    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
+                           NetLogSource());
+    const NetworkChangeNotifier::NetworkHandle network_handle =
+        NetworkChangeNotifier::GetDefaultNetwork();
+    if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+      EXPECT_EQ(
+          OK, socket.ConnectUsingNetwork(network_handle, fake_server_address));
+      EXPECT_EQ(network_handle, socket.GetBoundNetwork());
+    }
+  }
+#else
+  UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource());
+  EXPECT_EQ(
+      ERR_NOT_IMPLEMENTED,
+      socket.ConnectUsingNetwork(wrong_network_handle, fake_server_address));
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
@@ -1361,6 +1407,39 @@ TEST_F(UDPSocketTest, RecordRadioWakeUpTrigger) {
   // Check the write is recorded as a possible radio wake-up trigger.
   histograms.ExpectTotalCount(
       android::kUmaNamePossibleWakeupTriggerUDPWriteAnnotationId, 1);
+}
+
+TEST_F(UDPSocketTest, BindToNetwork) {
+  // The specific value of this address doesn't really matter, and no
+  // server needs to be running here. The test only needs to call
+  // Connect() and won't send any datagrams.
+  const IPEndPoint fake_server_address(IPAddress::IPv4Localhost(), 8080);
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
+    GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
+
+  // Binding the socket to a not existing network should fail at connect time.
+  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+  UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
+                         wrong_network_handle);
+  // Different Android versions might report different errors. Hence, just check
+  // what shouldn't happen.
+  int rv = socket.Connect(fake_server_address);
+  EXPECT_NE(OK, rv);
+  EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
+  EXPECT_NE(wrong_network_handle, socket.GetBoundNetwork());
+
+  // Binding the socket to an existing network should succeed.
+  const NetworkChangeNotifier::NetworkHandle network_handle =
+      NetworkChangeNotifier::GetDefaultNetwork();
+  if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+    UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
+                           network_handle);
+    EXPECT_EQ(OK, socket.Connect(fake_server_address));
+    EXPECT_EQ(network_handle, socket.GetBoundNetwork());
+  }
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

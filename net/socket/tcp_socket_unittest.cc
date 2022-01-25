@@ -37,11 +37,14 @@
 #include "testing/platform_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/android/network_change_notifier_factory_android.h"
 #include "net/android/radio_activity_tracker.h"
 #include "net/base/features.h"
+#include "net/base/network_change_notifier.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // For getsockopt() call.
@@ -1010,6 +1013,37 @@ TEST_F(TCPSocketTest, RecordRadioWakeUpTrigger) {
   // Check the write is recorded as a possible radio wake-up trigger.
   histograms.ExpectTotalCount(
       android::kUmaNamePossibleWakeupTriggerTCPWriteAnnotationId, 1);
+}
+
+TEST_F(TCPSocketTest, BindToNetwork) {
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
+    GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
+
+  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+  // Try binding to this IP to trigger the underlying BindToNetwork call.
+  const IPEndPoint ip(IPAddress::IPv4Localhost(), 0);
+  // TestCompletionCallback connect_callback;
+  TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
+                                    nullptr, NetLogSource(),
+                                    wrong_network_handle);
+  // Different Android versions might report different errors. Hence, just check
+  // what shouldn't happen.
+  int rv = connecting_socket.Bind(ip);
+  EXPECT_NE(OK, rv);
+  EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
+
+  // Connecting using an existing network should succeed.
+  const NetworkChangeNotifier::NetworkHandle network_handle =
+      NetworkChangeNotifier::GetDefaultNetwork();
+  if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+    TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
+                                      nullptr, NetLogSource(),
+                                      wrong_network_handle);
+    EXPECT_EQ(OK, connecting_socket.Bind(ip));
+  }
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

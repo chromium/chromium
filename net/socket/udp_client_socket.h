@@ -20,9 +20,14 @@ struct NetLogSource;
 // A client socket that uses UDP as the transport layer.
 class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
  public:
+  // If `network` is specified, the socket will be bound to it. All data traffic
+  // on the socket will be sent and received via `network`. Communication using
+  // this socket will fail if `network` disconnects.
   UDPClientSocket(DatagramSocket::BindType bind_type,
                   net::NetLog* net_log,
-                  const net::NetLogSource& source);
+                  const net::NetLogSource& source,
+                  NetworkChangeNotifier::NetworkHandle network =
+                      NetworkChangeNotifier::kInvalidNetworkHandle);
 
   UDPClientSocket(const UDPClientSocket&) = delete;
   UDPClientSocket& operator=(const UDPClientSocket&) = delete;
@@ -80,7 +85,9 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
 
  private:
   UDPSocket socket_;
+  // The network the socket is currently bound to.
   NetworkChangeNotifier::NetworkHandle network_;
+  NetworkChangeNotifier::NetworkHandle connect_using_network_;
 };
 
 }  // namespace net

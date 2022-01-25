@@ -12,13 +12,16 @@ namespace net {
 
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  net::NetLog* net_log,
-                                 const net::NetLogSource& source)
-    : socket_(bind_type, net_log, source),
-      network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
+                                 const net::NetLogSource& source,
+                                 NetworkChangeNotifier::NetworkHandle network)
+    : socket_(bind_type, net_log, source), connect_using_network_(network) {}
 
 UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
+  if (connect_using_network_ != NetworkChangeNotifier::kInvalidNetworkHandle)
+    return ConnectUsingNetwork(connect_using_network_, address);
+
   int rv = socket_.Open(address.GetFamily());
   if (rv != OK)
     return rv;
