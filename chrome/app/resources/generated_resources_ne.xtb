@@ -507,6 +507,7 @@
 <translation id="1521442365706402292">प्रमाणपत्रहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
 <translation id="152234381334907219">कहिल्यै सुरक्षित गरिँदैन</translation>
+<translation id="1523279371236772909">गत महिना हेरिएको</translation>
 <translation id="1523978563989812243">टेक्स्ट-टू-स्पिचका इन्जिनहरू</translation>
 <translation id="1524430321211440688">किबोर्ड</translation>
 <translation id="1524563461097350801">पर्दैन, धन्यवाद</translation>
@@ -1237,6 +1238,7 @@
 <translation id="2232876851878324699">फाइलमा एउटा प्रमाणपत्र समावेश थियो, जुन आयात गरिएको थिएन:</translation>
 <translation id="2233502537820838181">&amp;थप जानकारी</translation>
 <translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
+<translation id="2234827758954819389">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
 <translation id="2234876718134438132">सिंक तथा Google सेवाहरू</translation>
 <translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2238379619048995541">फ्रिक्वेन्सी स्थिति डाटा</translation>
@@ -3091,6 +3093,7 @@
 <translation id="4095264805865317199">सेलुलर सक्रिय गर्नेसम्बन्धी UI खोल्नुहोस्</translation>
 <translation id="4095507791297118304">प्राथमिक प्रदर्शन</translation>
 <translation id="4096508467498758490">विकारकर्ता मोड विस्तारहरू असक्षम गर्नुहोस्</translation>
+<translation id="4096797685681362305">गत हप्ता हेरिएको</translation>
 <translation id="4097406557126260163">एप र एक्स्टेन्सनहरू</translation>
 <translation id="409742781329613461">Chrome सम्बन्धी सुझावहरू</translation>
 <translation id="4097560579602855702">Google मा खोज्नुहोस्</translation>
@@ -3646,6 +3649,7 @@
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
+<translation id="4701335814944566468">हिजो हेरिएको</translation>
 <translation id="4708794300267213770">शयन अवस्थाबाट सक्रिय पार्दा लक स्क्रिन देखाउनुहोस्</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
 <translation id="4711638718396952945">सेटिङहरू पुनर्स्थापित गर्नुहोस्</translation>
@@ -3713,6 +3717,7 @@
 <translation id="479536056609751218">वेबपृष्ठ, HTML मात्रै</translation>
 <translation id="4796142525425001238">सधैँ रिस्टोर गरियोस्</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ब्लुटुथ लगहरू<ph name="END_LINK" /> संलग्न गर्नुहोस् (Google आन्तरिक)</translation>
+<translation id="479863874072008121">डिभाइस व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4800839971935185386">परिवर्तन गरिएका नाम तथा आइकन हेर्नुहोस्</translation>
 <translation id="4801448226354548035">खाताहरू लुकाउनुहोस्</translation>
 <translation id="4801512016965057443">मोबाइल डाटा रोमिङको लागि अनुमति दिनुहोस्</translation>
@@ -6435,6 +6440,7 @@
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7659154729610375585">जे भए पनि इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
 <translation id="7659297516559011665">यो डिभाइसमा सुरक्षित गरिएका पासवर्डहरू मात्र</translation>
+<translation id="7659336857671800422">गोपनीयतासम्बन्धी मार्गदर्शन प्राप्त गर्नुहोस्</translation>
 <translation id="7659584679870740384">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार छैन। कृपया साइन-इन अनुमतिको लागि प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="7661259717474717992">साइटहरूलाई कुकी सम्बन्धी डेटा सुरक्षित गर्न र पढ्न अनुमति दिनुहोस्</translation>
 <translation id="7661451191293163002">दर्ताको कुनै प्रमाणपत्र प्राप्त गर्न सकिएन।</translation>
@@ -7956,6 +7962,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू परिवर्तन गर्न सक्ने छ</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="9201023452444595544">सबै अफलाइन डेटा हटाइने छ</translation>
+<translation id="9201117361710210082">यसअघि हेरिएको</translation>
 <translation id="9201220332032049474">स्क्रिन लकका विकल्पहरू</translation>
 <translation id="9201842707396338580">केही चिज गडबड भयो। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="9203398526606335860">&amp;प्रोफाइलिङ सक्षम भयो</translation>

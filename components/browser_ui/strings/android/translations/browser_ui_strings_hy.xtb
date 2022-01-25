@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Թույլատրել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
+<translation id="4194328954146351878">Կայքերի համար թույլտվություն խնդրել՝ տեսնելու և փոփոխելու տեղեկությունները NFC սարքերում (խորհուրդ է տրվում)</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
 <translation id="4226663524361240545">Ծանուցումների ժամանակ սարքը կթրթռա</translation>
 <translation id="4259722352634471385">Նավիգացիան արգելափակված է՝ <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Սարքի NFC-ն անջատված է։ Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
+<translation id="8928445016601307354">Արգելել կայքերին տեսնել և փոփոխել տեղեկությունները NFC սարքերում</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավիգացիան անհասանելի է՝ <ph name="URL" /></translation>

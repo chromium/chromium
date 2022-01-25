@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">將其他頁面放到掃瞄器上</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
+<translation id="291142119251986300">不相容的元件</translation>
+<translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>

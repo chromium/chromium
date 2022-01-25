@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">အချို့ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးများ ခွင့်ပြုသည်။</translation>
 <translation id="4046123991198612571">နောက်တစ်ပုဒ်</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
+<translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
 <translation id="4226663524361240545">အကြောင်းကြားချက်သည် စက်ပစ္စည်းကို တုန်ခါစေပါမည်</translation>
 <translation id="4259722352634471385">သွားလာမှုပြလမ်းညွှန်အား ပိတ်ထား၏- <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ဤစက်အတွက် NFC ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> ထဲတွင် ၎င်းကို ဖွင့်ပါ။</translation>
+<translation id="8928445016601307354">ဝဘ်ဆိုက်များအား NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့် ပိတ်ရန်</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">အချို့ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးများကို ပိတ်ဆို့သည်။</translation>
 <translation id="8959122750345127698">သွားလာမှုပြလမ်းညွှန်ဆီသို့ မရောက်နိုင်ပါ- <ph name="URL" /></translation>
