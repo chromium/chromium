@@ -416,7 +416,6 @@ void DesksTemplatesItemView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   DCHECK_EQ(sender, name_view_);
-  DCHECK(is_template_name_being_modified_);
 
   // To avoid potential security and memory issues, we don't allow template
   // names to have an unbounded length. Therefore we trim if needed at
@@ -429,6 +428,13 @@ void DesksTemplatesItemView::ContentsChanged(
   }
 
   name_view_->OnContentsChanged();
+
+  auto* focus_manager = GetWidget()->GetFocusManager();
+  if (focus_manager->GetFocusedView() != name_view_) {
+    // The text editor isn't currently the active view, so we'll assume that it
+    // was updated from a drag and drop operation.
+    UpdateTemplateName();
+  }
 }
 
 bool DesksTemplatesItemView::HandleKeyEvent(views::Textfield* sender,

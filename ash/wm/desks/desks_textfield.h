@@ -45,6 +45,8 @@ class ASH_EXPORT DesksTextfield : public views::Textfield,
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
 
   // OverviewHighlightableView:
   views::View* GetView() override;

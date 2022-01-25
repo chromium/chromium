@@ -134,6 +134,16 @@ void DesksTextfield::OnBlur() {
   views::Textfield::OnBlur();
 }
 
+void DesksTextfield::OnDragEntered(const ui::DropTargetEvent& event) {
+  GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
+  views::Textfield::OnDragEntered(event);
+}
+
+void DesksTextfield::OnDragExited() {
+  GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
+  views::Textfield::OnDragExited();
+}
+
 views::View* DesksTextfield::GetView() {
   return this;
 }
