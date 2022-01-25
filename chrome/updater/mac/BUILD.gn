@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/compile_plist.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
+import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
 
@@ -76,23 +78,54 @@ source_set("privileged_helper_sources") {
   ]
 }
 
+compile_plist("priviledged_info_plist") {
+  plist_templates = [ "privileged_helper/Info.plist" ]
+  format = "xml1"
+  substitutions = [
+    "UPDATER_HELPER_BUNDLE_ID=$privileged_helper_name",
+    "UPDATER_HELPER_BUNDLE_NAME=$privileged_helper_bundle_name",
+    "BROWSER_BUNDLE_IDENTIFIER=$mac_browser_bundle_identifier",
+  ]
+  output_name = "$target_gen_dir/$privileged_helper_name-Info.plist"
+}
+
+process_version("priviledged_launchd_plist") {
+  extra_args = [
+    "-e",
+    "UPDATER_HELPER_BUNDLE_ID=\"$privileged_helper_name\"",
+  ]
+
+  process_only = true
+  template_file = "privileged_helper/launchd.plist"
+  output = "$target_gen_dir/$privileged_helper_name-launchd.plist"
+}
+
 executable("privileged_helper") {
   output_name = privileged_helper_name
 
   sources = [ "privileged_helper/main.mm" ]
   deps = [
+    ":priviledged_info_plist",
+    ":priviledged_launchd_plist",
     ":privileged_helper_sources",
     "//base",
   ]
 
   frameworks = [ "Foundation.framework" ]
 
-  inputs = [ "privileged_helper/Info.plist" ]
+  inputs = [
+    "$target_gen_dir/$privileged_helper_name-Info.plist",
+    "$target_gen_dir/$privileged_helper_name-launchd.plist",
+  ]
   ldflags = [
     "-sectcreate",
     "__TEXT",
     "__info_plist",
-    rebase_path(inputs[0], root_build_dir),
+    rebase_path(inputs[0], root_out_dir),
+    "-sectcreate",
+    "__TEXT",
+    "__launchd_plist",
+    rebase_path(inputs[1], root_out_dir),
   ]
 }
 

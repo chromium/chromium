@@ -28,7 +28,7 @@ class TestVersionUpdater : public VersionUpdater {
 
 // VersionUpdater implementation:
 #if BUILDFLAG(IS_MAC)
-  void PromoteUpdater() const override {}
+  void PromoteUpdater() override {}
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,

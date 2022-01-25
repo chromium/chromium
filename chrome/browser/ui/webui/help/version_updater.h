@@ -95,7 +95,7 @@ class VersionUpdater {
 
 #if BUILDFLAG(IS_MAC)
   // Make updates available for all users.
-  virtual void PromoteUpdater() const = 0;
+  virtual void PromoteUpdater() = 0;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -8,17 +8,18 @@
 #import <AppKit/AppKit.h>
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 #if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 #include <string.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/updater/update_service.h"  // nogncheck
 
 class BrowserUpdaterClient;
+class BrowserUpdaterHelperClientMac;
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 @class KeystoneObserver;
@@ -33,7 +34,7 @@ class VersionUpdaterMac : public VersionUpdater {
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback status_callback,
                       PromoteCallback promote_callback) override;
-  void PromoteUpdater() const override;
+  void PromoteUpdater() override;
 
   // Process status updates received from Keystone. The dictionary will contain
   // an AutoupdateStatus value as an intValue at key kAutoupdateStatusStatus. If
@@ -81,6 +82,7 @@ class VersionUpdaterMac : public VersionUpdater {
   // Instance of the BrowserUpdaterClient used to update the browser with the
   // new updater.
   scoped_refptr<BrowserUpdaterClient> update_client_;
+  scoped_refptr<BrowserUpdaterHelperClientMac> update_helper_client_;
   base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
 #endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 };

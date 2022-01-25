@@ -5,18 +5,18 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.chromium.ChromiumUpdater.helper</string>
-  <key>CFBundleInfoDictionaryVersion</key>
-  <string>6.0</string>
+	<string>${UPDATER_HELPER_BUNDLE_ID}</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>ChromiumUpdaterHelper</string>
+	<string>${UPDATER_HELPER_BUNDLE_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
 	<string>3.0</string>
-  <key>SMAuthorizedClients</key>
-  <array>
-      <string>identifier "org.chromium.Chromium"</string>
-  </array>
+	<key>SMAuthorizedClients</key>
+	<array>
+		<string>identifier "${BROWSER_BUNDLE_IDENTIFIER}"</string>
+	</array>
 </dict>
 </plist>

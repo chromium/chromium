@@ -13,8 +13,7 @@
 namespace updater {
 
 PrivilegedHelperServer::PrivilegedHelperServer()
-    : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      service_(base::MakeRefCounted<PrivilegedHelperService>()) {}
+    : service_(base::MakeRefCounted<PrivilegedHelperService>()) {}
 PrivilegedHelperServer::~PrivilegedHelperServer() = default;
 
 void PrivilegedHelperServer::Initialize() {

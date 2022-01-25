@@ -12,6 +12,7 @@ class FilePath;
 }
 
 extern const char kUpdaterName[];
+extern const char kPrivilegedHelperName[];
 
 // Gets the FilePath to the updater folder (e.g. Chromium/ChromiumUpdater).
 base::FilePath GetUpdaterFolderName();

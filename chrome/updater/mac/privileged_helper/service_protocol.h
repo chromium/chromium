@@ -10,9 +10,8 @@
 // Protocol for the XPC privileged helper service.
 @protocol PrivilegedHelperServiceProtocol <NSObject>
 
-- (void)performSystemUpdaterTasksWithBrowserPath:(NSString* _Nonnull)browserPath
-                                           reply:
-                                               (void (^_Nonnull)(int rc))reply;
+- (void)setupSystemUpdaterWithBrowserPath:(NSString* _Nonnull)browserPath
+                                    reply:(void (^_Nonnull)(int rc))reply;
 @end
 
 #endif  // CHROME_UPDATER_MAC_PRIVILEGED_HELPER_SERVICE_PROTOCOL_H_

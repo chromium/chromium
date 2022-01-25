@@ -11,10 +11,6 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/mac/privileged_helper/service.h"
 
-namespace base {
-class SequencedTaskRunner;
-}
-
 namespace updater {
 
 class PrivilegedHelperServer : public App {
@@ -32,7 +28,6 @@ class PrivilegedHelperServer : public App {
   void FirstTaskRun() override;
   void Uninitialize() override;
 
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<PrivilegedHelperService> service_;
   base::scoped_nsobject<NSXPCListener> service_listener_;
   base::scoped_nsobject<PrivilegedHelperServiceXPCDelegate> service_delegate_;

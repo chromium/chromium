@@ -479,6 +479,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/lib_util_mac.mm",
         "//chrome/updater/mac/mac_util.h",
         "//chrome/updater/mac/mac_util.mm",
+        "//chrome/updater/mac/privileged_helper/service_protocol.h",
         "//chrome/updater/mac/xpc_service_names.h",
         "//chrome/updater/mac/xpc_service_names.mm",
         "//chrome/updater/util_mac.mm",
