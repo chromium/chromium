@@ -15,9 +15,9 @@
 //    Deprecated: #if defined(OS_WIN)
 //
 //  Operating System:
-//    IS_AIX / IS_ANDROID / IS_ASMJS / IS_FREEBSD / IS_FUCHSIA / IS_IOS /
-//    IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD / IS_OPENBSD /
-//    IS_QNX / IS_SOLARIS / IS_WIN
+//    IS_AIX / IS_ANDROID / IS_ASMJS / IS_CHROMEOS / IS_FREEBSD / IS_FUCHSIA /
+//    IS_IOS / IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD / IS_OPENBSD / IS_QNX /
+//    IS_SOLARIS / IS_WIN
 //  Operating System family:
 //    IS_APPLE: IOS or MAC
 //    IS_BSD: FREEBSD or NETBSD or OPENBSD
