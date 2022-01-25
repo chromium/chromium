@@ -8,9 +8,11 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace extensions {
 
@@ -229,5 +231,30 @@ INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiTest,
                          DestructiveScriptTest,
                          ::testing::Range(0,
                                           kDestructiveScriptTestBucketCount));
+
+class ExecuteScriptApiFencedFrameTest
+    : public ExecuteScriptApiTestBase,
+      public testing::WithParamInterface<bool /* shadow_dom_fenced_frame */> {
+ protected:
+  ExecuteScriptApiFencedFrameTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{blink::features::kFencedFrames,
+                               {{"implementation_type",
+                                 GetParam() ? "shadow_dom" : "mparch"}}}},
+        /*disabled_features=*/{features::kSpareRendererForSitePerProcess});
+  }
+  ~ExecuteScriptApiFencedFrameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiFencedFrameTest, Load) {
+  ASSERT_TRUE(RunExtensionTest("executescript/fenced_frames")) << message_;
+}
+
+INSTANTIATE_TEST_SUITE_P(ExecuteScriptApiFencedFrameTest,
+                         ExecuteScriptApiFencedFrameTest,
+                         testing::Bool());
 
 }  // namespace extensions
