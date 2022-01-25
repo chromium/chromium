@@ -86,6 +86,9 @@ char kLSanDefaultSuppressions[] =
     "BluetoothServerSocket\n"
     // Suppress leak in NearbyConnectionBrokerImpl. crbug.com/1279578
     "leak:ash::secure_channel::NearbyConnectionBrokerImpl\n"
+    // Suppress leak in NearbyEndpointFinderImpl. crbug.com/1288577
+    "leak:ash::secure_channel::NearbyEndpointFinderImpl::~"
+    "NearbyEndpointFinderImpl\n"
 #endif
 
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
