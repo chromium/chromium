@@ -551,7 +551,8 @@ public class PersonalDataManager {
         private String mBasicCardIssuerNetwork;
         private int mIssuerIconDrawableId;
         private String mBillingAddressId;
-        private String mServerId;
+        private final String mServerId;
+        private final long mInstrumentId;
         // The label set for the card. This could be one of Card Network + LastFour, Nickname +
         // LastFour or a Google specific string for Google-issued cards. This is used for displaying
         // the card in PaymentMethods in Settings.
@@ -563,11 +564,11 @@ public class PersonalDataManager {
         public static CreditCard create(String guid, String origin, boolean isLocal,
                 boolean isCached, String name, String number, String mObfuscatedNumber,
                 String month, String year, String basicCardIssuerNetwork, int iconId,
-                String billingAddressId, String serverId, String cardLabel, String nickname,
-                GURL cardArtUrl) {
+                String billingAddressId, String serverId, long instrumentId, String cardLabel,
+                String nickname, GURL cardArtUrl) {
             return new CreditCard(guid, origin, isLocal, isCached, name, number, mObfuscatedNumber,
                     month, year, basicCardIssuerNetwork, iconId, billingAddressId, serverId,
-                    cardLabel, nickname, cardArtUrl);
+                    instrumentId, cardLabel, nickname, cardArtUrl);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
@@ -576,13 +577,15 @@ public class PersonalDataManager {
                 String serverId) {
             this(guid, origin, isLocal, isCached, name, number, obfuscatedNumber, month, year,
                     basicCardIssuerNetwork, issuerIconDrawableId, billingAddressId, serverId,
+                    /* instrumentId= */ 0,
                     /* cardLabel= */ obfuscatedNumber, /* nickname= */ "", /* cardArtUrl= */ null);
         }
 
         public CreditCard(String guid, String origin, boolean isLocal, boolean isCached,
                 String name, String number, String obfuscatedNumber, String month, String year,
                 String basicCardIssuerNetwork, int issuerIconDrawableId, String billingAddressId,
-                String serverId, String cardLabel, String nickname, GURL cardArtUrl) {
+                String serverId, long instrumentId, String cardLabel, String nickname,
+                GURL cardArtUrl) {
             mGUID = guid;
             mOrigin = origin;
             mIsLocal = isLocal;
@@ -596,6 +599,7 @@ public class PersonalDataManager {
             mIssuerIconDrawableId = issuerIconDrawableId;
             mBillingAddressId = billingAddressId;
             mServerId = serverId;
+            mInstrumentId = instrumentId;
             mCardLabel = cardLabel;
             mNickname = nickname;
             mCardArtUrl = cardArtUrl;
@@ -675,6 +679,11 @@ public class PersonalDataManager {
         @CalledByNative("CreditCard")
         public String getServerId() {
             return mServerId;
+        }
+
+        @CalledByNative("CreditCard")
+        public long getInstrumentId() {
+            return mInstrumentId;
         }
 
         public String getCardLabel() {
