@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
-    enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
+    enum="BluetoothConnectionFailureReason" expires_after="2023-01-23">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
