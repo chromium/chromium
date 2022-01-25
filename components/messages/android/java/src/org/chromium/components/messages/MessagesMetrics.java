@@ -133,6 +133,8 @@ public class MessagesMetrics {
                 return "VrServicesUpgrade";
             case MessageIdentifier.AR_CORE_UPGRADE:
                 return "ArCoreUpgrade";
+            case MessageIdentifier.INSTANT_APPS:
+                return "InstantApps";
             default:
                 return "Unknown";
         }
