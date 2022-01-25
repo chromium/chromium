@@ -25,8 +25,8 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
 }
 
-@interface WindowAccessibityChangeNotifierAppAgent () <AppStateObserver,
-                                                       SceneStateObserver>
+@interface WindowAccessibilityChangeNotifierAppAgent () <AppStateObserver,
+                                                         SceneStateObserver>
 // Observed app state.
 @property(nonatomic, weak) AppState* appState;
 
@@ -39,7 +39,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
 @end
 
-@implementation WindowAccessibityChangeNotifierAppAgent
+@implementation WindowAccessibilityChangeNotifierAppAgent
 
 #pragma mark - AppStateAgent
 
@@ -82,7 +82,7 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
   // Weakify, since the window count can change in shutdown, so there are
   // likely to be pending notifications that would otherwise keep this object
   // alive.
-  __weak WindowAccessibityChangeNotifierAppAgent* weakSelf = self;
+  __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
                                static_cast<int64_t>(delay * NSEC_PER_SEC)),
                  dispatch_get_main_queue(), ^{

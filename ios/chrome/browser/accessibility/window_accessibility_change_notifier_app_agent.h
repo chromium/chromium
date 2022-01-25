@@ -9,7 +9,7 @@
 
 // An app agent that montitors the number of visible (that is: active) scenes
 // and provides accessibility notifications when this count changes.
-@interface WindowAccessibityChangeNotifierAppAgent : NSObject <AppStateAgent>
+@interface WindowAccessibilityChangeNotifierAppAgent : NSObject <AppStateAgent>
 @end
 
 #endif  // IOS_CHROME_BROWSER_ACCESSIBILITY_WINDOW_ACCESSIBILITY_CHANGE_NOTIFIER_APP_AGENT_H_
