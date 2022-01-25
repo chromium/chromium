@@ -66,6 +66,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -239,6 +240,8 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
       std::make_unique<AwRenderViewHostExt>(this, web_contents_.get());
 
   InitializePageLoadMetricsForWebContents(web_contents_.get());
+  metrics::ContentStabilityMetricsProvider::SetupWebContentsObserver(
+      web_contents_.get());
 
   permission_request_handler_ =
       std::make_unique<PermissionRequestHandler>(this, web_contents_.get());
