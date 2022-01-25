@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
@@ -74,6 +75,12 @@ public class SurfaceColorDrawable extends GradientDrawable {
         onNonNullTheme(theme);
     }
 
+    /**
+     * Lint suppression for NewApi, since we check if a gradient is set by calling #getColors, which
+     * is available after API 24. This is fine, since this class is a custom drawable, which is only
+     * supported after API 24.
+     */
+    @SuppressLint("NewApi")
     private void onNonNullTheme(@NonNull Theme theme) {
         boolean elevationOverlayEnabled =
                 AttrUtils.resolveBoolean(theme, R.attr.elevationOverlayEnabled);
@@ -88,6 +95,12 @@ public class SurfaceColorDrawable extends GradientDrawable {
                         elevationOverlayAccentColor, colorSurface, mDensity);
         final @ColorInt int color =
                 elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(mElevation);
-        setTint(color);
+        if (getColors() == null) {
+            // Gradient not set, so we call #setColor.
+            setColor(color);
+        } else {
+            // Gradient set, so we call #setTint to preserve it.
+            setTint(color);
+        }
     }
 }
