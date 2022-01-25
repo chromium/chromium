@@ -44,6 +44,7 @@ source_set("share") {
     deps += [
       ":jni_headers",
       "//chrome/browser/share/android:jni_headers",
+      "//components/ukm/content:content",
       "//ui/android",
       "//url:gurl_android",
     ]

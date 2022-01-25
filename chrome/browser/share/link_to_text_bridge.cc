@@ -7,10 +7,22 @@
 #include "chrome/browser/share/android/jni_headers/LinkToTextBridge_jni.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "components/ukm/content/source_url_recorder.h"
+#include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 
 using shared_highlighting::LinkGenerationReadyStatus;
 using shared_highlighting::LinkGenerationStatus;
+
+namespace {
+
+ukm::SourceId GetSourceId(
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  return ukm::GetSourceIdForWebContentsDocument(web_contents);
+}
+}  // namespace
 
 // TODO(gayane): Update the name whenever
 // |ShouldOfferLinkToText| updated to more descriptive
@@ -22,13 +34,19 @@ static jboolean JNI_LinkToTextBridge_ShouldOfferLinkToText(
   return shared_highlighting::ShouldOfferLinkToText(*url);
 }
 
-static void JNI_LinkToTextBridge_LogFailureMetrics(JNIEnv* env, jint error) {
+static void JNI_LinkToTextBridge_LogFailureMetrics(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents,
+    jint error) {
   shared_highlighting::LogRequestedFailureMetrics(
+      GetSourceId(j_web_contents),
       static_cast<shared_highlighting::LinkGenerationError>(error));
 }
 
-static void JNI_LinkToTextBridge_LogSuccessMetrics(JNIEnv* env) {
-  shared_highlighting::LogRequestedSuccessMetrics();
+static void JNI_LinkToTextBridge_LogSuccessMetrics(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  shared_highlighting::LogRequestedSuccessMetrics(GetSourceId(j_web_contents));
 }
 
 static void JNI_LinkToTextBridge_LogLinkRequestedBeforeStatus(

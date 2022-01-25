@@ -284,7 +284,9 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedErrorLatency) {
 
 // Tests all the metrics that need to be recorded in case of a failure.
 TEST_F(SharedHighlightingMetricsTest, LogRequestedFailureMetrics) {
-  LogRequestedFailureMetrics(LinkGenerationError::kEmptySelection);
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = 1;
+  LogRequestedFailureMetrics(source_id, LinkGenerationError::kEmptySelection);
 
   histogram_tester_.ExpectBucketCount(
       "SharedHighlights.LinkGenerated.Requested", false, 1);
@@ -295,16 +297,38 @@ TEST_F(SharedHighlightingMetricsTest, LogRequestedFailureMetrics) {
       LinkGenerationError::kEmptySelection, 1);
   histogram_tester_.ExpectTotalCount(
       "SharedHighlights.LinkGenerated.Error.Requested", 1);
+
+  // Check UKM
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkGenerated_Requested::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  EXPECT_EQ(source_id, entry->source_id);
+  ukm_recorder.ExpectEntryMetric(entry, kSuccessUkmMetric, false);
+  ukm_recorder.ExpectEntryMetric(
+      entry, kErrorUkmMetric,
+      static_cast<int64_t>(LinkGenerationError::kEmptySelection));
 }
 
 // Tests all the metrics that need to be recorded in case of a success.
 TEST_F(SharedHighlightingMetricsTest, LogRequestedSuccessMetrics) {
-  LogRequestedSuccessMetrics();
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm::SourceId source_id = 1;
+  LogRequestedSuccessMetrics(source_id);
 
   histogram_tester_.ExpectBucketCount(
       "SharedHighlights.LinkGenerated.Requested", true, 1);
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
                                      1);
+
+  // Check UKM
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::SharedHighlights_LinkGenerated_Requested::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const ukm::mojom::UkmEntry* entry = entries[0];
+  EXPECT_EQ(source_id, entry->source_id);
+  ukm_recorder.ExpectEntryMetric(entry, kSuccessUkmMetric, true);
+  EXPECT_FALSE(ukm_recorder.GetEntryMetric(entry, kErrorUkmMetric));
 }
 
 // Tests that requested before or after histogram is correctly recorded.

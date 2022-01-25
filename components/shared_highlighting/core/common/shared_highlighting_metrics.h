@@ -118,10 +118,11 @@ void LogLinkRequestedStatus(LinkGenerationStatus status);
 
 // Records metrics when successfully generated link to text was available for
 // the user.
-void LogRequestedSuccessMetrics();
+void LogRequestedSuccessMetrics(ukm::SourceId source_id);
 
 // Records metrics when link to text was not available for the user.
-void LogRequestedFailureMetrics(LinkGenerationError error);
+void LogRequestedFailureMetrics(ukm::SourceId source_id,
+                                LinkGenerationError error);
 
 // Records whether an individual text fragment could not be scrolled to because
 // there was an |ambiguous_match| (generally because more than one matching
@@ -198,6 +199,20 @@ void LogLinkGeneratedErrorUkmEvent(ukm::SourceId source_id,
 void LogLinkGeneratedErrorUkmEvent(ukm::UkmRecorder* recorder,
                                    ukm::SourceId source_id,
                                    LinkGenerationError reason);
+
+// Records a UKM event when link with text fragments was available for the user.
+// |source_id| refers to the current frame, and this function will record using
+// the static Recorder. This API can only be used when calling from the browser
+// process, otherwise no event will be recorded.
+void LogLinkGeneratedRequestedSuccessUkmEvent(ukm::SourceId source_id);
+
+// Records a UKM event when link with text fragments was not available for the
+// user. |source_id| refers to the current frame and |reason| highlights the
+// cause of the failure. This function will record using the static Recorder.
+// This API can only be used when calling from the browser process, otherwise no
+// event will be recorded.
+void LogLinkGeneratedRequestedErrorUkmEvent(ukm::SourceId source_id,
+                                            LinkGenerationError reason);
 
 // Records whether link to text was requested before or after link generation
 // was complete with corresponding success status.

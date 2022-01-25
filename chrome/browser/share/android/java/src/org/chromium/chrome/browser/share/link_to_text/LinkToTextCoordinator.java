@@ -344,7 +344,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     private void completeRequestWithFailure(@LinkGenerationError int error) {
-        LinkToTextBridge.logFailureMetrics(error);
+        LinkToTextBridge.logFailureMetrics(mTab.getWebContents(), error);
 
         switch (error) {
             case LinkGenerationError.TAB_HIDDEN:
@@ -363,7 +363,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         if (mChromeShareExtras.isReshareHighlightedText()) {
             LinkToTextBridge.logLinkToTextReshareStatus(LinkToTextReshareStatus.SUCCESS);
         } else {
-            LinkToTextBridge.logSuccessMetrics();
+            LinkToTextBridge.logSuccessMetrics(mTab.getWebContents());
         }
         onSelectorReady(selector);
         cleanup();

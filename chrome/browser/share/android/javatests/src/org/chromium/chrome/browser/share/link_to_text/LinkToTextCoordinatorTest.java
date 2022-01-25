@@ -243,7 +243,8 @@ public class LinkToTextCoordinatorTest {
         checkShowsShareSheetWithNoLink();
 
         // Check that histogram will be recorded correctly.
-        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.BLOCK_LIST);
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(any(), eq(LinkGenerationError.BLOCK_LIST));
     }
 
     @Test
@@ -259,7 +260,8 @@ public class LinkToTextCoordinatorTest {
         checkShowsShareSheetWithNoLink();
 
         // Check that histogram will be recorded correctly.
-        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.EMPTY_SELECTION);
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(any(), eq(LinkGenerationError.EMPTY_SELECTION));
     }
 
     @Test
@@ -274,7 +276,8 @@ public class LinkToTextCoordinatorTest {
         checkShowsShareSheetWithNoLink();
 
         // Check that histogram will be recorded correctly.
-        verify(mLinkToTextBridge, times(1)).logFailureMetrics(LinkGenerationError.TIMEOUT);
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(any(), eq(LinkGenerationError.TIMEOUT));
 
         // Receiving generation result after timeout, should not trigger another sharesheet.
         mLinkToTextCoordinator.onRemoteRequestCompleted("",
@@ -283,8 +286,8 @@ public class LinkToTextCoordinatorTest {
         verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
 
         // No new histogram is recorded.
-        verify(mLinkToTextBridge, times(1)).logFailureMetrics(anyInt());
-        verify(mLinkToTextBridge, times(0)).logSuccessMetrics();
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(any(), anyInt());
+        verify(mLinkToTextBridge, times(0)).logSuccessMetrics(any());
     }
 
     @Test
@@ -298,15 +301,15 @@ public class LinkToTextCoordinatorTest {
 
         // Check that shows share sheet without link to text
         checkShowsShareSheetWithLink(VISIBLE_URL + "#:~:text=selector");
-        verify(mLinkToTextBridge, times(1)).logSuccessMetrics();
+        verify(mLinkToTextBridge, times(1)).logSuccessMetrics(any());
 
         // Timeout after remote request was completed should not trigger another sharesheet.
         mLinkToTextCoordinator.timeout();
         verify(mShareCallback, times(1)).showShareSheet(any(), any(), anyLong());
 
         // No new histogram is recorded.
-        verify(mLinkToTextBridge, times(0)).logFailureMetrics(anyInt());
-        verify(mLinkToTextBridge, times(1)).logSuccessMetrics();
+        verify(mLinkToTextBridge, times(0)).logFailureMetrics(any(), anyInt());
+        verify(mLinkToTextBridge, times(1)).logSuccessMetrics(any());
     }
 
     @Test
@@ -322,7 +325,7 @@ public class LinkToTextCoordinatorTest {
 
         // Check that histogram will be recorded correctly.
         verify(mLinkToTextBridge, times(1))
-                .logFailureMetrics(LinkGenerationError.OMNIBOX_NAVIGATION);
+                .logFailureMetrics(any(), eq(LinkGenerationError.OMNIBOX_NAVIGATION));
 
         // Receiving generation result should not trigger another sharesheet.
         mLinkToTextCoordinator.onRemoteRequestCompleted("",
@@ -331,8 +334,8 @@ public class LinkToTextCoordinatorTest {
         verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
 
         // No new histogram is recorded.
-        verify(mLinkToTextBridge, times(1)).logFailureMetrics(anyInt());
-        verify(mLinkToTextBridge, times(0)).logSuccessMetrics();
+        verify(mLinkToTextBridge, times(1)).logFailureMetrics(any(), anyInt());
+        verify(mLinkToTextBridge, times(0)).logSuccessMetrics(any());
     }
 
     @Test

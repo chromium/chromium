@@ -166,10 +166,12 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   shared_highlighting::LogLinkRequestedBeforeStatus(status, ready_status);
   if (status == LinkGenerationStatus::kSuccess) {
     DCHECK_EQ(error, LinkGenerationError::kNone);
-    shared_highlighting::LogRequestedSuccessMetrics();
+    shared_highlighting::LogRequestedSuccessMetrics(
+        render_frame_host_->GetPageUkmSourceId());
   } else {
     DCHECK_NE(error, LinkGenerationError::kNone);
-    shared_highlighting::LogRequestedFailureMetrics(error);
+    shared_highlighting::LogRequestedFailureMetrics(
+        render_frame_host_->GetPageUkmSourceId(), error);
 
     // If there is no valid selector, leave the menu item disabled.
     return;
@@ -269,7 +271,8 @@ void LinkToTextMenuObserver::Timeout() {
 
 void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
   is_generation_complete_ = true;
-  shared_highlighting::LogRequestedFailureMetrics(error);
+  shared_highlighting::LogRequestedFailureMetrics(
+      render_frame_host_->GetPageUkmSourceId(), error);
 }
 
 void LinkToTextMenuObserver::ReshareLink() {

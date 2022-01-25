@@ -16743,7 +16743,7 @@ be describing additional metrics about the same event.
   <owner>chrome-creation@google.com</owner>
   <summary>
     Event representing the user action of selecting a piece of text on a page
-    and selection the option to create a link which would contain the necessary
+    and selecting the option to create a link which would contain the necessary
     text fragment information to link back to this specific part of the page.
   </summary>
   <metric name="Error" enum="LinkGenerationError">
@@ -16755,6 +16755,28 @@ be describing additional metrics about the same event.
   <metric name="Success" enum="Boolean">
     <summary>
       Whether the generation of a link with text fragments was successful or
+      not.
+    </summary>
+  </metric>
+</event>
+
+<event name="SharedHighlights.LinkGenerated.Requested">
+  <owner>gayane@chromium.org</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Event representing the user action of selecting a piece of text on a page
+    and selecting the option to create a link which would contain the necessary
+    text fragment information to link back to this specific part of the page.
+  </summary>
+  <metric name="Error" enum="LinkGenerationError">
+    <summary>
+      Record the type of error which prevented offering link to text to user.
+      Only recorded if the link was not offered to the user.
+    </summary>
+  </metric>
+  <metric name="Success" enum="Boolean">
+    <summary>
+      Whether the link with text fragments was successful offered to the user or
       not.
     </summary>
   </metric>
