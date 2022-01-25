@@ -9,11 +9,14 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/terminal_system_app_menu_model_chromeos.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 TerminalSystemAppMenuButton::TerminalSystemAppMenuButton(
     BrowserView* browser_view)
-    : WebAppMenuButton(browser_view) {}
+    : WebAppMenuButton(browser_view) {
+  set_icon(vector_icons::kCaretDownIcon);
+}
 
 TerminalSystemAppMenuButton::~TerminalSystemAppMenuButton() = default;
 
