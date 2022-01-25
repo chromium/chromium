@@ -16,7 +16,6 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 
 polymer_element_files = [
-  "firmware_confirmation_dialog.js",
   "firmware_shared_css.js",
   "firmware_shared_fonts.js",
   "firmware_update_app.js",
@@ -61,7 +60,6 @@ js_type_check("closure_compile") {
     ":fake_data",
     ":fake_update_controller",
     ":fake_update_provider",
-    ":firmware_confirmation_dialog",
     ":firmware_update_app",
     ":firmware_update_types",
     ":mojo_interface_provider",
@@ -95,19 +93,8 @@ js_library("fake_update_provider") {
 
 js_library("firmware_update_app") {
   deps = [
-    ":firmware_confirmation_dialog",
     ":firmware_update_dialog",
     ":peripheral_updates_list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
-js_library("firmware_confirmation_dialog") {
-  deps = [
-    ":firmware_update_types",
-    ":mojo_utils",
-    "//ash/webui/firmware_update_ui/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
