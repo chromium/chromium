@@ -51,6 +51,7 @@ namespace cc {
 class ClientPaintCache;
 class ImageProvider;
 class ServicePaintCache;
+class SkottieSerializationHistory;
 class TransferCacheDeserializeHelper;
 class TransferCacheSerializeHelper;
 
@@ -177,6 +178,7 @@ class CC_PAINT_EXPORT PaintOp {
                      ClientPaintCache* paint_cache,
                      SkStrikeServer* strike_server,
                      sk_sp<SkColorSpace> color_space,
+                     SkottieSerializationHistory* skottie_serialization_history,
                      bool can_use_lcd_text,
                      bool context_supports_distance_field_text,
                      int max_texture_size,
@@ -191,6 +193,8 @@ class CC_PAINT_EXPORT PaintOp {
     raw_ptr<ClientPaintCache> paint_cache = nullptr;
     raw_ptr<SkStrikeServer> strike_server = nullptr;
     sk_sp<SkColorSpace> color_space = nullptr;
+    raw_ptr<SkottieSerializationHistory> skottie_serialization_history =
+        nullptr;
     bool can_use_lcd_text = false;
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;

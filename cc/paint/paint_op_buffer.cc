@@ -21,6 +21,7 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/scoped_raster_flags.h"
+#include "cc/paint/skottie_serialization_history.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -361,6 +362,7 @@ PaintOp::SerializeOptions::SerializeOptions(
     ClientPaintCache* paint_cache,
     SkStrikeServer* strike_server,
     sk_sp<SkColorSpace> color_space,
+    SkottieSerializationHistory* skottie_serialization_history,
     bool can_use_lcd_text,
     bool context_supports_distance_field_text,
     int max_texture_size,
@@ -370,6 +372,7 @@ PaintOp::SerializeOptions::SerializeOptions(
       paint_cache(paint_cache),
       strike_server(strike_server),
       color_space(std::move(color_space)),
+      skottie_serialization_history(skottie_serialization_history),
       can_use_lcd_text(can_use_lcd_text),
       context_supports_distance_field_text(
           context_supports_distance_field_text),
@@ -700,10 +703,17 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
   helper.Write(op->dst);
   helper.Write(SkFloatToScalar(op->t));
   helper.Write(op->skottie);
+
+  SkottieFrameDataMap images_to_serialize = op->images;
+  if (options.skottie_serialization_history) {
+    options.skottie_serialization_history->FilterNewSkottieFrameImages(
+        *op->skottie, images_to_serialize);
+  }
+
   // Write number of images in the map first so that we know how many images to
   // read from the buffer during deserialization.
-  helper.WriteSize(op->images.size());
-  for (const auto& image_asset_pair : op->images) {
+  helper.WriteSize(images_to_serialize.size());
+  for (const auto& image_asset_pair : images_to_serialize) {
     const SkottieResourceIdHash& asset_id_hash = image_asset_pair.first;
     const SkottieFrameData& frame_data = image_asset_pair.second;
     helper.WriteSize(asset_id_hash.GetUnsafeValue());

@@ -1903,6 +1903,7 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
     // it to succeed if the buffer is large enough.
     for (size_t i = 0; i < bytes_written[op_idx] + 2; ++i) {
       options_provider.ClearPaintCache();
+      options_provider.ForcePurgeSkottieSerializationHistory();
       size_t written_bytes = iter->Serialize(
           output_.get(), i, options_provider.serialize_options(), nullptr,
           SkM44(), SkM44());

@@ -88,6 +88,8 @@ cc_component("paint") {
     "skottie_frame_data_provider.h",
     "skottie_resource_metadata.cc",
     "skottie_resource_metadata.h",
+    "skottie_serialization_history.cc",
+    "skottie_serialization_history.h",
     "skottie_transfer_cache_entry.cc",
     "skottie_transfer_cache_entry.h",
     "skottie_wrapper.cc",

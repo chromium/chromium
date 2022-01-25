@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_cache.h"
+#include "cc/paint/skottie_serialization_history.h"
 #include "gpu/command_buffer/client/client_font_manager.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
@@ -452,6 +453,8 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
 
   cc::ClientPaintCache::PurgedData temp_paint_cache_purged_data_;
   std::unique_ptr<cc::ClientPaintCache> paint_cache_;
+
+  cc::SkottieSerializationHistory skottie_serialization_history_;
 
   raw_ptr<ImageDecodeAcceleratorInterface> image_decode_accelerator_;
   const bool raw_draw_;

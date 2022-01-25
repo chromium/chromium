@@ -11,6 +11,7 @@
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/skottie_serialization_history.h"
 #include "cc/test/test_skcanvas.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
@@ -51,6 +52,7 @@ class TestOptionsProvider : public ImageProvider,
 
   void PushFonts();
   void ClearPaintCache();
+  void ForcePurgeSkottieSerializationHistory();
 
  private:
   class DiscardableManager;
@@ -65,6 +67,7 @@ class TestOptionsProvider : public ImageProvider,
   SkStrikeServer strike_server_;
   SkStrikeClient strike_client_;
   sk_sp<SkColorSpace> color_space_;
+  SkottieSerializationHistory skottie_serialization_history_;
   bool can_use_lcd_text_ = true;
   bool context_supports_distance_field_text_ = true;
   int max_texture_size_ = 1024;
