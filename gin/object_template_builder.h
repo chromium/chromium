@@ -5,7 +5,6 @@
 #ifndef GIN_OBJECT_TEMPLATE_BUILDER_H_
 #define GIN_OBJECT_TEMPLATE_BUILDER_H_
 
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -105,9 +104,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
       options.holder_is_first_argument = true;
       options.holder_type = type_name_;
     }
-    v8::AccessorNameGetterCallback callback;
-    v8::Local<v8::Value> data;
-    std::tie(callback, data) = CreateDataPropertyCallback(
+    auto [callback, data] = CreateDataPropertyCallback(
         isolate_, base::BindRepeating(getter), std::move(options));
     return SetLazyDataPropertyImpl(name, callback, data);
   }
