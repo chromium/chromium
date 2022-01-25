@@ -84,6 +84,7 @@ async function onInitReceived(sender) {
       function(message, sender, sendResponse) {
         if (message === 'init') {
           onInitReceived(sender).then(sendResponse);
+          return true;  // Keep message context open for async response.
         }
       });
 
