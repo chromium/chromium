@@ -79,8 +79,9 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetWindowTitle() const {
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetExplanatoryMessage()
     const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL);
+  return l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL,
+      GetLearnMoreLinkText());
 }
 
 std::u16string VirtualCardEnrollBubbleControllerImpl::GetAcceptButtonText()
@@ -93,6 +94,12 @@ std::u16string VirtualCardEnrollBubbleControllerImpl::GetDeclineButtonText()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL);
+}
+
+std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
 }
 
 VirtualCardEnrollmentFields*

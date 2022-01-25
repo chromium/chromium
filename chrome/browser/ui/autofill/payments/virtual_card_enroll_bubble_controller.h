@@ -49,6 +49,9 @@ class VirtualCardEnrollBubbleController {
   virtual std::u16string GetAcceptButtonText() const = 0;
   virtual std::u16string GetDeclineButtonText() const = 0;
 
+  // Returns the text used in the learn more link.
+  virtual std::u16string GetLearnMoreLinkText() const = 0;
+
   // Returns the enrollment fields for the virtual card.
   virtual VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields()
       const = 0;

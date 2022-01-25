@@ -482,14 +482,17 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DOWNSTREAM_DIALOG_TITLE_LABEL" desc="Title encouraging users to enroll their downstreamed card to VCN.">
       Make your card more secure?
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL" desc="Text explaining the benefit of enrolling a credit card as a virtual card.">
-      A virtual card disguises your actual card to help protect you from potential fraud.
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL" desc="Text explaining the benefit of enrolling a credit card as a virtual card. Also contains a link to learn more about virtual cards from IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL.">
+      A virtual card disguises your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL">$1<ex>Learn about virtual cards</ex></ph>
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept enrolling card as a virtual card.">
       Yes I'm in
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL" desc="Decline enrolling card as a virtual card.">
       Not now
+    </message>
+    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" desc="Link text to learn more about virtual cards. Added to the end of the explanatory message of the virtual card enrollment dialog in IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL.">
+      Learn about virtual cards
     </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card enroll bubble on Desktop. This bubble prompts users if they would like to enroll in a virtual card.">
       Enroll in a virtual card

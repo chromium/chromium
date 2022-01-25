@@ -61,6 +61,8 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
   ~VirtualCardEnrollBubbleViews() override;
 
  private:
+  void LearnMoreLinkClicked();
+
   void LegalMessageClicked(const GURL& url);
 
   raw_ptr<VirtualCardEnrollBubbleController> controller_;
@@ -69,6 +71,8 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
+
+  base::WeakPtrFactory<VirtualCardEnrollBubbleViews> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

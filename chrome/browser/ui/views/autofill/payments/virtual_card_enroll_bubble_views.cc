@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -24,6 +25,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -167,20 +169,36 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
   std::u16string explanation = controller_->GetExplanatoryMessage();
   if (!explanation.empty()) {
     auto* const explanation_label =
-        view->AddChildView(std::make_unique<views::Label>(
-            explanation, CONTEXT_DIALOG_BODY_TEXT_SMALL,
-            views::style::STYLE_SECONDARY));
-    explanation_label->SetMultiLine(true);
+        view->AddChildView(std::make_unique<views::StyledLabel>());
     explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    explanation_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+    explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    explanation_label->SetText(explanation);
+
+    views::StyledLabel::RangeStyleInfo style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &VirtualCardEnrollBubbleViews::LearnMoreLinkClicked,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    uint32_t offset =
+        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    explanation_label->AddStyleRange(
+        gfx::Range(offset,
+                   offset + controller_->GetLearnMoreLinkText().length()),
+        style_info);
   }
-
-  // TODO(crbug.com/1287208): Add learn more button to VCN enrollment bubble.
-
   return view;
 }
 
 void VirtualCardEnrollBubbleViews::Init() {
   AddChildView(CreateMainContentView());
+}
+
+void VirtualCardEnrollBubbleViews::LearnMoreLinkClicked() {
+  if (controller()) {
+    controller()->OnLinkClicked(
+        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
+  }
 }
 
 void VirtualCardEnrollBubbleViews::LegalMessageClicked(const GURL& url) {

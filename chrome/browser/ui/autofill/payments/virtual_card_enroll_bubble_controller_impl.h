@@ -37,6 +37,7 @@ class VirtualCardEnrollBubbleControllerImpl
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
+  std::u16string GetLearnMoreLinkText() const override;
   VirtualCardEnrollmentFields* GetVirtualCardEnrollmentFields() const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
 
