@@ -6,7 +6,12 @@
 
 #include <utility>
 
+#include "ash/public/cpp/network_config_service.h"
+#include "ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -14,7 +19,10 @@
 #include "chrome/services/sharing/nearby/nearby_connections.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sharing {
@@ -31,6 +39,31 @@ class SharingImplTest : public testing::Test {
         std::make_unique<SharingImpl>(remote_.BindNewPipeAndPassReceiver(),
                                       /*io_task_runner=*/nullptr);
 
+    // Set up CrosNetworkConfig mojo service.
+    cros_network_config_test_helper_ = std::make_unique<
+        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+        cros_network_config_remote;
+    ash::GetNetworkConfigService(
+        cros_network_config_remote.InitWithNewPipeAndPassReceiver());
+
+    // Set up firewall hole factory mojo service.
+    mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+        firewall_hole_factory_remote;
+    firewall_hole_factory_self_owned_receiver_ref_ =
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
+            firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
+
+    // Set up TCP socket factory mojo service.
+    mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+        tcp_socket_factory_remote;
+    tcp_socket_factory_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<ash::nearby::FakeTcpSocketFactory>(
+            /*default_local_addr=*/net::IPEndPoint(
+                net::IPAddress(192, 168, 86, 75), 44444)),
+        tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
+
     Connect(
         connections_.BindNewPipeAndPassReceiver(),
         decoder_.BindNewPipeAndPassReceiver(),
@@ -38,7 +71,10 @@ class SharingImplTest : public testing::Test {
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
-        webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
+        webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote(),
+        std::move(cros_network_config_remote),
+        std::move(firewall_hole_factory_remote),
+        std::move(tcp_socket_factory_remote));
 
     ASSERT_TRUE(AreNearbyConnectionsAndDecoderInstancesActive());
     ASSERT_TRUE(connections_.is_connected());
@@ -58,15 +94,26 @@ class SharingImplTest : public testing::Test {
           mdns_responder_factory,
       mojo::PendingRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher,
       mojo::PendingRemote<sharing::mojom::WebRtcSignalingMessenger>
-          webrtc_signaling_messenger) {
+          webrtc_signaling_messenger,
+      mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+          cros_network_config,
+      mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+          firewall_hole_factory,
+      mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+          tcp_socket_factory) {
     auto webrtc_dependencies =
         location::nearby::connections::mojom::WebRtcDependencies::New(
             std::move(socket_manager), std::move(mdns_responder_factory),
             std::move(ice_config_fetcher),
             std::move(webrtc_signaling_messenger));
+    auto wifilan_dependencies =
+        location::nearby::connections::mojom::WifiLanDependencies::New(
+            std::move(cros_network_config), std::move(firewall_hole_factory),
+            std::move(tcp_socket_factory));
     auto dependencies =
         location::nearby::connections::mojom::NearbyConnectionsDependencies::
             New(std::move(bluetooth_adapter), std::move(webrtc_dependencies),
+                std::move(wifilan_dependencies),
                 location::nearby::api::LogMessage::Severity::kInfo);
     base::RunLoop run_loop;
     service_->Connect(std::move(dependencies), std::move(connections_receiver),
@@ -104,6 +151,12 @@ class SharingImplTest : public testing::Test {
   mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_test_helper_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_self_owned_receiver_ref_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
+      tcp_socket_factory_self_owned_receiver_ref_;
 };
 
 TEST_F(SharingImplTest, ConnectAndShutDown) {
@@ -134,6 +187,21 @@ TEST_F(SharingImplTest, NearbyConnections_WebRtcP2PSocketManagerDisconnects) {
 
 TEST_F(SharingImplTest, NearbyConnections_WebRtcIceConfigFetcherDisconnects) {
   webrtc_dependencies_.ice_config_fetcher_.reset();
+  EnsureDependenciesAreDisconnected();
+}
+
+TEST_F(SharingImplTest, NearbyConnections_CrosNetworkConfigDisconnects) {
+  cros_network_config_test_helper_.reset();
+  EnsureDependenciesAreDisconnected();
+}
+
+TEST_F(SharingImplTest, NearbyConnections_FirewallHoleFactoryDisconnects) {
+  firewall_hole_factory_self_owned_receiver_ref_->Close();
+  EnsureDependenciesAreDisconnected();
+}
+
+TEST_F(SharingImplTest, NearbyConnections_TcpSocketFactoryDisconnects) {
+  tcp_socket_factory_self_owned_receiver_ref_->Close();
   EnsureDependenciesAreDisconnected();
 }
 

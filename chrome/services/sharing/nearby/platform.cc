@@ -4,6 +4,8 @@
 
 #include "third_party/nearby/src/cpp/platform/api/platform.h"
 
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -23,6 +25,8 @@
 #include "chrome/services/sharing/nearby/platform/scheduled_executor.h"
 #include "chrome/services/sharing/nearby/platform/submittable_executor.h"
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
+#include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/cpp/platform/api/atomic_boolean.h"
@@ -174,7 +178,37 @@ std::unique_ptr<WifiMedium> ImplementationPlatform::CreateWifiMedium() {
 }
 
 std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
-  return nullptr;
+  auto& connections = connections::NearbyConnections::GetInstance();
+
+  // TODO(https://crbug.com/1261238): This should always be bound when the
+  // WifiLan feature flag is enabled. Update logging to ERROR after launch.
+  const mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>&
+      cros_network_config = connections.cros_network_config();
+  if (!cros_network_config.is_bound()) {
+    VLOG(1) << "CrosNetworkConfig not bound. Returning null WifiLan medium";
+    return nullptr;
+  }
+
+  // TODO(https://crbug.com/1261238): This should always be bound when the
+  // WifiLan feature flag is enabled. Update logging to ERROR after launch.
+  const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+      firewall_hole_factory = connections.firewall_hole_factory();
+  if (!firewall_hole_factory.is_bound()) {
+    VLOG(1) << "FirewallHoleFactory not bound. Returning null WifiLan medium";
+    return nullptr;
+  }
+
+  // TODO(https://crbug.com/1261238): This should always be bound when the
+  // WifiLan feature flag is enabled. Update logging to ERROR after launch.
+  const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+      tcp_socket_factory = connections.tcp_socket_factory();
+  if (!tcp_socket_factory.is_bound()) {
+    VLOG(1) << "TcpSocketFactory not bound. Returning null WifiLan medium";
+    return nullptr;
+  }
+
+  return std::make_unique<chrome::WifiLanMedium>(
+      tcp_socket_factory, cros_network_config, firewall_hole_factory);
 }
 
 std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {

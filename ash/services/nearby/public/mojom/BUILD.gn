@@ -27,6 +27,7 @@ mojom("mojom") {
 
   public_deps = [
     ":nearby_share_target_types",
+    "//chromeos/services/network_config/public/mojom",
     "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

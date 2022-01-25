@@ -8,6 +8,7 @@
 
 #include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc.mojom.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
@@ -152,6 +153,37 @@ NearbyConnections::NearbyConnections(
                      MojoDependencyName::kWebRtcSignalingMessenger),
       base::SequencedTaskRunnerHandle::Get());
 
+  // TODO(https://crbug.com/1261238): This should always be true when the
+  // WifiLan feature flag is enabled. Remove when flag is enabled by default.
+  if (dependencies->wifilan_dependencies) {
+    cros_network_config_.Bind(
+        std::move(dependencies->wifilan_dependencies->cros_network_config),
+        io_task_runner);
+    cros_network_config_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kCrosNetworkConfig),
+        base::SequencedTaskRunnerHandle::Get());
+
+    firewall_hole_factory_.Bind(
+        std::move(dependencies->wifilan_dependencies->firewall_hole_factory),
+        io_task_runner);
+    firewall_hole_factory_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kFirewallHoleFactory),
+        base::SequencedTaskRunnerHandle::Get());
+
+    tcp_socket_factory_.Bind(
+        std::move(dependencies->wifilan_dependencies->tcp_socket_factory),
+        io_task_runner);
+    tcp_socket_factory_.set_disconnect_handler(
+        base::BindOnce(&NearbyConnections::OnDisconnect,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       MojoDependencyName::kTcpSocketFactory),
+        base::SequencedTaskRunnerHandle::Get());
+  }
+
   // There should only be one instance of NearbyConnections in a process.
   DCHECK(!g_instance);
   g_instance = this;
@@ -188,6 +220,12 @@ std::string NearbyConnections::GetMojoDependencyName(
       return "ICE Config Fetcher";
     case MojoDependencyName::kWebRtcSignalingMessenger:
       return "WebRTC Signaling Messenger";
+    case MojoDependencyName::kCrosNetworkConfig:
+      return "CrOS Network Config";
+    case MojoDependencyName::kFirewallHoleFactory:
+      return "Firewall Hole Factory";
+    case MojoDependencyName::kTcpSocketFactory:
+      return "TCP socket Factory";
   }
 }
 

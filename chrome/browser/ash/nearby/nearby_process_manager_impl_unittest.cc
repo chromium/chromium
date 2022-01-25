@@ -7,12 +7,17 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/network_config_service.h"
+#include "ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -30,6 +35,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -107,6 +114,28 @@ class NearbyProcessManagerImplTest : public testing::Test {
       webrtc_dependencies_ =
           std::make_unique<sharing::MockWebRtcDependencies>();
 
+      // Set up CrosNetworkConfig mojo service.
+      mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+          cros_network_config_remote;
+      ash::GetNetworkConfigService(
+          cros_network_config_remote.InitWithNewPipeAndPassReceiver());
+
+      // Set up firewall hole factory mojo service.
+      mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+          firewall_hole_factory_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
+          firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
+
+      // Set up TCP socket factory mojo service.
+      mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+          tcp_socket_factory_remote;
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<ash::nearby::FakeTcpSocketFactory>(
+              /*default_local_addr=*/net::IPEndPoint(
+                  net::IPAddress(192, 168, 86, 75), 44444)),
+          tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
+
       return location::nearby::connections::mojom::
           NearbyConnectionsDependencies::New(
               fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
@@ -118,6 +147,10 @@ class NearbyProcessManagerImplTest : public testing::Test {
                   webrtc_dependencies_->ice_config_fetcher_
                       .BindNewPipeAndPassRemote(),
                   webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
+              location::nearby::connections::mojom::WifiLanDependencies::New(
+                  std::move(cros_network_config_remote),
+                  std::move(firewall_hole_factory_remote),
+                  std::move(tcp_socket_factory_remote)),
               location::nearby::api::LogMessage::Severity::kInfo);
     }
 
@@ -126,6 +159,8 @@ class NearbyProcessManagerImplTest : public testing::Test {
     int prepare_for_shutdown_count() { return prepare_for_shutdown_count_; }
 
    private:
+    chromeos::network_config::CrosNetworkConfigTestHelper
+        cros_network_config_test_helper_;
     std::unique_ptr<bluetooth::FakeAdapter> fake_adapter_;
     std::unique_ptr<sharing::MockWebRtcDependencies> webrtc_dependencies_;
     int prepare_for_shutdown_count_ = 0;

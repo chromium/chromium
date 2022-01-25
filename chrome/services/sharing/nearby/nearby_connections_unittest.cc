@@ -10,7 +10,12 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/public/cpp/network_config_service.h"
+#include "ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -23,6 +28,8 @@
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "chrome/services/sharing/nearby/test_support/mock_webrtc_dependencies.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -194,14 +201,44 @@ class MockInputStream : public InputStream {
 class NearbyConnectionsTest : public testing::Test {
  public:
   NearbyConnectionsTest() {
+    // Set up CrosNetworkConfig mojo service.
+    cros_network_config_test_helper_ = std::make_unique<
+        chromeos::network_config::CrosNetworkConfigTestHelper>();
+    mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
+        cros_network_config_remote;
+    ash::GetNetworkConfigService(
+        cros_network_config_remote.InitWithNewPipeAndPassReceiver());
+
+    // Set up firewall hole factory mojo service.
+    mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+        firewall_hole_factory_remote;
+    firewall_hole_factory_self_owned_receiver_ref_ =
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<ash::nearby::FakeFirewallHoleFactory>(),
+            firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
+
+    // Set up TCP socket factory mojo service.
+    mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+        tcp_socket_factory_remote;
+    tcp_socket_factory_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
+        std::make_unique<ash::nearby::FakeTcpSocketFactory>(
+            /*default_local_addr=*/net::IPEndPoint(
+                net::IPAddress(192, 168, 86, 75), 44444)),
+        tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
+
     auto webrtc_dependencies = mojom::WebRtcDependencies::New(
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
+    auto wifilan_dependencies =
+        mojom::WifiLanDependencies::New(std::move(cros_network_config_remote),
+                                        std::move(firewall_hole_factory_remote),
+                                        std::move(tcp_socket_factory_remote));
     auto dependencies = mojom::NearbyConnectionsDependencies::New(
         bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
-        std::move(webrtc_dependencies), api::LogMessage::Severity::kInfo);
+        std::move(webrtc_dependencies), std::move(wifilan_dependencies),
+        location::nearby::api::LogMessage::Severity::kInfo);
     auto service_controller_router =
         std::make_unique<testing::NiceMock<MockServiceControllerRouter>>();
     service_controller_router_ptr_ = service_controller_router.get();
@@ -412,6 +449,12 @@ class NearbyConnectionsTest : public testing::Test {
   mojo::Remote<mojom::NearbyConnections> remote_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   sharing::MockWebRtcDependencies webrtc_dependencies_;
+  std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_test_helper_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory_self_owned_receiver_ref_;
+  mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
+      tcp_socket_factory_self_owned_receiver_ref_;
   std::unique_ptr<NearbyConnections> nearby_connections_;
   testing::NiceMock<MockServiceControllerRouter>*
       service_controller_router_ptr_;
@@ -445,6 +488,21 @@ TEST_F(NearbyConnectionsTest, IceConfigFetcherDisconnect) {
 
 TEST_F(NearbyConnectionsTest, WebRtcSignalingMessengerDisconnect) {
   webrtc_dependencies_.messenger_.reset();
+  disconnect_run_loop_.Run();
+}
+
+TEST_F(NearbyConnectionsTest, CrosNetworkConfigDisconnect) {
+  cros_network_config_test_helper_.reset();
+  disconnect_run_loop_.Run();
+}
+
+TEST_F(NearbyConnectionsTest, FirewallHoleFactoryDisconnect) {
+  firewall_hole_factory_self_owned_receiver_ref_->Close();
+  disconnect_run_loop_.Run();
+}
+
+TEST_F(NearbyConnectionsTest, TcpSocketFactoryDisconnect) {
+  tcp_socket_factory_self_owned_receiver_ref_->Close();
   disconnect_run_loop_.Run();
 }
 

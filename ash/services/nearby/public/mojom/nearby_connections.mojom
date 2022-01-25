@@ -4,9 +4,12 @@
 
 module location.nearby.connections.mojom;
 
+import "ash/services/nearby/public/mojom/firewall_hole.mojom";
 import "ash/services/nearby/public/mojom/nearby_connections_types.mojom";
+import "ash/services/nearby/public/mojom/tcp_socket_factory.mojom";
 import "ash/services/nearby/public/mojom/webrtc.mojom";
 import "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom";
+import "chromeos/services/network_config/public/mojom/cros_network_config.mojom";
 import "device/bluetooth/public/mojom/adapter.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/read_only_file.mojom";
@@ -31,6 +34,17 @@ struct WebRtcDependencies {
   pending_remote<sharing.mojom.IceConfigFetcher> ice_config_fetcher;
   // Used to send and receive SDP messages for establishing WebRTC connection.
   pending_remote<sharing.mojom.WebRtcSignalingMessenger> messenger;
+};
+
+// Collection of dependencies required by WifiLan medium.
+struct WifiLanDependencies {
+  // Used to fetch the local device's IP address; needed for TCP server sockets.
+  pending_remote<chromeos.network_config.mojom.CrosNetworkConfig>
+      cros_network_config;
+  // Used to open a firewall hole for a TCP server socket.
+  pending_remote<sharing.mojom.FirewallHoleFactory> firewall_hole_factory;
+  // A proxy for NetworkContext, used to create TCP sockets.
+  pending_remote<sharing.mojom.TcpSocketFactory> tcp_socket_factory;
 };
 
 // Listener invoked during endpoint discovery. This interface is used by the
@@ -386,6 +400,9 @@ struct NearbyConnectionsDependencies {
   pending_remote<bluetooth.mojom.Adapter>? bluetooth_adapter;
 
   WebRtcDependencies webrtc_dependencies;
+
+  // Null if the WifiLan feature flag is disabled.
+  WifiLanDependencies? wifilan_dependencies;
 
   LogSeverity min_log_severity = LogSeverity.kInfo;
 };

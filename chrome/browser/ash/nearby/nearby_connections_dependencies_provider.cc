@@ -4,19 +4,28 @@
 
 #include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
 
+#include "ash/public/cpp/network_config_service.h"
+#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
+#include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
+#include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "chrome/browser/nearby_sharing/tachyon_ice_config_fetcher.h"
+#include "chrome/browser/nearby_sharing/tcp_socket/nearby_connections_tcp_socket_factory.h"
 #include "chrome/browser/nearby_sharing/webrtc_signaling_messenger.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_isolation_key.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
 
 namespace ash {
@@ -111,6 +120,7 @@ NearbyConnectionsDependenciesProvider::GetDependencies() {
     dependencies->bluetooth_adapter = mojo::NullRemote();
 
   dependencies->webrtc_dependencies = GetWebRtcDependencies();
+  dependencies->wifilan_dependencies = GetWifiLanDependencies();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNearbyShareVerboseLogging)) {
@@ -144,9 +154,6 @@ NearbyConnectionsDependenciesProvider::GetBluetoothAdapterPendingRemote() {
 
 location::nearby::connections::mojom::WebRtcDependenciesPtr
 NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
-  auto* network_context =
-      profile_->GetDefaultStoragePartition()->GetNetworkContext();
-
   MojoPipe<network::mojom::P2PTrustedSocketManagerClient> socket_manager_client;
   MojoPipe<network::mojom::P2PTrustedSocketManager> trusted_socket_manager;
   MojoPipe<network::mojom::P2PSocketManager> socket_manager;
@@ -157,7 +164,7 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
       std::move(socket_manager_client.receiver));
 
   // Create socket manager.
-  network_context->CreateP2PSocketManager(
+  GetNetworkContext()->CreateP2PSocketManager(
       net::NetworkIsolationKey::CreateTransient(),
       std::move(socket_manager_client.remote),
       std::move(trusted_socket_manager.receiver),
@@ -184,6 +191,38 @@ NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
       std::move(socket_manager.remote),
       std::move(mdns_responder_factory_pipe.remote),
       std::move(ice_config_fetcher.remote), std::move(messenger.remote));
+}
+
+location::nearby::connections::mojom::WifiLanDependenciesPtr
+NearbyConnectionsDependenciesProvider::GetWifiLanDependencies() {
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan))
+    return nullptr;
+
+  MojoPipe<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config;
+  ash::GetNetworkConfigService(std::move(cros_network_config.receiver));
+
+  MojoPipe<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<NearbyConnectionsFirewallHoleFactory>(),
+      std::move(firewall_hole_factory.receiver));
+
+  MojoPipe<sharing::mojom::TcpSocketFactory> tcp_socket_factory;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<NearbyConnectionsTcpSocketFactory>(base::BindRepeating(
+          &NearbyConnectionsDependenciesProvider::GetNetworkContext,
+          base::Unretained(this))),
+      std::move(tcp_socket_factory.receiver));
+
+  return location::nearby::connections::mojom::WifiLanDependencies::New(
+      std::move(cros_network_config.remote),
+      std::move(firewall_hole_factory.remote),
+      std::move(tcp_socket_factory.remote));
+}
+
+network::mojom::NetworkContext*
+NearbyConnectionsDependenciesProvider::GetNetworkContext() {
+  return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 }  // namespace nearby

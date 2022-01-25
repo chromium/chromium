@@ -32,7 +32,10 @@ source_set("unit_tests") {
     ":sharing",
     "nearby",
     "nearby/test_support",
+    "//ash/public/cpp",
+    "//ash/services/nearby/public/cpp:test_support",
     "//base/test:test_support",
+    "//chromeos/services/network_config/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

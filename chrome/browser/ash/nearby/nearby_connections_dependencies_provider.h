@@ -7,10 +7,10 @@
 
 #include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 class Profile;
 
@@ -60,15 +60,17 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
   location::nearby::connections::mojom::WebRtcDependenciesPtr
   GetWebRtcDependencies();
 
+  location::nearby::connections::mojom::WifiLanDependenciesPtr
+  GetWifiLanDependencies();
+
+  network::mojom::NetworkContext* GetNetworkContext();
+
   std::unique_ptr<BluetoothAdapterManager> bluetooth_manager_;
 
   bool shut_down_ = false;
 
   Profile* profile_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
-
-  base::WeakPtrFactory<NearbyConnectionsDependenciesProvider> weak_ptr_factory_{
-      this};
 };
 
 }  // namespace nearby
