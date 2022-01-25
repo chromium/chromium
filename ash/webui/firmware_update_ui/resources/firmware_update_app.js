@@ -4,6 +4,7 @@
 
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './firmware_confirmation_dialog.js';
 import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';
 

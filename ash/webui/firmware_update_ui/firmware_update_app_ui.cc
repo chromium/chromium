@@ -40,6 +40,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"appTitle", IDS_FIRMWARE_TITLE_TEXT},
+      {"confirmationTitle", IDS_CONFIRMATION_TITLE_TEXT},
       {"criticalUpdate", IDS_FIRMWARE_CRITICAL_UPDATE_TEXT},
       {"prepareDevice", IDS_FIRMWARE_PREPARE_DEVICE_TEXT},
       {"nextButton", IDS_FIRMWARE_NEXT_BUTTON_TEXT},
