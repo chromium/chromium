@@ -252,8 +252,10 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
 
     /** Called when incognito tab existence changes. */
     void onIncognitoTabsExistenceChanged(boolean doesExist) {
-        if (!doesExist == mShouldShowNewTabVariation) return;
-        mShouldShowNewTabVariation = shouldShowNewTabVariation(doesExist);
+        boolean shouldShowNewTabVariation = shouldShowNewTabVariation(doesExist);
+        if (shouldShowNewTabVariation == mShouldShowNewTabVariation) return;
+
+        mShouldShowNewTabVariation = shouldShowNewTabVariation;
 
         if (mIncognitoToggleTabLayout != null) {
             mIncognitoToggleTabLayout.setVisibility(mShouldShowNewTabVariation ? GONE : VISIBLE);
