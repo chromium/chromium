@@ -267,27 +267,6 @@ Polymer({
   },
 
   /**
-   * TODO(crbug.com/1128256): Remove after specs/a11y.
-   * Call from the JS debug console to test scrolling.
-   * @param {number} numContacts
-   * @private
-   */
-  genFakeContacts_(numContacts) {
-    clearTimeout(this.downloadTimeoutId_);
-    const fakeContacts = [];
-    for (let i = 0; i < numContacts; i++) {
-      fakeContacts.push({
-        id: String(-i),
-        description: String(i) + '@google.com',
-        name: 'Person ' + i,
-        checked: false,
-      });
-    }
-    this.contacts = fakeContacts;
-    this.contactsState = ContactsState.HAS_CONTACTS;
-  },
-
-  /**
    * Used to show/hide parts of the UI based on current visibility selection.
    * @return {boolean} returns true when checkboxes should be shown for
    *     contacts.
