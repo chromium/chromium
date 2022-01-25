@@ -64,9 +64,6 @@ void ApplyProperties(app_restore::WindowInfo* window_info,
 
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return;
-
   DCHECK(out_params);
 
   const bool is_arc_app =
@@ -128,9 +125,6 @@ void ModifyWidgetParams(int32_t restore_window_id,
 }
 
 int32_t FetchRestoreWindowId(const std::string& app_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
   // If full restore is not running, check if desk templates can get a viable
   // window id, otherwise default to checking full restore.
   auto* full_restore_read_handler =
@@ -164,9 +158,6 @@ void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id) {
 }
 
 int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
   if (ShouldUseFullRestoreArcData()) {
     return full_restore::FullRestoreReadHandler::GetInstance()
         ->GetArcRestoreWindowIdForTaskId(task_id);
@@ -176,9 +167,6 @@ int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id) {
 }
 
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
   if (ShouldUseFullRestoreArcData()) {
     return full_restore::FullRestoreReadHandler::GetInstance()
         ->GetArcRestoreWindowIdForSessionId(session_id);

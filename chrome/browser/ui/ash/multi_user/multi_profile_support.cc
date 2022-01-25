@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -227,15 +226,13 @@ void MultiProfileSupport::OnWindowOwnerEntryChanged(aura::Window* window,
 }
 
 void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
-  if (full_restore::features::IsFullRestoreEnabled()) {
-    Profile* profile = ProfileManager::GetActiveUserProfile();
-    full_restore::SetActiveProfilePath(profile->GetPath());
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  full_restore::SetActiveProfilePath(profile->GetPath());
 
-    auto* full_restore_service =
-        ash::full_restore::FullRestoreService::GetForProfile(profile);
-    if (full_restore_service)
-      full_restore_service->OnTransitionedToNewActiveUser(profile);
-  }
+  auto* full_restore_service =
+      ash::full_restore::FullRestoreService::GetForProfile(profile);
+  if (full_restore_service)
+    full_restore_service->OnTransitionedToNewActiveUser(profile);
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();

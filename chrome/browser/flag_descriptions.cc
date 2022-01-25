@@ -4717,9 +4717,6 @@ const char kFrameThrottleFps20[] = "20 fps";
 const char kFrameThrottleFps25[] = "25 fps";
 const char kFrameThrottleFps30[] = "30 fps";
 
-const char kFullRestoreName[] = "Full restore";
-const char kFullRestoreDescription[] = "Chrome OS full restore";
-
 const char kFullRestoreForLacrosName[] = "Full restore lacros support";
 const char kFullRestoreForLacrosDescription[] =
     "Chrome OS full restore lacros support";

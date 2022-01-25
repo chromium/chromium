@@ -38,7 +38,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/layout_manager.h"
@@ -211,9 +210,6 @@ void ReportAshPipAndroidPipUseTime(base::TimeDelta duration) {
 
 // Notifies the window restore controller to write to file.
 void SaveWindowForWindowRestore(WindowState* window_state) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return;
-
   auto* controller = WindowRestoreController::Get();
   if (controller)
     controller->SaveWindow(window_state);

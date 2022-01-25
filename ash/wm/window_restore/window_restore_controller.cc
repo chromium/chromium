@@ -27,7 +27,6 @@
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -218,7 +217,6 @@ bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
     if (topmost_visible_iter != active_desk_children.rend() &&
         (*topmost_visible_iter)
             ->GetProperty(app_restore::kLaunchedFromFullRestoreKey)) {
-      DCHECK(full_restore::features::IsFullRestoreEnabled());
       return false;
     }
   }

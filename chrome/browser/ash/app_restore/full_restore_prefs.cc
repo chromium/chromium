@@ -6,7 +6,6 @@
 
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
-#include "components/app_restore/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -25,9 +24,6 @@ const char kRestoreAppsAndPagesPrefName[] = "settings.restore_apps_and_pages";
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kRestoreAppsEnabled, true);
   registry->RegisterBooleanPref(kGhostWindowEnabled, true);
-
-  if (!::full_restore::features::IsFullRestoreEnabled())
-    return;
 
   registry->RegisterIntegerPref(
       kRestoreAppsAndPagesPrefName,

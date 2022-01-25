@@ -81,7 +81,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #endif
 
@@ -97,14 +96,8 @@ namespace {
 // restarted.
 bool ShouldRestoreApps(bool is_post_restart, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If the full restore feature is enabled, check the full restore file.
-  // Restore apps only when there are apps launched before reboot.
-  if (full_restore::features::IsFullRestoreEnabled())
-    return full_restore::HasAppTypeBrowser(profile->GetPath());
-
-  // If the full restore feature is disabled, always restores apps
-  // unconditionally.
-  return true;
+  // In ChromeOS, restore apps only when there are apps launched before reboot.
+  return full_restore::HasAppTypeBrowser(profile->GetPath());
 #else
   return is_post_restart;
 #endif

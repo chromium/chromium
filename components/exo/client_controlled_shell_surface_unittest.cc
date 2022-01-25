@@ -40,7 +40,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
@@ -2776,31 +2775,9 @@ TEST_F(ClientControlledShellSurfaceTest, OverlayShadowBounds) {
   }
 }
 
-class ClientControlledShellSurfaceFullRestoreTest
-    : public ClientControlledShellSurfaceTest {
- public:
-  ClientControlledShellSurfaceFullRestoreTest() = default;
-  ClientControlledShellSurfaceFullRestoreTest(
-      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
-  ClientControlledShellSurfaceFullRestoreTest& operator=(
-      const ClientControlledShellSurfaceFullRestoreTest&) = delete;
-  ~ClientControlledShellSurfaceFullRestoreTest() override = default;
-
-  // ClientControlledShellSurfaceTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::full_restore::features::kFullRestore);
-    ClientControlledShellSurfaceTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // WideFrameView follows its respective surface when it is eventually parented.
 // See crbug.com/1223135.
-TEST_F(ClientControlledShellSurfaceFullRestoreTest,
-       WideframeForUnparentedTasks) {
+TEST_F(ClientControlledShellSurfaceTest, WideframeForUnparentedTasks) {
   auto surface = std::make_unique<Surface>();
   auto shell_surface =
       exo_test_helper()->CreateClientControlledShellSurface(surface.get());

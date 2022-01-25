@@ -56,7 +56,6 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
@@ -336,10 +335,8 @@ int ScopedDesksTemplatesAppLaunchHandlerSetter::instance_count_ = 0;
 class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksTemplatesClientTest() {
-    // This feature depends on full restore feature, so need to enable it.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{full_restore::features::kFullRestore,
-                              ash::features::kDesksTemplates},
+        /*enabled_features=*/{ash::features::kDesksTemplates},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksTemplatesClientTest(const DesksTemplatesClientTest&) = delete;
@@ -1841,8 +1838,7 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{full_restore::features::kFullRestore,
-                              ash::features::kDesksTemplates},
+        /*enabled_features=*/{ash::features::kDesksTemplates},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   DesksTemplatesClientArcTest(const DesksTemplatesClientArcTest&) = delete;
@@ -1951,9 +1947,8 @@ class DesksTemplatesClientMultiProfileTest : public ash::LoginManagerTest {
     account_id1_ = login_mixin_.users()[0].account_id;
     account_id2_ = login_mixin_.users()[1].account_id;
 
-    // This feature depends on full restore feature, so need to enable it.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{full_restore::features::kFullRestore},
+        /*enabled_features=*/{},
         /*disabled_features=*/{ash::features::kDeskTemplateSync});
   }
   ~DesksTemplatesClientMultiProfileTest() override = default;

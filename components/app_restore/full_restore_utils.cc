@@ -18,7 +18,7 @@ namespace full_restore {
 void SaveAppLaunchInfo(
     const base::FilePath& profile_path,
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info) {
-  if (!full_restore::features::IsFullRestoreEnabled() || !app_launch_info)
+  if (!app_launch_info)
     return;
 
   FullRestoreSaveHandler::GetInstance()->SaveAppLaunchInfo(
@@ -26,16 +26,10 @@ void SaveAppLaunchInfo(
 }
 
 void SaveWindowInfo(const app_restore::WindowInfo& window_info) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return;
-
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
 void SetActiveProfilePath(const base::FilePath& profile_path) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return;
-
   FullRestoreSaveHandler::GetInstance()->SetActiveProfilePath(profile_path);
   FullRestoreReadHandler::GetInstance()->SetActiveProfilePath(profile_path);
 }
@@ -46,23 +40,14 @@ void SetPrimaryProfilePath(const base::FilePath& profile_path) {
 }
 
 bool HasAppTypeBrowser(const base::FilePath& profile_path) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return false;
-
   return FullRestoreReadHandler::GetInstance()->HasAppTypeBrowser(profile_path);
 }
 
 bool HasBrowser(const base::FilePath& profile_path) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return false;
-
   return FullRestoreReadHandler::GetInstance()->HasBrowser(profile_path);
 }
 
 bool HasWindowInfo(int32_t restore_window_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return false;
-
   return FullRestoreReadHandler::GetInstance()->HasWindowInfo(
       restore_window_id);
 }
@@ -74,9 +59,6 @@ void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path) {
 }
 
 std::string GetAppId(aura::Window* window) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return std::string();
-
   return FullRestoreSaveHandler::GetInstance()->GetAppId(window);
 }
 

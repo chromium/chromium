@@ -191,7 +191,6 @@
 #include "chromeos/dbus/usb/usbguard_client.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/system/devicemode.h"
-#include "components/app_restore/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -1283,8 +1282,7 @@ void Shell::Init(
 
   // Create window restore controller after WindowTreeHostManager::InitHosts()
   // since it may need to add observers to root windows.
-  if (full_restore::features::IsFullRestoreEnabled())
-    window_restore_controller_ = std::make_unique<WindowRestoreController>();
+  window_restore_controller_ = std::make_unique<WindowRestoreController>();
 
   cursor_manager_->HideCursor();  // Hide the mouse cursor on startup.
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);

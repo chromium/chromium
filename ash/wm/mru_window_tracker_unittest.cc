@@ -10,8 +10,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
@@ -164,11 +162,7 @@ class MruWindowTrackerFullRestoreTest : public MruWindowTrackerTest {
   ~MruWindowTrackerFullRestoreTest() override = default;
 
   // MruWindowTrackerTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
-    MruWindowTrackerTest::SetUp();
-  }
+  void SetUp() override { MruWindowTrackerTest::SetUp(); }
 
   // Simulates restoring a window using Full Restore by init'ing a window with
   // the `app_restore::kActivationIndexKey`.
@@ -188,9 +182,6 @@ class MruWindowTrackerFullRestoreTest : public MruWindowTrackerTest {
     for (size_t i = 0; i < expected_list.size(); ++i)
       EXPECT_EQ(expected_list[i], actual_list[i]);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests whether MRU order is properly restored for the Full Restore feature.

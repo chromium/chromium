@@ -110,10 +110,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/app_restore/features.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
@@ -532,10 +528,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, NoSessionRestoreNewWindowChromeOS) {
   // page for this test, to verify that session restore does not occur.
   Profile* profile = browser()->profile();
   SessionStartupPref current_pref = SessionStartupPref::GetStartupPref(profile);
-  if (full_restore::features::IsFullRestoreEnabled()) {
-    SessionStartupPref pref(SessionStartupPref::DEFAULT);
-    SessionStartupPref::SetStartupPref(profile, pref);
-  }
+  SessionStartupPref pref(SessionStartupPref::DEFAULT);
+  SessionStartupPref::SetStartupPref(profile, pref);
 
   GURL url(ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),

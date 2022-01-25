@@ -46,7 +46,6 @@
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_restore/app_launch_info.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -474,8 +473,7 @@ apps::mojom::WindowInfoPtr SetSessionId(
     window_info->display_id = display::kInvalidDisplayId;
   }
 
-  if (!full_restore::features::IsFullRestoreEnabled() ||
-      window_info->window_id != -1) {
+  if (window_info->window_id != -1) {
     return window_info;
   }
 

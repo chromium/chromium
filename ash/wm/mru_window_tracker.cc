@@ -20,7 +20,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
@@ -213,8 +212,7 @@ bool CanIncludeWindowInMruList(aura::Window* window) {
 // MruWindowTracker, public:
 
 MruWindowTracker::MruWindowTracker() {
-  if (full_restore::features::IsFullRestoreEnabled())
-    aura::Env::GetInstance()->AddObserver(this);
+  aura::Env::GetInstance()->AddObserver(this);
 
   Shell::Get()->activation_client()->AddObserver(this);
 }
@@ -303,7 +301,7 @@ void MruWindowTracker::OnWindowActivated(ActivationReason reason,
 
   SetActiveWindow(gained_active);
 
-  if (gained_active && full_restore::features::IsFullRestoreEnabled())
+  if (gained_active)
     WindowRestoreController::Get()->OnWindowActivated(gained_active);
 }
 
@@ -316,8 +314,6 @@ void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
 }
 
 void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
-  DCHECK(full_restore::features::IsFullRestoreEnabled());
-
   int32_t* activation_index =
       window->GetProperty(app_restore::kActivationIndexKey);
   if (!activation_index)

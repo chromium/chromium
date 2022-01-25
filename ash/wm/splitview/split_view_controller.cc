@@ -54,7 +54,6 @@
 #include "base/system/sys_info.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/features.h"
-#include "components/app_restore/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -803,11 +802,8 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
 
   // Windows created by window restore are not activatable while being restored.
   // However, we still want to be able to snap these windows at this point.
-  bool restoring_snap_state = false;
-  if (full_restore::features::IsFullRestoreEnabled()) {
-    restoring_snap_state =
-        WindowRestoreController::Get()->is_restoring_snap_state();
-  }
+  bool restoring_snap_state =
+      WindowRestoreController::Get()->is_restoring_snap_state();
 
   // TODO(sammiequon): Investigate if we need to check for window activation.
   if (!restoring_snap_state && !wm::CanActivateWindow(window))

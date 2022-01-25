@@ -60,7 +60,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "components/app_restore/features.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -164,44 +163,39 @@ bool SessionService::ShouldRestore(Browser* browser) {
   // the other platforms.
   // On ChromeOS opening a new window should never start a new session.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If the full restore feature is enabled, Chrome browser is not launched
-  // automatically during the system startup phase. When Chrome browser is
-  // created or launched by users, sessions might be restored based on the on
-  // startup setting.
-  if (full_restore::features::IsFullRestoreEnabled()) {
-    // If there are other browser windows, or during the restoring process, or
-    // restore from crash, or should not restore for `browser`, sessions should
-    // not be restored.
-    if (SessionRestore::IsRestoring(profile()) ||
-        has_open_trackable_browsers_ || HasPendingUncleanExit(profile()) ||
-        (browser && !browser->should_trigger_session_restore())) {
-      return false;
-    }
+  // In Chrome OS, Chrome browser is not launched automatically during the
+  // system startup phase. When Chrome browser is created or launched by users,
+  // sessions might be restored based on the startup setting.
 
-    // If the on startup setting is not restore, sessions should not be
-    // restored.
-    SessionStartupPref pref =
-        SessionStartupPref::GetStartupPref(profile()->GetPrefs());
-    if (!pref.ShouldRestoreLastSession())
-      return false;
-
-    if (!browser)
-      return true;
-
-    // App windows should not be restored.
-    auto window_type = WindowTypeForBrowserType(browser->type());
-    if (window_type == sessions::SessionWindow::TYPE_APP ||
-        window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
-      return false;
-    }
-
-    // If the browser does not have a `restore_id`, then we restore the session.
-    return browser->create_params().restore_id == Browser::kDefaultRestoreId;
+  // If there are other browser windows, or during the restoring process, or
+  // restore from crash, or should not restore for `browser`, sessions should
+  // not be restored.
+  if (SessionRestore::IsRestoring(profile()) || has_open_trackable_browsers_ ||
+      HasPendingUncleanExit(profile()) ||
+      (browser && !browser->should_trigger_session_restore())) {
+    return false;
   }
 
-  if (!force_browser_not_alive_with_no_windows_)
+  // If the on startup setting is not restore, sessions should not be
+  // restored.
+  SessionStartupPref pref =
+      SessionStartupPref::GetStartupPref(profile()->GetPrefs());
+  if (!pref.ShouldRestoreLastSession())
     return false;
-#endif
+
+  if (!browser)
+    return true;
+
+  // App windows should not be restored.
+  auto window_type = WindowTypeForBrowserType(browser->type());
+  if (window_type == sessions::SessionWindow::TYPE_APP ||
+      window_type == sessions::SessionWindow::TYPE_APP_POPUP) {
+    return false;
+  }
+
+  // If the browser does not have a `restore_id`, then we restore the session.
+  return browser->create_params().restore_id == Browser::kDefaultRestoreId;
+#else
   if (!has_open_trackable_browsers_ &&
       !StartupBrowserCreator::InSynchronousProfileLaunch() &&
       !SessionRestore::IsRestoring(profile())
@@ -214,6 +208,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
     return true;
   }
   return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
@@ -523,8 +518,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
       return true;
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  } else if (full_restore::features::IsFullRestoreEnabled() &&
-             HasPendingUncleanExit(profile())) {
+  } else if (HasPendingUncleanExit(profile())) {
     if (!browser) {
       // If 'browser' is null, call StartupBrowserCreator to create a new
       // browser instance.
