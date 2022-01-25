@@ -854,12 +854,11 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
   const KURL& url = params->url;
   // See WebNavigationParams for special case explanations.
   if (url.IsAboutSrcdocURL()) {
-    // TODO(dgozman): instead of reaching to the owner here, we could instead:
-    // - grab the "srcdoc" value when starting a navigation right in the owner;
-    // - pass it around through BeginNavigation to CommitNavigation as |data|;
-    // - use it here instead of re-reading from the owner.
-    // This way we will get rid of extra dependency between starting and
-    // committing navigation.
+    if (params->body_loader)
+      return;
+    // TODO(wjmaclean): It seems some pathways don't go via the
+    // RenderFrameImpl::BeginNavigation/CommitNavigation functions.
+    // https://crbug.com/1290435.
     String srcdoc;
     HTMLFrameOwnerElement* owner_element = frame->DeprecatedLocalOwner();
     if (!IsA<HTMLIFrameElement>(owner_element) ||

@@ -858,4 +858,8 @@ bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
                                                           IsFencedFrameRoot());
 }
 
+void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
+  srcdoc_value_ = srcdoc_value;
+}
+
 }  // namespace content

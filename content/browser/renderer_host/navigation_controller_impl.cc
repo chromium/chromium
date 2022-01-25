@@ -3698,7 +3698,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */);
+          base::TimeTicks() /* commit_sent */, false /* anonymous */,
+          std::string() /* srcdoc_value */);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
@@ -3837,6 +3838,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           frame_tree_node->pending_frame_policy());
   commit_params->post_content_type = post_content_type;
 
+  if (common_params->url.IsAboutSrcdoc())
+    commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   return NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,

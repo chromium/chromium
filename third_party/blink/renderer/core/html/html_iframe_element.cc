@@ -517,6 +517,13 @@ void HTMLIFrameElement::DidChangeAttributes() {
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
       ContentFrame()->GetFrameToken(),
       csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
+
+  // Make sure we update the srcdoc value, if any, in the browser.
+  String srcdoc_value = "";
+  if (FastHasAttribute(html_names::kSrcdocAttr))
+    srcdoc_value = FastGetAttribute(html_names::kSrcdocAttr).GetString();
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
+      ContentFrame()->GetFrameToken(), srcdoc_value);
 }
 
 }  // namespace blink

@@ -487,4 +487,7 @@ struct CommitNavigationParams {
 
   // Whether or not this navigation will commit in an anonymous frame.
   bool anonymous = false;
+
+  // When URL is about:srcdoc, this carries the srcdoc attribute's value.
+  string srcdoc_value;
 };

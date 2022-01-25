@@ -240,4 +240,8 @@ void FakeLocalFrameHost::BindFrameHostReceiver(
       std::move(handle)));
 }
 
+void FakeLocalFrameHost::DidChangeSrcDoc(
+    const blink::FrameToken& child_frame_token,
+    const WTF::String& srcdoc_value) {}
+
 }  // namespace blink

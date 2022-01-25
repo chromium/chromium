@@ -6997,6 +6997,17 @@ void RenderFrameHostImpl::GetKeepAliveHandleFactory(
   keep_alive_handle_factory_.Bind(std::move(receiver));
 }
 
+void RenderFrameHostImpl::DidChangeSrcDoc(
+    const blink::FrameToken& child_frame_token,
+    const std::string& srcdoc_value) {
+  auto* child =
+      FindAndVerifyChild(child_frame_token, bad_message::RFH_OWNER_PROPERTY);
+  if (!child)
+    return;
+
+  child->SetSrcdocValue(srcdoc_value);
+}
+
 // TODO(ahemery): Move checks to mojo bad message reporting.
 void RenderFrameHostImpl::BeginNavigation(
     blink::mojom::CommonNavigationParamsPtr common_params,
@@ -7832,6 +7843,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   bool is_srcdoc = common_params->url.IsAboutSrcdoc();
   if (is_srcdoc) {
+    commit_params->srcdoc_value = frame_tree_node_->srcdoc_value();
     // Main frame srcdoc navigation are meaningless. They are blocked whenever a
     // navigation attempt is made. It shouldn't reach CommitNavigation.
     CHECK(!is_main_frame());
@@ -7909,7 +7921,7 @@ void RenderFrameHostImpl::CommitNavigation(
 
   std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
       subresource_loader_factories;
-  if ((!is_same_document || is_first_navigation) && !is_srcdoc) {
+  if (!is_same_document || is_first_navigation) {
     recreate_default_url_loader_factory_after_network_service_crash_ = false;
     subresource_loader_factories =
         std::make_unique<blink::PendingURLLoaderFactoryBundle>();
@@ -8186,24 +8198,6 @@ void RenderFrameHostImpl::CommitNavigation(
               ->RecordFeatureUsage(this);
         }
       }
-    }
-
-    // about:srcdoc "inherits" loaders from its parent in the renderer process,
-    // There are no need to provide new ones here.
-    // TODO(arthursonzogni): What about about:blank URLs?
-    // TODO(arthursonzogni): What about data-URLs?
-    //
-    // Note: Inheriting loaders could be done in the browser process, but we
-    //       aren't confident there are enough reliable information in the
-    //       browser process to always make the correct decision. "Inheriting"
-    //       in the renderer process is slightly less problematic in that it
-    //       guarantees the renderer won't have higher privileges than it
-    //       originally had (since it will inherit loader factories it already
-    //       had access to).
-    if (is_srcdoc) {
-      DCHECK(!subresource_loader_factories);
-      DCHECK(!subresource_overrides);
-      DCHECK(!prefetch_loader_factory);
     }
 
     blink::mojom::PolicyContainerPtr policy_container =

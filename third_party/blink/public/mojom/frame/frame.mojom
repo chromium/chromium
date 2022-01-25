@@ -556,6 +556,11 @@ interface LocalFrameHost {
 
   // Notifies the frame that the document's color scheme has been inferred.
   DidInferColorScheme(PreferredColorScheme color_scheme);
+
+  // Notifies the browser that a subframe's srcdoc attribute has changed, and
+  // sends the new value to the browser. Also sent when a subframe's content
+  // frame is changed.
+  DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token, string srcdoc_value);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

@@ -927,7 +927,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */, false /* anonymous */);
+          base::TimeTicks() /* commit_sent */, false /* anonymous */,
+          std::string() /* srcdoc_value */);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

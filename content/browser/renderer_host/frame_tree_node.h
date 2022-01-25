@@ -505,6 +505,11 @@ class CONTENT_EXPORT FrameTreeNode {
   // Returns true if error page isolation is enabled.
   bool IsErrorPageIsolationEnabled() const;
 
+  // Functions to store and retrieve a frame's srcdoc value on this
+  // FrameTreeNode.
+  void SetSrcdocValue(const std::string& srcdoc_value);
+  const std::string& srcdoc_value() const { return srcdoc_value_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);
@@ -577,6 +582,10 @@ class CONTENT_EXPORT FrameTreeNode {
   // When created using window.open, the origin of the creator.
   // Please refer to {Get,Set}PopupCreatorOrigin() documentation.
   url::Origin popup_creator_origin_;
+
+  // If the url from the the last BeginNavigation is about:srcdoc, this value
+  // stores the srcdoc_attribute's value for re-use in history navigations.
+  std::string srcdoc_value_;
 
   // Whether this frame is still on the initial about:blank document or the
   // synchronously committed about:blank document committed at frame creation,

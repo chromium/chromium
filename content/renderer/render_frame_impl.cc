@@ -2674,7 +2674,7 @@ void RenderFrameImpl::CommitNavigation(
   // Sanity check that the browser always sends us new loader factories on
   // cross-document navigations.
   DCHECK(common_params->url.SchemeIs(url::kJavaScriptScheme) ||
-         common_params->url.IsAboutSrcdoc() || subresource_loader_factories);
+         subresource_loader_factories);
 
   int request_id = blink::WebResourceRequestSender::MakeRequestID();
   std::unique_ptr<DocumentState> document_state = BuildDocumentStateFromParams(
@@ -2825,45 +2825,17 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
-  // Here, creator means either the parent frame or the window opener.
-  bool inherit_loaders_from_creator =
-      // Iframe with the about:srcdoc URL inherits subresource loaders from
-      // its parent. If its parent is able to use the FileUrlLoader, then its
-      // about:srcdoc iframe can use it too.
-      // TODO(arthursonzogni): Ideally, this decision should be made by the
-      // browser process. However, giving an iframe the FileUrlLoader mistakenly
-      // could have terrible consequences (e.g. give access to user's file from
-      // an unknown website). Inheriting from the parent in the renderer process
-      // is more conservative and feels more cautious for now.
-      // TODO(arthursonzogni): Something similar needs to be done for
-      // about:blank.
-      common_params->url.IsAboutSrcdoc();
-
-  // TODO(lukasza): https://crbug.com/936696: No need to postpone setting the
-  // |new_loader_factories| once we start swapping RenderFrame^H^H^H
-  // RenderDocument on every cross-document navigation.
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle> new_loader_factories;
-  if (inherit_loaders_from_creator) {
-    // The browser process didn't provide any way to fetch subresources, it
-    // expects this document to inherit loaders from its parent.
-    DCHECK(!subresource_loader_factories);
-    DCHECK(!subresource_overrides);
-    DCHECK(!prefetch_loader_factory);
-
-    // Presence of the parent is verified by the browser process before
-    // committing.
-    //
-    // TODO(arthursonzogni, dcheng): If `inherit_loaders_from_creator` is ever
-    // extended to 'about:blank', then `creator` might also need to come from
-    // the opener.
-    auto* creator = RenderFrameImpl::FromWebFrame(frame_->Parent());
-    DCHECK(creator);
-    new_loader_factories = creator->CloneLoaderFactories();
-  } else {
-    new_loader_factories = CreateLoaderFactoryBundle(
-        std::move(subresource_loader_factories),
-        std::move(subresource_overrides), std::move(prefetch_loader_factory));
+  if (common_params->url.IsAboutSrcdoc()) {
+    WebNavigationParams::FillStaticResponse(navigation_params.get(),
+                                            "text/html", "UTF-8",
+                                            commit_params->srcdoc_value);
   }
+
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> new_loader_factories =
+      CreateLoaderFactoryBundle(std::move(subresource_loader_factories),
+                                std::move(subresource_overrides),
+                                std::move(prefetch_loader_factory));
+
   DCHECK(new_loader_factories);
   DCHECK(new_loader_factories->HasBoundDefaultFactory());
 
@@ -3231,11 +3203,10 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
   } else {
 #if DCHECK_IS_ON()
     // This situation should happen only if the frame hosts a document that
-    // isn't related to a real navigation (i.e. if the frame should "inherit"
-    // the factories from its opener/parent - for example for about:blank or
-    // about:srcdoc or about:blank#someHref frames, or for frames with no URL
-    // - like the initial frame opened by window('', 'popup')).
+    // isn't related to a real navigation (i.e. if an initial empty document
+    // should "inherit" the factories from its opener/parent).
     WebURL url = GetWebFrame()->GetDocument().Url();
+    DCHECK(!GURL(url).IsAboutSrcdoc());
     if (url.IsValid() && !url.IsEmpty())
       DCHECK(url.ProtocolIs(url::kAboutScheme));
 #endif

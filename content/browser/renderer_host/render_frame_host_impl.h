@@ -2123,6 +2123,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const absl::optional<std::u16string>& source_id,
       const absl::optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
+  void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
+                       const std::string& srcdoc_value) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;

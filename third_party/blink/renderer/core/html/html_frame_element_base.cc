@@ -111,6 +111,13 @@ void HTMLFrameElementBase::ParseAttribute(
   const QualifiedName& name = params.name;
   const AtomicString& value = params.new_value;
   if (name == html_names::kSrcdocAttr) {
+    String srcdoc_value = "";
+    if (!value.IsNull())
+      srcdoc_value = FastGetAttribute(html_names::kSrcdocAttr).GetString();
+    if (ContentFrame()) {
+      GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
+          ContentFrame()->GetFrameToken(), srcdoc_value);
+    }
     if (!value.IsNull()) {
       SetLocation(SrcdocURL().GetString());
     } else {
