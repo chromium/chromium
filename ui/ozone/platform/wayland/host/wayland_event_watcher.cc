@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 
 #include <wayland-client-core.h>
+#include <cstring>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
