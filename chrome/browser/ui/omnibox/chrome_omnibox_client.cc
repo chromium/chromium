@@ -268,10 +268,11 @@ void ChromeOmniboxClient::OnResultChanged(
   for (const AutocompleteMatch& match : result) {
     ++result_index;
 
-    // Trigger prerendering only if `should_prerender` is set to true, which
-    // means all AutocompeleteProviders have done their work, so the results
-    // will not change for the given input, to ensure we do not prerender one
-    // AutocompleteMatch twice.
+    // Trigger prerendering only if `should_prerender` is set to true. Caller
+    // uses this parameter to explicitly allow embedders to prerender. A typical
+    // scenario is that the caller will only set it to true if the results will
+    // not change, to ensure that the prerender is not triggered for the same
+    // input repeatedly.
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         should_prerender && BaseSearchProvider::ShouldPrerender(match)) {
       DoPrerender(match);
