@@ -343,6 +343,10 @@ class NET_EXPORT UDPSocketPosix {
   // Returns a net error code.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
 
+  // Exposes the underlying socket descriptor for testing its state. Does not
+  // release ownership of the descriptor.
+  SocketDescriptor SocketDescriptorForTesting() const { return socket_; }
+
   // Resets the thread to be used for thread-safety checks.
   void DetachFromThread();
 

@@ -45,6 +45,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "net/android/network_library.h"
 #include "net/android/radio_activity_tracker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -162,6 +163,18 @@ int TCPSocketPosix::Open(AddressFamily family) {
   if (rv == OK && tag_ != SocketTag())
     tag_.Apply(socket_->socket_fd());
   return rv;
+}
+
+int TCPSocketPosix::BindToNetwork(
+    NetworkChangeNotifier::NetworkHandle network) {
+  DCHECK(IsValid());
+  DCHECK(!IsConnected());
+#if BUILDFLAG(IS_ANDROID)
+  return net::android::BindToNetwork(socket_->socket_fd(), network);
+#else
+  NOTIMPLEMENTED();
+  return ERR_NOT_IMPLEMENTED;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,

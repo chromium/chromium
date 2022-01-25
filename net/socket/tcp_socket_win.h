@@ -17,6 +17,7 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_performance_watcher.h"
@@ -133,6 +134,9 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   // Apply |tag| to this socket.
   void ApplySocketTag(const SocketTag& tag);
+
+  // Not implemented. Returns ERR_NOT_IMPLEMENTED.
+  int BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
 
   // May return nullptr.
   SocketPerformanceWatcher* socket_performance_watcher() const {

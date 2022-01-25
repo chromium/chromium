@@ -13,6 +13,7 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_performance_watcher.h"
@@ -165,6 +166,13 @@ class NET_EXPORT TCPSocketPosix {
   SocketPerformanceWatcher* socket_performance_watcher() const {
     return socket_performance_watcher_.get();
   }
+
+  // Binds this socket to `network`. All data traffic on the socket will be sent
+  // and received via `network`. Must be called after Open() but before
+  // Connect() and/or Bind(). This call will fail if `network` has disconnected.
+  // Communication using this socket will fail if `network` disconnects.
+  // Returns a net error code.
+  int BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
 
  private:
   void AcceptCompleted(std::unique_ptr<TCPSocketPosix>* tcp_socket,

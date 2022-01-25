@@ -19,6 +19,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/socket/socket_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -113,6 +114,15 @@ NET_EXPORT_PRIVATE bool ReportBadDefaultNetwork();
 NET_EXPORT_PRIVATE void TagSocket(SocketDescriptor socket,
                                   uid_t uid,
                                   int32_t tag);
+
+// Binds this socket to `network`. All data traffic on the socket will be sent
+// and received via `network`. This call will fail if `network` has
+// disconnected. Communication using this socket will fail if `network`
+// disconnects.
+// Returns a net error code.
+NET_EXPORT_PRIVATE int BindToNetwork(
+    SocketDescriptor socket,
+    NetworkChangeNotifier::NetworkHandle network);
 
 }  // namespace android
 }  // namespace net

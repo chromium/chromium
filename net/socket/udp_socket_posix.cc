@@ -51,10 +51,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include <dlfcn.h>
-#include "base/android/build_info.h"
 #include "base/native_library.h"
-#include "base/strings/utf_string_conversions.h"
+#include "net/android/network_library.h"
 #include "net/android/radio_activity_tracker.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -520,72 +518,11 @@ int UDPSocketPosix::BindToNetwork(
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_connected());
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
-    return ERR_INVALID_ARGUMENT;
 #if BUILDFLAG(IS_ANDROID)
-  // Android prior to Lollipop didn't have support for binding sockets to
-  // networks.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_LOLLIPOP) {
-    return ERR_NOT_IMPLEMENTED;
-  }
-  int rv;
-  // On Android M and newer releases use supported NDK API. On Android L use
-  // setNetworkForSocket from libnetd_client.so.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    // See declaration of android_setsocknetwork() here:
-    // http://androidxref.com/6.0.0_r1/xref/development/ndk/platforms/android-M/include/android/multinetwork.h#65
-    // Function cannot be called directly as it will cause app to fail to load
-    // on pre-marshmallow devices.
-    typedef int (*MarshmallowSetNetworkForSocket)(int64_t netId, int socketFd);
-    static MarshmallowSetNetworkForSocket marshmallowSetNetworkForSocket;
-    // This is racy, but all racers should come out with the same answer so it
-    // shouldn't matter.
-    if (!marshmallowSetNetworkForSocket) {
-      base::FilePath file(base::GetNativeLibraryName("android"));
-      void* dl = dlopen(file.value().c_str(), RTLD_NOW);
-      marshmallowSetNetworkForSocket =
-          reinterpret_cast<MarshmallowSetNetworkForSocket>(
-              dlsym(dl, "android_setsocknetwork"));
-    }
-    if (!marshmallowSetNetworkForSocket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = marshmallowSetNetworkForSocket(network, socket_);
-    if (rv)
-      rv = errno;
-  } else {
-    // NOTE(pauljensen): This does rely on Android implementation details, but
-    // they won't change because Lollipop is already released.
-    typedef int (*LollipopSetNetworkForSocket)(unsigned netId, int socketFd);
-    static LollipopSetNetworkForSocket lollipopSetNetworkForSocket;
-    // This is racy, but all racers should come out with the same answer so it
-    // shouldn't matter.
-    if (!lollipopSetNetworkForSocket) {
-      // Android's netd client library should always be loaded in our address
-      // space as it shims socket() which was used to create |socket_|.
-      base::FilePath file(base::GetNativeLibraryName("netd_client"));
-      // Use RTLD_NOW to match Android's prior loading of the library:
-      // http://androidxref.com/6.0.0_r5/xref/bionic/libc/bionic/NetdClient.cpp#37
-      // Use RTLD_NOLOAD to assert that the library is already loaded and
-      // avoid doing any disk IO.
-      void* dl = dlopen(file.value().c_str(), RTLD_NOW | RTLD_NOLOAD);
-      lollipopSetNetworkForSocket =
-          reinterpret_cast<LollipopSetNetworkForSocket>(
-              dlsym(dl, "setNetworkForSocket"));
-    }
-    if (!lollipopSetNetworkForSocket)
-      return ERR_NOT_IMPLEMENTED;
-    rv = -lollipopSetNetworkForSocket(network, socket_);
-  }
-  // If |network| has since disconnected, |rv| will be ENONET.  Surface this as
-  // ERR_NETWORK_CHANGED, rather than MapSystemError(ENONET) which gives back
-  // the less descriptive ERR_FAILED.
-  if (rv == ENONET)
-    return ERR_NETWORK_CHANGED;
-  if (rv == 0)
+  int rv = net::android::BindToNetwork(socket_, network);
+  if (rv == OK)
     bound_network_ = network;
-  return MapSystemError(rv);
+  return rv;
 #else
   NOTIMPLEMENTED();
   return ERR_NOT_IMPLEMENTED;
