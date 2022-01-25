@@ -36,8 +36,11 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // |sync_service| password syncing state. Uses |sync_service| and
   // |identity_manager| to obtain the sync username to report about its presence
   // among saved credentials. Uses the |prefs| to obtain information whether the
-  // password manager and the leak detection feature is enabled. |done_call| is
-  // run after all metrics reporting is done from the store.
+  // password manager and the leak detection feature is
+  // enabled.|for_primary_user_profile| indicates whether metrics are reported
+  // for the user which created the current session. Metrics for primary user
+  // profile are reported in different histograms from other profiles.
+  // |done_call| is run after all metrics reporting is done from the store.
   StoreMetricsReporter(PasswordStoreInterface* profile_store,
                        PasswordStoreInterface* account_store,
                        const syncer::SyncService* sync_service,
@@ -45,6 +48,7 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
                        PrefService* prefs,
                        PasswordReuseManager* password_reuse_manager,
                        bool is_under_advanced_protection,
+                       bool for_primary_user_profile,
                        base::OnceClosure done_call);
   StoreMetricsReporter(const StoreMetricsReporter&) = delete;
   StoreMetricsReporter& operator=(const StoreMetricsReporter&) = delete;
@@ -69,6 +73,10 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   scoped_refptr<PasswordStoreInterface> account_store_;
 
   bool is_under_advanced_protection_;
+
+  // Used to report metrics for primary user profile and non-primary user
+  // profile in different histogram.
+  const std::string user_profile_infix_;
 
   std::string sync_username_;
 

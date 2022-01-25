@@ -54,6 +54,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".Other" summary="The scheme of the origin is something else."/>
 </variants>
 
+<variants name="Store">
+  <variant name="AccountStore." summary="for account-scoped store"/>
+  <variant name="ProfileStore." summary="for profile-scoped store"/>
+</variants>
+
+<variants name="UserProfileLevel">
+  <variant name="NonPrimaryUserProfile."
+      summary="the a profile that didn't create the current sessions."/>
+  <variant name="PrimaryUserProfile."
+      summary="the profile that created the current sessions."/>
+</variants>
+
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
     enum="AccessoryAction" expires_after="2022-06-19">
   <owner>fhorschig@chromium.org</owner>
@@ -498,6 +510,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.AccountStoreVsProfileStore2.{DifferenceType}"
     units="accounts" expires_after="2022-05-31">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>
@@ -995,6 +1011,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.CompromisedCredentials.{Issue}"
     units="credentials" expires_after="2022-06-12">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>Count of known {Issue}. Recorded on start-up.</summary>
@@ -1102,6 +1122,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.CredentialsWithDuplicates" units="units"
     expires_after="2022-07-03">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1117,6 +1141,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates"
     units="units" expires_after="2022-06-30">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2250,6 +2278,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SyncingAccountState"
     enum="PasswordManagerSyncingAccountState" expires_after="2022-06-30">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
@@ -2462,6 +2494,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.{Store}BlacklistedSitesHiRes{CustomPassphraseStatus}"
     units="sites" expires_after="2022-05-01">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -2518,6 +2554,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.{Store}TimesPasswordUsed.{PasswordType}{CustomPassphraseStatus}"
     units="PasswordUses" expires_after="2022-05-31">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -2539,6 +2579,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes.WithScheme{Scheme}"
     units="accounts" expires_after="2022-05-31">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -2585,6 +2629,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.{Store}{Metric}.{PasswordType}{CustomPassphraseStatus}"
     units="units" expires_after="2022-04-24">
+  <obsolete>
+    Removed in M100. Split into two different metrics for primary and
+    non-primary user profiles.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -2600,6 +2648,176 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary="for profile-scoped store"/>
     <variant name="AccountStore." summary="for account-scoped store"/>
   </token>
+  <token key="Metric">
+    <variant name="AccountsPerSiteHiRes" summary="per site"/>
+    <variant name="TotalAccountsHiRes.ByType" summary="across all sites"/>
+  </token>
+  <token key="PasswordType" variants="PasswordType"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}AccountStoreVsProfileStore2.{DifferenceType}"
+    units="accounts" expires_after="2022-05-31">
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of accounts {DifferenceType}. Recorded once per run of Chrome,
+    soon after startup, only for users who are opted in to the account-scoped
+    storage. Recorded for passwords in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="DifferenceType">
+    <variant name="Additional"
+        summary="stored in the password manager's account-scoped store that
+                 don't exist in the profile-scoped store"/>
+    <variant name="Conflicting"
+        summary="stored in the password manager with a conflicting password
+                 between the account-scoped store and profile-scoped store
+                 (i.e. the signon realm and username match, but the password
+                 does not)"/>
+    <variant name="Identical"
+        summary="stored in both the password manager's account-scoped store
+                 and profile-scoped store"/>
+    <variant name="Missing"
+        summary="stored in the password manager's profile-scoped store that
+                 don't exist in the account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}CompromisedCredentials.{Issue}"
+    units="credentials" expires_after="2022-06-12">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of known {Issue}. Recorded on start-up in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="Issue">
+    <variant name="CountLeaked" summary="leaked credentials in the database"/>
+    <variant name="CountLeakedAfterBulkCheck"
+        summary="leaked credentials in the database if password bulk check
+                 was executed at least once"/>
+    <variant name="CountPhished" summary="phished credentials in the database"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.{UserProfileLevel}CredentialsWithDuplicates"
+    units="units" expires_after="2022-07-03">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;duplicates&quot; exist. A duplicate is a credential with the same
+    signon realm, username, and password - i.e. indistinguishable from the
+    user's point of view. This records the number of *sets* of duplicated
+    credentials; the number of credentials in each set of duplicates is not
+    recorded. Recorded once per browser start-up. Recorded for the passwords
+    store in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}CredentialsWithMismatchedDuplicates"
+    units="units" expires_after="2022-06-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of stored (non-blacklisted) credentials for which
+    &quot;mismatched duplicates&quot; exist. A mismatched duplicate is a
+    credential with the same signon realm and username, but different password.
+    This records the number of *sets* of duplicated credentials; the number of
+    credentials in each set of duplicates is not recorded. Recorded once per
+    browser start-up. Recorded for the passwords store in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+</histogram>
+
+<histogram name="PasswordManager.{UserProfileLevel}SyncingAccountState"
+    enum="PasswordManagerSyncingAccountState" expires_after="2022-06-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Information about the user's current sync status crossed with whether their
+    synced password is saved. Record for {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}{Store}BlacklistedSitesHiRes{CustomPassphraseStatus}"
+    units="sites" expires_after="2022-05-01">
+  <owner>kazinova@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The total number of sites that the user has blocklisted in the password
+    manager's {Store}. Recorded by iterating over stored passwords once per run
+    of Chrome. Records the entries in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="Store" variants="Store"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}{Store}TimesPasswordUsed.{PasswordType}{CustomPassphraseStatus}"
+    units="PasswordUses" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of times each saved password from the {Store} has been used to
+    log in. Split by whether created by the user or generated by Chrome, and
+    further by whether the user used sync with custom passphrase or not. Records
+    the counts in {UserProfileLevel}. Recorded by iterating over stored
+    passwords once per browser run, soon after startup.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="Store" variants="Store"/>
+  <token key="PasswordType" variants="PasswordType"/>
+  <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}{Store}TotalAccountsHiRes.WithScheme{Scheme}"
+    units="accounts" expires_after="2022-05-31">
+  <owner>battre@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The number of accounts stored in the password manager's {Store} (across all
+    sites) for origins with the scheme (e.g., HTTP, HTTPS, FTP) as given in the
+    histogram suffix. For each scheme, the count is recorded once per browser
+    start-up. Records the accounts stored in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="Store" variants="Store"/>
+  <token key="Scheme" variants="Scheme"/>
+</histogram>
+
+<histogram
+    name="PasswordManager.{UserProfileLevel}{Store}{Metric}.{PasswordType}{CustomPassphraseStatus}"
+    units="units" expires_after="2022-04-24">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The number of accounts stored {Metric} in the password manager's {Store}. ,
+    split by whether created by the user or generated by Chrome, and further by
+    whether the user use sync with custom passphrase or not. Recorded during
+    browser start-up. Records the accounts stored in {UserProfileLevel}.
+  </summary>
+  <token key="UserProfileLevel" variants="UserProfileLevel"/>
+  <token key="Store" variants="Store"/>
   <token key="Metric">
     <variant name="AccountsPerSiteHiRes" summary="per site"/>
     <variant name="TotalAccountsHiRes.ByType" summary="across all sites"/>
