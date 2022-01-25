@@ -1423,6 +1423,7 @@ component("ash") {
     "system/privacy_screen/privacy_screen_toast_controller.h",
     "system/privacy_screen/privacy_screen_toast_view.cc",
     "system/privacy_screen/privacy_screen_toast_view.h",
+    "system/progress_indicator/progress_indicator_animation_registry.cc",
     "system/progress_indicator/progress_indicator_animation_registry.h",
     "system/rotation/rotation_lock_feature_pod_controller.cc",
     "system/rotation/rotation_lock_feature_pod_controller.h",

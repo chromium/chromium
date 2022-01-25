@@ -5,12 +5,15 @@
 #ifndef ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_ANIMATION_REGISTRY_H_
 #define ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_ANIMATION_REGISTRY_H_
 
+#include <map>
+#include <memory>
+
+#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
+#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 
 namespace ash {
-
-class HoldingSpaceProgressIconAnimation;
-class HoldingSpaceProgressRingAnimation;
 
 // A registry for progress indicator animations.
 //
@@ -29,6 +32,13 @@ class HoldingSpaceProgressRingAnimation;
 //     progress indicator's inner icon.
 class ProgressIndicatorAnimationRegistry {
  public:
+  ProgressIndicatorAnimationRegistry();
+  ProgressIndicatorAnimationRegistry(
+      const ProgressIndicatorAnimationRegistry&) = delete;
+  ProgressIndicatorAnimationRegistry& operator=(
+      const ProgressIndicatorAnimationRegistry&) = delete;
+  ~ProgressIndicatorAnimationRegistry();
+
   using ProgressIconAnimationChangedCallbackList =
       base::RepeatingCallbackList<void(HoldingSpaceProgressIconAnimation*)>;
 
@@ -62,6 +72,58 @@ class ProgressIndicatorAnimationRegistry {
   // NOTE: This may return `nullptr` if no such animation is registered.
   virtual HoldingSpaceProgressRingAnimation* GetProgressRingAnimationForKey(
       const void* key) = 0;
+
+  // TODO(dmblack): Move to private after completing refactor of
+  // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
+  template <typename AnimationType>
+  struct AnimationWithSubscription {
+    std::unique_ptr<AnimationType> animation;
+    base::CallbackListSubscription subscription;
+  };
+
+  // TODO(dmblack): Remove these methods after completing refactor of
+  // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
+  std::map<const void*,
+           AnimationWithSubscription<HoldingSpaceProgressIconAnimation>>&
+  icon_animations_by_key() {
+    return icon_animations_by_key_;
+  }
+  std::map<const void*, ProgressIconAnimationChangedCallbackList>&
+  icon_animation_changed_callback_lists_by_key() {
+    return icon_animation_changed_callback_lists_by_key_;
+  }
+  std::map<const void*,
+           AnimationWithSubscription<HoldingSpaceProgressRingAnimation>>&
+  ring_animations_by_key() {
+    return ring_animations_by_key_;
+  }
+  std::map<const void*, ProgressRingAnimationChangedCallbackList>&
+  ring_animation_changed_callback_lists_by_key() {
+    return ring_animation_changed_callback_lists_by_key_;
+  }
+
+ private:
+  // Mapping of keys to their associated progress icon animations.
+  std::map<const void*,
+           AnimationWithSubscription<HoldingSpaceProgressIconAnimation>>
+      icon_animations_by_key_;
+
+  // Mapping of keys to their associated icon animation changed callback lists.
+  // Whenever an animation for a given key is changed, the callback list for
+  // that key will be notified.
+  std::map<const void*, ProgressIconAnimationChangedCallbackList>
+      icon_animation_changed_callback_lists_by_key_;
+
+  // Mapping of keys to their associated progress ring animations.
+  std::map<const void*,
+           AnimationWithSubscription<HoldingSpaceProgressRingAnimation>>
+      ring_animations_by_key_;
+
+  // Mapping of keys to their associated ring animation changed callback lists.
+  // Whenever an animation for a given key is changed, the callback list for
+  // that key will be notified.
+  std::map<const void*, ProgressRingAnimationChangedCallbackList>
+      ring_animation_changed_callback_lists_by_key_;
 };
 
 }  // namespace ash
