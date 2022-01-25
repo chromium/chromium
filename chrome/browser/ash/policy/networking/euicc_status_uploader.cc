@@ -64,6 +64,10 @@ EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
     : client_(client),
       local_state_(local_state),
       retry_entry_(&kBackOffPolicy) {
+  if (!chromeos::NetworkHandler::IsInitialized()) {
+    LOG(WARNING) << "NetworkHandler is not initialized.";
+    return;
+  }
   chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->AddObserver(this);
@@ -74,11 +78,13 @@ EuiccStatusUploader::EuiccStatusUploader(CloudPolicyClient* client,
 }
 
 EuiccStatusUploader::~EuiccStatusUploader() {
-  chromeos::NetworkHandler::Get()
-      ->managed_network_configuration_handler()
-      ->RemoveObserver(this);
-  chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
-      this, FROM_HERE);
+  if (chromeos::NetworkHandler::IsInitialized()) {
+    chromeos::NetworkHandler::Get()
+        ->managed_network_configuration_handler()
+        ->RemoveObserver(this);
+    chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+        this, FROM_HERE);
+  }
   if (chromeos::HermesEuiccClient::Get())
     chromeos::HermesEuiccClient::Get()->RemoveObserver(this);
 }
