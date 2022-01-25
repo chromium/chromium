@@ -6,7 +6,6 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 js_library("modules") {
@@ -112,29 +111,12 @@ group("web_components") {
 # Up one folder to get to the root NTP gen dir, where files need to live
 # for bundling.
 preprocess_folder = "../preprocessed/modules"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
-generate_grd("build_grdp") {
-  grd_prefix = "new_tab_page"
-  out_grd = "$target_gen_dir/resources.grdp"
-  deps = [
-    ":preprocess",
-    ":preprocess_gen",
-  ]
-  manifest_files = [
-    "$target_gen_dir/preprocessed_manifest.json",
-    "$target_gen_dir/preprocessed_gen_manifest.json",
-  ]
-  resource_path_prefix = "modules"
-}
 
 preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = "./"
 
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "module_descriptor.js",
     "module_descriptors.js",
@@ -154,7 +136,6 @@ preprocess_if_expr("preprocess_gen") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "module_header.js",
     "module_wrapper.js",

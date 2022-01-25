@@ -8,6 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
@@ -292,8 +293,6 @@ group("web_components") {
 
 grd_prefix = "new_tab_page"
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -303,7 +302,6 @@ preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
     "background_manager.js",
     "window_proxy.js",
@@ -322,7 +320,6 @@ preprocess_if_expr("preprocess_gen") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
     "app.js",
     "middle_slot_promo.js",
@@ -338,57 +335,59 @@ preprocess_if_expr("preprocess_gen") {
   ]
 }
 
-generate_grd("build_new_tab_page_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/new_tab_page_mojo_resources.grdp"
-  input_files = [ "new_tab_page.mojom-webui.js" ]
+# Copy all Mojom generated JS files used by the NTP to a common location so that
+# TS compiler can find them when resolving relative paths.
+copy("copy_mojom") {
+  deps = [
+    "//chrome/browser/cart:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_js__generator",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/cart/chrome_cart.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module/task_module.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox/realbox.mojom-webui.js",
+  ]
 
   if (!is_official_build) {
-    input_files += [ "foo/foo.mojom-webui.js" ]
-    resource_path_rewrites = [ "foo/foo.mojom-webui.js|foo.mojom-webui.js" ]
+    deps += [
+      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js__generator",
+    ]
+    sources += [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.js" ]
   }
 
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page",
-          root_build_dir)
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-generate_grd("build_drive_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/drive_mojo_resources.grdp"
-  input_files = [ "drive.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive",
-          root_build_dir)
+mojo_js_files = [
+  "chrome_cart.mojom-webui.js",
+  "drive.mojom-webui.js",
+  "new_tab_page.mojom-webui.js",
+  "photos.mojom-webui.js",
+  "realbox.mojom-webui.js",
+  "task_module.mojom-webui.js",
+]
+
+if (!is_official_build) {
+  mojo_js_files += [ "foo.mojom-webui.js" ]
 }
 
-generate_grd("build_photos_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/photos_mojo_resources.grdp"
-  input_files = [ "photos.mojom-webui.js" ]
-  input_files_base_dir = rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos",
-          root_build_dir)
-}
-
-generate_grd("build_task_module_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/task_module_mojo_resources.grdp"
-  input_files = [ "task_module.mojom-webui.js" ]
-  input_files_base_dir = rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module",
-          root_build_dir)
-}
-
-generate_grd("build_chrome_cart_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/chrome_cart_mojo_resources.grdp"
-  input_files = [ "chrome_cart.mojom-webui.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/chrome/browser/cart",
-                  root_build_dir)
+if (optimize_webui) {
+  # Register all mojo files to their own grdp, since they are excluded from the
+  # bundle on optimized builds and need to be registered separately.
+  generate_grd("build_mojo_grdp") {
+    grd_prefix = grd_prefix
+    out_grd = "$target_gen_dir/mojo_resources.grdp"
+    input_files = mojo_js_files
+    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
+  }
 }
 
 generate_grd("build_grd") {
@@ -411,52 +410,32 @@ generate_grd("build_grd") {
     "$target_gen_dir/modules/photos/icons/resources.grdp",
     "$target_gen_dir/modules/photos/images/resources.grdp",
     "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
-    "$target_gen_dir/new_tab_page_mojo_resources.grdp",
     "$target_gen_dir/realbox/icons/resources.grdp",
-    "$target_gen_dir/realbox/realbox_mojo_resources.grdp",
-    "$target_gen_dir/task_module_mojo_resources.grdp",
-    "$target_gen_dir/chrome_cart_mojo_resources.grdp",
-    "$target_gen_dir/drive_mojo_resources.grdp",
-    "$target_gen_dir/photos_mojo_resources.grdp",
   ]
 
   deps = [
-    ":build_chrome_cart_mojo_grdp",
-    ":build_drive_mojo_grdp",
-    ":build_new_tab_page_mojo_grdp",
-    ":build_photos_mojo_grdp",
-    ":build_task_module_mojo_grdp",
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
     "modules/photos/icons:build_grdp",
     "modules/photos/images:build_grdp",
     "modules/recipes_v2/icons:build_grdp",
-    "realbox:build_realbox_mojo_grdp",
     "realbox/icons:build_grdp",
   ]
 
   if (optimize_webui) {
-    deps += [ ":optimized_js" ]
+    deps += [
+      ":build_mojo_grdp",
+      ":optimized_js",
+    ]
     resource_path_rewrites = [
       "new_tab_page.rollup.js|new_tab_page.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
   } else {
-    deps += [
-      ":preprocess",
-      ":preprocess_gen",
-      "modules:build_grdp",
-      "realbox:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/modules/resources.grdp",
-      "$target_gen_dir/realbox/resources.grdp",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps += [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
@@ -492,18 +471,8 @@ grit("resources") {
 if (optimize_webui) {
   optimize_webui("optimized_js") {
     host = "new-tab-page"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    deps = [
-      ":preprocess",
-      ":preprocess_gen",
-      "modules:preprocess",
-      "modules:preprocess_gen",
-      "realbox:preprocess",
-      "realbox:preprocess_gen",
-      "//ui/webui/resources:preprocess",
-      "//ui/webui/resources/cr_components/customize_themes:build_ts",
-      "//ui/webui/resources/cr_components/most_visited:build_ts",
-    ]
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
     js_module_in_files = [
       "new_tab_page.js",
       "lazy_load.js",
@@ -515,23 +484,91 @@ if (optimize_webui) {
       "shared.rollup.js",
     ]
     excludes = [
-      "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-      "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
-      "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
-      "chrome_cart.mojom-webui.js",
-      "drive.mojom-webui.js",
-      "foo.mojom-webui.js",
-      "new_tab_page.mojom-webui.js",
-      "photos.mojom-webui.js",
-      "realbox.mojom-webui.js",
-      "task_module.mojom-webui.js",
+                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+                 "chrome://resources/js/cr.m.js",
+                 "chrome://resources/mojo/mojo/public/js/bindings.js",
+                 "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
+                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+                 "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+                 "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+               ] + mojo_js_files
+  }
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+               "app.js",
+               "background_manager.js",
+               "customize_backgrounds.js",
+               "customize_dialog.js",
+               "customize_dialog_types.js",
+               "customize_modules.js",
+               "customize_shortcuts.js",
+               "doodle_share_dialog.js",
+               "i18n_setup.js",
+               "iframe.js",
+               "lazy_load.js",
+               "logo.js",
+               "metrics_utils.js",
+               "middle_slot_promo.js",
+               "mini_page.js",
+               "modules/cart/chrome_cart_proxy.js",
+               "modules/cart/module.js",
+               "modules/cart_v2/module.js",
+               "modules/drive/drive_module_proxy.js",
+               "modules/drive/module.js",
+               "modules/drive_v2/module.js",
+               "modules/info_dialog.js",
+               "modules/module_descriptor.js",
+               "modules/module_descriptors.js",
+               "modules/module_header.js",
+               "modules/module_registry.js",
+               "modules/modules.js",
+               "modules/module_wrapper.js",
+               "modules/photos/module.js",
+               "modules/photos/photos_module_proxy.js",
+               "modules/recipes_v2/module.js",
+               "modules/task_module/module.js",
+               "modules/task_module/task_module_handler_proxy.js",
+               "new_tab_page.js",
+               "new_tab_page_proxy.js",
+               "realbox/realbox_action.js",
+               "realbox/realbox_browser_proxy.js",
+               "realbox/realbox_dropdown.js",
+               "realbox/realbox_icon.js",
+               "realbox/realbox.js",
+               "realbox/realbox_match.js",
+               "utils.js",
+               "voice_search_overlay.js",
+               "window_proxy.js",
+             ] + mojo_js_files
+
+  if (!is_official_build) {
+    in_files += [
+      "modules/dummy_v2/foo_proxy.js",
+      "modules/dummy_v2/module.js",
     ]
   }
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+    "//ui/webui/resources/cr_components/most_visited:build_ts",
+  ]
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess",
+    ":preprocess_gen",
+    "modules:preprocess",
+    "modules:preprocess_gen",
+    "realbox:preprocess",
+    "realbox:preprocess_gen",
+  ]
 }
