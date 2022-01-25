@@ -10,7 +10,6 @@ component("cpp") {
     "constants.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
-    "storage_key_quota_client.h",
   ]
 
   sources = [

@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -29,7 +29,7 @@ class DatabaseTracker;
 //
 // This interface is used on the IO thread by the quota manager.
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
-    : public StorageKeyQuotaClient {
+    : public storage::mojom::QuotaClient {
  public:
   explicit DatabaseQuotaClient(DatabaseTracker& tracker);
 
@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
 
   ~DatabaseQuotaClient() override;
 
-  // StorageKeyQuotaClient method overrides.
+  // storage::mojom::QuotaClient method overrides.
   void GetStorageKeyUsage(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type,
                           GetStorageKeyUsageCallback callback) override;

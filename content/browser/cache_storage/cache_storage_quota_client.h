@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -27,7 +27,7 @@ class CacheStorageManager;
 // CacheStorageOwner tuple.  Created and accessed on the cache storage task
 // runner.
 class CONTENT_EXPORT CacheStorageQuotaClient
-    : public storage::StorageKeyQuotaClient {
+    : public storage::mojom::QuotaClient {
  public:
   CacheStorageQuotaClient(scoped_refptr<CacheStorageManager> cache_manager,
                           storage::mojom::CacheStorageOwner owner);
@@ -37,7 +37,7 @@ class CONTENT_EXPORT CacheStorageQuotaClient
 
   ~CacheStorageQuotaClient() override;
 
-  // storage::StorageKeyQuotaClient method overrides.
+  // storage::mojom::QuotaClient method overrides.
   void GetStorageKeyUsage(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type,
                           GetStorageKeyUsageCallback callback) override;

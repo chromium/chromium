@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/common/content_export.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
@@ -24,7 +24,7 @@ class IndexedDBContextImpl;
 // Integrates IndexedDB with the quota management system.
 //
 // Each instance is owned by an IndexedDBContextImpl.
-class IndexedDBQuotaClient : public storage::StorageKeyQuotaClient {
+class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
  public:
   CONTENT_EXPORT explicit IndexedDBQuotaClient(
       IndexedDBContextImpl& indexed_db_context);
@@ -34,7 +34,7 @@ class IndexedDBQuotaClient : public storage::StorageKeyQuotaClient {
 
   CONTENT_EXPORT ~IndexedDBQuotaClient() override;
 
-  // storage::StorageKeyQuotaClient implementation:
+  // storage::mojom::QuotaClient implementation:
   void GetStorageKeyUsage(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type,
                           GetStorageKeyUsageCallback callback) override;

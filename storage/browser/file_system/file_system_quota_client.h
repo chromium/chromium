@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -33,7 +33,7 @@ class FileSystemContext;
 // All of the public methods of this class are called by the quota manager
 // (except for the constructor/destructor).
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
-    : public StorageKeyQuotaClient {
+    : public storage::mojom::QuotaClient {
  public:
   explicit FileSystemQuotaClient(FileSystemContext* file_system_context);
   ~FileSystemQuotaClient() override;
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   FileSystemQuotaClient(const FileSystemQuotaClient&) = delete;
   FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
-  // QuotaClient methods.
+  // storage::mojom::QuotaClient methods.
   void GetStorageKeyUsage(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type,
                           GetStorageKeyUsageCallback callback) override;

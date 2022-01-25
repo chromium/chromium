@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/services/storage/public/cpp/storage_key_quota_client.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -23,7 +23,7 @@ class NativeIOManager;
 // Integrates NativeIO with the quota system.
 //
 // Each NativeIOManager owns exactly one NativeIOQuotaClient.
-class NativeIOQuotaClient : public storage::StorageKeyQuotaClient {
+class NativeIOQuotaClient : public storage::mojom::QuotaClient {
  public:
   explicit NativeIOQuotaClient(NativeIOManager* manager);
   ~NativeIOQuotaClient() override;
@@ -31,7 +31,7 @@ class NativeIOQuotaClient : public storage::StorageKeyQuotaClient {
   NativeIOQuotaClient(const NativeIOQuotaClient&) = delete;
   NativeIOQuotaClient& operator=(const NativeIOQuotaClient&) = delete;
 
-  // storage::StorageKeyQuotaClient method overrides.
+  // storage::mojom::QuotaClient method overrides.
   void GetStorageKeyUsage(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type,
                           GetStorageKeyUsageCallback callback) override;
