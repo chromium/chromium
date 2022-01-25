@@ -1669,6 +1669,8 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3},
       {"privacyReviewHistorySyncCardHeader",
        IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_CARD_HEADER},
+      {"privacyReviewHistorySyncSettingLabel",
+       IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_SETTING_LABEL},
       {"privacyReviewHistorySyncFeatureDescription1",
        IDS_SETTINGS_PRIVACY_REVIEW_HISTORY_SYNC_FEATURE_DESCRIPTION1},
       {"privacyReviewHistorySyncFeatureDescription2",
