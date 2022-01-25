@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -35,28 +36,44 @@ class MockReportQueueProvider : public ReportQueueProvider {
   // know how often you expect this method to be called.
   void ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(size_t times);
 
+  // The following mocks will be invoked on the same thread
+  // MockReportQueueProvider was constructed on.
   MOCK_METHOD(void,
-              CreateNewQueue,
+              CreateNewQueueMock,
               (std::unique_ptr<ReportQueueConfiguration> config,
                CreateReportQueueCallback cb),
-              (override));
+              ());
 
   MOCK_METHOD(
       (StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>),
-      CreateNewSpeculativeQueue,
+      CreateNewSpeculativeQueueMock,
       (),
-      (override));
+      ());
 
-  MOCK_METHOD(void, OnInitCompleted, (), ());
+  MOCK_METHOD(void, OnInitCompletedMock, (), ());
 
   MOCK_METHOD(void,
-              ConfigureReportQueue,
+              ConfigureReportQueueMock,
               (std::unique_ptr<ReportQueueConfiguration> configuration,
                ReportQueueProvider::ReportQueueConfiguredCallback callback),
-              (override));
+              ());
+
+  void CheckOnThread() const;
 
  private:
+  // Implementations of ReportQueueProvider virtual methods.
+  void OnInitCompleted() override;
+  void CreateNewQueue(std::unique_ptr<ReportQueueConfiguration> config,
+                      CreateReportQueueCallback cb) override;
+  StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>
+  CreateNewSpeculativeQueue() override;
+  void ConfigureReportQueue(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
+      ReportQueueConfiguredCallback completion_cb) override;
+
   scoped_refptr<StorageModuleInterface> storage_;
+  const scoped_refptr<base::SequencedTaskRunner> test_sequenced_task_runner_;
+  SEQUENCE_CHECKER(test_sequence_checker_);
 };
 
 }  // namespace reporting

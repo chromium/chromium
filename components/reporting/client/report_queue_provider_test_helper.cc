@@ -19,7 +19,7 @@ void SetForTesting(MockReportQueueProvider* provider) {
 
 }  // namespace report_queue_provider_test_helper
 
-// Implementation of the mock report provider for this test.
+// Implementation of the mock report provider for this test helper.
 ReportQueueProvider* ReportQueueProvider::GetInstance() {
   return report_queue_provider_test_helper::g_mock_report_queue_provider;
 }

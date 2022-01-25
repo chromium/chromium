@@ -52,7 +52,7 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
   auto config_result = ReportQueueConfiguration::Create(
       EventType::kDevice, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
-  EXPECT_CALL(*provider.get(), OnInitCompleted()).Times(1);
+  EXPECT_CALL(*provider.get(), OnInitCompletedMock()).Times(1);
   provider->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   // Use it to asynchronously create ReportingQueue and then asynchronously
   // send the message.
