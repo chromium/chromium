@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 const ERROR_INVALID_SENDER = 'Error: Invalid sender';
+const ERROR_INVALID_REQUEST_ID = 'Error: Invalid requestId';
 const ERROR_ATTACH = 'Error: Another extension is already attached';
 const ERROR_DETACH = 'Error: This extension is not currently attached';
 
@@ -135,6 +136,30 @@ let availableTests = [
           await chrome.webAuthenticationProxy.detach();
           await chrome.test.assertPromiseRejects(
               completeCreateRequest(request.requestId), ERROR_INVALID_SENDER);
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+    await chrome.webAuthenticationProxy.attach();
+    chrome.test.sendMessage('ready');
+  },
+  async function makeCredentialCancel() {
+    let canceled = false;
+    chrome.webAuthenticationProxy.onRequestCanceled.addListener(() => {
+      chrome.test.assertFalse(canceled);
+      canceled = true;
+    });
+    chrome.webAuthenticationProxy.onCreateRequest.addListener(
+        async (request) => {
+          chrome.test.assertFalse(canceled);
+          await chrome.test.sendMessage('request');
+          // Browser indicates the request completed, which means the cancel
+          // handler should have been invoked.
+          chrome.test.assertTrue(canceled);
+
+          // Completing the canceled request should fail.
+          await chrome.test.assertPromiseRejects(
+              completeCreateRequest(request.requestId),
+              ERROR_INVALID_REQUEST_ID);
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });

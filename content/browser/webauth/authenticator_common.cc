@@ -666,7 +666,7 @@ void AuthenticatorCommon::MakeCredential(
 
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
-    proxy->SignalCreateRequest(
+    request_proxy_make_credential_id_ = proxy->SignalCreateRequest(
         options,
         base::BindOnce(&AuthenticatorCommon::OnMakeCredentialProxyResponse,
                        weak_factory_.GetWeakPtr()));
@@ -1614,6 +1614,17 @@ void AuthenticatorCommon::CancelWithStatus(
     blink::mojom::AuthenticatorStatus status) {
   DCHECK(!make_credential_response_callback_ ||
          !get_assertion_response_callback_);
+  if (request_proxy_make_credential_id_) {
+    WebAuthenticationRequestProxy* proxy =
+        GetWebAuthenticationDelegate()->MaybeGetRequestProxy(
+            GetBrowserContext());
+    // As long as `request_proxy_make_credential_id_` is set, there should be an
+    // active request proxy. Deactivation of the proxy would have invoked
+    // `OnMakeCredentialProxyResponse()`, and cleared
+    // `request_proxy_make_credential_id_`
+    DCHECK(proxy);
+    proxy->CancelRequest(*request_proxy_make_credential_id_);
+  }
   if (make_credential_response_callback_) {
     CompleteMakeCredentialRequest(status);
   } else if (get_assertion_response_callback_) {
@@ -1894,6 +1905,7 @@ void AuthenticatorCommon::Cleanup() {
   error_awaiting_user_acknowledgement_ =
       blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
   requested_extensions_.clear();
+  request_proxy_make_credential_id_.reset();
 }
 
 void AuthenticatorCommon::DisableUI() {
@@ -1946,18 +1958,12 @@ AuthenticatorCommon::GetWebAuthnRequestProxyIfActive() {
 }
 
 void AuthenticatorCommon::OnMakeCredentialProxyResponse(
+    WebAuthenticationRequestProxy::RequestId request_id,
     blink::mojom::AuthenticatorStatus status,
     blink::mojom::MakeCredentialAuthenticatorResponsePtr response) {
-  if (!make_credential_response_callback_) {
-    // The caller may have cancelled the request, or it timed out. But the
-    // WebAuthenticationProxyService doesn't know that.
-    // TODO(https://crbug.com/1231802): Raise request cancellation as an
-    // webAuthenticationRequestProxy extension API event. Note that currently
-    // the response can race against a subsequent request following
-    // cancellation, which can lead to the wrong response callback being
-    // invoked.
-    return;
-  }
+  DCHECK_EQ(*request_proxy_make_credential_id_, request_id);
+  DCHECK(make_credential_response_callback_);
+  request_proxy_make_credential_id_.reset();
   CompleteMakeCredentialRequest(status, std::move(response), Focus::kDoCheck);
 }
 

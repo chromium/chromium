@@ -16,6 +16,10 @@
 namespace extensions {
 namespace {
 
+//  base64url('test') = 'dGVzdA'. This matches the credential ID of
+//  `MAKE_CREDENTIAL_RESPONSE_JSON` in the JS tests.
+constexpr char kTestCredentialId[] = "dGVzdA";
+
 MATCHER_P(IsDomError, name, "") {
   return arg.error.find(name) != std::string::npos;
 }
@@ -60,6 +64,31 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
             })();)";
     return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                            kMakeCredentialJs);
+  }
+
+  bool NavigateAndCallMakeCredentialThenCancel() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL("/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+      return false;
+    }
+    constexpr char kMakeCredentialJs[] =
+        R"((async () => {
+              let abort = new AbortController();
+              let createPromise = navigator.credentials.create({publicKey: {
+                rp: {'name': 'A'},
+                challenge: new ArrayBuffer(),
+                user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
+                pubKeyCredParams: [],
+              },
+              signal: abort.signal});
+              abort.abort();
+              let err = await createPromise;
+              return err;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kMakeCredentialJs)
+               .error.find("AbortError") >= 0;
   }
 
   base::FilePath extension_dir_;
@@ -175,10 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredential) {
   ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
 
-  //  base64url('test') = 'dGVzdA'. This matches the credential ID passed to
-  //  `MAKE_CREDENTIAL_RESPONSE_JSON ` in the JS test.
-  constexpr char kCredentialId[] = "dGVzdA";
-  EXPECT_EQ(NavigateAndCallMakeCredential().ExtractString(), kCredentialId);
+  EXPECT_EQ(NavigateAndCallMakeCredential().ExtractString(), kTestCredentialId);
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
@@ -230,6 +256,22 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
   // extension never resolves the request but detaches itself.
   EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError("NotAllowedError"));
   ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialCancel) {
+  SetJsTestName("makeCredentialCancel");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener request_listener("request", true);
+  EXPECT_TRUE(NavigateAndCallMakeCredentialThenCancel());
+  ASSERT_TRUE(request_listener.WaitUntilSatisfied());
+  request_listener.Reply("");
+
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 

@@ -1705,7 +1705,12 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
   struct CallCounts {
     size_t signal_create_request;
     size_t signal_is_uvpaa_request;
+    size_t cancel_request;
   };
+
+  ~TestWebAuthenticationRequestProxy() override {
+    DCHECK(!HasPendingRequest());
+  }
 
   Config& config() { return config_; }
 
@@ -1713,32 +1718,51 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   bool IsActive() override { return config_.is_active; }
 
-  void SignalCreateRequest(const PublicKeyCredentialCreationOptionsPtr& options,
-                           CreateCallback callback) override {
+  RequestId SignalCreateRequest(
+      const PublicKeyCredentialCreationOptionsPtr& options,
+      CreateCallback callback) override {
+    DCHECK(!HasPendingRequest());
+
+    current_request_id_++;
     call_counts_.signal_create_request++;
     if (config_.resolve_callbacks) {
-      std::move(callback).Run(config_.make_credential_status,
-                              config_.make_credential_response.Clone());
-      return;
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), current_request_id_,
+                                    config_.make_credential_status,
+                                    config_.make_credential_response.Clone()));
+      return current_request_id_;
     }
-    DCHECK(!pending_create_callback_);
     pending_create_callback_ = std::move(callback);
+    return current_request_id_;
   }
 
-  void SignalIsUvpaaRequest(IsUvpaaCallback callback) override {
+  RequestId SignalIsUvpaaRequest(IsUvpaaCallback callback) override {
+    DCHECK(!HasPendingRequest());
+
+    current_request_id_++;
     call_counts_.signal_is_uvpaa_request++;
     if (config_.resolve_callbacks) {
-      std::move(callback).Run(config_.is_uvpaa);
-      return;
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), config_.is_uvpaa));
+      return current_request_id_;
     }
     DCHECK(!pending_is_uvpaa_callback_);
     pending_is_uvpaa_callback_ = std::move(callback);
+    return current_request_id_;
+  }
+
+  void CancelRequest(RequestId request_id) override {
+    DCHECK_EQ(request_id, current_request_id_);
+    call_counts_.cancel_request++;
+    if (pending_create_callback_) {
+      pending_create_callback_.Reset();
+    }
   }
 
   void RunPendingCreateCallback() {
     DCHECK(pending_create_callback_);
     std::move(pending_create_callback_)
-        .Run(config_.make_credential_status,
+        .Run(current_request_id_, config_.make_credential_status,
              config_.make_credential_response.Clone());
   }
 
@@ -1747,10 +1771,15 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     std::move(pending_is_uvpaa_callback_).Run(config_.is_uvpaa);
   }
 
+  bool HasPendingRequest() {
+    return pending_create_callback_ || pending_is_uvpaa_callback_;
+  }
+
  private:
   Config config_;
   CallCounts call_counts_;
 
+  RequestId current_request_id_ = 0;
   CreateCallback pending_create_callback_;
   IsUvpaaCallback pending_is_uvpaa_callback_;
 };
@@ -8237,6 +8266,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
 
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
+  EXPECT_EQ(request_proxy().call_counts().cancel_request, 0u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
@@ -8254,9 +8284,10 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
+  EXPECT_EQ(request_proxy().call_counts().cancel_request, 1u);
 
-  // Proxy should still be able to run the callback after a timeout. But it does
-  // nothing.
-  request_proxy().RunPendingCreateCallback();
+  // Proxy should not hold a pending request after cancellation.
+  EXPECT_FALSE(request_proxy().HasPendingRequest());
 }
+
 }  // namespace content

@@ -41,6 +41,13 @@ namespace webAuthenticationProxy {
     // occurs. The extension must supply a response by calling
     // completeIsUvpaaRequest() with the given requestId.
     static void onIsUvpaaRequest(IsUvpaaRequest requestInfo);
+
+    // Fires when a `onCreateRequest` or `onGetRequest` event is canceled
+    // (because the WebAuthn request was aborted by the caller, or because it
+    // timed out). When receiving this event, the extension should cancel
+    // processing of the corresponding request on the client side. Extensions
+    // cannot complete a request once it has been canceled.
+    static void onRequestCanceled(long requestId);
   };
 
   callback ErrorCallback = void(optional DOMString error);

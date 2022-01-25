@@ -9,6 +9,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/extensions/api/web_authentication_proxy/value_conversions.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -26,9 +27,6 @@
 namespace extensions {
 
 namespace {
-int32_t NewRequestId() {
-  return base::RandGenerator(std::numeric_limits<uint32_t>::max()) + 1;
-}
 
 absl::optional<blink::mojom::AuthenticatorStatus>
 ToAuthenticatorStatusForMakeCredential(const std::string& error_name) {
@@ -68,6 +66,8 @@ WebAuthenticationProxyService::WebAuthenticationProxyService(
 WebAuthenticationProxyService::~WebAuthenticationProxyService() = default;
 
 const Extension* WebAuthenticationProxyService::GetActiveRequestProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!active_request_proxy_extension_id_) {
     return nullptr;
   }
@@ -79,6 +79,8 @@ const Extension* WebAuthenticationProxyService::GetActiveRequestProxy() {
 }
 
 void WebAuthenticationProxyService::ClearActiveRequestProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!active_request_proxy_extension_id_) {
     return;
   }
@@ -88,6 +90,7 @@ void WebAuthenticationProxyService::ClearActiveRequestProxy() {
 
 void WebAuthenticationProxyService::SetActiveRequestProxy(
     const Extension* extension) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(extension);
   DCHECK(extension_registry_->enabled_extensions().Contains(extension->id()));
   // Callers must explicitly clear the active request proxy first.
@@ -103,6 +106,7 @@ void WebAuthenticationProxyService::SetActiveRequestProxy(
 bool WebAuthenticationProxyService::CompleteCreateRequest(
     const api::web_authentication_proxy::CreateResponseDetails& details,
     std::string* error_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(error_out);
   auto callback_it = pending_create_callbacks_.find(details.request_id);
   if (callback_it == pending_create_callbacks_.end()) {
@@ -122,7 +126,7 @@ bool WebAuthenticationProxyService::CompleteCreateRequest(
       *error_out = "Invalid CreateResponseDetails.errorName";
       return false;
     }
-    std::move(callback).Run(*status, nullptr);
+    std::move(callback).Run(details.request_id, *status, nullptr);
     return true;
   }
   if (!details.response_json) {
@@ -145,13 +149,15 @@ bool WebAuthenticationProxyService::CompleteCreateRequest(
     return false;
   }
 
-  std::move(callback).Run(blink::mojom::AuthenticatorStatus::SUCCESS,
+  std::move(callback).Run(details.request_id,
+                          blink::mojom::AuthenticatorStatus::SUCCESS,
                           std::move(response));
   return true;
 }
 
 bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(
     const api::web_authentication_proxy::IsUvpaaResponseDetails& details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto callback_it = pending_is_uvpaa_callbacks_.find(details.request_id);
   if (callback_it == pending_is_uvpaa_callbacks_.end()) {
     return false;
@@ -162,27 +168,64 @@ bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(
   return true;
 }
 
-void WebAuthenticationProxyService::CancelPendingCallbacks() {
+void WebAuthenticationProxyService::CancelRequest(RequestId request_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsActive());
-  for (auto& pair : pending_create_callbacks_) {
-    std::move(pair.second)
-        .Run(blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR, nullptr);
+  if (base::Contains(pending_create_callbacks_, request_id)) {
+    pending_create_callbacks_.erase(request_id);
+  } else {
+    // Invalid `request_id`. Note that isUvpaa requests cannot be cancelled.
+    return;
   }
-  pending_create_callbacks_.clear();
 
-  for (auto& pair : pending_is_uvpaa_callbacks_) {
+  event_router_->DispatchEventToExtension(
+      *active_request_proxy_extension_id_,
+      std::make_unique<Event>(
+          events::WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED,
+          api::web_authentication_proxy::OnRequestCanceled::kEventName,
+          api::web_authentication_proxy::OnRequestCanceled::Create(
+              request_id)));
+}
+
+void WebAuthenticationProxyService::CancelPendingCallbacks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(IsActive());
+  auto create_callbacks = std::move(pending_create_callbacks_);
+  for (auto& pair : create_callbacks) {
+    std::move(pair.second)
+        .Run(pair.first, blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
+             nullptr);
+  }
+
+  auto is_uvpaa_callbacks = std::move(pending_is_uvpaa_callbacks_);
+  for (auto& pair : is_uvpaa_callbacks) {
     std::move(pair.second).Run(/*is_uvpaa=*/false);
   }
-  pending_is_uvpaa_callbacks_.clear();
+}
+
+WebAuthenticationProxyService::RequestId
+WebAuthenticationProxyService::NewRequestId() {
+  int32_t request_id =
+      base::RandGenerator(std::numeric_limits<uint32_t>::max()) + 1;
+  // Technically, this could spin forever if there are 4 billion active
+  // requests. However, there's no real risk to this happening (no security or
+  // DOS concerns).
+  while (base::Contains(pending_is_uvpaa_callbacks_, request_id) ||
+         base::Contains(pending_create_callbacks_, request_id)) {
+    request_id = base::RandGenerator(std::numeric_limits<uint32_t>::max()) + 1;
+  }
+  return request_id;
 }
 
 bool WebAuthenticationProxyService::IsActive() {
   return active_request_proxy_extension_id_.has_value();
 }
 
-void WebAuthenticationProxyService::SignalCreateRequest(
+WebAuthenticationProxyService::RequestId
+WebAuthenticationProxyService::SignalCreateRequest(
     const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options_ptr,
     CreateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsActive());
 
   uint32_t request_id = NewRequestId();
@@ -202,20 +245,15 @@ void WebAuthenticationProxyService::SignalCreateRequest(
           events::WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST,
           api::web_authentication_proxy::OnCreateRequest::kEventName,
           api::web_authentication_proxy::OnCreateRequest::Create(request)));
+  return request_id;
 }
 
-void WebAuthenticationProxyService::SignalIsUvpaaRequest(
-    IsUvpaaCallback callback) {
+WebAuthenticationProxyService::RequestId
+WebAuthenticationProxyService::SignalIsUvpaaRequest(IsUvpaaCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsActive());
 
   int32_t request_id = NewRequestId();
-  // Technically, this could spin forever if there are 4 billion active
-  // requests. However, there's no real risk to this happening (no security or
-  // DOS concerns).
-  while (pending_is_uvpaa_callbacks_.find(request_id) !=
-         pending_is_uvpaa_callbacks_.end()) {
-    request_id = NewRequestId();
-  }
   pending_is_uvpaa_callbacks_.emplace(request_id, std::move(callback));
   api::web_authentication_proxy::IsUvpaaRequest request;
   request.request_id = request_id;
@@ -225,12 +263,14 @@ void WebAuthenticationProxyService::SignalIsUvpaaRequest(
           events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST,
           api::web_authentication_proxy::OnIsUvpaaRequest::kEventName,
           api::web_authentication_proxy::OnIsUvpaaRequest::Create(request)));
+  return request_id;
 }
 
 void WebAuthenticationProxyService::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (extension->id() != active_request_proxy_extension_id_) {
     return;
   }

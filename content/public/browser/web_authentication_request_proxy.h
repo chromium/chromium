@@ -14,10 +14,15 @@ namespace content {
 // Authentication API requests.
 class WebAuthenticationRequestProxy {
  public:
+  // RequestId uniquely identifies a proxied request when invoking a response
+  // callback or cancelling.
+  using RequestId = int32_t;
+
   // CreateCallback is the response callback type for `SignalCreateRequest`. It
   // is invoked with the status and optional response that resulted from the
   // proxied request.
   using CreateCallback = base::OnceCallback<void(
+      RequestId,
       blink::mojom::AuthenticatorStatus,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr)>;
 
@@ -33,14 +38,18 @@ class WebAuthenticationRequestProxy {
 
   // SignalCreateRequest is invoked when a Web Authentication API
   // `navigator.credentials.create()` request occurs.
-  virtual void SignalCreateRequest(
+  virtual RequestId SignalCreateRequest(
       const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
       CreateCallback callback) = 0;
 
   // SignalIsUvpaaRequest is invoked when a
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() (aka
   // `IsUvpaa`) request occurs.
-  virtual void SignalIsUvpaaRequest(IsUvpaaCallback callback) = 0;
+  virtual RequestId SignalIsUvpaaRequest(IsUvpaaCallback callback) = 0;
+
+  // CancelRequest cancels processing of the request with the
+  // given `request_id`.
+  virtual void CancelRequest(RequestId request_id) = 0;
 };
 
 }  // namespace content

@@ -235,6 +235,7 @@ class CONTENT_EXPORT AuthenticatorCommon {
   WebAuthenticationRequestProxy* GetWebAuthnRequestProxyIfActive();
 
   void OnMakeCredentialProxyResponse(
+      WebAuthenticationRequestProxy::RequestId request_id,
       blink::mojom::AuthenticatorStatus status,
       blink::mojom::MakeCredentialAuthenticatorResponsePtr response);
 
@@ -273,6 +274,9 @@ class CONTENT_EXPORT AuthenticatorCommon {
   bool enable_request_proxy_api_ = false;
 
   base::flat_set<RequestExtension> requested_extensions_;
+
+  absl::optional<WebAuthenticationRequestProxy::RequestId>
+      request_proxy_make_credential_id_;
 
   base::WeakPtrFactory<AuthenticatorCommon> weak_factory_{this};
 };
