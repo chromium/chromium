@@ -7,6 +7,7 @@ syntax = "proto3";
 package feedwire;
 
 import "components/feed/core/proto/v2/wire/action_diagnostic_info.proto";
+import "components/feed/core/proto/v2/wire/client_info.proto";
 import "components/feed/core/proto/v2/wire/consistency_token.proto";
 import "components/feed/core/proto/v2/wire/feed_action.proto";
 
@@ -16,4 +17,5 @@ message UploadActionsRequest {
   repeated FeedAction feed_actions = 1;
   ConsistencyToken consistency_token = 2;
   ActionDiagnosticInfo action_diagnostic_info = 5;
+  ClientInfo client_info = 6;
 }
