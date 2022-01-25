@@ -7530,16 +7530,6 @@ crbug.com/1225606 external/wpt/sanitizer-api/sanitizer-names.https.tentative.htm
 # Changes to fork() on Mac causing test to crash
 crbug.com/1284401 [ Mac ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-credential.https.html [ Crash Failure ]
 
-# DevTools roll
-crbug.com/1287519 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/elements/styles-4/disable-last-property-without-semicolon.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/elements/styles-4/styles-formatting.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/elements/styles-4/undo-add-property.js [ Skip ]
-crbug.com/1287519 http/tests/devtools/modify-cross-domain-rule.js [ Skip ]
-crbug.com/1287519 [ Mac ] http/tests/devtools/elements/styles-3/styles-add-new-rule-colon.js [ Skip ]
-
 # Flaky failures in finding the reference file on Mac
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-012.https.html [ Failure Pass ]
 crbug.com/1286944 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure Pass ]
