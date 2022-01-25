@@ -1361,17 +1361,6 @@ void FrameLoader::ProcessFragment(const KURL& url,
   if (!view)
     return;
 
-  // Leaking scroll position to a cross-origin ancestor would permit the
-  // so-called "framesniffing" attack.
-  Frame* boundary_frame =
-      url.HasFragmentIdentifier()
-          ? frame_->FindUnsafeParentScrollPropagationBoundary()
-          : nullptr;
-
-  // FIXME: Handle RemoteFrames
-  if (auto* boundary_local_frame = DynamicTo<LocalFrame>(boundary_frame))
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(false);
-
   const bool is_same_document_navigation =
       load_start_type == kNavigationWithinSameDocument;
 
@@ -1410,9 +1399,6 @@ void FrameLoader::ProcessFragment(const KURL& url,
 
   view->ProcessUrlFragment(url, is_same_document_navigation,
                            !block_fragment_scroll);
-
-  if (auto* boundary_local_frame = DynamicTo<LocalFrame>(boundary_frame))
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(true);
 }
 
 bool FrameLoader::ShouldClose(bool is_reload) {

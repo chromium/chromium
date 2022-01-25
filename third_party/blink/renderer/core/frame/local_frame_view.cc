@@ -263,7 +263,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       first_layout_(true),
       base_background_color_(Color::kWhite),
       media_type_(media_type_names::kScreen),
-      safe_to_propagate_scroll_to_parent_(true),
       visually_non_empty_character_count_(0),
       visually_non_empty_pixel_count_(0),
       is_visually_non_empty_(false),
@@ -3930,10 +3929,17 @@ ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
 void LocalFrameView::ScrollRectToVisibleInRemoteParent(
     const PhysicalRect& rect_to_scroll,
     mojom::blink::ScrollIntoViewParamsPtr params) {
-  DCHECK(GetFrame().IsLocalRoot() && !GetFrame().IsMainFrame() &&
-         safe_to_propagate_scroll_to_parent_);
+  DCHECK(GetFrame().IsLocalRoot());
+  DCHECK(!GetFrame().IsMainFrame());
+  DCHECK(params->cross_origin_boundaries ||
+         GetFrame()
+             .Tree()
+             .Parent()
+             ->GetSecurityContext()
+             ->GetSecurityOrigin()
+             ->CanAccess(GetFrame().GetSecurityContext()->GetSecurityOrigin()));
   PhysicalRect new_rect = ConvertToRootFrame(rect_to_scroll);
-  frame_->GetLocalFrameHostRemote().ScrollRectToVisibleInParentFrame(
+  GetFrame().GetLocalFrameHostRemote().ScrollRectToVisibleInParentFrame(
       gfx::Rect(new_rect.X().ToInt(), new_rect.Y().ToInt(),
                 new_rect.Width().ToInt(), new_rect.Height().ToInt()),
       std::move(params));

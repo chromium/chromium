@@ -107,14 +107,6 @@ bool ElementFragmentAnchor::Invoke() {
   if (!doc.HaveRenderBlockingResourcesLoaded() || !frame_->View())
     return true;
 
-  Frame* boundary_frame = frame_->FindUnsafeParentScrollPropagationBoundary();
-
-  // FIXME: Handle RemoteFrames
-  auto* boundary_local_frame = DynamicTo<LocalFrame>(boundary_frame);
-  if (boundary_local_frame) {
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(false);
-  }
-
   Member<Element> element_to_scroll = DynamicTo<Element>(anchor_node_.Get());
   if (!element_to_scroll)
     element_to_scroll = doc.documentElement();
@@ -124,10 +116,6 @@ bool ElementFragmentAnchor::Invoke() {
     options->setBlock("start");
     options->setInlinePosition("nearest");
     ScrollElementIntoViewWithOptions(element_to_scroll, options);
-  }
-
-  if (boundary_local_frame) {
-    boundary_local_frame->View()->SetSafeToPropagateScrollToParent(true);
   }
 
   if (AXObjectCache* cache = doc.ExistingAXObjectCache())

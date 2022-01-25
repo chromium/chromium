@@ -337,13 +337,6 @@ class CORE_EXPORT LocalFrameView final
 
   void DidAttachDocument();
 
-  bool SafeToPropagateScrollToParent() const {
-    return safe_to_propagate_scroll_to_parent_;
-  }
-  void SetSafeToPropagateScrollToParent(bool is_safe) {
-    safe_to_propagate_scroll_to_parent_ = is_safe;
-  }
-
   void AddPartToUpdate(LayoutEmbeddedObject&);
 
   Color DocumentBackgroundColor();
@@ -1046,8 +1039,6 @@ class CORE_EXPORT LocalFrameView final
 
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;
-
-  bool safe_to_propagate_scroll_to_parent_;
 
   unsigned visually_non_empty_character_count_;
   uint64_t visually_non_empty_pixel_count_;

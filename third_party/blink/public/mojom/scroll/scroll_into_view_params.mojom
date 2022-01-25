@@ -54,4 +54,10 @@ struct ScrollIntoViewParams {
   // animation that zooms both layout and visual viewport into a focused
   // editable element.
   bool stop_at_main_frame_layout_viewport = false;
+
+  // Whether a ScrollIntoView should bubble from an iframe to a parent that
+  // isn't same-origin. This defaults to true since that's the behavior of JS
+  // APIs and most legacy callsites but new uses should carefully consider
+  // whether they need this behavior.
+  bool cross_origin_boundaries = true;
 };

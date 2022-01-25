@@ -8213,8 +8213,15 @@ void LayoutBox::ReassignSnapAreas(LayoutBox& new_container) {
 bool LayoutBox::AllowedToPropagateRecursiveScrollToParentFrame(
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   NOT_DESTROYED();
-  if (!GetFrameView()->SafeToPropagateScrollToParent())
-    return false;
+  if (!params->cross_origin_boundaries) {
+    Frame& this_frame = GetFrameView()->GetFrame();
+    Frame* parent_frame = this_frame.Tree().Parent();
+    if (parent_frame &&
+        !parent_frame->GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+            this_frame.GetSecurityContext()->GetSecurityOrigin())) {
+      return false;
+    }
+  }
 
   if (params->type != mojom::blink::ScrollType::kProgrammatic)
     return true;

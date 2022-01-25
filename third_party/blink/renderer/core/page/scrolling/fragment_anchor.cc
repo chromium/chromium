@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/fragment_directive/css_selector_fragment_anchor.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -85,7 +86,14 @@ void FragmentAnchor::ScrollElementIntoViewWithOptions(
         element_to_scroll, DocumentUpdateReason::kFindInPage);
   }
 
-  element_to_scroll->ScrollIntoViewNoVisualUpdate(options);
+  if (element_to_scroll->GetLayoutObject()) {
+    DCHECK(element_to_scroll->GetComputedStyle());
+    mojom::blink::ScrollIntoViewParamsPtr params =
+        ScrollAlignment::CreateScrollIntoViewParams(
+            *options, *element_to_scroll->GetComputedStyle());
+    params->cross_origin_boundaries = false;
+    element_to_scroll->ScrollIntoViewNoVisualUpdate(std::move(params));
+  }
 }
 
 void FragmentAnchor::Trace(Visitor* visitor) const {
