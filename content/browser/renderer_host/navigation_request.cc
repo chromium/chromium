@@ -812,6 +812,11 @@ int EstimateHistoryOffset(NavigationController& controller,
 
 bool IsDocumentToCommitAnonymous(FrameTreeNode* frame,
                                  bool is_synchronous_about_blank_navigation) {
+  // FencedFrame do not propagate the anonymous bit deeper.
+  // In particular, it means their future response will have to adhere to COEP.
+  if (frame->IsFencedFrameRoot())
+    return false;
+
   RenderFrameHostImpl* current_document = frame->current_frame_host();
   RenderFrameHostImpl* parent_document = frame->parent();
 
