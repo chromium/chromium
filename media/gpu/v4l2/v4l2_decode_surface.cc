@@ -57,6 +57,12 @@ void V4L2DecodeSurface::SetVisibleRect(const gfx::Rect& visible_rect) {
   visible_rect_ = visible_rect;
 }
 
+void V4L2DecodeSurface::SetColorSpace(const VideoColorSpace& color_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  color_space_ = color_space;
+}
+
 void V4L2DecodeSurface::SetReferenceSurfaces(
     std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

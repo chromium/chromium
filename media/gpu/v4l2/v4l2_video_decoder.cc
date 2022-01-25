@@ -214,6 +214,7 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   profile_ = config.profile();
   aspect_ratio_ = config.aspect_ratio();
+  color_space_ = config.color_space_info();
 
   if (profile_ == VIDEO_CODEC_PROFILE_UNKNOWN) {
     VLOGF(1) << "Unknown profile.";
@@ -315,14 +316,14 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
     VLOGF(1) << "Using a stateful API for profile: " << GetProfileName(profile_)
              << " and fourcc: " << FourccToString(input_format_fourcc);
     backend_ = std::make_unique<V4L2StatefulVideoDecoderBackend>(
-        this, device_, profile_, decoder_task_runner_);
+        this, device_, profile_, color_space_, decoder_task_runner_);
   } else {
     DCHECK_EQ(preferred_api_and_format.first, kStateless);
     VLOGF(1) << "Using a stateless API for profile: "
              << GetProfileName(profile_)
              << " and fourcc: " << FourccToString(input_format_fourcc);
     backend_ = std::make_unique<V4L2StatelessVideoDecoderBackend>(
-        this, device_, profile_, decoder_task_runner_);
+        this, device_, profile_, color_space_, decoder_task_runner_);
   }
 
   if (!backend_->Initialize()) {
@@ -813,6 +814,7 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
 
 void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
                                    const gfx::Rect& visible_rect,
+                                   const VideoColorSpace& color_space,
                                    base::TimeDelta timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(4) << "timestamp: " << timestamp.InMilliseconds() << " msec";
@@ -834,6 +836,8 @@ void V4L2VideoDecoder::OutputFrame(scoped_refptr<VideoFrame> frame,
 
     frame = std::move(wrapped_frame);
   }
+
+  frame->set_color_space(color_space.ToGfxColorSpace());
 
   output_cb_.Run(std::move(frame));
 }

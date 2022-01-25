@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_status.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -57,6 +58,7 @@ class V4L2VideoDecoderBackend {
     // Convert the frame and call the output callback.
     virtual void OutputFrame(scoped_refptr<VideoFrame> frame,
                              const gfx::Rect& visible_rect,
+                             const VideoColorSpace& color_space,
                              base::TimeDelta timestamp) = 0;
     // Get the video frame pool without passing the ownership.
     virtual DmabufVideoFramePool* GetVideoFramePool() const = 0;

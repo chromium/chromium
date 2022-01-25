@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "media/base/video_color_space.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -42,6 +43,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   // if not null.
   void SetDecoded();
   void SetVisibleRect(const gfx::Rect& visible_rect);
+  void SetColorSpace(const VideoColorSpace& color_space);
   // Take references to each reference surface and keep them until the
   // target surface is decoded.
   void SetReferenceSurfaces(
@@ -74,6 +76,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   }
   scoped_refptr<VideoFrame> video_frame() const { return video_frame_; }
   gfx::Rect visible_rect() const { return visible_rect_; }
+  const VideoColorSpace& color_space() const { return color_space_; }
 
   std::string ToString() const;
 
@@ -93,6 +96,8 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   const int output_record_;
   // The visible size of the buffer.
   gfx::Rect visible_rect_;
+  // The color space of the buffer.
+  VideoColorSpace color_space_;
 
   // Indicate whether the surface is decoded or not.
   bool decoded_;

@@ -471,10 +471,9 @@ V4L2VideoDecoderDelegateH264Legacy::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateH264Legacy::OutputPicture(
     scoped_refptr<H264Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(H264PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

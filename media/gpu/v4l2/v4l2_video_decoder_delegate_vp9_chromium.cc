@@ -333,10 +333,9 @@ DecodeStatus V4L2VideoDecoderDelegateVP9Chromium::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateVP9Chromium::OutputPicture(
     scoped_refptr<VP9Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP9PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

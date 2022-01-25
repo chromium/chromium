@@ -28,6 +28,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
       Client* const client,
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
+      const VideoColorSpace& color_space,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~V4L2StatefulVideoDecoderBackend() override;
 
@@ -119,6 +120,9 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
 
   // Video profile we are decoding.
   VideoCodecProfile profile_;
+
+  // Video color space we are decoding.
+  VideoColorSpace color_space_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

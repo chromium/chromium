@@ -48,9 +48,11 @@ V4L2StatefulVideoDecoderBackend::V4L2StatefulVideoDecoderBackend(
     Client* const client,
     scoped_refptr<V4L2Device> device,
     VideoCodecProfile profile,
+    const VideoColorSpace& color_space,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : V4L2VideoDecoderBackend(client, std::move(device)),
       profile_(profile),
+      color_space_(color_space),
       task_runner_(task_runner) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -440,7 +442,9 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
     }
 
     const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
-    client_->OutputFrame(std::move(frame), *visible_rect_, timestamp);
+    // TODO(b/214190092): Get color space from the buffer.
+    client_->OutputFrame(std::move(frame), *visible_rect_, color_space_,
+                         timestamp);
   }
 
   // We were waiting for the last buffer before a resolution change
