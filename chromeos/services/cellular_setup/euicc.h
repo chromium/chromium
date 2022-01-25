@@ -75,21 +75,11 @@ class Euicc : public mojom::Euicc {
   static void RecordRequestPendingProfilesResult(
       RequestPendingProfilesResult result);
 
-  // Type of callback for profile installation methods.
-  using ProfileInstallResultCallback =
-      base::OnceCallback<void(mojom::ProfileInstallResult)>;
-
-  void PerformInstallProfileFromActivationCode(
-      const std::string& activation_code,
-      const std::string& confirmation_code,
-      InstallProfileFromActivationCodeCallback callback,
-      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnESimInstallProfileResult(
       InstallProfileFromActivationCodeCallback callback,
       HermesResponseStatus hermes_status,
       absl::optional<dbus::ObjectPath> profile_path,
       absl::optional<std::string> service_path);
-  void OnNewProfileConnectSuccess(const dbus::ObjectPath& profile_path);
   void PerformRequestPendingProfiles(
       RequestPendingProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
