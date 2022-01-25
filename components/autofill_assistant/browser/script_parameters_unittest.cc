@@ -300,4 +300,16 @@ TEST(ScriptParametersTest, ExperimentIdParsing) {
   }
 }
 
+TEST(ScriptParametersTest, HasExperimentId) {
+  ScriptParameters parameters = {{{"EXPERIMENT_IDS", "13,123,778"}}};
+  EXPECT_THAT(
+      parameters.GetExperiments(),
+      UnorderedElementsAreArray(std::vector<std::string>{"13", "123", "778"}));
+  EXPECT_TRUE(parameters.HasExperimentId("13"));
+  EXPECT_TRUE(parameters.HasExperimentId("123"));
+  EXPECT_TRUE(parameters.HasExperimentId("778"));
+  EXPECT_FALSE(parameters.HasExperimentId("1"));
+  EXPECT_FALSE(parameters.HasExperimentId("42"));
+}
+
 }  // namespace autofill_assistant

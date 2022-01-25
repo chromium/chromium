@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -195,6 +196,10 @@ absl::optional<std::string> ScriptParameters::GetParameter(
     return absl::nullopt;
 
   return iter->second.strings().values(0);
+}
+
+bool ScriptParameters::HasExperimentId(const std::string& experiment_id) const {
+  return base::ranges::count(GetExperiments(), experiment_id) > 0;
 }
 
 absl::optional<std::string> ScriptParameters::GetOverlayColors() const {
