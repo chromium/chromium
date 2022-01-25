@@ -1032,7 +1032,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   BrowserContext* browser_context_ = nullptr;
 
   // Owned by |browser_context_|.
-  const raw_ptr<StoragePartitionImpl> storage_partition_impl_;
+  raw_ptr<StoragePartitionImpl> storage_partition_impl_;
 
   // Owns the singular DomStorageProvider binding established by this renderer.
   mojo::Receiver<blink::mojom::DomStorageProvider>
@@ -1138,11 +1138,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // not be backgrounded.
   int foreground_service_worker_count_ = 0;
 
-  // A WeakPtrFactory which is reset every time Cleanup() runs. Used to vend
-  // WeakPtrs which are invalidated any time the RenderProcessHost is recycled.
-  absl::optional<base::WeakPtrFactory<RenderProcessHostImpl>>
-      instance_weak_factory_;
-
   std::unique_ptr<mojo::Receiver<viz::mojom::CompositingModeReporter>>
       compositing_mode_reporter_;
 
@@ -1187,6 +1182,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   class IOThreadHostImpl;
   friend class IOThreadHostImpl;
   absl::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
+
+  // A WeakPtrFactory which is reset every time Cleanup() runs. Used to vend
+  // WeakPtrs which are invalidated any time the RenderProcessHost is recycled.
+  absl::optional<base::WeakPtrFactory<RenderProcessHostImpl>>
+      instance_weak_factory_;
 
   base::WeakPtrFactory<RenderProcessHostImpl> weak_factory_{this};
 };
