@@ -152,7 +152,7 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     content::RenderFrame* render_frame,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
-  const L10nMessagesMap* l10n_messages =
+  const i18n_util::L10nMessagesMap* l10n_messages =
       i18n_util::GetRendererMessagesMap(extension_id, render_frame);
   if (!l10n_messages)
     return v8::Undefined(isolate);

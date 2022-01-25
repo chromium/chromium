@@ -6,10 +6,10 @@
 
 #include "base/strings/stringprintf.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/message_bundle.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
+#include "extensions/renderer/renderer_i18n_util.h"
 #include "extensions/renderer/script_context.h"
 
 namespace extensions {
@@ -35,12 +35,14 @@ TEST_F(I18nHooksDelegateTest, TestI18nGetMessage) {
 
   // In practice, messages will be retrieved from the browser process on first
   // request. Since this is a unittest, pre-populate the message bundle.
-  L10nMessagesMap messages = {
-      {"simple", "simple message"},
-      {"one_placeholder", "placeholder $1 end"},
-      {"multi_placeholders", "placeholder $1 and $2 end"},
-      {"special_characters", "< Hello $1 World &gt;"}};
-  GetExtensionToL10nMessagesMap()->emplace(extension->id(), messages);
+  {
+    i18n_util::L10nMessagesMap messages = {
+        {"simple", "simple message"},
+        {"one_placeholder", "placeholder $1 end"},
+        {"multi_placeholders", "placeholder $1 and $2 end"},
+        {"special_characters", "< Hello $1 World &gt;"}};
+    i18n_util::SetMessagesMapForTesting(extension->id(), std::move(messages));
+  }
 
   auto run_get_message = [context](const char* args) {
     SCOPED_TRACE(args);

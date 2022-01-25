@@ -48,7 +48,6 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -78,6 +77,7 @@
 #include "extensions/renderer/process_info_native_handler.h"
 #include "extensions/renderer/render_frame_observer_natives.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "extensions/renderer/renderer_i18n_util.h"
 #include "extensions/renderer/runtime_custom_bindings.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
@@ -1148,7 +1148,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 
   // Invalidates the messages map for the extension in case the extension is
   // reloaded with a new messages map.
-  EraseL10nMessagesMap(extension_id);
+  i18n_util::EraseRendererMessagesMap(extension_id);
 
   // Update the origin access map so that any content scripts injected no longer
   // have dedicated allow/block lists for extra origins.

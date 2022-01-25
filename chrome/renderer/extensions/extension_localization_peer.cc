@@ -241,7 +241,7 @@ void ExtensionLocalizationPeer::ReplaceMessages() {
     return;
 
   std::string extension_id = request_url_.host();
-  const extensions::L10nMessagesMap* l10n_messages =
+  const extensions::i18n_util::L10nMessagesMap* l10n_messages =
       extensions::i18n_util::GetRendererMessagesMap(extension_id,
                                                     message_sender_);
   DCHECK(l10n_messages);

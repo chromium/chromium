@@ -395,37 +395,4 @@ TEST(MessageBundle, ReplaceMessagesInText) {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Renderer helper functions test.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsTheSameObject) {
-  ExtensionToL10nMessagesMap* map1 = GetExtensionToL10nMessagesMap();
-  ASSERT_TRUE(NULL != map1);
-
-  ExtensionToL10nMessagesMap* map2 = GetExtensionToL10nMessagesMap();
-  ASSERT_EQ(map1, map2);
-}
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsNullForUnknownExtensionId) {
-  const std::string extension_id("some_unique_12334212314234_id");
-  L10nMessagesMap* map = GetL10nMessagesMap(extension_id);
-  EXPECT_TRUE(NULL == map);
-}
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsMapForKnownExtensionId) {
-  const std::string extension_id("some_unique_121212121212121_id");
-  // Store a map for given id.
-  L10nMessagesMap messages;
-  messages.insert(std::make_pair("message_name", "message_value"));
-  (*GetExtensionToL10nMessagesMap())[extension_id] = messages;
-
-  L10nMessagesMap* map = GetL10nMessagesMap(extension_id);
-  ASSERT_TRUE(NULL != map);
-  EXPECT_EQ(1U, map->size());
-  EXPECT_EQ("message_value", (*map)["message_name"]);
-}
-
 }  // namespace extensions

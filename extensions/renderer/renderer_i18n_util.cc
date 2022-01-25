@@ -5,14 +5,26 @@
 #include "extensions/renderer/renderer_i18n_util.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "extensions/common/extension_messages.h"
 #include "ipc/ipc_sender.h"
 
 namespace extensions::i18n_util {
 
+namespace {
+
+using ExtensionToL10nMessagesMap = std::map<ExtensionId, L10nMessagesMap>;
+
+ExtensionToL10nMessagesMap& GetExtensionToL10nMessagesMap() {
+  static base::NoDestructor<ExtensionToL10nMessagesMap> map;
+  return *map;
+}
+
+}  // namespace
+
 const L10nMessagesMap* GetRendererMessagesMap(const ExtensionId& extension_id,
                                               IPC::Sender* message_sender) {
-  ExtensionToL10nMessagesMap& messages_map = *GetExtensionToL10nMessagesMap();
+  ExtensionToL10nMessagesMap& messages_map = GetExtensionToL10nMessagesMap();
   auto iter = messages_map.find(extension_id);
   if (iter != messages_map.end())
     return &iter->second;
@@ -35,6 +47,14 @@ const L10nMessagesMap* GetRendererMessagesMap(const ExtensionId& extension_id,
   // DCHECK(!l10n_messages->empty());
 
   return &l10n_messages;
+}
+
+void EraseRendererMessagesMap(const ExtensionId& id) {
+  GetExtensionToL10nMessagesMap().erase(id);
+}
+
+void SetMessagesMapForTesting(const ExtensionId& id, L10nMessagesMap map) {
+  GetExtensionToL10nMessagesMap()[id] = std::move(map);
 }
 
 }  // namespace extensions::i18n_util

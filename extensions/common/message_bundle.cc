@@ -299,42 +299,4 @@ std::string MessageBundle::GetL10nMessage(const std::string& name,
   return std::string();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Renderer helper functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// Unique class for Singleton.
-struct ExtensionToMessagesMap {
-  ExtensionToMessagesMap();
-  ~ExtensionToMessagesMap();
-
-  // Maps extension ID to message map.
-  ExtensionToL10nMessagesMap messages_map;
-};
-
-static base::LazyInstance<ExtensionToMessagesMap>::DestructorAtExit
-    g_extension_to_messages_map = LAZY_INSTANCE_INITIALIZER;
-
-ExtensionToMessagesMap::ExtensionToMessagesMap() {}
-
-ExtensionToMessagesMap::~ExtensionToMessagesMap() {}
-
-ExtensionToL10nMessagesMap* GetExtensionToL10nMessagesMap() {
-  return &g_extension_to_messages_map.Get().messages_map;
-}
-
-L10nMessagesMap* GetL10nMessagesMap(const std::string& extension_id) {
-  auto it = g_extension_to_messages_map.Get().messages_map.find(extension_id);
-  if (it != g_extension_to_messages_map.Get().messages_map.end())
-    return &(it->second);
-
-  return NULL;
-}
-
-void EraseL10nMessagesMap(const std::string& extension_id) {
-  g_extension_to_messages_map.Get().messages_map.erase(extension_id);
-}
-
 }  // namespace extensions
