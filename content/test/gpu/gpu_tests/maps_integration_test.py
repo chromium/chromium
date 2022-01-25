@@ -85,11 +85,11 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
     action_runner.WaitForJavaScriptCondition('window.testDone', timeout=320)
 
     # Wait for the page to process immediate work and load tiles.
-    action_runner.EvaluateJavaScript('''
+    action_runner.EvaluateJavaScript("""
         window.testCompleted = false;
         requestIdleCallback(
             () => window.testCompleted = true,
-            { timeout : 10000 })''')
+            { timeout : 10000 })""")
     action_runner.WaitForJavaScriptCondition('window.testCompleted', timeout=30)
 
     expected = _ReadPixelExpectations('maps_pixel_expectations.json')
@@ -107,7 +107,7 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
       self.fail('Could not capture screenshot')
 
     dpr = tab.EvaluateJavaScript('window.devicePixelRatio')
-    print('Maps\' devicePixelRatio is ' + str(dpr))
+    print("Maps' devicePixelRatio is %s" % dpr)
 
     # The bottom corners of Mac screenshots have black triangles due to the
     # rounded corners of Mac windows. So, crop the bottom few rows off now to

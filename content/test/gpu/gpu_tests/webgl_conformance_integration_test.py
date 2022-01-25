@@ -85,9 +85,9 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _webgl_version = None
   _is_asan = False
   _crash_count = 0
-  _gl_backend = ""
-  _angle_backend = ""
-  _command_decoder = ""
+  _gl_backend = ''
+  _angle_backend = ''
+  _command_decoder = ''
   _verified_flags = False
 
   @classmethod
@@ -318,11 +318,11 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
-    context_type = "webgl2" if test_args.webgl_version == 2 else "webgl"
-    extension_list_string = "["
+    context_type = 'webgl2' if test_args.webgl_version == 2 else 'webgl'
+    extension_list_string = '['
     for extension in test_args.extension_list:
-      extension_list_string = extension_list_string + extension + ", "
-    extension_list_string = extension_list_string + "]"
+      extension_list_string = extension_list_string + extension + ', '
+    extension_list_string = extension_list_string + ']'
     self.tab.action_runner.EvaluateJavaScript(
         'checkSupportedExtensions({{ extensions_string }}, {{context_type}})',
         extensions_string=extension_list_string,
@@ -333,7 +333,7 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._NavigateTo(test_path, _GetExtensionHarnessScript())
     self.tab.action_runner.WaitForJavaScriptCondition(
         'window._loaded', timeout=self._GetTestTimeout())
-    context_type = "webgl2" if test_args.webgl_version == 2 else "webgl"
+    context_type = 'webgl2' if test_args.webgl_version == 2 else 'webgl'
     self.tab.action_runner.EvaluateJavaScript(
         'checkExtension({{ extension }}, {{ context_type }})',
         extension=test_args.extension,

@@ -84,7 +84,7 @@ class InfoCollectionTest(gpu_integration_test.GpuIntegrationTest):
     # Gather the expected IDs passed on the command line
     if (not test_args.expected_vendor_id_str
         or not test_args.expected_device_id_strs):
-      self.fail("Missing --expected-[vendor|device]-id command line args")
+      self.fail('Missing --expected-[vendor|device]-id command line args')
 
     expected_vendor_id = int(test_args.expected_vendor_id_str, 16)
     expected_device_ids = [

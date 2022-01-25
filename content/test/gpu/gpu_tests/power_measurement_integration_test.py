@@ -45,7 +45,7 @@ _POWER_MEASUREMENT_DURATION = 15
 # Measures power in resolution of [x] milli-seconds.
 _POWER_MEASUREMENT_RESOLUTION = 100
 
-_GPU_RELATIVE_PATH = "content/test/data/gpu/"
+_GPU_RELATIVE_PATH = 'content/test/data/gpu/'
 
 _DATA_PATHS = [
     os.path.join(path_util.GetChromiumSrcDir(), _GPU_RELATIVE_PATH),
@@ -244,65 +244,65 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def AddCommandlineArgs(cls, parser):
     super(PowerMeasurementIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option(
-        "--duration",
+        '--duration',
         default=_POWER_MEASUREMENT_DURATION,
-        type="int",
-        help="specify how many seconds Intel Power Gadget measures. By "
-        "default, %d seconds is selected." % _POWER_MEASUREMENT_DURATION)
+        type='int',
+        help='specify how many seconds Intel Power Gadget measures. By '
+        'default, %d seconds is selected.' % _POWER_MEASUREMENT_DURATION)
     parser.add_option(
-        "--delay",
+        '--delay',
         default=_POWER_MEASUREMENT_DELAY,
-        type="int",
-        help="specify how many seconds we skip in the data Intel Power Gadget "
-        "collects. This time is for starting video play, switching to "
-        "fullscreen mode, etc. By default, %d seconds is selected." %
+        type='int',
+        help='specify how many seconds we skip in the data Intel Power Gadget '
+        'collects. This time is for starting video play, switching to '
+        'fullscreen mode, etc. By default, %d seconds is selected.' %
         _POWER_MEASUREMENT_DELAY)
     parser.add_option(
-        "--resolution",
+        '--resolution',
         default=100,
-        type="int",
-        help="specify how often Intel Power Gadget samples data in "
-        "milliseconds. By default, 100 ms is selected.")
+        type='int',
+        help='specify how often Intel Power Gadget samples data in '
+        'milliseconds. By default, 100 ms is selected.')
+    parser.add_option('--url',
+                      help='specify the webpage URL the browser launches with.')
     parser.add_option(
-        "--url", help="specify the webpage URL the browser launches with.")
-    parser.add_option(
-        "--fullscreen",
-        action="store_true",
+        '--fullscreen',
+        action='store_true',
         default=False,
-        help="specify if the browser goes to fullscreen mode automatically, "
-        "specifically if there is a single video element in the page, switch "
-        "it to fullsrceen mode.")
+        help='specify if the browser goes to fullscreen mode automatically, '
+        'specifically if there is a single video element in the page, switch '
+        'it to fullsrceen mode.')
     parser.add_option(
-        "--underlay",
-        action="store_true",
+        '--underlay',
+        action='store_true',
         default=False,
-        help="add a layer on top so the video layer becomes an underlay.")
+        help='add a layer on top so the video layer becomes an underlay.')
     parser.add_option(
-        "--logdir",
-        help="Speficy where the Intel Power Gadget log file should be stored. "
-        "If specified, the log file name will include a timestamp. If not "
-        "specified, the log file will be PowerLog.csv at the current dir and "
-        "will be overwritten at next run.")
+        '--logdir',
+        help='Specify where the Intel Power Gadget log file should be stored. '
+        'If specified, the log file name will include a timestamp. If not '
+        'specified, the log file will be PowerLog.csv at the current dir and '
+        'will be overwritten at next run.')
     parser.add_option(
-        "--repeat",
+        '--repeat',
         default=3,
-        type="int",
-        help="specify how many times to repreat the measurement. By default, "
-        "measure only once. If measure more than once, between each "
-        "measurement, browser restarts.")
+        type='int',
+        help='specify how many times to repreat the measurement. By default, '
+        'measure only once. If measure more than once, between each '
+        'measurement, browser restarts.')
     parser.add_option(
-        "--outliers",
+        '--outliers',
         default=0,
-        type="int",
-        help="if a test is repeated multiples and outliers is set to N, then "
-        "N smallest results and N largest results are discarded before "
-        "computing mean and stdev.")
+        type='int',
+        help='if a test is repeated multiples and outliers is set to N, then '
+        'N smallest results and N largest results are discarded before '
+        'computing mean and stdev.')
     parser.add_option(
-        "--bypass-ipg",
-        action="store_true",
+        '--bypass-ipg',
+        action='store_true',
         default=False,
-        help="Do not launch Intel Power Gadget. This is for testing "
-        "convenience on machines where Intel Power Gadget does not work.")
+        help='Do not launch Intel Power Gadget. This is for testing '
+        'convenience on machines where Intel Power Gadget does not work.')
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -387,7 +387,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _MeasurePowerWithIPG(bypass_ipg):
     total_time = _POWER_MEASUREMENT_DURATION + _POWER_MEASUREMENT_DELAY
     if bypass_ipg:
-      logging.info("Bypassing Intel Power Gadget")
+      logging.info('Bypassing Intel Power Gadget')
       time.sleep(total_time)
       return {}
     logfile = None  # Use the default path
@@ -413,7 +413,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def _LogResults(results):
     # TODO(zmo): output in a way that the results can be tracked at
     # chromeperf.appspot.com.
-    logging.info("Results: %s", str(results))
+    logging.info('Results: %s', str(results))
 
   def _SetupVideo(self, fullscreen, underlay):
     self.tab.action_runner.WaitForJavaScriptCondition(
@@ -480,23 +480,23 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     bypass_ipg = params.bypass_ipg
 
     if repeat > 1:
-      logging.info("Total iterations: %d", repeat)
+      logging.info('Total iterations: %d', repeat)
     logfiles = []
     for iteration in range(repeat):
       if repeat > 1:
-        logging.info("Iteration %d", iteration)
+        logging.info('Iteration %d', iteration)
       self.tab.action_runner.Navigate(test_path, _VIDEO_TEST_SCRIPT)
       self.tab.WaitForDocumentReadyStateToBeComplete()
       self._SetupVideo(fullscreen=params.fullscreen, underlay=params.underlay)
 
       if bypass_ipg:
-        logging.info("Bypassing Intel Power Gadget")
+        logging.info('Bypassing Intel Power Gadget')
         time.sleep(ipg_duration + ipg_delay)
       else:
         logfile = None
         if ipg_logdir:
           if not os.path.isdir(ipg_logdir):
-            self.fail("Folder " + ipg_logdir + " doesn't exist")
+            self.fail('Folder ' + ipg_logdir + " doesn't exist")
           logfile = ipg_utils.GenerateIPGLogFilename(
               log_dir=ipg_logdir, timestamp=True)
         ipg_utils.RunIPG(ipg_duration + ipg_delay, params.ipg_resolution,
@@ -512,16 +512,16 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     if repeat == 1:
       results = ipg_utils.AnalyzeIPGLogFile(logfiles[0], ipg_delay)
-      logging.info("Results: %s", str(results))
+      logging.info('Results: %s', str(results))
     else:
       json_path = None
       if ipg_logdir:
-        json_path = os.path.join(ipg_logdir, "output.json")
-        print("Results saved in ", json_path)
+        json_path = os.path.join(ipg_logdir, 'output.json')
+        print('Results saved in ', json_path)
 
       summary = ipg_utils.ProcessResultsFromMultipleIPGRuns(
           logfiles, ipg_delay, params.outliers, json_path)
-      logging.info("Summary: %s", str(summary))
+      logging.info('Summary: %s', str(summary))
 
   @classmethod
   def ExpectationsFiles(cls):

@@ -1,8 +1,22 @@
+[MASTER]  # nocheck
+
+# Pickle collected data for later comparisons.
+persistent=yes
+
+# List of plugins (as comma separated values of python modules names) to load,
+# usually to register additional checkers.
+load-plugins=
+    pylint_quotes
+
+# Configure quote preferences.
+string-quote = single-avoid-escape
+triple-quote = double
+docstring-quote = double
+
 [MESSAGES CONTROL]
 
 # Disable the message, report, category or checker with the given id(s).
-disable=abstract-class-little-used,
-        duplicate-code,
+disable=duplicate-code,
         fixme,
         invalid-name,
         locally-disabled,
@@ -16,11 +30,6 @@ disable=abstract-class-little-used,
 # lines of disable= entries, nor does it allow multiple disable= lines, so
 # we can't comment inline about why any of the above can't be removed. Thus,
 # that information is here.
-
-# abstract-class-little-used
-# There is a bug in Pylint that prevents inline disables of this warning.
-# Supposedly https://www.logilab.org/ticket/111138 is a bug report for this.
-# See https://stackoverflow.com/q/11543992.
 
 # duplicate-code
 # There is a bug in Pylint that prevents duplicate-code from being disabled for

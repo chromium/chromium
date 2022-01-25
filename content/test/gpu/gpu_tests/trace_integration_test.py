@@ -13,7 +13,7 @@ from gpu_tests import pixel_test_pages
 from telemetry.timeline import model as model_module
 from telemetry.timeline import tracing_config
 
-gpu_relative_path = "content/test/data/gpu/"
+gpu_relative_path = 'content/test/data/gpu/'
 
 data_paths = [
     os.path.join(path_util.GetChromiumSrcDir(), gpu_relative_path),

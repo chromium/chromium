@@ -180,12 +180,12 @@ class PixelIntegrationTest(
   def _AssertLowPowerGPU(self):
     if self._IsDualGPUMacLaptop():
       if not self._IsIntelGPUActive():
-        self.fail('Low power GPU should have been active but wasn\'t')
+        self.fail("Low power GPU should have been active but wasn't")
 
   def _AssertHighPerformanceGPU(self):
     if self._IsDualGPUMacLaptop():
       if self._IsIntelGPUActive():
-        self.fail('High performance GPU should have been active but wasn\'t')
+        self.fail("High performance GPU should have been active but wasn't")
 
   #
   # Optional actions pages can take.
@@ -224,7 +224,7 @@ class PixelIntegrationTest(
     dummy_tab.action_runner.Wait(2)
     # Close new tab.
     dummy_tab.Close()
-    tab.EvaluateJavaScript("copyImage()")
+    tab.EvaluateJavaScript('copyImage()')
 
   def _RunTestWithHighPerformanceTab(self, tab, page):
     del page  # Unused in this particular action.

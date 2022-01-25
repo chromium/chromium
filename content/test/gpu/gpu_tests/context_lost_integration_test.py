@@ -247,7 +247,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self._CheckCrashCount(tab, expected_kills)
 
       if not completed:
-        self.fail('Test didn\'t complete (no context lost event?)')
+        self.fail("Test didn't complete (no context lost event?)")
       if not tab.EvaluateJavaScript(
           'window.domAutomationController._succeeded'):
         self.fail('Test failed (context not restored properly?)')
@@ -258,7 +258,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Browser must support system info')
 
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
-      self.fail('Test failed (didn\'t render content properly?)')
+      self.fail("Test failed (didn't render content properly?)")
 
     number_of_crashes = -1
     if expected_kills > 0:
@@ -319,7 +319,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     completed = _WaitForPageToFinish(tab, timeout=timeout)
     if not completed:
-      self.fail('Test didn\'t complete (no context lost / restored event?)')
+      self.fail("Test didn't complete (no context lost / restored event?)")
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('Test failed (context not restored properly?)')
 

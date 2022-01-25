@@ -14,9 +14,9 @@ html_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
 data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
 four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 
-frame_sources = ["camera", "capture", "offscreen", "hw_decoder", "sw_decoder"]
-codecs = ["avc1.42001E", "vp8", "vp09.00.10.08", "av01.0.04M.08"]
-accelerations = ["prefer-hardware", "prefer-software"]
+frame_sources = ['camera', 'capture', 'offscreen', 'hw_decoder', 'sw_decoder']
+codecs = ['avc1.42001E', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
+accelerations = ['prefer-hardware', 'prefer-software']
 
 
 class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -30,21 +30,21 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def GenerateGpuTests(cls, options):
     for source_type in frame_sources:
       yield ('WebCodecs_DrawImage_' + source_type, 'draw-image.html', ({
-          "source_type":
+          'source_type':
           source_type
       }))
       yield ('WebCodecs_TexImage2d_' + source_type, 'tex-image-2d.html', ({
-          "source_type":
+          'source_type':
           source_type
       }))
       yield ('WebCodecs_copyTo_' + source_type, 'copyTo.html', ({
-          "source_type":
+          'source_type':
           source_type
       }))
 
     for codec in codecs:
       yield ('WebCodecs_EncodeDecode_' + codec, 'encode-decode.html', ({
-          "codec":
+          'codec':
           codec
       }))
 
@@ -53,35 +53,35 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         for acc in accelerations:
           args = (source_type, codec, acc)
           yield ('WebCodecs_Encode_%s_%s_%s' % args, 'encode.html', ({
-              "source_type":
+              'source_type':
               source_type,
-              "codec":
+              'codec':
               codec,
-              "acceleration":
+              'acceleration':
               acc
           }))
 
     for codec in codecs:
       for acc in accelerations:
-        for bitrate_mode in ["constant", "variable"]:
-          for latency_mode in ["realtime", "quality"]:
-            args = ("offscreen", codec, acc, bitrate_mode, latency_mode)
+        for bitrate_mode in ['constant', 'variable']:
+          for latency_mode in ['realtime', 'quality']:
+            args = ('offscreen', codec, acc, bitrate_mode, latency_mode)
             yield ('WebCodecs_EncodingModes_%s_%s_%s_%s_%s' % args,
                    'encoding-modes.html', ({
-                       "source_type": source_type,
-                       "codec": codec,
-                       "acceleration": acc,
-                       "bitrate_mode": bitrate_mode,
-                       "latency_mode": latency_mode
+                       'source_type': source_type,
+                       'codec': codec,
+                       'acceleration': acc,
+                       'bitrate_mode': bitrate_mode,
+                       'latency_mode': latency_mode
                    }))
 
     for codec in codecs:
       for layers in [2, 3]:
         args = (codec, layers)
         yield ('WebCodecs_SVC_%s_layers_%d' % args, 'svc.html', ({
-            "codec":
+            'codec':
             codec,
-            "layers":
+            'layers':
             layers
         }))
 
@@ -90,8 +90,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         args = (codec, acc)
         yield ('WebCodecs_EncodeColorSpace_%s_%s' % args,
                'encode-color-space.html', ({
-                   "codec": codec,
-                   "acceleration": acc
+                   'codec': codec,
+                   'acceleration': acc
                }))
 # pylint: enable=too-many-branches
 
@@ -100,7 +100,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     arg_obj = args[0]
     os_name = self.platform.GetOSName()
-    arg_obj["validate_camera_frames"] = self.CameraCanShowFourColors(os_name)
+    arg_obj['validate_camera_frames'] = self.CameraCanShowFourColors(os_name)
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
         'document.readyState == "complete"')

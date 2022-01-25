@@ -597,7 +597,7 @@ class PixelTestPages():
   @staticmethod
   def SwiftShaderPages(base_name):
     browser_args = [cba.DISABLE_GPU]
-    suffix = "_SwiftShader"
+    suffix = '_SwiftShader'
     return [
         PixelTestPage('pixel_canvas2d.html',
                       base_name + '_Canvas2DRedBox' + suffix,
@@ -621,7 +621,7 @@ class PixelTestPages():
   @staticmethod
   def NoGpuProcessPages(base_name):
     browser_args = [cba.DISABLE_GPU, cba.DISABLE_SOFTWARE_RASTERIZER]
-    suffix = "_NoGpuProcess"
+    suffix = '_NoGpuProcess'
     return [
         PixelTestPage(
             'pixel_canvas2d.html',

@@ -87,8 +87,8 @@ class ExpectedColorTest(
             'location', 'size', and 'color' keys. See pixel_test_pages.py for
             examples.
       """
-      location = expectation["location"]
-      size = expectation["size"]
+      location = expectation['location']
+      size = expectation['size']
       x0 = int(location[0] * device_pixel_ratio)
       x1 = int((location[0] + size[0]) * device_pixel_ratio)
       y0 = int(location[1] * device_pixel_ratio)
@@ -103,15 +103,14 @@ class ExpectedColorTest(
 
           actual_color = image_util.GetPixelColor(screenshot, x, y)
           expected_color = rgba_color.RgbaColor(
-              expectation["color"][0], expectation["color"][1],
-              expectation["color"][2],
-              expectation["color"][3] if len(expectation["color"]) > 3 else 255)
+              expectation['color'][0], expectation['color'][1],
+              expectation['color'][2],
+              expectation['color'][3] if len(expectation['color']) > 3 else 255)
           if not actual_color.IsEqual(expected_color, tolerance):
-            self.fail('Expected pixel at ' + str(location) +
-                      ' (actual pixel (' + str(x) + ', ' + str(y) + ')) ' +
-                      ' to be ' + str(expectation["color"]) + " but got [" +
-                      str(actual_color.r) + ", " + str(actual_color.g) + ", " +
-                      str(actual_color.b) + ", " + str(actual_color.a) + "]")
+            self.fail('Expected pixel at %s (actual pixel (%s, %s)) to be %s '
+                      'but got [%s, %s, %s, %s]' %
+                      (location, x, y, expectation['color'], actual_color.r,
+                       actual_color.g, actual_color.b, actual_color.a))
 
     expected_colors = page.expected_colors
     tolerance = page.tolerance
@@ -136,7 +135,7 @@ class ExpectedColorTest(
             device_pixel_ratio = override['scale_factor']
             break
           if (test_machine_name and 'machine_name' in override
-              and override["machine_name"] == test_machine_name):
+              and override['machine_name'] == test_machine_name):
             logging.warning(
                 'Overriding device_pixel_ratio %s with scale '
                 'factor %s for machine name %s', device_pixel_ratio,
@@ -146,7 +145,7 @@ class ExpectedColorTest(
         # Only support one "scale_factor_overrides" in the expectation format.
         break
     for expectation in expected_colors:
-      if "scale_factor_overrides" in expectation:
+      if 'scale_factor_overrides' in expectation:
         continue
       _CompareScreenshotWithExpectation(expectation)
 

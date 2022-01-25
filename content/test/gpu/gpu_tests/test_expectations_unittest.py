@@ -77,7 +77,7 @@ _get_generic = lambda tags: set(
 
 ResultType = json_results.ResultType
 
-INTEL_DRIVER_VERSION_SCHEMA = '''
+INTEL_DRIVER_VERSION_SCHEMA = """
 The version format of Intel graphics driver is AA.BB.CC.DDDD (legacy schema)
 and AA.BB.CCC.DDDD (new schema).
 
@@ -88,7 +88,7 @@ CC or CCC: It's meaningful to indicate different branches. Different CC means
 different branch, while all CCCs share the same branch.
 
 DDDD: It's always meaningful.
-'''
+"""
 
 
 def check_intel_driver_version(version):
@@ -207,7 +207,7 @@ def CheckTestExpectationsAreForExistingTests(unittest_testcase,
     test_expectations.parse_tagged_list(f.read(), f.name)
     broke_expectations = '\n'.join([
         "\t- {0}:{1}: Expectation with pattern '{2}' does not match"
-        " any tests in the {3} test suite".format(f.name, exp.lineno, exp.test,
+        ' any tests in the {3} test suite'.format(f.name, exp.lineno, exp.test,
                                                   test_class.Name())
         for exp in test_expectations.check_for_broken_expectations(test_names)
     ])
@@ -320,7 +320,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         msg = ''
         for ununsed_pattern in set(e.test for e in broken_expectations):
           msg += ("Expectations with pattern '{0}' in {1} do not apply to any "
-                  "webgl version {2} extension tests\n".format(
+                  'webgl version {2} extension tests\n'.format(
                       ununsed_pattern, os.path.basename(f.name), webgl_version))
         self.assertEqual(msg, '')
 
@@ -410,63 +410,63 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
       self.assertFalse(errors)
 
   def testConflictsBetweenAngleAndNonAngleConfigurations(self):
-    test_expectations = '''
+    test_expectations = """
     # tags: [ android ]
     # tags: [ android-nexus-5x ]
     # tags: [ opengles ]
     # results: [ RetryOnFailure Skip ]
     [ android android-nexus-5x ] a/b/c/d [ RetryOnFailure ]
     [ android opengles ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testConflictBetweenTestExpectationsWithOsNameAndOSVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp ]
+    test_expectations = """# tags: [ mac win linux xp ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel xp ] a/b/c/d [ Failure ]
     [ intel win debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testNoConflictBetweenOsVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel win7 ] a/b/c/d [ Failure ]
     [ intel xp debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
 
   def testConflictBetweenGpuVendorAndGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 ] a/b/c/d [ Failure ]
     [ nvidia debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
   def testNoConflictBetweenGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 win7 ] a/b/c/d [ Failure ]
     [ nvidia-0x02 win7 debug ] a/b/c/d [ Skip ]
     [ nvidia win debug ] a/b/c/* [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
@@ -493,11 +493,11 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
           ' to any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '4: Expectation with pattern \'a/c/*\' does not match'
+          "4: Expectation with pattern 'a/c/*' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '3: Expectation with pattern \'a/b/d\' does not match'
+          "3: Expectation with pattern 'a/b/d' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
 

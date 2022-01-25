@@ -46,22 +46,22 @@ class RepeatStrategy(enum.Enum):
   @classmethod
   def ToString(cls, strategy):
     if strategy == cls.COUNT_EACH:
-      return "each"
+      return 'each'
     if strategy == cls.COUNT_MINIMUM:
-      return "minimum"
+      return 'minimum'
     if strategy == cls.COUNT_AVERAGE:
-      return "average"
+      return 'average'
     if strategy == cls.COUNT_MEDIAN:
-      return "median"
+      return 'median'
     assert strategy == cls.COUNT_MINIMUM_FIRST_TWO
-    return "minimum (first two)"
+    return 'minimum (first two)'
 
 
 def LoadResultsJsonFiles():
   jsons = []
   for json_filename in _RESULTS_JSON_FILES:
     json_path = os.path.join(_RESULTS_PATH, json_filename)
-    with open(json_path, "r") as json_file:
+    with open(json_path, 'r') as json_file:
       logging.debug('Loading %s', json_path)
       jsons.append(json.load(json_file))
   return jsons
@@ -268,19 +268,19 @@ def RunExperiment_BadBots(jsons,
         bad_bots.append(bot_name)
         logging.debug('Potential bad bot %s: stdev = %f', bot_name, stdev)
     total_bad_bots |= set(bad_bots)
-    logging.debug("Total bots considered: %d", bots_considered)
-    logging.debug("Bad bots: %d", len(bad_bots))
-    logging.debug("%s", bad_bots)
+    logging.debug('Total bots considered: %d', bots_considered)
+    logging.debug('Bad bots: %d', len(bad_bots))
+    logging.debug('%s', bad_bots)
   MarkSection()
   total_bad_bots = list(total_bad_bots)
   total_bad_bots.sort()
-  logging.debug("All potential bad bots: %d", len(total_bad_bots))
-  logging.debug("%s", total_bad_bots)
+  logging.debug('All potential bad bots: %d', len(total_bad_bots))
+  logging.debug('%s', total_bad_bots)
   MarkSection()
   for bot in total_bad_bots:
     build_numbers = GetBotBuilds(jsons, bot)
     build_numbers.sort()
-    logging.debug("Bad bot %s builds: %s", bot, build_numbers)
+    logging.debug('Bad bot %s builds: %s', bot, build_numbers)
   return total_bad_bots
 
 

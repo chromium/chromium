@@ -259,10 +259,10 @@ class GpuIntegrationTest(
               cls.platform)
           if url is not None:
             logging.info(
-                "GpuIntegrationTest screenshot of browser failure "
-                "located at %s", url)
+                'GpuIntegrationTest screenshot of browser failure '
+                'located at %s', url)
           else:
-            logging.warning("GpuIntegrationTest unable to take screenshot.")
+            logging.warning('GpuIntegrationTest unable to take screenshot.')
         # Stop the browser to make sure it's in an
         # acceptable state to try restarting it.
         if cls.browser:
@@ -582,7 +582,7 @@ class GpuIntegrationTest(
     gpu_device_id = gpu.device_id
     os_version = self.browser.platform.GetOSVersionName()
     if os_version is None:
-      raise Exception("browser.platform.GetOSVersionName() returns None")
+      raise Exception('browser.platform.GetOSVersionName() returns None')
     os_version = os_version.lower()
 
     config = {
@@ -634,7 +634,7 @@ class GpuIntegrationTest(
 
     os_version = self.browser.platform.GetOSVersionName()
     if os_version is None:
-      raise Exception("browser.platform.GetOSVersionName() returns None")
+      raise Exception('browser.platform.GetOSVersionName() returns None')
     os_version = os_version.lower()
     assert os_version in _SUPPORTED_WIN_VERSIONS
 
@@ -712,7 +712,7 @@ class GpuIntegrationTest(
     except Exception:
       # restart the browser to make sure a failure in a test doesn't
       # propagate to the next test iteration.
-      logging.exception("Failure during browser startup")
+      logging.exception('Failure during browser startup')
       cls._RestartBrowser('failure in setup')
       raise
 

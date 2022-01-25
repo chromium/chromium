@@ -29,7 +29,7 @@ def ForceUntilExitSRGB(skip_restoring_color_profile=False):
   # Register an atexit handler to restore the previous color profiles.
   def Restore():
     if skip_restoring_color_profile:
-      print("Skipping restoring the original color profile")
+      print('Skipping restoring the original color profile')
       return
     for display_id in display_profile_url_map:
       color_profile_manager_mac.SetDisplayCustomProfile(

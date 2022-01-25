@@ -22,7 +22,7 @@ from py_utils import cloud_storage
 
 from telemetry.util import image_util
 
-GPU_RELATIVE_PATH = "content/test/data/gpu/"
+GPU_RELATIVE_PATH = 'content/test/data/gpu/'
 GPU_DATA_DIR = os.path.join(path_util.GetChromiumSrcDir(), GPU_RELATIVE_PATH)
 TEST_DATA_DIRS = [
     GPU_DATA_DIR,
@@ -145,7 +145,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help='(Mainly on Mac) don\'t restore the system\'s original color '
+        help="(Mainly on Mac) don't restore the system's original color "
         'profile after the test completes; leave the system using the sRGB '
         'color profile. See http://crbug.com/784456.')
     parser.add_option(
@@ -197,7 +197,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         '--no-luci-auth',
         action='store_true',
         default=False,
-        help='Don\'t use the service account provided by LUCI for '
+        help="Don't use the service account provided by LUCI for "
         'authentication for Skia Gold, instead relying on gsutil to be '
         'pre-authenticated. Meant for testing locally instead of on the bots.')
     parser.add_option(

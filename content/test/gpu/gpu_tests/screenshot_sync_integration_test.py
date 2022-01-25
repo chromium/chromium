@@ -53,7 +53,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help='(Mainly on Mac) don\'t restore the system\'s original color '
+        help="(Mainly on Mac) don't restore the system's original color "
         'profile after the test completes; leave the system using the sRGB '
         'color profile. See http://crbug.com/784456.')
 
@@ -124,11 +124,10 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),
         255)
     tab = self.tab
-    tab.EvaluateJavaScript(
-        "window.draw({{ red }}, {{ green }}, {{ blue }});",
-        red=canvasRGB.r,
-        green=canvasRGB.g,
-        blue=canvasRGB.b)
+    tab.EvaluateJavaScript('window.draw({{ red }}, {{ green }}, {{ blue }});',
+                           red=canvasRGB.r,
+                           green=canvasRGB.g,
+                           blue=canvasRGB.b)
     screenshot = tab.Screenshot(10)
     # Avoid checking along antialiased boundary due to limited Adreno 3xx
     # interpolation precision (crbug.com/847984). We inset by one CSS pixel
