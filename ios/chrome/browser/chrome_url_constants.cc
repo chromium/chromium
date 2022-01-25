@@ -87,9 +87,7 @@ const char kOnDeviceEncryptionOptInURL[] =
     "utm_source=chrome&utm_medium=ios&utm_campaign=encryption_enroll";
 
 const char kOnDeviceEncryptionLearnMoreURL[] =
-    "https://support.google.com/accounts?"
-    "p=settings_password_ode&utm_source=chrome&utm_medium=ios&"
-    "utm_campaign=encryption_enroll";
+    "https://support.google.com/accounts?p=settings_password_ode";
 
 const char kPageInfoHelpCenterURL[] =
     "https://support.google.com/chrome?p=ui_security_indicator&ios=1";
