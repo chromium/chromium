@@ -23,6 +23,9 @@ class CloseButton : public views::ImageButton,
     kSmall,
     kMedium,
     kLarge,
+    kSmallFloating,
+    kMediumFloating,
+    kLargeFloating,
   };
 
   CloseButton(PressedCallback callback,
@@ -36,6 +39,9 @@ class CloseButton : public views::ImageButton,
   // button's bounds. Used to help enlarge the hit area of the close button.
   // Note, only necessary for `kSmall` type of CloseButton.
   bool DoesIntersectScreenRect(const gfx::Rect& screen_rect) const;
+
+  // Resets the listener so that the listener can go out of scope.
+  void ResetListener();
 
  private:
   // views::ImageButton:

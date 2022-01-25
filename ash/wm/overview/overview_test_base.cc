@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/style/close_button.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -26,7 +27,6 @@
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -118,7 +118,7 @@ OverviewItem* OverviewTestBase::GetDropTarget(int grid_index) {
   return GetOverviewSession()->grid_list_[grid_index]->GetDropTarget();
 }
 
-views::ImageButton* OverviewTestBase::GetCloseButton(OverviewItem* item) {
+CloseButton* OverviewTestBase::GetCloseButton(OverviewItem* item) {
   return item->overview_item_view_->close_button();
 }
 

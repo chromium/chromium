@@ -7,10 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/style_util.h"
+#include "ash/style/close_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -25,16 +23,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -54,8 +44,6 @@ constexpr base::TimeDelta kCloseButtonSlowFadeInDuration =
 
 // Delay before the slow show animation of the close button.
 constexpr base::TimeDelta kCloseButtonSlowFadeInDelay = base::Milliseconds(750);
-
-constexpr int kCloseButtonInkDropRadiusDp = 18;
 
 // Value should match the one in
 // ash/resources/vector_icons/overview_window_close.icon.
@@ -84,50 +72,6 @@ void AnimateLayerOpacity(ui::Layer* layer, bool visible) {
   layer->SetOpacity(target_opacity);
 }
 
-// The close button for the overview item. It has a custom ink drop.
-class OverviewCloseButton : public views::ImageButton {
- public:
-  METADATA_HEADER(OverviewCloseButton);
-
-  explicit OverviewCloseButton(PressedCallback callback)
-      : views::ImageButton(std::move(callback)) {
-    views::InkDrop::Get(this)->SetMode(
-        views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this));
-    SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-    SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    SetMinimumImageSize(gfx::Size(kHeaderHeightDp, kHeaderHeightDp));
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-    SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-
-    views::InstallFixedSizeCircleHighlightPathGenerator(
-        this, kCloseButtonInkDropRadiusDp);
-  }
-  OverviewCloseButton(const OverviewCloseButton&) = delete;
-  OverviewCloseButton& operator=(const OverviewCloseButton&) = delete;
-  ~OverviewCloseButton() override = default;
-
-  // Resets the listener so that the listener can go out of scope.
-  void ResetListener() { SetCallback(views::Button::PressedCallback()); }
-
- protected:
-  // views::ImageButton:
-  void OnThemeChanged() override {
-    views::ImageButton::OnThemeChanged();
-    auto* color_provider = AshColorProvider::Get();
-    const SkColor color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kButtonIconColor);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color));
-    StyleUtil::ConfigureInkDropAttributes(
-        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity, color);
-  }
-};
-
-BEGIN_METADATA(OverviewCloseButton, views::ImageButton)
-END_METADATA
-
 }  // namespace
 
 OverviewItemView::OverviewItemView(
@@ -135,16 +79,21 @@ OverviewItemView::OverviewItemView(
     views::Button::PressedCallback close_callback,
     aura::Window* window,
     bool show_preview)
-    : WindowMiniView(window), overview_item_(overview_item) {
+    : WindowMiniView(window),
+      overview_item_(overview_item),
+      close_button_(header_view()->AddChildView(
+          std::make_unique<CloseButton>(std::move(close_callback),
+                                        CloseButton::Type::kLargeFloating))) {
   DCHECK(overview_item_);
   // This should not be focusable. It's also to avoid accessibility error when
   // |window->GetTitle()| is empty.
   SetFocusBehavior(FocusBehavior::NEVER);
 
-  close_button_ = header_view()->AddChildView(
-      std::make_unique<OverviewCloseButton>(std::move(close_callback)));
-  close_button_->SetPaintToLayer();
-  close_button_->layer()->SetFillsBoundsOpaquely(false);
+  views::InkDrop::Get(close_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
+  close_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+  close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   // Call this last as it calls |Layout()| which relies on the some of the other
   // elements existing.
@@ -215,7 +164,7 @@ void OverviewItemView::HideCloseInstantlyAndThenShowItSlowly() {
 
 void OverviewItemView::OnOverviewItemWindowRestoring() {
   overview_item_ = nullptr;
-  static_cast<OverviewCloseButton*>(close_button_)->ResetListener();
+  close_button_->ResetListener();
 }
 
 void OverviewItemView::RefreshPreviewView() {

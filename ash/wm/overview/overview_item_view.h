@@ -15,11 +15,12 @@ class Window;
 }  // namespace aura
 
 namespace views {
-class ImageButton;
 class View;
 }  // namespace views
 
 namespace ash {
+
+class CloseButton;
 class OverviewItem;
 
 // OverviewItemView covers the overview window and listens for events.
@@ -83,7 +84,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   void OnViewUnhighlighted() override;
   gfx::Point GetMagnifierFocusPointInScreen() override;
 
-  views::ImageButton* close_button() { return close_button_; }
+  CloseButton* close_button() const { return close_button_; }
 
  protected:
   // views::View:
@@ -99,7 +100,7 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   // until |OnOverviewItemWindowRestoring| is called.
   OverviewItem* overview_item_;
 
-  views::ImageButton* close_button_;
+  CloseButton* close_button_;
 
   HeaderVisibility current_header_visibility_ = HeaderVisibility::kVisible;
 };
