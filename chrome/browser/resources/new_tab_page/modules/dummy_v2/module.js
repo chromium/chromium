@@ -89,7 +89,7 @@ export const dummyV2Descriptor = new ModuleDescriptorV2(
 export const dummyV2Descriptor02 = new ModuleDescriptorV2(
     /*id=*/ 'dummy2',
     /*name=*/ loadTimeData.getString('modulesDummy2Title'),
-    /*height*/ ModuleHeight.SHORT,
+    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy2Title')));
 
 /** @type {!ModuleDescriptorV2} */
@@ -103,7 +103,7 @@ export const dummyV2Descriptor03 = new ModuleDescriptorV2(
 export const dummyV2Descriptor04 = new ModuleDescriptorV2(
     /*id=*/ 'dummy4',
     /*name=*/ loadTimeData.getString('modulesDummy4Title'),
-    /*height*/ ModuleHeight.SHORT,
+    /*height*/ ModuleHeight.TALL,
     () => Promise.resolve(createDummyElement('modulesDummy4Title')));
 
 /** @type {!ModuleDescriptorV2} */
@@ -124,7 +124,7 @@ export const dummyV2Descriptor06 = new ModuleDescriptorV2(
 export const dummyV2Descriptor07 = new ModuleDescriptorV2(
     /*id=*/ 'dummy7',
     /*name=*/ loadTimeData.getString('modulesDummy7Title'),
-    /*height*/ ModuleHeight.TALL,
+    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy7Title')));
 
 /** @type {!ModuleDescriptorV2} */
@@ -145,19 +145,19 @@ export const dummyV2Descriptor09 = new ModuleDescriptorV2(
 export const dummyV2Descriptor10 = new ModuleDescriptorV2(
     /*id=*/ 'dummy10',
     /*name=*/ loadTimeData.getString('modulesDummy10Title'),
-    /*height*/ ModuleHeight.TALL,
+    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy10Title')));
 
 /** @type {!ModuleDescriptorV2} */
 export const dummyV2Descriptor11 = new ModuleDescriptorV2(
     /*id=*/ 'dummy11',
     /*name=*/ loadTimeData.getString('modulesDummy11Title'),
-    /*height*/ ModuleHeight.TALL,
+    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy11Title')));
 
 /** @type {!ModuleDescriptorV2} */
 export const dummyV2Descriptor12 = new ModuleDescriptorV2(
     /*id=*/ 'dummy12',
     /*name=*/ loadTimeData.getString('modulesDummy12Title'),
-    /*height*/ ModuleHeight.TALL,
+    /*height*/ ModuleHeight.SHORT,
     () => Promise.resolve(createDummyElement('modulesDummy12Title')));

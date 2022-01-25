@@ -4,7 +4,7 @@
 
 import 'chrome://test/mojo_webui_test_support.js';
 
-import {$$, Module, ModuleDescriptor, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -52,6 +52,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
   [true, false].forEach(visible => {
     test(`modules rendered if visibility ${visible}`, async () => {
+      // Arrange.
       const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
       const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
       const bazDescriptor = new ModuleDescriptor('baz', 'Baz', initNullModule);
@@ -97,6 +98,81 @@ suite('NewTabPageModulesModulesTest', () => {
           1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', visible));
       assertEquals(1, handler.getCallCount('updateDisabledModules'));
       assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
+    });
+  });
+
+  suite('modules redesigned layout', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        modulesRedesignedLayoutEnabled: true,
+      });
+    });
+
+    test(`sibling short modules wrapped in a container`, async () => {
+      // Arrange.
+      const moduleArray = [];
+      for (let i = 0; i < 4; ++i) {
+        let module = createElement();
+        moduleArray.push(module);
+      }
+      const fooDescriptor = new ModuleDescriptorV2(
+          'foo', 'foo', ModuleHeight.SHORT, async () => createElement());
+      const barDescriptor = new ModuleDescriptorV2(
+          'bar', 'bar', ModuleHeight.SHORT, async () => createElement());
+      const bazDescriptor = new ModuleDescriptorV2(
+          'baz', 'baz', ModuleHeight.SHORT, async () => createElement());
+      const quzDescriptor = new ModuleDescriptorV2(
+          'quz', 'quz', ModuleHeight.TALL, async () => createElement());
+      moduleRegistry.setResultFor(
+          'getDescriptors',
+          [fooDescriptor, barDescriptor, bazDescriptor, quzDescriptor]);
+
+      // Act.
+      const modulesElement = await createModulesElement([
+        {
+          descriptor: fooDescriptor,
+          element: moduleArray[0],
+        },
+        {
+          descriptor: barDescriptor,
+          element: moduleArray[1],
+        },
+        {
+          descriptor: bazDescriptor,
+          element: moduleArray[2],
+        },
+        {
+          descriptor: quzDescriptor,
+          element: moduleArray[3],
+        },
+      ]);
+
+      // Assert.
+      const modules =
+          Array.from(modulesElement.shadowRoot.querySelectorAll('#modules'));
+      const moduleWrappers =
+          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+      const moduleWrapperContainers =
+          modulesElement.shadowRoot.querySelectorAll('.module-container');
+      const shortModuleSiblingsContainers =
+          modulesElement.shadowRoot.querySelectorAll(
+              '.short-module-siblings-container');
+      assertEquals(4, moduleWrappers.length);
+      assertEquals(4, moduleWrapperContainers.length);
+      assertEquals(1, shortModuleSiblingsContainers.length);
+      assertEquals(modules[0].children[0], shortModuleSiblingsContainers[0]);
+      assertEquals(
+          moduleArray[0],
+          shortModuleSiblingsContainers[0]
+              .children[0]
+              .children[0]
+              .module.element);
+      assertEquals(
+          moduleArray[1],
+          shortModuleSiblingsContainers[0]
+              .children[1]
+              .children[0]
+              .module.element);
     });
   });
 

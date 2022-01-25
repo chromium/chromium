@@ -14,7 +14,7 @@ import {I18nBehavior, loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {$$} from '../utils.js';
 
-import {Module} from './module_descriptor.js';
+import {Module, ModuleHeight} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
 
@@ -129,7 +129,8 @@ export class ModulesElement extends mixinBehaviors
         loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
-      modules.forEach(module => {
+      let shortModuleSiblingsContainer = null;
+      modules.forEach((module, index) => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
         if (this.dragEnabled_) {
@@ -155,12 +156,37 @@ export class ModulesElement extends mixinBehaviors
                */
               (event));
         });
-
+        let moduleContainerParent = this.$.modules;
+        if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
+          // Wrap pairs of sibling short modules in a container. All other
+          // modules will be placed in a container of their own.
+          if (module.descriptor.height === ModuleHeight.SHORT &&
+              shortModuleSiblingsContainer) {
+            // Add current sibling short module to container which already
+            // contains the previous sibling short module by setting its parent
+            // to be 'shortModuleSiblingsContainer'.
+            moduleContainerParent = shortModuleSiblingsContainer;
+            this.$.modules.appendChild(shortModuleSiblingsContainer);
+            shortModuleSiblingsContainer = null;
+          } else if (
+              module.descriptor.height === ModuleHeight.SHORT &&
+              index + 1 !== modules.length &&
+              (modules[index + 1].descriptor.height === ModuleHeight.SHORT)) {
+            // Add current short module to a new container since the next one is
+            // short as well by setting its parent to be
+            // 'shortModuleSiblingsContainer'.
+            shortModuleSiblingsContainer =
+                this.ownerDocument.createElement('div');
+            shortModuleSiblingsContainer.classList.add(
+                'short-module-siblings-container');
+            moduleContainerParent = shortModuleSiblingsContainer;
+          }
+        }
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
         moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
         moduleContainer.appendChild(moduleWrapper);
-        this.$.modules.appendChild(moduleContainer);
+        moduleContainerParent.appendChild(moduleContainer);
       });
       this.onModulesLoaded_();
     }
