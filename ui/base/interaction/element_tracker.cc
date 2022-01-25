@@ -33,7 +33,6 @@ class ElementTracker::ElementData {
     activated_callbacks_.set_removal_callback(removal_callback);
     hidden_callbacks_.set_removal_callback(removal_callback);
   }
-
   ~ElementData() = default;
 
   ElementIdentifier identifier() const { return identifier_; }
@@ -178,19 +177,19 @@ ElementTrackerFrameworkDelegate* ElementTracker::GetFrameworkDelegate() {
 TrackedElement* ElementTracker::GetUniqueElement(ElementIdentifier id,
                                                  ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  if (it == element_data_.end() || it->second->num_elements() == 0)
+  if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  DCHECK_EQ(1U, it->second->num_elements());
-  return it->second->elements().front();
+  DCHECK_EQ(1U, it->second.num_elements());
+  return it->second.elements().front();
 }
 
 TrackedElement* ElementTracker::GetFirstMatchingElement(
     ElementIdentifier id,
     ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  if (it == element_data_.end() || it->second->num_elements() == 0)
+  if (it == element_data_.end() || it->second.num_elements() == 0)
     return nullptr;
-  return it->second->elements().front();
+  return it->second.elements().front();
 }
 
 ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
@@ -199,7 +198,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   const auto it = element_data_.find(LookupKey(id, context));
   ElementList result;
   if (it != element_data_.end()) {
-    std::copy(it->second->elements().begin(), it->second->elements().end(),
+    std::copy(it->second.elements().begin(), it->second.elements().end(),
               std::back_inserter(result));
   }
   return result;
@@ -208,9 +207,9 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
 ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
     ElementIdentifier id) {
   ElementList result;
-  for (const auto& pr : element_to_data_lookup_) {
-    if (pr.first->identifier() == id)
-      result.push_back(pr.first);
+  for (const auto [element, data] : element_to_data_lookup_) {
+    if (element->identifier() == id)
+      result.push_back(element);
   }
   return result;
 }
@@ -218,7 +217,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
 bool ElementTracker::IsElementVisible(ElementIdentifier id,
                                       ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
-  return it != element_data_.end() && it->second->num_elements() > 0;
+  return it != element_data_.end() && it->second.num_elements() > 0;
 }
 
 ElementTracker::Subscription ElementTracker::AddElementShownCallback(
@@ -286,17 +285,12 @@ ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
     ElementIdentifier id,
     ElementContext context) {
   const LookupKey key(id, context);
-  auto it = element_data_.find(key);
-  if (it == element_data_.end()) {
-    // This might be the first time we've referenced this identifier, so make
-    // sure it's registered.
+  const auto [it, added] = element_data_.try_emplace(key, this, id, context);
+  // This might be the first time we've referenced this identifier, so make
+  // sure it's registered.
+  if (added)
     ElementIdentifier::RegisterKnownIdentifier(id);
-    const auto result = element_data_.emplace(
-        key, std::make_unique<ElementData>(this, id, context));
-    DCHECK(result.second);
-    it = result.first;
-  }
-  return it->second.get();
+  return &it->second;
 }
 
 void ElementTracker::MaybeCleanup(ElementData* data) {

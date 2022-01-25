@@ -6,7 +6,6 @@
 #define UI_VIEWS_INTERACTION_ELEMENT_TRACKER_VIEWS_H_
 
 #include <map>
-#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -137,8 +136,7 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // destroyed).
   void MaybeObserveWidget(Widget* widget);
 
-  std::map<ui::ElementIdentifier, std::unique_ptr<ElementDataViews>>
-      element_data_;
+  std::map<ui::ElementIdentifier, ElementDataViews> element_data_;
   base::ScopedMultiSourceObservation<Widget, WidgetObserver> widget_observer_{
       this};
 };

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <memory>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -244,7 +245,7 @@ TrackedElementViews* ElementTrackerViews::GetElementForView(
     DCHECK(!assign_temporary_id);
     return nullptr;
   }
-  return it->second->GetElementForView(view);
+  return it->second.GetElementForView(view);
 }
 
 const TrackedElementViews* ElementTrackerViews::GetElementForView(
@@ -269,7 +270,7 @@ View* ElementTrackerViews::GetFirstMatchingView(ui::ElementIdentifier id,
   const auto it = element_data_.find(id);
   if (it == element_data_.end())
     return nullptr;
-  return it->second->FindFirstViewInContext(context);
+  return it->second.FindFirstViewInContext(context);
 }
 
 ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
@@ -278,7 +279,7 @@ ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
   const auto it = element_data_.find(id);
   if (it == element_data_.end())
     return ViewList();
-  return it->second->FindAllViewsInContext(context);
+  return it->second.FindAllViewsInContext(context);
 }
 
 ElementTrackerViews::ViewList
@@ -286,19 +287,14 @@ ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
   const auto it = element_data_.find(id);
   if (it == element_data_.end())
     return ViewList();
-  return it->second->GetAllViews();
+  return it->second.GetAllViews();
 }
 
 void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,
                                        View* view) {
-  auto it = element_data_.find(element_id);
-  if (it == element_data_.end()) {
-    it = element_data_
-             .emplace(element_id,
-                      std::make_unique<ElementDataViews>(this, element_id))
-             .first;
-  }
-  it->second->AddView(view);
+  const auto [it, added] =
+      element_data_.try_emplace(element_id, this, element_id);
+  it->second.AddView(view);
 }
 
 void ElementTrackerViews::UnregisterView(ui::ElementIdentifier element_id,
@@ -306,7 +302,7 @@ void ElementTrackerViews::UnregisterView(ui::ElementIdentifier element_id,
   DCHECK(view);
   const auto it = element_data_.find(element_id);
   DCHECK(it != element_data_.end());
-  it->second->RemoveView(view);
+  it->second.RemoveView(view);
 }
 
 void ElementTrackerViews::NotifyViewActivated(ui::ElementIdentifier element_id,
@@ -314,15 +310,15 @@ void ElementTrackerViews::NotifyViewActivated(ui::ElementIdentifier element_id,
   DCHECK(view);
   const auto it = element_data_.find(element_id);
   DCHECK(it != element_data_.end());
-  it->second->NotifyViewActivated(view);
+  it->second.NotifyViewActivated(view);
 }
 
 void ElementTrackerViews::OnWidgetVisibilityChanged(Widget* widget,
                                                     bool visible) {
   if (!visible)
     return;
-  for (auto& entry : element_data_)
-    entry.second->UpdateViewVisibilityForWidget(widget);
+  for (auto& [id, data] : element_data_)
+    data.UpdateViewVisibilityForWidget(widget);
   widget_observer_.RemoveObservation(widget);
 }
 
