@@ -220,6 +220,9 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
+        'swarming': {
+          'quickrun_shards': 18,
+        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
@@ -262,6 +265,7 @@
             },
           ],
           'shards': 25,
+          'quickrun_shards': 26,
         },
       },
       'Mac11 Tests (dbg)': {
@@ -841,7 +845,7 @@
     'modifications': {
       'chromeos-amd64-generic-rel': {
         'swarming': {
-          'quickrun_shards': 4,
+          'quickrun_shards': 8,
         },
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
@@ -1218,6 +1222,11 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
         'experiment_percentage': 100,
       },
+      'Mac11 Tests': {
+        'swarming': {
+          'quickrun_shards': 10,
+        },
+      },
       'Mac11 Tests (dbg)': { # https://crbug.com/1279504
         'swarming': {
           'shards': 7,
@@ -1412,6 +1421,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_m.content_shell_test_apk.filter',
         ],
+        'swarming': {
+          'quickrun_shards': 8,
+        },
       },
       'android-pie-x86-rel': {
         'args': [
@@ -1519,6 +1531,15 @@
     'remove_from': [
       'chromeos-kevin-rel',
     ],
+  },
+  'exo_unittests': {
+    'modifications': {
+      'linux-chromeos-rel': {
+        'swarming': {
+          'quickrun_shards': 2,
+        }
+      },
+    },
   },
   'extensions_browsertests': {
     'remove_from': [
@@ -2410,6 +2431,9 @@
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
+        'swarming': {
+          'quickrun_shards': 18,
+        },
       },
       'linux-code-coverage': {
         'args': [
@@ -3527,6 +3551,7 @@
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
         # capacity has been deployed.
         'swarming': {
+          'quickrun_shards': 2,
           'dimension_sets': [
             {
               'device_type': 'sailfish',

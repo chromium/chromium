@@ -29394,6 +29394,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
+          "quickrun_shards": 8,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -37907,6 +37908,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
+          "quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "weblayer_browsertests",
