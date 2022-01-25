@@ -5695,6 +5695,7 @@
                     "name": "EnabledExploreAndTrendingSegmentation2",
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
+                        "behavioural_targeting": "model_comparison",
                         "experiment_tag": "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}",
                         "image_prefetch_mode": "top",
                         "is_unmetered_network_required": "false",
@@ -5709,7 +5710,8 @@
                         "QueryTilesInNTP",
                         "QueryTilesLocalOrdering",
                         "QueryTilesRemoveTrendingAfterInactivity",
-                        "QueryTilesSegmentation"
+                        "QueryTilesSegmentation",
+                        "SegmentationPlatformQueryTiles"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
@@ -5720,6 +5722,7 @@
                     "name": "EnabledExploreAndServerRankingAndRawTrendingSegmentation2",
                     "params": {
                         "base_url": "https://chromeupboarding-pa.googleapis.com",
+                        "behavioural_targeting": "model_comparison",
                         "experiment_tag": "{maxLevels : 1, rankTiles : true, enableTrending : true, maxTrendingQueries : 8, disableEntityTranslation: true}",
                         "image_prefetch_mode": "top",
                         "is_unmetered_network_required": "false",
@@ -5734,7 +5737,8 @@
                         "QueryTilesInNTP",
                         "QueryTilesLocalOrdering",
                         "QueryTilesRemoveTrendingAfterInactivity",
-                        "QueryTilesSegmentation"
+                        "QueryTilesSegmentation",
+                        "SegmentationPlatformQueryTiles"
                     ],
                     "disable_features": [
                         "QueryTilesEnableQueryEditing",
