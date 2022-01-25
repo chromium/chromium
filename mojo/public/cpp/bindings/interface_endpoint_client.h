@@ -293,10 +293,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   ScopedInterfaceEndpointHandle handle_;
   std::unique_ptr<AssociatedGroup> associated_group_;
-  raw_ptr<InterfaceEndpointController> controller_ = nullptr;
+  // `controller_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
+  InterfaceEndpointController* controller_ = nullptr;
 
-  const raw_ptr<MessageReceiverWithResponderStatus> incoming_receiver_ =
-      nullptr;
+  // `incoming_receiver_` is not a raw_ptr<...> for performance reasons (based
+  // on analysis of sampling profiler data).
+  MessageReceiverWithResponderStatus* const incoming_receiver_ = nullptr;
   HandleIncomingMessageThunk thunk_{this};
   MessageDispatcher dispatcher_;
 

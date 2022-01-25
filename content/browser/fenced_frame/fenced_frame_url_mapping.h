@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

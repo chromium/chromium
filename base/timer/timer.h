@@ -188,7 +188,9 @@ class BASE_EXPORT TimerBase {
 
   // Detects when the scheduled task is deleted before being executed. Null when
   // there is no scheduled task.
-  raw_ptr<TaskDestructionDetector> task_destruction_detector_
+  // `task_destruction_detector_` is not a raw_ptr<...> for performance reasons
+  // (based on analysis of sampling profiler data).
+  TaskDestructionDetector* task_destruction_detector_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Location in user code.

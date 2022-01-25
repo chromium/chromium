@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/export_template.h"
-#include "base/memory/raw_ptr.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 namespace url {
@@ -140,7 +139,9 @@ class CanonOutputT {
     return true;
   }
 
-  raw_ptr<T> buffer_;
+  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
+  T* buffer_;
   int buffer_len_;
 
   // Used characters in the buffer.
