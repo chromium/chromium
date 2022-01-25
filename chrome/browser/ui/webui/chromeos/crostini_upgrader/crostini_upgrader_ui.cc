@@ -70,7 +70,8 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"restoreMessage", IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE},
       {"restoreSucceededMessage",
        IDS_CROSTINI_UPGRADER_RESTORE_SUCCEEDED_MESSAGE},
-      {"logFileMessage", IDS_CROSTINI_UPGRADER_LOG_FILE},
+      {"logFileMessageError", IDS_CROSTINI_UPGRADER_LOG_FILE_ERROR},
+      {"logFileMessageSuccess", IDS_CROSTINI_UPGRADER_LOG_FILE_SUCCESS},
 
       {"backupCheckboxMessage", IDS_CROSTINI_UPGRADER_BACKUP_CHECKBOX_MESSAGE},
       {"backupChangeLocation", IDS_CROSTINI_UPGRADER_BACKUP_CHANGE_LOCATION},

@@ -98,7 +98,7 @@ suite('<crostini-upgrader-app>', () => {
   };
 
   const getCancelButton = () => {
-    return app.$$('.cancel-button');
+    return app.$$('#cancel-button');
   };
 
   const clickAction = async () => {
@@ -221,7 +221,7 @@ suite('<crostini-upgrader-app>', () => {
     fakeBrowserProxy.page.onRestoreSucceeded();
     await flushTasks();
 
-    await clickAction();
+    await clickCancel();
     expectEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
     expectEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });

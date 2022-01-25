@@ -81,7 +81,7 @@ void CrostiniUpgraderDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 bool CrostiniUpgraderDialog::ShouldShowCloseButton() const {
-  return true;
+  return false;
 }
 
 bool CrostiniUpgraderDialog::ShouldShowDialogTitle() const {

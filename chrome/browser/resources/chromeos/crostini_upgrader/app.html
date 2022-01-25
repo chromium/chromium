@@ -17,12 +17,6 @@
     width: 180px;
   }
 
-  #img-square-error-illustration {
-    align-self: center;
-    height: 180px;
-    width: 180px;
-  }
-
   #icon {
     fill: var(--cros-icon-color-prominent);
     height: 32px;
@@ -92,6 +86,7 @@
 
   #button-container {
     display: flex;
+    gap: 8px;
     justify-content: flex-end;
     margin: 32px 0;
   }
@@ -144,15 +139,17 @@
       <paper-progress class="progress-bar" indeterminate></paper-progress>
     </div>
     <div id="upgrade-error-message" hidden="[[isErrorLogsHidden_(state_)]]">
-      <textarea id="error-log" rows="10" cols="80" readonly>[[getErrorLogs_(state_)]]</textarea>
+      <textarea id="error-log" rows="20" cols="80" readonly>
+        [[getErrorLogs_(state_)]]
+      </textarea>
     </div>
   </div>
 
   <img id="[[getIllustrationStyle_(state_)]]"
       src="[[getIllustrationURI_(state_)]]" alt=""
       hidden="[[hideIllustration_(state_)]]">
-  <div id="log-storage-message" hidden="[[isLogsMessageHidden_(state_)]]">
-    <span>$i18n{logFileMessage} [[logFileName_]]</span>
+  <div id="log-storage-message-error" hidden="[[isLogsMessageHidden_(state_)]]">
+    <span>[[getLogMessage_(state_, logFileName_)]]</span>
   </div>
   <div id="backup-checkbox" hidden="[[!isState_(state_, State.PROMPT)]]">
     <cr-checkbox checked="{{backupCheckboxChecked_}}" >
@@ -165,7 +162,7 @@
     </cr-checkbox>
   </div>
   <div id="button-container">
-    <cr-button class="cancel-button" on-click="onCancelButtonClick_"
+    <cr-button id="cancel-button" on-click="onCancelButtonClick_"
         hidden="[[!canCancel_(state_)]]">
       [[getCancelButtonLabel_(state_)]]
     </cr-button>
