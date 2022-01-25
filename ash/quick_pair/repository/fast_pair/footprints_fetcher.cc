@@ -31,6 +31,7 @@ const char kUserDeleteDeviceUrl[] =
     "https://nearbydevices-pa.googleapis.com/v1/user/devices/%s"
     "?key=%s&alt=proto";
 
+// TODO(crbug/1226117): Update annotation with policy details when available.
 const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefinePartialNetworkTrafficAnnotation("fast_pair_footprints_request",
                                                "oauth2_api_call_flow",
@@ -47,17 +48,10 @@ const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
       }
       policy {
           cookies_allowed: NO
-          setting:
-            "You can enable or disable this feature by toggling on/off the "
-            "Fast Pair toggle in chrome://os-settings under 'Bluetooth'. The "
-            "feature is enabled by default. Fast Pair does not fetch data from "
-            "the repository if the user is not signed in."
-          chrome_policy {
-            FastPairEnabled {
-                FastPairEnabled: true
-            }
-          }
-        })");
+          setting: "There is a toggle in OS Settings under Bluetooth."
+          policy_exception_justification:
+            "Not yet created, feature disabled by flag"
+      })");
 
 std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
   return std::make_unique<OAuthHttpFetcher>(
