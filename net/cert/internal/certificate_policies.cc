@@ -161,19 +161,7 @@ bool ParseCertificatePoliciesExtensionImpl(
     if (!policy_information_parser.ReadTag(der::kOid, &policy_oid))
       return false;
 
-    // Build the |policy_oids| vector in sorted order (sorted on DER encoded
-    // policy OID). Use a binary search to check whether a duplicate policy is
-    // present, and if not, where to insert the policy to maintain the sorted
-    // order.
-    auto i =
-        std::lower_bound(policy_oids->begin(), policy_oids->end(), policy_oid);
-    // RFC 5280 section 4.2.1.4: A certificate policy OID MUST NOT appear more
-    // than once in a certificate policies extension.
-    if (i != policy_oids->end() && *i == policy_oid) {
-      errors->AddError(kPoliciesDuplicateOid,
-                       CreateCertErrorParams1Der("oid", policy_oid));
-      return false;
-    }
+    policy_oids->push_back(policy_oid);
 
     std::vector<PolicyQualifierInfo>* policy_qualifiers = nullptr;
     if (policy_informations) {
@@ -181,8 +169,6 @@ bool ParseCertificatePoliciesExtensionImpl(
       policy_informations->back().policy_oid = policy_oid;
       policy_qualifiers = &policy_informations->back().policy_qualifiers;
     }
-
-    policy_oids->insert(i, policy_oid);
 
     if (!policy_information_parser.HasMore())
       continue;
@@ -209,6 +195,17 @@ bool ParseCertificatePoliciesExtensionImpl(
       errors->AddError(kFailedParsingPolicyQualifiers);
       return false;
     }
+  }
+
+  // RFC 5280 section 4.2.1.4: A certificate policy OID MUST NOT appear more
+  // than once in a certificate policies extension.
+  std::sort(policy_oids->begin(), policy_oids->end());
+  auto dupe_policy_iter =
+      std::adjacent_find(policy_oids->begin(), policy_oids->end());
+  if (dupe_policy_iter != policy_oids->end()) {
+    errors->AddError(kPoliciesDuplicateOid,
+                     CreateCertErrorParams1Der("oid", *dupe_policy_iter));
+    return false;
   }
 
   return true;
