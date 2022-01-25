@@ -2369,8 +2369,9 @@ TEST_P(AppListViewTabletTest, DisplayTest) {
 }
 
 // Tests switching rapidly between multiple pages of the launcher.
-// TODO(https://crbug.com/1280300): Fix or skip for ProductivityLauncher.
-TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
+// ProductivityLauncher has tests of animated page transitions in the tests for
+// AppListBubbleView and AppListBubbleAppsPage.
+TEST_F(AppListViewPeekingTest, PageSwitchingAnimationTest) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
