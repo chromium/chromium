@@ -8,11 +8,13 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -1719,13 +1721,19 @@ TEST_F(TemplateURLTest, ReplacePageClassification) {
   search_terms_args.page_classification = metrics::OmniboxEventProto::NTP;
   result = url.url_ref().ReplaceSearchTerms(search_terms_args,
                                             search_terms_data_);
-  EXPECT_EQ("http://www.google.com/?pgcl=1&q=foo", result);
+  EXPECT_EQ(base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)
+                ? "http://www.google.com/?q=foo"
+                : "http://www.google.com/?pgcl=1&q=foo",
+            result);
 
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::HOME_PAGE;
   result = url.url_ref().ReplaceSearchTerms(search_terms_args,
                                             search_terms_data_);
-  EXPECT_EQ("http://www.google.com/?pgcl=3&q=foo", result);
+  EXPECT_EQ(base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)
+                ? "http://www.google.com/?q=foo"
+                : "http://www.google.com/?pgcl=3&q=foo",
+            result);
 }
 
 // Test the IsSearchResults function.
