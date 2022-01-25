@@ -87122,9 +87122,12 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="ULPLanguageStatus">
-  <int value="0" label="Top ULP language"/>
-  <int value="1" label="Non-top ULP language"/>
+  <int value="0" label="Top ULP language (Exact Match)"/>
+  <int value="1" label="Non-top ULP language (Exact Match)"/>
   <int value="2" label="Language not in ULP"/>
+  <int value="3" label="Top ULP language (Base Match)"/>
+  <int value="4" label="Non-top ULP language (Base Match)"/>
+  <int value="5" label="Language empty"/>
 </enum>
 
 <enum name="UmaCleanExitConsistency">

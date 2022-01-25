@@ -52,17 +52,17 @@ void RecordULPInitMetrics(Profile* profile,
   logger.RecordInitiationUILanguageInULP(
       logger.DetermineLanguageStatus(app_locale, ulp_languages));
 
-  const std::string translate_target_language =
+  const std::string target_language =
       translate::TranslatePrefs(pref_service).GetRecentTargetLanguage();
   logger.RecordInitiationTranslateTargetInULP(
-      logger.DetermineLanguageStatus(translate_target_language, ulp_languages));
+      logger.DetermineLanguageStatus(target_language, ulp_languages));
 
   std::vector<std::string> accept_languages;
   language::LanguagePrefs(pref_service)
       .GetAcceptLanguagesList(&accept_languages);
 
   language::ULPLanguageStatus accept_language_status =
-      language::ULPLanguageStatus::kLanguageNotInULP;
+      language::ULPLanguageStatus::kLanguageEmpty;
   if (accept_languages.size() > 0) {
     accept_language_status =
         logger.DetermineLanguageStatus(accept_languages[0], ulp_languages);
