@@ -22,21 +22,27 @@ namespace network_time {
 // and the x-cup-server-proof header into |kGoodTimeResponseBody| and
 // |kGoodTimeResponseServerProofHeader| respectively, and the
 // 'current_time_millis' value of the response into
-// |kGoodTimeResponseHandlerJsTime|.  Do this twice, so that the two requests
-// appear in order below.
+// |kGoodTimeResponseHandlerJsTime|.  Do this three times, so that the three
+// requests appear in order below.
 const char* kGoodTimeResponseBody[] = {
     ")]}'\n{\"current_time_millis\":1619464140565,"
     "\"server_nonce\":-1.656679479914492E230}",
     ")]}'\n{\"current_time_millis\":1619464273366,"
-    "\"server_nonce\":2.1195306862817135E-5}"};
+    "\"server_nonce\":2.1195306862817135E-5}",
+    ")]}'\n{\"current_time_millis\":1642162812422,"
+    "\"server_nonce\":3.374791108303444E207}"};
 const char* kGoodTimeResponseServerProofHeader[] = {
     "3045022100f829ced2af34ade53400f66eef6df9af732fa8bfe08517287c2805c92891e321"
     "022062fb405b2cf12bc3e2ac037985c4b8065a62e86e29a2e745ebff80fd52189c6a:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "3046022100c78436ad47904634aacd33f4c4bcb55bd6f7f2ed84a620fda0deaede99c32de6"
     "022100b595458bd03d83f33bfb891de1327b26620d576937f3713af59bb1f2c53f2e8b:"
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3045022100f50a8e6f97d8c362f878e2c988ab2c983e536de4dc2116a314699a4010d7d8b8"
+    "02202ace752a45721399ec6dd704da55700c9b11626f7c55a72037db255b79992476:"
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"};
-const double kGoodTimeResponseHandlerJsTime[] = {1619464140565, 1619464273366};
+const double kGoodTimeResponseHandlerJsTime[] = {1619464140565, 1619464273366,
+                                                 1642162812422};
 
 std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
     const net::test_server::HttpRequest& request) {

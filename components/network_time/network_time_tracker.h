@@ -157,7 +157,7 @@ class NetworkTimeTracker {
 
   GURL GetTimeServerURLForTesting() const;
 
-  bool QueryTimeServiceForTesting();
+  bool QueryTimeServiceForTesting(bool on_demand = true);
 
   void WaitForFetchForTesting(uint32_t nonce);
 
@@ -180,12 +180,13 @@ class NetworkTimeTracker {
 
   // Updates network time from a time server response, returning true
   // if successful.
-  bool UpdateTimeFromResponse(std::unique_ptr<std::string> response_body);
+  bool UpdateTimeFromResponse(CheckTimeType check_type,
+                              std::unique_ptr<std::string> response_body);
 
   // Records histograms related to clock skew. All of these histograms are
   // currently local-only. See https://crbug.com/1258624.
   void RecordClockSkewHistograms(base::Time current_time,
-                                 base::TimeDelta fetch_latency) const;
+                                 base::TimeDelta fetch_latency);
 
   // Called to process responses from the secure time service.
   void OnURLLoaderComplete(CheckTimeType check_type,

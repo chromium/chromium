@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -160,6 +161,12 @@ void RecordFetchValidHistogram(bool valid) {
   LOCAL_HISTOGRAM_BOOLEAN("NetworkTimeTracker.UpdateTimeFetchValid", valid);
 }
 
+void UmaHistogramCustomTimesClockSkew(const char* name,
+                                      base::TimeDelta sample) {
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(1),
+                                base::Days(7), 50);
+}
+
 }  // namespace
 
 // static
@@ -289,8 +296,8 @@ void NetworkTimeTracker::SetPublicKeyForTesting(base::StringPiece key) {
   query_signer_ = client_update_protocol::Ecdsa::Create(kKeyVersion, key);
 }
 
-bool NetworkTimeTracker::QueryTimeServiceForTesting() {
-  CheckTime(CheckTimeType::ON_DEMAND);
+bool NetworkTimeTracker::QueryTimeServiceForTesting(bool on_demand) {
+  CheckTime(on_demand ? CheckTimeType::ON_DEMAND : CheckTimeType::BACKGROUND);
   return time_fetcher_ != nullptr;
 }
 
@@ -483,6 +490,7 @@ void NetworkTimeTracker::CheckTime(CheckTimeType check_type) {
 }
 
 bool NetworkTimeTracker::UpdateTimeFromResponse(
+    CheckTimeType check_type,
     std::unique_ptr<std::string> response_body) {
   int response_code = 0;
   if (time_fetcher_->ResponseInfo() && time_fetcher_->ResponseInfo()->headers)
@@ -542,8 +550,6 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   base::TimeDelta latency = tick_clock_->NowTicks() - fetch_started_;
   LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.TimeQueryLatency", latency);
 
-  historical_latencies_.Record(latency);
-
   if (!last_fetched_time_.is_null()) {
     LOCAL_HISTOGRAM_CUSTOM_TIMES("NetworkTimeTracker.TimeBetweenFetches",
                                  current_time - last_fetched_time_,
@@ -551,7 +557,8 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
   }
   last_fetched_time_ = current_time;
 
-  RecordClockSkewHistograms(current_time, latency);
+  if (check_type == CheckTimeType::BACKGROUND)
+    RecordClockSkewHistograms(current_time, latency);
 
   UpdateNetworkTime(current_time, resolution, latency, tick_clock_->NowTicks());
   return true;
@@ -559,30 +566,12 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
 
 void NetworkTimeTracker::RecordClockSkewHistograms(
     base::Time current_time,
-    base::TimeDelta fetch_latency) const {
+    base::TimeDelta fetch_latency) {
   // Compute the skew by comparing the reference clock to the system clock. Note
   // that the server processed our query roughly `fetch_latency/2` units of time
   // in the past. Adjust the `current_time` accordingly.
   base::TimeDelta system_clock_skew =
-      base::Time::NowFromSystemTime() - (current_time + fetch_latency / 2);
-
-  enum class ClockSkewRange {
-    TooSmall = 0,
-    InRange = 1,
-    TooBig = 2,
-    kMaxValue = TooBig,
-  };
-
-  auto DetermineClockSkewRange =
-      [](base::TimeDelta system_clock_skew) -> ClockSkewRange {
-    // These bounds must be updated if/when we switch to a custom "times"
-    // histogram. For now, they are calibrated for `LOCAL_HISTOGRAM_TIMES`.
-    if (system_clock_skew > base::Seconds(10))
-      return ClockSkewRange::TooBig;
-    if (system_clock_skew < base::Milliseconds(1))
-      return ClockSkewRange::TooSmall;
-    return ClockSkewRange::InRange;
-  };
+      clock_->Now() - (current_time + fetch_latency / 2);
 
   // Add noise for privacy reasons.
   system_clock_skew +=
@@ -590,25 +579,22 @@ void NetworkTimeTracker::RecordClockSkewHistograms(
 
   // Explicitly record clock skew of zero in the "positive" histograms.
   if (system_clock_skew >= base::TimeDelta()) {
-    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.Magnitude.Positive",
-                          system_clock_skew);
-    LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Positive",
-                                DetermineClockSkewRange(system_clock_skew));
+    UmaHistogramCustomTimesClockSkew(
+        "PrivacyBudget.ClockSkew.Magnitude.Positive", system_clock_skew);
   } else if (system_clock_skew.is_negative()) {
-    base::TimeDelta magnitude = system_clock_skew.magnitude();
-    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.Magnitude.Negative",
-                          magnitude);
-    LOCAL_HISTOGRAM_ENUMERATION("NetworkTimeTracker.ClockSkew.Range.Negative",
-                                DetermineClockSkewRange(magnitude));
+    UmaHistogramCustomTimesClockSkew(
+        "PrivacyBudget.ClockSkew.Magnitude.Negative", -system_clock_skew);
   }
 
-  LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.FetchLatency",
-                        fetch_latency);
+  base::UmaHistogramTimes("PrivacyBudget.ClockSkew.FetchLatency",
+                          fetch_latency);
+  historical_latencies_.Record(fetch_latency);
+
   absl::optional<base::TimeDelta> latency_jitter =
       historical_latencies_.StdDeviation();
   if (latency_jitter.has_value()) {
-    LOCAL_HISTOGRAM_TIMES("NetworkTimeTracker.ClockSkew.FetchLatencyJitter",
-                          latency_jitter.value());
+    base::UmaHistogramTimes("PrivacyBudget.ClockSkew.FetchLatencyJitter",
+                            latency_jitter.value());
   }
 }
 
@@ -623,6 +609,7 @@ void NetworkTimeTracker::OnURLLoaderComplete(
   // After completion of a query, whether succeeded or failed, go to sleep for a
   // long time.
   if (!UpdateTimeFromResponse(
+          check_type,
           std::move(response_body))) {  // On error, back off.
     if (backoff_ < base::Days(2)) {
       backoff_ *= 2;
