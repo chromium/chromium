@@ -15,11 +15,7 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace {
-
-constexpr int kBlockSizeBytes = 16;
-
-}  // namespace
+constexpr inline int kBlockSizeBytes = 16;
 
 namespace ash {
 namespace quick_pair {

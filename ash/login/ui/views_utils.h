@@ -20,26 +20,22 @@ namespace ash {
 
 namespace login_views_utils {
 
-namespace {
-
 // The most used font size on login/lock screen.
-constexpr int kLoginDefaultFontSize = 13;
+constexpr inline int kLoginDefaultFontSize = 13;
 
 // The most used font on login/lock screen.
-constexpr char kLoginDefaultFontName[] = "Roboto";
-constexpr char kGoogleSansFont[] = "Google Sans";
+constexpr inline char kLoginDefaultFontName[] = "Roboto";
+constexpr inline char kGoogleSansFont[] = "Google Sans";
 
-constexpr int kDefaultLineHeight = 20;
+constexpr inline int kDefaultLineHeight = 20;
 
 // Helper function to get default font list for login/lock screen text label.
 // It is slightly different from views::Label::GetDefaultFontList since the
 // font size returned is 13 pt instead of 12 pt.
-const gfx::FontList GetLoginDefaultFontList() {
+inline const gfx::FontList GetLoginDefaultFontList() {
   return gfx::FontList({kLoginDefaultFontName}, gfx::Font::FontStyle::NORMAL,
                        kLoginDefaultFontSize, gfx::Font::Weight::NORMAL);
 }
-
-}  // namespace
 
 // Wraps view in another view so the original view is sized to it's preferred
 // size, regardless of the view's parent's layout manager.

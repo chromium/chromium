@@ -20,14 +20,10 @@
 
 namespace ash {
 
-namespace {
-
 // A simple std::list of calendar events, used to store a single day's events
 // in EventMap. Not to be confused with google_apis::calendar::EventList,
 // which represents the return value of a query from the GoogleCalendar API.
 using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
-
-}  // namespace
 
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarViewController {
