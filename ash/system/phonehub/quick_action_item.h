@@ -6,13 +6,19 @@
 #define ASH_SYSTEM_PHONEHUB_QUICK_ACTION_ITEM_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/unified/feature_pod_button.h"
+#include "ui/views/view.h"
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace views {
 class Label;
 }
 
 namespace ash {
+
+class IconButton;
 
 // A toggle button with labels used in the quick action view.
 class ASH_EXPORT QuickActionItem : public views::View {
@@ -58,11 +64,11 @@ class ASH_EXPORT QuickActionItem : public views::View {
   void RequestFocus() override;
   const char* GetClassName() const override;
 
-  FeaturePodIconButton* icon_button() const { return icon_button_; }
+  IconButton* icon_button() const { return icon_button_; }
 
  private:
   // Owned by views hierarchy.
-  FeaturePodIconButton* icon_button_ = nullptr;
+  IconButton* icon_button_ = nullptr;
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
 

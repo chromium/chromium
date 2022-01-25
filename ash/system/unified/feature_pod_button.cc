@@ -46,23 +46,6 @@ void ConfigureFeaturePodLabel(views::Label* label,
 
 }  // namespace
 
-FeaturePodIconButton::FeaturePodIconButton(PressedCallback callback,
-                                           bool is_togglable)
-    : IconButton(std::move(callback),
-                 IconButton::Type::kMedium,
-                 /*icon=*/nullptr,
-                 is_togglable,
-                 /*has_border=*/true) {
-  SetFlipCanvasOnPaintForRTLUI(false);
-  GetViewAccessibility().OverrideIsLeaf(true);
-}
-
-FeaturePodIconButton::~FeaturePodIconButton() = default;
-
-const char* FeaturePodIconButton::GetClassName() const {
-  return "FeaturePodIconButton";
-}
-
 FeaturePodLabelButton::FeaturePodLabelButton(PressedCallback callback)
     : Button(std::move(callback)),
       label_(new views::Label),
@@ -216,13 +199,17 @@ void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {
 
 FeaturePodButton::FeaturePodButton(FeaturePodControllerBase* controller,
                                    bool is_togglable)
-    : icon_button_(new FeaturePodIconButton(
+    : icon_button_(new IconButton(
           base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                               base::Unretained(controller)),
-          is_togglable)),
+          IconButton::Type::kMedium,
+          /*icon=*/nullptr,
+          is_togglable,
+          /*has_border=*/true)),
       label_button_(new FeaturePodLabelButton(
           base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
                               base::Unretained(controller)))) {
+  icon_button_->SetFlipCanvasOnPaintForRTLUI(false);
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kUnifiedFeaturePodSpacing));
