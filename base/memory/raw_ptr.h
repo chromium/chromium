@@ -37,7 +37,7 @@ namespace cc {
 class Scheduler;
 }
 namespace base::internal {
-class TimerBase;
+class DelayTimerBase;
 }
 namespace content::responsiveness {
 class Calculator;
@@ -336,7 +336,7 @@ struct IsSupportedType<cc::Scheduler> {
   static constexpr bool value = false;
 };
 template <>
-struct IsSupportedType<base::internal::TimerBase> {
+struct IsSupportedType<base::internal::DelayTimerBase> {
   static constexpr bool value = false;
 };
 template <>
