@@ -7316,21 +7316,6 @@
             ]
         }
     ],
-    "VirtualKeyboardBorderedKey": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VirtualKeyboardBorderedKey"
-                    ]
-                }
-            ]
-        }
-    ],
     "Vulkan": [
         {
             "platforms": [
