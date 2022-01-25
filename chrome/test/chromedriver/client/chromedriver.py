@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
 import platform
 import sys
 import util
+
 import psutil
 
 import command_executor
@@ -141,7 +141,7 @@ class ChromeDriver(object):
     try:
       self._InternalInit(server_url, **kwargs)
     except Exception as e:
-      if not e.message.startswith('timed out'):
+      if not str(e).startswith('timed out'):
         raise
       else:
         # Kill ChromeDriver child processes recursively
@@ -344,13 +344,13 @@ class ChromeDriver(object):
       if (self.w3c_compliant and len(value) == 1
           and ELEMENT_KEY_W3C in value
           and isinstance(
-            value[ELEMENT_KEY_W3C], basestring)):
+            value[ELEMENT_KEY_W3C], str)):
         return WebElement(self, value[ELEMENT_KEY_W3C])
       elif (len(value) == 1 and SHADOW_KEY in value
-            and isinstance(value[SHADOW_KEY], basestring)):
+            and isinstance(value[SHADOW_KEY], str)):
         return WebShadowRoot(self, value[SHADOW_KEY])
       elif (len(value) == 1 and ELEMENT_KEY in value
-            and isinstance(value[ELEMENT_KEY], basestring)):
+            and isinstance(value[ELEMENT_KEY], str)):
         return WebElement(self, value[ELEMENT_KEY])
       else:
         unwraped = {}
@@ -367,7 +367,7 @@ class ChromeDriver(object):
     try:
       response = self._executor.Execute(command, params)
     except Exception as e:
-      if e.message.startswith('timed out'):
+      if str(e).startswith('timed out'):
         self._RequestCrash()
       raise e
 
@@ -393,8 +393,9 @@ class ChromeDriver(object):
       # In some cases, Chrome will not honor the request
       # Print the exception as it may give information on the Chrome state
       # but Page.crash will also generate exception, so filter that out
-      if 'session deleted because of page crash' not in e.message:
-        print('\n Exception from Page.crash: ' + str(e.message) + '\n')
+      message = str(e)
+      if 'session deleted because of page crash' not in message:
+        print('\n Exception from Page.crash: ' + message + '\n')
     tempDriver.Quit()
 
   def ExecuteCommand(self, command, params={}):
@@ -445,7 +446,7 @@ class ChromeDriver(object):
         {'script': script, 'args': converted_args})
 
   def SwitchToFrame(self, id_or_name):
-    if isinstance(id_or_name, basestring) and self.w3c_compliant:
+    if isinstance(id_or_name, str) and self.w3c_compliant:
         try:
           id_or_name = self.FindElement('css selector',
                                         '[id="%s"]' % id_or_name)

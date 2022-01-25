@@ -2,13 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import absolute_import
-import six.moves.BaseHTTPServer
+import http.server
 import os
-import six.moves.socketserver
-import threading
+import socketserver
 import ssl
 import sys
+import threading
 
 
 class Responder(object):
@@ -24,7 +23,7 @@ class Responder(object):
 
   def SendResponseFromFile(self, path):
     """Sends OK response with the given file as the body."""
-    with open(path, 'r') as f:
+    with open(path, 'rb') as f:
       self.SendResponse({}, f.read())
 
   def SendHeaders(self, headers={}, content_length=None):
@@ -55,10 +54,10 @@ class Request(object):
     return self._handler.path
 
   def GetHeader(self, name):
-    return self._handler.headers.getheader(name)
+    return self._handler.headers.get(name)
 
 
-class _BaseServer(six.moves.BaseHTTPServer.HTTPServer):
+class _BaseServer(http.server.HTTPServer):
   """Internal server that throws if timed out waiting for a request."""
 
   def __init__(self, on_request, server_cert_and_key_path=None):
@@ -71,7 +70,7 @@ class _BaseServer(six.moves.BaseHTTPServer.HTTPServer):
       server_cert_and_key_path: path to a PEM file containing the cert and key.
                                 if it is None, start the server as an HTTP one.
     """
-    class _Handler(six.moves.BaseHTTPServer.BaseHTTPRequestHandler):
+    class _Handler(http.server.BaseHTTPRequestHandler):
       """Internal handler that just asks the server to handle the request."""
 
       def do_GET(self):
@@ -86,17 +85,17 @@ class _BaseServer(six.moves.BaseHTTPServer.HTTPServer):
 
       def handle(self):
         try:
-          six.moves.BaseHTTPServer.BaseHTTPRequestHandler.handle(self)
+          http.server.BaseHTTPRequestHandler.handle(self)
         except:
           pass # Ignore socket errors.
 
       def finish(self):
         try:
-          six.moves.BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
+          http.server.BaseHTTPRequestHandler.finish(self)
         except:
           pass # Ignore socket errors.
 
-    six.moves.BaseHTTPServer.HTTPServer.__init__(self, ('127.0.0.1', 0), \
+    http.server.HTTPServer.__init__(self, ('127.0.0.1', 0), \
       _Handler)
 
     if server_cert_and_key_path is not None:
@@ -118,7 +117,7 @@ class _BaseServer(six.moves.BaseHTTPServer.HTTPServer):
     return 'http' + postfix
 
 
-class _ThreadingServer(six.moves.socketserver.ThreadingMixIn, _BaseServer):
+class _ThreadingServer(socketserver.ThreadingMixIn, _BaseServer):
   """_BaseServer enhanced to handle multiple requests simultaneously"""
   pass
 

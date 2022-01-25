@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -309,13 +309,13 @@ def _ReplaceWindowAndElementIds(payload, id_map):
   """
   if isinstance(payload, dict):
     for key, value in payload.items():
-      if isinstance(value, basestring) and value in id_map:
+      if isinstance(value, str) and value in id_map:
         payload[key] = id_map[value]
       else:
         _ReplaceWindowAndElementIds(payload[key], id_map)
   elif isinstance(payload, list):
     for i, value in enumerate(payload):
-      if isinstance(value, basestring) and value in id_map:
+      if isinstance(value, str) and value in id_map:
         payload[i] = id_map[value]
       else:
         _ReplaceWindowAndElementIds(payload[i], id_map)
@@ -830,7 +830,7 @@ class CommandSequence(object):
         command_response_pairs[next_entry.session_id]["command"] = next_entry
 
     response = [
-        {u"id": key, u"capabilities": val["response"].GetPayloadPrimitive()}
+        {"id": key, "capabilities": val["response"].GetPayloadPrimitive()}
         for key, val in command_response_pairs.items()
     ]
     self._last_response = _GetSessionsResponseEntry(response)

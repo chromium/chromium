@@ -36,11 +36,11 @@ To run these tests, first build Chrome and ChromeDriver, and then
 invoke `run_py_tests.py`:
 ```
 autoninja -C out/Default chrome chromedriver
-python <CHROMEDRIVER_DIR>/test/run_py_tests.py --chromedriver=out/Default/chromedriver
+python3 <CHROMEDRIVER_DIR>/test/run_py_tests.py --chromedriver=out/Default/chromedriver
 ```
 
 The `run_py_tests.py` script has a number of options.
-Run it with `--help` for more information. 
+Run it with `--help` for more information.
 The only require option is `--chromedriver` to specify the location of
 the ChromeDriver binary.
 
@@ -124,7 +124,7 @@ git clone https://chromium.googlesource.com/chromium/deps/webdriver java_tests
 
 After the setup, the tests can be run with
 ```
-python <CHROMEDRIVER_DIR>/test/run_java_tests.py --chromedriver=out/Default/chromedriver
+python3 <CHROMEDRIVER_DIR>/test/run_java_tests.py --chromedriver=out/Default/chromedriver
 ```
 
 The `run_py_tests.py` script has a number of options.

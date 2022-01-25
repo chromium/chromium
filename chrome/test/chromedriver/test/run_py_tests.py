@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,9 +11,8 @@
 # TODO (crbug.com/857239): Remove above comment when adb version
 # is updated in Devil.
 
-from __future__ import print_function
-from __future__ import absolute_import
 import base64
+import imghdr
 import json
 import math
 import optparse
@@ -21,20 +20,17 @@ import os
 import re
 import shutil
 import socket
+import struct
 import subprocess
 import sys
 import tempfile
 import threading
 import time
 import unittest
-import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
-import six.moves.urllib.request, six.moves.urllib.error, six.moves.urllib.parse
+import urllib.error
+import urllib.parse
+import urllib.request
 import uuid
-import imghdr
-import struct
-from six.moves import map
-from six.moves import range
-from six.moves import zip
 
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -412,19 +408,19 @@ class ChromeDriverBaseTestWithWebServer(ChromeDriverBaseTest):
         chrome_paths.GetTestData(), cert_path)
 
     def respondWithUserAgentString(request):
-      return {}, """
+      return {}, bytes("""
         <html>
         <body>%s</body>
-        </html>""" % request.GetHeader('User-Agent')
+        </html>""" % request.GetHeader('User-Agent'), 'utf-8')
 
     def respondWithUserAgentStringUseDeviceWidth(request):
-      return {}, """
+      return {}, bytes("""
         <html>
         <head>
         <meta name="viewport" content="width=device-width,minimum-scale=1.0">
         </head>
         <body>%s</body>
-        </html>""" % request.GetHeader('User-Agent')
+        </html>""" % request.GetHeader('User-Agent'), 'utf-8')
 
     ChromeDriverBaseTestWithWebServer._http_server.SetCallbackForPath(
         '/userAgent', respondWithUserAgentString)
@@ -463,16 +459,16 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
     send_response = threading.Event()
     def waitAndRespond():
         send_response.wait(10)
-        self._sync_server.RespondWithContent('#')
+        self._sync_server.RespondWithContent(b'#')
     thread = threading.Thread(target=waitAndRespond)
 
     self._http_server.SetDataForPath('/top.html',
-     """
+     bytes("""
      <html><body>
      <div id='top'>
        <img src='%s'>
      </div>
-     </body></html>""" % self._sync_server.GetUrl())
+     </body></html>""" % self._sync_server.GetUrl(), 'utf-8'))
     eager_driver = self.CreateDriver(page_load_strategy='eager')
     thread.start()
     start_eager = monotonic()
@@ -490,7 +486,7 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
 
       def slowPage(self, request):
         self.sent_hello.wait(2)
-        return {}, """
+        return {}, b"""
         <html>
         <body>hello</body>
         </html>"""
@@ -935,7 +931,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>a</div><div>b</div>";')
-    self.assertRaisesRegexp(chromedriver.NoSuchElement,
+    self.assertRaisesRegex(chromedriver.NoSuchElement,
                             'no such element: Unable '
                             'to locate element: {"method":"tag name",'
                             '"selector":"divine"}',
@@ -1750,9 +1746,9 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     time.sleep(1)
 
     platform = util.GetPlatformName()
-    modifier_key = u'\uE009'
+    modifier_key = '\uE009'
     if platform == 'mac':
-      modifier_key = u'\uE03D'
+      modifier_key = '\uE03D'
 
     # This is a sequence of actions, first move the mouse to input field
     # "elem1", then press ctrl/cmd key and 'a' key to select all the text in
@@ -1850,9 +1846,9 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(ChromeDriverTest.GetHttpUrlForFile(
         '/chromedriver/two_inputs.html'))
     elem = self._driver.FindElement('css selector', '#first')
-    expected = u'T\U0001f4a9XL\u0436'.encode('utf-8')
+    expected = 'T💩XLж'
     elem.SendKeys(expected)
-    actual = elem.GetProperty('value').encode('utf-8')
+    actual = elem.GetProperty('value')
     self.assertEqual(expected, actual)
 
   def testGetElementAttribute(self):
@@ -1967,12 +1963,12 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     """Tests that ChromeDriver determines loading correctly for new windows."""
     self._http_server.SetDataForPath(
         '/newwindow',
-        """
+        bytes("""
         <html>
         <body>
         <a href='%s' target='_blank'>new window/tab</a>
         </body>
-        </html>""" % self._sync_server.GetUrl())
+        </html>""" % self._sync_server.GetUrl(), 'utf-8'))
     self._driver.Load(self._http_server.GetUrl() + '/newwindow')
     old_windows = self._driver.GetWindowHandles()
     self._driver.FindElement('tag name', 'a').Click()
@@ -1982,7 +1978,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertFalse(self._driver.IsLoading())
     self._driver.SwitchToWindow(new_window)
     self.assertTrue(self._driver.IsLoading())
-    self._sync_server.RespondWithContent('<html>new window</html>')
+    self._sync_server.RespondWithContent(b'<html>new window</html>')
     self._driver.ExecuteScript('return 1')  # Shouldn't hang.
 
   def testPopups(self):
@@ -2052,7 +2048,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     target = handle[len(handle_prefix):]
     self._driver.SetWindowRect(640, 400, 100, 200)
     rect = self._driver.MinimizeWindow()
-    expected_rect = {u'y': 200, u'width': 640, u'height': 400, u'x': 100}
+    expected_rect = {'y': 200, 'width': 640, 'height': 400, 'x': 100}
 
     #check it returned the correct rect
     for key in expected_rect.keys():
@@ -2130,7 +2126,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     try:
       self._driver.GetLog('browser')
     except chromedriver.ChromeDriverException as e:
-      self.fail('exception while calling GetLog on a closed tab: ' + e.message)
+      self.fail('exception while calling GetLog on a closed tab: {}'.format(e))
 
   def testGetLogOnWindowWithAlert(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -2138,7 +2134,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     try:
       self._driver.GetLog('browser')
     except Exception as e:
-      self.fail(e.message)
+      self.fail(str(e))
 
   def testDoesntHangOnDebugger(self):
     self._driver.Load('about:blank')
@@ -2185,7 +2181,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testEmulateNetworkConditionsSpeed(self):
     # Warm up the browser.
     self._http_server.SetDataForPath(
-        '/', "<html><body>blank</body></html>")
+        '/', b"<html><body>blank</body></html>")
     self._driver.Load(self._http_server.GetUrl() + '/')
 
     # DSL: 2Mbps throughput, 5ms RTT
@@ -2198,7 +2194,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     _1_megabyte = _32_bytes * 32768
     self._http_server.SetDataForPath(
         '/1MB',
-        "<html><body>%s</body></html>" % _1_megabyte)
+        bytes("<html><body>%s</body></html>" % _1_megabyte, 'utf-8'))
     start = monotonic()
     self._driver.Load(self._http_server.GetUrl() + '/1MB')
     finish = monotonic()
@@ -2210,7 +2206,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
   def testEmulateNetworkConditionsNameSpeed(self):
     # Warm up the browser.
     self._http_server.SetDataForPath(
-        '/', "<html><body>blank</body></html>")
+        '/', b"<html><body>blank</body></html>")
     self._driver.Load(self._http_server.GetUrl() + '/')
 
     # DSL: 2Mbps throughput, 5ms RTT
@@ -2222,7 +2218,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     _1_megabyte = _32_bytes * 32768
     self._http_server.SetDataForPath(
         '/1MB',
-        "<html><body>%s</body></html>" % _1_megabyte)
+        bytes("<html><body>%s</body></html>" % _1_megabyte, 'utf-8'))
     start = monotonic()
     self._driver.Load(self._http_server.GetUrl() + '/1MB')
     finish = monotonic()
@@ -2486,7 +2482,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html#x'))
 
   def SetCookie(self, request):
-    return {'Set-Cookie': 'x=y; HttpOnly'}, "<!DOCTYPE html><html></html>"
+    return {'Set-Cookie': 'x=y; HttpOnly'}, b"<!DOCTYPE html><html></html>"
 
   def testGetHttpOnlyCookie(self):
     self._http_server.SetCallbackForPath('/setCookie', self.SetCookie)
@@ -2525,7 +2521,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     named_cookie = self._driver.GetNamedCookie('a')
     self.assertEqual('a' , named_cookie['name'])
     self.assertEqual('b' , named_cookie['value'])
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.NoSuchCookie, "no such cookie",
         self._driver.GetNamedCookie, 'foo')
 
@@ -2567,7 +2563,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     # the test HTTP server.
     path = os.path.join(chrome_paths.GetTestData(), 'chromedriver',
       'page_with_frame.html')
-    url = 'file://' + six.moves.urllib.request.pathname2url(path)
+    url = 'file://' + urllib.request.pathname2url(path)
     self._driver.Load(url)
     frame = self._driver.FindElement('css selector', '#frm')
     self._driver.SwitchToFrame(frame)
@@ -2577,7 +2573,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.HandleAlert(True)
 
   def testThrowErrorWithExecuteScript(self):
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.JavaScriptError, "some error",
         self._driver.ExecuteScript, 'throw new Error("some error")')
 
@@ -2648,7 +2644,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       # locally, .2 didn't fail before code change, .3 did
       time.sleep(.5)
       self._sync_server.RespondWithContent(
-          """
+          b"""
           <html>
             <body>
               <p id='valueToRead'>11</p>
@@ -2657,7 +2653,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
           """)
 
     self._http_server.SetDataForPath('/page10.html',
-      """
+      bytes("""
       <html>
         <head>
           <title>
@@ -2675,7 +2671,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
           <p id='valueToRead'>10</p>
         </body>
       </html>
-      """ % self._sync_server.GetUrl())
+       """ % self._sync_server.GetUrl(), 'utf-8'))
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/page_for_next_iframe.html'))
     frame = self._driver.FindElement('tag name', 'iframe')
@@ -2696,10 +2692,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       # Send iframe contents slowly
       time.sleep(2)
       self._sync_server.RespondWithContent(
-        '<html><div id=iframediv>IFrame contents</div></html>')
+        b'<html><div id=iframediv>IFrame contents</div></html>')
 
     self._http_server.SetDataForPath('/top.html',
-        """
+        bytes("""
         <html><body>
         <div id='top'>
           <input id='button' type="button" onclick="run()" value='Click'>
@@ -2712,7 +2708,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
           document.body.appendChild(iframe);
         }
         </script>
-        </body></html>""" % self._sync_server.GetUrl())
+        </body></html>""" % self._sync_server.GetUrl(), 'utf-8'))
     self._driver.Load(self._http_server.GetUrl() + '/top.html')
     thread = threading.Thread(target=waitAndRespond)
     thread.start()
@@ -3338,18 +3334,21 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
   # Encodes a string in URL-safe base64 with no padding.
   @staticmethod
   def URLSafeBase64Encode(string):
+    if isinstance(string, str):
+      string = string.encode('utf-8')
     encoded = base64.urlsafe_b64encode(string)
-    while encoded[-1] == "=":
+    while encoded[-1] == b"=":
       encoded = encoded[0:-1]
-    return encoded
+    return encoded.decode('utf-8')
 
   # Decodes a base64 string with no padding.
   @staticmethod
   def UrlSafeBase64Decode(string):
-    string = string.encode("utf-8")
+    if isinstance(string, str):
+      string = string.encode('utf-8')
     if len(string) % 4 != 0:
-      string += "=" * (4 - len(string) % 4)
-    return base64.urlsafe_b64decode(string)
+      string += b'=' * (4 - len(string) % 4)
+    return base64.urlsafe_b64decode(string).decode('utf-8')
 
   def setUp(self):
     self._driver = self.CreateDriver(
@@ -3397,7 +3396,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
       )
       self.assertTrue(len(authenticator_id) > 0)
 
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.UnsupportedOperation,
         'INVALID is not a recognized protocol version',
         self._driver.AddVirtualAuthenticator,
@@ -3405,19 +3404,19 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
             transport = 'usb')
 
   def testAddVirtualBadExtensions(self):
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'extensions must be a list of strings',
         self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
         'usb', extensions = 'invalid')
 
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'extensions must be a list of strings',
         self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
         'usb', extensions = [42])
 
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.UnsupportedOperation,
         'smolBlowbs is not a recognized extension',
         self._driver.AddVirtualAuthenticator, protocol = 'ctap2', transport =
@@ -3443,7 +3442,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         '/chromedriver/webauthn_test.html', 'chromedriver.test'))
 
     # Removing a non existent virtual authenticator should fail.
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'Could not find a Virtual Authenticator matching the ID',
         self._driver.RemoveVirtualAuthenticator, 'id')
@@ -3458,7 +3457,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.RemoveVirtualAuthenticator(authenticatorId)
 
     # Trying to remove the same authenticator should fail.
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'Could not find a Virtual Authenticator matching the ID',
         self._driver.RemoveVirtualAuthenticator, authenticatorId)
@@ -3551,7 +3550,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     )
 
     # Try adding a credentialId that is encoded in vanilla base64.
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'credentialId must be a base64url encoded string',
         self._driver.AddCredential, authenticatorId, '_0n+wWqg=',
@@ -3559,7 +3558,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     )
 
     # Try adding a credentialId that is not a string.
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         chromedriver.InvalidArgument,
         'credentialId must be a base64url encoded string',
         self._driver.AddCredential, authenticatorId, 1,
@@ -3773,7 +3772,7 @@ class ChromeDriverW3cTest(ChromeDriverBaseTestWithWebServer):
           'var input = document.getElementsByTagName("i")[0];'
           'return input;')
       element.SendKeys('hello')
-      self.assertEqual(u'hello->hello', element.GetText())
+      self.assertEqual('hello->hello', element.GetText())
 
       self._driver.Load(self.GetHttpUrlForFile(
           '/chromedriver/empty.html'))
@@ -3785,12 +3784,12 @@ class ChromeDriverW3cTest(ChromeDriverBaseTestWithWebServer):
           'input.focus();'
           'return input;')
       element.SendKeys('hello')
-      self.assertEqual(u'hellohello ->', element.GetText())
+      self.assertEqual('hellohello ->', element.GetText())
 
   def testUnexpectedAlertOpenExceptionMessage(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript('window.alert("Hi");')
-    self.assertRaisesRegexp(chromedriver.UnexpectedAlertOpen,
+    self.assertRaisesRegex(chromedriver.UnexpectedAlertOpen,
                             '{Alert text : Hi}',
                             self._driver.FindElement, 'tag name', 'divine')
     # In W3C mode, the alert is dismissed by default.
@@ -3959,7 +3958,7 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
     second = self._driver.FindElement('css selector', '#second')
     first.Click()
     self._driver.SendKeys('snoopy')
-    self._driver.SendKeys(u'\uE004')
+    self._driver.SendKeys('\uE004')
     self._driver.SendKeys('prickly pete')
     self.assertEqual('snoopy', self._driver.ExecuteScript(
         'return arguments[0].value;', first))
@@ -4005,7 +4004,7 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
   def testUnexpectedAlertOpenExceptionMessage(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript('window.alert("Hi");')
-    self.assertRaisesRegexp(chromedriver.UnexpectedAlertOpen,
+    self.assertRaisesRegex(chromedriver.UnexpectedAlertOpen,
                             'unexpected alert open: {Alert text : Hi}',
                             self._driver.FindElement, 'tag name', 'divine')
 
@@ -4108,7 +4107,7 @@ class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
       # Don't hang infinitely, 10 seconds are enough.
       self.send_response_event.wait(10)
       self.send_response_event.clear()
-      return {'Cache-Control': 'no-store'}, 'Hi!'
+      return {'Cache-Control': 'no-store'}, b'Hi!'
 
   def setUp(self):
     self._handler = ChromeDriverPageLoadTimeoutTest._RequestHandler()
@@ -4137,8 +4136,7 @@ class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):
     timed_out = False
     try:
       action()
-    except chromedriver.ChromeDriverException as e:
-      self.assertNotEqual(-1, e.message.find('timeout'))
+    except chromedriver.Timeout as e:
       timed_out = True
     finally:
       self._handler.send_response_event.set()
@@ -4189,7 +4187,7 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
 
     try:
       omaha_list = json.loads(
-          six.moves.urllib.request.urlopen('http://omahaproxy.appspot.com/all.json').read())
+          urllib.request.urlopen('http://omahaproxy.appspot.com/all.json').read())
       for l in omaha_list:
         if l['os'] != 'android':
           continue
@@ -4202,7 +4200,7 @@ class ChromeDriverAndroidTest(ChromeDriverBaseTest):
             self.assertTrue(omaha <= device)
             return
       raise RuntimeError('Malformed omaha JSON')
-    except six.moves.urllib.error.URLError as e:
+    except urllib.error.URLError as e:
       print('Unable to fetch current version info from omahaproxy (%s)' % e)
 
   def testDeviceManagement(self):
@@ -4244,7 +4242,7 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
     return temp_dir
 
   def RespondWithCsvFile(self, request):
-    return {'Content-Type': 'text/csv'}, 'a,b,c\n1,2,3\n'
+    return {'Content-Type': 'text/csv'}, b'a,b,c\n1,2,3\n'
 
   def WaitForFileToDownload(self, path):
     deadline = monotonic() + 60
@@ -4430,7 +4428,7 @@ class ChromeDesiredCapabilityTest(ChromeDriverBaseTest):
                       driver.capabilities['unexpectedAlertBehaviour'])
     driver.ExecuteScript('alert("HI");')
     self.WaitForCondition(driver.IsAlertOpen)
-    self.assertRaisesRegexp(chromedriver.UnexpectedAlertOpen,
+    self.assertRaisesRegex(chromedriver.UnexpectedAlertOpen,
                             'unexpected alert open: {Alert text : HI}',
                             driver.FindElement, 'tag name', 'div')
     self.assertFalse(driver.IsAlertOpen())
@@ -4453,7 +4451,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
   """Tests that chromedriver properly processes chromeOptions.extensions."""
 
   def _PackExtension(self, ext_path):
-    return base64.b64encode(open(ext_path, 'rb').read())
+    return base64.b64encode(open(ext_path, 'rb').read()).decode('utf-8')
 
   def testExtensionsInstall(self):
     """Checks that chromedriver can take the extensions in crx format."""
@@ -4577,7 +4575,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(360, driver.ExecuteScript('return window.screen.width'))
     self.assertEqual(640, driver.ExecuteScript('return window.screen.height'))
     body_tag = driver.FindElement('tag name', 'body')
-    self.assertRegexpMatches(
+    self.assertRegex(
         body_tag.GetText(),
         '^' +
         re.escape('Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) '
@@ -4690,10 +4688,10 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
 
   def testNetworkConnectionTypeIsAppliedToAllTabsImmediately(self):
     def respondWithString(request):
-      return {}, """
+      return {}, bytes("""
         <html>
         <body>%s</body>
-        </html>""" % "hello world!"
+        </html>""" % "hello world!", 'utf-8')
 
     self._http_server.SetCallbackForPath(
       '/helloworld', respondWithString)
@@ -4819,7 +4817,7 @@ class ChromeDriverLogTest(ChromeDriverBaseTest):
           experimental_options={ self.UNEXPECTED_CHROMEOPTION_CAP : 1 })
       driver.Quit()
     except chromedriver.ChromeDriverException as e:
-      self.assertTrue(self.LOG_MESSAGE in e.message)
+      self.assertTrue(self.LOG_MESSAGE in str(e))
     finally:
       chromedriver_server.Kill()
     with open(tmp_log_path, 'r') as f:
@@ -5024,7 +5022,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
 
     file_descriptor, path = tempfile.mkstemp()
     try:
-      os.write(file_descriptor, '#!/bin/bash\nexit 0')
+      os.write(file_descriptor, b'#!/bin/bash\nexit 0')
       os.close(file_descriptor)
       os.chmod(path, 0o777)
       exception_raised = False
@@ -5034,10 +5032,10 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
                                            chrome_binary=path,
                                            test_name=self.id())
       except Exception as e:
-        self.assertIn('Chrome failed to start', e.message)
-        self.assertIn('exited normally', e.message)
+        self.assertIn('Chrome failed to start', str(e))
+        self.assertIn('exited normally', str(e))
         self.assertIn('ChromeDriver is assuming that Chrome has crashed',
-                      e.message)
+                      str(e))
         exception_raised = True
       self.assertTrue(exception_raised)
       try:
@@ -5058,7 +5056,7 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
           chrome_binary=os.path.join(temp_dir, 'this_file_should_not_exist'),
           test_name=self.id())
     except Exception as e:
-      self.assertIn('no chrome binary', e.message)
+      self.assertIn('no chrome binary', str(e))
       exception_raised = True
     finally:
       shutil.rmtree(temp_dir)
@@ -5206,8 +5204,8 @@ class HeadlessChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                   }
                                 })
     decoded_pdf = base64.b64decode(pdf)
-    self.assertTrue(decoded_pdf.startswith("%PDF"))
-    self.assertTrue(decoded_pdf.endswith("%%EOF"))
+    self.assertTrue(decoded_pdf.startswith(b"%PDF"))
+    self.assertTrue(decoded_pdf.endswith(b"%%EOF"))
 
   def testPrintInvalidArgumentHeadless(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
@@ -5401,7 +5399,7 @@ if __name__ == '__main__':
   all_tests_suite = unittest.defaultTestLoader.loadTestsFromModule(
       sys.modules[__name__])
   test_suite = unittest_util.FilterTestSuite(all_tests_suite, options.filter)
-  test_suites = [test_suite]
+  test_suites = [list(map(lambda t: t.id(),  test_suite))]
 
   ChromeDriverBaseTestWithWebServer.GlobalSetUp()
 
@@ -5421,7 +5419,7 @@ if __name__ == '__main__':
       retry_test_suite.addTest(f[0])
     for e in result.errors:
       retry_test_suite.addTest(e[0])
-    test_suites.append(retry_test_suite)
+    test_suites.append(list(map(lambda t: t.id(),  retry_test_suite)))
     print('\nRetrying failed tests\n')
     retry_result = runner.run(retry_test_suite)
     results.append(retry_result)

@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import httplib
+import http.client
 import json
 import os
 import sys
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
@@ -227,7 +227,7 @@ class CommandExecutor(object):
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
       timeout = 30
-    self._http_client = httplib.HTTPConnection(
+    self._http_client = http.client.HTTPConnection(
       parsed_url.hostname, parsed_url.port, timeout=timeout)
 
   @staticmethod

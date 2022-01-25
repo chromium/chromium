@@ -4,16 +4,16 @@
 
 """WPT WebDriver tests runner."""
 
-from __future__ import absolute_import
-import pytest
-import os
 import argparse
-import sys
 import json
+import logging
+import os
+import sys
 import tempfile
 import time
-import logging
 import zlib
+
+import pytest
 
 _log = logging.getLogger(__name__)
 

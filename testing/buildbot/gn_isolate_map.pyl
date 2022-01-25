@@ -524,7 +524,6 @@
     "type": "additional_compile_target",
   },
   "chromedriver_py_tests": {
-    "python3": False,
     "args": [
       "../../testing/scripts/run_chromedriver_tests.py",
       "../../chrome/test/chromedriver/test/run_py_tests.py",
@@ -587,7 +586,6 @@
     "type": "generated_script",
   },
   "chromedriver_replay_unittests": {
-    "python3": False,
     "label": "//chrome/test/chromedriver:chromedriver_replay_unittests",
     "script": "//chrome/test/chromedriver/log_replay/client_replay_unittest.py",
     "type": "script",

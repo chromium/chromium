@@ -13,9 +13,9 @@ autoninja -C out/Default chromedriver_py_tests
 ```
 Then, either run
 ```
-vpython chrome/test/chromedriver/test/run_py_tests.py --chromedriver=out/Default/chromedriver --filter=__main__.ChromeDriverTest.testCanSetCheckboxWithSpaceKey
+vpython3 chrome/test/chromedriver/test/run_py_tests.py --chromedriver=out/Default/chromedriver --filter=__main__.ChromeDriverTest.testCanSetCheckboxWithSpaceKey
 ```
 or the abbreviating the filter
 ```
-vpython chrome/test/chromedriver/test/run_py_tests.py --chromedriver=out/Default/chromedriver --filter=\*testCanSetCheckboxWithSpaceKey
+vpython3 chrome/test/chromedriver/test/run_py_tests.py --chromedriver=out/Default/chromedriver --filter=\*testCanSetCheckboxWithSpaceKey
 ```

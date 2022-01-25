@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -133,16 +133,16 @@ class ChromeDriverClientReplayTest(unittest.TestCase):
 
     # pylint: disable=unidiomatic-typecheck
     self.assertTrue(type(logged) == type(real)
-                    or (isinstance(real, basestring)
-                        and isinstance(logged, basestring)))
+                    or (isinstance(real, str)
+                        and isinstance(logged, str)))
     # pylint: enable=unidiomatic-typecheck
 
-    if isinstance(real, basestring) \
+    if isinstance(real, str) \
         and (real[:14] == "<!DOCTYPE html" or real[:5] == "<html"):
       real = "".join(real.split())
       logged = "".join(logged.split())
 
-    if not isinstance(real, basestring):
+    if not isinstance(real, str):
       real = json.dumps(real)
       logged = json.dumps(logged)
 
