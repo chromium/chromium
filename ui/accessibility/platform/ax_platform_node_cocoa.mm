@@ -1400,32 +1400,27 @@ bool IsAXSetter(SEL selector) {
                                     [self AXTitle], [self AXRole]];
 }
 
-// The methods below implement the NSAccessibility protocol. These methods
-// appear to be the minimum needed to avoid AppKit refusing to handle the
-// element or crashing internally. Most of the remaining old API methods (the
-// ones from NSObject) are implemented in terms of the new NSAccessibility
-// methods.
 //
-// TODO(https://crbug.com/386671): Does this class need to implement the various
-// accessibilityPerformFoo methods, or are the stub implementations from
-// NSAccessibilityElement sufficient?
-- (NSArray*)accessibilityChildren {
-  return [self AXChildren];
-}
+// UIAccessibility protocol.
+//
 
 - (BOOL)isAccessibilityElement {
   if (!_node)
     return NO;
 
+  // Do not return false for invisible elements, otherwise no events for menus
+  // are fired.
   return (![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
-          !_node->IsInvisibleOrIgnored());
+          !_node->GetDelegate()->IsIgnored());
 }
+
 - (BOOL)isAccessibilityEnabled {
   if (!_node)
     return NO;
 
   return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
+
 - (NSRect)accessibilityFrame {
   return [self boundsInScreen];
 }
@@ -1446,7 +1441,23 @@ bool IsAXSetter(SEL selector) {
   return [self AXValue];
 }
 
-// NSAccessibility protocol:
+//
+// NSAccessibility protocol.
+//
+
+// The methods below implement the NSAccessibility protocol. These methods
+// appear to be the minimum needed to avoid AppKit refusing to handle the
+// element or crashing internally. Most of the remaining old API methods (the
+// ones from NSObject) are implemented in terms of the new NSAccessibility
+// methods.
+//
+// TODO(https://crbug.com/386671): Does this class need to implement the various
+// accessibilityPerformFoo methods, or are the stub implementations from
+// NSAccessibilityElement sufficient?
+- (NSArray*)accessibilityChildren {
+  return [self AXChildren];
+}
+
 - (NSNumber*)accessibilityRequired {
   TRACE_EVENT1("accessibility", "accessibilityRequired",
                "role=", ui::ToString([self internalRole]));

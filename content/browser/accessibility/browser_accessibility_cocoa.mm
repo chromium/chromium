@@ -3071,19 +3071,6 @@ bool content::IsNSRange(id value) {
   return [self isIgnored];
 }
 
-- (BOOL)isAccessibilityElement {
-  TRACE_EVENT1("accessibility",
-               "BrowserAccessibilityCocoa::isAccessibilityElement",
-               "role=", ui::ToString([self internalRole]));
-  if (![self instanceActive])
-    return NO;
-
-  // Unlike accessibilityIsIgnored do not return false for invisible elements,
-  // otherwise it fails to fire events for menus.
-  return ![[self role] isEqualToString:NSAccessibilityUnknownRole] &&
-         !_owner->IsIgnored();
-}
-
 - (BOOL)isAccessibilityEnabled {
   if (![self instanceActive])
     return NO;
