@@ -111,9 +111,7 @@ leveldb::Status LevelDBScopes::Initialize() {
   for (; iterator->Valid() && iterator->key().starts_with(prefix_key);
        iterator->Next()) {
     // Parse the key & value.
-    int64_t scope_id;
-    bool success;
-    std::tie(success, scope_id) = leveldb_scopes::ParseScopeMetadataId(
+    auto [success, scope_id] = leveldb_scopes::ParseScopeMetadataId(
         iterator->key(), metadata_key_prefix_);
     if (UNLIKELY(!success)) {
       return leveldb::Status::Corruption(base::StrCat(
@@ -274,9 +272,7 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(recovery_finished_);
   DCHECK(cleanup_runner_);
-  LevelDBScope::Mode scopes_mode;
-  leveldb::Status s;
-  std::tie(s, scopes_mode) = scope->Commit(sync_on_commit);
+  auto [status, scopes_mode] = scope->Commit(sync_on_commit);
   if (scopes_mode == LevelDBScope::Mode::kUndoLogOnDisk) {
     auto task = std::make_unique<CleanupScopeTask>(
         level_db_, metadata_key_prefix_, scope->scope_id(),
@@ -288,7 +284,7 @@ leveldb::Status LevelDBScopes::Commit(std::unique_ptr<LevelDBScope> scope,
         base::BindOnce(&LevelDBScopes::OnCleanupTaskResult,
                        weak_factory_.GetWeakPtr(), std::move(on_complete)));
   }
-  return s;
+  return status;
 }
 
 leveldb::Status LevelDBScopes::Rollback(int64_t scope_id,
