@@ -9,6 +9,7 @@
 
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -168,10 +169,11 @@ void DlpConfidentialContentsCache::Cache(
       std::make_unique<Entry>(content, restriction, base::TimeTicks::Now());
   StartEvictionTimer(entry.get());
   entries_.push_front(std::move(entry));
-
   if (entries_.size() > cache_size_limit_) {
     entries_.pop_back();
   }
+  DlpConfidentialContentsCountHistogram(dlp::kConfidentialContentsCount,
+                                        entries_.size(), cache_size_limit_);
 }
 
 bool DlpConfidentialContentsCache::Contains(
@@ -203,10 +205,6 @@ size_t DlpConfidentialContentsCache::GetSizeForTesting() const {
 // static
 base::TimeDelta DlpConfidentialContentsCache::GetCacheTimeout() {
   return kDefaultCacheTimeout;
-}
-
-void DlpConfidentialContentsCache::SetCacheSizeLimitForTesting(int limit) {
-  cache_size_limit_ = limit;
 }
 
 void DlpConfidentialContentsCache::SetTaskRunnerForTesting(

@@ -136,9 +136,6 @@ class DlpConfidentialContentsCache {
   // Returns the duration for which the entries are kept in the cache.
   static base::TimeDelta GetCacheTimeout();
 
-  // Used only in tests to set a different size limit.
-  void SetCacheSizeLimitForTesting(int limit);
-
   // Used only in tests to inject a task runner for time control.
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -166,7 +163,7 @@ class DlpConfidentialContentsCache {
   void OnEvictionTimerUp(const DlpConfidentialContent& content);
 
   std::list<std::unique_ptr<Entry>> entries_;
-  size_t cache_size_limit_;
+  const size_t cache_size_limit_;
 
   // Used to evict cache entries after the timeout.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

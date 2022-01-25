@@ -937,6 +937,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.ConfidentialContentsCount" units="entries"
+    expires_after="2022-12-01">
+  <owner>aidazolic@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Number of items stored in the DlpConfidentialContentsCache. It is recorded
+    each time a new entry is cached.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.DataTransferControllerStarted" enum="Boolean"
     expires_after="2022-12-01">
   <owner>poromov@chromium.org</owner>
