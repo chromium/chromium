@@ -217,6 +217,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccountManager.FacadeGetAccountsMojoStatus"
+    enum="AccountManagerFacadeMojoStatus" expires_after="2023-01-25">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the status of the mojo connection between the Ash account manager
+    and the Lacros account manager facade, when
+    `AccountManagerFacade::GetAccounts()` is called. See
+    https://crbug.com/1287297
+  </summary>
+</histogram>
+
 <histogram name="AccountManager.InitializationTime" units="microseconds"
     expires_after="2022-05-01">
   <owner>sinhak@chromium.org</owner>
