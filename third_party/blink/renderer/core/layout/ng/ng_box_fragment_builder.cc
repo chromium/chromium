@@ -93,7 +93,8 @@ void NGBoxFragmentBuilder::AddResult(
   // instead. The fact that we create a line box at all in such cases is just an
   // implementation detail -- anything of interest is stored on the child block
   // fragment.
-  const NGLayoutResult* result_for_propagation = &child_layout_result;
+  scoped_refptr<const NGLayoutResult> result_for_propagation =
+      &child_layout_result;
 
   if (!fragment.IsBox() && items_builder_) {
     if (const NGPhysicalLineBoxFragment* line =
