@@ -18,8 +18,8 @@ TAG_HEADER = """\
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave mountainlion
-#             sierra
+#         mac bigsur catalina lion highsierra mac-10.12 mojave monterey
+#             mountainlion sierra
 #         win win7 win8 win10 ]
 # Devices
 # tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
