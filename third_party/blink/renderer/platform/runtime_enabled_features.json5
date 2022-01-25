@@ -2723,6 +2723,12 @@
     {
       name: "WindowPlacement",
       origin_trial_feature_name: "WindowPlacementOT2",
+      implied_by: ["WindowPlacementV2"],
+      status: "experimental",
+    },
+    // Further extends window placement functionality for multi-screen devices.
+    {
+      name: "WindowPlacementV2",
       status: "experimental",
     },
     {

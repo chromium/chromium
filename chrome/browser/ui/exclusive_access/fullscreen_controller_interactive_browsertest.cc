@@ -650,11 +650,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 // specific screen, move fullscreen windows to different displays, and gain new
 // affordances to request fullscreen on permission grants and screen changes.
 class ExperimentalFullscreenControllerInteractiveTest
-    : public FullscreenControllerInteractiveTest {
+    : public FullscreenControllerInteractiveTest,
+      public testing::WithParamInterface<bool> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures, "WindowPlacement");
+        switches::kEnableBlinkFeatures,
+        (GetParam() ? "WindowPlacementV2" : "WindowPlacement"));
     FullscreenControllerInteractiveTest::SetUpCommandLine(command_line);
   }
 
@@ -794,7 +796,7 @@ class ExperimentalFullscreenControllerInteractiveTest
 #define MAYBE_SeparateDisplay SeparateDisplay
 #endif
 // Test requesting fullscreen on a separate display.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplay) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -822,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayMaximized SeparateDisplayMaximized
 #endif
 // Test requesting fullscreen on a separate display from a maximized window.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayMaximized) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -857,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SameDisplayAndSwap SameDisplayAndSwap
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwap) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -887,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #endif
 // Test requesting fullscreen on the current display and then swapping displays
 // from a maximized window.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SameDisplayAndSwapMaximized) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -926,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SeparateDisplayAndSwap SeparateDisplayAndSwap
 #endif
 // Test requesting fullscreen on a separate display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SeparateDisplayAndSwap) {
   SetUpTestScreenAndWindowPlacementTab();
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
@@ -959,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_SwapShowsBubble SwapShowsBubble
 #endif
 // Test requesting fullscreen on the current display and then swapping displays.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_SwapShowsBubble) {
   SetUpTestScreenAndWindowPlacementTab();
 
@@ -999,7 +1001,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_FullscreenOnScreensChange FullscreenOnScreensChange
 #endif
 // Tests async fullscreen requests on screenschange event.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnScreensChange) {
   content::WebContents* tab = SetUpTestScreenAndWindowPlacementTab();
 
@@ -1026,13 +1028,18 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #else
   display_list().RemoveDisplay(2);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  fullscreen_observer.Wait();
-  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  if (GetParam())  // The request will only be honored with WindowPlacementV2.
+    fullscreen_observer.Wait();
+  EXPECT_EQ(GetParam(), browser()->window()->IsFullscreen());
 
   // Close all tabs to avoid assertions failing when their cached screen info
   // differs from the restored original Screen instance.
   browser()->tab_strip_model()->CloseAllTabs();
 }
+
+INSTANTIATE_TEST_SUITE_P(V2,
+                         ExperimentalFullscreenControllerInteractiveTest,
+                         testing::Bool());
 
 // TODO(crbug.com/1134731): Disabled on Windows, where RenderWidgetHostViewAura
 // blindly casts display::Screen::GetScreen() to display::win::ScreenWin*.
@@ -1042,7 +1049,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 #define MAYBE_FullscreenOnPermissionGrant FullscreenOnPermissionGrant
 #endif
 // Test requesting fullscreen using the permission grant's transient activation.
-IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(ExperimentalFullscreenControllerInteractiveTest,
                        MAYBE_FullscreenOnPermissionGrant) {
   EXPECT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/simple.html"));
