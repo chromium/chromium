@@ -165,8 +165,9 @@ void AuctionRunner::FailAuction(AuctionResult result,
 
   ClosePipes();
 
-  std::move(callback_).Run(this, absl::nullopt, absl::nullopt, absl::nullopt,
-                           absl::nullopt, errors_);
+  std::move(callback_).Run(this, /*render_url=*/absl::nullopt,
+                           /*ad_component_urls=*/absl::nullopt,
+                           /*report_urls=*/{}, errors_);
 }
 
 void AuctionRunner::StartAuction(
@@ -516,16 +517,20 @@ void AuctionRunner::OnReportSellerResultComplete(
     const absl::optional<std::string>& signals_for_winner,
     const absl::optional<GURL>& seller_report_url,
     const std::vector<std::string>& errors) {
-  seller_report_url_ = seller_report_url;
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
+  // There should be no other report URLs at this point.
+  DCHECK(report_urls_.empty());
 
-  absl::optional<GURL> opt_bidder_report_url;
-  if (seller_report_url && !IsUrlValid(*seller_report_url)) {
-    mojo::ReportBadMessage("Invalid seller report URL");
-    FailAuction(AuctionResult::kBadMojoMessage);
-    return;
+  if (seller_report_url) {
+    if (!IsUrlValid(*seller_report_url)) {
+      mojo::ReportBadMessage("Invalid seller report URL");
+      FailAuction(AuctionResult::kBadMojoMessage);
+      return;
+    }
+
+    report_urls_.push_back(*seller_report_url);
   }
 
+  errors_.insert(errors_.end(), errors.begin(), errors.end());
   LoadBidderWorkletToReportBidWin(signals_for_winner);
 }
 
@@ -575,13 +580,19 @@ void AuctionRunner::ReportBidWin(
 void AuctionRunner::OnReportBidWinComplete(
     const absl::optional<GURL>& bidder_report_url,
     const std::vector<std::string>& errors) {
-  if (bidder_report_url && !IsUrlValid(*bidder_report_url)) {
-    mojo::ReportBadMessage("Invalid bidder report URL");
-    FailAuction(AuctionResult::kBadMojoMessage);
-    return;
+  // There should be at most one other report URL at this point.
+  DCHECK_LE(report_urls_.size(), 1u);
+
+  if (bidder_report_url) {
+    if (!IsUrlValid(*bidder_report_url)) {
+      mojo::ReportBadMessage("Invalid bidder report URL");
+      FailAuction(AuctionResult::kBadMojoMessage);
+      return;
+    }
+
+    report_urls_.push_back(*bidder_report_url);
   }
 
-  bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   ReportSuccess();
 }
@@ -616,6 +627,8 @@ void AuctionRunner::FailAuctionAsync(AuctionResult result) {
 void AuctionRunner::ReportSuccess() {
   DCHECK(callback_);
   DCHECK(top_bidder_->bid_result);
+  DCHECK_LE(report_urls_.size(), 2u);
+
   ClosePipes();
 
   RecordResult(AuctionResult::kSuccess);
@@ -639,8 +652,7 @@ void AuctionRunner::ReportSuccess() {
 
   std::move(callback_).Run(this, top_bidder_->bid_result->render_url,
                            top_bidder_->bid_result->ad_components,
-                           std::move(bidder_report_url_),
-                           std::move(seller_report_url_), std::move(errors_));
+                           std::move(report_urls_), std::move(errors_));
 }
 
 void AuctionRunner::ClosePipes() {

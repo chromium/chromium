@@ -37,16 +37,13 @@ class CONTENT_EXPORT AuctionRunner {
   // Invoked when a FLEDGE auction is complete.
   //
   // `render_url` URL of auction winning ad to render. Null if there is no
-  // winner.
+  //  winner.
   //
   // `ad_component_urls` is the list of ad component URLs returned by the
-  // winning bidder. Null if there is no winner or no list was returned.
+  //  winning bidder. Null if there is no winner or no list was returned.
   //
-  // `bidder_report_url` URL to use for reporting result to the bidder. Null if
-  //  no report should be sent.
-  //
-  // `seller_report`  URL to use for reporting result to the seller. Null if no
-  //  report should be sent.
+  // `report_urls` Reporting URLs returned by seller worklet reportResult()
+  //  methods and the winning bidder's reportWin() methods, if any.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
@@ -54,8 +51,7 @@ class CONTENT_EXPORT AuctionRunner {
       AuctionRunner* auction_runner,
       const absl::optional<GURL> render_url,
       const absl::optional<std::vector<GURL>> ad_component_urls,
-      const absl::optional<GURL> bidder_report_url,
-      const absl::optional<GURL> seller_report_url,
+      const std::vector<GURL> report_urls,
       std::vector<std::string> errors)>;
 
   // Returns true if `origin` is allowed to use the interest group API. Will be
@@ -142,7 +138,7 @@ class CONTENT_EXPORT AuctionRunner {
   //  same for all worklets.
   //
   // `frame_origin` is the origin running the auction (not the top frame
-  // origin), used as the initiator in network requests.
+  //  origin), used as the initiator in network requests.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
@@ -391,11 +387,10 @@ class CONTENT_EXPORT AuctionRunner {
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;
 
-  // Seller script reportResult() results.
-  absl::optional<GURL> seller_report_url_;
-
-  // Bidder script reportWin() results.
-  absl::optional<GURL> bidder_report_url_;
+  // Report URLs from reportResult() and reportWin() methods. Returned to caller
+  // for it to deal with, so the AuctionRunner itself can be deleted at the end
+  // of the auction.
+  std::vector<GURL> report_urls_;
 
   // All errors reported by worklets thus far.
   std::vector<std::string> errors_;
