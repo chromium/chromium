@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
@@ -1209,10 +1208,10 @@ bool ResourceBundle::LoadLottie(int resource_id, gfx::ImageSkiaRep* rep) const {
       base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
     return false;
 
-  auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
+  std::string bytes_string;
   DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
-                     &(bytes_string->data()));
-  *rep = (*g_parse_lottie_as_still_image_)(*bytes_string);
+                     &bytes_string);
+  *rep = (*g_parse_lottie_as_still_image_)(bytes_string);
   return true;
 }
 #endif

@@ -5,11 +5,9 @@
 #ifndef UI_LOTTIE_RESOURCE_H_
 #define UI_LOTTIE_RESOURCE_H_
 
-#include "base/component_export.h"
+#include <string>
 
-namespace base {
-class RefCountedString;
-}
+#include "base/component_export.h"
 
 namespace gfx {
 class ImageSkiaRep;
@@ -19,8 +17,7 @@ namespace lottie {
 
 // Used for loading a Lottie asset intended as a still image (not animated).
 COMPONENT_EXPORT(UI_LOTTIE)
-gfx::ImageSkiaRep ParseLottieAsStillImage(
-    const base::RefCountedString& bytes_string);
+gfx::ImageSkiaRep ParseLottieAsStillImage(const std::string& bytes_string);
 
 }  // namespace lottie
 

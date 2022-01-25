@@ -18,9 +18,9 @@
 
 namespace lottie {
 
-gfx::ImageSkiaRep ParseLottieAsStillImage(
-    const base::RefCountedString& bytes_string) {
-  const uint8_t* bytes_pointer = bytes_string.front_as<uint8_t>();
+gfx::ImageSkiaRep ParseLottieAsStillImage(const std::string& bytes_string) {
+  const uint8_t* bytes_pointer =
+      reinterpret_cast<const uint8_t*>(bytes_string.data());
   std::unique_ptr<lottie::Animation> content =
       std::make_unique<lottie::Animation>(
           cc::SkottieWrapper::CreateSerializable(std::vector<uint8_t>(

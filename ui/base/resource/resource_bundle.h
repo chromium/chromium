@@ -33,7 +33,6 @@ namespace base {
 class File;
 class Lock;
 class RefCountedMemory;
-class RefCountedString;
 }  // namespace base
 
 namespace gfx {
@@ -157,7 +156,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   };
 
   using LottieImageParseFunction =
-      gfx::ImageSkiaRep (*)(const base::RefCountedString& bytes_string);
+      gfx::ImageSkiaRep (*)(const std::string& bytes_string);
 
   // Initialize the ResourceBundle for this process. Does not take ownership of
   // the |delegate| value. Returns the language selected or an empty string if
