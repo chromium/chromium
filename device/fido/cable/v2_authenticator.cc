@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_authenticator.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -19,6 +20,7 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
 #include "device/fido/cbor_extract.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -190,9 +192,14 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   std::array<uint8_t, device::kAaguidLength> aaguid{};
   std::vector<cbor::Value> versions;
   versions.emplace_back("FIDO_2_0");
-  // TODO: should be based on whether a screen-lock is enabled.
+
   cbor::Value::MapValue options;
+  // This code is only invoked if a screen-lock (i.e. user verification) is
+  // configured on the device. Therefore the 'uv' option is unconditionally
+  // true.
   options.emplace("uv", true);
+  options.emplace("rk",
+                  base::FeatureList::IsEnabled(device::kWebAuthCableDisco));
 
   cbor::Value::MapValue response_map;
   response_map.emplace(1, std::move(versions));

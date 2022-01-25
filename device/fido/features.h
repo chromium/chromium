@@ -36,6 +36,10 @@ extern const base::Feature kWebAuthPhoneSupport;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableExtensionAnywhere;
 
+// Enable discoverable credentials on caBLE authenticators.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthCableDisco;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable a ChromeOS platform authenticator
 COMPONENT_EXPORT(DEVICE_FIDO)

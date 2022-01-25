@@ -381,8 +381,9 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
   }
 
   // caBLE devices don't yet support discoverable credentials and so we
-  // shouldn't offer them for such requests.
-  if (!uses_discoverable_creds) {
+  // shouldn't offer them for such requests unless forced by a feature flag.
+  if (!uses_discoverable_creds ||
+      base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
     if (base::FeatureList::IsEnabled(features::kWebAuthCable)) {
       transports.insert(
           device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
