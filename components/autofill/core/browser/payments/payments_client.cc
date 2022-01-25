@@ -1123,9 +1123,9 @@ void PaymentsClient::SelectChallengeOption(
 
 void PaymentsClient::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
-    base::OnceCallback<
-        void(AutofillClient::PaymentsRpcResult,
-             payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const payments::PaymentsClient::
+                                GetDetailsForEnrollmentResponseDetails&)>
         callback) {
   IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
                    request_details, std::move(callback)),

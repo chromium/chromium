@@ -226,7 +226,7 @@ class PaymentsClientTest : public testing::Test {
 
   void OnDidGetVirtualCardEnrollmentDetails(
       AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
+      const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           get_details_for_enrollment_response_fields) {
     result_ = result;
     get_details_for_enrollment_response_fields_ =

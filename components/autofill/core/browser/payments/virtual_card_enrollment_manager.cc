@@ -33,7 +33,12 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
     raw_ptr<AutofillClient> autofill_client,
     raw_ptr<PersonalDataManager> personal_data_manager)
     : autofill_client_(autofill_client),
-      personal_data_manager_(personal_data_manager) {}
+      payments_client_(autofill_client->GetPaymentsClient()),
+      personal_data_manager_(personal_data_manager) {
+  // Here only check autofill_client_ because in some tests payments_client_
+  // does not exist.
+  DCHECK(autofill_client_);
+}
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
@@ -69,7 +74,7 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
 }
 
 void VirtualCardEnrollmentManager::Reset() {
-  autofill_client_->GetPaymentsClient()->CancelRequest();
+  payments_client_->CancelRequest();
   weak_ptr_factory_.InvalidateWeakPtrs();
   state_ = VirtualCardEnrollmentProcessState();
 }
@@ -81,7 +86,22 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
 }
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
-  // TODO(crbug.com/1281695): Add integration with GetDetailsForEnrollRequest.
+  payments::PaymentsClient::GetDetailsForEnrollmentRequestDetails
+      request_details;
+  request_details.app_locale = personal_data_manager_->app_locale();
+  request_details.risk_data = state_.risk_data.value_or("");
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+  request_details.instrument_id =
+      state_.virtual_card_enrollment_fields.credit_card->instrument_id();
+  request_details.source =
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
+
+  payments_client_->GetVirtualCardEnrollmentDetails(
+      request_details,
+      base::BindOnce(
+          &VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
@@ -148,7 +168,7 @@ void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted() {
       payments::GetBillingCustomerId(personal_data_manager_);
   request_details.vcn_context_token = state_.vcn_context_token;
 
-  autofill_client_->GetPaymentsClient()->UpdateVirtualCardEnrollment(
+  payments_client_->UpdateVirtualCardEnrollment(
       request_details,
       base::BindOnce(&VirtualCardEnrollmentManager::
                          OnDidGetUpdateVirtualCardEnrollmentResponse,

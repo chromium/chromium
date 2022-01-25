@@ -482,9 +482,9 @@ class PaymentsClient {
   // enrollment.
   virtual void GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
-      base::OnceCallback<void(
-          AutofillClient::PaymentsRpcResult,
-          payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const payments::PaymentsClient::
+                                  GetDetailsForEnrollmentResponseDetails&)>
           callback);
 
   // The user has chosen to change the virtual-card enrollment of a credit card.

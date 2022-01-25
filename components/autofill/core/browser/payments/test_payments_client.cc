@@ -13,9 +13,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace autofill {
-
-namespace payments {
+namespace autofill::payments {
 
 namespace {
 // Base64 encoding of "This is a test challenge".
@@ -34,7 +32,7 @@ TestPaymentsClient::TestPaymentsClient(
   unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kCvc;
 }
 
-TestPaymentsClient::~TestPaymentsClient() {}
+TestPaymentsClient::~TestPaymentsClient() = default;
 
 void TestPaymentsClient::GetUnmaskDetails(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
@@ -109,6 +107,15 @@ void TestPaymentsClient::SelectChallengeOption(
   }
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
                           "context_token from SelectChallengeOption");
+}
+
+void TestPaymentsClient::GetVirtualCardEnrollmentDetails(
+    const GetDetailsForEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const payments::PaymentsClient::
+                                GetDetailsForEnrollmentResponseDetails&)>
+        callback) {
+  get_details_for_enrollment_request_details_ = std::move(request_details);
 }
 
 void TestPaymentsClient::UpdateVirtualCardEnrollment(
@@ -220,5 +227,4 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
   }
 }
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments

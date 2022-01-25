@@ -95,17 +95,6 @@ class VirtualCardEnrollmentManager {
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
 
-#if defined(UNIT_TEST)
-  void SetVirtualCardEnrollmentProcessStateForTest(
-      const VirtualCardEnrollmentProcessState& state) {
-    state_ = state;
-  }
-
-  VirtualCardEnrollmentProcessState
-  GetVirtualCardEnrollmentProcessStateForTest() {
-    return state_;
-  }
-#endif
  protected:
   // Handles the response from the UpdateVirtualCardEnrollmentRequest.
   // |result| represents the result from the server call to change the virtual
@@ -116,6 +105,14 @@ class VirtualCardEnrollmentManager {
 
   // Resets the state of this VirtualCardEnrollmentManager.
   virtual void Reset();
+
+  // Data in |state_| will be populated with the data we have at the current
+  // point of the virtual card enrollment flow we are in. This data will then be
+  // used by future points of the flow for actions such as populating request
+  // fields, and sending data to the VirtualCardEnrollmentBubbleController to
+  // display in the UI. VirtualCardEnrollmentManager::Reset() will reset
+  // |state_|.
+  VirtualCardEnrollmentProcessState state_;
 
  private:
   // Called once the risk data is loaded. The |risk_data| will be used with
@@ -170,18 +167,12 @@ class VirtualCardEnrollmentManager {
   // need it. Weak reference.
   raw_ptr<AutofillClient> autofill_client_;
 
+  raw_ptr<payments::PaymentsClient> payments_client_;
+
   // The associated personal data manager, used to save and load personal data
   // to/from the web database. Weak reference. May be nullptr, which indicates
   // OTR.
   raw_ptr<PersonalDataManager> personal_data_manager_;
-
-  // Data in |state_| will be populated with the data we have at the current
-  // point of the virtual card enrollment flow we are in. This data will then be
-  // used by future points of the flow for actions such as populating request
-  // fields, and sending data to the VirtualCardEnrollmentBubbleController to
-  // display in the UI. VirtualCardEnrollmentManager::Reset() will reset
-  // |state_|.
-  VirtualCardEnrollmentProcessState state_;
 
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };

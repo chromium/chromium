@@ -17,9 +17,10 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
   GetDetailsForEnrollmentRequest(
       const PaymentsClient::GetDetailsForEnrollmentRequestDetails&
           request_details,
-      base::OnceCallback<void(
-          AutofillClient::PaymentsRpcResult,
-          PaymentsClient::GetDetailsForEnrollmentResponseDetails&)> callback);
+      base::OnceCallback<
+          void(AutofillClient::PaymentsRpcResult,
+               const PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+          callback);
   GetDetailsForEnrollmentRequest(const GetDetailsForEnrollmentRequest&) =
       delete;
   GetDetailsForEnrollmentRequest& operator=(
@@ -47,7 +48,7 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
   // The callback function to be invoked when the response is received.
   base::OnceCallback<void(
       AutofillClient::PaymentsRpcResult,
-      PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
+      const PaymentsClient::GetDetailsForEnrollmentResponseDetails&)>
       callback_;
 };
 

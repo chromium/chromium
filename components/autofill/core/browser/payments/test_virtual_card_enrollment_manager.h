@@ -30,6 +30,10 @@ class TestVirtualCardEnrollmentManager : public VirtualCardEnrollmentManager {
 
   void SetResetCalled(bool reset_called) { reset_called_ = reset_called; }
 
+  VirtualCardEnrollmentProcessState* GetVirtualCardEnrollmentProcessState() {
+    return &state_;
+  }
+
   // VirtualCardEnrollmentManager:
   void OnDidGetUpdateVirtualCardEnrollmentResponse(
       AutofillClient::PaymentsRpcResult result) override;
