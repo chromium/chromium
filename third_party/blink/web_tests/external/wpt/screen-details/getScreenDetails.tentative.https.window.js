@@ -9,10 +9,10 @@ promise_test(async t => {
 
 promise_test(async t => {
   await test_driver.set_permission({name: 'window-placement'}, 'granted');
-  const screensInterface = await self.getScreenDetails();
-  const screens = screensInterface.screens;
+  const screenDetails = await self.getScreenDetails();
+  const screens = screenDetails.screens;
   assert_greater_than(screens.length, 0);
-  assert_true(screens.includes(screensInterface.currentScreen));
+  assert_true(screens.includes(screenDetails.currentScreen));
 
   assert_equals(typeof screens[0].availWidth, 'number');
   assert_equals(typeof screens[0].availHeight, 'number');
@@ -68,12 +68,12 @@ promise_test(async t => {
 promise_test(async t => {
   await test_driver.set_permission({name: 'window-placement'}, 'granted');
   let iframe = document.body.appendChild(document.createElement('iframe'));
-  const screensInterface = await iframe.contentWindow.getScreenDetails();
-  assert_greater_than(screensInterface.screens.length, 0);
-  assert_equals(screensInterface.currentScreen, screensInterface.screens[0]);
+  const screenDetails = await iframe.contentWindow.getScreenDetails();
+  assert_greater_than(screenDetails.screens.length, 0);
+  assert_equals(screenDetails.currentScreen, screenDetails.screens[0]);
   iframe.remove();
   await t.step_wait(() => !iframe.contentWindow, "execution context invalid");
   assert_equals(iframe.contentWindow, null);
-  assert_equals(screensInterface.screens.length, 0);
-  assert_equals(screensInterface.currentScreen, null);
-}, "Cached Screens interface from detached iframe doesn't crash, behaves okay");
+  assert_equals(screenDetails.screens.length, 0);
+  assert_equals(screenDetails.currentScreen, null);
+}, 'Cached ScreenDetails interface from detached iframe does not crash, behaves okay');
