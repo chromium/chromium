@@ -54,6 +54,9 @@ class CORE_EXPORT MediaCustomControlsFullscreenDetector final
       const gfx::Size& viewport_size,
       const gfx::Size& intersection_size);
 
+  void UpdateDominantAndFullscreenStatus(bool is_dominant_visible_content,
+                                         bool is_effectively_fullscreen);
+
   // `video_element_` owns |this|.
   Member<HTMLVideoElement> video_element_;
   Member<IntersectionObserver> viewport_intersection_observer_;
