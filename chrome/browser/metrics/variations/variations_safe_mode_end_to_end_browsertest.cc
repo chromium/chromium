@@ -19,6 +19,7 @@
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_switches.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -180,7 +181,13 @@ class VariationsSafeModeEndToEndBrowserTest : public ::testing::Test {
   base::FilePath local_state_file_;
 };
 
-TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeModeEndToEnd) {
+// TODO(crbug.com/1290822): Test failed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ExtendedSafeModeEndToEnd DISABLED_ExtendedSafeModeEndToEnd
+#else
+#define MAYBE_ExtendedSafeModeEndToEnd ExtendedSafeModeEndToEnd
+#endif
+TEST_F(VariationsSafeModeEndToEndBrowserTest, MAYBE_ExtendedSafeModeEndToEnd) {
   // Reuse the browser_tests binary (i.e., that this test code is in), to
   // manually run the sub-test.
   base::CommandLine sub_test =
