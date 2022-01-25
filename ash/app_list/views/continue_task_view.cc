@@ -86,6 +86,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
+  SetShowInkDropWhenHotTracked(false);
 
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
