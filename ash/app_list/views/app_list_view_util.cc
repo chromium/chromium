@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_view_util.h"
 
 #include "base/callback.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/animation/animation_builder.h"

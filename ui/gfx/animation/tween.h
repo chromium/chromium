@@ -7,17 +7,19 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_export.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/transform_operations.h"
 
 namespace base {
 class TimeTicks;
 }
 
 namespace gfx {
+
+class Rect;
+class RectF;
+class Size;
+class SizeF;
+class Transform;
+class TransformOperations;
 
 class ANIMATION_EXPORT Tween {
  public:
