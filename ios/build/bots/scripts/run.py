@@ -46,6 +46,7 @@ class Runner():
     """
     self.args = argparse.Namespace()
     self.test_args = []
+    self.should_move_xcode_runtime_to_cache = True
 
     if args:
       self.parse_args(args)
@@ -245,6 +246,14 @@ class Runner():
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
       return 3
+    except test_runner.SimulatorNotFoundError as e:
+      # This means there's probably some issue in simulator runtime so we don't
+      # want to cache it anymore (when it's in new Xcode format).
+      self.should_move_xcode_runtime_to_cache = False
+      sys.stderr.write(traceback.format_exc())
+      summary['step_text'] = '%s%s' % (e.__class__.__name__,
+                                       ': %s' % e.args[0] if e.args else '')
+      return 2
     except test_runner.TestRunnerError as e:
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = '%s%s' % (e.__class__.__name__,
@@ -283,9 +292,12 @@ class Runner():
       # legacy (i.e. Xcode program & runtimes are in different CIPD packages.)
       # and it's a simulator task.
       if not is_legacy_xcode and self.args.version:
-        runtime_cache_folder = xcode.construct_runtime_cache_folder(
-            self.args.runtime_cache_prefix, self.args.version)
-        xcode.move_runtime(runtime_cache_folder, self.args.xcode_path, False)
+        if self.should_move_xcode_runtime_to_cache:
+          runtime_cache_folder = xcode.construct_runtime_cache_folder(
+              self.args.runtime_cache_prefix, self.args.version)
+          xcode.move_runtime(runtime_cache_folder, self.args.xcode_path, False)
+        else:
+          xcode.remove_runtimes(self.args.xcode_path)
 
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')

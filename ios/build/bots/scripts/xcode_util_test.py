@@ -371,6 +371,38 @@ class MoveRuntimeTests(XcodeUtilTest):
                                  xcode_runtime_path)
 
 
+  @mock.patch('shutil.rmtree', autospec=True)
+  @mock.patch('glob.glob', autospec=True)
+  def test_remove_runtimes(self, mock_glob, mock_rmtree):
+
+    mock_glob.return_value = [
+        ('test/path/Xcode.app/Contents/Developer/'
+         'Platforms/iPhoneOS.platform/Library/Developer/'
+         'CoreSimulator/Profiles/Runtimes/iOS.simruntime'),
+        ('test/path/Xcode.app/Contents/Developer/'
+         'Platforms/iPhoneOS.platform/Library/Developer/'
+         'CoreSimulator/Profiles/Runtimes/iOS 15.0.simruntime')
+    ]
+
+    xcode_util.remove_runtimes(self.xcode_app_path)
+
+    calls = [
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/*.simruntime'))
+    ]
+    mock_glob.assert_has_calls(calls)
+    calls = [
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/iOS.simruntime')),
+        mock.call(('test/path/Xcode.app/Contents/Developer/'
+                   'Platforms/iPhoneOS.platform/Library/Developer/'
+                   'CoreSimulator/Profiles/Runtimes/iOS 15.0.simruntime'))
+    ]
+    mock_rmtree.assert_has_calls(calls)
+
+
 class MacToolchainInvocationTests(XcodeUtilTest):
   """Test class for xcode_util functions invoking mac_toolchain."""
 
