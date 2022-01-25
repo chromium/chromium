@@ -1037,17 +1037,13 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   AssertNoFlagsSet();
 
   // Grab the original values for flags and deadline.
-  uint64_t old_flags;
-  base::TimeTicks old_deadline;
-  std::tie(old_flags, old_deadline) = deadline_.GetFlagsAndDeadline();
+  auto [old_flags, old_deadline] = deadline_.GetFlagsAndDeadline();
 
   // Set the flag. Operation cannot fail.
   deadline_.SetIgnoreCurrentWatchHangsInScope();
 
   // Get new flags and deadline.
-  uint64_t new_flags;
-  base::TimeTicks new_deadline;
-  std::tie(new_flags, new_deadline) = deadline_.GetFlagsAndDeadline();
+  auto [new_flags, new_deadline] = deadline_.GetFlagsAndDeadline();
 
   // Flag was set properly.
   ASSERT_TRUE(HangWatchDeadline::IsFlagSet(
@@ -1096,9 +1092,7 @@ TEST_F(HangWatchDeadlineTest, SetDeadline) {
 TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
   AssertNoFlagsSet();
 
-  uint64_t flags;
-  base::TimeTicks deadline;
-  std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
+  auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
   // Simulate value change. Flags are constant.
   const base::TimeTicks new_deadline =
@@ -1123,9 +1117,7 @@ TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
 TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
   AssertNoFlagsSet();
 
-  uint64_t flags;
-  base::TimeTicks deadline;
-  std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
+  auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
   deadline_.SetIgnoreCurrentWatchHangsInScope();
   std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
@@ -1157,9 +1149,7 @@ TEST_F(HangWatchDeadlineTest,
        SetIgnoreCurrentHangWatchScopeEnableDeadlineChangedd) {
   AssertNoFlagsSet();
 
-  uint64_t flags;
-  base::TimeTicks deadline;
-  std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
+  auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
   // Simulate deadline change. Flags are constant.
   const base::TimeTicks new_deadline =
@@ -1184,9 +1174,7 @@ TEST_F(HangWatchDeadlineTest,
 // Setting a new deadline should wipe flags that a not persistent.
 // Persistent flags should not be disturbed.
 TEST_F(HangWatchDeadlineTest, SetDeadlineWipesFlags) {
-  uint64_t flags;
-  base::TimeTicks deadline;
-  std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
+  auto [flags, deadline] = deadline_.GetFlagsAndDeadline();
 
   ASSERT_TRUE(deadline_.SetShouldBlockOnHang(flags, deadline));
   ASSERT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));

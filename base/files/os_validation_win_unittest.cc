@@ -79,19 +79,12 @@ class OpenFileTest : public OsValidationTest,
     std::tie(standard_rights, generic_rights, std::ignore) = GetParam();
 
     // Extract the five standard rights bits.
-    DWORD synchronize_bit;
-    DWORD write_dac_bit;
-    DWORD read_control_bit;
-    DWORD delete_bit;
-    std::tie(synchronize_bit, write_dac_bit, read_control_bit, delete_bit) =
+    auto [synchronize_bit, write_dac_bit, read_control_bit, delete_bit] =
         standard_rights;
 
     // Extract the three generic file rights masks.
-    DWORD file_generic_read_bits;
-    DWORD file_generic_write_bits;
-    DWORD file_generic_execute_bits;
-    std::tie(file_generic_read_bits, file_generic_write_bits,
-             file_generic_execute_bits) = generic_rights;
+    auto [file_generic_read_bits, file_generic_write_bits,
+          file_generic_execute_bits] = generic_rights;
 
     // Combine and return the desired access rights.
     return synchronize_bit | write_dac_bit | read_control_bit | delete_bit |
@@ -107,10 +100,7 @@ class OpenFileTest : public OsValidationTest,
     std::tie(std::ignore, std::ignore, sharing_bits) = GetParam();
 
     // Extract the sharing mode bits.
-    DWORD share_read_bit;
-    DWORD share_write_bit;
-    DWORD share_delete_bit;
-    std::tie(share_read_bit, share_write_bit, share_delete_bit) = sharing_bits;
+    auto [share_read_bit, share_write_bit, share_delete_bit] = sharing_bits;
 
     // Combine and return the sharing mode.
     return share_read_bit | share_write_bit | share_delete_bit;

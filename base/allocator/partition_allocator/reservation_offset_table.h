@@ -141,10 +141,8 @@ ALWAYS_INLINE const uint16_t* GetReservationOffsetTableEnd(uintptr_t address) {
 ALWAYS_INLINE uint16_t* ReservationOffsetPointer(uintptr_t address) {
 #if defined(PA_HAS_64_BITS_POINTERS)
   // In 64-bit mode, find the owning Pool and compute the offset from its base.
-  pool_handle pool;
   address = memory::UnmaskPtr(address);
-  uintptr_t offset;
-  std::tie(pool, offset) = GetPoolAndOffset(address);
+  auto [pool, offset] = GetPoolAndOffset(address);
   return ReservationOffsetPointer(pool, offset);
 #else
   size_t table_index = address >> kSuperPageShift;

@@ -146,9 +146,7 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   current_hang_watch_state->SetCurrentWatchHangsInScope(this);
 #endif
 
-  uint64_t old_flags;
-  base::TimeTicks old_deadline;
-  std::tie(old_flags, old_deadline) =
+  auto [old_flags, old_deadline] =
       current_hang_watch_state->GetFlagsAndDeadline();
 
   // TODO(crbug.com/1034046): Check whether we are over deadline already for the
@@ -536,9 +534,7 @@ void HangWatcher::WatchStateSnapShot::Init(
 
   // Copy hung thread information.
   for (const auto& watch_state : watch_states) {
-    uint64_t flags;
-    base::TimeTicks deadline;
-    std::tie(flags, deadline) = watch_state->GetFlagsAndDeadline();
+    auto [flags, deadline] = watch_state->GetFlagsAndDeadline();
 
     if (deadline <= deadline_ignore_threshold) {
       found_deadline_before_ignore_threshold = true;

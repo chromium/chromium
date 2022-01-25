@@ -305,9 +305,7 @@ class WaitableEventWatcherDeletionTest
           std::tuple<test::TaskEnvironment::MainThreadType, bool>> {};
 
 TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   // Delete the WaitableEvent out from under the Watcher. This is explictly
   // allowed by the interface.
@@ -337,9 +335,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
 }
 
 TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   // Signal and immediately delete the WaitableEvent out from under the Watcher.
 
@@ -374,9 +370,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
 // Tests deleting the WaitableEventWatcher between signaling the event and
 // when the callback should be run.
 TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
-  test::TaskEnvironment::MainThreadType main_thread_type;
-  bool delay_after_delete;
-  std::tie(main_thread_type, delay_after_delete) = GetParam();
+  auto [main_thread_type, delay_after_delete] = GetParam();
 
   test::TaskEnvironment task_environment(main_thread_type);
   scoped_refptr<SingleThreadTaskRunner> task_runner =

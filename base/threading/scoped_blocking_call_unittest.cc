@@ -951,8 +951,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   // Between 0 and kNumRacingThreads sampled Now() and their
   // IOJankMonitoringWindow before Now() was fast-forwarded by
   // kDeltaFromBoundary.
-  int janky_intervals_count, total_jank_count;
-  std::tie(janky_intervals_count, total_jank_count) = reports_[0];
+  auto [janky_intervals_count, total_jank_count] = reports_[0];
   EXPECT_GE(janky_intervals_count, 0);
   EXPECT_LE(janky_intervals_count, 1);
   EXPECT_GE(total_jank_count, 0);
