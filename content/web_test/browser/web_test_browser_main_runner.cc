@@ -139,9 +139,7 @@ void WebTestBrowserMainRunner::Initialize() {
   // only default to a software GL if the flag isn't already specified.
   if (!command_line.HasSwitch(switches::kUseGpuInTests) &&
       !command_line.HasSwitch(switches::kUseGL)) {
-    // This setting makes web tests run on SwANGLE instead of SwiftShader GL.
-    bool legacy_software_gl = false;
-    gl::SetSoftwareGLCommandLineSwitches(&command_line, legacy_software_gl);
+    gl::SetSoftwareGLCommandLineSwitches(&command_line);
   }
   command_line.AppendSwitchASCII(switches::kTouchEventFeatureDetection,
                                  switches::kTouchEventFeatureDetectionEnabled);

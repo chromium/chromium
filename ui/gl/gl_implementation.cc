@@ -297,32 +297,18 @@ bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
          (implementation == GetSoftwareGLImplementation());
 }
 
-void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
-                                      bool legacy_software_gl) {
-  if (legacy_software_gl) {
-    command_line->AppendSwitchASCII(
-        switches::kUseGL,
-        gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation()));
-  } else {
-    GLImplementationParts implementation = GetSoftwareGLImplementation();
-    command_line->AppendSwitchASCII(
-        switches::kUseGL, gl::GetGLImplementationGLName(implementation));
-    command_line->AppendSwitchASCII(
-        switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
-  }
+void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
+  GLImplementationParts implementation = GetSoftwareGLImplementation();
+  command_line->AppendSwitchASCII(
+      switches::kUseGL, gl::GetGLImplementationGLName(implementation));
+  command_line->AppendSwitchASCII(
+      switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
 }
 
-void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line,
-                                         bool legacy_software_gl) {
-  if (legacy_software_gl) {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    kGLImplementationSwiftShaderForWebGLName);
-  } else {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    kGLImplementationANGLEName);
-    command_line->AppendSwitchASCII(
-        switches::kUseANGLE, kANGLEImplementationSwiftShaderForWebGLName);
-  }
+void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kUseGL, kGLImplementationANGLEName);
+  command_line->AppendSwitchASCII(switches::kUseANGLE,
+                                  kANGLEImplementationSwiftShaderForWebGLName);
 }
 
 const char* GetGLImplementationGLName(GLImplementationParts implementation) {

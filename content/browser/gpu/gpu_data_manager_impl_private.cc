@@ -1338,14 +1338,9 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
     case gpu::GpuMode::HARDWARE_VULKAN:
       use_gl = browser_command_line->GetSwitchValueASCII(switches::kUseGL);
       break;
-    case gpu::GpuMode::SWIFTSHADER: {
-      bool legacy_software_gl = true;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-      // This setting makes WebGL run on SwANGLE instead of SwiftShader GL.
-      legacy_software_gl = false;
-#endif
-      gl::SetSoftwareWebGLCommandLineSwitches(command_line, legacy_software_gl);
-    } break;
+    case gpu::GpuMode::SWIFTSHADER:
+      gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      break;
     default:
       use_gl = gl::kGLImplementationDisabledName;
   }
