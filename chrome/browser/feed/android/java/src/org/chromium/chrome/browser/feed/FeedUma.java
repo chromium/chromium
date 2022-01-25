@@ -19,7 +19,8 @@ public class FeedUma {
     public static final int CONTROLS_ACTION_TOGGLED_FEED = 3;
     public static final int CONTROLS_ACTION_CLICKED_FEED_HEADER_MENU = 4;
     public static final int CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY = 5;
-    public static final int NUM_CONTROLS_ACTIONS = 6;
+    public static final int CONTROLS_ACTION_CLICKED_MANAGE = 6;
+    public static final int NUM_CONTROLS_ACTIONS = 7;
 
     public static void recordFeedControlsAction(int action) {
         assert action >= 0;

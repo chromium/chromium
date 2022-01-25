@@ -37137,6 +37137,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Toggled the feed"/>
   <int value="4" label="Clicked on the feed menu button"/>
   <int value="5" label="Clicked on autoplay"/>
+  <int value="6" label="Clicked on Manage"/>
 </enum>
 
 <enum name="FeedEngagementType">
@@ -37365,6 +37366,9 @@ Called by update_permissions_policy_enum.py.-->
       label="User tapped Settings link to open feed autoplay settings."/>
   <int value="41"
       label="User tapped &quot;Add to Reading List&quot; in the context menu."/>
+  <int value="42"
+      label="User tapped the Manage icon to visit the feed management
+             interstitial."/>
 </enum>
 
 <enum name="FeedUserCommandType">

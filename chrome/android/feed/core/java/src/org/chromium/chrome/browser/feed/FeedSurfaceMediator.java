@@ -963,6 +963,10 @@ public class FeedSurfaceMediator
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         if (itemId == R.id.ntp_feed_header_menu_item_manage) {
             Intent intent = new Intent(mContext, FeedManagementActivity.class);
+            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE);
+            if (mCurrentStream != null) {
+                mCurrentStream.recordActionManage();
+            }
             mContext.startActivity(intent);
         } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,

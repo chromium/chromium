@@ -96,6 +96,9 @@ public interface Stream {
     /** Record that user tapped Learn More. */
     default void recordActionLearnMore() {}
 
+    /** Record that user tapped Manage. */
+    default void recordActionManage() {}
+
     /** Whether activity logging is enabled for this feed. */
     default boolean isActivityLoggingEnabled() {
         return false;

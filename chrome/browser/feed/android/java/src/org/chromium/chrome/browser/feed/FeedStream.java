@@ -706,6 +706,12 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public void recordActionManage() {
+        FeedStreamJni.get().reportOtherUserAction(
+                mNativeFeedStream, FeedStream.this, FeedUserActionType.TAPPED_MANAGE);
+    }
+
+    @Override
     public void triggerRefresh(Callback<Boolean> callback) {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             if (mRenderer != null) {

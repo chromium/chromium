@@ -119,8 +119,10 @@ enum class FeedUserActionType {
   kOpenedAutoplaySettings = 40,
   // User tapped "Add to Reading List" in the context menu.
   kTappedAddToReadingList = 41,
+  // User tapped "Manage" icon to open the manage intestitial.
+  kTappedManage = 42,
 
-  kMaxValue = kTappedAddToReadingList,
+  kMaxValue = kTappedManage,
 };
 
 // For testing and debugging only.
