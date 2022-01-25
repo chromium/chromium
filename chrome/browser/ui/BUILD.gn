@@ -3225,6 +3225,8 @@ static_library("ui") {
       "webui/discards/site_data_provider_impl.h",
       "webui/signin/inline_login_handler.cc",
       "webui/signin/inline_login_handler.h",
+      "webui/signin/signin_url_utils.cc",
+      "webui/signin/signin_url_utils.h",
       "webui/signin/signin_web_dialog_ui.cc",
       "webui/signin/signin_web_dialog_ui.h",
       "webui/signin/sync_confirmation_handler.cc",

@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
@@ -116,6 +117,13 @@ AccountInfo FillAccountInfo(
   account_info.locale = "en";
   account_info.picture_url = "https://get-avatar.com/foo";
   return account_info;
+}
+
+GURL GetSyncConfirmationURL(SkColor profile_color = kProfileColor) {
+  return AppendSyncConfirmationQueryParams(
+      GURL("chrome://sync-confirmation/"),
+      {/*is_modal=*/false, SyncConfirmationUI::DesignVersion::kColored,
+       profile_color});
 }
 
 void ExpectSyncAborted(Profile* profile) {
@@ -616,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
-      GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -664,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_to_cancel = SignInForNewProfile(
-      GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   // Close the flow with the [X] button.
   base::FilePath canceled_path = profile_to_cancel->GetPath();
@@ -680,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // it's disregarded. Instead of the profile switch screen, the normal sync
   // confirmation should appear.
   Profile* profile_being_created = SignInForNewProfile(
-      GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
   EXPECT_NE(canceled_path, profile_being_created->GetPath());
 
   // Simulate closing the UI with "No, thanks".
@@ -790,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForLoadStop(GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(GetSyncConfirmationURL(kDifferentProfileColor));
 
   // Simulate closing the UI with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -823,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
-      GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -919,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Wait for the sign-in to propagate to the flow, resulting in sync
   // confirmation screen getting displayed.
-  WaitForLoadStop(GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(GetSyncConfirmationURL());
 
   // Simulate closing the UI with "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
@@ -1298,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
           kEntepriseAccountSyncEnabled,
       /*proceed=*/true);
 
-  WaitForLoadStop(GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "No, thanks".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
@@ -1396,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
           kEntepriseAccountSyncEnabled,
       /*proceed=*/true);
 
-  WaitForLoadStop(GURL("chrome://sync-confirmation/"));
+  WaitForLoadStop(GetSyncConfirmationURL());
   // Simulate finishing the flow with "Configure sync".
   LoginUIServiceFactory::GetForProfile(profile_being_created)
       ->SyncConfirmationUIClosed(LoginUIService::CONFIGURE_SYNC_FIRST);
@@ -1663,7 +1671,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerCreationFlowEphemeralProfileBrowserTest,
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
   Profile* profile_being_created = SignInForNewProfile(
-      GURL("chrome://sync-confirmation/"), "joe.consumer@gmail.com", "Joe");
+      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
 
   // Check that the profile is ephemeral, regardless of the policy.
   ProfileAttributesEntry* entry =
