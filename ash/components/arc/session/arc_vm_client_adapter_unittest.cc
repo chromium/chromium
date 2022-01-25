@@ -614,6 +614,10 @@ class ArcVmClientAdapterTest : public testing::Test,
     return boot_server_.get();
   }
 
+  void set_block_apex_path(base::FilePath block_apex_path) {
+    block_apex_path_ = block_apex_path;
+  }
+
   void set_host_rootfs_writable(bool host_rootfs_writable) {
     host_rootfs_writable_ = host_rootfs_writable;
   }
@@ -629,6 +633,7 @@ class ArcVmClientAdapterTest : public testing::Test,
 
  private:
   void RewriteStatus(FileSystemStatus* status) {
+    status->set_block_apex_path_for_testing(block_apex_path_);
     status->set_host_rootfs_writable_for_testing(host_rootfs_writable_);
     status->set_system_image_ext_format_for_testing(system_image_ext_format_);
   }
@@ -642,6 +647,7 @@ class ArcVmClientAdapterTest : public testing::Test,
   ArcServiceManager arc_service_manager_;
 
   // Variables to override the value in FileSystemStatus.
+  base::FilePath block_apex_path_;
   bool host_rootfs_writable_;
   bool system_image_ext_format_;
 
@@ -2127,6 +2133,38 @@ TEST_F(ArcVmClientAdapterTest, ArcVmBalloonPolicyDisabled) {
   StartMiniArcWithParams(true, std::move(start_params));
   auto request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.has_balloon_policy());
+}
+
+// Test that the request passes an empty disk for the demo image
+// or the block apex composite disk when they are not present.
+// There should be two empty disks (/dev/block/vdc and /dev/block/vdd)
+// and they should have path /dev/null.
+TEST_F(ArcVmClientAdapterTest, ArcVmEmptyVirtualDisksExist) {
+  StartMiniArc();
+
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_EQ(request.disks(1).path(), "/dev/null");
+  EXPECT_EQ(request.disks(2).path(), "/dev/null");
+}
+
+// Test that block apex disk path exists when the composite disk payload
+// exists.
+TEST_F(ArcVmClientAdapterTest, ArcVmBlockApexDiskExists) {
+  constexpr const char path[] = "/opt/google/vms/android/apex/payload.img";
+  set_block_apex_path(base::FilePath(path));
+  StartMiniArc();
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(request.disks(), path,
+                             [](const auto& p) { return p.path(); }));
+}
+
+// Test that the block apex disk path isn't included when it doesn't exist.
+TEST_F(ArcVmClientAdapterTest, ArcVmNoBlockApexDisk) {
+  constexpr const char path[] = "/opt/google/vms/android/apex/payload.img";
+  StartMiniArc();
+  auto request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(base::Contains(request.disks(), path,
+                              [](const auto& p) { return p.path(); }));
 }
 
 // Tests that OnConnectionReady() calls the MakeRtVcpu call D-Bus method.

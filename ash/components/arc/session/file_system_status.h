@@ -34,6 +34,7 @@ class FileSystemStatus {
   const base::FilePath& vendor_image_path() const { return vendor_image_path_; }
   const base::FilePath& guest_kernel_path() const { return guest_kernel_path_; }
   const base::FilePath& fstab_path() const { return fstab_path_; }
+  const base::FilePath& block_apex_path() const { return block_apex_path_; }
 
   // Setters for testing.
   void set_host_rootfs_writable_for_testing(bool is_host_rootfs_writable) {
@@ -58,6 +59,9 @@ class FileSystemStatus {
   void set_fstab_path_for_testing(const base::FilePath& fstab_path) {
     fstab_path_ = fstab_path;
   }
+  void set_block_apex_path_for_testing(const base::FilePath& block_apex_path) {
+    block_apex_path_ = block_apex_path;
+  }
 
   static bool IsSystemImageExtFormatForTesting(const base::FilePath& path) {
     return IsSystemImageExtFormat(path);
@@ -78,6 +82,7 @@ class FileSystemStatus {
   base::FilePath vendor_image_path_;
   base::FilePath guest_kernel_path_;
   base::FilePath fstab_path_;
+  base::FilePath block_apex_path_;
   bool is_system_image_ext_format_;
   bool has_adbd_json_;
 };
