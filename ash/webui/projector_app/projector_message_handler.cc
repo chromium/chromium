@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -47,6 +48,9 @@ constexpr char kRejectedRequestArgsKey[] = "requestArgs";
 constexpr char kNoneStr[] = "NONE";
 constexpr char kOtherStr[] = "OTHER";
 constexpr char kTokenFetchFailureStr[] = "TOKEN_FETCH_FAILURE";
+// Disallow special chars that potentially allow redirecting writes to
+// arbitrary file system locations.
+constexpr char kInvalidStorageDirNameRegex[] = "\\.\\.|/|\\\\";
 
 // Struct used to describe args to set user's preference.
 struct SetUserPrefArgs {
@@ -298,6 +302,11 @@ void ProjectorMessageHandler::StartProjectorSession(
   // TODO(b/177959166): Pass the directory to ProjectorController when starting
   // a new session.
   DCHECK_EQ(func_args.GetList().size(), 1u);
+  auto storage_dir_name = func_args.GetList()[0].GetString();
+  if (RE2::PartialMatch(storage_dir_name, kInvalidStorageDirNameRegex)) {
+    ResolveJavascriptCallback(args[0], base::Value(false));
+    return;
+  }
 
   // TODO(b/195113693): Start the projector session with the selected account
   // and folder.
@@ -309,7 +318,7 @@ void ProjectorMessageHandler::StartProjectorSession(
     return;
   }
 
-  controller->StartProjectorSession(func_args.GetList()[0].GetString());
+  controller->StartProjectorSession(storage_dir_name);
   ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
