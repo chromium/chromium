@@ -71,7 +71,7 @@ non_preprocessed_files = [
   "on_startup_page_tests.ts",
   "password_check_test.js",
   "passwords_and_autofill_fake_data.ts",
-  "passwords_device_section_test.js",
+  "passwords_device_section_test.ts",
   "passwords_export_test.ts",
   "passwords_section_test.js",
   "payments_section_interactive_test.ts",

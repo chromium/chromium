@@ -35,13 +35,14 @@ export enum MoveToAccountStoreTrigger {
   COUNT = 4,
 }
 
-interface PasswordMoveToAccountDialogElement {
+export interface PasswordMoveToAccountDialogElement {
   $: {
     dialog: CrDialogElement,
+    moveButton: HTMLElement,
   };
 }
 
-class PasswordMoveToAccountDialogElement extends PolymerElement {
+export class PasswordMoveToAccountDialogElement extends PolymerElement {
   static get is() {
     return 'password-move-to-account-dialog';
   }
@@ -79,6 +80,12 @@ class PasswordMoveToAccountDialogElement extends PolymerElement {
 
   private onCancelButtonClick_() {
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-move-to-account-dialog': PasswordMoveToAccountDialogElement;
   }
 }
 

@@ -29,6 +29,8 @@ export type PasswordMoreActionsClickedEvent = CustomEvent<{
 export interface PasswordListItemElement {
   $: {
     moreActionsButton: HTMLElement,
+    originUrl: HTMLAnchorElement,
+    username: HTMLInputElement,
   };
 }
 

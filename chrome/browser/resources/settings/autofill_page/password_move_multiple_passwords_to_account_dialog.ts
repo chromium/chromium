@@ -24,6 +24,8 @@ import {MoveToAccountStoreTrigger} from './password_move_to_account_dialog.js';
 export interface PasswordMoveMultiplePasswordsToAccountDialogElement {
   $: {
     dialog: CrDialogElement,
+    moveButton: HTMLElement,
+    cancelButton: HTMLElement,
   };
 }
 

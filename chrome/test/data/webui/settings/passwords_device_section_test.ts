@@ -7,8 +7,9 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {IronListElement, PasswordMoveToAccountDialogElement, PasswordsDeviceSectionElement} from 'chrome://settings/lazy_load.js';
+import {MultiStorePasswordUiEntry, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {createMultiStorePasswordEntry, createPasswordEntry, PasswordDeviceSectionElementFactory} from './passwords_and_autofill_fake_data.js';
@@ -18,16 +19,15 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 /**
  * Sets the fake password data, the appropriate route and creates the element.
- * @param {!TestSyncBrowserProxy} syncBrowserProxy
- * @param {!TestPasswordManagerProxy} passwordManager
- * @param {!Array<!chrome.passwordsPrivate.PasswordUiEntry>} passwordList
- * @return {!Object}
  */
 async function createPasswordsDeviceSection(
-    syncBrowserProxy, passwordManager, passwordList) {
+    syncBrowserProxy: TestSyncBrowserProxy,
+    passwordManager: TestPasswordManagerProxy,
+    passwordList: Array<chrome.passwordsPrivate.PasswordUiEntry>):
+    Promise<PasswordsDeviceSectionElement> {
   passwordManager.data.passwords = passwordList;
   Router.getInstance().setCurrentRoute(
-      routes.DEVICE_PASSWORDS, new URLSearchParams());
+      routes.DEVICE_PASSWORDS, new URLSearchParams(), false);
   const passwordsDeviceSection =
       document.createElement('passwords-device-section');
   document.body.appendChild(passwordsDeviceSection);
@@ -43,39 +43,34 @@ async function createPasswordsDeviceSection(
 }
 
 /**
- * @param {!Element} subsection The passwords subsection element that will be
- * checked.
- * @param {!Array<!MultiStorePasswordUiEntry>} expectedPasswords The
- *     expected passwords in this subsection.
- * @private
+ * @param subsection The passwords subsection element that will be checked.
+ * @param expectedPasswords The expected passwords in this subsection.
  */
-function validatePasswordsSubsection(subsection, expectedPasswords) {
+function validatePasswordsSubsection(
+    subsection: IronListElement,
+    expectedPasswords: Array<MultiStorePasswordUiEntry>) {
   assertDeepEquals(expectedPasswords, subsection.items);
   const listItemElements = subsection.querySelectorAll('password-list-item');
   for (let index = 0; index < expectedPasswords.length; ++index) {
-    const expectedPassword = expectedPasswords[index];
+    const expectedPassword = expectedPasswords[index]!;
     const listItemElement = listItemElements[index];
     assertTrue(!!listItemElement);
     assertEquals(
         expectedPassword.urls.shown,
-        listItemElement.$.originUrl.textContent.trim());
+        listItemElement.$.originUrl.textContent!.trim());
     assertEquals(expectedPassword.urls.link, listItemElement.$.originUrl.href);
     assertEquals(expectedPassword.username, listItemElement.$.username.value);
   }
 }
 
 suite('PasswordsDeviceSection', function() {
-  /** @type {TestPasswordManagerProxy} */
-  let passwordManager = null;
-  /** @type {TestSyncBrowserProxy} */
-  let syncBrowserProxy = null;
-  /** @type {!settings.StoredAccount} */
+  let passwordManager: TestPasswordManagerProxy;
+  let syncBrowserProxy: TestSyncBrowserProxy;
   const SIGNED_IN_ACCOUNT = {email: 'john@gmail.com'};
-  /** @type {PasswordDeviceSectionElementFactory} */
-  let elementFactory = null;
+  let elementFactory: PasswordDeviceSectionElementFactory;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     syncBrowserProxy = new TestSyncBrowserProxy();
@@ -86,8 +81,11 @@ suite('PasswordsDeviceSection', function() {
     // syncing) and opted-in to account storage.
     syncBrowserProxy.storedAccounts = [SIGNED_IN_ACCOUNT];
     simulateStoredAccounts(syncBrowserProxy.storedAccounts);
-    syncBrowserProxy.testSyncStatus = {signedIn: false};
-    simulateSyncStatus(syncBrowserProxy.syncStatus);
+    syncBrowserProxy.testSyncStatus = {
+      signedIn: false,
+      statusAction: StatusAction.NO_ACTION
+    };
+    simulateSyncStatus(syncBrowserProxy.testSyncStatus);
     passwordManager.setIsOptedInForAccountStorageAndNotify(true);
   });
 
@@ -96,12 +94,12 @@ suite('PasswordsDeviceSection', function() {
   test('verifyPasswordsEmptySubsections', async function() {
     const passwordsDeviceSection = await createPasswordsDeviceSection(
         syncBrowserProxy, passwordManager, []);
-    assertFalse(passwordsDeviceSection.shadowRoot
-                    .querySelector('#noDeviceOnlyPasswordsLabel')
-                    .hidden);
-    assertFalse(passwordsDeviceSection.shadowRoot
-                    .querySelector('#noDeviceAndAccountPasswordsLabel')
-                    .hidden);
+    assertFalse(
+        passwordsDeviceSection.shadowRoot!
+            .querySelector<HTMLElement>('#noDeviceOnlyPasswordsLabel')!.hidden);
+    assertFalse(passwordsDeviceSection.shadowRoot!
+                    .querySelector<HTMLElement>(
+                        '#noDeviceAndAccountPasswordsLabel')!.hidden);
   });
 
   // Test verifies that account passwords are not displayed, whereas
@@ -135,12 +133,12 @@ suite('PasswordsDeviceSection', function() {
           createMultiStorePasswordEntry(
               {username: 'both', deviceId: 2, accountId: 3}),
         ]);
-    assertTrue(passwordsDeviceSection.shadowRoot
-                   .querySelector('#noDeviceOnlyPasswordsLabel')
-                   .hidden);
-    assertTrue(passwordsDeviceSection.shadowRoot
-                   .querySelector('#noDeviceAndAccountPasswordsLabel')
-                   .hidden);
+    assertTrue(
+        passwordsDeviceSection.shadowRoot!
+            .querySelector<HTMLElement>('#noDeviceOnlyPasswordsLabel')!.hidden);
+    assertTrue(passwordsDeviceSection.shadowRoot!
+                   .querySelector<HTMLElement>(
+                       '#noDeviceAndAccountPasswordsLabel')!.hidden);
   });
 
   // Test verifies that removing the device copy of a duplicated password
@@ -161,8 +159,8 @@ suite('PasswordsDeviceSection', function() {
 
     // Remove device copy.
     passwordList.splice(1, 1);
-    passwordManager.lastCallback.addSavedPasswordListChangedListener(
-        passwordList);
+    passwordManager.lastCallback.addSavedPasswordListChangedListener!
+        (passwordList);
     flush();
 
     validatePasswordsSubsection(
@@ -189,8 +187,8 @@ suite('PasswordsDeviceSection', function() {
 
     // Remove account copy.
     passwordList.splice(0, 1);
-    passwordManager.lastCallback.addSavedPasswordListChangedListener(
-        passwordList);
+    passwordManager.lastCallback.addSavedPasswordListChangedListener!
+        (passwordList);
     flush();
 
     validatePasswordsSubsection(
@@ -213,9 +211,10 @@ suite('PasswordsDeviceSection', function() {
             syncBrowserProxy, passwordManager,
             [nonGooglePasswordWithSameEmail, googlePasswordWithDifferentEmail]);
         const passwordElements =
-            passwordsDeviceSection.root.querySelectorAll('password-list-item');
+            passwordsDeviceSection.shadowRoot!.querySelectorAll(
+                'password-list-item');
 
-        passwordElements[0].$.moreActionsButton.click();
+        passwordElements[0]!.$.moreActionsButton.click();
         flush();
         let moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler
                                       .$.menuMovePasswordToAccount;
@@ -223,7 +222,7 @@ suite('PasswordsDeviceSection', function() {
 
         passwordsDeviceSection.$.passwordsListHandler.$.menu.close();
 
-        passwordElements[1].$.moreActionsButton.click();
+        passwordElements[1]!.$.moreActionsButton.click();
         flush();
         moveToAccountOption = passwordsDeviceSection.$.passwordsListHandler.$
                                   .menuMovePasswordToAccount;
@@ -238,8 +237,8 @@ suite('PasswordsDeviceSection', function() {
         {username: SIGNED_IN_ACCOUNT.email, url: 'accounts.google.com'});
     const passwordsDeviceSection = await createPasswordsDeviceSection(
         syncBrowserProxy, passwordManager, [signedInGoogleAccountPassword]);
-    const [password] =
-        passwordsDeviceSection.root.querySelectorAll('password-list-item');
+    const password = passwordsDeviceSection.shadowRoot!.querySelectorAll(
+        'password-list-item')[0]!;
 
     password.$.moreActionsButton.click();
     flush();
@@ -254,27 +253,28 @@ suite('PasswordsDeviceSection', function() {
   test('verifyMovesCorrectIdToAccount', async function() {
     // Create duplicated password that will be merged in the UI.
     const accountCopy = createPasswordEntry(
-        {user: 'both', id: 2, frontendId: 42, fromAccountStore: true});
+        {username: 'both', id: 2, frontendId: 42, fromAccountStore: true});
     const deviceCopy = createPasswordEntry(
-        {user: 'both', id: 1, frontendId: 42, fromAccountStore: false});
+        {username: 'both', id: 1, frontendId: 42, fromAccountStore: false});
     const passwordsDeviceSection = await createPasswordsDeviceSection(
         syncBrowserProxy, passwordManager, [deviceCopy, accountCopy]);
 
     // At first the dialog is not shown.
-    assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.shadowRoot
+    assertFalse(!!passwordsDeviceSection.$.passwordsListHandler.shadowRoot!
                       .querySelector('#passwordMoveToAccountDialog'));
 
     // Click the option in the overflow menu to move the password. Verify the
     // dialog is now open.
-    const [password] =
-        passwordsDeviceSection.root.querySelectorAll('password-list-item');
+    const password = passwordsDeviceSection.shadowRoot!.querySelectorAll(
+        'password-list-item')[0]!;
     password.$.moreActionsButton.click();
     passwordsDeviceSection.$.passwordsListHandler.$.menuMovePasswordToAccount
         .click();
     flush();
     const moveToAccountDialog =
-        passwordsDeviceSection.$.passwordsListHandler.shadowRoot.querySelector(
-            '#passwordMoveToAccountDialog');
+        passwordsDeviceSection.$.passwordsListHandler.shadowRoot!
+            .querySelector<PasswordMoveToAccountDialogElement>(
+                '#passwordMoveToAccountDialog');
     assertTrue(!!moveToAccountDialog);
 
     // Click the Move button in the dialog. The API should be called with the id
@@ -289,7 +289,7 @@ suite('PasswordsDeviceSection', function() {
   test('leavesPageIfSyncIsEnabled', async function() {
     await createPasswordsDeviceSection(syncBrowserProxy, passwordManager, []);
     assertEquals(Router.getInstance().currentRoute, routes.DEVICE_PASSWORDS);
-    simulateSyncStatus({signedIn: true});
+    simulateSyncStatus({signedIn: true, statusAction: StatusAction.NO_ACTION});
     flush();
     assertEquals(Router.getInstance().currentRoute, routes.PASSWORDS);
   });
@@ -345,8 +345,8 @@ suite('PasswordsDeviceSection', function() {
         [deviceEntry1, deviceEntry2]);
     // Uncheck the first entry.
     const firstPasswordItem =
-        moveMultipleDialog.shadowRoot.querySelector('password-list-item');
-    firstPasswordItem.querySelector('cr-checkbox').click();
+        moveMultipleDialog.shadowRoot!.querySelector('password-list-item')!;
+    firstPasswordItem.querySelector('cr-checkbox')!.click();
     // Press the Move button
     moveMultipleDialog.$.moveButton.click();
     flush();
@@ -366,7 +366,7 @@ suite('PasswordsDeviceSection', function() {
     const moveMultipleDialog =
         elementFactory.createMoveMultiplePasswordsDialog([deviceEntry]);
     const firstPasswordItem =
-        moveMultipleDialog.shadowRoot.querySelector('password-list-item');
+        moveMultipleDialog.shadowRoot!.querySelector('password-list-item')!;
     assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
   });
 
@@ -377,9 +377,7 @@ suite('PasswordsDeviceSection', function() {
         const passwordsDeviceSection = await createPasswordsDeviceSection(
             syncBrowserProxy, passwordManager, []);
 
-        assertTrue(passwordsDeviceSection.shadowRoot
-                       .querySelector('#moveMultiplePasswordsBanner')
-                       .hidden);
+        assertTrue(passwordsDeviceSection.$.moveMultiplePasswordsBanner.hidden);
       });
 
   test(
@@ -389,9 +387,8 @@ suite('PasswordsDeviceSection', function() {
         const passwordsDeviceSection = await createPasswordsDeviceSection(
             syncBrowserProxy, passwordManager, [devicePassword]);
 
-        assertFalse(passwordsDeviceSection.shadowRoot
-                        .querySelector('#moveMultiplePasswordsBanner')
-                        .hidden);
+        assertFalse(
+            passwordsDeviceSection.$.moveMultiplePasswordsBanner.hidden);
       });
 
   test(
@@ -417,8 +414,6 @@ suite('PasswordsDeviceSection', function() {
             syncBrowserProxy, passwordManager,
             [devicePassword, accountPassword]);
 
-        assertTrue(passwordsDeviceSection.shadowRoot
-                       .querySelector('#moveMultiplePasswordsBanner')
-                       .hidden);
+        assertTrue(passwordsDeviceSection.$.moveMultiplePasswordsBanner.hidden);
       });
 });

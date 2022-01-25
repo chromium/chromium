@@ -47,9 +47,10 @@ declare global {
 
 export interface PasswordsListHandlerElement {
   $: {
-    menu: CrActionMenuElement,
-    removalToast: CrToastElement,
     copyToast: CrToastElement,
+    menu: CrActionMenuElement,
+    menuMovePasswordToAccount: HTMLElement,
+    removalToast: CrToastElement,
   };
 }
 
