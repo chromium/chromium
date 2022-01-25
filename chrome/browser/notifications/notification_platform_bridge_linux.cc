@@ -28,6 +28,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -68,6 +69,7 @@ const char kMethodGetCapabilities[] = "GetCapabilities";
 const char kMethodListActivatableNames[] = "ListActivatableNames";
 const char kMethodNameHasOwner[] = "NameHasOwner";
 const char kMethodNotify[] = "Notify";
+const char kMethodStartServiceByName[] = "StartServiceByName";
 
 // DBus signals.
 const char kSignalActionInvoked[] = "ActionInvoked";
@@ -99,6 +101,9 @@ const char kSettingsButtonId[] = "settings";
 // Max image size; specified in the FDO notification specification.
 const int kMaxImageWidth = 200;
 const int kMaxImageHeight = 100;
+
+// Time to wait for the notification service to start.
+constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 // Notification on-screen time, in milliseconds.
 const int32_t kExpireTimeout = 25000;
@@ -286,7 +291,24 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
     dbus::MessageReader reader(list_activatable_names_response.get());
     std::vector<std::string> activatable_names;
     reader.PopArrayOfStrings(&activatable_names);
-    return base::Contains(activatable_names, kFreedesktopNotificationsName);
+    if (base::Contains(activatable_names, kFreedesktopNotificationsName)) {
+      dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
+                                          kMethodStartServiceByName);
+      dbus::MessageWriter start_service_writer(&start_service_call);
+      start_service_writer.AppendString(kFreedesktopNotificationsName);
+      start_service_writer.AppendUint32(/*flags=*/0);
+      auto start_service_response = dbus_proxy->CallMethodAndBlock(
+          &start_service_call, kStartServiceTimeout.InMilliseconds());
+      if (!start_service_response)
+        return false;
+      dbus::MessageReader start_service_reader(start_service_response.get());
+      uint32_t start_service_reply = 0;
+      if (start_service_reader.PopUint32(&start_service_reply) &&
+          (start_service_reply == DBUS_START_REPLY_SUCCESS ||
+           start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
+        return true;
+      }
+    }
   }
   return false;
 }

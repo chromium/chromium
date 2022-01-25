@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
@@ -28,6 +29,7 @@ namespace {
 
 constexpr char kDBusMethodNameHasOwner[] = "NameHasOwner";
 constexpr char kDBusMethodListActivatableNames[] = "ListActivatableNames";
+constexpr char kMethodStartServiceByName[] = "StartServiceByName";
 
 constexpr char kXdgPortalService[] = "org.freedesktop.portal.Desktop";
 constexpr char kXdgPortalObject[] = "/org/freedesktop/portal/desktop";
@@ -56,6 +58,9 @@ constexpr char kFileChooserOptionCurrentName[] = "current_name";
 constexpr int kFileChooserFilterKindGlob = 0;
 
 constexpr char kFileUriPrefix[] = "file://";
+
+// Time to wait for the notification service to start, in milliseconds.
+constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 struct FileChooserProperties : dbus::PropertySet {
   dbus::Property<uint32_t> version;
@@ -291,7 +296,25 @@ bool SelectFileDialogImplPortal::IsPortalActivatableOnBusThread(
     return false;
   }
 
-  return base::Contains(names, kXdgPortalService);
+  if (base::Contains(names, kXdgPortalService)) {
+    dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
+                                        kMethodStartServiceByName);
+    dbus::MessageWriter start_service_writer(&start_service_call);
+    start_service_writer.AppendString(kXdgPortalService);
+    start_service_writer.AppendUint32(/*flags=*/0);
+    auto start_service_response = dbus_proxy->CallMethodAndBlock(
+        &start_service_call, kStartServiceTimeout.InMilliseconds());
+    if (!start_service_response)
+      return false;
+    dbus::MessageReader start_service_reader(start_service_response.get());
+    uint32_t start_service_reply = 0;
+    if (start_service_reader.PopUint32(&start_service_reply) &&
+        (start_service_reply == DBUS_START_REPLY_SUCCESS ||
+         start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 SelectFileDialogImplPortal::PortalFilter::PortalFilter() = default;
