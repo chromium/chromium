@@ -242,6 +242,25 @@ void AddCallback(int* output_err, int err, sql::Statement* /*stmt*/) {
     DLOG(WARNING) << "LoginDatabase::AddLogin updated an existing form";
 }
 
+class ScopedDbErrorHandler {
+ public:
+  explicit ScopedDbErrorHandler(sql::Database* db) : db_(db) {
+    db_->set_error_callback(
+        base::BindRepeating(AddCallback, &sqlite_error_code_));
+  }
+  ScopedDbErrorHandler(const ScopedDbErrorHandler&) = delete;
+  ScopedDbErrorHandler& operator=(const ScopedDbErrorHandler&) = delete;
+
+  ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
+
+  void reset_error_code() { sqlite_error_code_ = 0; }
+  int get_error_code() const { return sqlite_error_code_; }
+
+ private:
+  raw_ptr<sql::Database> db_;
+  int sqlite_error_code_{0};
+};
+
 bool DoesMatchConstraints(const PasswordForm& form) {
   if (!IsValidAndroidFacetURI(form.signon_realm) && form.url.is_empty()) {
     DLOG(ERROR) << "Constraint violation: form.origin is empty";
@@ -933,8 +952,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
   sql::Statement s(
       db_.GetCachedStatement(SQL_FROM_HERE, add_statement_.c_str()));
   BindAddStatement(form_with_encrypted_password, &s);
-  int sqlite_error_code;
-  db_.set_error_callback(base::BindRepeating(&AddCallback, &sqlite_error_code));
+  ScopedDbErrorHandler db_error_handler(&db_);
   const bool success = s.Run();
   if (success) {
     // If success, the row never existed so password was not changed.
@@ -947,12 +965,10 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     list.emplace_back(PasswordStoreChange::ADD,
                       std::move(form_with_encrypted_password), primary_key,
                       /*password_changed=*/false);
-    db_.reset_error_callback();
     return list;
   }
-
   // Repeat the same statement but with REPLACE semantic.
-  sqlite_error_code = 0;
+  db_error_handler.reset_error_code();
   DCHECK(!add_replace_statement_.empty());
   PrimaryKeyAndPassword old_primary_key_password =
       GetPrimaryKeyAndPassword(form);
@@ -979,13 +995,12 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
                       FormPrimaryKey(db_.GetLastInsertRowId()),
                       password_changed, insecure_changed);
   } else if (error) {
-    if (sqlite_error_code == 19 /*SQLITE_CONSTRAINT*/) {
+    if (db_error_handler.get_error_code() == 19 /*SQLITE_CONSTRAINT*/) {
       *error = AddLoginError::kConstraintViolation;
     } else {
       *error = AddLoginError::kDbError;
     }
   }
-  db_.reset_error_callback();
   return list;
 }
 
