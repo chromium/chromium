@@ -123,9 +123,7 @@ class WebBundleElementBrowserTest : public ContentBrowserTest,
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    ElementType element_type;
-    UuidScheme uuid_scheme;
-    std::tie(element_type, uuid_scheme) = info.param;
+    auto [element_type, uuid_scheme] = info.param;
     return base::StringPrintf(
         "%sElementWith%sScheme",
         element_type == ElementType::Link ? "Link" : "Script",

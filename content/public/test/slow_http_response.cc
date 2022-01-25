@@ -62,9 +62,7 @@ void SlowHttpResponse::SendResponse(
     base::WeakPtr<HttpResponseDelegate> delegate) {
   // Construct the headers here so subclasses can override them. Then we will
   // bind them into the async task which sends them in the response.
-  net::HttpStatusCode status;
-  std::string status_reason;
-  std::tie(status, status_reason) = StatusLine();
+  auto [status, status_reason] = StatusLine();
 
   base::StringPairs headers = ResponseHeaders();
   headers.emplace_back("Cache-Control", "no-store");

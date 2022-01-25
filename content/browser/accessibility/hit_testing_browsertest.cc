@@ -48,9 +48,7 @@ AccessibilityHitTestingBrowserTest::~AccessibilityHitTestingBrowserTest() =
 
 void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  double device_scale_factor;
-  bool use_zoom_for_dsf;
-  std::tie(device_scale_factor, use_zoom_for_dsf) = GetParam();
+  auto [device_scale_factor, use_zoom_for_dsf] = GetParam();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor,
       base::StringPrintf("%.2f", device_scale_factor));
@@ -62,9 +60,7 @@ void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
 
 std::string AccessibilityHitTestingBrowserTest::TestPassToString::operator()(
     const ::testing::TestParamInfo<AccessibilityZoomTestParam>& info) const {
-  double device_scale_factor;
-  bool use_zoom_for_dsf;
-  std::tie(device_scale_factor, use_zoom_for_dsf) = info.param;
+  auto [device_scale_factor, use_zoom_for_dsf] = info.param;
   std::string name =
       base::StringPrintf("ZoomFactor%g_UseZoomForDSF%s", device_scale_factor,
                          use_zoom_for_dsf ? "On" : "Off");

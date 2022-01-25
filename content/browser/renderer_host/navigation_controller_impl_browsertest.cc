@@ -185,9 +185,7 @@ class NavigationControllerBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    std::string render_document_level;
-    bool enable_back_forward_cache;
-    std::tie(render_document_level, enable_back_forward_cache) = info.param;
+    auto [render_document_level, enable_back_forward_cache] = info.param;
     return base::StringPrintf(
         "%s_%s",
         GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
@@ -344,12 +342,8 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    std::string render_document_level;
-    bool use_load_data_as_string_with_base_url;
-    bool base_url_empty;
-    bool history_url_empty;
-    std::tie(render_document_level, use_load_data_as_string_with_base_url,
-             base_url_empty, history_url_empty) = info.param;
+    auto [render_document_level, use_load_data_as_string_with_base_url,
+          base_url_empty, history_url_empty] = info.param;
     return base::StringPrintf(
         "%s_%s_%s_%s",
         GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
@@ -923,9 +917,7 @@ class LoadDataWithBaseURLBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    std::string render_document_level;
-    bool use_load_data_as_string_with_base_url;
-    std::tie(render_document_level, use_load_data_as_string_with_base_url) =
+    auto [render_document_level, use_load_data_as_string_with_base_url] =
         info.param;
     return base::StringPrintf(
         "%s_%s",
@@ -3921,9 +3913,7 @@ class InitialEmptyDocNavigationControllerBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    std::string render_document_level;
-    bool renderer_initiated;
-    std::tie(render_document_level, renderer_initiated) = info.param;
+    auto [render_document_level, renderer_initiated] = info.param;
     return base::StringPrintf(
         "%s_%s",
         GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),

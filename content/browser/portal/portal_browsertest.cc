@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <tuple>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -1301,9 +1300,7 @@ class PortalOrphanedNavigationBrowserTest
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const ::testing::TestParamInfo<ParamType>& info) {
-    bool cross_site;
-    bool commit_after_adoption;
-    std::tie(cross_site, commit_after_adoption) = info.param;
+    auto [cross_site, commit_after_adoption] = info.param;
     return base::StringPrintf("%sSite_Commit%sAdoption",
                               cross_site ? "Cross" : "Same",
                               commit_after_adoption ? "After" : "Before");
@@ -2584,9 +2581,7 @@ class PortalsValidConfigurationBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
 
-    std::string switch_name;
-    std::string switch_value;
-    std::tie(switch_name, switch_value) = GetParam();
+    auto [switch_name, switch_value] = GetParam();
     if (switch_name == switches::kEnableFeatures) {
       scoped_feature_list_.InitFromCommandLine(switch_value, "");
     } else {

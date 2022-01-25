@@ -92,9 +92,7 @@ class IndexedDBTransactionTest : public testing::Test {
                          base::Unretained(this), false));
       return;
     }
-    IndexedDBDatabase::RunTasksResult result;
-    leveldb::Status status;
-    std::tie(result, status) = db_->RunTasks();
+    auto [result, status] = db_->RunTasks();
     switch (result) {
       case IndexedDBDatabase::RunTasksResult::kDone:
         return;

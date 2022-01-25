@@ -637,9 +637,7 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
       ServiceWorkerMetrics::EventTypeToString(event_type));
 
   base::TimeTicks expiration_time = tick_clock_->NowTicks() + timeout;
-  bool is_inserted = false;
-  std::set<InflightRequestTimeoutInfo>::iterator iter;
-  std::tie(iter, is_inserted) = request_timeouts_.emplace(
+  auto [iter, is_inserted] = request_timeouts_.emplace(
       request_id, event_type, expiration_time, timeout_behavior);
   DCHECK(is_inserted);
   request_rawptr->timeout_iter = iter;
@@ -2139,9 +2137,7 @@ void ServiceWorkerVersion::SetAllRequestExpirations(
     const base::TimeTicks& expiration) {
   std::set<InflightRequestTimeoutInfo> new_timeouts;
   for (const auto& info : request_timeouts_) {
-    bool is_inserted = false;
-    std::set<InflightRequestTimeoutInfo>::iterator iter;
-    std::tie(iter, is_inserted) = new_timeouts.emplace(
+    auto [iter, is_inserted] = new_timeouts.emplace(
         info.id, info.event_type, expiration, info.timeout_behavior);
     DCHECK(is_inserted);
     InflightRequest* request = inflight_requests_.Lookup(info.id);

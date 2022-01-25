@@ -362,9 +362,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
 
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
-  int process_id = ChildProcessHost::kInvalidUniqueID;
-  std::tie(factory_receiver, process_id) = WaitForFactoryReceiver();
+  auto [factory_receiver, process_id] = WaitForFactoryReceiver();
   // Currently shared worker is created in the same process with the creator's
   // process by default.
   EXPECT_EQ(renderer_host0->GetID(), process_id);
@@ -988,9 +986,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
 
   // Starts a worker.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
-  int worker_process_id0 = ChildProcessHost::kInvalidUniqueID;
-  std::tie(factory_receiver0, worker_process_id0) = WaitForFactoryReceiver();
+  auto [factory_receiver0, worker_process_id0] = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
   base::RunLoop().RunUntilIdle();
@@ -1084,9 +1080,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
       MakeSharedWorkerConnector(render_frame_host0->GetGlobalId()), kUrl, kName,
       &client0, &local_port0);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
-  int worker_process_id0 = ChildProcessHost::kInvalidUniqueID;
-  std::tie(factory_receiver0, worker_process_id0) = WaitForFactoryReceiver();
+  auto [factory_receiver0, worker_process_id0] = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
   // Simulate unexpected disconnection like a process crash.

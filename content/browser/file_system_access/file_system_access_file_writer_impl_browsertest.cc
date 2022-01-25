@@ -112,8 +112,7 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        ContentsWrittenToSwapFileFirst) {
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
   const std::string file_contents = "file contents to write";
 
   EXPECT_EQ(0,
@@ -155,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        KeepExistingDataHasPreviousContent) {
   const std::string initial_contents = "fooks";
   const std::string expected_contents = "barks";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -190,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        CreateWriterNoKeepExistingWithEmptyFile) {
   const std::string initial_contents = "very long string";
   const std::string expected_contents = "bar";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -223,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFile) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -250,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFileRacy) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -289,9 +284,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 #endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        MAYBE_FileAnnotated) {
-  base::FilePath test_file, swap_file, lib_file;
-
-  std::tie(test_file, swap_file) = CreateQuarantineTestFilesAndEntry();
+  auto [test_file, swap_file] = CreateQuarantineTestFilesAndEntry();
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -312,8 +305,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        RespectOSPermissions) {
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
 
   // Make the file read-only.
   {
