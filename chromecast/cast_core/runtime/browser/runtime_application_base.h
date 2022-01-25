@@ -61,8 +61,7 @@ class RuntimeApplicationBase
   CastWebView* cast_web_view() { return cast_web_view_.get(); }
 
   // RuntimeApplication implementation:
-  url_rewrite::UrlRequestRewriteRulesManager* GetUrlRewriteRulesManager()
-      override;
+  CastWebContents* GetCastWebContents() override;
 
   // RuntimeApplicationServiceDelegate implementation:
   void SetUrlRewriteRules(const cast::v2::SetUrlRewriteRulesRequest& request,
@@ -108,9 +107,6 @@ class RuntimeApplicationBase
   // The WebView associated with the window in which the Cast application is
   // displayed.
   CastWebView::Scoped cast_web_view_;
-
-  std::unique_ptr<url_rewrite::UrlRequestRewriteRulesManager>
-      url_rewrite_rules_manager_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

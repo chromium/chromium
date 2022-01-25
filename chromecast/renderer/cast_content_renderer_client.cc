@@ -13,6 +13,7 @@
 #include "chromecast/base/bitstream_audio_codecs.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/chromecast_switches.h"
+#include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/crash/app_state_tracker.h"
 #include "chromecast/media/base/media_codec_support.h"
 #include "chromecast/media/base/supported_codec_profile_levels_memo.h"
@@ -385,7 +386,8 @@ std::unique_ptr<blink::URLLoaderThrottleProvider>
 CastContentRendererClient::CreateURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type) {
   return std::make_unique<CastURLLoaderThrottleProvider>(
-      type, activity_url_filter_manager(), this);
+      type, activity_url_filter_manager(), this,
+      base::BindRepeating(&IsCorsExemptHeader));
 }
 
 absl::optional<::media::AudioRendererAlgorithmParameters>

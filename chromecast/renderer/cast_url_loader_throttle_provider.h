@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 
@@ -21,7 +23,9 @@ class CastURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   CastURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType type,
       CastActivityUrlFilterManager* url_filter_manager,
-      CastURLRewriteRulesStore* url_rewrite_rules_store);
+      CastURLRewriteRulesStore* url_rewrite_rules_store,
+      base::RepeatingCallback<bool(base::StringPiece)>
+          is_cors_exempt_header_callback);
   ~CastURLLoaderThrottleProvider() override;
   CastURLLoaderThrottleProvider& operator=(
       const CastURLLoaderThrottleProvider&) = delete;
@@ -41,6 +45,8 @@ class CastURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
   blink::URLLoaderThrottleProviderType type_;
   CastActivityUrlFilterManager* const cast_activity_url_filter_manager_;
   CastURLRewriteRulesStore* const url_rewrite_rules_store_;
+  base::RepeatingCallback<bool(base::StringPiece)>
+      is_cors_exempt_header_callback_;
 
   THREAD_CHECKER(thread_checker_);
 };

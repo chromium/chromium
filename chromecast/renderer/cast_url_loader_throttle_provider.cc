@@ -5,11 +5,11 @@
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 
 #include <string>
+#include <utility>
 
-#include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/common/activity_filtering_url_loader_throttle.h"
-#include "chromecast/common/cors_exempt_headers.h"
 #include "chromecast/renderer/cast_activity_url_filter_manager.h"
 #include "chromecast/renderer/cast_url_rewrite_rules_store.h"
 #include "components/url_rewrite/common/url_loader_throttle.h"
@@ -20,11 +20,14 @@ namespace chromecast {
 CastURLLoaderThrottleProvider::CastURLLoaderThrottleProvider(
     blink::URLLoaderThrottleProviderType type,
     CastActivityUrlFilterManager* url_filter_manager,
-    CastURLRewriteRulesStore* url_rewrite_rules_store)
+    CastURLRewriteRulesStore* url_rewrite_rules_store,
+    base::RepeatingCallback<bool(base::StringPiece)>
+        is_cors_exempt_header_callback)
     : type_(type),
       cast_activity_url_filter_manager_(url_filter_manager),
-      url_rewrite_rules_store_(url_rewrite_rules_store) {
-  DCHECK(cast_activity_url_filter_manager_);
+      url_rewrite_rules_store_(url_rewrite_rules_store),
+      is_cors_exempt_header_callback_(
+          std::move(is_cors_exempt_header_callback)) {
   DCHECK(url_rewrite_rules_store_);
   DETACH_FROM_THREAD(thread_checker_);
 }
@@ -38,7 +41,8 @@ CastURLLoaderThrottleProvider::CastURLLoaderThrottleProvider(
     : type_(other.type_),
       cast_activity_url_filter_manager_(
           other.cast_activity_url_filter_manager_),
-      url_rewrite_rules_store_(other.url_rewrite_rules_store_) {
+      url_rewrite_rules_store_(other.url_rewrite_rules_store_),
+      is_cors_exempt_header_callback_(other.is_cors_exempt_header_callback_) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -55,19 +59,22 @@ CastURLLoaderThrottleProvider::CreateThrottles(
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
-  auto* activity_url_filter =
-      cast_activity_url_filter_manager_->GetActivityUrlFilterForRenderFrameID(
-          render_frame_id);
-  if (activity_url_filter) {
-    throttles.emplace_back(std::make_unique<ActivityFilteringURLLoaderThrottle>(
-        activity_url_filter));
+  if (cast_activity_url_filter_manager_) {
+    auto* activity_url_filter =
+        cast_activity_url_filter_manager_->GetActivityUrlFilterForRenderFrameID(
+            render_frame_id);
+    if (activity_url_filter) {
+      throttles.emplace_back(
+          std::make_unique<ActivityFilteringURLLoaderThrottle>(
+              activity_url_filter));
+    }
   }
 
   auto rules =
       url_rewrite_rules_store_->GetUrlRequestRewriteRules(render_frame_id);
   if (rules) {
     throttles.emplace_back(std::make_unique<url_rewrite::URLLoaderThrottle>(
-        rules, base::BindRepeating(&IsCorsExemptHeader)));
+        rules, is_cors_exempt_header_callback_));
   }
 
   return throttles;

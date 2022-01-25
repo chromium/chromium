@@ -23,10 +23,10 @@ class MockCastWebContents : public CastWebContents {
   MOCK_METHOD(int, id, (), (const, override));
   MOCK_METHOD(content::WebContents*, web_contents, (), (const, override));
   MOCK_METHOD(PageState, page_state, (), (const, override));
-  MOCK_METHOD(const url_rewrite::UrlRequestRewriteRulesManager*,
+  MOCK_METHOD(url_rewrite::UrlRequestRewriteRulesManager*,
               url_rewrite_rules_manager,
               (),
-              (const, override));
+              (override));
   MOCK_METHOD(void, AddRendererFeatures, (base::Value), (override));
   MOCK_METHOD(void,
               SetInterfacesForRenderer,

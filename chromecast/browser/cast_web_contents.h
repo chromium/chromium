@@ -173,8 +173,8 @@ class CastWebContents : public mojom::CastWebContents {
   // TODO(seantopping): Hide this, clients shouldn't use WebContents directly.
   virtual content::WebContents* web_contents() const = 0;
   virtual PageState page_state() const = 0;
-  virtual const url_rewrite::UrlRequestRewriteRulesManager*
-  url_rewrite_rules_manager() const = 0;
+  virtual url_rewrite::UrlRequestRewriteRulesManager*
+  url_rewrite_rules_manager() = 0;
 
   // mojom::CastWebContents implementation:
   void SetAppProperties(const std::string& app_id,

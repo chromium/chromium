@@ -36,10 +36,6 @@ class CastRuntimeContentRendererClient
   CastRuntimeContentRendererClient& operator=(
       CastRuntimeContentRendererClient&&) = delete;
 
-  // Returns URL rewrite rules for provided RenderFrame |routing_id|.
-  const scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetUrlRewriteRules(
-      int routing_id) const;
-
   // content::ContentRendererClient overrides.
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   std::unique_ptr<::media::Demuxer> OverrideDemuxerForUrl(
@@ -51,16 +47,9 @@ class CastRuntimeContentRendererClient
       blink::URLLoaderThrottleProviderType type) override;
 
  private:
-  // Called by UrlRewriteRulesProvider when its corresponding RenderFrame
-  // is in the process of being deleted.
-  void OnRenderFrameDeleted(int routing_id);
-
   cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
   std::unique_ptr<cast_streaming::RendererControllerProxy>
       cast_streaming_renderer_controller_proxy_;
-  // Map of RenderFrame routing ID to UrlRewriteRulesProvider.
-  base::flat_map<int, std::unique_ptr<UrlRewriteRulesProvider>>
-      url_rewrite_rules_providers_;
 };
 
 }  // namespace chromecast

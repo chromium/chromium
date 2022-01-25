@@ -220,8 +220,8 @@ PageState CastWebContentsImpl::page_state() const {
   return page_state_;
 }
 
-const url_rewrite::UrlRequestRewriteRulesManager*
-CastWebContentsImpl::url_rewrite_rules_manager() const {
+url_rewrite::UrlRequestRewriteRulesManager*
+CastWebContentsImpl::url_rewrite_rules_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return &url_rewrite_rules_manager_;
 }

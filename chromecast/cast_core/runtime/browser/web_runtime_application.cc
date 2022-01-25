@@ -75,6 +75,7 @@ void WebRuntimeApplication::InnerContentsCreated(
     CastWebContents* inner_contents,
     CastWebContents* outer_contents) {
   DCHECK(inner_contents);
+  DCHECK_EQ(outer_contents, GetCastWebContents());
 
   LOG(INFO) << "Inner web contents created";
 
@@ -100,7 +101,8 @@ void WebRuntimeApplication::InnerContentsCreated(
   CastWebContents::Observer::Observe(inner_contents);
 
   // Attach URL request rewrire rules to the inner CastWebContents.
-  GetUrlRewriteRulesManager()->AddWebContents(inner_contents->web_contents());
+  outer_contents->url_rewrite_rules_manager()->AddWebContents(
+      inner_contents->web_contents());
 }
 
 }  // namespace chromecast

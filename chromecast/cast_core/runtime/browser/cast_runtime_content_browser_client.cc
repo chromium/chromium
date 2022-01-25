@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_content_browser_client.h"
 
 #include "base/ranges/algorithm.h"
+#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/service_manager_connection.h"
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/runtime/browser/cast_core_switches.h"
@@ -114,11 +115,9 @@ CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
     content::WebContents* web_contents) {
   DCHECK(runtime_application_);
 
-  url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager =
-      runtime_application_->GetUrlRewriteRulesManager();
-  DCHECK(url_rewrite_rules_manager);
-
-  const auto& rules = url_rewrite_rules_manager->GetCachedRules();
+  const auto& rules = runtime_application_->GetCastWebContents()
+                          ->url_rewrite_rules_manager()
+                          ->GetCachedRules();
   if (!rules) {
     LOG(WARNING) << "Can't create URL throttle as URL rules are not available";
     return nullptr;

@@ -11,11 +11,9 @@
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "url/gurl.h"
 
-namespace url_rewrite {
-class UrlRequestRewriteRulesManager;
-}
-
 namespace chromecast {
+
+class CastWebContents;
 
 // This represents an application that can be hosted by RuntimeService.  Its
 // lifecycle is very simple: Load() -> Launch() -> Destruction.  Implementations
@@ -42,9 +40,8 @@ class RuntimeApplication {
   // NOTE: This is the empty string until after Launch().
   const GURL& app_url() const { return app_url_; }
 
-  // NOTE: These fields are the empty string until after Load().
-  virtual url_rewrite::UrlRequestRewriteRulesManager*
-  GetUrlRewriteRulesManager() = 0;
+  // NOTE: These fields are the empty until after Load().
+  virtual CastWebContents* GetCastWebContents() = 0;
 
   // Called before Launch() to perform any pre-launch loading that is
   // necessary. This should return true if the load was successful and it's

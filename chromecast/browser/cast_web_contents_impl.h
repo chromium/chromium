@@ -61,8 +61,8 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents() const override;
   PageState page_state() const override;
-  const url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager()
-      const override;
+  url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager()
+      override;
 
   // CastWebContents implementation:
   int tab_id() const override;

@@ -69,20 +69,10 @@ bool RuntimeApplicationBase::Load(
             << ", endpoint=" << grpc_address;
 
   CreateCastWebView();
-  url_rewrite_rules_manager_ =
-      std::make_unique<url_rewrite::UrlRequestRewriteRulesManager>();
-  if (!url_rewrite_rules_manager_->AddWebContents(
-          cast_web_view_->cast_web_contents()->web_contents())) {
-    LOG(ERROR) << "Failed to attach WebContets to URL rewrite rules";
-    return false;
-  }
-
   url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
       mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
           request.url_rewrite_rules());
-  if (!url_rewrite_rules_manager_->OnRulesUpdated(std::move(mojom_rules))) {
-    LOG(ERROR) << "Failed to update URL rewrite rules";
-  }
+  GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
 
   LOG(INFO) << "Successfully loaded: " << *this;
   return true;
@@ -116,8 +106,7 @@ void RuntimeApplicationBase::FinishLaunch(
   core_app_stub_ =
       cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
 
-  InitializeApplication(core_app_stub_.get(),
-                        cast_web_view_->cast_web_contents());
+  InitializeApplication(core_app_stub_.get(), GetCastWebContents());
   DCHECK(!app_url().is_empty());
 
   LOG(INFO) << "Application is initialized: " << *this;
@@ -125,11 +114,11 @@ void RuntimeApplicationBase::FinishLaunch(
   const std::vector<int32_t> feature_permissions;
   const std::vector<std::string> additional_feature_permission_origins;
   // TODO(b/203580094): Currently we assume the app is not audio only.
-  cast_web_view_->cast_web_contents()->SetAppProperties(
+  GetCastWebContents()->SetAppProperties(
       app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
       app_url(), false /*enforce_feature_permissions*/, feature_permissions,
       additional_feature_permission_origins);
-  cast_web_view_->cast_web_contents()->LoadUrl(app_url());
+  GetCastWebContents()->LoadUrl(app_url());
   cast_web_view_->window()->GrantScreenAccess();
   cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
@@ -150,9 +139,9 @@ void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
   callback->StepGRPC(grpc::Status::OK);
 }
 
-url_rewrite::UrlRequestRewriteRulesManager*
-RuntimeApplicationBase::GetUrlRewriteRulesManager() {
-  return url_rewrite_rules_manager_.get();
+CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
+  DCHECK(cast_web_view_);
+  return cast_web_view_->cast_web_contents();
 }
 
 void RuntimeApplicationBase::SetUrlRewriteRules(
@@ -169,9 +158,7 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
     url_rewrite::mojom::UrlRequestRewriteRulesPtr mojom_rules =
         mojo::ConvertTo<url_rewrite::mojom::UrlRequestRewriteRulesPtr>(
             request.rules());
-    if (!url_rewrite_rules_manager_->OnRulesUpdated(std::move(mojom_rules))) {
-      LOG(ERROR) << "Failed to update URL rewrite rules";
-    }
+    GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
   }
   callback->StepGRPC(grpc::Status::OK);
 }
@@ -231,7 +218,7 @@ void RuntimeApplicationBase::StopApplication() {
   }
 
   if (cast_web_view_) {
-    cast_web_view_->cast_web_contents()->ClosePage();
+    GetCastWebContents()->ClosePage();
   }
 
   if (web_service_) {
