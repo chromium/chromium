@@ -18,6 +18,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -28,9 +29,13 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -44,16 +49,12 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-
 public class SubscriptionsManagerImplTest {
-    @Mock
-    private Profile mProfile;
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public JniMocker mMocker = new JniMocker();
-
-    @Mock
-    private CommerceSubscriptionsStorage.Natives mCommerceSubscriptionsStorageJni;
 
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
@@ -61,8 +62,11 @@ public class SubscriptionsManagerImplTest {
     private static final String OFFER_ID_4 = "offer_id_4";
 
     @Mock
+    private Profile mProfile;
+    @Mock
+    private CommerceSubscriptionsStorage.Natives mCommerceSubscriptionsStorageJni;
+    @Mock
     private CommerceSubscriptionsStorage mStorage;
-
     @Mock
     private CommerceSubscriptionsServiceProxy mProxy;
 
@@ -71,6 +75,7 @@ public class SubscriptionsManagerImplTest {
     private CommerceSubscription mSubscription2;
     private CommerceSubscription mSubscription3;
     private CommerceSubscription mSubscription4;
+    private FeatureList.TestValues mTestValues;
 
     private final class SubscriptionsComparator implements Comparator<CommerceSubscription> {
         @Override
@@ -82,6 +87,13 @@ public class SubscriptionsManagerImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        mTestValues = new FeatureList.TestValues();
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
+        FeatureList.setTestValues(mTestValues);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
 
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
         mSubscriptionsManager = new SubscriptionsManagerImpl(mProfile, mStorage, mProxy);
@@ -477,6 +489,41 @@ public class SubscriptionsManagerImplTest {
         ArgumentCaptor<Boolean> resultCaptor = ArgumentCaptor.forClass(Boolean.class);
         verify(isSubscribedCallback, times(1)).onResult(resultCaptor.capture());
         assertEquals(true, resultCaptor.getValue());
+    }
+
+    @MediumTest
+    @Test
+    public void testOnIdentityChanged_AccountCleared() {
+        // Fetch subscriptions when SubscriptionManager is created.
+        verify(mProxy, times(1))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        any(Callback.class));
+
+        // Simulate user signs out. We should delete local storage but not fetch data from server.
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(false);
+        mSubscriptionsManager.onIdentityChanged();
+        verify(mStorage, times(1)).deleteAll();
+        verify(mProxy, times(1))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        any(Callback.class));
+    }
+
+    @MediumTest
+    @Test
+    public void testOnIdentityChanged_AccountChanged() {
+        // Fetch subscriptions when SubscriptionManager is created.
+        verify(mProxy, times(1))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        any(Callback.class));
+
+        // Simulate user switches account. We should delete local storage and also fetch new data
+        // from server.
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        mSubscriptionsManager.onIdentityChanged();
+        verify(mStorage, times(1)).deleteAll();
+        verify(mProxy, times(2))
+                .get(eq(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK),
+                        any(Callback.class));
     }
 
     private void setLoadWithPrefixMockResponse(List<CommerceSubscription> subscriptions) {
