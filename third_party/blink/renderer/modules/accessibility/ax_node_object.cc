@@ -3375,8 +3375,9 @@ static bool ShouldInsertSpaceBetweenObjectsIfNeeded(
   //      LayoutBlockFlow (anonymous)
   //        LayoutText "def" <= next
   // See accessibility/name-calc-aria-hidden.html
+  const auto* next_layout_object = next->GetLayoutObject();
   for (auto* layout_object = previous->GetLayoutObject();
-       layout_object != next->GetLayoutObject();
+       layout_object && layout_object != next_layout_object;
        layout_object = layout_object->NextInPreOrder()) {
     if (layout_object->IsBlockInInline())
       return true;
