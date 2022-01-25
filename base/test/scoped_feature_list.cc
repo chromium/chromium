@@ -7,10 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/mock_entropy_provider.h"
@@ -27,7 +29,11 @@ std::vector<StringPiece> GetFeatureVector(
     const std::vector<Feature>& features) {
   std::vector<StringPiece> output;
   for (const Feature& feature : features) {
-    output.push_back(feature.name);
+    StringPiece name = feature.name;
+    // Check against special characters used in ParseEnableFeatures function.
+    DCHECK_EQ(StringPiece(name).find_first_of(":.<,/"), StringPiece::npos)
+        << ". Invalid feature name " << name << " with reserved characters.";
+    output.push_back(name);
   }
 
   return output;
