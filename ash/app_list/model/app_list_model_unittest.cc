@@ -13,11 +13,13 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/model/app_list_test_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/list_model_observer.h"
 
@@ -27,16 +29,10 @@ namespace {
 
 class TestObserver : public AppListModelObserver {
  public:
-  TestObserver()
-      : status_changed_count_(0),
-        items_added_(0),
-        items_removed_(0),
-        items_updated_(0) {}
-
+  TestObserver() = default;
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   // AppListModelObserver
   void OnAppListModelStatusChanged() override { ++status_changed_count_; }
@@ -62,22 +58,20 @@ class TestObserver : public AppListModelObserver {
   }
 
  private:
-  int status_changed_count_;
-  size_t items_added_;
-  size_t items_removed_;
-  size_t items_updated_;
+  int status_changed_count_ = 0;
+  size_t items_added_ = 0;
+  size_t items_removed_ = 0;
+  size_t items_updated_ = 0;
 };
 
 }  // namespace
 
 class AppListModelTest : public testing::Test {
  public:
-  AppListModelTest() {}
-
+  AppListModelTest() = default;
   AppListModelTest(const AppListModelTest&) = delete;
   AppListModelTest& operator=(const AppListModelTest&) = delete;
-
-  ~AppListModelTest() override {}
+  ~AppListModelTest() override = default;
 
   // testing::Test overrides:
   void SetUp() override {
@@ -123,6 +117,18 @@ class AppListModelTest : public testing::Test {
 
   std::string GetModelContents() {
     return GetItemListContents(model_->top_level_item_list());
+  }
+
+  // Creates a folder named `name` with `num_apps` items. The returned pointer
+  // is owned by the `model_`.
+  AppListFolderItem* CreateFolderWithApps(const char* name, size_t num_apps) {
+    AppListFolderItem* folder = new AppListFolderItem(name, model_.get());
+    model_->AddItem(folder);  // Takes ownership.
+    for (int i = 0; static_cast<size_t>(i) < num_apps; ++i) {
+      std::string name = model_->GetItemName(i);
+      model_->AddItemToFolder(model_->CreateItem(name), folder->id());
+    }
+    return folder;
   }
 
   std::unique_ptr<test::AppListTestModel> model_;
@@ -254,13 +260,8 @@ TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
   model_->PopulateApps(1);
 
   AppListItem* item0 = model_->top_level_item_list()->item_at(0);
-  AppListFolderItem* folder = new AppListFolderItem("folder1", model_.get());
-  model_->AddItem(folder);
   const size_t num_folder_apps = 2;
-  for (int i = 0; static_cast<size_t>(i) < num_folder_apps; ++i) {
-    std::string name = model_->GetItemName(i);
-    model_->AddItemToFolder(model_->CreateItem(name), folder->id());
-  }
+  AppListFolderItem* folder = CreateFolderWithApps("folder1", num_folder_apps);
 
   // Calling MergeItems(AppListItem, AppListFolderItem) results in
   // AppListFolderItem being deleted. Previously AppListModel did not remove
@@ -270,6 +271,11 @@ TEST_F(AppListModelFolderTest, MergeItemIntoFolder) {
 }
 
 TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
+  // The configs tested here are not used by ProductivityLauncher. This test
+  // can be deleted when ProductivityLauncher is the default.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kProductivityLauncher);
+
   // Ensure any configs set by previous tests are cleared.
   AppListConfigProvider::Get().ResetForTesting();
 
@@ -279,14 +285,9 @@ TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
                                                     true);
   ASSERT_TRUE(large_config);
 
-  AppListFolderItem* folder = new AppListFolderItem("folder1", model_.get());
   const size_t num_folder_apps = 5;
   const size_t num_observed_apps = 4;
-  model_->AddItem(folder);
-  for (int i = 0; static_cast<size_t>(i) < num_folder_apps; ++i) {
-    std::string name = model_->GetItemName(i);
-    model_->AddItemToFolder(model_->CreateItem(name), folder->id());
-  }
+  AppListFolderItem* folder = CreateFolderWithApps("folder1", num_folder_apps);
 
   // Verify that the folder has folder image for large config.
   FolderImage* large_config_image =
@@ -326,6 +327,66 @@ TEST_F(AppListModelFolderTest, NonSharedConfigIconGeneration) {
       AppListConfigType::kMedium));
 
   EXPECT_FALSE(folder->GetFolderImageForTesting(AppListConfigType::kSmall));
+
+  AppListConfigProvider::Get().ResetForTesting();
+}
+
+// Same test as above, but for ProductivityLauncher config types.
+TEST_F(AppListModelFolderTest,
+       NonSharedConfigIconGenerationProductivityLauncher) {
+  // The configs tested here are only used by ProductivityLauncher.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kProductivityLauncher);
+
+  // Ensure any configs set by previous tests are cleared.
+  AppListConfigProvider::Get().ResetForTesting();
+
+  // Start with kRegular config available.
+  const AppListConfig* regular_config =
+      AppListConfigProvider::Get().GetConfigForType(AppListConfigType::kRegular,
+                                                    true);
+  ASSERT_TRUE(regular_config);
+
+  const size_t num_folder_apps = 5;
+  const size_t num_observed_apps = 4;
+  AppListFolderItem* folder = CreateFolderWithApps("folder1", num_folder_apps);
+
+  // Verify that the folder has folder image for regular config.
+  FolderImage* regular_config_image =
+      folder->GetFolderImageForTesting(AppListConfigType::kRegular);
+  ASSERT_TRUE(regular_config_image);
+  EXPECT_EQ(regular_config->folder_unclipped_icon_size(),
+            regular_config_image->icon().size());
+
+  // Verify that the folder is observing the app list item.
+  EXPECT_TRUE(ItemObservedByFolder(
+      folder, folder->item_list()->item_at(num_observed_apps - 1),
+      AppListConfigType::kRegular));
+  EXPECT_FALSE(ItemObservedByFolder(
+      folder, folder->item_list()->item_at(num_observed_apps),
+      AppListConfigType::kRegular));
+
+  // Not kDense folder image, as the config does not exist yet.
+  EXPECT_FALSE(folder->GetFolderImageForTesting(AppListConfigType::kDense));
+
+  // Create dense config, and verify the folder image for dense config gets
+  // created.
+  const AppListConfig* dense_config =
+      AppListConfigProvider::Get().GetConfigForType(AppListConfigType::kDense,
+                                                    true);
+  FolderImage* dense_config_image =
+      folder->GetFolderImageForTesting(AppListConfigType::kDense);
+  ASSERT_TRUE(dense_config_image);
+  EXPECT_EQ(dense_config->folder_unclipped_icon_size(),
+            dense_config_image->icon().size());
+
+  // Verify that the folder is observing the app list item.
+  EXPECT_TRUE(ItemObservedByFolder(
+      folder, folder->item_list()->item_at(num_observed_apps - 1),
+      AppListConfigType::kDense));
+  EXPECT_FALSE(ItemObservedByFolder(
+      folder, folder->item_list()->item_at(num_observed_apps),
+      AppListConfigType::kDense));
 
   AppListConfigProvider::Get().ResetForTesting();
 }
