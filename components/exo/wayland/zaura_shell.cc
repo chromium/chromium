@@ -591,6 +591,18 @@ void AuraSurface::OnDeskChanged(Surface* surface, int state) {
   zaura_surface_send_desk_changed(resource_, state);
 }
 
+void AuraSurface::ThrottleFrameRate(bool on) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_START_THROTTLE_SINCE_VERSION) {
+    return;
+  }
+  if (on)
+    zaura_surface_send_start_throttle(resource_);
+  else
+    zaura_surface_send_end_throttle(resource_);
+  wl_client_flush(wl_resource_get_client(resource_));
+}
+
 void AuraSurface::MoveToDesk(int desk_index) {
   constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
   if (desk_index == kToggleVisibleOnAllWorkspacesValue) {

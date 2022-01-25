@@ -28,6 +28,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
+#include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
@@ -1984,6 +1985,21 @@ TEST_F(ShellSurfaceTest, Reparent) {
   child_shell_surface->Activate();
   EXPECT_TRUE(child_widget->ShouldPaintAsActive());
   EXPECT_TRUE(widget2->ShouldPaintAsActive());
+}
+
+TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
+  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  SurfaceObserverForTest observer;
+  shell_surface->root_surface()->AddSurfaceObserver(&observer);
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  EXPECT_CALL(observer, ThrottleFrameRate(true));
+  window->SetProperty(ash::kFrameRateThrottleKey, true);
+
+  EXPECT_CALL(observer, ThrottleFrameRate(false));
+  window->SetProperty(ash::kFrameRateThrottleKey, false);
+
+  shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
 }
 
 }  // namespace exo

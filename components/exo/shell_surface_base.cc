@@ -744,6 +744,14 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
   container_ = container;
   this->root_surface()->RemoveSurfaceObserver(this);
   root_surface->AddSurfaceObserver(this);
+  // Reset throttle status of the old root surface and apply the status to the
+  // new root surface.
+  if (widget_ && widget_->GetNativeWindow()) {
+    if (widget_->GetNativeWindow()->GetProperty(ash::kFrameRateThrottleKey)) {
+      this->root_surface()->ThrottleFrameRate(false);
+      root_surface->ThrottleFrameRate(true);
+    }
+  }
   SetRootSurface(root_surface);
   host_window()->Show();
   if (widget_ && widget_->GetNativeWindow() &&
@@ -1111,6 +1119,8 @@ void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
   if (window == parent_)
     SetParentInternal(nullptr);
   window->RemoveObserver(this);
+  if (widget_ && window == widget_->GetNativeWindow() && root_surface())
+    root_surface()->ThrottleFrameRate(false);
 }
 
 void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
@@ -1125,6 +1135,9 @@ void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
           window->GetProperty(chromeos::kFrameRestoreLookKey));
     } else if (key == aura::client::kWindowWorkspaceKey) {
       root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
+    } else if (key == ash::kFrameRateThrottleKey) {
+      root_surface()->ThrottleFrameRate(
+          window->GetProperty(ash::kFrameRateThrottleKey));
     }
   }
 }

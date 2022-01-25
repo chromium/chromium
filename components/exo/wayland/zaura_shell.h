@@ -21,7 +21,7 @@ class ShellSurfaceBase;
 
 namespace wayland {
 
-constexpr uint32_t kZAuraShellVersion = 28;
+constexpr uint32_t kZAuraShellVersion = 29;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -73,6 +73,7 @@ class AuraSurface : public SurfaceObserver,
   void OnWindowOcclusionChanged(Surface* surface) override;
   void OnFrameLockingChanged(Surface* surface, bool lock) override;
   void OnDeskChanged(Surface* surface, int state) override;
+  void ThrottleFrameRate(bool on) override;
 
   // Overridden from ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,

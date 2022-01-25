@@ -324,6 +324,8 @@ source_set("unit_tests") {
       "shell_surface_unittest.cc",
       "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
+      "surface_test_util.cc",
+      "surface_test_util.h",
       "surface_unittest.cc",
       "text_input_unittest.cc",
       "toast_surface_unittest.cc",

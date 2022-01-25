@@ -403,6 +403,9 @@ class Surface final : public ui::PropertyHandler {
   // Release the pinned mode and allows the user to do other things again.
   void Unpin();
 
+  // Starts or ends throttling on the surface.
+  void ThrottleFrameRate(bool on);
+
  private:
   struct State {
     State();

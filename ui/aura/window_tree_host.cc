@@ -551,8 +551,7 @@ void WindowTreeHost::DestroyCompositor() {
   if (!compositor_)
     return;
 
-  if (ShouldThrottleWhenOccluded())
-    HostFrameRateThrottler::GetInstance().RemoveHost(this);
+  HostFrameRateThrottler::GetInstance().RemoveHost(this);
 
   // Explicitly delete the HideHelper early as it makes use of `compositor_`
   // and `window_`.

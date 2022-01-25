@@ -42,6 +42,9 @@ class SurfaceObserver {
                                 int64_t old_display,
                                 int64_t new_display) {}
 
+  // Starts or ends throttling.
+  virtual void ThrottleFrameRate(bool on) {}
+
  protected:
   virtual ~SurfaceObserver() {}
 };

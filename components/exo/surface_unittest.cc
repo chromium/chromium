@@ -10,6 +10,7 @@
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/sub_surface.h"
+#include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -82,25 +83,6 @@ std::string TransformToString(Transform transform) {
   }
   return prefix + name;
 }
-
-class SurfaceObserverForTest : public SurfaceObserver {
- public:
-  SurfaceObserverForTest() = default;
-
-  SurfaceObserverForTest(const SurfaceObserverForTest&) = delete;
-  SurfaceObserverForTest& operator=(const SurfaceObserverForTest&) = delete;
-
-  void OnSurfaceDestroying(Surface* surface) override {}
-
-  void OnWindowOcclusionChanged(Surface* surface) override {
-    num_occlusion_changes_++;
-  }
-
-  int num_occlusion_changes() const { return num_occlusion_changes_; }
-
- private:
-  int num_occlusion_changes_ = 0;
-};
 
 class SurfaceTest : public test::ExoTestBase,
                     public ::testing::WithParamInterface<float> {

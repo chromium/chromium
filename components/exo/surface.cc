@@ -1577,4 +1577,9 @@ void Surface::Unpin() {
     delegate_->Unpin();
 }
 
+void Surface::ThrottleFrameRate(bool on) {
+  for (SurfaceObserver& observer : observers_)
+    observer.ThrottleFrameRate(on);
+}
+
 }  // namespace exo

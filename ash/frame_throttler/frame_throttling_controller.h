@@ -31,6 +31,19 @@ namespace ash {
 
 constexpr uint8_t kDefaultThrottleFps = 20;
 
+struct ThrottleCandidates {
+  ThrottleCandidates();
+  ~ThrottleCandidates();
+  ThrottleCandidates(const ThrottleCandidates&);
+  ThrottleCandidates& operator=(const ThrottleCandidates&);
+
+  // The frame sink ids of the browser windows to be throttled this frame.
+  base::flat_set<viz::FrameSinkId> browser_frame_sink_ids;
+
+  // The lacros windows that are to be throttled this frame.
+  base::flat_map<aura::Window*, viz::FrameSinkId> lacros_candidates;
+};
+
 class ASH_EXPORT FrameThrottlingController final
     : public aura::WindowTreeHostObserver,
       public aura::WindowObserver {
@@ -68,19 +81,34 @@ class ASH_EXPORT FrameThrottlingController final
   void StartThrottlingArc(const std::vector<aura::Window*>& windows);
   void EndThrottlingArc();
 
-  void UpdateThrottlingOnBrowserWindows();
+  // Collect the lacros window in the given |window|. This function recursively
+  // walks through |window|'s descendents and finds the lacros window if any.
+  // |inside_lacros| is a flag to indicate if the functions is called inside a
+  // lacros window. |ids| are the ids of the frame sinks that are qualified for
+  // throttling. |candidates|, as output, will be filled with throttle
+  // candidates info. |lacros_window|, as output, will be set to the lacros
+  // window found.
+  void CollectLacrosWindowsInWindow(
+      aura::Window* window,
+      bool inside_lacros,
+      const base::flat_set<viz::FrameSinkId>& ids,
+      base::flat_map<aura::Window*, viz::FrameSinkId>* candidates,
+      aura::Window* lacros_window = nullptr);
+  void UpdateThrottlingOnFrameSinks();
+
+  void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
   ui::ContextFactory* context_factory_ = nullptr;
   base::ObserverList<FrameThrottlingObserver> observers_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
   // Maps aura::WindowTreeHost* to a set of FrameSinkIds to be throttled.
-  using WindowTreeHostMap = base::flat_map<const aura::WindowTreeHost*,
-                                           base::flat_set<viz::FrameSinkId>>;
+  using WindowTreeHostMap =
+      base::flat_map<const aura::WindowTreeHost*, ThrottleCandidates>;
   // Compositing-based throttling updates the set of FrameSinkIds per tree and
-  // this map keeps each aura::WindowTreeHost* to the most recent updated
-  // FrameSinkIds.
-  WindowTreeHostMap host_to_ids_map_;
+  // this map keeps each aura::WindowTreeHost* to the most recently updated
+  // candidates, including browser and lacros windows.
+  WindowTreeHostMap host_to_candidates_map_;
 
   // Frame sink ids to be throttled in special UI modes, such as overview and
   // window cycling. This set will be empty when UI is not in such modes.
