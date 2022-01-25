@@ -184,7 +184,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
   // If not all data are received, it continues to download from network.
   void OnCacheWriterResumed(net::Error error);
 
-  // |response_head| is only valid when kCombineResponseBody is enabled.
+  // 'response_head' is only valid when kCombineResponseBody is enabled.
   void OnStartLoadingResponseBodyInternal(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle consumer);

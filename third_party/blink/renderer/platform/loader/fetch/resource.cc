@@ -526,7 +526,6 @@ void Resource::ResponseReceived(const ResourceResponse& response) {
 
 void Resource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
   DCHECK(!is_revalidating_);
-  DCHECK(!GetResponse().IsNull());
 }
 
 bool Resource::CodeCacheHashRequired() const {

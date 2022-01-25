@@ -390,7 +390,8 @@ NOINLINE void RawResourceClientStateChecker::ResponseReceived() {
 
 NOINLINE void RawResourceClientStateChecker::SetSerializedCachedMetadata() {
   SECURITY_CHECK(state_ == kResponseReceived ||
-                 state_ == kDataReceivedAsBytesConsumer);
+                 state_ == kDataReceivedAsBytesConsumer ||
+                 state_ == kDataReceived);
 }
 
 NOINLINE void RawResourceClientStateChecker::ResponseBodyReceived() {
