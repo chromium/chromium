@@ -1528,13 +1528,13 @@ Status StorageQueue::SwitchLastFileIfNotEmpty() {
 std::map<int64_t, scoped_refptr<StorageQueue::SingleFile>>
 StorageQueue::CollectFilesForUpload(int64_t sequencing_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
-  // Locate the first file based on sequencing id.
-  auto file_it = files_.find(sequencing_id);
-  if (file_it == files_.end()) {
-    file_it = files_.upper_bound(sequencing_id);
-    if (file_it != files_.begin()) {
-      --file_it;
-    }
+  // Locate the last file that contains a sequencing ID <= sequencing_id. This
+  // is to ensure that we do not miss an event that hasn't been uploaded (i.e.,
+  // an event that has a sequencing ID >= sequencing_id). If no such file
+  // exists, use files_.begin().
+  auto file_it = files_.upper_bound(sequencing_id);
+  if (file_it != files_.begin()) {
+    --file_it;
   }
 
   // Create references to the files that will be uploaded.
