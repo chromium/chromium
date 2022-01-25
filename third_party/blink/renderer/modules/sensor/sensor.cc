@@ -91,6 +91,8 @@ Sensor::Sensor(ExecutionContext* execution_context,
 Sensor::~Sensor() = default;
 
 void Sensor::start() {
+  if (!GetExecutionContext())
+    return;
   if (state_ != SensorState::kIdle)
     return;
   state_ = SensorState::kActivating;
