@@ -890,6 +890,7 @@ fyi_coverage_builder(
         ),
     ],
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    coverage_test_types = ["overall", "unit"],
     use_clang_coverage = True,
     schedule = "triggered",
     triggered_by = [],
