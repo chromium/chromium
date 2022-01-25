@@ -743,6 +743,7 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-418',  # android-nexus-5x
         'qualcomm-adreno-(tm)-540',  # android-pixel-2
         'qualcomm-adreno-(tm)-640',  # android-pixel-4
+        'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-nexus-9 and android-shield-android-tv
         'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs

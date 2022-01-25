@@ -4090,7 +4090,7 @@
           'gpu-swarming-pool',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_pixel4_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
@@ -4101,78 +4101,80 @@
         'mixins': [
           'android_s',
           'has_native_resultdb_integration',
+          'limited_capacity_bot',
           'oriole',
           'gpu-swarming-pool',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test'
+                'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+                'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
       'Android FYI SkiaRenderer GL (Nexus 5X)': {
-        'os_type': 'android',
-        'browser_config': 'android-chromium',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'marshmallow',
-          'bullhead',
-       ],
-       'test_suites': {
-         'gpu_telemetry_tests': 'gpu_skia_renderer_egl_telemetry_tests',
-       }
+              'os_type': 'android',
+              'browser_config': 'android-chromium',
+              'skip_merge_script': True,
+              'mixins': [
+                      'has_native_resultdb_integration',
+              'marshmallow',
+              'bullhead',
+              ],
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_skia_renderer_egl_telemetry_tests',
+              }
       },
       'Android FYI SkiaRenderer Vulkan (Pixel 2)': {
-        'os_type': 'android',
-        'browser_config': 'android-chromium',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_skia_renderer_vulkan_gtests',
-          'gpu_telemetry_tests': 'gpu_skia_renderer_vulkan_telemetry_tests',
-        },
+              'os_type': 'android',
+              'browser_config': 'android-chromium',
+              'skip_merge_script': True,
+              'mixins': [
+                      'has_native_resultdb_integration',
+              'pie_fleet',
+              'walleye',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_skia_renderer_vulkan_gtests',
+                      'gpu_telemetry_tests': 'gpu_skia_renderer_vulkan_telemetry_tests',
+              },
       },
       'ChromeOS FYI Release (amd64-generic)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'os_type': 'chromeos',
-        'skip_merge_script': True,
-        'mixins': [
-          'chromeos-amd64-generic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
-        },
+              'additional_compile_targets': [
+                      'chromiumos_preflight',
+              ],
+              'browser_config': 'cros-chrome',
+              'os_type': 'chromeos',
+              'skip_merge_script': True,
+              'mixins': [
+                      'chromeos-amd64-generic',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+              },
       },
       'ChromeOS FYI Release (kevin)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'os_type': 'chromeos',
-        'skip_merge_script': True,
-        'mixins': [
-          'chromeos-kevin',
-          'limited_capacity_bot',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
-        },
+              'additional_compile_targets': [
+                      'chromiumos_preflight',
+              ],
+              'browser_config': 'cros-chrome',
+              'os_type': 'chromeos',
+              'skip_merge_script': True,
+              'mixins': [
+                      'chromeos-kevin',
+              'limited_capacity_bot',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_chromeos_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+              },
       },
       'GPU FYI Android arm Builder': {},
       'GPU FYI Android arm64 Builder': {},
       'GPU FYI Fuchsia Builder' : {
-        'additional_compile_targets': [
-          'angle_end2end_tests',
-          'angle_unittests',
-        ],
+              'additional_compile_targets': [
+                      'angle_end2end_tests',
+              'angle_unittests',
+              ],
       },
       'GPU FYI Linux Builder' : {},
       'GPU FYI Linux Builder (dbg)' : {},
@@ -4185,345 +4187,345 @@
       'GPU FYI Win x64 DX12 Vulkan Builder': {},
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': {},
       'Lacros FYI x64 Release (AMD)': {
-        'os_type': 'lacros',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'linux_amd_rx_5500_xt',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
+              'os_type': 'lacros',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'linux_amd_rx_5500_xt',
+              ],
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+              },
       },
       'Lacros FYI x64 Release (Intel)': {
-        'os_type': 'lacros',
-        'browser_config': 'release',
-        'mixins': [
-          # Weston does not work on Mesa 19, but works on Mesa 20.
-          # TODO(crbug.com/1153159): Switch to the stable mixin once 20 becomes
-          # the standard version.
-          'linux_intel_hd_630_experimental',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
-        },
+              'os_type': 'lacros',
+              'browser_config': 'release',
+              'mixins': [
+# Weston does not work on Mesa 19, but works on Mesa 20.
+# TODO(crbug.com/1153159): Switch to the stable mixin once 20 becomes
+# the standard version.
+                      'linux_intel_hd_630_experimental',
+              ],
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
+              },
       },
       'Linux FYI Debug (NVIDIA)': {
-        'browser_config': 'debug',
-        'os_type': 'linux',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_debug_telemetry_tests',
-        },
+              'browser_config': 'debug',
+              'os_type': 'linux',
+              'mixins': [
+                      'linux_nvidia_gtx_1660_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_debug_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_debug_telemetry_tests',
+              },
       },
       'Linux FYI Experimental Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'linux_intel_hd_630_experimental',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'linux_intel_hd_630_experimental',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+              },
       },
       'Linux FYI Experimental Release (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'linux_nvidia_gtx_1660_experimental',
-        ],
-        # If the experimental configuration is the same as stable, this should
-        # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
-        # should be running the same tests as 'Linux FYI Release (NVIDIA)'.
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'linux_nvidia_gtx_1660_experimental',
+              ],
+# If the experimental configuration is the same as stable, this should
+# only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
+# should be running the same tests as 'Linux FYI Release (NVIDIA)'.
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+              },
       },
       'Linux FYI GPU TSAN Release': {
-        # This bot doesn't run any Telemetry-based tests so doesn't
-        # need the browser_config parameter.
-        'os_type': 'linux',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          # This bot doesn't run any browser-based tests
-          # (tab_capture_end2end_tests) either.
-          'gtest_tests': 'gpu_fyi_linux_debug_gtests',
-        },
+# This bot doesn't run any Telemetry-based tests so doesn't
+# need the browser_config parameter.
+              'os_type': 'linux',
+              'mixins': [
+                      'linux_nvidia_gtx_1660_stable',
+              ],
+              'test_suites': {
+# This bot doesn't run any browser-based tests
+# (tab_capture_end2end_tests) either.
+                      'gtest_tests': 'gpu_fyi_linux_debug_gtests',
+              },
       },
       'Linux FYI Release (AMD RX 5500 XT)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        # There are only two bots of this type in the Swarming pool right now,
-        # so we have to increase the default expiration time of 1 hour
-        # to prevent webgl2_conformance_tests' shards from timing out.
-        'mixins': [
-          'limited_capacity_bot',
-          'linux_amd_rx_5500_xt',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+# There are only two bots of this type in the Swarming pool right now,
+# so we have to increase the default expiration time of 1 hour
+# to prevent webgl2_conformance_tests' shards from timing out.
+              'mixins': [
+                      'limited_capacity_bot',
+              'linux_amd_rx_5500_xt',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+              },
       },
       'Linux FYI Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_intel_hd_630_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+              },
       },
       'Linux FYI Release (Intel UHD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_uhd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_intel_uhd_630_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+              },
       },
       'Linux FYI Release (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_nvidia_gtx_1660_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_linux_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_linux_release_telemetry_tests',
+              },
       },
       'Linux FYI SkiaRenderer Dawn Release (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_skia_renderer_dawn_gtests',
-          'gpu_telemetry_tests': 'gpu_skia_renderer_dawn_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_intel_hd_630_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_skia_renderer_dawn_gtests',
+                      'gpu_telemetry_tests': 'gpu_skia_renderer_dawn_telemetry_tests',
+              },
       },
       'Linux FYI SkiaRenderer Vulkan (Intel HD 630)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_intel_hd_630_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_vulkan_gtests',
-          'isolated_scripts': 'gpu_blink_web_tests',
-          'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_intel_hd_630_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_vulkan_gtests',
+                      'isolated_scripts': 'gpu_blink_web_tests',
+                      'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
+              },
       },
       'Linux FYI SkiaRenderer Vulkan (NVIDIA)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_vulkan_gtests',
-          'isolated_scripts': 'gpu_blink_web_tests',
-          'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
-        },
+              'os_type': 'linux',
+              'browser_config': 'release',
+              'mixins': [
+                      'linux_nvidia_gtx_1660_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_vulkan_gtests',
+                      'isolated_scripts': 'gpu_blink_web_tests',
+                      'gpu_telemetry_tests': 'gpu_skia_renderer_telemetry_tests',
+              },
       },
       'Mac FYI ASAN (Intel)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_mini_intel_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+              },
       },
       'Mac FYI Debug (Intel)': {
-        'os_type': 'mac',
-        'browser_config': 'debug',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'debug',
+              'mixins': [
+                      'mac_mini_intel_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_debug_gtests',
+                      'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+              },
       },
       'Mac FYI Experimental Release (Intel)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_mini_intel_gpu_experimental',
-        ],
-        # When the experimental OS version is identical to the stable version,
-        # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
-        # should have the same test_suites as 'Mac FYI Release (Intel)'.
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'mac_mini_intel_gpu_experimental',
+              ],
+# When the experimental OS version is identical to the stable version,
+# the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
+# should have the same test_suites as 'Mac FYI Release (Intel)'.
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+              },
       },
       'Mac FYI Experimental Retina Release (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_retina_amd_gpu_experimental',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'mac_retina_amd_gpu_experimental',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+                      'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+              },
       },
       'Mac FYI Experimental Retina Release (NVIDIA)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_retina_nvidia_gpu_experimental',
-        ],
-        # Currently the experimental driver is identical to the stable
-        # driver. If it's upgraded, change these test_suites to be the same as
-        # 'Mac FYI Retina Release (NVIDIA)'.
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'limited_capacity_bot',
+              'mac_retina_nvidia_gpu_experimental',
+              ],
+# Currently the experimental driver is identical to the stable
+# driver. If it's upgraded, change these test_suites to be the same as
+# 'Mac FYI Retina Release (NVIDIA)'.
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+              },
       },
       'Mac FYI Release (Apple M1)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_arm64_apple_m1_gpu',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_arm64_apple_m1_gpu',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+                      'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+              },
       },
       'Mac FYI Release (Intel)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_mini_intel_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+                      'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+              },
       },
       'Mac FYI Retina ASAN (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_retina_amd_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+              },
       },
       'Mac FYI Retina Debug (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'debug',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'debug',
+              'mixins': [
+                      'mac_retina_amd_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_debug_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_debug_telemetry_tests',
+              },
       },
       'Mac FYI Retina Debug (NVIDIA)': {
-        'os_type': 'mac',
-        'browser_config': 'debug',
-        'mixins': [
-          'mac_retina_nvidia_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'debug',
+              'mixins': [
+                      'mac_retina_nvidia_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_debug_gtests',
+                      'gpu_telemetry_tests': 'gpu_common_telemetry_tests',
+              },
       },
       'Mac FYI Retina Release (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-          'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_retina_amd_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+                      'isolated_scripts': 'rendering_desktop_representative_perf_tests_isolated_scripts',
+              },
       },
       'Mac FYI Retina Release (NVIDIA)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        'mixins': [
-          'mac_retina_nvidia_gpu_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+              'mixins': [
+                      'mac_retina_nvidia_gpu_stable',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
+              },
       },
       'Mac Pro FYI Release (AMD)': {
-        'os_type': 'mac',
-        'browser_config': 'release',
-        # There are only two bots of this type in the Swarming pool right now,
-        # so we have to increase the default expiration time of 1 hour (3600
-        # seconds) to prevent webgl2_conformance_tests' shards from timing
-        # out.
-        'mixins': [
-          'limited_capacity_bot',
-          'mac_pro_amd_gpu',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_mac_pro_release_telemetry_tests',
-        },
+              'os_type': 'mac',
+              'browser_config': 'release',
+# There are only two bots of this type in the Swarming pool right now,
+# so we have to increase the default expiration time of 1 hour (3600
+# seconds) to prevent webgl2_conformance_tests' shards from timing
+# out.
+              'mixins': [
+                      'limited_capacity_bot',
+              'mac_pro_amd_gpu',
+              ],
+              'test_suites': {
+                      'gtest_tests': 'gpu_fyi_mac_release_gtests',
+                      'gpu_telemetry_tests': 'gpu_fyi_mac_pro_release_telemetry_tests',
+              },
       },
-      # BEGIN Fake builder used as mirror targets for Optional GPU tryservers
+# BEGIN Fake builder used as mirror targets for Optional GPU tryservers
       'Optional Android Release (Nexus 5X)': {
-        'os_type': 'android',
-        'mixins': [
-          'marshmallow',
-          'bullhead',
-        ],
-        # No tests run on this bot right now; they are all running on the main
-        # android_n5x_swarming_rel bot. We should get the WebGL 2.0 conformance
-        # tests running on this bot, similarly to how they run on the optional
-        # desktop trybots.
+              'os_type': 'android',
+              'mixins': [
+                      'marshmallow',
+              'bullhead',
+              ],
+# No tests run on this bot right now; they are all running on the main
+# android_n5x_swarming_rel bot. We should get the WebGL 2.0 conformance
+# tests running on this bot, similarly to how they run on the optional
+# desktop trybots.
       },
       'Optional Android Release (Pixel 4)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'android_r',
-          'has_native_resultdb_integration',
-          'flame',
-          'gpu-swarming-pool',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_pixel4_telemetry_tests',
+              'browser_config': 'android-chromium',
+              'os_type': 'android',
+              'skip_merge_script': True,
+              'mixins': [
+                      'android_r',
+              'has_native_resultdb_integration',
+              'flame',
+              'gpu-swarming-pool',
+              ],
+              'test_suites': {
+                      'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },

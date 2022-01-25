@@ -30,6 +30,10 @@
       {
         "device_type": "Pixel 4",
         "scale_factor": 1.1025
+      },
+      {
+        "device_type": "Pixel 6",
+        "scale_factor": 1.10375
       }
     ]
   },

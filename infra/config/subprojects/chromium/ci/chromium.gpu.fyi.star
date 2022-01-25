@@ -111,6 +111,9 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Android FYI Release (Pixel 6)",
+    # TODO(crbug.com/1280418): Revert this to the default once more Pixel 6
+    # capacity is deployed.
+    execution_timeout = 8 * time.hour,
     console_view_entry = consoles.console_view_entry(
         category = "Android|S64|ARM",
         short_name = "P6",
