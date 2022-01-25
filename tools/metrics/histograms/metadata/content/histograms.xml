@@ -683,7 +683,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.Network.Duration.{NetworkEvent}"
+<histogram name="ContentSuggestions.Feed.Network.Duration{NetworkEvent}"
     units="ms" expires_after="2023-03-01">
   <owner>sczs@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
