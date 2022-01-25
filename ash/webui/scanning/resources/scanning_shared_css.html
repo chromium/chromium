@@ -6,6 +6,13 @@
 
 <template>
   <style include="cr-shared-style md-select scanning-fonts">
+    :host {
+      --scanning-progress-bar: var(--google-blue-600);
+      --scanning-progress-bar-track: rgba(
+          var(--google-blue-600-rgb),
+          var(--cros-second-tone-opacity));
+    }
+
     select {
       height: 32px;
       overflow: hidden;
@@ -111,6 +118,15 @@
         --right-panel-margin-inline-start: 60px;
         --right-panel-padding-inline-end: 32px;
         --right-panel-padding-inline-start: 32px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --scanning-progress-bar: var(--google-blue-300);
+        --scanning-progress-bar-track: rgba(
+            var(--google-blue-300-rgb),
+            var(--cros-second-tone-opacity));
       }
     }
   </style>
