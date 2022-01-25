@@ -1075,7 +1075,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher dismissPopupMenuAnimated:YES];
   RecordAction(UserMetricsAction("MobileMenuPasswords"));
   [self.dispatcher
-      showSavedPasswordsSettingsFromViewController:self.baseViewController];
+      showSavedPasswordsSettingsFromViewController:self.baseViewController
+                                  showCancelButton:NO];
 }
 
 // Dismisses the menu and opens downloads.

@@ -165,19 +165,17 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     savePasswordsControllerForBrowser:(Browser*)browser
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate
-      startPasswordCheckAutomatically:(BOOL)startCheck {
+      startPasswordCheckAutomatically:(BOOL)startCheck
+                     showCancelButton:(BOOL)showCancelButton {
   DCHECK(browser);
 
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:nil
                          browser:browser
                         delegate:delegate];
-  [nc showSavedPasswordsAndStartPasswordCheck:startCheck];
+  [nc showSavedPasswordsAndStartPasswordCheck:startCheck
+                             showCancelButton:showCancelButton];
 
-  // Make sure the cancel button is always present, as the Save Passwords screen
-  // isn't just shown from Settings.
-  [nc.savedPasswordsCoordinator.viewController navigationItem]
-      .leftBarButtonItem = [nc cancelButton];
   return nc;
 }
 
@@ -457,8 +455,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 // Shows the saved passwords and starts the password check is
-// |startPasswordCheck| is true.
-- (void)showSavedPasswordsAndStartPasswordCheck:(BOOL)startPasswordCheck {
+// |startPasswordCheck| is true. If |showCancelButton| is true, adds a cancel
+// button as the left navigation item.
+- (void)showSavedPasswordsAndStartPasswordCheck:(BOOL)startPasswordCheck
+                               showCancelButton:(BOOL)showCancelButton {
   self.savedPasswordsCoordinator = [[PasswordsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
@@ -466,6 +466,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.savedPasswordsCoordinator start];
   if (startPasswordCheck) {
     [self.savedPasswordsCoordinator checkSavedPasswords];
+  }
+  if (showCancelButton) {
+    [self.savedPasswordsCoordinator.viewController navigationItem]
+        .leftBarButtonItem = [self cancelButton];
   }
 }
 
@@ -623,13 +627,15 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 // TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.
 - (void)showSavedPasswordsSettingsFromViewController:
-    (UIViewController*)baseViewController {
-  [self showSavedPasswordsAndStartPasswordCheck:NO];
+            (UIViewController*)baseViewController
+                                    showCancelButton:(BOOL)showCancelButton {
+  [self showSavedPasswordsAndStartPasswordCheck:NO
+                               showCancelButton:showCancelButton];
 }
 
 - (void)showSavedPasswordsSettingsAndStartPasswordCheckFromViewController:
     (UIViewController*)baseViewController {
-  [self showSavedPasswordsAndStartPasswordCheck:YES];
+  [self showSavedPasswordsAndStartPasswordCheck:YES showCancelButton:NO];
 }
 
 // TODO(crbug.com/779791) : Do not pass |baseViewController| through dispatcher.

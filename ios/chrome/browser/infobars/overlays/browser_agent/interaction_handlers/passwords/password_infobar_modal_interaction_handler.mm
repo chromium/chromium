@@ -48,7 +48,8 @@ void PasswordInfobarModalInteractionHandler::PresentPasswordsSettings(
     InfoBarIOS* infobar) {
   id<ApplicationSettingsCommands> settings_command_handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ApplicationSettingsCommands);
-  [settings_command_handler showSavedPasswordsSettingsFromViewController:nil];
+  [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
+                                                        showCancelButton:YES];
 
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",

@@ -862,7 +862,8 @@
 
 - (void)openPasswordSettings {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-      showSavedPasswordsSettingsFromViewController:self.viewController];
+      showSavedPasswordsSettingsFromViewController:self.viewController
+                                  showCancelButton:YES];
 }
 
 - (void)openAddressSettings {

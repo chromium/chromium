@@ -1783,7 +1783,8 @@ bool IsSigninForcedByPolicy() {
 
 // TODO(crbug.com/779791) : Remove show settings commands from MainController.
 - (void)showSavedPasswordsSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                    showCancelButton:(BOOL)showCancelButton {
   if (!baseViewController) {
     // TODO(crbug.com/779791): Don't pass base view controller through
     // dispatched command.
@@ -1794,14 +1795,16 @@ bool IsSigninForcedByPolicy() {
                                          self.signinCoordinator.class));
   if (self.settingsNavigationController) {
     [self.settingsNavigationController
-        showSavedPasswordsSettingsFromViewController:baseViewController];
+        showSavedPasswordsSettingsFromViewController:baseViewController
+                                    showCancelButton:showCancelButton];
     return;
   }
   Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController savePasswordsControllerForBrowser:browser
-                                                             delegate:self
-                                      startPasswordCheckAutomatically:NO];
+  self.settingsNavigationController = [SettingsNavigationController
+      savePasswordsControllerForBrowser:browser
+                               delegate:self
+        startPasswordCheckAutomatically:YES
+                       showCancelButton:showCancelButton];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
@@ -1823,7 +1826,8 @@ bool IsSigninForcedByPolicy() {
   self.settingsNavigationController =
       [SettingsNavigationController savePasswordsControllerForBrowser:browser
                                                              delegate:self
-                                      startPasswordCheckAutomatically:YES];
+                                      startPasswordCheckAutomatically:YES
+                                                     showCancelButton:NO];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];

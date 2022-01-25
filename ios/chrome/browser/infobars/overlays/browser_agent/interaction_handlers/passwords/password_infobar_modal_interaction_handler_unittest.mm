@@ -73,7 +73,8 @@ TEST_F(PasswordInfobarModalInteractionHandlerTest, NeverSaveCredentials) {
 // Tests that PresentPasswordsSettings() forwards the call to the mock delegate.
 TEST_F(PasswordInfobarModalInteractionHandlerTest, PresentPasswordsSettings) {
   OCMExpect([mock_command_receiver_
-      showSavedPasswordsSettingsFromViewController:nil]);
+      showSavedPasswordsSettingsFromViewController:nil
+                                  showCancelButton:YES]);
   handler_->PresentPasswordsSettings(&infobar_);
 }
 
