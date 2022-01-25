@@ -15,7 +15,7 @@ WindowPredictor* WindowPredictor::GetInstance() {
   return instance.get();
 }
 
-WindowPredictor::WindowPredictor() {}
+WindowPredictor::WindowPredictor() = default;
 
 WindowPredictor::~WindowPredictor() = default;
 

@@ -8,7 +8,9 @@
 #include "components/app_restore/window_info.h"
 #include "ui/display/types/display_constants.h"
 
+namespace arc {
 namespace {
+
 std::unique_ptr<app_restore::WindowInfo> GetAppWindowInfo(
     arc::mojom::WindowInfoPtr window_info) {
   auto app_window_info = std::make_unique<app_restore::WindowInfo>();
@@ -17,9 +19,9 @@ std::unique_ptr<app_restore::WindowInfo> GetAppWindowInfo(
   }
   return app_window_info;
 }
+
 }  // namespace
 
-namespace arc {
 ArcPredictorAppLaunchHandler::ArcPredictorAppLaunchHandler(Profile* profile)
     : ash::AppLaunchHandler(profile) {
   set_restore_data(std::make_unique<app_restore::RestoreData>());

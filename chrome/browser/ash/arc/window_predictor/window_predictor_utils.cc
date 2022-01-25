@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
+
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
