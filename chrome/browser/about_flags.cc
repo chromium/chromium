@@ -7499,6 +7499,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     "BookmarksRefresh")},
 #endif
 
+    {"enable-tab-audio-muting", flag_descriptions::kTabAudioMutingName,
+     flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-app-discovery-for-oobe",
      flag_descriptions::kAppDiscoveryForOobeName,

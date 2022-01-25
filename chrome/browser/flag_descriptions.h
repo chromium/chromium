@@ -811,6 +811,9 @@ extern const char kHeavyAdPrivacyMitigationsDescription[];
 extern const char kHeavyAdInterventionName[];
 extern const char kHeavyAdInterventionDescription[];
 
+extern const char kTabAudioMutingName[];
+extern const char kTabAudioMutingDescription[];
+
 extern const char kTabSearchMediaTabsId[];
 extern const char kTabSearchMediaTabsName[];
 extern const char kTabSearchMediaTabsDescription[];
