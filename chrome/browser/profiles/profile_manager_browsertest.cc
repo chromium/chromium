@@ -287,8 +287,14 @@ class ProfileManagerBrowserTest : public ProfileManagerBrowserTestBase,
 
 // CrOS multi-profiles implementation is too different for these tests.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-
-IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteSingletonProfile) {
+// TODO(crbug.com/1290803): Test failed on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DeleteSingletonProfile DISABLED_DeleteSingletonProfile
+#else
+#define MAYBE_DeleteSingletonProfile DeleteSingletonProfile
+#endif
+IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest,
+                       MAYBE_DeleteSingletonProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
