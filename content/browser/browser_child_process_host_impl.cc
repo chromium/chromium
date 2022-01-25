@@ -531,7 +531,7 @@ bool BrowserChildProcessHostImpl::Send(IPC::Message* message) {
 void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
   // Create a persistent memory segment for subprocess histograms only if
   // they're active in the browser.
-  // TODO(bcwhite): Remove this once persistence is always enabled.
+  // TODO(crbug.com/1290457): Remove this.
   if (!base::GlobalHistogramAllocator::Get())
     return;
 

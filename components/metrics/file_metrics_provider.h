@@ -70,7 +70,6 @@ class FileMetricsProvider : public MetricsProvider,
     // inactive for any period of time only to be opened again and have new
     // data written to them. The file should probably never be deleted because
     // there would be no guarantee that the data has been reported.
-    // TODO(bcwhite): Enable when read/write mem-mapped files are supported.
     SOURCE_HISTOGRAMS_ACTIVE_FILE,
   };
 

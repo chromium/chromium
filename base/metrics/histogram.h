@@ -223,10 +223,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   base::Value ToGraphDict() const override;
 
-  // Validates the histogram contents and CHECKs on errors.
-  // TODO(bcwhite): Remove this after https://crbug/836875.
-  void ValidateHistogramContents() const override;
-
  protected:
   // This class, defined entirely within the .cc file, contains all the
   // common logic for building a Histogram and can be overridden by more

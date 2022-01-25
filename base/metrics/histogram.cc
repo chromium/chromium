@@ -450,8 +450,6 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
     UmaHistogramSparse("Histogram.TooManyBuckets.1000",
                        static_cast<Sample>(HashMetricName(name)));
 
-    // TODO(bcwhite): Look at injecting allowlist (using hashes) from a higher
-    // layer rather than hardcoding them here.
     // Blink.UseCounter legitimately has more than 1000 entries in its enum.
     if (!StartsWith(name, "Blink.UseCounter")) {
       DVLOG(1) << "Histogram: " << name
@@ -575,14 +573,6 @@ bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {
 base::Value Histogram::ToGraphDict() const {
   std::unique_ptr<SampleVector> snapshot = SnapshotAllSamples();
   return snapshot->ToGraphDict(histogram_name(), flags());
-}
-
-void Histogram::ValidateHistogramContents() const {
-  CHECK(unlogged_samples_);
-  CHECK(unlogged_samples_->bucket_ranges());
-  CHECK(logged_samples_);
-  CHECK(logged_samples_->bucket_ranges());
-  CHECK_NE(0U, logged_samples_->id());
 }
 
 void Histogram::SerializeInfoImpl(Pickle* pickle) const {
