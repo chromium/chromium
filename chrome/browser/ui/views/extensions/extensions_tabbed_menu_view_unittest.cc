@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/views/view_utils.h"
 
@@ -557,6 +558,20 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, InstalledTab_ReloadExtensionFailed) {
   EXPECT_EQ(installed_items().size(), 0u);
   for (views::View* child : extensions_container()->children())
     EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       InstalledTab_DiscoverMoreButtonOpenWebstorePage) {
+  InstallExtension("Test Extension");
+
+  ShowInstalledTabInMenu();
+  EXPECT_TRUE(ExtensionsTabbedMenuView::IsShowing());
+
+  ClickButton(extensions_tabbed_menu()->GetDiscoverMoreButtonForTesting());
+
+  EXPECT_EQ(
+      extension_urls::GetWebstoreLaunchURL(),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,

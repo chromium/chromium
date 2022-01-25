@@ -44,6 +44,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_urls.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -435,6 +436,11 @@ void ShowAboutChrome(Browser* browser) {
 void ShowSearchEngineSettings(Browser* browser) {
   base::RecordAction(UserMetricsAction("EditSearchEngines"));
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
+}
+
+void ShowWebStore(Browser* browser) {
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      browser, extension_urls::GetWebstoreLaunchURL());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
