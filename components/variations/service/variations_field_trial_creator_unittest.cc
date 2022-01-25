@@ -404,15 +404,9 @@ class FieldTrialCreatorTestWithStartupVisibility
     : public FieldTrialCreatorSafeModeExperimentTest,
       public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
 
-struct ChannelTestParams {
-  const std::string test_name;
-  version_info::Channel channel;
-  bool should_experiment_be_active;
-};
-
 class SafeModeExperimentTestByChannel
     : public FieldTrialCreatorSafeModeExperimentTest,
-      public ::testing::WithParamInterface<ChannelTestParams> {};
+      public ::testing::WithParamInterface<version_info::Channel> {};
 
 // Verify that unexpired seeds are used.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NotExpired) {
@@ -1003,61 +997,36 @@ TEST_P(FieldTrialCreatorTestWithStartupVisibility,
   base::FeatureList::ClearInstanceForTesting();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    SafeModeExperimentTestByChannel,
-    ::testing::Values(
-        ChannelTestParams{.test_name = "Unknown",
-                          .channel = version_info::Channel::UNKNOWN,
-                          .should_experiment_be_active = true},
-        ChannelTestParams{.test_name = "Canary",
-                          .channel = version_info::Channel::CANARY,
-                          .should_experiment_be_active = true},
-        ChannelTestParams{.test_name = "Dev",
-                          .channel = version_info::Channel::DEV,
-                          .should_experiment_be_active = true},
-        ChannelTestParams{.test_name = "Beta",
-                          .channel = version_info::Channel::BETA,
-                          .should_experiment_be_active = true},
-#if BUILDFLAG(IS_IOS)
-        ChannelTestParams{.test_name = "Stable",
-                          .channel = version_info::Channel::STABLE,
-                          .should_experiment_be_active = true}),
-#else
-        ChannelTestParams{.test_name = "Stable",
-                          .channel = version_info::Channel::STABLE,
-                          .should_experiment_be_active = false}),
-#endif  // BUILDFLAG(IS_IOS)
-    [](const ::testing::TestParamInfo<ChannelTestParams>& params) {
-      return params.param.test_name;
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeModeExperimentTestByChannel,
+                         ::testing::Values(version_info::Channel::UNKNOWN,
+                                           version_info::Channel::CANARY,
+                                           version_info::Channel::DEV,
+                                           version_info::Channel::BETA,
+                                           version_info::Channel::STABLE));
 
-// Verify that the Extended Variations Safe Mode experiment is active on
-// pre-stable channels and disabled on stable.
-//
-// TODO(crbug/1269139): Update this test as the Extended Variations Safe Mode
-// experiment is rolled out.
+// Verify that the Extended Variations Safe Mode experiment is active on all
+// channels.
 TEST_P(SafeModeExperimentTestByChannel, FieldTrialActivationIsValid) {
   // Ensure that Variations Safe Mode is not triggered.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
-  ChannelTestParams params = GetParam();
+  version_info::Channel channel = GetParam();
   NiceMock<MockVariationsServiceClient> variations_service_client;
   ON_CALL(variations_service_client, GetChannel())
-      .WillByDefault(Return(params.channel));
+      .WillByDefault(Return(channel));
 
   TestVariationsFieldTrialCreator field_trial_creator(
-      local_state(), &variations_service_client, &safe_seed_manager,
-      params.channel, user_data_dir_path());
+      local_state(), &variations_service_client, &safe_seed_manager, channel,
+      user_data_dir_path());
 
   ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
   // Verify that the experiment is (or is not) active.
-  EXPECT_EQ(params.should_experiment_be_active,
-            base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
-  EXPECT_EQ(params.should_experiment_be_active,
-            field_trial_creator.was_maybe_extend_variations_safe_mode_called());
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_TRUE(
+      field_trial_creator.was_maybe_extend_variations_safe_mode_called());
 }
 
 TEST_F(FieldTrialCreatorSafeModeExperimentTest,
