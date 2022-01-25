@@ -104,3 +104,26 @@ input:checked + label::after {
   content: 'hide license';
   cursor: pointer;
 }
+
+/* Strip out color and style when printing. We want dense B&W text. */
+@media print {
+  .licence {
+    display: block;
+  }
+  .product,
+  a,
+  body {
+    color: black;
+  }
+  .product {
+    background-color: white;
+  }
+  a {
+    text-decoration: none;
+  }
+  .show,
+  .product .homepage::before,
+  #print-link {
+    display: none;
+  }
+}
