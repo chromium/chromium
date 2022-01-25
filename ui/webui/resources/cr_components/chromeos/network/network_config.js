@@ -1819,9 +1819,10 @@ Polymer({
     propertiesToSet.typeConfig.vpn.host = 'wireguard';
     propertiesToSet.ipAddressConfigType = 'Static';
     propertiesToSet.staticIpConfig = {
-      ipAddress: this.ipAddressInput_,
       gateway: this.ipAddressInput_,
+      ipAddress: this.ipAddressInput_,
       routingPrefix: 32,
+      type: chromeos.networkConfig.mojom.IPConfigType.kIPv4,
     };
     if (this.nameServersInput_) {
       propertiesToSet.nameServersConfigType = 'Static';

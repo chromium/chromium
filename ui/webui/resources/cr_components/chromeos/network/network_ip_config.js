@@ -183,16 +183,16 @@ Polymer({
 
     if (properties.ipConfigs || properties.staticIpConfig) {
       // Update the 'ipConfig' property.
-      const ipv4 = this.getIPConfigUIProperties_(
-          OncMojo.getIPConfigForType(properties, 'IPv4'));
-      let ipv6 = this.getIPConfigUIProperties_(
-          OncMojo.getIPConfigForType(properties, 'IPv6'));
+      const ipv4 = this.getIPConfigUIProperties_(OncMojo.getIPConfigForType(
+          properties, chromeos.networkConfig.mojom.IPConfigType.kIPv4));
+      let ipv6 = this.getIPConfigUIProperties_(OncMojo.getIPConfigForType(
+          properties, chromeos.networkConfig.mojom.IPConfigType.kIPv6));
 
       // If connected and the IP address is automatic and set, show message if
       // the ipv6 address is not set.
       if (OncMojo.connectionStateIsConnected(properties.connectionState) &&
           this.automatic_ && ipv4 && ipv4.ipAddress) {
-        ipv6 = ipv6 || {};
+        ipv6 = ipv6 || {type: chromeos.networkConfig.mojom.IPConfigType.kIPv6};
         ipv6.ipAddress = ipv6.ipAddress || this.i18n('ipAddressNotAvailable');
       }
 
@@ -239,9 +239,6 @@ Polymer({
     if (!ipv4.netmask) {
       ipv4.netmask = '255.255.255.0';
     }
-    if (!ipv4.type) {
-      ipv4.type = 'IPv4';
-    }
   },
 
   /** @private */
@@ -254,7 +251,9 @@ Polymer({
         this.ipConfig_.ipv4 = this.savedStaticIp_;
       }
       if (!this.ipConfig_.ipv4) {
-        this.ipConfig_.ipv4 = {};
+        this.ipConfig_.ipv4 = {
+          type: chromeos.networkConfig.mojom.IPConfigType.kIPv4
+        };
       }
       this.setIpv4Defaults_(this.ipConfig_.ipv4);
       this.sendStaticIpConfig_();

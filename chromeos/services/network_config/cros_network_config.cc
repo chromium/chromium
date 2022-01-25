@@ -120,6 +120,26 @@ NetworkTypePattern MojoTypeToPattern(mojom::NetworkType type) {
   return NetworkTypePattern::Default();
 }
 
+mojom::IPConfigType OncIPConfigTypeToMojo(const std::string& ip_config_type) {
+  if (ip_config_type == ::onc::ipconfig::kIPv4)
+    return mojom::IPConfigType::kIPv4;
+  if (ip_config_type == ::onc::ipconfig::kIPv6)
+    return mojom::IPConfigType::kIPv6;
+  NOTREACHED() << "Unsupported ONC IPConfig type: " << ip_config_type;
+  return mojom::IPConfigType::kIPv4;
+}
+
+std::string MojoIPConfigTypeToOnc(mojom::IPConfigType type) {
+  switch (type) {
+    case mojom::IPConfigType::kIPv4:
+      return ::onc::ipconfig::kIPv4;
+    case mojom::IPConfigType::kIPv6:
+      return ::onc::ipconfig::kIPv6;
+  }
+  NOTREACHED() << "Unexpeted mojo IPConfig type: " << type;
+  return ::onc::ipconfig::kIPv4;
+}
+
 std::string MojoNetworkTypeToOnc(mojom::NetworkType type) {
   switch (type) {
     case mojom::NetworkType::kAll:
@@ -958,10 +978,13 @@ mojom::IPConfigPropertiesPtr GetIPConfig(const base::Value* dict) {
   ip_config->search_domains =
       GetStringList(dict, ::onc::ipconfig::kSearchDomains);
   ip_config->routing_prefix = GetInt32(dict, ::onc::ipconfig::kRoutingPrefix);
-  ip_config->type = GetString(dict, ::onc::ipconfig::kType);
-  // Shill may omit the IP Config type for VPNs. The type should be IPv4.
-  if (!ip_config->type || ip_config->type->empty())
-    ip_config->type = ::onc::ipconfig::kIPv4;
+  auto type = GetString(dict, ::onc::ipconfig::kType);
+  if (!type || type->empty()) {
+    // Shill may omit the IP Config type for VPNs. The type should be IPv4.
+    ip_config->type = mojom::IPConfigType::kIPv4;
+  } else {
+    ip_config->type = OncIPConfigTypeToMojo(*type);
+  }
   ip_config->web_proxy_auto_discovery_url =
       GetString(dict, ::onc::ipconfig::kWebProxyAutoDiscoveryUrl);
   return ip_config;
@@ -976,7 +999,14 @@ mojom::ManagedIPConfigPropertiesPtr GetManagedIPConfig(
       GetManagedStringList(dict, ::onc::ipconfig::kNameServers);
   ip_config->routing_prefix =
       GetManagedInt32(dict, ::onc::ipconfig::kRoutingPrefix);
-  ip_config->type = GetManagedString(dict, ::onc::ipconfig::kType);
+  // The IPConfig type is not actually mutable, so we convert from an optional
+  // managed string to a required unmanaged type enum.
+  mojom::ManagedStringPtr managed_type =
+      GetManagedString(dict, ::onc::ipconfig::kType);
+  mojom::IPConfigType type =
+      managed_type ? OncIPConfigTypeToMojo(managed_type->active_value)
+                   : mojom::IPConfigType::kIPv4;
+  ip_config->type = type;
   ip_config->web_proxy_auto_discovery_url =
       GetManagedString(dict, ::onc::ipconfig::kWebProxyAutoDiscoveryUrl);
   return ip_config;
@@ -2020,7 +2050,8 @@ std::unique_ptr<base::DictionaryValue> GetOncFromConfigProperties(
                   &ip_config_dict);
     ip_config_dict.SetIntKey(::onc::ipconfig::kRoutingPrefix,
                              ip_config.routing_prefix);
-    SetString(::onc::ipconfig::kType, ip_config.type, &ip_config_dict);
+    ip_config_dict.SetStringKey(::onc::ipconfig::kType,
+                                MojoIPConfigTypeToOnc(ip_config.type));
     SetString(::onc::ipconfig::kWebProxyAutoDiscoveryUrl,
               ip_config.web_proxy_auto_discovery_url, &ip_config_dict);
     onc->SetKey(::onc::network_config::kStaticIPConfig,

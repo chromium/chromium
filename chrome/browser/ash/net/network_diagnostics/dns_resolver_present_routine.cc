@@ -42,21 +42,24 @@ std::vector<std::string> GetNonEmptyNameServers(
 
 // Checks that at least one name server IP address is valid depending on the IP
 // config type. If the type is not set, IPv4 is assumed.
-bool NameServersHaveValidAddresses(const std::vector<std::string>& name_servers,
-                                   const absl::optional<std::string>& type) {
+bool NameServersHaveValidAddresses(
+    const std::vector<std::string>& name_servers,
+    ::chromeos::network_config::mojom::IPConfigType type) {
   for (const auto& name_server : name_servers) {
     net::IPAddress ip_address;
     if (!ip_address.AssignFromIPLiteral(name_server)) {
       continue;
     }
 
-    // TODO(crbug/1245700): Make ip_config's type field a non-optional enum
-    if (!type.has_value() || type.value() == ::onc::ipconfig::kIPv4) {
-      if (ip_address.IsIPv4())
-        return true;
-    } else if (type == ::onc::ipconfig::kIPv6) {
-      if (ip_address.IsIPv6() || ip_address.IsIPv4MappedIPv6())
-        return true;
+    switch (type) {
+      case ::chromeos::network_config::mojom::IPConfigType::kIPv4:
+        if (ip_address.IsIPv4())
+          return true;
+        break;
+      case ::chromeos::network_config::mojom::IPConfigType::kIPv6:
+        if (ip_address.IsIPv6() || ip_address.IsIPv4MappedIPv6())
+          return true;
+        break;
     }
   }
 

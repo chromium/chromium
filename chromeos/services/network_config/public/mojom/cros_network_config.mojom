@@ -355,7 +355,7 @@ struct IPConfigProperties {
   array<string>? name_servers;
   array<string>? search_domains;
   int32 routing_prefix = kNoRoutingPrefix;
-  string? type;
+  IPConfigType type;
   string? web_proxy_auto_discovery_url;
 };
 
@@ -488,7 +488,7 @@ struct ManagedIPConfigProperties {
   ManagedString? ip_address;
   ManagedStringList? name_servers;
   ManagedInt32? routing_prefix;
-  ManagedString? type;
+  IPConfigType type;
   ManagedString? web_proxy_auto_discovery_url;
 };
 

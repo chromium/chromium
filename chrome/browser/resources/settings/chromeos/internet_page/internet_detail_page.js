@@ -682,7 +682,9 @@ Polymer({
     }
 
     // Set the IPAddress property to the IPv4 Address.
-    const ipv4 = OncMojo.getIPConfigForType(this.managedProperties_, 'IPv4');
+    const ipv4 = OncMojo.getIPConfigForType(
+        this.managedProperties_,
+        chromeos.networkConfig.mojom.IPConfigType.kIPv4);
     this.ipAddress_ = (ipv4 && ipv4.ipAddress) || '';
 
     // Update the detail page title.

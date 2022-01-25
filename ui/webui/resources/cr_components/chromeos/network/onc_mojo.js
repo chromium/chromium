@@ -922,7 +922,7 @@
    * Returns IPConfigProperties for |type|. For IPv4, these will be the static
    * properties if IPAddressConfigType is Static and StaticIPConfig is set.
    * @param {!chromeos.networkConfig.mojom.ManagedProperties} properties
-   * @param {string} desiredType Desired ip config type (IPv4 or IPv6).
+   * @param {!chromeos.networkConfig.mojom.IPConfigType} desiredType
    * @return {!chromeos.networkConfig.mojom.IPConfigProperties|undefined}
    */
   static getIPConfigForType(properties, desiredType) {
@@ -931,13 +931,13 @@
     let ipConfig;
     if (ipConfigs) {
       ipConfig = ipConfigs.find(ipconfig => ipconfig.type === desiredType);
-      if (ipConfig && desiredType !== 'IPv4') {
+      if (ipConfig && desiredType !== mojom.IPConfigType.kIPv4) {
         return ipConfig;
       }
     }
 
     // Only populate static ip config properties for IPv4.
-    if (desiredType !== 'IPv4') {
+    if (desiredType !== mojom.IPConfigType.kIPv4) {
       return undefined;
     }
 
@@ -962,9 +962,7 @@
       if (staticIpConfig.routingPrefix) {
         ipConfig.routingPrefix = staticIpConfig.routingPrefix.activeValue;
       }
-      if (staticIpConfig.type) {
-        ipConfig.type = staticIpConfig.type.activeValue;
-      }
+      ipConfig.type = staticIpConfig.type;
     }
     if (properties.nameServersConfigType &&
         properties.nameServersConfigType.activeValue === 'Static') {
@@ -1022,7 +1020,8 @@
     let nsConfigType =
         OncMojo.getActiveString(managedProperties.nameServersConfigType) ||
         'DHCP';
-    let staticIpConfig = OncMojo.getIPConfigForType(managedProperties, 'IPv4');
+    let staticIpConfig =
+        OncMojo.getIPConfigForType(managedProperties, mojom.IPConfigType.kIPv4);
     let nameServers = staticIpConfig ? staticIpConfig.nameServers : undefined;
     if (field === 'ipAddressConfigType') {
       const newIpConfigType = /** @type {string} */ (newValue);
@@ -1039,7 +1038,7 @@
     } else if (field === 'staticIpConfig') {
       const ipConfigValue =
           /** @type {!mojom.IPConfigProperties} */ (newValue);
-      if (!ipConfigValue.type || !ipConfigValue.ipAddress) {
+      if (!ipConfigValue.ipAddress) {
         console.error('Invalid StaticIPConfig: ' + JSON.stringify(newValue));
         return null;
       }
@@ -1070,7 +1069,7 @@
     config.ipAddressConfigType = ipConfigType;
     config.nameServersConfigType = nsConfigType;
     if (ipConfigType === 'Static') {
-      assert(staticIpConfig && staticIpConfig.type && staticIpConfig.ipAddress);
+      assert(staticIpConfig && staticIpConfig.ipAddress);
       config.staticIpConfig = staticIpConfig;
     }
     if (nsConfigType === 'Static') {
@@ -1427,7 +1426,7 @@ OncMojo.ManagedProperty;
  *   ipAddress: (string|undefined),
  *   nameServers: (Array<string>|undefined),
  *   netmask: (string|undefined),
- *   type: (string|undefined),
+ *   type: !chromeos.networkConfig.mojom.IPConfigType,
  *   webProxyAutoDiscoveryUrl: (string|undefined),
  * }}
  */
