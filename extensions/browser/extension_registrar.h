@@ -103,11 +103,11 @@ class ExtensionRegistrar : public ProcessManagerObserver {
 
   // Removes |extension| from the extension system by deactivating it if it is
   // enabled and removing references to it from the ExtensionRegistry's
-  // enabled or disabled sets.
-  // Note: Extensions will not be removed from other sets (terminated,
-  // blocklisted or blocked). ExtensionService handles that, since it also adds
-  // it to those sets. TODO(michaelpg): Make ExtensionRegistrar the sole mutator
-  // of ExtensionRegsitry to simplify this usage.
+  // enabled, disabled or terminated sets.
+  // Note: Extensions will not be removed from other sets (blocklisted or
+  // blocked). ExtensionService handles that, since it also adds it to those
+  // sets. TODO(michaelpg): Make ExtensionRegistrar the sole mutator of
+  // ExtensionRegsitry to simplify this usage.
   void RemoveExtension(const ExtensionId& extension_id,
                        UnloadedExtensionReason reason);
 

@@ -7925,6 +7925,31 @@ TEST_F(ExtensionServiceTest, PluginManagerCrash) {
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+// Test that blocking extension doesn't trigger unload notification for disabled
+// extensions. (crbug.com/708230)
+TEST_F(ExtensionServiceTest, BlockDisabledExtensionNotification) {
+  // Initialize a new extension.
+  InitializeEmptyExtensionService();
+  base::FilePath path = data_dir().AppendASCII("good.crx");
+  const Extension* extension = InstallCRX(path, INSTALL_NEW);
+  ASSERT_EQ(good_crx, extension->id());
+
+  // Disable the extension.
+  service()->DisableExtension(extension->id(),
+                              disable_reason::DISABLE_USER_ACTION);
+
+  // Create observer
+  MockExtensionRegistryObserver observer;
+  registry()->AddObserver(&observer);
+
+  // Block the extension
+  service()->BlockAllExtensions();
+
+  // Check that we didn't get unloading notification
+  EXPECT_EQ(std::string(), observer.last_extension_unloaded);
+  registry()->RemoveObserver(&observer);
+}
+
 class ExternalExtensionPriorityTest
     : public ExtensionServiceTest,
       public testing::WithParamInterface<ManifestLocation> {};

@@ -139,8 +139,7 @@ void ShellExtensionSystem::RegisterExtensionWithRequestContexts(
 }
 
 void ShellExtensionSystem::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id,
-    const UnloadedExtensionReason reason) {}
+    const std::string& extension_id) {}
 
 const base::OneShotEvent& ShellExtensionSystem::ready() const {
   return ready_;

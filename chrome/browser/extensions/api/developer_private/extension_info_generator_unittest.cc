@@ -184,7 +184,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
             .SetID(kId)
             .Build();
 
-    ExtensionRegistry::Get(profile())->AddEnabled(extension);
+    service()->AddExtension(extension.get());
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
     updater.GrantActivePermissions(extension.get());

@@ -122,8 +122,7 @@ class ExtensionSystem : public KeyedService {
   // info map clean up its RequestContexts once all the listeners to the
   // EXTENSION_UNLOADED notification have finished running.
   virtual void UnregisterExtensionWithRequestContexts(
-      const std::string& extension_id,
-      const UnloadedExtensionReason reason) {}
+      const std::string& extension_id) {}
 
   // Signaled when the extension system has completed its startup tasks.
   virtual const base::OneShotEvent& ready() const = 0;

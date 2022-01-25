@@ -265,7 +265,7 @@ class AppContextMenuTest : public AppListTestBase {
                         extensions::LaunchType launch_type) {
     scoped_refptr<extensions::Extension> store = MakeApp(app_id, platform_app);
     service_->AddExtension(store.get());
-    extensions::ExtensionRegistry::Get(profile())->AddEnabled(store);
+    service_->EnableExtension(app_id);
     app_service_test_.SetUp(profile());
     app_service_test_.FlushMojoCalls();
 

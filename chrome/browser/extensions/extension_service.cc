@@ -90,6 +90,7 @@
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/browser/update_observer.h"
@@ -1045,10 +1046,6 @@ void ExtensionService::BlockAllExtensions() {
 
     if (!CanBlockExtension(extension.get()))
       continue;
-
-    registry_->RemoveEnabled(id);
-    registry_->RemoveDisabled(id);
-    registry_->RemoveTerminated(id);
 
     registry_->AddBlocked(extension.get());
     UnloadExtension(id, UnloadedExtensionReason::LOCK_ALL);
@@ -2239,6 +2236,9 @@ void ExtensionService::UnloadAllExtensionsInternal() {
   profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForAllExtensions();
 
   registry_->ClearAll();
+
+  RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->UnloadAllExtensionsForTest();  // IN-TEST
 
   // TODO(erikkay) should there be a notification for this?  We can't use
   // EXTENSION_UNLOADED since that implies that the extension has

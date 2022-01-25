@@ -35,21 +35,10 @@ void InfoMap::AddExtension(const Extension* extension,
   extensions_.Insert(extension);
 }
 
-void InfoMap::RemoveExtension(const std::string& extension_id,
-                              const UnloadedExtensionReason reason) {
+void InfoMap::RemoveExtension(const std::string& extension_id) {
   CheckOnValidThread();
-  const Extension* extension = extensions_.GetByID(extension_id);
-  bool was_uninstalled = (reason != UnloadedExtensionReason::DISABLE &&
-                          reason != UnloadedExtensionReason::TERMINATE);
-  if (extension) {
-    extensions_.Remove(extension_id);
-  } else if (!was_uninstalled) {
-    // NOTE: This can currently happen if we receive multiple unload
-    // notifications, e.g. setting incognito-enabled state for a
-    // disabled extension (e.g., via sync).  See
-    // http://code.google.com/p/chromium/issues/detail?id=50582 .
-    NOTREACHED() << extension_id;
-  }
+  DCHECK(extensions_.GetByID(extension_id));
+  extensions_.Remove(extension_id);
 }
 
 void InfoMap::SetContentVerifier(ContentVerifier* verifier) {

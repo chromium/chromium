@@ -261,14 +261,11 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                             .Build());
     builder.SetID(extension_id);
     builder.SetPath(temp_dir.GetPath());
-    ExtensionRegistry::Get(browser()->profile())->AddEnabled(builder.Build());
+    extension_service()->AddExtension(builder.Build().get());
 
     const Extension* extension = GetInstalledExtension(extension_id);
     ASSERT_NE(nullptr, extension);
     ASSERT_EQ(version, extension->VersionString());
-
-    RendererStartupHelperFactory::GetForBrowserContext(browser()->profile())
-        ->OnExtensionLoaded(*extension);
   }
 
   static void InstallerCallback(base::OnceClosure quit_closure,

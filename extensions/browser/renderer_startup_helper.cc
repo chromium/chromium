@@ -261,11 +261,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
 }
 
 void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
-  // Extension was already loaded.
-  // TODO(crbug.com/708230): Ensure that clients don't call this for an
-  // already loaded extension and change this to a DCHECK.
-  if (base::Contains(extension_process_map_, extension.id()))
-    return;
+  DCHECK(!base::Contains(extension_process_map_, extension.id()));
 
   // Mark the extension as loaded.
   std::set<content::RenderProcessHost*>& loaded_process_set =
@@ -299,11 +295,7 @@ void RendererStartupHelper::OnExtensionLoaded(const Extension& extension) {
 }
 
 void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
-  // Extension is not loaded.
-  // TODO(crbug.com/708230): Ensure that clients call this for a loaded
-  // extension only and change this to a DCHECK.
-  if (!base::Contains(extension_process_map_, extension.id()))
-    return;
+  DCHECK(base::Contains(extension_process_map_, extension.id()));
 
   const std::set<content::RenderProcessHost*>& loaded_process_set =
       extension_process_map_[extension.id()];
@@ -321,6 +313,10 @@ void RendererStartupHelper::OnExtensionUnloaded(const Extension& extension) {
 
   // Mark the extension as unloaded.
   extension_process_map_.erase(extension.id());
+}
+
+void RendererStartupHelper::UnloadAllExtensionsForTest() {
+  extension_process_map_.clear();
 }
 
 mojo::PendingAssociatedRemote<mojom::Renderer>

@@ -506,11 +506,10 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
 }
 
 void ExtensionSystemImpl::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id,
-    const UnloadedExtensionReason reason) {
+    const std::string& extension_id) {
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&InfoMap::RemoveExtension, info_map(),
-                                extension_id, reason));
+      FROM_HERE,
+      base::BindOnce(&InfoMap::RemoveExtension, info_map(), extension_id));
 }
 
 }  // namespace extensions

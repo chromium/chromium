@@ -148,17 +148,20 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
                                          UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  int include_mask =
-      ExtensionRegistry::EVERYTHING & ~ExtensionRegistry::TERMINATED;
+  int include_mask = ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+                     ExtensionRegistry::TERMINATED;
   scoped_refptr<const Extension> extension(
       registry_->GetExtensionById(extension_id, include_mask));
 
-  // If the extension was already removed, just notify of the new unload reason.
-  // TODO: It's unclear when this needs to be called given that it may be a
-  // duplicate notification. See crbug.com/708230.
-  if (!extension) {
-    extension_system_->UnregisterExtensionWithRequestContexts(extension_id,
-                                                              reason);
+  // If the extension is blocked/blocklisted, no need to notify again.
+  if (!extension)
+    return;
+
+  if (registry_->terminated_extensions().Contains(extension_id)) {
+    // The extension was already deactivated from the call to
+    // TerminateExtension(), which also should have added it to
+    // unloaded_extension_paths_ if necessary.
+    registry_->RemoveTerminated(extension->id());
     return;
   }
 
@@ -169,17 +172,14 @@ void ExtensionRegistrar::RemoveExtension(const ExtensionId& extension_id,
   // Stop tracking whether the extension was meant to be enabled after a reload.
   reloading_extensions_.erase(extension->id());
 
-  if (registry_->disabled_extensions().Contains(extension_id)) {
-    // The extension is already deactivated.
-    registry_->RemoveDisabled(extension->id());
-    extension_system_->UnregisterExtensionWithRequestContexts(extension_id,
-                                                              reason);
-  } else {
-    // TODO(michaelpg): The extension may be blocked or blocklisted, in which
-    // case it shouldn't need to be "deactivated". Determine whether the removal
-    // notifications are necessary (crbug.com/708230).
+  if (registry_->enabled_extensions().Contains(extension_id)) {
     registry_->RemoveEnabled(extension_id);
     DeactivateExtension(extension.get(), reason);
+  } else {
+    // The extension was already deactivated from the call to
+    // DisableExtension().
+    bool removed = registry_->RemoveDisabled(extension->id());
+    DCHECK(removed);
   }
 }
 
@@ -502,8 +502,7 @@ void ExtensionRegistrar::DeactivateExtension(const Extension* extension,
                                              UnloadedExtensionReason reason) {
   registry_->TriggerOnUnloaded(extension, reason);
   renderer_helper_->OnExtensionUnloaded(*extension);
-  extension_system_->UnregisterExtensionWithRequestContexts(extension->id(),
-                                                            reason);
+  extension_system_->UnregisterExtensionWithRequestContexts(extension->id());
   DeactivateTaskQueueForExtension(browser_context_, extension);
 
   delegate_->PostDeactivateExtension(extension);

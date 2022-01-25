@@ -82,8 +82,7 @@ class ShellExtensionSystem : public ExtensionSystem {
       const Extension* extension,
       base::OnceClosure callback) override;
   void UnregisterExtensionWithRequestContexts(
-      const std::string& extension_id,
-      const UnloadedExtensionReason reason) override;
+      const std::string& extension_id) override;
   const base::OneShotEvent& ready() const override;
   bool is_ready() const override;
   ContentVerifier* content_verifier() override;
