@@ -32,6 +32,8 @@ import {
   Effect,
   EntryType,
   GetCameraAppDeviceStatus,
+  MojoBlob,
+  PointF,
   ReprocessResultListenerCallbackRouter,
   ResultMetadataObserverCallbackRouter,
   StreamType,
@@ -93,6 +95,9 @@ export function parseMetadata(entry: CameraMetadataEntry): number[] {
  */
 function getMetadataData(
     metadata: CameraMetadata, tag: CameraMetadataTag): number[] {
+  if (metadata.entries === undefined) {
+    return [];
+  }
   for (let i = 0; i < metadata.entryCount; i++) {
     const entry = metadata.entries[i];
     if (entry.tag === tag) {
@@ -558,7 +563,7 @@ export class DeviceOperator {
    */
   async setReprocessOptions(deviceId: string, effects: Effect[]):
       Promise<Array<Promise<Blob>>> {
-    const reprocessEvents = new Map;
+    const reprocessEvents = new Map<Effect, CancelableEvent<Blob>>();
     const callbacks = [];
     for (const effect of effects) {
       const event = new CancelableEvent<Blob>();
@@ -569,7 +574,7 @@ export class DeviceOperator {
     const listenerCallbacksRouter =
         wrapEndpoint(new ReprocessResultListenerCallbackRouter());
     listenerCallbacksRouter.onReprocessDone.addListener(
-        (effect, status, blob) => {
+        (effect: Effect, status: number, blob: MojoBlob|null) => {
           const event = assertExists(reprocessEvents.get(effect));
           if (blob === null || status !== 0) {
             event.signalError(new Error(`Set reprocess failed: ${status}`));
@@ -653,9 +658,10 @@ export class DeviceOperator {
       callback: (corners: Point[]) => void): Promise<MojoEndpoint> {
     const observerCallbackRouter =
         wrapEndpoint(new DocumentCornersObserverCallbackRouter());
-    observerCallbackRouter.onDocumentCornersUpdated.addListener((corners) => {
-      callback(corners.map((c) => new Point(c.x, c.y)));
-    });
+    observerCallbackRouter.onDocumentCornersUpdated.addListener(
+        (corners: PointF[]) => {
+          callback(corners.map((c) => new Point(c.x, c.y)));
+        });
 
     const device = await this.getDevice(deviceId);
     await device.registerDocumentCornersObserver(
@@ -680,7 +686,7 @@ export class DeviceOperator {
    *     exist instance.
    * @return The singleton instance.
    */
-  static async getInstance(): Promise<DeviceOperator> {
+  static async getInstance(): Promise<DeviceOperator|null> {
     await readyEvent.wait();
     if (instance === null) {
       instance = new DeviceOperator();
@@ -690,13 +696,14 @@ export class DeviceOperator {
     }
 
     // Using a wrapper to ensure all the device operations are sequentialized.
-    const deviceOperatorWrapper = {
+    const deviceOperatorWrapper: ProxyHandler<DeviceOperator> = {
       get: function(target, property) {
-        if (target[property] instanceof Function) {
-          return (...args) =>
-                     operationQueue.push(() => target[property](...args));
+        const val = Reflect.get(target, property);
+        if (val instanceof Function) {
+          return (...args: unknown[]) => operationQueue.push(
+                     () => Reflect.apply(val, target, args));
         }
-        return target[property];
+        return val;
       },
     };
     return new Proxy(instance, deviceOperatorWrapper);
