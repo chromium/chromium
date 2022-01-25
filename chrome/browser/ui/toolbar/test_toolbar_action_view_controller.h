@@ -40,7 +40,7 @@ class TestToolbarActionViewController : public ToolbarActionViewController {
           context_menu_source) override;
   bool ExecuteAction(bool by_user, InvocationSource source) override;
   void UpdateState() override;
-  PageInteractionStatus GetPageInteractionStatus(
+  extensions::SitePermissionsHelper::SiteInteraction GetSiteInteraction(
       content::WebContents* web_contents) const override;
 
   // Instruct the controller to fake showing a popup.

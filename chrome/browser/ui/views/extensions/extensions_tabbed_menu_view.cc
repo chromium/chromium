@@ -119,10 +119,10 @@ ExtensionsTabbedMenuView::ExtensionsTabbedMenuView(
       requests_access_{
           nullptr, nullptr,
           IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_REQUESTS_ACCESS_SECTION_TITLE,
-          ToolbarActionViewController::PageInteractionStatus::kPending},
+          extensions::SitePermissionsHelper::SiteInteraction::kPending},
       has_access_{nullptr, nullptr,
                   IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_HAS_ACCESS_SECTION_TITLE,
-                  ToolbarActionViewController::PageInteractionStatus::kActive} {
+                  extensions::SitePermissionsHelper::SiteInteraction::kActive} {
   // Ensure layer masking is used for the extensions menu to ensure buttons with
   // layer effects sitting flush with the bottom of the bubble are clipped
   // appropriately.
@@ -444,10 +444,9 @@ void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
 
   // Extensions with no current site interaction don't belong to a site access
   // section and therefore do not need a site access item view.
-  const ToolbarActionViewController::PageInteractionStatus status =
-      controller->GetPageInteractionStatus(
-          browser_->tab_strip_model()->GetActiveWebContents());
-  auto* section = GetSiteAccessSectionForPageStatus(status);
+  auto site_interaction = controller->GetSiteInteraction(
+      browser_->tab_strip_model()->GetActiveWebContents());
+  auto* section = GetSectionForSiteInteraction(site_interaction);
   if (!section)
     return;
 
@@ -479,18 +478,20 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
         std::vector<ExtensionsMenuItemView*> items_to_move;
         for (views::View* view : section->items->children()) {
           auto* item_view = GetAsMenuItemView(view);
-          auto item_page_status =
-              item_view->view_controller()->GetPageInteractionStatus(
-                  web_contents);
-          if (item_page_status != section->page_status)
-            items_to_move.push_back(item_view);
+          auto site_interaction =
+              item_view->view_controller()->GetSiteInteraction(web_contents);
+          if (site_interaction == section->site_interaction)
+            continue;
+
+          items_to_move.push_back(item_view);
         }
 
         for (ExtensionsMenuItemView* item_view : items_to_move) {
           auto item_view_to_move = section->items->RemoveChildViewT(item_view);
-          auto* new_section = GetSiteAccessSectionForPageStatus(
-              item_view_to_move->view_controller()->GetPageInteractionStatus(
-                  web_contents));
+          auto site_interaction =
+              item_view_to_move->view_controller()->GetSiteInteraction(
+                  web_contents);
+          auto* new_section = GetSectionForSiteInteraction(site_interaction);
           if (!new_section)
             return;
 
@@ -520,16 +521,16 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
 }
 
 ExtensionsTabbedMenuView::SiteAccessSection*
-ExtensionsTabbedMenuView::GetSiteAccessSectionForPageStatus(
-    ToolbarActionViewController::PageInteractionStatus status) {
+ExtensionsTabbedMenuView::GetSectionForSiteInteraction(
+    extensions::SitePermissionsHelper::SiteInteraction status) {
   switch (status) {
-    case ToolbarActionViewController::PageInteractionStatus::kNone:
+    case extensions::SitePermissionsHelper::SiteInteraction::kNone:
       // Extensions with no interaction with the current site don't belong to a
       // site access section.
       return nullptr;
-    case ToolbarActionViewController::PageInteractionStatus::kPending:
+    case extensions::SitePermissionsHelper::SiteInteraction::kPending:
       return &requests_access_;
-    case ToolbarActionViewController::PageInteractionStatus::kActive:
+    case extensions::SitePermissionsHelper::SiteInteraction::kActive:
       return &has_access_;
   }
 }

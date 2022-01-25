@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TABBED_MENU_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -109,8 +110,8 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
     // current site string.
     const int header_string_id;
 
-    // The PageInteractionStatus that this section is handling.
-    const ToolbarActionViewController::PageInteractionStatus page_status;
+    // The site interaction that this section is handling.
+    const extensions::SitePermissionsHelper::SiteInteraction site_interaction;
   };
 
   // Initially creates the tabs.
@@ -146,9 +147,9 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // be visible if there are any extensions displayed in it.
   void UpdateSiteAccessSectionsVisibility();
 
-  // Returns the section corresponding to `status`, or nullptr.
-  SiteAccessSection* GetSiteAccessSectionForPageStatus(
-      ToolbarActionViewController::PageInteractionStatus status);
+  // Returns the section corresponding to `site_interaction`, or nullptr.
+  SiteAccessSection* GetSectionForSiteInteraction(
+      extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
   // Runs a set of consistency checks on the appearance of the menu. This is a
   // no-op if DCHECKs are disabled.

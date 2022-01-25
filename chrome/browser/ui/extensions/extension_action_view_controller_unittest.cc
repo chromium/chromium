@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -46,6 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::ManifestLocation;
+using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 
 class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
  public:
@@ -646,8 +648,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   content::WebContents* web_contents = GetActiveWebContents();
 
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kPending,
+              controller->GetSiteInteraction(web_contents));
     EXPECT_TRUE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
@@ -661,8 +663,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   // and verify the expected appearance.
   NavigateAndCommitActiveTab(kGrantedHost);
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kActive,
+              controller->GetSiteInteraction(web_contents));
     // This is a little unintuitive, but if an extension is using a page action
     // and has not specified any declarative rules or manually changed it's
     // enabled state, it can have access to a page but be in the disabled state.
@@ -679,8 +681,8 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
   // Navigate to a restricted URL and verify the expected appearance.
   NavigateAndCommitActiveTab(kRestrictedHost);
   {
-    EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-              controller->GetPageInteractionStatus(web_contents));
+    EXPECT_EQ(SiteInteraction::kNone,
+              controller->GetSiteInteraction(web_contents));
     EXPECT_FALSE(controller->IsEnabled(web_contents));
     std::unique_ptr<IconWithBadgeImageSource> image_source =
         controller->GetIconImageSourceForTesting(web_contents, view_size());
@@ -693,8 +695,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, ActiveTabIconAppearance) {
 
 // Tests that an extension with the activeTab permission is shown to be pending
 // user approval for normal web pages, but not for restricted URLs.
-TEST_F(ExtensionActionViewControllerUnitTest,
-       GetPageInteractionStatusWithActiveTab) {
+TEST_F(ExtensionActionViewControllerUnitTest, GetSiteInteractionWithActiveTab) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
           .SetAction(extensions::ActionInfo::TYPE_BROWSER)
@@ -711,38 +712,38 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kPending,
+            controller->GetSiteInteraction(web_contents));
 
   // Click on the action, which grants activeTab and allows the extension to
   // access the page. This changes the page interaction status to "active".
   controller->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kActive,
+            controller->GetSiteInteraction(web_contents));
 
   // Now navigate to a restricted URL. Clicking the extension won't give access
   // here, so the page interaction status should be "none".
   NavigateAndCommitActiveTab(GURL("chrome://extensions"));
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
   controller->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
 }
 
 // Tests that file URLs only show as pending user approval for activeTab
 // extensions if the extension has file URL access.
 TEST_F(ExtensionActionViewControllerUnitTest,
-       GetPageInteractionStatusActiveTabWithFileURL) {
+       GetSiteInteractionActiveTabWithFileURL) {
   // We need to use a TestExtensionDir here to allow for the reload when giving
   // an extension file URL access.
   extensions::TestExtensionDir test_dir;
   test_dir.WriteManifest(R"(
     {
       "name": "Active Tab Page Interaction with File URLs",
-      "description": "Testing PageInteractionStatus and ActiveTab on file URLs",
+      "description": "Testing SiteInteraction and ActiveTab on file URLs",
       "version": "0.1",
       "manifest_version": 2,
       "browser_action": {},
@@ -762,12 +763,12 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(controller);
   content::WebContents* web_contents = GetActiveWebContents();
 
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
   controller->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kNone,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kNone,
+            controller->GetSiteInteraction(web_contents));
 
   // After being granted access to file URLs the page interaction status should
   // show as "pending". A click will grant activeTab, giving access to the page
@@ -780,12 +781,12 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   ASSERT_TRUE(extension);
   // Refresh the controller as the extension has been reloaded.
   controller = GetViewControllerForId(extension->id());
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kPending,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kPending,
+            controller->GetSiteInteraction(web_contents));
   controller->ExecuteAction(
       true, ToolbarActionViewController::InvocationSource::kToolbarButton);
-  EXPECT_EQ(ExtensionActionViewController::PageInteractionStatus::kActive,
-            controller->GetPageInteractionStatus(web_contents));
+  EXPECT_EQ(SiteInteraction::kActive,
+            controller->GetSiteInteraction(web_contents));
 }
 
 // ExtensionActionViewController::GetIcon() can potentially be called with a

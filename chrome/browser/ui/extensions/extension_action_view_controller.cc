@@ -16,10 +16,10 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
@@ -72,8 +72,8 @@ bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     content::WebContents* web_contents) {
   for (const auto& action : actions) {
-    if (action->GetPageInteractionStatus(web_contents) ==
-        PageInteractionStatus::kActive) {
+    if (action->GetSiteInteraction(web_contents) ==
+        extensions::SitePermissionsHelper::SiteInteraction::kActive) {
       return true;
     }
   }
@@ -152,27 +152,26 @@ std::u16string ExtensionActionViewController::GetAccessibleName(
   std::u16string title_utf16 =
       base::UTF8ToUTF16(title.empty() ? extension()->name() : title);
 
-  // Include a "host access" portion of the tooltip if the extension has or
-  // wants access to the site.
-  PageInteractionStatus interaction_status =
-      GetPageInteractionStatus(web_contents);
-  int interaction_status_description_id = -1;
-  switch (interaction_status) {
-    case PageInteractionStatus::kNone:
+  // Include a "host access" portion of the tooltip if the extension has active
+  // or pending interaction with the site.
+  auto site_interaction = GetSiteInteraction(web_contents);
+  int site_interaction_description_id = -1;
+  switch (site_interaction) {
+    case extensions::SitePermissionsHelper::SiteInteraction::kNone:
       // No string for neither having nor wanting access.
       break;
-    case PageInteractionStatus::kPending:
-      interaction_status_description_id = IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE;
+    case extensions::SitePermissionsHelper::SiteInteraction::kPending:
+      site_interaction_description_id = IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE;
       break;
-    case PageInteractionStatus::kActive:
-      interaction_status_description_id = IDS_EXTENSIONS_HAS_ACCESS_TO_SITE;
+    case extensions::SitePermissionsHelper::SiteInteraction::kActive:
+      site_interaction_description_id = IDS_EXTENSIONS_HAS_ACCESS_TO_SITE;
       break;
   }
 
-  if (interaction_status_description_id != -1) {
+  if (site_interaction_description_id != -1) {
     title_utf16 = base::StrCat(
         {title_utf16, u"\n",
-         l10n_util::GetStringUTF16(interaction_status_description_id)});
+         l10n_util::GetStringUTF16(site_interaction_description_id)});
   }
 
   return title_utf16;
@@ -190,8 +189,8 @@ bool ExtensionActionViewController::IsEnabled(
 
   return extension_action_->GetIsVisible(
              sessions::SessionTabHelper::IdForTab(web_contents).id()) ||
-         GetPageInteractionStatus(web_contents) ==
-             PageInteractionStatus::kPending;
+         GetSiteInteraction(web_contents) ==
+             extensions::SitePermissionsHelper::SiteInteraction::kPending;
 }
 
 bool ExtensionActionViewController::IsShowingPopup() const {
@@ -312,37 +311,11 @@ void ExtensionActionViewController::OnExtensionHostDestroyed(
   OnPopupClosed();
 }
 
-ExtensionActionViewController::PageInteractionStatus
-ExtensionActionViewController::GetPageInteractionStatus(
+extensions::SitePermissionsHelper::SiteInteraction
+ExtensionActionViewController::GetSiteInteraction(
     content::WebContents* web_contents) const {
-  // The |web_contents| can be null, if TabStripModel::GetActiveWebContents()
-  // returns null. In that case, default to kNone.
-  if (!web_contents)
-    return PageInteractionStatus::kNone;
-
-  const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-  const GURL& url = web_contents->GetLastCommittedURL();
-  extensions::PermissionsData::PageAccess page_access =
-      extension_->permissions_data()->GetPageAccess(url, tab_id,
-                                                    /*error=*/nullptr);
-  extensions::PermissionsData::PageAccess script_access =
-      extension_->permissions_data()->GetContentScriptAccess(url, tab_id,
-                                                             /*error=*/nullptr);
-  if (page_access == extensions::PermissionsData::PageAccess::kAllowed ||
-      script_access == extensions::PermissionsData::PageAccess::kAllowed) {
-    return PageInteractionStatus::kActive;
-  }
-  // TODO(tjudkins): Investigate if we need to check HasBeenBlocked() for this
-  // case. We do know that extensions that have been blocked should always be
-  // marked pending, but those cases should be covered by the withheld page
-  // access checks.
-  if (page_access == extensions::PermissionsData::PageAccess::kWithheld ||
-      script_access == extensions::PermissionsData::PageAccess::kWithheld ||
-      HasBeenBlocked(web_contents) || HasActiveTabAndCanAccess(url)) {
-    return PageInteractionStatus::kPending;
-  }
-
-  return PageInteractionStatus::kNone;
+  return extensions::SitePermissionsHelper(browser_->profile())
+      .GetSiteInteraction(*extension(), web_contents);
 }
 
 bool ExtensionActionViewController::ExtensionIsValid() const {
@@ -393,7 +366,8 @@ ExtensionActionViewController::GetIconImageSourceForTesting(
 
 bool ExtensionActionViewController::HasBeenBlockedForTesting(
     content::WebContents* web_contents) const {
-  return HasBeenBlocked(web_contents);
+  return extensions::SitePermissionsHelper(browser_->profile())
+      .HasBeenBlocked(*extension(), web_contents);
 }
 
 ExtensionActionViewController*
@@ -475,36 +449,18 @@ ExtensionActionViewController::GetIconImageSource(
   }
   image_source->SetBadge(std::move(badge));
 
-  bool grayscale = false;
-  bool was_blocked = false;
-  bool action_is_visible = extension_action_->GetIsVisible(tab_id);
-  PageInteractionStatus interaction_status =
-      GetPageInteractionStatus(web_contents);
   // We only grayscale the icon if it cannot interact with the page and the icon
   // is disabled.
-  grayscale =
-      interaction_status == PageInteractionStatus::kNone && !action_is_visible;
-  was_blocked = HasBeenBlocked(web_contents);
-
+  bool action_is_visible = extension_action_->GetIsVisible(tab_id);
+  bool grayscale =
+      GetSiteInteraction(web_contents) ==
+          extensions::SitePermissionsHelper::SiteInteraction::kNone &&
+      !action_is_visible;
   image_source->set_grayscale(grayscale);
+
+  bool was_blocked = extensions::SitePermissionsHelper(browser_->profile())
+                         .HasBeenBlocked(*extension(), web_contents);
   image_source->set_paint_blocked_actions_decoration(was_blocked);
 
   return image_source;
-}
-
-bool ExtensionActionViewController::HasActiveTabAndCanAccess(
-    const GURL& url) const {
-  return extension_->permissions_data()->HasAPIPermission(
-             extensions::mojom::APIPermissionID::kActiveTab) &&
-         !extension_->permissions_data()->IsRestrictedUrl(url,
-                                                          /*error=*/nullptr) &&
-         (!url.SchemeIsFile() || extensions::util::AllowFileAccess(
-                                     extension_->id(), browser_->profile()));
-}
-
-bool ExtensionActionViewController::HasBeenBlocked(
-    content::WebContents* web_contents) const {
-  ExtensionActionRunner* action_runner =
-      ExtensionActionRunner::GetForWebContents(web_contents);
-  return action_runner && action_runner->WantsToRun(extension());
 }

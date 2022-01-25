@@ -83,15 +83,15 @@ ExtensionsMenuView::ExtensionsMenuView(
       cant_access_{nullptr, nullptr,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA_SHORT,
                    IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA,
-                   ToolbarActionViewController::PageInteractionStatus::kNone},
+                   extensions::SitePermissionsHelper::SiteInteraction::kNone},
       wants_access_{
           nullptr, nullptr, IDS_EXTENSIONS_MENU_WANTS_TO_ACCESS_SITE_DATA_SHORT,
           IDS_EXTENSIONS_MENU_WANTS_TO_ACCESS_SITE_DATA,
-          ToolbarActionViewController::PageInteractionStatus::kPending},
+          extensions::SitePermissionsHelper::SiteInteraction::kPending},
       has_access_{nullptr, nullptr,
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA_SHORT,
                   IDS_EXTENSIONS_MENU_ACCESSING_SITE_DATA,
-                  ToolbarActionViewController::PageInteractionStatus::kActive} {
+                  extensions::SitePermissionsHelper::SiteInteraction::kActive} {
   // Ensure layer masking is used for the extensions menu to ensure buttons with
   // layer effects sitting flush with the bottom of the bubble are clipped
   // appropriately.
@@ -249,17 +249,17 @@ ExtensionsMenuView::CreateExtensionButtonsContainer() {
   return extension_buttons;
 }
 
-ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForStatus(
-    ToolbarActionViewController::PageInteractionStatus status) {
+ExtensionsMenuView::Section* ExtensionsMenuView::GetSectionForSiteInteraction(
+    extensions::SitePermissionsHelper::SiteInteraction site_interaction) {
   Section* section = nullptr;
-  switch (status) {
-    case ToolbarActionViewController::PageInteractionStatus::kNone:
+  switch (site_interaction) {
+    case extensions::SitePermissionsHelper::SiteInteraction::kNone:
       section = &cant_access_;
       break;
-    case ToolbarActionViewController::PageInteractionStatus::kPending:
+    case extensions::SitePermissionsHelper::SiteInteraction::kPending:
       section = &wants_access_;
       break;
-    case ToolbarActionViewController::PageInteractionStatus::kActive:
+    case extensions::SitePermissionsHelper::SiteInteraction::kActive:
       section = &has_access_;
       break;
   }
@@ -307,11 +307,9 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
 void ExtensionsMenuView::InsertMenuItem(ExtensionsMenuItemView* menu_item) {
   DCHECK(!Contains(menu_item))
       << "Trying to insert a menu item that is already added in a section!";
-  const ToolbarActionViewController::PageInteractionStatus status =
-      menu_item->view_controller()->GetPageInteractionStatus(
-          browser_->tab_strip_model()->GetActiveWebContents());
-
-  Section* const section = GetSectionForStatus(status);
+  auto site_interaction = menu_item->view_controller()->GetSiteInteraction(
+      browser_->tab_strip_model()->GetActiveWebContents());
+  Section* const section = GetSectionForSiteInteraction(site_interaction);
   // Add the view at the end. Note that this *doesn't* insert the item at the
   // correct spot or ensure the view is visible; it's assumed that any callers
   // will handle those separately.
@@ -343,9 +341,9 @@ void ExtensionsMenuView::Update() {
     std::vector<ExtensionsMenuItemView*> views_to_move;
     for (views::View* view : section->menu_items->children()) {
       auto* menu_item = GetAsMenuItemView(view);
-      ToolbarActionViewController::PageInteractionStatus status =
-          menu_item->view_controller()->GetPageInteractionStatus(web_contents);
-      if (status == section->page_status)
+      auto site_interaction =
+          menu_item->view_controller()->GetSiteInteraction(web_contents);
+      if (site_interaction == section->site_interaction)
         continue;
       views_to_move.push_back(menu_item);
     }
@@ -377,9 +375,9 @@ void ExtensionsMenuView::SanityCheck() {
     std::vector<ExtensionsMenuItemView*> menu_items;
     for (views::View* view : section->menu_items->children()) {
       auto* menu_item = GetAsMenuItemView(view);
-      ToolbarActionViewController::PageInteractionStatus status =
-          menu_item->view_controller()->GetPageInteractionStatus(web_contents);
-      DCHECK_EQ(section, GetSectionForStatus(status));
+      auto site_interaction =
+          menu_item->view_controller()->GetSiteInteraction(web_contents);
+      DCHECK_EQ(section, GetSectionForSiteInteraction(site_interaction));
       menu_items.push_back(menu_item);
     }
     DCHECK(std::is_sorted(menu_items.begin(), menu_items.end(),
@@ -527,9 +525,10 @@ ExtensionsMenuView* ExtensionsMenuView::GetExtensionsMenuViewForTesting() {
 // static
 std::vector<ExtensionsMenuItemView*>
 ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-    ToolbarActionViewController::PageInteractionStatus status) {
+    extensions::SitePermissionsHelper::SiteInteraction site_interaction) {
   const ExtensionsMenuView::Section* section =
-      GetExtensionsMenuViewForTesting()->GetSectionForStatus(status);
+      GetExtensionsMenuViewForTesting()->GetSectionForSiteInteraction(
+          site_interaction);
   std::vector<ExtensionsMenuItemView*> menu_item_views;
   for (views::View* view : section->menu_items->children())
     menu_item_views.push_back(GetAsMenuItemView(view));

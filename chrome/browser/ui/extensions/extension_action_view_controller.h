@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -29,6 +30,7 @@ class Extension;
 class ExtensionAction;
 class ExtensionRegistry;
 class ExtensionViewHost;
+class SitePermissionsHelper;
 }
 
 // The platform-independent controller for an ExtensionAction that is shown on
@@ -70,7 +72,7 @@ class ExtensionActionViewController
   std::u16string GetAccessibleName(
       content::WebContents* web_contents) const override;
   std::u16string GetTooltip(content::WebContents* web_contents) const override;
-  PageInteractionStatus GetPageInteractionStatus(
+  extensions::SitePermissionsHelper::SiteInteraction GetSiteInteraction(
       content::WebContents* web_contents) const override;
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
@@ -168,19 +170,6 @@ class ExtensionActionViewController
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSource(
       content::WebContents* web_contents,
       const gfx::Size& size);
-
-  // Returns true if this extension uses the activeTab permission and would
-  // probably be able to to access the given |url|. The actual checks when an
-  // activeTab extension tries to run are a little more complicated and can be
-  // seen in ExtensionActionRunner and ActiveTabPermissionGranter.
-  // Note: The rare cases where this gets it wrong should only be for false
-  // positives, where it reports that the extension wants access but it can't
-  // actually be given access when it tries to run.
-  bool HasActiveTabAndCanAccess(const GURL& url) const;
-
-  // Returns true if this extension has been blocked on the given
-  // |web_contents|.
-  bool HasBeenBlocked(content::WebContents* web_contents) const;
 
   // The extension associated with the action we're displaying.
   scoped_refptr<const extensions::Extension> extension_;

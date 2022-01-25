@@ -226,7 +226,7 @@ TEST_F(ExtensionsMenuViewUnitTest, ExtensionsAreSortedInTheMenu) {
 
   std::vector<ExtensionsMenuItemView*> menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          ToolbarActionViewController::PageInteractionStatus::kNone);
+          extensions::SitePermissionsHelper::SiteInteraction::kNone);
   ASSERT_EQ(4u, menu_items.size());
 
   std::vector<std::string> item_names;

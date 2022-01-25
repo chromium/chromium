@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -63,10 +64,10 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // Returns the currently-showing ExtensionsMenuView, if any exists.
   static ExtensionsMenuView* GetExtensionsMenuViewForTesting();
 
-  // Returns the children of a section for the given `status`.
+  // Returns the children of a section for the given `site_interaction`.
   static std::vector<ExtensionsMenuItemView*>
   GetSortedItemsForSectionForTesting(
-      ToolbarActionViewController::PageInteractionStatus status);
+      extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
   // views::BubbleDialogDelegateView:
   std::u16string GetAccessibleWindowTitle() const override;
@@ -124,8 +125,8 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
     // The id of the string to use for the longer description of the section.
     const int description_string_id;
 
-    // The PageInteractionStatus that this section is handling.
-    const ToolbarActionViewController::PageInteractionStatus page_status;
+    // The site interaction that this section is handling.
+    const extensions::SitePermissionsHelper::SiteInteraction site_interaction;
   };
 
   // Initially populates the menu by creating sections with menu items for all
@@ -134,9 +135,9 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
   std::unique_ptr<views::View> CreateExtensionButtonsContainer();
 
-  // Returns the appropriate section for the given |status|.
-  Section* GetSectionForStatus(
-      ToolbarActionViewController::PageInteractionStatus status);
+  // Returns the appropriate section for the given `site_interaction`.
+  Section* GetSectionForSiteInteraction(
+      extensions::SitePermissionsHelper::SiteInteraction site_interaction);
 
   // Sorts the views within all sections by the name of the action.
   void SortMenuItemsByName();

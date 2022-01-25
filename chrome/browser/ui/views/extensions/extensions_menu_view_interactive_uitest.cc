@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   std::vector<ExtensionsMenuItemView*> active_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          ToolbarActionViewController::PageInteractionStatus::kActive);
+          extensions::SitePermissionsHelper::SiteInteraction::kActive);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       item_button->GetTooltipText());
   std::vector<ExtensionsMenuItemView*> pending_menu_items =
       ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-          ToolbarActionViewController::PageInteractionStatus::kPending);
+          extensions::SitePermissionsHelper::SiteInteraction::kPending);
   ASSERT_EQ(1u, pending_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", pending_menu_items[0]
                                        ->primary_action_button_for_testing()
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                 u"\n"),
             item_button->GetTooltipText());
   active_menu_items = ExtensionsMenuView::GetSortedItemsForSectionForTesting(
-      ToolbarActionViewController::PageInteractionStatus::kActive);
+      extensions::SitePermissionsHelper::SiteInteraction::kActive);
   ASSERT_EQ(1u, active_menu_items.size());
   EXPECT_EQ(u"All Urls Extension", active_menu_items[0]
                                        ->primary_action_button_for_testing()
