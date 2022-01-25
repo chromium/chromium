@@ -494,6 +494,17 @@ bool ProcessSingletonNotificationCallback(
       FROM_HERE, base::BindOnce(&ProcessSingletonNotificationCallbackImpl,
                                 command_line, current_directory));
 }
+
+bool ShouldInstallSodaDuringPostProfileInit(
+    const base::CommandLine& command_line) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(
+      ash::features::kOnDeviceSpeechRecognition);
+#else
+  return !command_line.HasSwitch(switches::kDisableComponentUpdate);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -1213,6 +1224,13 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
                        profile->GetPath()));
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (ShouldInstallSodaDuringPostProfileInit(parsed_command_line())) {
+    speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
+                                               browser_process_->local_state());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1557,6 +1575,12 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (parsed_command_line().HasSwitch(::switches::kAutoOpenDevToolsForTabs))
     g_browser_process->CreateDevToolsAutoOpener();
 
+  // Needs to be done before PostProfileInit, since the SODA Installer setup is
+  // called inside PostProfileInit and depends on it.
+  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
+    component_updater::RegisterComponentsForUpdate();
+  }
+
   // TODO(stevenjb): Move WIN and MACOSX specific code to appropriate Parts.
   // (requires supporting early exit).
   CallPostProfileInit(profile);
@@ -1699,37 +1723,20 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   PreBrowserStart();
 
-  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
-    component_updater::RegisterComponentsForUpdate();
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-    // Exclude Android: SODA is not supported.
-    // Exclude ChromeOS: SODA is independent of Component Updater.
-    speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
-                                               browser_process_->local_state());
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-
-    // Only read and update the persisted sets when First-Party Sets component
-    // will be installed.
-    if (base::FeatureList::IsEnabled(features::kFirstPartySets)) {
-      FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
-          user_data_dir_,
-          /*send_sets=*/
-          base::BindOnce(
-              [](base::OnceCallback<void(const std::string&)> callback,
-                 const std::string& sets) {
-                content::GetNetworkService()
-                    ->SetPersistedFirstPartySetsAndGetCurrentSets(
-                        sets, std::move(callback));
-              }));
-    }
+  // Only read and update the persisted sets when First-Party Sets component
+  // will be installed.
+  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate) &&
+      base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+        user_data_dir_,
+        /*send_sets=*/
+        base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
+                          const std::string& sets) {
+          content::GetNetworkService()
+              ->SetPersistedFirstPartySetsAndGetCurrentSets(
+                  sets, std::move(callback));
+        }));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
-    speech::SodaInstaller::GetInstance()->Init(profile->GetPrefs(),
-                                               browser_process_->local_state());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   variations::VariationsService* variations_service =
       browser_process_->variations_service();
