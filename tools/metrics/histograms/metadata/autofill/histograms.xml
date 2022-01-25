@@ -2675,7 +2675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
-    enum="BooleanShown" expires_after="2022-02-01">
+    enum="BooleanShown" expires_after="2022-12-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2686,7 +2686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Snackbar.{SnackbarType}.Shown" enum="BooleanShown"
-    expires_after="2022-02-01">
+    expires_after="2022-12-01">
   <owner>siashah@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
