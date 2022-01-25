@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from './assert.js';
+import {assertExists, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
@@ -77,7 +77,8 @@ function deactivate(index: number) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
-    element.dataset['tabindex'] = element.getAttribute('tabindex');
+    element.dataset['tabindex'] =
+        assertExists(element.getAttribute('tabindex'));
     element.setAttribute('tabindex', '-1');
   });
   const activeElement = document.activeElement;
