@@ -856,6 +856,8 @@ component("net") {
     "socket/datagram_server_socket.h",
     "socket/datagram_socket.h",
     "socket/diff_serv_code_point.h",
+    "socket/network_binding_client_socket_factory.cc",
+    "socket/network_binding_client_socket_factory.h",
     "socket/next_proto.cc",
     "socket/next_proto.h",
     "socket/server_socket.cc",
