@@ -83,7 +83,7 @@ class NotifyPushBufferCompleteTask : public chromecast::TaskRunner::Task {
 
 class FakeAudioDecoder : public CmaBackend::AudioDecoder {
  public:
-  enum PipelineStatus {
+  enum TestingPipelineStatus {
     PIPELINE_STATUS_OK,
     PIPELINE_STATUS_BUSY,
     PIPELINE_STATUS_ERROR,
@@ -139,7 +139,7 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
 
   const AudioConfig& config() const { return config_; }
   float volume() const { return volume_; }
-  void set_pipeline_status(PipelineStatus status) {
+  void set_pipeline_status(TestingPipelineStatus status) {
     if (status == PIPELINE_STATUS_OK && pending_push_) {
       pending_push_ = false;
       params_.task_runner->PostTask(new NotifyPushBufferCompleteTask(delegate_),
@@ -158,7 +158,7 @@ class FakeAudioDecoder : public CmaBackend::AudioDecoder {
   AudioConfig config_;
   float volume_;
 
-  PipelineStatus pipeline_status_;
+  TestingPipelineStatus pipeline_status_;
   bool pending_push_;
   int pushed_buffer_count_;
   scoped_refptr<DecoderBufferBase> last_buffer_;

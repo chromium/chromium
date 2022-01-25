@@ -76,7 +76,7 @@ interface RendererClient {
   // Executed if any error was encountered during decode or rendering. If
   // this error happens during an operation that has a completion callback,
   // OnError() will be called before firing the completion callback.
-  OnError(Status status);
+  OnError(PipelineStatus status);
 
   // Executed whenever DemuxerStream status returns kConfigChange. Initial
   // configs provided by OnMetadata.

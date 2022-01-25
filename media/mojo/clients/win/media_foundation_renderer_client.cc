@@ -199,13 +199,13 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(!init_cb_.is_null());
 
-  if (status != PipelineStatus::PIPELINE_OK) {
+  if (status != PIPELINE_OK) {
     std::move(init_cb_).Run(status);
     return;
   }
 
   if (!has_video_) {
-    std::move(init_cb_).Run(PipelineStatus::PIPELINE_OK);
+    std::move(init_cb_).Run(PIPELINE_OK);
     return;
   }
 

@@ -13,8 +13,12 @@
 
 namespace media {
 
+// Static declaration for dictionary keys that we expect to be used inside
+// different |MediaLogRecord|s. We declare them here so if they change, its
+// only in one spot.
 const char MediaLog::kEventKey[] = "event";
-const char MediaLog::kStatusText[] = "pipeline_error";
+const char MediaLog::kCodeKey[] = "code";
+const char MediaLog::kGroupKey[] = "group";
 
 // A count of all MediaLogs created in the current process. Used to generate
 // unique IDs.
@@ -52,13 +56,6 @@ void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
       CreateRecord(MediaLogRecord::Type::kMessage));
   record->params.SetStringPath(MediaLogMessageLevelToString(level),
                                std::move(message));
-  AddLogRecord(std::move(record));
-}
-
-void MediaLog::NotifyError(PipelineStatus status) {
-  std::unique_ptr<MediaLogRecord> record(
-      CreateRecord(MediaLogRecord::Type::kMediaStatus));
-  record->params.SetIntPath(MediaLog::kStatusText, status);
   AddLogRecord(std::move(record));
 }
 

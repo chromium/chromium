@@ -297,8 +297,7 @@ void CastStreamingDemuxer::OnStreamsInitializedOnMediaThread(
   DCHECK(initialized_cb_);
 
   if (!audio_stream_info && !video_stream_info) {
-    std::move(initialized_cb_)
-        .Run(media::PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN);
+    std::move(initialized_cb_).Run(media::DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
   }
 
@@ -312,7 +311,7 @@ void CastStreamingDemuxer::OnStreamsInitializedOnMediaThread(
   }
   was_initialization_successful_ = true;
 
-  std::move(initialized_cb_).Run(media::PipelineStatus::PIPELINE_OK);
+  std::move(initialized_cb_).Run(media::PIPELINE_OK);
 }
 
 std::vector<media::DemuxerStream*> CastStreamingDemuxer::GetAllStreams() {
@@ -366,7 +365,7 @@ void CastStreamingDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {}
 // Not supported.
 void CastStreamingDemuxer::Seek(base::TimeDelta time,
                                 media::PipelineStatusCallback status_cb) {
-  std::move(status_cb).Run(media::PipelineStatus::PIPELINE_OK);
+  std::move(status_cb).Run(media::PIPELINE_OK);
 }
 
 void CastStreamingDemuxer::Stop() {

@@ -35,42 +35,6 @@ enum class StatusCode : StatusCodeType {
   kH264ParsingError = 0x0801,
   kH264BufferTooSmall = 0x0802,
 
-  // Pipeline Errors: 0x09
-  // Deprecated: kPipelineErrorUrlNotFound = 0x0901,
-  kPipelineErrorNetwork = 0x0902,
-  kPipelineErrorDecode = 0x0903,
-  // Deprecated: kPipelineErrorDecrypt = 0x0904,
-  kPipelineErrorAbort = 0x0905,
-  kPipelineErrorInitializationFailed = 0x0906,
-  // Unused: 0x0907
-  kPipelineErrorCouldNotRender = 0x0908,
-  kPipelineErrorRead = 0x0909,
-  // Deprecated: kPipelineErrorOperationPending = 0x090a,
-  kPipelineErrorInvalidState = 0x090b,
-  // Demuxer related errors.
-  kPipelineErrorDemuxerErrorCouldNotOpen = 0x090c,
-  kPipelineErrorDemuxerErrorCouldNotParse = 0x090d,
-  kPipelineErrorDemuxerErrorNoSupportedStreams = 0x090e,
-  // Decoder related errors.
-  kPipelineErrorDecoderErrorNotSupported = 0x090f,
-  // ChunkDemuxer related errors.
-  kPipelineErrorChuckDemuxerErrorAppendFailed = 0x0910,
-  kPipelineErrorChunkDemuxerErrorEosStatusDecodeError = 0x0911,
-  kPipelineErrorChunkDemuxerErrorEosStatusNetworkError = 0x0912,
-  // Audio rendering errors.
-  kPipelineErrorAudioRendererError = 0x0913,
-  // Deprecated: kPipelineErrorAudioRendererErrorSpliceFailed = 0x0914,
-  kPipelineErrorExternalRendererFailed = 0x0915,
-  // Android only. Used as a signal to fallback MediaPlayerRenderer, and thus
-  // not exactly an 'error' per say.
-  kPipelineErrorDemuxerErrorDetectedHLS = 0x0916,
-  // Used when hardware context is reset (e.g. OS sleep/resume), where we should
-  // recreate the Renderer instead of fail the playback. See
-  // https://crbug.com/1208618
-  kPipelineErrorHardwareContextReset = 0x0917,
-  // The remote media component was disconnected unexpectedly, e.g. crash.
-  kPipelineErrorDisconnected = 0x0918,
-
   // Frame operation errors: 0x0A
   kUnsupportedFrameFormatError = 0x0A01,
 

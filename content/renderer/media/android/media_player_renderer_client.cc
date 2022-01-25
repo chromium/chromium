@@ -73,7 +73,7 @@ void MediaPlayerRendererClient::OnStreamTextureWrapperInitialized(
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   if (!success) {
     std::move(init_cb_).Run(
-        media::PipelineStatus::PIPELINE_ERROR_INITIALIZATION_FAILED);
+        media::PipelineStatus::Codes::PIPELINE_ERROR_INITIALIZATION_FAILED);
     return;
   }
 

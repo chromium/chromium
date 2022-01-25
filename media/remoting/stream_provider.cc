@@ -472,9 +472,8 @@ void StreamProvider::CancelPendingSeek(base::TimeDelta seek_time) {}
 
 void StreamProvider::Seek(base::TimeDelta time,
                           PipelineStatusCallback seek_cb) {
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(seek_cb), PipelineStatus::PIPELINE_OK));
+  media_task_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(seek_cb), PIPELINE_OK));
 }
 
 void StreamProvider::Stop() {}
@@ -629,7 +628,7 @@ void StreamProvider::CompleteInitialize() {
     return;
 
   // |init_done_callback_| should be called on |media_task_runner_|.
-  std::move(init_done_callback_).Run(PipelineStatus::PIPELINE_OK);
+  std::move(init_done_callback_).Run(PIPELINE_OK);
 }
 
 std::vector<DemuxerStream*> StreamProvider::GetAllStreams() {

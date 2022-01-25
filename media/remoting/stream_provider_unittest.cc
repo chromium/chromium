@@ -150,7 +150,7 @@ class StreamProviderTest : public testing::Test {
   }
 
   void OnStreamProviderInitialized(PipelineStatus status) {
-    EXPECT_EQ(PipelineStatus::PIPELINE_OK, status);
+    EXPECT_EQ(PIPELINE_OK, status);
     stream_provider_initialized_ = true;
     audio_stream_ =
         stream_provider_->GetFirstStream(DemuxerStream::Type::AUDIO);

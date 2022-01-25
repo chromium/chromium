@@ -75,7 +75,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   void OnBufferingStateChange(BufferingState state,
                               BufferingStateChangeReason reason) override;
   void OnEnded() override;
-  void OnError(const Status& status) override;
+  void OnError(const PipelineStatus& status) override;
   void OnAudioConfigChange(const AudioDecoderConfig& config) override;
   void OnVideoConfigChange(const VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;

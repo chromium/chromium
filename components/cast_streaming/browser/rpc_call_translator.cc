@@ -60,7 +60,7 @@ void RpcCallTranslator::OnBufferingStateChange(
   message_processor_.Run(CreateMessageForBufferingStateChange(state));
 }
 
-void RpcCallTranslator::OnError(const media::Status& status) {
+void RpcCallTranslator::OnError(const media::PipelineStatus& status) {
   message_processor_.Run(CreateMessageForError());
 }
 

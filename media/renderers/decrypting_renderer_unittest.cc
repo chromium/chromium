@@ -106,7 +106,7 @@ TEST_F(DecryptingRendererTest, ClearStreams_NoCdm) {
 
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
                                    renderer_init_cb_.Get());
@@ -123,7 +123,7 @@ TEST_F(DecryptingRendererTest, ClearStreams_AesDecryptor) {
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
   EXPECT_CALL(set_cdm_cb_, Run(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
 
   decrypting_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -140,7 +140,7 @@ TEST_F(DecryptingRendererTest, ClearStreams_OtherCdm) {
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
   EXPECT_CALL(*renderer_, OnSetCdm(_, _)).WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -169,7 +169,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreams_AesDecryptor) {
 
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -187,7 +187,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreams_OtherCdm) {
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
   EXPECT_CALL(*renderer_, OnSetCdm(_, _)).WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -205,7 +205,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreams_AesDecryptor_CdmSetBeforeInit) {
 
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
@@ -223,7 +223,7 @@ TEST_F(DecryptingRendererTest, EncryptedStreams_OtherCdm_CdmSetBeforeInit) {
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
   EXPECT_CALL(*renderer_, OnSetCdm(_, _)).WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->SetCdm(&cdm_context_, set_cdm_cb_.Get());
@@ -241,7 +241,7 @@ TEST_F(DecryptingRendererTest, EncryptedAndClearStream_OtherCdm) {
   EXPECT_CALL(*renderer_, OnInitialize(_, _, _))
       .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
   EXPECT_CALL(*renderer_, OnSetCdm(_, _)).WillOnce(RunOnceCallback<1>(true));
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_OK));
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   EXPECT_CALL(set_cdm_cb_, Run(true));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
@@ -257,7 +257,8 @@ TEST_F(DecryptingRendererTest, DecryptingMediaResourceInitFails) {
   AddStream(DemuxerStream::VIDEO, /* encrypted = */ true);
   UseAesDecryptor(true);
 
-  EXPECT_CALL(renderer_init_cb_, Run(PIPELINE_ERROR_INITIALIZATION_FAILED));
+  EXPECT_CALL(renderer_init_cb_,
+              Run(HasStatusCode(PIPELINE_ERROR_INITIALIZATION_FAILED)));
 
   decrypting_renderer_->Initialize(&media_resource_, &renderer_client_,
                                    renderer_init_cb_.Get());

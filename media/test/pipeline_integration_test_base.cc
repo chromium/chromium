@@ -231,7 +231,7 @@ PipelineStatus PipelineIntegrationTestBase::WaitUntilEndedOrError() {
 }
 
 void PipelineIntegrationTestBase::OnError(PipelineStatus status) {
-  DCHECK_NE(status, PIPELINE_OK);
+  DCHECK(status != PIPELINE_OK);
   pipeline_status_ = status;
   pipeline_->Stop();
   if (on_error_closure_)
@@ -406,7 +406,7 @@ void PipelineIntegrationTestBase::Stop() {
 }
 
 void PipelineIntegrationTestBase::FailTest(PipelineStatus status) {
-  DCHECK_NE(PIPELINE_OK, status);
+  DCHECK(status != PIPELINE_OK);
   OnError(status);
 }
 

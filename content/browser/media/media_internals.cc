@@ -403,19 +403,7 @@ static bool ConvertEventToUpdate(int render_process_id,
       break;
   }
 
-  // Convert PipelineStatus to human readable string
-  if (event.type == media::MediaLogRecord::Type::kMediaStatus) {
-    absl::optional<int> status = event.params.FindIntKey("pipeline_error");
-    if (!status || *status < static_cast<int>(media::PIPELINE_OK) ||
-        *status > static_cast<int>(media::PIPELINE_STATUS_MAX)) {
-      return false;
-    }
-    media::PipelineStatus error = static_cast<media::PipelineStatus>(*status);
-    dict.SetStringPath("params.pipeline_error",
-                       media::PipelineStatusToString(error));
-  } else {
-    dict.SetKey("params", std::move(cloned_params));
-  }
+  dict.SetKey("params", std::move(cloned_params));
 
   *update = SerializeUpdate("media.onMediaEvent", &dict);
   return true;

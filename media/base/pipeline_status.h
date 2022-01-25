@@ -22,7 +22,7 @@ namespace media {
 // Status states for pipeline.  All codes except PIPELINE_OK indicate errors.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
 // When adding a new one, also update enums.xml.
-enum PipelineStatus {
+enum PipelineStatusCodes : StatusCodeType {
   PIPELINE_OK = 0,
   // Deprecated: PIPELINE_ERROR_URL_NOT_FOUND = 1,
   PIPELINE_ERROR_NETWORK = 2,
@@ -70,16 +70,22 @@ enum PipelineStatus {
   PIPELINE_STATUS_MAX = PIPELINE_ERROR_DISCONNECTED,
 };
 
-MEDIA_EXPORT absl::optional<PipelineStatus> StatusCodeToPipelineStatus(
-    StatusCode status);
-MEDIA_EXPORT StatusCode PipelineStatusToStatusCode(PipelineStatus status);
+struct PipelineStatusTraits {
+  using Codes = PipelineStatusCodes;
+
+  static constexpr StatusGroupType Group() { return "PipelineStatus"; }
+  static constexpr Codes DefaultEnumValue() { return PIPELINE_OK; }
+};
+
+using PipelineStatus = TypedStatus<PipelineStatusTraits>;
 
 // Returns a string version of the status, unique to each PipelineStatus, and
 // not including any ':'. This makes it suitable for usage in
 // MediaError.message as the UA-specific-error-code.
-MEDIA_EXPORT std::string PipelineStatusToString(PipelineStatus status);
+MEDIA_EXPORT std::string PipelineStatusToString(const PipelineStatus& status);
 
-MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, PipelineStatus status);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out,
+                                      const PipelineStatus& status);
 
 // TODO(crbug.com/1007799): Delete PipelineStatusCB once all callbacks are
 //                          converted to PipelineStatusCallback.

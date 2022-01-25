@@ -907,7 +907,7 @@ void RendererImpl::RunEndedCallbackIfNeeded() {
 void RendererImpl::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK_NE(PIPELINE_OK, error) << "PIPELINE_OK isn't an error!";
+  DCHECK(error != PIPELINE_OK) << "PIPELINE_OK isn't an error!";
   TRACE_EVENT1("media", "RendererImpl::OnError", "error",
                PipelineStatusToString(error));
 

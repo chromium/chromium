@@ -338,8 +338,8 @@ TEST_F(ReceiverTest, InitializeBeforeRpcInitialize) {
 
   EXPECT_CALL(*mock_renderer_,
               OnInitialize(&mock_media_resource_, receiver_.get(), _))
-      .WillOnce(RunOnceCallback<2>(PipelineStatus::PIPELINE_OK));
-  EXPECT_CALL(*this, OnRendererInitialized(PipelineStatus::PIPELINE_OK))
+      .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
+  EXPECT_CALL(*this, OnRendererInitialized(HasStatusCode(PIPELINE_OK)))
       .Times(1);
   EXPECT_CALL(*mock_sender_, InitializeCallback(true)).Times(1);
 
@@ -356,8 +356,8 @@ TEST_F(ReceiverTest, InitializeAfterRpcInitialize) {
 
   EXPECT_CALL(*mock_renderer_,
               OnInitialize(&mock_media_resource_, receiver_.get(), _))
-      .WillOnce(RunOnceCallback<2>(PipelineStatus::PIPELINE_OK));
-  EXPECT_CALL(*this, OnRendererInitialized(PipelineStatus::PIPELINE_OK))
+      .WillOnce(RunOnceCallback<2>(PIPELINE_OK));
+  EXPECT_CALL(*this, OnRendererInitialized(HasStatusCode(PIPELINE_OK)))
       .Times(1);
   EXPECT_CALL(*mock_sender_, InitializeCallback(true)).Times(1);
 
@@ -427,7 +427,7 @@ TEST_F(ReceiverTest, RendererClientInterface) {
 
   // OnError
   EXPECT_CALL(*mock_sender_, OnFatalError()).Times(1);
-  receiver_->OnError(PipelineStatus::AUDIO_RENDERER_ERROR);
+  receiver_->OnError(AUDIO_RENDERER_ERROR);
   task_environment_.RunUntilIdle();
 
   // OnAudioConfigChange

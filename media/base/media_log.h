@@ -44,7 +44,8 @@ namespace media {
 class MEDIA_EXPORT MediaLog {
  public:
   static const char kEventKey[];
-  static const char kStatusText[];
+  static const char kCodeKey[];
+  static const char kGroupKey[];
 
 // Maximum limit for the total number of logs kept per renderer. At the time of
 // writing, 512 events of the kind: { "property": value } together consume ~88kb
@@ -92,16 +93,15 @@ class MEDIA_EXPORT MediaLog {
     AddLogRecord(std::move(record));
   }
 
-  // TODO(tmathmeyer) replace with Status when that's ready.
-  void NotifyError(PipelineStatus status);
-
   // Notify a non-ok Status. This method Should _not_ be given an OK status.
   template <typename T>
   void NotifyError(const TypedStatus<T>& status) {
     DCHECK(!status.is_ok());
-    std::string output_str;
-    base::JSONWriter::Write(MediaSerialize(status), &output_str);
-    AddMessage(MediaLogMessageLevel::kERROR, output_str);
+    std::unique_ptr<MediaLogRecord> record =
+        CreateRecord(MediaLogRecord::Type::kMediaStatus);
+    auto serialized = MediaSerialize(status);
+    record->params.MergeDictionary(&serialized);
+    AddLogRecord(std::move(record));
   }
 
   // Notify the media log that the player is destroyed. Some implementations

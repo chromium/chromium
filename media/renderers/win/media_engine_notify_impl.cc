@@ -69,24 +69,24 @@ PipelineStatus MediaEngineErrorToPipelineStatus(
   // during OS sleep/resume, or moving video to different graphics adapters.
   // This is not an error, so special case it here.
   if (hr == static_cast<HRESULT>(0x8004CD12))
-    return PipelineStatus::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+    return PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
 
   switch (media_engine_error) {
     case MF_MEDIA_ENGINE_ERR_NOERROR:
-      return PipelineStatus::PIPELINE_OK;
+      return PIPELINE_OK;
     case MF_MEDIA_ENGINE_ERR_ABORTED:
-      return PipelineStatus::PIPELINE_ERROR_ABORT;
+      return PIPELINE_ERROR_ABORT;
     case MF_MEDIA_ENGINE_ERR_NETWORK:
-      return PipelineStatus::PIPELINE_ERROR_NETWORK;
+      return PIPELINE_ERROR_NETWORK;
     case MF_MEDIA_ENGINE_ERR_DECODE:
       [[fallthrough]];
     case MF_MEDIA_ENGINE_ERR_ENCRYPTED:
-      return PipelineStatus::PIPELINE_ERROR_DECODE;
+      return PIPELINE_ERROR_DECODE;
     case MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED:
-      return PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN;
+      return DEMUXER_ERROR_COULD_NOT_OPEN;
     default:
       NOTREACHED();
-      return PipelineStatus::PIPELINE_ERROR_INVALID_STATE;
+      return PIPELINE_ERROR_INVALID_STATE;
   }
 }
 

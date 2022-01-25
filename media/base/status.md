@@ -155,6 +155,21 @@ int main() {
 ```
 
 
+## Testing
+There are some helper matchers defined in test_helpers.h that can help convert
+some of the trickier method expectations. For example, this:
+```
+EXPECT_CALL(object_, Foo(kExpectedCode));
+```
+becomes:
+```
+EXPECT_CALL(object_, Foo(HasStatusCode(kExpectedCode)));
+```
+The EXPECT_CALL macro won't test for overloaded operator== equality here, so
+|HasStatusCode| is a matcher macro that allows checking if the expected status
+has the matching error code.
+
+
 ## Additional setup for mojo
 
 If you want to send a specialization of TypedStatus over mojo,

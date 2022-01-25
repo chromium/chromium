@@ -252,7 +252,7 @@ class VideoRendererImplTest : public testing::Test {
   bool IsDecodePending() { return !!decode_cb_; }
 
   void WaitForError(PipelineStatus expected) {
-    SCOPED_TRACE(base::StringPrintf("WaitForError(%d)", expected));
+    SCOPED_TRACE(base::StringPrintf("WaitForError(%d)", expected.code()));
 
     WaitableMessageLoopEvent event;
     PipelineStatusCallback error_cb = event.GetPipelineStatusCB();
@@ -609,7 +609,7 @@ TEST_F(VideoRendererImplTest, DecodeError_Playing) {
 TEST_F(VideoRendererImplTest, DecodeError_DuringStartPlayingFrom) {
   Initialize();
   QueueFrames("error");
-  EXPECT_CALL(mock_cb_, OnError(PIPELINE_ERROR_DECODE));
+  EXPECT_CALL(mock_cb_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)));
   StartPlayingFrom(0);
   Destroy();
 }

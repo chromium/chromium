@@ -53,7 +53,7 @@ class RpcCallTranslator : public media::mojom::RendererClient,
       media::BufferingState state,
       media::BufferingStateChangeReason reason) override;
   void OnEnded() override;
-  void OnError(const media::Status& status) override;
+  void OnError(const media::PipelineStatus& status) override;
   void OnAudioConfigChange(const media::AudioDecoderConfig& config) override;
   void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
   void OnVideoNaturalSizeChange(const gfx::Size& size) override;

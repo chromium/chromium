@@ -128,7 +128,7 @@ class MojoRendererTest : public ::testing::Test {
 
   void InitializeAndExpect(PipelineStatus status) {
     DVLOG(1) << __func__ << ": " << status;
-    EXPECT_CALL(*this, OnInitialized(status));
+    EXPECT_CALL(*this, OnInitialized(SameStatusCode(status)));
     mojo_renderer_->Initialize(&demuxer_, &renderer_client_,
                                base::BindOnce(&MojoRendererTest::OnInitialized,
                                               base::Unretained(this)));
@@ -263,7 +263,9 @@ TEST_F(MojoRendererTest, Flush_ConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(PIPELINE_ERROR_DISCONNECTED)))
+      .Times(1);
   EXPECT_CALL(*mock_renderer_, OnFlush(_))
       .WillOnce(InvokeWithoutArgs(this, &MojoRendererTest::ConnectionError));
   Flush();
@@ -273,7 +275,9 @@ TEST_F(MojoRendererTest, Flush_AfterConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(PIPELINE_ERROR_DISCONNECTED)))
+      .Times(1);
   ConnectionError();
 
   Flush();
@@ -340,7 +344,9 @@ TEST_F(MojoRendererTest, SetCdm_BeforeInitialize) {
 TEST_F(MojoRendererTest, SetCdm_AfterInitializeAndConnectionError) {
   CreateCdm();
   Initialize();
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DISCONNECTED)).Times(1);
+  EXPECT_CALL(renderer_client_,
+              OnError(HasStatusCode(PIPELINE_ERROR_DISCONNECTED)))
+      .Times(1);
   ConnectionError();
   SetCdmAndExpect(false);
 }
@@ -440,7 +446,8 @@ TEST_F(MojoRendererTest, Destroy_PendingInitialize) {
   CreateAudioStream();
   EXPECT_CALL(*mock_renderer_, OnInitialize(_, _, _))
       .WillRepeatedly(RunOnceCallback<2>(PIPELINE_ERROR_ABORT));
-  EXPECT_CALL(*this, OnInitialized(PIPELINE_ERROR_INITIALIZATION_FAILED));
+  EXPECT_CALL(*this, OnInitialized(
+                         HasStatusCode(PIPELINE_ERROR_INITIALIZATION_FAILED)));
   mojo_renderer_->Initialize(
       &demuxer_, &renderer_client_,
       base::BindOnce(&MojoRendererTest::OnInitialized, base::Unretained(this)));
@@ -473,7 +480,8 @@ TEST_F(MojoRendererTest, Destroy_PendingSetCdm) {
 TEST_F(MojoRendererTest, ErrorDuringPlayback) {
   Initialize();
 
-  EXPECT_CALL(renderer_client_, OnError(PIPELINE_ERROR_DECODE)).Times(1);
+  EXPECT_CALL(renderer_client_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)))
+      .Times(1);
 
   Play();
   remote_renderer_client_->OnError(PIPELINE_ERROR_DECODE);

@@ -902,7 +902,7 @@ void PipelineImpl::RendererWrapper::OnVideoConfigChange(
 
 void PipelineImpl::RendererWrapper::OnPipelineError(PipelineStatus error) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK_NE(PIPELINE_OK, error) << "PIPELINE_OK isn't an error!";
+  DCHECK(!error.is_ok()) << "PIPELINE_OK isn't an error!";
 
   // Preserve existing abnormal status.
   if (status_ != PIPELINE_OK)
@@ -966,7 +966,7 @@ void PipelineImpl::RendererWrapper::CompleteSeek(base::TimeDelta seek_time,
   DCHECK(state_ == kStarting || state_ == kSeeking || state_ == kResuming);
 
   if (state_ == kStarting) {
-    UMA_HISTOGRAM_ENUMERATION("Media.PipelineStatus.Start", status,
+    UMA_HISTOGRAM_ENUMERATION("Media.PipelineStatus.Start", status.code(),
                               PIPELINE_STATUS_MAX + 1);
   }
 
@@ -1540,7 +1540,7 @@ void PipelineImpl::AsyncCreateRenderer(
 void PipelineImpl::OnError(PipelineStatus error) {
   DVLOG(2) << __func__;
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_NE(PIPELINE_OK, error) << "PIPELINE_OK isn't an error!";
+  DCHECK(!error.is_ok()) << "PIPELINE_OK isn't an error!";
   DCHECK(IsRunning());
 
   // If the error happens during starting/seeking/suspending/resuming,

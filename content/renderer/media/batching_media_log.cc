@@ -90,7 +90,7 @@ void BatchingMediaLog::AddLogRecordLocked(
   {
     base::AutoLock auto_lock(lock_);
     switch (event->type) {
-      // Hold onto the most recent PIPELINE_ERROR and the first, if any,
+      // Hold onto the most recent failed status and the first, if any,
       // MEDIA_LOG_ERROR_ENTRY for use in GetErrorMessage().
       case media::MediaLogRecord::Type::kMediaStatus:
         last_pipeline_error_ = *event;
@@ -175,11 +175,17 @@ std::string BatchingMediaLog::MediaEventToMessageString(
     const media::MediaLogRecord& event) {
   switch (event.type) {
     case media::MediaLogRecord::Type::kMediaStatus: {
-      int error_code =
-          event.params.FindIntKey(media::MediaLog::kStatusText).value_or(0);
-      DCHECK_NE(error_code, 0);
-      return PipelineStatusToString(
-          static_cast<media::PipelineStatus>(error_code));
+      const std::string* group =
+          event.params.FindStringKey(MediaLog::kGroupKey);
+      auto code = event.params.FindIntKey(MediaLog::kCodeKey).value_or(0);
+      DCHECK_NE(code, 0);
+      if (group && *group == media::PipelineStatus::Traits::Group()) {
+        return PipelineStatusToString(
+            static_cast<media::PipelineStatusCodes>(code));
+      }
+      std::stringstream formatted;
+      formatted << *group << ":" << code;
+      return formatted.str();
     }
     case media::MediaLogRecord::Type::kMessage: {
       std::string result;

@@ -1494,7 +1494,8 @@ TEST_F(ChunkDemuxerTest, ErrorWhileParsingClusterAfterInit) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
 
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   AppendGarbage();
 }
 
@@ -1612,7 +1613,8 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButAboveClusterTimecode) {
 
   EXPECT_MEDIA_LOG(WebMOutOfOrderTimecode());
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   ASSERT_FALSE(AppendCluster(cb.Finish()));
 
   // Verify that AppendData() ignores data after the error.
@@ -1664,7 +1666,8 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButBeforeClusterTimecode) {
 
   EXPECT_MEDIA_LOG(WebMOutOfOrderTimecode());
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   ASSERT_FALSE(AppendCluster(cb.Finish()));
 
   // Verify that AppendData() ignores data after the error.
@@ -1691,7 +1694,8 @@ TEST_F(ChunkDemuxerTest, PerStreamMonotonicallyIncreasingTimestamps) {
 
   EXPECT_MEDIA_LOG(WebMOutOfOrderTimecode());
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   ASSERT_FALSE(AppendCluster(cb.Finish()));
 }
 
@@ -1750,8 +1754,8 @@ TEST_F(ChunkDemuxerTest, DecodeErrorEndOfStream) {
   ASSERT_TRUE(AppendCluster(kDefaultFirstCluster()));
   CheckExpectedRanges(kDefaultFirstClusterRange);
 
-  EXPECT_CALL(host_,
-              OnDemuxerError(CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR));
+  EXPECT_CALL(host_, OnDemuxerError(HasStatusCode(
+                         CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR)));
   MarkEndOfStream(CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR);
   CheckExpectedRanges(kDefaultFirstClusterRange);
 }
@@ -1762,8 +1766,8 @@ TEST_F(ChunkDemuxerTest, NetworkErrorEndOfStream) {
   ASSERT_TRUE(AppendCluster(kDefaultFirstCluster()));
   CheckExpectedRanges(kDefaultFirstClusterRange);
 
-  EXPECT_CALL(host_,
-              OnDemuxerError(CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR));
+  EXPECT_CALL(host_, OnDemuxerError(HasStatusCode(
+                         CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR)));
   MarkEndOfStream(CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR);
 }
 
@@ -3967,7 +3971,8 @@ TEST_F(ChunkDemuxerTest, AppendWindow_AudioConfigUpdateRemovesPreroll) {
 TEST_F(ChunkDemuxerTest, StartWaitingForSeekAfterParseError) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   AppendGarbage();
   base::TimeDelta seek_time = base::Seconds(50);
   demuxer_->StartWaitingForSeek(seek_time);
@@ -4594,7 +4599,8 @@ TEST_F(ChunkDemuxerTest, UnmarkEOSRetainsParseErrorState_AfterInit) {
   // Trigger a (fatal) parse error after successfully reaching source init.
   InitDemuxer(HAS_AUDIO | HAS_VIDEO);
   EXPECT_MEDIA_LOG(StreamParsingFailed());
-  EXPECT_CALL(host_, OnDemuxerError(CHUNK_DEMUXER_ERROR_APPEND_FAILED));
+  EXPECT_CALL(host_,
+              OnDemuxerError(HasStatusCode(CHUNK_DEMUXER_ERROR_APPEND_FAILED)));
   AppendGarbage();
 
   // Simulate SourceBuffer Append Error algorithm.

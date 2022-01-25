@@ -317,21 +317,21 @@ void End2EndTestRenderer::Initialize(MediaResource* media_resource,
 }
 
 void End2EndTestRenderer::InitializeReceiverRenderer(PipelineStatus status) {
-  DCHECK_EQ(PIPELINE_OK, status);
+  DCHECK(status == PIPELINE_OK);
   receiver_->Initialize(
       stream_provider_.get(), nullptr,
-      base::BindOnce(&End2EndTestRenderer::OnReceiverInitalized,
+      base::BindOnce(&End2EndTestRenderer::OnReceiverInitialized,
                      weak_factory_.GetWeakPtr()));
 }
 
 void End2EndTestRenderer::OnCourierRendererInitialized(PipelineStatus status) {
-  DCHECK_EQ(PIPELINE_OK, status);
+  DCHECK(status == PIPELINE_OK);
   courier_renderer_initialized_ = true;
   CompleteInitialize();
 }
 
-void End2EndTestRenderer::OnReceiverInitalized(PipelineStatus status) {
-  DCHECK_EQ(PIPELINE_OK, status);
+void End2EndTestRenderer::OnReceiverInitialized(PipelineStatus status) {
+  DCHECK(status == PIPELINE_OK);
   receiver_initialized_ = true;
   CompleteInitialize();
 }

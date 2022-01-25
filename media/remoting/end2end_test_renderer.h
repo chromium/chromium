@@ -67,7 +67,7 @@ class End2EndTestRenderer final : public Renderer {
 
   void InitializeReceiverRenderer(PipelineStatus status);
   void OnCourierRendererInitialized(PipelineStatus status);
-  void OnReceiverInitalized(PipelineStatus status);
+  void OnReceiverInitialized(PipelineStatus status);
   void CompleteInitialize();
 
   // Callback function when RPC message is received.

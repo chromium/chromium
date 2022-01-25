@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "media/base/mock_filters.h"
+#include "media/base/test_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,8 +54,7 @@ TEST_F(PlaybackCommandForwardingRendererTest,
       .WillOnce([this](media::MediaResource* media_resource,
                        media::RendererClient* client,
                        media::PipelineStatusCallback& init_cb) {
-        auto result = base::BindOnce(std::move(init_cb),
-                                     media::PipelineStatus::PIPELINE_OK);
+        auto result = base::BindOnce(std::move(init_cb), media::PIPELINE_OK);
         task_environment_.GetMainThreadTaskRunner()->PostTask(
             FROM_HERE, std::move(result));
       });
@@ -66,8 +66,8 @@ TEST_F(PlaybackCommandForwardingRendererTest,
   renderer_->Initialize(&mock_media_resource, &mock_renderer_client,
                         std::move(init_cb));
 
-  EXPECT_CALL(*this,
-              OnInitializationComplete(media::PipelineStatus::PIPELINE_OK));
+  EXPECT_CALL(*this, OnInitializationComplete(
+                         media::HasStatusCode(media::PIPELINE_OK)));
   EXPECT_CALL(*mock_renderer_, SetPlaybackRate(1.0));
   EXPECT_CALL(*mock_renderer_, StartPlayingFrom(testing::_));
   task_environment_.RunUntilIdle();

@@ -377,7 +377,7 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
     DLOG(ERROR) << "Failed in checking internal state.";
     ReportErrorReason(ErrorReason::kCdmProxyReceivedInInvalidState);
-    renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_INVALID_STATE);
+    renderer_client_->OnError(PIPELINE_ERROR_INVALID_STATE);
     return;
   }
 
@@ -390,7 +390,7 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to set source on media engine: " << PrintHr(hr);
     ReportErrorReason(ErrorReason::kFailedToSetSourceOnMediaEngine);
-    renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
+    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
 }
@@ -425,7 +425,7 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to SetCurrentTime: " << PrintHr(hr);
     ReportErrorReason(ErrorReason::kFailedToSetCurrentTime);
-    renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
+    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
 
@@ -433,7 +433,7 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to start playback: " << PrintHr(hr);
     ReportErrorReason(ErrorReason::kFailedToPlay);
-    renderer_client_->OnError(PipelineStatus::PIPELINE_ERROR_COULD_NOT_RENDER);
+    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
     return;
   }
 }

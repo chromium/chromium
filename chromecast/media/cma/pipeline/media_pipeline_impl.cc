@@ -179,7 +179,7 @@ void MediaPipelineImpl::SetCdm(CastCdmContext* cdm_context) {
   ::media::PipelineStatus status =
       audio_pipeline_->Initialize(config, std::move(frame_provider));
 
-  if (status == ::media::PipelineStatus::PIPELINE_OK) {
+  if (status.is_ok()) {
     // TODO(b/67112414): Do something better than this.
     MediaPipelineObserver::NotifyAudioPipelineInitialized(this, config);
   }
@@ -573,10 +573,10 @@ void MediaPipelineImpl::UpdateMediaTime() {
 
 void MediaPipelineImpl::OnError(::media::PipelineStatus error) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_NE(error, ::media::PIPELINE_OK) << "PIPELINE_OK is not an error!";
+  DCHECK(error != ::media::PIPELINE_OK) << "PIPELINE_OK is not an error!";
 
   metrics::CastMetricsHelper::GetInstance()->RecordApplicationEventWithValue(
-      "Cast.Platform.Error", error);
+      "Cast.Platform.Error", error.code());
 
   if (!client_.error_cb.is_null())
     std::move(client_.error_cb).Run(error);

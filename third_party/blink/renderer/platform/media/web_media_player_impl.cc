@@ -1859,7 +1859,7 @@ void WebMediaPlayerImpl::OnMemoryPressure(
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   DVLOG(1) << __func__ << ": status=" << status;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK_NE(status, media::PIPELINE_OK);
+  DCHECK(status != media::PIPELINE_OK);
 
   if (suppress_destruction_errors_)
     return;
@@ -1867,9 +1867,8 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
 #if BUILDFLAG(IS_ANDROID)
   // `mb_data_source_` may be nullptr if someone passes in a m3u8 as a data://
   // URL, since MediaPlayer doesn't support data:// URLs, fail playback now.
-  const bool found_hls =
-      base::FeatureList::IsEnabled(media::kHlsPlayer) &&
-      status == media::PipelineStatus::DEMUXER_ERROR_DETECTED_HLS;
+  const bool found_hls = base::FeatureList::IsEnabled(media::kHlsPlayer) &&
+                         status == media::DEMUXER_ERROR_DETECTED_HLS;
   if (found_hls && mb_data_source_) {
     demuxer_found_hls_ = true;
 
@@ -1944,7 +1943,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
   // Hardware context reset is not an error. Restart to recover.
   // TODO(crbug.com/1208618): Find a way to break the potential infinite loop of
   // restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
-  if (status == media::PipelineStatus::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
+  if (status == media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
     ScheduleRestart();
     return;
   }
@@ -1964,7 +1963,7 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     // be considered a format error.
     SetNetworkState(WebMediaPlayer::kNetworkStateFormatError);
   } else {
-    SetNetworkState(PipelineErrorToNetworkState(status));
+    SetNetworkState(PipelineErrorToNetworkState(status.code()));
   }
 
   // PipelineController::Stop() is idempotent.
@@ -2066,7 +2065,7 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
   // reaching HAVE_METADATA.
   if (!HasVideo() && !HasAudio()) {
     DVLOG(1) << __func__ << ": no audio and no video -> error";
-    OnError(media::PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN);
+    OnError(media::DEMUXER_ERROR_COULD_NOT_OPEN);
     return;  // Do not transition to HAVE_METADATA.
   }
 
@@ -2920,7 +2919,7 @@ void WebMediaPlayerImpl::StartPipeline() {
         media_task_runner_, data_source_.get(), encrypted_media_init_data_cb,
         media_tracks_updated_cb, media_log_.get(), IsLocalFile(loaded_url_)));
 #else
-    OnError(media::PipelineStatus::DEMUXER_ERROR_COULD_NOT_OPEN);
+    OnError(media::DEMUXER_ERROR_COULD_NOT_OPEN);
     return;
 #endif
   } else {

@@ -248,9 +248,9 @@ void MediaMetricsProvider::Initialize(
   media_stream_type_ = media_stream_type;
 }
 
-void MediaMetricsProvider::OnError(PipelineStatus status) {
+void MediaMetricsProvider::OnError(const PipelineStatus& status) {
   DCHECK(initialized_);
-  uma_info_.last_pipeline_status = status;
+  uma_info_.last_pipeline_status = status.code();
 }
 
 void MediaMetricsProvider::SetIsEME() {

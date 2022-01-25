@@ -91,7 +91,7 @@ WebTimeRanges ConvertToWebTimeRanges(
 
 WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
     media::PipelineStatus error) {
-  switch (error) {
+  switch (error.code()) {
     case media::PIPELINE_ERROR_NETWORK:
     case media::PIPELINE_ERROR_READ:
     case media::CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR:

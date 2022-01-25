@@ -123,8 +123,8 @@ void PlaybackEventsRecorder::OnBufferingComplete() {
   last_buffering_end_time_ = now;
 }
 
-void PlaybackEventsRecorder::OnError(PipelineStatus status) {
-  RecordEventWithValue("Error", status);
+void PlaybackEventsRecorder::OnError(const PipelineStatus& status) {
+  RecordEventWithValue("Error", status.code());
 }
 
 void PlaybackEventsRecorder::OnNaturalSizeChanged(const gfx::Size& size) {

@@ -285,7 +285,8 @@ class AudioRendererImplTest : public ::testing::Test,
   }
 
   void InitializeWithStatus(PipelineStatus expected) {
-    SCOPED_TRACE(base::StringPrintf("InitializeWithStatus(%d)", expected));
+    SCOPED_TRACE(
+        base::StringPrintf("InitializeWithStatus(%d)", expected.code()));
 
     WaitableMessageLoopEvent event;
     InitializeRenderer(&demuxer_stream_, event.GetPipelineStatusCB());
@@ -339,7 +340,7 @@ class AudioRendererImplTest : public ::testing::Test,
                PipelineStatus expected) {
     SCOPED_TRACE(base::StringPrintf("Preroll(%" PRId64 ", %d)",
                                     first_timestamp.InMilliseconds(),
-                                    expected));
+                                    expected.code()));
     next_timestamp_->SetBaseTimestamp(first_timestamp);
 
     // Fill entire buffer to complete prerolling.
@@ -1196,7 +1197,7 @@ TEST_F(AudioRendererImplTest, OnRenderErrorCausesDecodeError) {
   Preroll();
   StartTicking();
 
-  EXPECT_CALL(*this, OnError(AUDIO_RENDERER_ERROR));
+  EXPECT_CALL(*this, OnError(HasStatusCode(AUDIO_RENDERER_ERROR)));
   sink_->OnRenderError();
   base::RunLoop().RunUntilIdle();
 }
@@ -1740,7 +1741,7 @@ TEST_F(AudioRendererImplTest, DecodeAudioReadyPreemptsFlush) {
   StartTicking();
   EXPECT_TRUE(ConsumeBufferedDataUntilNotFull());
   WaitForPendingRead();
-  EXPECT_CALL(*this, OnError(PIPELINE_ERROR_DECODE));
+  EXPECT_CALL(*this, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)));
   StopTicking();
   EXPECT_TRUE(IsDecodePending());
 
