@@ -2822,11 +2822,12 @@ ScrollbarTheme& PaintLayerScrollableArea::GetPageScrollbarTheme() const {
 void PaintLayerScrollableArea::DidAddScrollbar(
     Scrollbar& scrollbar,
     ScrollbarOrientation orientation) {
-  // Z-order of recordered overflow controls is updated along with the z-order
-  // lists.
-  if (HasOverlayOverflowControls())
+  if (HasOverlayOverflowControls() ||
+      layer_->NeedsReorderOverlayOverflowControls()) {
+    // Z-order of existing or new recordered overflow controls is updated along
+    // with the z-order lists.
     layer_->DirtyStackingContextZOrderLists();
-
+  }
   ScrollableArea::DidAddScrollbar(scrollbar, orientation);
 }
 
