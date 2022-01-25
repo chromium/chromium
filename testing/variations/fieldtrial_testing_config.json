@@ -1637,26 +1637,6 @@
             ]
         }
     ],
-    "ChromeOSCarolineRegularMemoryPolicy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "RegularMemoryPolicy",
-                    "params": {
-                        "CrOSExtraFreeMb": "0",
-                        "CrOSRamVsSwapWeight": "4"
-                    },
-                    "enable_features": [
-                        "CrOSTuneExtraFree",
-                        "CrOSTuneRamVsSwapWeight"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSHeuristicPalm": [
         {
             "platforms": [
