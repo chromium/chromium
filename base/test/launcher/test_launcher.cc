@@ -1545,7 +1545,7 @@ bool TestLauncher::Init(CommandLine* command_line) {
 
   if (!results_tracker_.Init(*command_line)) {
     LOG(ERROR) << "Failed to initialize test results tracker.";
-    return 1;
+    return true;
   }
 
 #if defined(NDEBUG)

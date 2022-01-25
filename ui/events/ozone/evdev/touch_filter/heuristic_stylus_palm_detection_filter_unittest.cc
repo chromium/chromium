@@ -58,8 +58,8 @@ TEST_F(HeuristicStylusPalmDetectionFilterDeathTest, TestDCheck) {
 
 TEST_F(HeuristicStylusPalmDetectionFilterTest, TestSetsToZero) {
   std::bitset<kNumTouchEvdevSlots> suppress, hold;
-  suppress.set(kNumTouchEvdevSlots - 1, 1);
-  hold.set(0, 1);
+  suppress.set(kNumTouchEvdevSlots - 1, true);
+  hold.set(0, true);
   palm_detection_filter_->Filter(touches_, test_start_time_, &hold, &suppress);
   EXPECT_TRUE(hold.none());
   EXPECT_TRUE(suppress.none());

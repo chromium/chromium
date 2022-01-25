@@ -51,7 +51,7 @@ class SendToFDPipe : public PacketPipe {
   explicit SendToFDPipe(int fd) : fd_(fd) {
   }
   void Send(std::unique_ptr<Packet> packet) final {
-    while (1) {
+    while (true) {
       int written = write(
           fd_,
           reinterpret_cast<char*>(&packet->front()),

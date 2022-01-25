@@ -64,7 +64,7 @@ PolicyData BuildPolicies() {
   {
     auto policy = OfflinePageClientPolicy::CreateTemporary(
         kSuggestedArticlesNamespace, base::Days(30));
-    policy.is_supported_by_download = 1;
+    policy.is_supported_by_download = true;
     policy.is_suggested = true;
     all_policies.push_back(policy);
   }

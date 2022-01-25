@@ -436,7 +436,7 @@ ALWAYS_INLINE bool EqualWithUTF8Internal(const CharType* a,
 
     if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(b),
                      utf8_sequence_length))
-      return 0;
+      return false;
 
     UChar32 character = ReadUTF8Sequence(b, utf8_sequence_length);
     DCHECK(!IsASCII(character));

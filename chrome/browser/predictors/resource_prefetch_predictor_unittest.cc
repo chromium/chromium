@@ -898,7 +898,7 @@ TEST_P(ResourcePrefetchPredictorPreconnectToRedirectTargetTest,
       enable_preconnect_to_redirect_target_experiment,
       predictor_->PredictPreconnectOrigins(main_frame_url, prediction.get()));
   auto expected_prediction_1 = CreatePreconnectPrediction(
-      "google.com", 0,
+      "google.com", false,
       {{url::Origin::Create(GURL("https://www.google.com/")), 1,
         www_google_network_isolation_key}});
   if (enable_preconnect_to_redirect_target_experiment) {
@@ -1000,7 +1000,7 @@ TEST_F(ResourcePrefetchPredictorTest,
       url::Origin::Create(GURL("https://www.google-redirected-to.com")));
 
   const auto expected_prediction = CreatePreconnectPrediction(
-      "google.com", 0,
+      "google.com", false,
       {{url::Origin::Create(GURL("https://www.google-redirected-to.com/")), 1,
         www_google_redirected_to_network_isolation_key}});
   EXPECT_EQ(expected_prediction, *prediction);

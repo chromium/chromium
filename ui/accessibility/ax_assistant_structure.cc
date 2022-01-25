@@ -245,10 +245,10 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   result->text_size = -1.0;
   result->bgcolor = 0;
   result->color = 0;
-  result->bold = 0;
-  result->italic = 0;
-  result->line_through = 0;
-  result->underline = 0;
+  result->bold = false;
+  result->italic = false;
+  result->line_through = false;
+  result->underline = false;
 
   if (node->HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
     result->text_size =

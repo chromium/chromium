@@ -66,7 +66,7 @@ int32_t WebRtcAudioDeviceNotImpl::InitSpeaker() {
 }
 
 bool WebRtcAudioDeviceNotImpl::SpeakerIsInitialized() const {
-  return 0;
+  return false;
 }
 
 int32_t WebRtcAudioDeviceNotImpl::InitMicrophone() {
@@ -74,7 +74,7 @@ int32_t WebRtcAudioDeviceNotImpl::InitMicrophone() {
 }
 
 bool WebRtcAudioDeviceNotImpl::MicrophoneIsInitialized() const {
-  return 0;
+  return false;
 }
 
 int32_t WebRtcAudioDeviceNotImpl::SpeakerVolumeIsAvailable(bool* available) {

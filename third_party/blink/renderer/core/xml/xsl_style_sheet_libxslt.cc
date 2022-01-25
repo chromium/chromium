@@ -134,7 +134,7 @@ bool XSLStyleSheet::ParseString(const String& source) {
 
   xmlParserCtxtPtr ctxt = xmlCreateMemoryParserCtxt(input.Data(), input.size());
   if (!ctxt)
-    return 0;
+    return false;
 
   if (parent_style_sheet_) {
     // The XSL transform may leave the newly-transformed document

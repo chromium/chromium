@@ -1823,7 +1823,7 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
   sparse_ranges_.clear();
 
   int64_t range_header_offset = sizeof(header) + key_.size();
-  while (1) {
+  while (true) {
     SimpleFileSparseRangeHeader range_header;
     int range_header_read_result = sparse_file->Read(
         range_header_offset, reinterpret_cast<char*>(&range_header),

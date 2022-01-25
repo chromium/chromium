@@ -7047,7 +7047,7 @@ void GLES2DecoderImpl::DoGenerateMipmap(GLenum target) {
     }
   }
 
-  bool enable_srgb = 0;
+  bool enable_srgb = false;
   if (target == GL_TEXTURE_2D) {
     tex->GetLevelType(target, tex->base_level(), &type, &internal_format);
     enable_srgb = GLES2Util::GetColorEncodingFromInternalFormat(

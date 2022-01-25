@@ -95,7 +95,7 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
                                           const std::string& contents_class,
                                           const std::string& description_class,
                                           AutocompleteMatch::Type type) {
-  AutocompleteMatch match(nullptr, 0, 0, type);
+  AutocompleteMatch match(nullptr, 0, false, type);
   match.destination_url = GURL(url);
   match.contents = u"test";
   match.contents_class =

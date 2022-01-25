@@ -443,7 +443,7 @@ TEST_F(CacheStorageTest, BasicArguments) {
   test_cache()->SetExpectedCacheQueryOptions(&expected_query_options);
 
   CacheQueryOptions* options = CacheQueryOptions::Create();
-  options->setIgnoreVary(1);
+  options->setIgnoreVary(true);
 
   Request* request = NewRequestFromUrl(url);
   DCHECK(request);

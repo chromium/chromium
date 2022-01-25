@@ -1126,7 +1126,7 @@ TEST_F(HistoryBackendDBTest, DownloadNukeRecordsMissingURLs) {
   download.interrupt_reason = kTestDownloadInterruptReasonNone;
   download.id = 1;
   download.guid = "05AF6C8E-E4E0-45D7-B5CE-BC99F7019918";
-  download.opened = 0;
+  download.opened = false;
   download.last_access_time = now;
   download.transient = false;
   download.by_ext_id = "by_ext_id";

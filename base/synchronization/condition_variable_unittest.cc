@@ -714,7 +714,7 @@ void WorkQueue::ThreadMain() {
   }
 
   Lock private_lock;  // Used to waste time on "our work".
-  while (1) {  // This is the main consumer loop.
+  while (true) {      // This is the main consumer loop.
     TimeDelta work_time;
     bool could_use_help;
     {

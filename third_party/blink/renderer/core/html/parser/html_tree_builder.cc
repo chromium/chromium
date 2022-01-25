@@ -443,7 +443,7 @@ void HTMLTreeBuilder::ProcessCloseWhenNestedTag(AtomicHTMLToken* token) {
   frameset_ok_ = false;
   HTMLElementStack::ElementRecord* node_record =
       tree_.OpenElements()->TopRecord();
-  while (1) {
+  while (true) {
     HTMLStackItem* item = node_record->StackItem();
     if (shouldClose(item)) {
       DCHECK(item->IsElementNode());
@@ -1539,7 +1539,7 @@ bool HTMLTreeBuilder::ProcessBodyEndTagForInBody(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessAnyOtherEndTagForInBody(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kEndTag);
   HTMLElementStack::ElementRecord* record = tree_.OpenElements()->TopRecord();
-  while (1) {
+  while (true) {
     HTMLStackItem* item = record->StackItem();
     if (item->MatchesHTMLTag(token->GetName())) {
       tree_.GenerateImpliedEndTagsWithExclusion(token->GetName());
@@ -1681,7 +1681,7 @@ void HTMLTreeBuilder::ResetInsertionModeAppropriately() {
   bool last = false;
   HTMLElementStack::ElementRecord* node_record =
       tree_.OpenElements()->TopRecord();
-  while (1) {
+  while (true) {
     HTMLStackItem* item = node_record->StackItem();
     if (item->GetNode() == tree_.OpenElements()->RootNode()) {
       last = true;
@@ -2935,7 +2935,7 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
             tree_.OpenElements()->TopRecord();
         if (!node_record->StackItem()->HasLocalName(token->GetName()))
           ParseError(token);
-        while (1) {
+        while (true) {
           if (node_record->StackItem()->HasLocalName(token->GetName())) {
             tree_.OpenElements()->PopUntilPopped(node_record->GetElement());
             return;

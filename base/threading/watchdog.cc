@@ -118,7 +118,7 @@ void Watchdog::ThreadDelegate::ThreadMain() {
   SetThreadName();
   TimeDelta remaining_duration;
   StaticData* static_data = GetStaticData();
-  while (1) {
+  while (true) {
     AutoLock lock(watchdog_->lock_);
     while (DISARMED == watchdog_->state_)
       watchdog_->condition_variable_.Wait();

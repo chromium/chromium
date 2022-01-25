@@ -333,7 +333,7 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
       vm_page_size_(SysInfo::VMAllocationGranularity()),
 #endif
       readonly_(readonly),
-      corrupt_(0),
+      corrupt_(false),
       allocs_histogram_(nullptr),
       used_histogram_(nullptr),
       errors_histogram_(nullptr) {

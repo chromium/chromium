@@ -185,13 +185,13 @@ TEST_F(DesktopNotificationHandlerTest, CloseHandler) {
       .WillOnce(::testing::Return());
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
-                  kDesktopNotificationId, /*by_user=*/0, base::DoNothing());
+                  kDesktopNotificationId, /*by_user=*/false, base::DoNothing());
 
   EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId))
       .WillOnce(::testing::Return());
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
-                  kDesktopNotificationId, /*by_user=*/1, base::DoNothing());
+                  kDesktopNotificationId, /*by_user=*/true, base::DoNothing());
 }
 
 TEST_F(DesktopNotificationHandlerTest, ClickHandler) {

@@ -65,7 +65,7 @@ class MockTranslateRanker : public TranslateRanker {
   bool is_query_enabled_ = false;
   bool is_enforcement_enabled_ = false;
   bool is_decision_override_enabled_ = false;
-  bool model_version_ = 0;
+  bool model_version_ = false;
   bool should_offer_translation_ = true;
 };
 

@@ -125,7 +125,7 @@ void DeleteSelectionCommand::InitializeStartEnd(Position& start,
   if (!options_.IsExpandForSpecialElements())
     return;
 
-  while (1) {
+  while (true) {
     start_special_container = nullptr;
     end_special_container = nullptr;
 

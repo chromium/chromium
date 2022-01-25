@@ -147,7 +147,7 @@ absl::Status DistributedPointFunction::GenerateNext(
   expanded_control_bits[1][1] = ExtractAndClearLowestBit(expanded_seeds[1][1]);
 
   // Lines 6-8: Assign keep/lose branch depending on current bit of `alpha`.
-  bool current_bit = 0;
+  bool current_bit = false;
   if (parameters_.back().log_domain_size() - tree_level < 128) {
     current_bit =
         (alpha & (absl::uint128{1}
@@ -278,7 +278,7 @@ DistributedPointFunction::EvaluateSeeds(
       // Merge back into result.
       const int bit_index = num_levels - level - 1;
       for (int i = 0; i < current_batch_size; ++i) {
-        path_bits[i] = 0;
+        path_bits[i] = false;
         if (bit_index < 128) {
           path_bits[i] =
               (paths[start_block + i] & (absl::uint128{1} << bit_index)) != 0;
@@ -670,7 +670,7 @@ DistributedPointFunction::GenerateKeysIncremental(
   keys[1].mutable_seed()->set_low(absl::Uint128Low64(seeds[1]));
 
   // Line 3: Initialize control bits.
-  std::array<bool, 2> control_bits{0, 1};
+  std::array<bool, 2> control_bits{false, true};
 
   // Line 4: Compute correction words for each level after the first one.
   keys[0].mutable_correction_words()->Reserve(tree_levels_needed_ - 1);

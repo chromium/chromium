@@ -791,7 +791,7 @@ TEST_F(ProcessUtilTest, EnsureTerminationUndying) {
 }
 
 MULTIPROCESS_TEST_MAIN(process_util_test_never_die) {
-  while (1) {
+  while (true) {
     PlatformThread::Sleep(Seconds(500));
   }
 }

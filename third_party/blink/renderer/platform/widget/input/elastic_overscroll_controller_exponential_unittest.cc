@@ -297,7 +297,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest, MomentumAnimate) {
   // Keep animating frames until the stretch returns to rest.
   int stretch_count = 3;
   int begin_frame_count = 4;
-  while (1) {
+  while (true) {
     TickCurrentTimeAndAnimate();
     if (helper_.StretchAmount().IsZero()) {
       stretch_count += 1;
@@ -395,7 +395,7 @@ TEST_F(ElasticOverscrollControllerExponentialTest,
   // to zero. Ensure that the return to zero doesn't happen immediately.
   helper_.SetUserScrollable(false);
   int ticks_to_zero = 0;
-  while (1) {
+  while (true) {
     TickCurrentTimeAndAnimate();
     if (helper_.StretchAmount().IsZero())
       break;

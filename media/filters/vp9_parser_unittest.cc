@@ -134,7 +134,7 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
 };
 
 Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
-  while (1) {
+  while (true) {
     std::unique_ptr<DecryptConfig> null_config;
     gfx::Size allocate_size;
     Vp9Parser::Result res =

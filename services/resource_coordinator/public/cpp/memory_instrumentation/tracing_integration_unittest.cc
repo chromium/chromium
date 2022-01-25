@@ -271,7 +271,7 @@ void MockCoordinator::RequestGlobalMemoryDumpAndAppendToTrace(
     MemoryDumpDeterminism determinism,
     RequestGlobalMemoryDumpAndAppendToTraceCallback callback) {
   client_->RequestChromeDump(dump_type, level_of_detail, determinism);
-  std::move(callback).Run(1, true);
+  std::move(callback).Run(true, true);
 }
 
 // Checks that is the ClientProcessImpl is initialized after tracing already

@@ -4217,7 +4217,7 @@ ScriptValue WebGLRenderingContextBase::getUniform(
             GLint value[4] = {0};
             ContextGL()->GetUniformiv(ObjectOrZero(program), location, value);
             if (length > 1) {
-              bool bool_value[4] = {0};
+              bool bool_value[4] = {false};
               for (unsigned j = 0; j < length; j++)
                 bool_value[j] = static_cast<bool>(value[j]);
               return WebGLAny(script_state, bool_value, length);

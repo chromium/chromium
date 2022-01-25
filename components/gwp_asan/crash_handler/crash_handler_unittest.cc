@@ -225,7 +225,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(ptrs[0]);
 
     // Take the remaining metadata slot with an allocation on a different page.
-    while (1) {
+    while (true) {
       void* new_alloc = gpa->Allocate(1);
       if (new_alloc != ptrs[0])
         break;

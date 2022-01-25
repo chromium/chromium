@@ -35,7 +35,7 @@ class PowerStatusHelperTest : public testing::Test {
     ~MockBatteryMonitor() {
       // Mojo gets mad if we don't finish up outstanding callbacks.
       if (callback_)
-        ProvidePowerUpdate(0, 0);
+        ProvidePowerUpdate(false, 0);
     }
 
     // device::mojom::blink::BatteryMonitor

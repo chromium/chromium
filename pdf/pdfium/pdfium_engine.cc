@@ -1777,7 +1777,7 @@ void PDFiumEngine::StartFind(const std::string& text, bool case_sensitive) {
     // Don't use PDFium to search for now, since it doesn't support unicode
     // text. Leave the code for now to avoid bit-rot, in case it's fixed later.
     // The extra parens suppress a -Wunreachable-code warning.
-    if ((0)) {
+    if ((false)) {
       SearchUsingPDFium(str, case_sensitive, first_search,
                         character_to_start_searching_from, current_page);
     } else {
