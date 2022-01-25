@@ -296,8 +296,9 @@ export async function share(file: File): Promise<void> {
  * @return the value if it's an enum variant, null otherwise
  */
 export function checkEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: string|null): T|null {
-  if (value === null || !Object.values<string>(enumType).includes(value)) {
+    enumType: {[key: string]: T}, value: string|null|undefined): T|null {
+  if (value === null || value === undefined ||
+      !Object.values<string>(enumType).includes(value)) {
     return null;
   }
   return value as T;
@@ -309,7 +310,7 @@ export function checkEnumVariant<T extends string>(
  * @return the value if it's an enum variant, throws assertion error otherwise.
  */
 export function assertEnumVariant<T extends string>(
-    enumType: {[key: string]: T}, value: string): T {
+    enumType: {[key: string]: T}, value: string|null|undefined): T {
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null);
   return ret;

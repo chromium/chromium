@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
+import {assertExists} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -103,9 +104,15 @@ class Toast {
     this.offsetProperties = (() => {
       const properties = [];
       const style = this.el.computedStyleMap();
+
+      function getPositionProperty(key: string) {
+        const property = assertExists(style.get(key)).toString();
+        return util.assertEnumVariant(PositionProperty, property);
+      }
+
       for (const dir of ['x', 'y']) {
-        const toastProperty = style.get(`--toast-ref-${dir}`).toString();
-        const elProperty = style.get(`--toast-element-ref-${dir}`).toString();
+        const toastProperty = getPositionProperty(`--toast-ref-${dir}`);
+        const elProperty = getPositionProperty(`--toast-element-ref-${dir}`);
         const offset = util.getStyleValueInPx(style, `--toast-offset-${dir}`);
         properties.push({elProperty, toastProperty, offset});
       }
