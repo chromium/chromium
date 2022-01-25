@@ -853,7 +853,7 @@ union BusResult {
 // The classes of the bus devices. Can be used to group the devices by their
 // use.
 //
-// NextMinVersion: 1, NextIndex: 5
+// NextMinVersion: 1, NextIndex: 6
 [Extensible]
 enum BusDeviceClass {
   // For the devices which cannot be classified.
