@@ -1221,20 +1221,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounterMainFrame(WebFeature::kCrossOriginEmbedderPolicyRequireCorp, 0);
 }
 
-class ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker
-    : public ChromeWebPlatformSecurityMetricsBrowserTest {
- public:
-  ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker() {
-    feature_.InitWithFeatures({blink::features::kCOEPForSharedWorker}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
-    CoepNoneSharedWorker) {
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepNoneSharedWorker) {
   GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
   GURL worker_url =
       https_server().GetURL("a.test",
@@ -1249,9 +1237,8 @@ IN_PROC_BROWSER_TEST_F(
   CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
-    CoepCredentiallessSharedWorker) {
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepCredentiallessSharedWorker) {
   GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
   GURL worker_url =
       https_server().GetURL("a.test",
@@ -1266,9 +1253,8 @@ IN_PROC_BROWSER_TEST_F(
   CheckCounter(WebFeature::kCoepRequireCorpSharedWorker, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ChromeWebPlatformSecurityMetricsBrowserTestWithSharedWorker,
-    CoepRequireCorpSharedWorker) {
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CoepRequireCorpSharedWorker) {
   GURL main_page_url = https_server().GetURL("a.test", "/empty.html");
   GURL worker_url =
       https_server().GetURL("a.test",

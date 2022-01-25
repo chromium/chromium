@@ -3208,7 +3208,6 @@ crbug.com/626703 [ Mac11-arm64 ] wpt_internal/css/selectors/focus-visible-select
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]
@@ -3388,11 +3387,9 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.html [ Failu
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.sharedworker.html [ Crash Failure ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?service_worker [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/navigation-timing/nav2_test_response_end_and_duration_before_during_and_after_load_event.html [ Timeout ]
 crbug.com/1270841 [ Mac ] external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac11 ] virtual/plz-dedicated-worker/external/wpt/workers/constructors/SharedWorker/setting-port-members.html [ Failure Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-transforms/crashtests/w-negative-002.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/dialogfocus-old-behavior/external/wpt/html/semantics/interactive-elements/the-dialog-element/backdrop-does-not-inherit.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/window-parent.html [ Timeout ]
@@ -3467,7 +3464,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_
 crbug.com/626703 [ Mac10.15 ] virtual/web-bluetooth-new-permissions-backend/wpt_internal/bluetooth/service/getCharacteristics/correct-characteristics.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-pranswer.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCRtpReceiver-getParameters.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/video.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-opaque-cross-origin.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCIceConnectionState-candidate-pair.https.html [ Skip Timeout ]
@@ -7524,7 +7520,6 @@ crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 
 # Sheriff 2022-01-11
 crbug.com/1286437 [ Mac ] media/picture-in-picture/v2/request-picture-in-picture-twice.html [ Failure Pass ]
-crbug.com/1286448 [ Mac ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/cache-storage.tentative.https.window.html [ Crash Pass ]
 
 # Sheriff 2022-01-12
 crbug.com/1286619 [ Mac ] external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]

@@ -356,20 +356,7 @@ TEST_F(SharedWorkerHostTest, OnContextClosed) {
   EXPECT_FALSE(host);
 }
 
-// Enable COEPForSharedWorker, since CreateNetworkFactoryParamsForSubresources
-// does more logic in that case.
-class SharedWorkerHostTestWithCOEPEnabled : public SharedWorkerHostTest {
- public:
-  SharedWorkerHostTestWithCOEPEnabled() = default;
-  ~SharedWorkerHostTestWithCOEPEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list{
-      /*enable_feature=*/blink::features::kCOEPForSharedWorker};
-};
-
-TEST_F(SharedWorkerHostTestWithCOEPEnabled,
-       CreateNetworkFactoryParamsForSubresources) {
+TEST_F(SharedWorkerHostTest, CreateNetworkFactoryParamsForSubresources) {
   base::WeakPtr<SharedWorkerHost> host = CreateHost();
 
   // Start the worker.
@@ -385,7 +372,7 @@ TEST_F(SharedWorkerHostTestWithCOEPEnabled,
   EXPECT_FALSE(params->isolation_info.nonce().has_value());
 }
 
-TEST_F(SharedWorkerHostTestWithCOEPEnabled,
+TEST_F(SharedWorkerHostTest,
        CreateNetworkFactoryParamsForSubresourcesWithNonce) {
   base::UnguessableToken nonce = base::UnguessableToken::Create();
   SharedWorkerInstance instance(
@@ -413,84 +400,18 @@ TEST_F(SharedWorkerHostTestWithCOEPEnabled,
   EXPECT_THAT(params->isolation_info.nonce(), testing::Optional(nonce));
 }
 
-// Enable PrivateNetworkAccessForWorkers only.
+// Enable PrivateNetworkAccessForWorkers.
 class SharedWorkerHostTestWithPNAEnabled : public SharedWorkerHostTest {
  public:
-  SharedWorkerHostTestWithPNAEnabled() {
-    feature_list.InitWithFeatures(
-        {/*enable_feature=*/features::kPrivateNetworkAccessForWorkers},
-        {/*disable_feature=*/blink::features::kCOEPForSharedWorker});
-  }
+  SharedWorkerHostTestWithPNAEnabled() = default;
   ~SharedWorkerHostTestWithPNAEnabled() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list;
-};
-
-TEST_F(SharedWorkerHostTestWithPNAEnabled,
-       CreateNetworkFactoryParamsForSubresources) {
-  SharedWorkerInstance instance(
-      kWorkerUrl, blink::mojom::ScriptType::kClassic,
-      network::mojom::CredentialsMode::kSameOrigin, "name",
-      blink::StorageKey(url::Origin::Create(kWorkerUrl)),
-      network::mojom::IPAddressSpace::kPublic,
-      blink::mojom::SharedWorkerCreationContextType::kSecure);
-  network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy;
-  creator_cross_origin_embedder_policy.value =
-      network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-  network::mojom::ClientSecurityStatePtr client_security_state =
-      network::ClientSecurityStateBuilder()
-          .WithPrivateNetworkRequestPolicy(
-              network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock)
-          .WithIPAddressSpace(network::mojom::IPAddressSpace::kPublic)
-          .WithIsSecureContext(true)
-          .WithCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy)
-          .Build();
-  network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy;
-  worker_cross_origin_embedder_policy.value =
-      network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
-  network::mojom::URLResponseHeadPtr response_head =
-      network::mojom::URLResponseHead::New();
-  response_head->parsed_headers = network::mojom::ParsedHeaders::New();
-  response_head->parsed_headers->cross_origin_embedder_policy =
-      worker_cross_origin_embedder_policy;
-  auto host = std::make_unique<SharedWorkerHost>(
-      &service_, instance, site_instance_,
-      std::vector<network::mojom::ContentSecurityPolicyPtr>(),
-      std::move(client_security_state));
-
-  // Start the worker.
-  mojo::PendingRemote<blink::mojom::SharedWorkerFactory> factory;
-  MockSharedWorkerFactory factory_impl(
-      factory.InitWithNewPipeAndPassReceiver());
-  StartWorker(host.get(), std::move(factory), GURL("devtools://test.url"),
-              std::move(response_head));
-
-  network::mojom::URLLoaderFactoryParamsPtr params =
-      host->CreateNetworkFactoryParamsForSubresources();
-  ASSERT_TRUE(params->client_security_state);
-  EXPECT_TRUE(params->client_security_state->is_web_secure_context);
-  EXPECT_EQ(params->client_security_state->ip_address_space,
-            network::mojom::IPAddressSpace::kLocal);
-  EXPECT_EQ(params->client_security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
-  EXPECT_EQ(params->client_security_state->cross_origin_embedder_policy.value,
-            network::mojom::CrossOriginEmbedderPolicyValue::kNone);
-}
-
-// Enable COEPForSharedWorker and PrivateNetworkAccessForWorkers.
-class SharedWorkerHostTestWithCOEPandPNAEnabled
-    : public SharedWorkerHostTestWithCOEPEnabled {
- public:
-  SharedWorkerHostTestWithCOEPandPNAEnabled() = default;
-  ~SharedWorkerHostTestWithCOEPandPNAEnabled() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list{
       /*enable_feature=*/features::kPrivateNetworkAccessForWorkers};
 };
 
-TEST_F(SharedWorkerHostTestWithCOEPandPNAEnabled,
+TEST_F(SharedWorkerHostTestWithPNAEnabled,
        CreateNetworkFactoryParamsForSubresources) {
   SharedWorkerInstance instance(
       kWorkerUrl, blink::mojom::ScriptType::kClassic,

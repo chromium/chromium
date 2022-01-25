@@ -84,45 +84,31 @@ bool SupportsSharedWorker() {
 // These tests are parameterized on following options:
 // 0 => Base
 // 1 => kPlzDedicatedWorker enabled
-// 2 => kCOEPForSharedWorker enabled
-// 3 => kPrivateNetworkAccessForWorkers enabled
+// 2 => kPrivateNetworkAccessForWorkers enabled
 class WorkerTest : public ContentBrowserTest,
                    public testing::WithParamInterface<int> {
  public:
   WorkerTest() : select_certificate_count_(0) {
     switch (GetParam()) {
       case 0:  // Base case.
-        feature_list_.InitWithFeatures(
-            {}, {
-                    blink::features::kPlzDedicatedWorker,
-                    blink::features::kCOEPForSharedWorker,
-                });
+        feature_list_.InitWithFeatures({},
+                                       {
+                                           blink::features::kPlzDedicatedWorker,
+                                       });
         break;
       case 1:  // PlzDedicatedWorker
         feature_list_.InitWithFeatures(
             {
                 blink::features::kPlzDedicatedWorker,
-                features::kPrivateNetworkAccessForWorkers,
             },
             {
-                blink::features::kCOEPForSharedWorker,
-            });
-        break;
-      case 2:  // CoepForSharedWorker
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kCOEPForSharedWorker,
                 features::kPrivateNetworkAccessForWorkers,
-            },
-            {
-                blink::features::kPlzDedicatedWorker,
             });
         break;
-      case 3:  // PrivateNetworkAccessForWorkers
+      case 2:  // PrivateNetworkAccessForWorkers
         feature_list_.InitWithFeatures(
             {
                 blink::features::kPlzDedicatedWorker,
-                blink::features::kCOEPForSharedWorker,
                 features::kPrivateNetworkAccessForWorkers,
             },
             {});
@@ -331,7 +317,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 4));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -351,7 +337,7 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 4));
+                         testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -932,7 +918,7 @@ class WorkerFromAnonymousIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromAnonymousIframeNikBrowserTest,
-                         testing::Range(0, 4));
+                         testing::Range(0, 3));
 
 IN_PROC_BROWSER_TEST_P(WorkerFromAnonymousIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
