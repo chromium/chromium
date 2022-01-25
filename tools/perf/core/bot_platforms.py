@@ -325,6 +325,7 @@ ASTRO_EXEC_FLAGS = _COMMON_FUCHSIA_ARGS + [
 SHERLOCK_EXEC_FLAGS = _COMMON_FUCHSIA_ARGS + [
     '--system-image-dir=%s' % _SHERLOCK_IMAGE_DIR
 ]
+ATLAS_EXEC_FLAGS = ['-d', '--os-check=ignore']
 
 _FUCHSIA_ASTRO_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(900,
@@ -335,6 +336,11 @@ _FUCHSIA_SHERLOCK_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(900,
                     path='bin/run_base_perftests',
                     additional_flags=SHERLOCK_EXEC_FLAGS)
+])
+_FUCHSIA_ATLAS_EXECUTABLE_CONFIGS = frozenset([
+    _base_perftests(900,
+                    path='bin/run_base_perftests',
+                    additional_flags=ATLAS_EXEC_FLAGS)
 ])
 
 _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
@@ -524,6 +530,7 @@ _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('media.mobile')
 ])
+_FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([])
 _LINUX_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('blink_perf.shadow_dom'),
@@ -701,6 +708,14 @@ FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
     'fuchsia',
     is_fyi=True,
     executables=_FUCHSIA_SHERLOCK_EXECUTABLE_CONFIGS)
+FUCHSIA_PERF_ATLAS_FYI = PerfPlatform(
+    'fuchsia-perf-atlas-fyi',
+    '',
+    _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
+    1,
+    'fuchsia',
+    is_fyi=True,
+    executables=_FUCHSIA_ATLAS_EXECUTABLE_CONFIGS)
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(
