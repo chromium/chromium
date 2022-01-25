@@ -111,17 +111,6 @@ PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationStart",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
   CheckAllowlist();
 }
 
@@ -334,19 +323,6 @@ bool PasswordProtectionRequest::IsVisualFeaturesEnabled() {
 
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
-
-  if (trigger_type_ == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE) {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.OnFocus.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  } else {
-    base::UmaHistogramExactLinear(
-        "PasswordProtection.PasswordEntry.UserPopulationOnPing",
-        password_protection_service_->GetUserPopulationPref(),
-        ChromeUserPopulation::UserPopulation_MAX + 1);
-  }
-
   if (password_protection_service_->CanGetAccessToken() &&
       password_protection_service_->token_fetcher()) {
     password_protection_service_->token_fetcher()->Start(

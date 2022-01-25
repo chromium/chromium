@@ -2789,6 +2789,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.{TriggerType}.UserPopulation{Moment}"
     enum="SafeBrowsingUserPopulation" expires_after="M98">
+  <obsolete>
+    Removed in M99 due to lack of use.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@chromium.org</owner>
   <summary>
