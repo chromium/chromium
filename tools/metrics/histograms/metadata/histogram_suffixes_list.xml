@@ -10440,9 +10440,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.LoadTime.ProcessCreateToExeMain2"/>
   <affected-histogram name="Startup.SystemUptime"/>
   <affected-histogram name="Startup.TimeSinceLastStartup"/>
-  <affected-histogram
-      name="Startup.WebFooterExperiment.DidFirstVisuallyNonEmptyPaint"/>
-  <affected-histogram name="Startup.WebFooterExperiment.WebFooterCreation"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Storage_BlobEvictReason" separator=".">

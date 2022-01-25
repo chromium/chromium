@@ -576,61 +576,11 @@ chromium-metrics-reviews@google.com.
   <summary>The result of the user pressing the mode change key.</summary>
 </histogram>
 
-<histogram name="InputMethod.Mojo.Extension.ActivateIMELatency" units="ms"
-    expires_after="2019-12-30">
-  <obsolete>
-    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
-    rule-based input methods via extension and IME service, but as at circa Q4
-    2019, rule-based input methods stopped going through the extension.
-  </obsolete>
-  <owner>googleo@chromium.org</owner>
-  <owner>shuchen@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The time taken to activate a new IME via IME Mojo service in the IME
-    extension. It's from when the IME extension sends out an request to activate
-    a new IME until the new IME is resolved in the IME service and its Mojo
-    interface is bound to the IME extension.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.Mojo.Extension.Event" enum="IMEExtensionMojoEvent"
     expires_after="2021-10-01">
   <owner>googleo@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>The events of Mojo service in the IME Extension.</summary>
-</histogram>
-
-<histogram name="InputMethod.Mojo.Extension.Rulebased.ProcessLatency"
-    units="ms" expires_after="2019-12-31">
-  <obsolete>
-    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
-    rule-based input methods via extension and IME service, but as at circa Q4
-    2019, rule-based input methods stopped going through the extension.
-  </obsolete>
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The time taken to process a rulebased request via the IME Mojo service
-    inside the IME extension.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.Mojo.Extension.ServiceInitLatency" units="ms"
-    expires_after="2019-12-31">
-  <obsolete>
-    Obsolete since Q4 2019. Officially deprecated Nov 2020. This was meant for
-    rule-based input methods via extension and IME service, but as at circa Q4
-    2019, rule-based input methods stopped going through the extension.
-  </obsolete>
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The time taken to initialize the IME Mojo service in the IME extension. It's
-    from the IME extension starts loading a private Mojo bundle for making a
-    request to connect a IME service until the connection between the extension
-    and the IME Mojo service is built.
-  </summary>
 </histogram>
 
 <histogram name="InputMethod.MouseWheel.ScrollCharacters" units="characters"

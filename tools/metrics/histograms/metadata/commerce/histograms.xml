@@ -22,11 +22,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </variants>
 
 <variants name="TabUsageStatuses">
-  <variant name="">
-    <obsolete>
-      Previous histogram didn't differentiate between Stale and Active Tab.
-    </obsolete>
-  </variant>
   <variant name="ActiveTab"
       summary="Tabs between 0 and 1 day since last usage."/>
   <variant name="StaleTab"

@@ -549,25 +549,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded" units="ms"
-    expires_after="2020-04-26">
-  <obsolete>
-    Removed 02/2021.
-  </obsolete>
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>mblsha@yandex-team.ru</owner>
-  <summary>
-    Time from application start to the time the GPU has finished compositing
-    after first Browser window has finished painting its children. At this point
-    the Browser interface is visible on screen. Measures how much time does it
-    take for GPU to actually paint the first time.
-
-    April 8, 2020: Changed the reference from process creation to application
-    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
-    application start.
-  </summary>
-</histogram>
-
 <histogram name="Startup.BrowserWindowDisplay" units="ms" expires_after="never">
 <!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
 
@@ -580,25 +561,6 @@ chromium-metrics-reviews@google.com.
     April 8, 2020: Changed the reference from process creation to application
     start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
     application start.
-  </summary>
-</histogram>
-
-<histogram name="Startup.ColdStartFromProcessCreationTime" units="ms"
-    expires_after="2021-08-22">
-  <obsolete>
-    Removed 03/2021. Broken starting M-87; removed and replaced with
-    Startup.ColdStartFromProcessCreationTimeV2 in M-91.
-  </obsolete>
-  <owner>djean@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    The duration of all initializations from process creation time to UI ready.
-    This includes code loading, static initializers and the execution time
-    contained in Startup.ColdStartWithExternalURLTime and
-    Startup.ColdStartWithoutExternalURLTime metrics. iOS specific. Deprecated
-    due to incomplete data from M87 to M91. The data is incomplete because it
-    was not logged in iOS 13+. See Startup.ColdStartFromProcessCreationTimeV2
-    instead.
   </summary>
 </histogram>
 
@@ -990,39 +952,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     [IOS] The duration between process spawn (returned by sysctl) and call to
     the first scene connection. Recorded when first scene is becomes active.
-  </summary>
-</histogram>
-
-<histogram name="Startup.WebFooterExperiment.DidFirstVisuallyNonEmptyPaint"
-    units="ms" expires_after="M89">
-  <obsolete>
-    Removed 08/2021 and tracked in http://crbug.com/1072603.
-  </obsolete>
-  <owner>pbos@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Time from application start until the first web footer finishes painting.
-
-    April 8, 2020: Changed the reference from process creation to application
-    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
-    application start.
-  </summary>
-</histogram>
-
-<histogram name="Startup.WebFooterExperiment.WebFooterCreation" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed 08/2021 and tracked in http://crbug.com/1072603.
-  </obsolete>
-  <owner>pbos@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Time from application start until the first WebView used to display a web
-    footer is created.
-
-    April 8, 2020: Changed the reference from process creation to application
-    start. See Startup.FirstWebContents.NonEmptyPaint3 for a definition of
-    application start.
   </summary>
 </histogram>
 
