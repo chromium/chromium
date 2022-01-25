@@ -7388,7 +7388,6 @@ crbug.com/1274917 external/wpt/content-security-policy/inheritance/history-ifram
 crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Pass Timeout ]
 
 # Sheriff 2021-11-23
-crbug.com/1270963 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/create-credential.https.html [ Skip ]
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
 crbug.com/1273282 [ Win7 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 

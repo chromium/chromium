@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/bad_message.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"
@@ -136,6 +137,13 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
     const url::Origin& origin,
     RequestType type,
     bool* is_cross_origin) {
+  if (render_frame_host_->IsNestedWithinFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host_->GetProcess(),
+        bad_message::BadMessageReason::AUTH_INVALID_FENCED_FRAME);
+    return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  }
+
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
   if (!*is_cross_origin)
     return blink::mojom::AuthenticatorStatus::SUCCESS;

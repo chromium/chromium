@@ -186,6 +186,13 @@ bool CheckSecurityRequirementsBeforeRequest(
   // The API is not exposed in non-secure context.
   SECURITY_CHECK(resolver->GetExecutionContext()->IsSecureContext());
 
+  if (resolver->DomWindow()->GetFrame()->IsInFencedFrameTree()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "The credential operation is not allowed in a fenced frame tree."));
+    return false;
+  }
+
   switch (required_origin_type) {
     case RequiredOriginType::kSecure:
       // This has already been checked.
