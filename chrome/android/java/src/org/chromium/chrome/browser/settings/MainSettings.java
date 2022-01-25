@@ -19,9 +19,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -75,7 +73,6 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_SAFETY_CHECK = "safety_check";
-    public static final String PREF_DATA_REDUCTION = "data_reduction";
     public static final String PREF_NOTIFICATIONS = "notifications";
     public static final String PREF_DOWNLOADS = "downloads";
     public static final String PREF_DEVELOPER = "developer";
@@ -170,7 +167,6 @@ public class MainSettings extends PreferenceFragmentCompat
         updatePasswordsPreference();
 
         setManagedPreferenceDelegateForPreference(PREF_SEARCH_ENGINE);
-        setManagedPreferenceDelegateForPreference(PREF_DATA_REDUCTION);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // If we are on Android O+ the Notifications preference should lead to the Android
@@ -254,10 +250,6 @@ public class MainSettings extends PreferenceFragmentCompat
         } else {
             removePreferenceIfPresent(PREF_DEVELOPER);
         }
-
-        ChromeBasePreference dataReduction =
-                (ChromeBasePreference) findPreference(PREF_DATA_REDUCTION);
-        dataReduction.setSummary(DataReductionPreferenceFragment.generateSummary(getResources()));
     }
 
     private Preference addPreferenceIfAbsent(String key) {
@@ -376,9 +368,6 @@ public class MainSettings extends PreferenceFragmentCompat
         return new ChromeManagedPreferenceDelegate() {
             @Override
             public boolean isPreferenceControlledByPolicy(Preference preference) {
-                if (PREF_DATA_REDUCTION.equals(preference.getKey())) {
-                    return DataReductionProxySettings.getInstance().isDataReductionProxyManaged();
-                }
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
@@ -387,11 +376,6 @@ public class MainSettings extends PreferenceFragmentCompat
 
             @Override
             public boolean isPreferenceClickDisabledByPolicy(Preference preference) {
-                if (PREF_DATA_REDUCTION.equals(preference.getKey())) {
-                    DataReductionProxySettings settings = DataReductionProxySettings.getInstance();
-                    return settings.isDataReductionProxyManaged()
-                            && !settings.isDataReductionProxyEnabled();
-                }
                 if (PREF_SEARCH_ENGINE.equals(preference.getKey())) {
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }

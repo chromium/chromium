@@ -42,10 +42,6 @@ if (is_android) {
       "//url:url",
     ]
   }
-
-  java_cpp_enum("data_reduction_proxy_savings_cleared_enum_java") {
-    sources = [ "data_reduction_proxy_compression_stats.h" ]
-  }
 }
 
 static_library("browser") {

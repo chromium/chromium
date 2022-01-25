@@ -54,7 +54,6 @@ public class ChromeFeedbackCollector
         sources.add(new DeviceInfoFeedbackSource());
         sources.add(new UrlFeedbackSource(initParams.url));
         sources.add(new VariationsFeedbackSource(initParams.profile));
-        sources.add(new DataReductionProxyFeedbackSource(initParams.profile));
         sources.add(new HistogramFeedbackSource(initParams.profile));
         sources.add(new LowEndDeviceFeedbackSource());
         sources.add(new IMEFeedbackSource());

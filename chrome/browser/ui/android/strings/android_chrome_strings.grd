@@ -1488,86 +1488,6 @@ Your Google account may have other forms of browsing history like searches and a
         Never translate sites
       </message>
 
-      <!-- Lite Mode-->
-      <message name="IDS_DATA_REDUCTION_TITLE_LITE_MODE" desc="Menu item for Lite mode, which allows users to save mobile data by compressing network traffic.">
-        Lite mode
-      </message>
-      <message name="IDS_DATA_REDUCTION_INITIAL_TITLE" desc="This title states that the below chart will contain the user's data savings after they have started browsing.">
-        Your data savings will appear here
-      </message>
-      <message name="IDS_DATA_REDUCTION_BENEFITS_DESCRIPTION_LITE_MODE" desc="Description text about the benefits of the Lite mode feature. Seen only before the user has enabled the feature.">
-         In Lite mode, Chrome loads pages faster and uses up to 60 percent less data.
-      </message>
-      <message name="IDS_DATA_REDUCTION_DESCRIPTION_LITE_MODE" desc="Text describing how the Lite mode feature works. Seen only before the user has enabled the feature.">
-        When Lite mode is on, Chrome uses Google servers to make pages load faster. Lite mode rewrites very slow pages to load only essential content. Lite mode does not apply to Incognito tabs.
-      </message>
-      <message name="IDS_DATA_REDUCTION_MENU_ITEM_SUMMARY_LITE_MODE" desc="Label that states the percent of mobile data that was saved by Lite mode. Lite mode allows users to to reduce their mobile data usage by compressing network traffic.">
-        <ph name="PERCENT">%1$s<ex>49%</ex></ph> data savings
-      </message>
-      <message name="IDS_DATA_REDUCTION_SAVINGS_LABEL" desc="Data Reduction statistics label that states the amount of mobile data that was saved by Lite mode. Lite mode allows users to to reduce their mobile data usage by compressing network traffic.">
-        data saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_USAGE_LABEL" desc="Data Reduction statistics label that states the amount of data that was used by Chrome when Lite mode is enabled.">
-        data used
-      </message>
-      <message name="IDS_DATA_REDUCTION_START_DATE_CONTENT_DESCRIPTION" desc="This label is used in the device screen reader to describe the starting date that data savings are computed from. This will always be used in the form 'Start date: February 28'.">
-        Start date <ph name="date">%1$s<ex>Feb 28</ex></ph>
-      </message>
-      <message name="IDS_DATA_REDUCTION_END_DATE_CONTENT_DESCRIPTION" desc="This label is used in the device screen reader to describe the end date that data savings are computed until. This will always be used in the form 'End date: February 28'..">
-        End date <ph name="date">%1$s<ex>Feb 28</ex></ph>
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_SITE_TITLE" desc="Title for the sites column on the Data Reduction statistics page. The breakdown lists the top ten sites with the greatest amount of data usage or mobile data that was saved.">
-        Site
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_SITE_HEADER_CONTENT_DESCRIPTION" desc="This label is used to state that by clicking the associated button, the displayed table will be sorted by website domain name. This is used in the device's screen reader and is not displayed visually to the user.">
-        Sort by site
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_HOSTNAME_SORTED" desc="This title states that the following table contains the details of how much data was saved for each site and that the table rows are sorted by the name of the site. This is used in the device's screen reader and is not displayed visually to the user.">
-        Details: Sorted by site name
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_USED_TITLE" desc="Title for the data used column on the Data Reduction statistics page. The breakdown lists the top ten sites with the greatest amount of data usage or mobile data that was saved.">
-        Used
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_USED_HEADER_CONTENT_DESCRIPTION" desc="This label is used to state that by clicking the associated button, the displayed table will be sorted descending by the amount of mobile data that was used when viewing a webpage. This is used in the device's screen reader and is not displayed visually to the user.">
-        Sort by amount of data used
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_DATA_USED_SORTED" desc="This title states that the following table contains the details of how much data was saved for each site and that the table rows are sorted by the how much data was used for each site. This is used in the device's screen reader and is not displayed visually to the user.">
-        Details: Sorted by amount of data used
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_SAVED_TITLE" desc="Title for the data saved column on the Data Reduction statistics page. The breakdown lists for the top ten sites with the greatest amount of data usage or mobile data that was saved. Lite mode allows users to to reduce their mobile data usage by compressing network traffic.">
-        Saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_SAVED_HEADER_CONTENT_DESCRIPTION" desc="This label is used to state that by clicking the associated button, the displayed table will be sorted descending by the amount of mobile data that was saved when viewing a webpage by using Chrome's Lite mode feature. This is used in the device's screen reader and is not displayed visually to the user.">
-        Sort by amount of data saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_DATA_SAVED_SORTED" desc="This title states that the following table contains the details of how much data was saved for each site and that the table rows are sorted by how much data was saved for each site. This is used in the device's screen reader and is not displayed visually to the user.">
-        Details: Sorted by amount of data saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_USED_CONTENT_DESCRIPTION" desc="This label is used as a suffix to describe the amount of mobile data that was used to view a webpage. It is used in the form '0 bytes used'.">
-        <ph name="amount">%1$s<ex>0 bytes</ex></ph> used
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_SAVED_CONTENT_DESCRIPTION" desc="This label is used as a suffix to describe the amount of mobile data that was saved when viewing a webpage by using Chrome's Lite mode feature. It is used in the form '0 bytes used'.">
-        <ph name="amount">%1$s<ex>0 bytes</ex></ph> saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_REMAINING_SITES_LABEL" desc="Title for the the remaining sites on the Data Reduction statistics page. The breakdown lists the top ten sites with the greatest amount of data usage or mobile data that was saved and then groups the remaining sites together.">
-        Remaining sites (<ph name="NUMBER_OF_SITES">%1$d<ex>35</ex></ph>)
-      </message>
-      <message name="IDS_DATA_REDUCTION_BREAKDOWN_OTHER_HOST_NAME" desc="Appears in a table that has a Site column and a Used column. URLs of sites the user has visited appear in the Site column, and the amount of data the site has used appears under Used. The “Other” entry appears at the bottom of the Site column, and is a grouping for sites and services where the URL is unavailable.">
-        Other
-      </message>
-      <message name="IDS_DATA_REDUCTION_USAGE_RESET_STATISTICS_BUTTON" desc="Text to be displayed on the button to reset the Data Reduction statistics.">
-        Reset statistics
-      </message>
-      <message name="IDS_DATA_REDUCTION_USAGE_RESET_STATISTICS_CONFIRMATION_TITLE_LITE_MODE" desc="Text to be displayed on the confirmation dialog to reset the user's history of data savings.">
-        Reset Lite mode?
-      </message>
-      <message name="IDS_DATA_REDUCTION_USAGE_RESET_STATISTICS_CONFIRMATION_DIALOG_LITE_MODE" desc="Text to be displayed on the confirmation dialog to reset the user's history of data savings.">
-        Resetting erases your history of data savings, including the list of visited sites.
-      </message>
-      <message name="IDS_DATA_REDUCTION_USAGE_RESET_STATISTICS_CONFIRMATION_BUTTON" desc="Text to be displayed on the confirmation button to proceed with resetting the history of data savings.">
-        Reset
-      </message>
-
        <!-- Dangerous download -->
       <message name="IDS_DANGEROUS_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download anyway
@@ -4401,12 +4321,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_IPH_DOWNLOAD_INDICATOR_TEXT" desc="The in-product-help message to open download home, which is shown alongside the offline indicator when the device goes offline.">
         See your offline files
-      </message>
-      <message name="IDS_IPH_DATA_SAVER_DETAIL_TEXT" desc="The in-product-help message to open lite mode.">
-        See how much data you've saved
-      </message>
-      <message name="IDS_IPH_DATA_SAVER_DETAIL_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open lite mode.">
-        See how much data you've saved from the More Options button
       </message>
       <message name="IDS_IPH_IDENTITY_DISC_TEXT" desc="The in-product-help text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         Manage your account

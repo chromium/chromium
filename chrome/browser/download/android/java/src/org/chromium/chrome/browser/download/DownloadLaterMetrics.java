@@ -61,20 +61,9 @@ public final class DownloadLaterMetrics {
      * @param choice The user choice, see {@link DownloadLaterDialogChoice}.
      */
     public static void recordDownloadLaterDialogChoice(
-            @DownloadLaterDialogChoice int choice, boolean dataSaverOn, long totalBytes) {
+            @DownloadLaterDialogChoice int choice, long totalBytes) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Download.Later.UI.DialogChoice.Main", choice, DownloadLaterDialogChoice.COUNT);
-
-        // Records the selection with data reduction proxy status.
-        if (dataSaverOn) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Download.Later.UI.DialogChoice.Main.DataSaverOn", choice,
-                    DownloadLaterDialogChoice.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Download.Later.UI.DialogChoice.Main.DataSaverOff", choice,
-                    DownloadLaterDialogChoice.COUNT);
-        }
 
         recordDownloadLaterUiEvent(DownloadLaterUiEvent.DOWNLOAD_LATER_DIALOG_COMPLETE);
 

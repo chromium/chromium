@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -48,8 +47,6 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettingsJni;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -141,8 +138,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock
     Profile mProfileMock;
     @Mock
-    private DataReductionProxySettings.Natives mDataReductionJniMock;
-    @Mock
     private WebFeedSnackbarController.FeedLauncher mFeedLauncher;
     @Mock
     private ModalDialogManager mDialogManager;
@@ -200,8 +195,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mProfileJniMock.fromWebContents(any(WebContents.class))).thenReturn(mProfileMock);
         jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
         Profile.setLastUsedProfileForTesting(mProfile);
-        jniMocker.mock(DataReductionProxySettingsJni.TEST_HOOKS, mDataReductionJniMock);
-        when(mDataReductionJniMock.isDataReductionProxyEnabled(anyLong(), any())).thenReturn(false);
         jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);

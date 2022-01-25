@@ -93,7 +93,6 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
 
     // List of preferences that should be restored unchanged.
     static final String[] BACKUP_ANDROID_BOOL_PREFS = {
-            ChromePreferenceKeys.DATA_REDUCTION_ENABLED,
             ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED,
             ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
             ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,

@@ -11,9 +11,6 @@
     <!-- The size of the text for tab titles. -->
     <dimen name="compositor_tab_title_text_size">14sp</dimen>
 
-    <!-- Data Saver -->
-    <dimen name="data_usage_chart_height">325dp</dimen>
-
     <!-- Full Screen Dimensions -->
     <dimen name="control_container_height">96dp</dimen>
     <dimen name="custom_tabs_control_container_height">64dp</dimen>

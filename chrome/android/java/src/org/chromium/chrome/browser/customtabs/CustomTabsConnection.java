@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1454,11 +1453,6 @@ public class CustomTabsConnection {
         }
         if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
             return SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED;
-        }
-        if (DataReductionProxySettings.getInstance().isDataReductionProxyEnabled()
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.PREDICTIVE_PREFETCHING_ALLOWED_ON_ALL_CONNECTION_TYPES)) {
-            return SPECULATION_STATUS_ON_START_NOT_ALLOWED_DATA_REDUCTION_ENABLED;
         }
         ConnectivityManager cm =
                 (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(

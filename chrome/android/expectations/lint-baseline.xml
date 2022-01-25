@@ -765,22 +765,6 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/android/java/res/drawable/data_reduction_big.xml"
-            line="16"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
-            file="../../chrome/android/java/res/drawable/data_reduction_big.xml"
-            line="22"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
             file="../../chrome/browser/share/android/java/res/drawable/delete_icon.xml"
             line="11"/>
     </issue>

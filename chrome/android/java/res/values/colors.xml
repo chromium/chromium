@@ -22,11 +22,6 @@
     <color name="distilled_page_prefs_selected">#999999</color>
     <color name="distilled_page_prefs_unselected">@color/dialog_bg_color</color>
 
-    <!-- Data Saver Colors -->
-    <color name="data_reduction_compressed_color">#E1E1E1</color>
-    <macro name="data_reduction_original_color">@macro/default_control_color_active</macro>
-    <color name="data_reduction_chart_background_color">@color/default_bg_color_secondary</color>
-
     <!-- Compositor Tab Title Colors -->
     <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
     <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>

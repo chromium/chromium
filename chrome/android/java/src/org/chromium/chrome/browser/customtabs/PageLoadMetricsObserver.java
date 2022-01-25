@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Bundle;
 
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
-
-import androidx.browser.customtabs.CustomTabsSessionToken;
 
 /**
  * Notifies the provided {@link CustomTabsConnection} of page load metrics, such as time until first
@@ -48,8 +47,6 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         args.putLong(PageLoadMetrics.EFFECTIVE_CONNECTION_TYPE, effectiveConnectionType);
         args.putLong(PageLoadMetrics.HTTP_RTT, httpRttMs);
         args.putLong(PageLoadMetrics.TRANSPORT_RTT, transportRttMs);
-        args.putBoolean(CustomTabsConnection.DATA_REDUCTION_ENABLED,
-                DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
         mConnection.notifyPageLoadMetrics(mSession, args);
     }
 

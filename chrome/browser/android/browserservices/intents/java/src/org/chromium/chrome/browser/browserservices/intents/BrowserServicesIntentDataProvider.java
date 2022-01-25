@@ -130,8 +130,7 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The URL that should be used from this intent. If it is a WebLite url, it may be
-     *         overridden if the Data Reduction Proxy is using Lo-Fi previews.
+     * @return The URL that should be used from this intent.
      * Must be called only after native has loaded.
      */
     @Nullable

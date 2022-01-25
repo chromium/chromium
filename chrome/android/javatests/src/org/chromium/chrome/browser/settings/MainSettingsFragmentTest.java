@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
-import org.chromium.chrome.browser.datareduction.settings.DataReductionPreferenceFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -239,8 +238,6 @@ public class MainSettingsFragmentTest {
         assertSettingsExists("accessibility", AccessibilitySettings.class);
         assertSettingsExists("content_settings", SiteSettings.class);
         assertSettingsExists("languages", LanguageSettings.class);
-        assertSettingsExists(
-                MainSettings.PREF_DATA_REDUCTION, DataReductionPreferenceFragment.class);
         assertSettingsExists(MainSettings.PREF_DOWNLOADS, DownloadSettings.class);
         assertSettingsExists(MainSettings.PREF_DEVELOPER, DeveloperSettings.class);
         assertSettingsExists("about_chrome", AboutChromeSettings.class);

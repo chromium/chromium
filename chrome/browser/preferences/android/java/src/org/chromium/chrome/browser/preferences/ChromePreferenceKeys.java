@@ -292,59 +292,6 @@ public final class ChromePreferenceKeys {
     public static final String CUSTOM_TABS_LAST_URL = "pref_last_custom_tab_url";
 
     /**
-     * Key used to save the time in milliseconds since epoch that the first run experience or second
-     * run promo was shown.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_FRE_OR_SECOND_PROMO_TIME_MS =
-            "displayed_data_reduction_promo_time_ms";
-    /**
-     * Key used to save the Chrome version the first run experience or second run promo was shown
-     * in.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_FRE_OR_SECOND_PROMO_VERSION =
-            "displayed_data_reduction_promo_version";
-    /**
-     * Key used to save whether the first run experience or second run promo screen has been shown.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_FRE_OR_SECOND_RUN_PROMO =
-            "displayed_data_reduction_promo";
-    /**
-     * Key used to save whether the infobar promo has been shown.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_INFOBAR_PROMO =
-            "displayed_data_reduction_infobar_promo";
-    /**
-     * Key used to save the Chrome version the infobar promo was shown in.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_INFOBAR_PROMO_VERSION =
-            "displayed_data_reduction_infobar_promo_version";
-    /**
-     * Key used to save the saved bytes when the milestone promo was last shown. This value is
-     * initialized to the bytes saved for data saver users that had data saver turned on when this
-     * pref was added. This prevents us from showing promo for savings that have already happened
-     * for existing users.
-     * Note: For historical reasons, this pref key is misnamed. This promotion used to be conveyed
-     * in a snackbar but was moved to an IPH in M74.
-     */
-    public static final String DATA_REDUCTION_DISPLAYED_MILESTONE_PROMO_SAVED_BYTES =
-            "displayed_data_reduction_snackbar_promo_saved_bytes";
-
-    // Visible for backup and restore
-    public static final String DATA_REDUCTION_ENABLED = "BANDWIDTH_REDUCTION_PROXY_ENABLED";
-    public static final String DATA_REDUCTION_FIRST_ENABLED_TIME =
-            "BANDWIDTH_REDUCTION_FIRST_ENABLED_TIME";
-    /**
-     * Key used to save whether the user opted out of the data reduction proxy in the FRE promo.
-     */
-    public static final String DATA_REDUCTION_FRE_PROMO_OPT_OUT = "fre_promo_opt_out";
-    /**
-     * Key used to save the date on which the site breakdown should be shown. If the user has
-     * historical data saver stats, the site breakdown cannot be shown for MAXIMUM_DAYS_IN_CHART.
-     */
-    public static final String DATA_REDUCTION_SITE_BREAKDOWN_ALLOWED_DATE =
-            "data_reduction_site_breakdown_allowed_date";
-
-    /**
      * Keys used to save whether it is ready to promo.
      */
     public static final String DEFAULT_BROWSER_PROMO_SESSION_COUNT =
@@ -743,7 +690,7 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix PROMO_TIMES_SEEN = new KeyPrefix("Chrome.PromoCard.TimesSeen.*");
 
     /**
-     * Whether the promotion for data reduction has been skipped on first invocation.
+     * Whether the promotions were skipped on first invocation.
      * Default value is false.
      */
     public static final String PROMOS_SKIPPED_ON_FIRST_START = "promos_skipped_on_first_start";
