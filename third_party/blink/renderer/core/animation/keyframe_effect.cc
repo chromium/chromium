@@ -248,7 +248,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     animation->FlushPendingUpdates();
 
   HeapVector<ScriptValue> computed_keyframes;
-  if (!model_->HasFrames())
+  if (!model_->HasFrames() || !script_state->ContextIsValid())
     return computed_keyframes;
 
   // getKeyframes() returns a list of 'ComputedKeyframes'. A ComputedKeyframe
