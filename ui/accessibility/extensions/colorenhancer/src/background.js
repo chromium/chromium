@@ -18,12 +18,10 @@ function injectContentScripts() {
         if (isDisallowedUrl(url)) {
           continue;
         }
-        chrome.tabs.executeScript(
-            tabs[j].id,
-            {file: 'src/common.js'});
-        chrome.tabs.executeScript(
-            tabs[j].id,
-            {file: 'src/cvd.js'});
+        chrome.scripting.executeScript({
+          target: {tabId: tabs[j].id},
+          files: ['src/common.js', 'src/cvd.js'],
+        });
       }
     }
   });
