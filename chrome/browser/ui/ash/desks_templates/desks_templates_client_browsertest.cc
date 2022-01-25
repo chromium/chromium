@@ -1109,10 +1109,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
 }
 
 // Tests that basic operations using the native UI work as expected.
-// TODO(crbug.com/1286515): Remove the NativeUI prefix from these tests. Remove
-// the tests that do not have the NativeUI prefix other than GetDeskTemplateJson
+// TODO(crbug.com/1286515): Remove the SystemUI prefix from these tests. Remove
+// the tests that do not have the SystemUI prefix other than GetDeskTemplateJson
 // once the extension is deprecated.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUIBasic) {
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUIBasic) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
   ASSERT_EQ(0, desk_model->GetEntryCount());
 
@@ -1149,7 +1149,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUIBasic) {
 }
 
 // Tests launching a template with a browser window.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUILaunchBrowser) {
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
   const int browser_active_index = 1;
@@ -1203,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, NativeUILaunchBrowser) {
 
 // Tests that a browser's urls can be captured correctly in the desk template.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUICaptureBrowserUrlsTest) {
+                       SystemUICaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   aura::Window* window = browser->window()->GetNativeWindow();
@@ -1240,7 +1240,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that incognito browser windows will NOT be captured in the desk
 // template.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUICaptureIncognitoBrowserTest) {
+                       SystemUICaptureIncognitoBrowserTest) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   chrome::AddTabAt(incognito_browser, GURL(kExampleUrl1), /*index=*/-1,
                    /*foreground=*/true);
@@ -1288,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that launching a template that contains a system web app works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchTemplateWithSystemWebApp) {
+                       SystemUILaunchTemplateWithSystemWebApp) {
   // Create the settings app, which is a system web app.
   CreateSettingsSystemWebApp(browser()->profile());
 
@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchTemplateWithSWAExisting) {
+                       SystemUILaunchTemplateWithSWAExisting) {
   Profile* profile = browser()->profile();
 
   // Create the settings app, which is a system web app.
@@ -1401,7 +1401,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that browser windows created from a template have the correct bounds
 // and window state.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUIBrowserWindowRestorationTest) {
+                       SystemUIBrowserWindowRestorationTest) {
   // Create a new browser and set its bounds.
   Browser* browser_1 = CreateBrowser({GURL(kExampleUrl1), GURL(kExampleUrl2)});
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
@@ -1465,7 +1465,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchTemplateWithPWA) {
+                       SystemUILaunchTemplateWithPWA) {
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
@@ -1524,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that saving and launching a template that contains a PWA in a browser
 // window works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchTemplateWithPWAInBrowser) {
+                       SystemUILaunchTemplateWithPWAInBrowser) {
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
   aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
@@ -1560,7 +1560,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that browsers and SWAs can be captured correctly in the desk template.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUICaptureActiveDeskAsTemplateTest) {
+                       SystemUICaptureActiveDeskAsTemplateTest) {
   // Change `browser`'s bounds.
   const gfx::Rect browser_bounds(800, 200);
   aura::Window* window = browser()->window()->GetNativeWindow();
@@ -1650,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that launching a template that contains a chrome app works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUILaunchTemplateWithChromeApp) {
+                       SystemUILaunchTemplateWithChromeApp) {
   // Create a chrome app.
   const extensions::Extension* extension =
       LoadAndLaunchPlatformApp("launch", "Launched");
@@ -1703,7 +1703,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that the windows and tabs count histogram is recorded properly.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUIDeskTemplateWindowAndTabCountHistogram) {
+                       SystemUIDeskTemplateWindowAndTabCountHistogram) {
   base::HistogramTester histogram_tester;
 
   // Create the settings app, which is a system web app.
@@ -1729,7 +1729,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that the template count histogram is recorded properly.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUIDeskTemplateUserTemplateCountHistogram) {
+                       SystemUIDeskTemplateUserTemplateCountHistogram) {
   base::HistogramTester histogram_tester;
 
   ash::ToggleOverview();
@@ -1786,7 +1786,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that browser session restore isn't triggered when we launch a template
 // that contains a browser window.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       NativeUIPreventBrowserSessionRestoreTest) {
+                       SystemUIPreventBrowserSessionRestoreTest) {
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
@@ -1871,7 +1871,7 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
 
 // Tests that launching a template that contains an ARC app works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
-                       NativeUILaunchTemplateWithArcApp) {
+                       SystemUILaunchTemplateWithArcApp) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
   ASSERT_EQ(0, desk_model->GetEntryCount());
 
