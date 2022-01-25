@@ -461,6 +461,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1272997")
     public void interactingWithLocationBarHidesAutofillAssistant() {
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
