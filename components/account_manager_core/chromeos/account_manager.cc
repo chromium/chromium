@@ -745,21 +745,18 @@ void AccountManager::CheckDummyGaiaTokenForAllAccounts(
     base::OnceCallback<
         void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
         callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(init_state_, InitializationState::kNotStarted);
 
-  base::OnceClosure closure =
-      base::BindOnce(&AccountManager::CheckDummyGaiaTokenForAllAccountsInternal,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
-  RunOnInitialization(std::move(closure));
-}
+  if (init_state_ != InitializationState::kInitialized) {
+    base::OnceClosure closure =
+        base::BindOnce(&AccountManager::CheckDummyGaiaTokenForAllAccounts,
+                       weak_factory_.GetWeakPtr(), std::move(callback));
+    RunOnInitialization(std::move(closure));
+    return;
+  }
 
-void AccountManager::CheckDummyGaiaTokenForAllAccountsInternal(
-    base::OnceCallback<
-        void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(init_state_, InitializationState::kInitialized);
-
   std::vector<std::pair<::account_manager::Account, bool>> accounts_list;
   accounts_list.reserve(accounts_.size());
 

@@ -217,10 +217,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   void HasDummyGaiaToken(const ::account_manager::AccountKey& account_key,
                          base::OnceCallback<void(bool)> callback);
 
-  // Calls the |callback| with a list of pairs of |account_key| and boolean
-  // which is set to true if the token stored against |account_key| is a dummy
+  // Calls the `callback` with a list of pairs of `account_key` and boolean
+  // which is set to true if the token stored against `account_key` is a dummy
   // Gaia token, for all accounts stored in AccountManager. See
-  // |HasDummyGaiaToken|.
+  // `HasDummyGaiaToken`.
   void CheckDummyGaiaTokenForAllAccounts(
       base::OnceCallback<
           void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
@@ -323,13 +323,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManager {
   // Returns |true| if |AccountManager| is operating in ephemeral / in-memory
   // mode, and not persisting anything to disk.
   bool IsEphemeralMode() const;
-
-  // Does the actual work of checking dummy token for all accounts. Assumes that
-  // |AccountManager| initialization (|init_state_|) is complete.
-  void CheckDummyGaiaTokenForAllAccountsInternal(
-      base::OnceCallback<
-          void(const std::vector<std::pair<::account_manager::Account, bool>>&)>
-          callback) const;
 
   // Returns the refresh token for `account_key`, if present. `account_key` must
   // be a Gaia account. Assumes that `AccountManager` initialization
