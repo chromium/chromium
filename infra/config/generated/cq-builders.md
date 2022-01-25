@@ -437,7 +437,7 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 * [android-11-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-11-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-11-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-11-x86-rel""))
-  * Experiment percentage: 5.0
+  * Experiment percentage: 10.0
 
 * [android-marshmallow-arm64-rel-rts](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""android-marshmallow-arm64-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel-rts""))
   * Experiment percentage: 5.0

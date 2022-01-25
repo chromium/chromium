@@ -40,7 +40,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     # TODO(crbug.com/1137474): Fully enable once it works fine
     tryjob = try_.job(
-        experiment_percentage = 5,
+        experiment_percentage = 10,
     ),
 )
 
