@@ -5178,6 +5178,47 @@
             ]
         }
     ],
+    "PercentDroppedFramesSlidingWindow": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "TwoSecondWindow",
+                    "params": {
+                        "seconds": "2"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                },
+                {
+                    "name": "FiveSecondWindow",
+                    "params": {
+                        "seconds": "5"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                },
+                {
+                    "name": "TwentySecondWindow",
+                    "params": {
+                        "seconds": "20"
+                    },
+                    "enable_features": [
+                        "SlidingWindowForDroppedFrameCounter"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionChip": [
         {
             "platforms": [
