@@ -166,7 +166,7 @@ void RecentAppsView::OnAppListItemWillBeDeleted(AppListItem* item) {
   }
 
   for (AppListItemView* view : views_to_delete) {
-    RemoveChildView(view);
+    RemoveChildViewT(view);
     base::Erase(item_views_, view);
   }
 
