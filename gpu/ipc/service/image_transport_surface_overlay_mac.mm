@@ -21,6 +21,7 @@
 #include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/gl_context.h"
@@ -318,19 +319,22 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
     DLOG(ERROR) << "Not an IOSurface image.";
     return false;
   }
+  // TODO(1290313): the display_bounds might not need to be rounded to the
+  // nearest rect as this eventually gets made into a CALayer. CALayers work in
+  // floats.
   const ui::CARendererLayerParams overlay_as_calayer_params(
       false,          // is_clipped
       gfx::Rect(),    // clip_rect
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
       gfx::Transform(), image,
-      overlay_plane_data.crop_rect,       // contents_rect
-      overlay_plane_data.display_bounds,  // rect
-      SK_ColorTRANSPARENT,                // background_color
-      0,                                  // edge_aa_mask
-      1.f,                                // opacity
-      GL_LINEAR,                          // filter
-      gfx::ProtectedVideoType::kClear);   // protected_video_type
+      overlay_plane_data.crop_rect,                           // contents_rect
+      gfx::ToNearestRect(overlay_plane_data.display_bounds),  // rect
+      SK_ColorTRANSPARENT,               // background_color
+      0,                                 // edge_aa_mask
+      1.f,                               // opacity
+      GL_LINEAR,                         // filter
+      gfx::ProtectedVideoType::kClear);  // protected_video_type
   return ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
       ->ScheduleCALayer(overlay_as_calayer_params);
 }

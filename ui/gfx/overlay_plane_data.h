@@ -22,7 +22,7 @@ struct GFX_EXPORT OverlayPlaneData {
   OverlayPlaneData();
   OverlayPlaneData(int z_order,
                    OverlayTransform plane_transform,
-                   const Rect& display_bounds,
+                   const RectF& display_bounds,
                    const RectF& crop_rect,
                    bool enable_blend,
                    const Rect& damage_rect,
@@ -43,8 +43,10 @@ struct GFX_EXPORT OverlayPlaneData {
   // Specifies how the buffer is to be transformed during composition.
   OverlayTransform plane_transform = OverlayTransform::OVERLAY_TRANSFORM_NONE;
 
-  // Pixel bounds within the display to position the image.
-  Rect display_bounds;
+  // Bounds within the display to position the image in pixel coordinates. They
+  // are sent as floating point rect as some backends such as Wayland are able
+  // to do delegated compositing with sub-pixel accurate positioning.
+  RectF display_bounds;
 
   // Normalized bounds of the image to be displayed in |display_bounds|.
   RectF crop_rect = RectF(1.f, 1.f);

@@ -17,6 +17,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "sysmem_native_pixmap.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
@@ -188,12 +189,14 @@ void ScenicSurface::Present(
     auto& overlay_data = overlay.overlay_plane_data;
     if (!overlay_view_info.visible ||
         overlay_view_info.plane_z_order != overlay_data.z_order ||
-        overlay_view_info.display_bounds != overlay_data.display_bounds ||
+        overlay_view_info.display_bounds !=
+            gfx::ToNearestRect(overlay_data.display_bounds) ||
         overlay_view_info.crop_rect != overlay_data.crop_rect ||
         overlay_view_info.plane_transform != overlay_data.plane_transform) {
       overlay_view_info.visible = true;
       overlay_view_info.plane_z_order = overlay_data.z_order;
-      overlay_view_info.display_bounds = overlay_data.display_bounds;
+      overlay_view_info.display_bounds =
+          gfx::ToNearestRect(overlay_data.display_bounds);
       overlay_view_info.crop_rect = overlay_data.crop_rect;
       overlay_view_info.plane_transform = overlay_data.plane_transform;
       layout_update_required = true;

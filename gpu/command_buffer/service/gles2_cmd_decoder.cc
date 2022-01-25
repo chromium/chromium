@@ -13761,8 +13761,8 @@ error::Error GLES2DecoderImpl::HandleScheduleOverlayPlaneCHROMIUM(
           image, std::move(gpu_fence),
           gfx::OverlayPlaneData(
               c.plane_z_order, transform,
-              gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width,
-                        c.bounds_height),
+              gfx::RectF(c.bounds_x, c.bounds_y, c.bounds_width,
+                         c.bounds_height),
               gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height),
               c.enable_blend,
               /*damage_rect=*/gfx::Rect(), /*opacity*/ 1.0f,

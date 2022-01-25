@@ -10,6 +10,7 @@
 #include "base/process/process.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"
@@ -32,7 +33,8 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
       ui::ozone::mojom::WaylandOverlayConfig::New()};
   wayland_overlay_config->z_order = input.overlay_plane_data.z_order;
   wayland_overlay_config->transform = input.overlay_plane_data.plane_transform;
-  wayland_overlay_config->bounds_rect = input.overlay_plane_data.display_bounds;
+  wayland_overlay_config->bounds_rect =
+      gfx::ToNearestRect(input.overlay_plane_data.display_bounds);
   wayland_overlay_config->crop_rect = input.overlay_plane_data.crop_rect;
   wayland_overlay_config->enable_blend = input.overlay_plane_data.enable_blend;
   wayland_overlay_config->opacity = input.overlay_plane_data.opacity;

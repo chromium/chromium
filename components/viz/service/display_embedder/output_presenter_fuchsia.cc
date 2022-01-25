@@ -356,10 +356,10 @@ void OutputPresenterFuchsia::ScheduleOverlays(
     auto& overlay = next_frame_->overlays.back();
     overlay.pixmap = std::move(pixmap);
     overlay.overlay_plane_data = gfx::OverlayPlaneData(
-        candidate.plane_z_order, candidate.transform,
-        gfx::ToRoundedRect(candidate.display_rect), candidate.uv_rect,
-        !candidate.is_opaque, gfx::ToRoundedRect(candidate.damage_rect),
-        candidate.opacity, candidate.priority_hint, candidate.rounded_corners,
+        candidate.plane_z_order, candidate.transform, candidate.display_rect,
+        candidate.uv_rect, !candidate.is_opaque,
+        gfx::ToRoundedRect(candidate.damage_rect), candidate.opacity,
+        candidate.priority_hint, candidate.rounded_corners,
         candidate.color_space, candidate.hdr_metadata);
   }
 }

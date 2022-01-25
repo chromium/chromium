@@ -360,12 +360,12 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   // here.
   gl_surface_->ScheduleOverlayPlane(
       gl_image, std::move(fence),
-      gfx::OverlayPlaneData(
-          kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
-          plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
-          plane.opacity, plane.priority_hint, plane.rounded_corners,
-          presenter_image->color_space(),
-          /*hdr_metadata=*/absl::nullopt));
+      gfx::OverlayPlaneData(kPlaneZOrder, plane.transform, plane.display_rect,
+                            plane.uv_rect, plane.enable_blending,
+                            gfx::Rect(plane.resource_size), plane.opacity,
+                            plane.priority_hint, plane.rounded_corners,
+                            presenter_image->color_space(),
+                            /*hdr_metadata=*/absl::nullopt));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -381,7 +381,7 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
   gl_surface_->ScheduleOverlayPlane(
       gl_image, /*gpu_fence=*/nullptr,
       gfx::OverlayPlaneData(kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE,
-                            gfx::Rect(),
+                            gfx::RectF(),
                             /*crop_rect=*/kUVRect,
                             /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
                             /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
@@ -432,10 +432,10 @@ void OutputPresenterGL::ScheduleOverlays(
           accesses[i] ? TakeGpuFence(accesses[i]->TakeAcquireFences())
                       : nullptr,
           gfx::OverlayPlaneData(
-              overlay.plane_z_order, overlay.transform,
-              ToNearestRect(overlay.display_rect), overlay.uv_rect,
-              !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
-              overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
+              overlay.plane_z_order, overlay.transform, overlay.display_rect,
+              overlay.uv_rect, !overlay.is_opaque,
+              ToEnclosingRect(overlay.damage_rect), overlay.opacity,
+              overlay.priority_hint, overlay.rounded_corners,
               overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
     }
 #elif BUILDFLAG(IS_APPLE)

@@ -215,7 +215,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
         image, nullptr,
         gfx::OverlayPlaneData(z_order,
                               gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-                              window_->GetBounds(), {}, false,
+                              gfx::RectF(window_->GetBounds()), {}, false,
                               gfx::Rect(window_->GetBounds().size()), 1.0f,
                               gfx::OverlayPriorityHint::kNone, gfx::RRectF(),
                               gfx::ColorSpace::CreateSRGB(), absl::nullopt));

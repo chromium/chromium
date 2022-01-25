@@ -394,7 +394,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
         gfx::ScaleRect(overlay_plane_data.crop_rect, buffer_size.width(),
                        buffer_size.height());
 
-    gfx::Rect dst = overlay_plane_data.display_bounds;
+    gfx::Rect dst = gfx::ToNearestRect(overlay_plane_data.display_bounds);
     gfx::Rect src = gfx::ToEnclosedRect(scaled_rect);
 
     // When the video is being scrolled offscreen DisplayCompositor will crop it

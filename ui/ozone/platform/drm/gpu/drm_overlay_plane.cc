@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
@@ -56,7 +57,7 @@ DrmOverlayPlane::DrmOverlayPlane(
     : DrmOverlayPlane(buffer,
                       overlay_plane_data.z_order,
                       overlay_plane_data.plane_transform,
-                      overlay_plane_data.display_bounds,
+                      gfx::ToNearestRect(overlay_plane_data.display_bounds),
                       overlay_plane_data.crop_rect,
                       overlay_plane_data.enable_blend,
                       std::move(gpu_fence)) {}
