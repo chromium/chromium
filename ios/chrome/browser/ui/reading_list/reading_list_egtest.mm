@@ -320,7 +320,7 @@ void AddCurrentPageToReadingList() {
   [ChromeEarlGrey watchForButtonsWithLabels:@[ snackBarLabel ]
                                     timeout:kSnackbarAppearanceTimeout];
   [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+      tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
 
   // Wait for the snackbar to appear.

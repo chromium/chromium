@@ -124,11 +124,23 @@ class ScopedDisableTimerTracking {
 
 - (void)closeToolsMenu {
   if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
-      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-    // With the new overflow menu on iPhone, the half sheet covers the bottom
-    // half of the screen. Swiping down on the sheet will close the menu.
+      [ChromeEarlGrey isCompactWidth]) {
+    // With the new overflow menu on compact devices, the half sheet covers the
+    // bottom half of the screen. Swiping down on the sheet will close the menu.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
         performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+    // Sometimes the menu can be expanded to full height, so one swipe isn't
+    // enough to dismiss. If the menu is still visible, swipe one more time to
+    // guarantee closing.
+    NSError* error;
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+    if (error) {
+      [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
+          performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+    }
   } else {
     // A scrim covers the whole window and tapping on this scrim dismisses the
     // tools menu.  The "Tools Menu" button happens to be outside of the bounds
