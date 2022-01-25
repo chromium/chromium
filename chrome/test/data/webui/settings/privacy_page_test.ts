@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ClearBrowsingDataBrowserProxyImpl, ContentSettingsTypes, CookiePrimarySetting, SafeBrowsingSetting, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
+import {HatsBrowserProxyImpl, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyPageBrowserProxyImpl, Route, Router, routes, SecureDnsMode, SettingsPrivacyPageElement, StatusAction, SyncStatus, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
@@ -205,8 +205,11 @@ suite('PrivacyPage', function() {
 
 suite('PrivacyReviewEnabled', function() {
   let page: SettingsPrivacyPageElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-privacy-page');
     page.prefs = {
@@ -268,9 +271,14 @@ suite('PrivacyReviewEnabled', function() {
     assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
   });
 
-  test('privacyReviewRowClick', function() {
+  test('privacyReviewRowClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#privacyReviewLinkRow')!.click();
+
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY, result);
+
     // Ensure the correct Settings page is shown.
     assertEquals(routes.PRIVACY_REVIEW, Router.getInstance().getCurrentRoute());
   });

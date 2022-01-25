@@ -14,6 +14,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSettingsPageHistogram',
       'recordSafeBrowsingInteractionHistogram',
       'recordPrivacyGuideNextNavigationHistogram',
+      'recordPrivacyGuideEntryExitHistogram',
     ]);
   }
 
@@ -37,5 +38,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   recordPrivacyGuideNextNavigationHistogram(interaction:
                                                 PrivacyGuideInteractions) {
     this.methodCalled('recordPrivacyGuideNextNavigationHistogram', interaction);
+  }
+
+  recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions) {
+    this.methodCalled('recordPrivacyGuideEntryExitHistogram', interaction);
   }
 }

@@ -627,6 +627,42 @@ suite('PrivacyReviewPage', function() {
         });
   });
 
+  test('completionCardSWAALinkClick', async function() {
+    navigateToStep(PrivacyReviewStep.COMPLETION);
+    setSignInState(true);
+    assertCompletionCardVisible();
+
+    const completionFragment =
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
+
+    assertTrue(isChildVisible(completionFragment, '#waaRow'));
+    completionFragment.shadowRoot!.querySelector<HTMLElement>(
+                                      '#waaRow')!.click();
+
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.SWAA_COMPLETION_LINK, result);
+  });
+
+  test('completionCardPrivacySandboxLinkClick', async function() {
+    navigateToStep(PrivacyReviewStep.COMPLETION);
+    assertCompletionCardVisible();
+
+    const completionFragment =
+        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
+    completionFragment.shadowRoot!
+        .querySelector<HTMLElement>('#privacySandboxRow')!.click();
+
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(
+        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK, result);
+  });
+
   test('completionCardGetsUpdated', function() {
     navigateToStep(PrivacyReviewStep.COMPLETION);
     setSignInState(true);

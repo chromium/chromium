@@ -17,7 +17,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {UpdateSyncStateEvent} from '../../clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
-import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../../metrics_browser_proxy.js';
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 
@@ -76,6 +76,8 @@ export class PrivacyReviewCompletionFragmentElement extends
   }
 
   private onPrivacySandboxClick_() {
+    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
+        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK);
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.CompletionPSClick');
     // Create a MouseEvent directly to avoid Polymer failing to synthesise a
@@ -87,6 +89,8 @@ export class PrivacyReviewCompletionFragmentElement extends
   }
 
   private onWaaClick_() {
+    this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
+        PrivacyGuideInteractions.SWAA_COMPLETION_LINK);
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacyGuide.CompletionSWAAClick');
     OpenWindowProxyImpl.getInstance().openURL(

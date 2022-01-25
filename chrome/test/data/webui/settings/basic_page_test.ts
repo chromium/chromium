@@ -11,9 +11,10 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, pageVisibility, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
@@ -220,6 +221,7 @@ suite('SettingsBasicPage', () => {
 suite('PrivacyReviewPromo', () => {
   let page: SettingsBasicPageElement;
   let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -233,6 +235,8 @@ suite('PrivacyReviewPromo', () => {
     page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     page.scroller = document.body;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
     // Need to wait for the 'show-container' event to fire after every
     // transition, to ensure no logic related to previous transitions is still

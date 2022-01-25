@@ -100,8 +100,12 @@ export enum PrivacyGuideInteractions {
   SAFE_BROWSING_NEXT_BUTTON = 3,
   COOKIES_NEXT_BUTTON = 4,
   COMPLETION_NEXT_BUTTON = 5,
+  SETTINGS_LINK_ROW_ENTRY = 6,
+  PROMO_ENTRY = 7,
+  SWAA_COMPLETION_LINK = 8,
+  PRIVACY_SANDBOX_COMPLETION_LINK = 9,
   // Leave this at the end.
-  COUNT = 6,
+  COUNT = 10,
 }
 
 export interface MetricsBrowserProxy {
@@ -137,6 +141,13 @@ export interface MetricsBrowserProxy {
    */
   recordPrivacyGuideNextNavigationHistogram(interaction:
                                                 PrivacyGuideInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.EntryExit histogram
+   */
+  recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions):
+      void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -172,6 +183,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
                                                 PrivacyGuideInteractions) {
     chrome.send('metricsHandler:recordInHistogram', [
       'Settings.PrivacyGuide.NextNavigation', interaction,
+      PrivacyGuideInteractions.COUNT
+    ]);
+  }
+
+  recordPrivacyGuideEntryExitHistogram(interaction: PrivacyGuideInteractions) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.EntryExit', interaction,
       PrivacyGuideInteractions.COUNT
     ]);
   }
