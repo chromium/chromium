@@ -28,8 +28,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(USE_VAAPI)
+#include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
-#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else

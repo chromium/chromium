@@ -25,6 +25,7 @@ source_set("chromeos") {
 
   deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//media",
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
