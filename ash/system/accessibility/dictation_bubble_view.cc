@@ -4,6 +4,8 @@
 
 #include "ash/system/accessibility/dictation_bubble_view.h"
 
+#include <memory>
+
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -46,6 +48,138 @@ void SetImageHelper(views::ImageView* image_view,
   image_view->SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, color));
 }
 
+std::unique_ptr<views::Label> CreateLabelView(views::Label** destination_view,
+                                              const std::u16string& text,
+                                              SkColor color) {
+  return views::Builder<views::Label>()
+      .CopyAddressTo(destination_view)
+      .SetText(text)
+      .SetEnabledColor(color)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetMultiLine(false)
+      .Build();
+}
+
+// View for the Dictation bubble top row. Responsible for displaying icons,
+// animations, and non-finalized speech results.
+class ASH_EXPORT TopRowView : public views::View {
+ public:
+  METADATA_HEADER(TopRowView);
+  TopRowView() {
+    std::unique_ptr<views::BoxLayout> layout =
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal);
+    layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
+    SetLayoutManager(std::move(layout));
+
+    AddChildView(CreateStandbyView());
+    AddChildView(CreateImageView(&macro_succeeded_image_,
+                                 kDictationBubbleMacroSucceededIcon));
+    AddChildView(
+        CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
+    AddChildView(CreateLabelView(
+        &label_, std::u16string(),
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorPrimary)));
+  }
+
+  TopRowView(const TopRowView&) = delete;
+  TopRowView& operator=(const TopRowView&) = delete;
+  ~TopRowView() override = default;
+
+  // Updates the visibility of all child views. Also updates the text content
+  // of `label_` and updates the size of this view.
+  void Update(DictationBubbleIconType icon,
+              const absl::optional<std::u16string>& text) {
+    // Update visibility.
+    if (use_standby_animation_) {
+      standby_animation_->SetVisible(icon == DictationBubbleIconType::kStandby);
+      icon == DictationBubbleIconType::kStandby ? standby_animation_->Play()
+                                                : standby_animation_->Stop();
+    } else {
+      standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
+    }
+
+    macro_succeeded_image_->SetVisible(icon ==
+                                       DictationBubbleIconType::kMacroSuccess);
+    macro_failed_image_->SetVisible(icon ==
+                                    DictationBubbleIconType::kMacroFail);
+
+    // Update label.
+    label_->SetVisible(text.has_value());
+    label_->SetText(text.has_value() ? text.value() : std::u16string());
+    SizeToPreferredSize();
+  }
+
+  // Updates this view so that it respects the global dark mode setting.
+  void OnColorModeChanged(bool dark_mode_enabled) {
+    AshColorProvider* color_provider = AshColorProvider::Get();
+    if (!color_provider)
+      return;
+
+    SkColor icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
+    SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    if (!use_standby_animation_)
+      SetImageHelper(standby_image_, kDictationBubbleIcon, icon_color);
+    SetImageHelper(macro_succeeded_image_, kDictationBubbleMacroSucceededIcon,
+                   icon_color);
+    SetImageHelper(macro_failed_image_, kDictationBubbleMacroFailedIcon,
+                   icon_color);
+    label_->SetEnabledColor(text_color);
+  }
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kGenericContainer;
+  }
+
+ private:
+  friend DictationBubbleView;
+
+  // Returns a std::unique_ptr<AnimatedImageView> if the standby animation
+  // can successfully be loaded. Otherwise, returns a std::unique_ptr<ImageView>
+  // as a fallback.
+  std::unique_ptr<views::View> CreateStandbyView() {
+    absl::optional<std::string> json =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            IDR_DICTATION_BUBBLE_ANIMATION);
+    if (json.has_value()) {
+      use_standby_animation_ = true;
+      auto skottie = cc::SkottieWrapper::CreateSerializable(
+          std::vector<uint8_t>(json.value().begin(), json.value().end()));
+      return views::Builder<views::AnimatedImageView>()
+          .CopyAddressTo(&standby_animation_)
+          .SetAnimatedImage(std::make_unique<lottie::Animation>(skottie))
+          .SetImageSize(gfx::Size(32, 16))
+          .Build();
+    }
+
+    use_standby_animation_ = false;
+    return CreateImageView(&standby_image_, kDictationBubbleIcon);
+  }
+
+  // Owned by the views hierarchy.
+  // An animation that is shown when Dictation is standing by.
+  views::AnimatedImageView* standby_animation_ = nullptr;
+  // An image that is shown when Dictation is standing by. Only used if the
+  // above AnimatedImageView fails to initialize.
+  views::ImageView* standby_image_ = nullptr;
+  // If true, this view will use `standby_animation_`. Otherwise, will use
+  // `standby_image_`.
+  bool use_standby_animation_ = false;
+  // An image that is shown when a macro is successfully run.
+  views::ImageView* macro_succeeded_image_ = nullptr;
+  // An image that is shown when a macro fails to run.
+  views::ImageView* macro_failed_image_ = nullptr;
+  // A label that displays non-final speech results.
+  views::Label* label_ = nullptr;
+};
+
+BEGIN_METADATA(TopRowView, views::View)
+END_METADATA
+
 }  // namespace
 
 DictationBubbleView::DictationBubbleView() {
@@ -57,56 +191,21 @@ DictationBubbleView::~DictationBubbleView() = default;
 
 void DictationBubbleView::Update(DictationBubbleIconType icon,
                                  const absl::optional<std::u16string>& text) {
-  // Update visibility.
-  if (use_standby_animation_) {
-    standby_animation_->SetVisible(icon == DictationBubbleIconType::kStandby);
-    icon == DictationBubbleIconType::kStandby ? standby_animation_->Play()
-                                              : standby_animation_->Stop();
-  } else {
-    standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
-  }
-  macro_succeeded_image_->SetVisible(icon ==
-                                     DictationBubbleIconType::kMacroSuccess);
-  macro_failed_image_->SetVisible(icon == DictationBubbleIconType::kMacroFail);
-
-  // Update label.
-  label_->SetVisible(text.has_value());
-  label_->SetText(text.has_value() ? text.value() : std::u16string());
+  top_row_view_->Update(icon, text);
   SizeToContents();
 }
 
 void DictationBubbleView::OnColorModeChanged(bool dark_mode_enabled) {
-  AshColorProvider* color_provider = AshColorProvider::Get();
-  if (!color_provider)
-    return;
-
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  SkColor text_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  if (!use_standby_animation_)
-    SetImageHelper(standby_image_, kDictationBubbleIcon, icon_color);
-  SetImageHelper(macro_succeeded_image_, kDictationBubbleMacroSucceededIcon,
-                 icon_color);
-  SetImageHelper(macro_failed_image_, kDictationBubbleMacroFailedIcon,
-                 icon_color);
-  label_->SetEnabledColor(text_color);
+  top_row_view_->OnColorModeChanged(dark_mode_enabled);
 }
 
 void DictationBubbleView::Init() {
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
+      views::BoxLayout::Orientation::kVertical);
   SetLayoutManager(std::move(layout));
-
   UseCompactMargins();
 
-  AddChildView(CreateStandbyView());
-  AddChildView(CreateImageView(&macro_succeeded_image_,
-                               kDictationBubbleMacroSucceededIcon));
-  AddChildView(
-      CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
-  AddChildView(CreateLabel(std::u16string()));
+  top_row_view_ = AddChildView(std::make_unique<TopRowView>());
 }
 
 void DictationBubbleView::OnBeforeBubbleWidgetInit(
@@ -124,61 +223,30 @@ void DictationBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 std::u16string DictationBubbleView::GetTextForTesting() {
-  return label_->GetText();
+  return top_row_view_->label_->GetText();
 }
 
 bool DictationBubbleView::IsStandbyViewVisibleForTesting() {
-  if (use_standby_animation_)
-    return standby_animation_->GetVisible();
+  if (top_row_view_->use_standby_animation_)
+    return top_row_view_->standby_animation_->GetVisible();
 
-  return standby_image_->GetVisible();
+  return top_row_view_->standby_image_->GetVisible();
 }
 
 bool DictationBubbleView::IsMacroSucceededImageVisibleForTesting() {
-  return macro_succeeded_image_->GetVisible();
+  return top_row_view_->macro_succeeded_image_->GetVisible();
 }
 
 bool DictationBubbleView::IsMacroFailedImageVisibleForTesting() {
-  return macro_failed_image_->GetVisible();
+  return top_row_view_->macro_failed_image_->GetVisible();
 }
 
 SkColor DictationBubbleView::GetLabelBackgroundColorForTesting() {
-  return label_->GetBackgroundColor();
+  return top_row_view_->label_->GetBackgroundColor();
 }
 
 SkColor DictationBubbleView::GetLabelTextColorForTesting() {
-  return label_->GetEnabledColor();
-}
-
-std::unique_ptr<views::View> DictationBubbleView::CreateStandbyView() {
-  absl::optional<std::string> json =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_DICTATION_BUBBLE_ANIMATION);
-  if (json.has_value()) {
-    use_standby_animation_ = true;
-    auto skottie = cc::SkottieWrapper::CreateSerializable(
-        std::vector<uint8_t>(json.value().begin(), json.value().end()));
-    return views::Builder<views::AnimatedImageView>()
-        .CopyAddressTo(&standby_animation_)
-        .SetAnimatedImage(std::make_unique<lottie::Animation>(skottie))
-        .SetImageSize(gfx::Size(32, 16))
-        .Build();
-  }
-
-  use_standby_animation_ = false;
-  return CreateImageView(&standby_image_, kDictationBubbleIcon);
-}
-
-std::unique_ptr<views::Label> DictationBubbleView::CreateLabel(
-    const std::u16string& text) {
-  return views::Builder<views::Label>()
-      .CopyAddressTo(&label_)
-      .SetText(text)
-      .SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary))
-      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-      .SetMultiLine(false)
-      .Build();
+  return top_row_view_->label_->GetEnabledColor();
 }
 
 BEGIN_METADATA(DictationBubbleView, views::View)

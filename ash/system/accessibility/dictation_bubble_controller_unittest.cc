@@ -57,9 +57,7 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   bool IsBubbleVisible() { return GetController()->widget_->IsVisible(); }
 
-  std::u16string GetBubbleText() {
-    return GetController()->dictation_bubble_view_->GetTextForTesting();
-  }
+  std::u16string GetBubbleText() { return GetView()->GetTextForTesting(); }
 
   bool IsStandbyViewVisible() {
     return GetView()->IsStandbyViewVisibleForTesting();
