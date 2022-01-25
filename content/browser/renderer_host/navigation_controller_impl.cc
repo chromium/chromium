@@ -3964,6 +3964,13 @@ void NavigationControllerImpl::InsertEntriesFrom(
   DCHECK_GE(entries_.size(), 1u);
   DCHECK(pending_entry_index_ == -1 ||
          pending_entry_ == GetEntryAtIndex(pending_entry_index_));
+  if (!source->frame_tree_.root()->is_on_initial_empty_document()) {
+    // If the source frame tree's root is not on the initial empty document,
+    // also mark this FrameTree's root as such, so that the next navigation
+    // won't replace the latest NavigationEntry due to it still being marked as
+    // "on the initial empty document".
+    frame_tree_.root()->SetNotOnInitialEmptyDocument();
+  }
 }
 
 void NavigationControllerImpl::SetGetTimestampCallbackForTest(

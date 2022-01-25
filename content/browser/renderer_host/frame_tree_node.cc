@@ -394,10 +394,6 @@ void FrameTreeNode::SetCurrentURL(const GURL& url) {
   blame_context_.TakeSnapshot();
 }
 
-void FrameTreeNode::DidCommitNonInitialEmptyDocument() {
-  is_on_initial_empty_document_ = false;
-}
-
 void FrameTreeNode::SetCollapsed(bool collapsed) {
   DCHECK(!IsMainFrame());
   if (is_collapsed_ == collapsed)

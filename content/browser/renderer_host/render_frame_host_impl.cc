@@ -3442,15 +3442,11 @@ void RenderFrameHostImpl::DidNavigate(
 
   // If the navigation was a cross-document navigation and it's not the
   // synchronous about:blank commit, then it committed a document that is not
-  // the initial empty document. Note that the
-  // DidCommitNonInitialEmptyDocument() call only actually changes the state of
-  // the FrameTreeNode the first time it was called (it changes the state from
-  // "is on the initial empty document" to "not on the initial empty document",
-  // and we never go back to the former state).
+  // the initial empty document.
   if (!navigation_request->IsSameDocument() &&
       (!navigation_request->is_synchronous_renderer_commit() ||
        !navigation_request->GetURL().IsAboutBlank())) {
-    navigation_request->frame_tree_node()->DidCommitNonInitialEmptyDocument();
+    navigation_request->frame_tree_node()->SetNotOnInitialEmptyDocument();
   }
 
   // For uuid-in-package: and urn: resources served from WebBundles, use the
