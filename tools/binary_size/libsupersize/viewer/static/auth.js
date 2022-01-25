@@ -19,11 +19,7 @@ function handleClientLoad() {
 
 function toggleSigninModal(show) {
   const modal = document.getElementById('signin-modal');
-  if (show) {
-    modal.style.display = 'block';
-  } else {
-    modal.style.display = 'none';
-  }
+  modal.style.display = show ? '': 'none';
 }
 
 function initClient() {

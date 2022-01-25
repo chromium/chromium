@@ -231,7 +231,6 @@ ul {
 
 .modal {
   background-color: rgba(0,0,0,0.5);
-  display: none;
   height: 100%;
   left: 0;
   overflow: auto;
@@ -256,7 +255,7 @@ ul {
 }
 
 .download-button {
-  vertical-align: middle;
-  margin-left: 8px;
   fill: #1a73e8;
+  margin-left: 8px;
+  vertical-align: middle;
 }

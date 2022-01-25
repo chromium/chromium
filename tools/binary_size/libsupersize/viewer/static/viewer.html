@@ -601,10 +601,16 @@
     </footer>
   </div>
   <!-- Modal Sign in Dialog -->
-  <div id="signin-modal" class="modal">
+  <div id="signin-modal" class="modal" style="display:none">
     <div class="modal-content">
       <p>You are trying to access a private size file. Please sign in with your @google.com account.</p>
       <button type="button" class="signin text-button filled-button">Sign Me In</button>
+    </div>
+  </div>
+  <!-- Modal Empty .sizediff Dialog -->
+  <div id="error-modal" class="modal" style="display:none">
+    <div class="modal-content">
+      <p>This diff contains no symbols (no sizes changed).</p>
     </div>
   </div>
 </body>

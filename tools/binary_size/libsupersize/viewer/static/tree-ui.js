@@ -425,6 +425,11 @@ const newTreeElement = (() => {
       link.click();
       link.tabIndex = 0;
     }
+    if (diffMode) {
+      if(Object.keys(root.childStats).length === 0) {
+        displayNoSymbolsMessage();
+      }
+    }
 
     // Double requestAnimationFrame ensures that the code inside executes in a
     // different frame than the above tree element creation.
@@ -454,7 +459,7 @@ const newTreeElement = (() => {
   }
 
   /**
-   * Display/hide download buttons for loadUrl.size and beforeUrl.size
+   * Displays/hides download buttons for loadUrl.size and beforeUrl.size.
    * @param {DOMString} beforeUrl
    * @param {DOMString} loadUrl
    */
@@ -471,6 +476,15 @@ const newTreeElement = (() => {
       loadAnchor.title = 'Download .sizediff file';
       loadAnchor.download = 'load_size.sizediff';
     }
+  }
+
+  /**
+   * Displays an error modal if the .sizediff file is empty.
+   */
+  function displayNoSymbolsMessage() {
+      const errorModal = document.getElementById('error-modal');
+      errorModal.querySelector('div').style.alignItems = 'center';
+      errorModal.style.display = '';
   }
 
   window.supersize.treeReady.then((message) => {
