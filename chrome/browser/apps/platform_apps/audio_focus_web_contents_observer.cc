@@ -22,26 +22,19 @@ AudioFocusWebContentsObserver::AudioFocusWebContentsObserver(
 
 AudioFocusWebContentsObserver::~AudioFocusWebContentsObserver() = default;
 
-void AudioFocusWebContentsObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
+void AudioFocusWebContentsObserver::PrimaryPageChanged(content::Page& page) {
+  content::RenderFrameHost& render_frame_host = page.GetMainDocument();
+  if (render_frame_host.IsErrorDocument())
     return;
-  }
 
   if (!audio_focus_group_id_.is_empty())
     return;
 
-  content::BrowserContext* context =
-      navigation_handle->GetWebContents()->GetBrowserContext();
+  content::BrowserContext* context = render_frame_host.GetBrowserContext();
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(context)
           ->enabled_extensions()
-          .GetExtensionOrAppByURL(navigation_handle->GetURL());
+          .GetExtensionOrAppByURL(render_frame_host.GetLastCommittedURL());
 
   if (!extension || !extension->is_platform_app())
     return;
