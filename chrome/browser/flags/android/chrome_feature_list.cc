@@ -587,7 +587,7 @@ const base::Feature kContextualTriggersSelectionSize{
 
 const base::Feature kQuickActionSearchWidgetAndroidDinoVariant{
     "QuickActionSearchWidgetAndroidDinoVariant",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDirectActions{"DirectActions",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
@@ -698,7 +698,7 @@ const base::Feature kProbabilisticCryptidRenderer{
     "ProbabilisticCryptidRenderer", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kQuickActionSearchWidgetAndroid{
-    "QuickActionSearchWidgetAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+    "QuickActionSearchWidgetAndroid", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kReachedCodeProfiler{"ReachedCodeProfiler",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
