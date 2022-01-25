@@ -37,20 +37,21 @@ async function wrapMojoResponse<T>(call: Promise<T>|undefined): Promise<T> {
   return result as T;
 }
 
-const mojoResponseHandler = {
+const mojoResponseHandler: ProxyHandler<MojoEndpoint> = {
   get: function(target, property) {
-    if (target[property] instanceof Function) {
-      return (...args) => {
+    const val = Reflect.get(target, property);
+    if (val instanceof Function) {
+      return (...args: unknown[]) => {
         if (windowUnload.isSignaled()) {
           // Don't try to call the mojo function if window is already unloaded,
           // since the connection would have already been closed, and there
           // would be uncaught exception if we try to call the mojo function.
           return NEVER_SETTLED_PROMISE;
         }
-        return wrapMojoResponse(target[property](...args));
+        return wrapMojoResponse(Reflect.apply(val, target, args));
       };
     }
-    return target[property];
+    return val;
   },
 };
 
@@ -69,7 +70,7 @@ function closeWhenUnload(endpoint: MojoEndpoint) {
  */
 export function wrapEndpoint<T extends MojoEndpoint>(endpoint: T): T {
   closeWhenUnload(endpoint);
-  return new Proxy(endpoint, mojoResponseHandler);
+  return new Proxy(endpoint, mojoResponseHandler as ProxyHandler<T>);
 }
 
 /**
