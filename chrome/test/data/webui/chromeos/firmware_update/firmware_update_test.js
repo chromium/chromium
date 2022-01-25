@@ -52,6 +52,28 @@ export function firmwareUpdateAppTest() {
   }
 
   /** @return {!CrDialogElement} */
+  function getConfirmationDialog() {
+    return page.shadowRoot.querySelector('firmware-confirmation-dialog')
+        .shadowRoot.querySelector('#confirmationDialog');
+  }
+
+  /** @return {!Promise} */
+  function confirmUpdate() {
+    const confirmationDialog = getConfirmationDialog();
+    assertTrue(confirmationDialog.open);
+    confirmationDialog.querySelector('#nextButton').click();
+    return flushTasks();
+  }
+
+  /** @return {!Promise} */
+  function cancelUpdate() {
+    const confirmationDialog = getConfirmationDialog();
+    assertTrue(confirmationDialog.open);
+    confirmationDialog.querySelector('#cancelButton').click();
+    return flushTasks();
+  }
+
+  /** @return {!CrDialogElement} */
   function getUpdateDialog() {
     return page.shadowRoot.querySelector('firmware-update-dialog')
         .shadowRoot.querySelector('#updateDialog');
@@ -105,13 +127,24 @@ export function firmwareUpdateAppTest() {
     assertEquals(fake_provider, getUpdateProvider());
   });
 
+  test('OpenConfirmationDialog', async () => {
+    await flushTasks();
+    // Open dialog for first firmware update card.
+    getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
+    await flushTasks();
+    assertTrue(getConfirmationDialog().open);
+    await cancelUpdate();
+    assertFalse(!!getConfirmationDialog());
+  });
+
   test('OpenUpdateDialog', async () => {
     initializePage();
     await flushTasks();
     // Open dialog for first firmware update card.
     getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
-    // Process |OnStateChanged| and |OnProgressChanged| calls.
     await flushTasks();
+    await confirmUpdate();
+    // Process |OnStatusChanged| call.
     await flushTasks();
     assertTrue(getUpdateDialog().open);
   });
@@ -121,8 +154,8 @@ export function firmwareUpdateAppTest() {
     await flushTasks();
     // Open dialog for firmware update.
     getUpdateCards()[1].shadowRoot.querySelector(`#updateButton`).click();
-    // Process |OnStateChanged| and |OnProgressChanged| calls.
     await flushTasks();
+    await confirmUpdate();
     await flushTasks();
     assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
@@ -146,7 +179,8 @@ export function firmwareUpdateAppTest() {
     // Open dialog for firmware update. The third fake update in the list
     // will fail.
     getUpdateCards()[2].shadowRoot.querySelector(`#updateButton`).click();
-    // Process |OnStateChanged| and |OnProgressChanged| calls.
+    await flushTasks();
+    await confirmUpdate();
     await flushTasks();
     await flushTasks();
     assertEquals(UpdateState.kUpdating, getUpdateState());

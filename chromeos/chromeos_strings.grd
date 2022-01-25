@@ -2566,7 +2566,7 @@ Try tapping the mic to ask me anything.
         Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
       </message>
       <message name="IDS_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
-        While updating, you can minimize window but do not unplug your device. This may take a few minutes and your device might not work during this update
+        While the firmware is updating, do not unplug this external device or shut down your computer. You can minimize this window. This update may take a few minutes and your external device may not work during this time.
       </message>
       <message name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
         Installing - <ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>%
@@ -2592,6 +2592,9 @@ Try tapping the mic to ask me anything.
       </message>
       <message translateable="false" name="IDS_FIRMWARE_UPDATE_FAILED_BODY_TEXT" desc="Label for communicating information about why an update failed.">
         Update failed
+      </message>
+      <message name="IDS_CONFIRMATION_TITLE_TEXT" desc="Label for the confirmation dialog title.">
+        Update firmware on <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
       </message>
 
       <!-- Quick Answers -->

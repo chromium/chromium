@@ -62,11 +62,9 @@ export class UpdateCardElement extends UpdateCardElementBase {
 
   /** @protected */
   onUpdateButtonClicked_() {
-    this.dispatchEvent(new CustomEvent('open-update-dialog', {
-      bubbles: true,
-      composed: true,
-      detail: {update: this.update, inflight: false}
-    }));
+    this.dispatchEvent(new CustomEvent(
+        'open-confirmation-dialog',
+        {bubbles: true, composed: true, detail: {update: this.update}}));
   }
 
   /**
