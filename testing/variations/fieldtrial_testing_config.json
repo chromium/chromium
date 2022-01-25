@@ -3505,21 +3505,6 @@
             ]
         }
     ],
-    "HelpAppLocalSearchServiceIntegration": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HelpAppSearchServiceIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "HoldbackRemoveMobileViewportDoubleTap": [
         {
             "platforms": [
