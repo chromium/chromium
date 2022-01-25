@@ -95,7 +95,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2022-05-22">
+    enum="CrosDisksClientFormatError" expires_after="2022-07-24">
   <owner>austinct@chromium.org</owner>
   <summary>
     The error code of disk format signals received from the Chrome OS cros-disks

@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Cr50.BoardIdFlags" enum="Cr50BoardIdFlags"
-    expires_after="2022-05-22">
+    expires_after="2022-07-24">
   <owner>apronin@chromium.org</owner>
   <owner>vbendeb@chromium.org</owner>
   <summary>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Cr50.FlashLog" enum="Cr50FlashLogs"
-    expires_after="2022-05-22">
+    expires_after="2022-07-24">
   <owner>apronin@chromium.org</owner>
   <owner>vbendeb@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
@@ -1324,7 +1324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Trunks.TpmErrorCode" enum="TPMResponseCode"
-    expires_after="2022-05-22">
+    expires_after="2022-07-24">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
