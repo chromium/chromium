@@ -193,7 +193,7 @@ void LoginDisplayHostCommon::BeforeSessionStart() {
 }
 
 void LoginDisplayHostCommon::Finalize(base::OnceClosure completion_callback) {
-  VLOG(4) << "Finalize";
+  LOG(WARNING) << "Finalize";
   // If finalize is called twice the LoginDisplayHost instance will be deleted
   // multiple times.
   CHECK(!is_finalizing_);
@@ -553,6 +553,7 @@ void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {
 }
 
 void LoginDisplayHostCommon::ShutdownDisplayHost() {
+  LOG(WARNING) << "ShutdownDisplayHost";
   if (shutting_down_)
     return;
   shutting_down_ = true;

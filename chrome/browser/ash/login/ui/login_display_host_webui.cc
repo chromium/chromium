@@ -389,12 +389,14 @@ class CloseAfterCommit : public ui::CompositorObserver,
   // ui::CompositorObserver:
   void OnCompositingDidCommit(ui::Compositor* compositor) override {
     DCHECK_EQ(widget_->GetCompositor(), compositor);
+    LOG(WARNING) << "Close login widget";
     widget_->Close();
   }
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override {
     DCHECK_EQ(widget, widget_);
+    LOG(WARNING) << "Login widget destroying";
     delete this;
   }
 
@@ -949,7 +951,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
 }
 
 void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
-  VLOG(4) << "ResetLoginWindowAndView";
+  LOG(WARNING) << "ResetLoginWindowAndView";
   // Notify any oobe dialog state observers (e.g. login shelf) that the UI is
   // hidden (so they can reset any cached OOBE dialog state.)
   LoginScreen::Get()->GetModel()->NotifyOobeDialogState(

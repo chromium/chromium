@@ -176,6 +176,7 @@ LoginDisplayHostMojo::~LoginDisplayHostMojo() {
 
 void LoginDisplayHostMojo::OnDialogDestroyed(
     const OobeUIDialogDelegate* dialog) {
+  LOG(WARNING) << "OnDialogDestroyed";
   if (dialog == dialog_) {
     StopObservingOobeUI();
     dialog_ = nullptr;
