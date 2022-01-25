@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/payments/content/payment_event_response_util.h"
@@ -204,6 +205,8 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
+  base::UmaHistogramBoolean("PaymentRequest.EventResponse.CanMakePayment",
+                            response->can_make_payment);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), this, can_make_payment_result_));
