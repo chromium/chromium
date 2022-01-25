@@ -5,6 +5,7 @@
 #include "components/metrics/call_stack_profile_metadata.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
 #include "base/strings/strcat.h"
@@ -142,7 +143,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RepeatItem) {
   metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
@@ -163,7 +164,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RepeatKeyedItem) {
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
@@ -184,7 +185,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_ModifiedItem) {
   metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Set(100, absl::nullopt, 11);
   metadata.RecordMetadata(
@@ -208,7 +209,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_ModifiedKeyedItem) {
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Set(100, 50, 11);
   metadata.RecordMetadata(
@@ -233,7 +234,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NewItem) {
   metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Set(101, absl::nullopt, 11);
   metadata.RecordMetadata(
@@ -258,7 +259,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_NewKeyedItem) {
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Set(101, 50, 11);
   metadata.RecordMetadata(
@@ -284,7 +285,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedItem) {
   metadata_recorder.Set(100, absl::nullopt, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Remove(100, absl::nullopt);
   metadata.RecordMetadata(
@@ -308,7 +309,7 @@ TEST(CallStackProfileMetadataTest, MetadataRecorder_RemovedKeyedItem) {
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Remove(100, 50);
   metadata.RecordMetadata(
@@ -360,7 +361,7 @@ TEST(CallStackProfileMetadataTest,
   metadata_recorder.Set(100, 50, 10);
   metadata.RecordMetadata(
       base::MetadataRecorder::MetadataProvider(&metadata_recorder));
-  (void)metadata.CreateSampleMetadata(&name_hashes);
+  std::ignore = metadata.CreateSampleMetadata(&name_hashes);
 
   metadata_recorder.Remove(100, absl::nullopt);
   metadata.RecordMetadata(

@@ -26,10 +26,9 @@ void* GuardedPageAllocator::MapRegion() {
 
 void GuardedPageAllocator::UnmapRegion() {
   CHECK(state_.pages_base_addr);
-  BOOL err = VirtualFree(reinterpret_cast<void*>(state_.pages_base_addr), 0,
-                         MEM_RELEASE);
+  [[maybe_unused]] BOOL err = VirtualFree(
+      reinterpret_cast<void*>(state_.pages_base_addr), 0, MEM_RELEASE);
   DPCHECK(err) << "VirtualFree";
-  (void)err;
 }
 
 void GuardedPageAllocator::MarkPageReadWrite(void* ptr) {

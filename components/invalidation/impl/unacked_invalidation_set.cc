@@ -52,7 +52,7 @@ void UnackedInvalidationSet::ExportInvalidations(
 
 // Removes the matching ack handle from the list.
 void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
-  bool handle_found = false;
+  [[maybe_unused]] bool handle_found = false;
   for (auto it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     if (it->ack_handle().Equals(handle)) {
       invalidations_.erase(*it);
@@ -61,7 +61,6 @@ void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
     }
   }
   DLOG_IF(WARNING, !handle_found) << "Unrecognized to ack for topic " << topic_;
-  (void)handle_found;  // Silence unused variable warning in release builds.
 }
 
 // Erase the invalidation with matching ack handle from the list.  Also creates
