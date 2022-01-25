@@ -68,7 +68,7 @@ void WebRuntimeApplication::InitializeApplication(
 }
 
 bool WebRuntimeApplication::IsStreamingApplication() const {
-  return true;
+  return false;
 }
 
 void WebRuntimeApplication::InnerContentsCreated(

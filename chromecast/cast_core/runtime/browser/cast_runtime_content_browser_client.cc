@@ -128,7 +128,9 @@ CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
 }
 
 bool CastRuntimeContentBrowserClient::IsBufferingEnabled() {
-  return !is_runtime_application_for_streaming_.load();
+  bool is_buffering_enabled = !is_runtime_application_for_streaming_.load();
+  LOG_IF(INFO, !is_buffering_enabled) << "Buffering has been disabled!";
+  return is_buffering_enabled;
 }
 
 void CastRuntimeContentBrowserClient::OnRuntimeApplicationChanged(
