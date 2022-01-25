@@ -1206,8 +1206,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       if (!select_statement.is_valid() || !update_statement.is_valid())
         return absl::nullopt;
 
-      bool okay = true;
-
       std::map<int64_t, std::string> encrypted_values;
 
       while (select_statement.Step()) {
@@ -1217,13 +1215,11 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         std::string decrypted_value;
         if (!crypto_->DecryptString(encrypted_value, &decrypted_value)) {
           RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_DECRYPT_FAILED);
-          okay = false;
           continue;
         }
         std::string new_encrypted_value;
         if (!crypto_->EncryptString(decrypted_value, &new_encrypted_value)) {
           RecordCookieCommitProblem(COOKIE_COMMIT_PROBLEM_ENCRYPT_FAILED);
-          okay = false;
           continue;
         }
         encrypted_values[rowid] = new_encrypted_value;
@@ -1236,8 +1232,6 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
         if (!update_statement.Run())
           return absl::nullopt;
       }
-
-      UMA_HISTOGRAM_BOOLEAN("Cookie.MigratedEncryptionKeySuccess", okay);
     }
 #endif
     ++cur_version;
