@@ -90,6 +90,8 @@ extern const char kNtpPhotosModuleDataParam[];
 extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 // Parameter determining the cooldown period (in days) for a target user.
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
+// Parameter determining the variation of the omnibox theme matching.
+extern const char kRealboxMatchOmniboxThemeVariantParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();

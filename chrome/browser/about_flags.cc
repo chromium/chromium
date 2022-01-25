@@ -1487,6 +1487,21 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleVariations[] = {
     {" - Fake memories: 4", kNtpPhotosModuleFakeData4,
      base::size(kNtpPhotosModuleFakeData4), nullptr}};
 
+const FeatureEntry::FeatureParam kRealboxMatchOmniboxThemeVar1[] = {
+    {ntp_features::kRealboxMatchOmniboxThemeVariantParam, "1"}};
+const FeatureEntry::FeatureParam kRealboxMatchOmniboxThemeVar2[] = {
+    {ntp_features::kRealboxMatchOmniboxThemeVariantParam, "2"}};
+
+const FeatureEntry::FeatureVariation kRealboxMatchOmniboxThemeVariations[] = {
+    {"(NTP background on steady state and Omnibox steady state background on "
+     "hover)",
+     kRealboxMatchOmniboxThemeVar1, base::size(kRealboxMatchOmniboxThemeVar1),
+     nullptr},
+    {"(NTP background on steady state and Omnibox steady state background on "
+     "hover)",
+     kRealboxMatchOmniboxThemeVar2, base::size(kRealboxMatchOmniboxThemeVar2),
+     nullptr}};
+
 const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
     {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},
     {ntp_features::kNtpSafeBrowsingModuleCountMaxParam, "1"}};
@@ -4964,7 +4979,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-realbox-match-omnibox-theme",
      flag_descriptions::kNtpRealboxMatchOmniboxThemeName,
      flag_descriptions::kNtpRealboxMatchOmniboxThemeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxMatchOmniboxTheme)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxMatchOmniboxTheme,
+                                    kRealboxMatchOmniboxThemeVariations,
+                                    "OmniboxBundledExperimentV1")},
 
     {"ntp-realbox-pedals", flag_descriptions::kNtpRealboxPedalsName,
      flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
