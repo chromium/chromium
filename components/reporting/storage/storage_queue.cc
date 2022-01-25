@@ -759,13 +759,13 @@ void StorageQueue::DeleteUnusedFiles(
 }
 
 void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
-  std::vector<std::pair<base::FilePath, uint64_t>> files_to_delete;
+  std::vector<base::FilePath> files_to_delete;
   base::FileEnumerator dir_enum(
       options_.directory(),
       /*recursive=*/false, base::FileEnumerator::FILES,
       base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".*")}));
-  base::FilePath full_name;
-  while (full_name = dir_enum.Next(), !full_name.empty()) {
+  for (base::FilePath full_name = dir_enum.Next(); !full_name.empty();
+       full_name = dir_enum.Next()) {
     const auto extension = dir_enum.GetInfo().GetName().FinalExtension();
     if (extension.empty()) {
       continue;
@@ -780,13 +780,13 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
     if (sequencing_id >= sequencing_id_to_keep) {
       continue;
     }
-    files_to_delete.emplace_back(
-        std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
+    files_to_delete.push_back(std::move(full_name));
   }
   for (const auto& file_to_delete : files_to_delete) {
     // Delete file on disk. Note: disk space has already been released when the
     // metafile was destructed, and so we don't need to do that here.
-    base::DeleteFile(file_to_delete.first);  // ignore result
+    // Ignore result. If it fails, the file will be naturally handled next time.
+    base::DeleteFile(file_to_delete);
   }
 }
 
