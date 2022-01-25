@@ -240,10 +240,14 @@ class FrameSchedulerImplTest : public testing::Test {
   }
 
   void StorePageInBackForwardCache() {
+    page_scheduler_->SetPageVisible(false);
+    page_scheduler_->SetPageFrozen(true);
     page_scheduler_->SetPageBackForwardCached(true);
   }
 
   void RestorePageFromBackForwardCache() {
+    page_scheduler_->SetPageVisible(true);
+    page_scheduler_->SetPageFrozen(false);
     page_scheduler_->SetPageBackForwardCached(false);
   }
 
