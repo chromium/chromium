@@ -354,12 +354,14 @@ std::vector<GURL> GetOverridesForChromeURL(
   DCHECK(url.SchemeIs(content::kChromeUIScheme));
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::DictionaryValue* overrides =
-      &base::Value::AsDictionaryValue(*profile->GetPrefs()->GetDictionary(
-          ExtensionWebUI::kExtensionURLOverrides));
+  const base::Value* overrides = profile->GetPrefs()->GetDictionary(
+      ExtensionWebUI::kExtensionURLOverrides);
 
-  const base::ListValue* url_list = nullptr;
-  if (!overrides || !overrides->GetList(url.host_piece(), &url_list))
+  if (!overrides)
+    return {};  // No overrides present for this host.
+
+  const base::Value* url_list = overrides->FindListPath(url.host_piece());
+  if (!url_list)
     return {};  // No overrides present for this host.
 
   extensions::ExtensionRegistry* registry =
@@ -449,8 +451,8 @@ bool ExtensionWebUI::HandleChromeURLOverride(
 bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     GURL* url, content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::DictionaryValue* overrides = &base::Value::AsDictionaryValue(
-      *profile->GetPrefs()->GetDictionary(kExtensionURLOverrides));
+  const base::Value* overrides =
+      profile->GetPrefs()->GetDictionary(kExtensionURLOverrides);
   if (!overrides)
     return false;
 
@@ -458,12 +460,11 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
   // internal URL
   // chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html#1 to
   // chrome://bookmarks/#1 for display in the omnibox.
-  for (base::DictionaryValue::Iterator dict_iter(*overrides);
-       !dict_iter.IsAtEnd(); dict_iter.Advance()) {
-    if (!dict_iter.value().is_list())
+  for (const auto dict_iter : overrides->DictItems()) {
+    if (!dict_iter.second.is_list())
       continue;
 
-    for (const auto& list_iter : dict_iter.value().GetList()) {
+    for (const auto& list_iter : dict_iter.second.GetList()) {
       const std::string* override = nullptr;
       if (list_iter.is_dict())
         override = list_iter.FindStringKey(kEntry);
@@ -472,7 +473,7 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
       if (base::StartsWith(url->spec(), *override,
                            base::CompareCase::SENSITIVE)) {
         GURL original_url(content::kChromeUIScheme + std::string("://") +
-                          dict_iter.key() +
+                          dict_iter.first +
                           url->spec().substr(override->length()));
         *url = original_url;
         return true;
