@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -41,6 +42,25 @@ InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
 
   return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
+}
+
+bool IsDialogLoaded(bool is_loaded,
+                    base::OnceClosure& on_loaded_callback,
+                    base::OnceClosure callback) {
+  if (is_loaded)
+    return true;
+  DCHECK(!on_loaded_callback);
+  on_loaded_callback = std::move(callback);
+  return false;
+}
+
+void OnDialogLoaded(bool& is_loaded, base::OnceClosure& on_loaded_callback) {
+  if (is_loaded)
+    return;
+  is_loaded = true;
+  if (on_loaded_callback) {
+    std::move(on_loaded_callback).Run();
+  }
 }
 
 }  // namespace
@@ -76,10 +96,14 @@ void LockScreenStartReauthDialog::OnProfileCreated(
     profile_ = profile;
     g_dialog->ShowSystemDialogForBrowserContext(
         profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-    // Show network screen if needed.
-    // TODO(mslus): Handle other states in NetworkStateInformer properly.
-    if (network_state_informer_->state() == NetworkStateInformer::OFFLINE) {
+    const NetworkStateInformer::State state = network_state_informer_->state();
+    // Show network or captive portal screen if needed.
+    // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
+    // properly.
+    if (state == NetworkStateInformer::OFFLINE) {
       ShowLockScreenNetworkDialog();
+    } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
+      ShowLockScreenCaptivePortalDialog();
     }
   } else if (status != Profile::CREATE_STATUS_CREATED) {
     // TODO(mohammedabdon): Create some generic way to show an error on the lock
@@ -130,6 +154,11 @@ void LockScreenStartReauthDialog::DismissLockScreenNetworkDialog() {
     lock_screen_network_dialog_->Dismiss();
 }
 
+void LockScreenStartReauthDialog::DismissLockScreenCaptivePortalDialog() {
+  if (captive_portal_dialog_)
+    captive_portal_dialog_->Dismiss();
+}
+
 void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   if (lock_screen_network_dialog_)
     return;
@@ -142,22 +171,36 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   lock_screen_network_dialog_->Show(profile_);
 }
 
+void LockScreenStartReauthDialog::ShowLockScreenCaptivePortalDialog() {
+  if (!captive_portal_dialog_) {
+    captive_portal_dialog_ = std::make_unique<LockScreenCaptivePortalDialog>();
+    OnCaptivePortalDialogReadyForTesting();
+  }
+  captive_portal_dialog_->Show(*profile_);
+}
+
 bool LockScreenStartReauthDialog::IsNetworkDialogLoadedForTesting(
     base::OnceClosure callback) {
-  if (is_network_dialog_loaded_for_testing_)
-    return true;
-  DCHECK(!on_network_dialog_loaded_callback_for_testing_);
-  on_network_dialog_loaded_callback_for_testing_ = std::move(callback);
-  return false;
+  return IsDialogLoaded(is_network_dialog_loaded_for_testing_,
+                        on_network_dialog_loaded_callback_for_testing_,
+                        std::move(callback));
+}
+
+bool LockScreenStartReauthDialog::IsCaptivePortalDialogLoadedForTesting(
+    base::OnceClosure callback) {
+  return IsDialogLoaded(is_captive_portal_dialog_loaded_for_testing_,
+                        on_captive_portal_dialog_loaded_callback_for_testing_,
+                        std::move(callback));
 }
 
 void LockScreenStartReauthDialog::OnNetworkDialogReadyForTesting() {
-  if (is_network_dialog_loaded_for_testing_)
-    return;
-  is_network_dialog_loaded_for_testing_ = true;
-  if (on_network_dialog_loaded_callback_for_testing_) {
-    std::move(on_network_dialog_loaded_callback_for_testing_).Run();
-  }
+  OnDialogLoaded(is_network_dialog_loaded_for_testing_,
+                 on_network_dialog_loaded_callback_for_testing_);
+}
+
+void LockScreenStartReauthDialog::OnCaptivePortalDialogReadyForTesting() {
+  OnDialogLoaded(is_captive_portal_dialog_loaded_for_testing_,
+                 on_captive_portal_dialog_loaded_callback_for_testing_);
 }
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
@@ -179,11 +222,14 @@ LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
 
 void LockScreenStartReauthDialog::UpdateState(
     NetworkError::ErrorReason reason) {
-  const bool is_offline =
-      NetworkStateInformer::OFFLINE == network_state_informer_->state();
-  if (is_offline) {
+  const NetworkStateInformer::State state = network_state_informer_->state();
+
+  if (state == NetworkStateInformer::OFFLINE) {
     ShowLockScreenNetworkDialog();
+  } else if (state == NetworkStateInformer::CAPTIVE_PORTAL) {
+    ShowLockScreenCaptivePortalDialog();
   } else {
+    DismissLockScreenCaptivePortalDialog();
     if (is_network_dialog_visible_ && lock_screen_network_dialog_) {
       is_network_dialog_visible_ = false;
       lock_screen_network_dialog_->Close();

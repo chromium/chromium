@@ -16,6 +16,7 @@
 
 namespace chromeos {
 
+class LockScreenCaptivePortalDialog;
 class LockScreenNetworkDialog;
 
 class LockScreenStartReauthDialog
@@ -32,17 +33,24 @@ class LockScreenStartReauthDialog
   int GetDialogWidth();
 
   void DismissLockScreenNetworkDialog();
+  void DismissLockScreenCaptivePortalDialog();
   void ShowLockScreenNetworkDialog();
+  void ShowLockScreenCaptivePortalDialog();
   static gfx::Size CalculateLockScreenReauthDialogSize(
       bool is_new_layout_enabled);
 
-  // Used for waiting for the network dialog in tests.
+  // Used for waiting for the corresponding dialogs in tests.
   // Similar methods exist for the main dialog in InSessionPasswordSyncManager.
   bool IsNetworkDialogLoadedForTesting(base::OnceClosure callback);
+  bool IsCaptivePortalDialogLoadedForTesting(base::OnceClosure callback);
   void OnNetworkDialogReadyForTesting();
 
   LockScreenNetworkDialog* get_network_dialog_for_testing() {
     return lock_screen_network_dialog_.get();
+  }
+
+  LockScreenCaptivePortalDialog* get_captive_portal_dialog_for_testing() {
+    return captive_portal_dialog_.get();
   }
 
   bool is_network_dialog_visible_for_testing() {
@@ -57,6 +65,8 @@ class LockScreenStartReauthDialog
   // NetworkStateInformer::NetworkStateInformerObserver:
   void UpdateState(NetworkError::ErrorReason reason) override;
 
+  void OnCaptivePortalDialogReadyForTesting();
+
   scoped_refptr<chromeos::NetworkStateInformer> network_state_informer_;
   bool is_network_dialog_visible_ = false;
 
@@ -66,9 +76,14 @@ class LockScreenStartReauthDialog
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
   Profile* profile_ = nullptr;
 
-  // A callback that is used to notify tests that the network dialog is loaded.
+  std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
+
+  // Callbacks that are used to notify tests that the corresponding dialog is
+  // loaded.
   base::OnceClosure on_network_dialog_loaded_callback_for_testing_;
+  base::OnceClosure on_captive_portal_dialog_loaded_callback_for_testing_;
   bool is_network_dialog_loaded_for_testing_ = false;
+  bool is_captive_portal_dialog_loaded_for_testing_ = false;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };

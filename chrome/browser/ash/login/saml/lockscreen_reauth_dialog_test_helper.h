@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -14,6 +15,7 @@ class LockScreenStartReauthUI;
 class LockScreenReauthHandler;
 class LockScreenNetworkDialog;
 class LockScreenNetworkUI;
+class LockScreenCaptivePortalDialog;
 class NetworkConfigMessageHandler;
 }  // namespace chromeos
 
@@ -77,6 +79,17 @@ class LockScreenReauthDialogTestHelper {
   // Precondition: The SAML container is visible.
   void WaitForIdpPageLoad();
 
+  // Next members allow to wait for the captive portal dialog to load (i.e. be
+  // initialized in `LockScreenStartReauthDialog`), be shown or be closed.
+  // Precondition: Main dialog must exist, since it owns the portal dialog.
+  void WaitForCaptivePortalDialogToLoad();
+  void WaitForCaptivePortalDialogToShow();
+  void WaitForCaptivePortalDialogToClose();
+
+  void ExpectCaptivePortalDialogVisible();
+  void ExpectCaptivePortalDialogHidden();
+  void CloseCaptivePortalDialogAndWait();
+
   // Returns the WebContents of the dialog's WebUI.
   content::WebContents* DialogWebContents();
   // Returns a JSChecker for the WebContents of the dialog's WebUI.
@@ -103,15 +116,22 @@ class LockScreenReauthDialogTestHelper {
   void WaitForNetworkDialogToLoad();
 
   // Main Dialog
-  InSessionPasswordSyncManager* password_sync_manager_ = nullptr;
-  chromeos::LockScreenStartReauthDialog* reauth_dialog_ = nullptr;
-  chromeos::LockScreenStartReauthUI* reauth_webui_controller_ = nullptr;
-  chromeos::LockScreenReauthHandler* main_handler_ = nullptr;
+  base::raw_ptr<InSessionPasswordSyncManager> password_sync_manager_ = nullptr;
+  base::raw_ptr<chromeos::LockScreenStartReauthDialog> reauth_dialog_ = nullptr;
+  base::raw_ptr<chromeos::LockScreenStartReauthUI> reauth_webui_controller_ =
+      nullptr;
+  base::raw_ptr<chromeos::LockScreenReauthHandler> main_handler_ = nullptr;
 
   // Network dialog which is owned by the main dialog.
-  chromeos::LockScreenNetworkDialog* network_dialog_ = nullptr;
-  chromeos::LockScreenNetworkUI* network_webui_controller_ = nullptr;
-  chromeos::NetworkConfigMessageHandler* network_handler_ = nullptr;
+  base::raw_ptr<chromeos::LockScreenNetworkDialog> network_dialog_ = nullptr;
+  base::raw_ptr<chromeos::LockScreenNetworkUI> network_webui_controller_ =
+      nullptr;
+  base::raw_ptr<chromeos::NetworkConfigMessageHandler> network_handler_ =
+      nullptr;
+
+  // Captive portal dialog which is owned by the main dialog.
+  base::raw_ptr<chromeos::LockScreenCaptivePortalDialog>
+      captive_portal_dialog_ = nullptr;
 };
 
 }  // namespace ash

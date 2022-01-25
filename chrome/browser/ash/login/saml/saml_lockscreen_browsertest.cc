@@ -16,6 +16,10 @@
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
+#include "chromeos/network/network_connection_handler.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_callbacks.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -193,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
 
   // Disconnect from all networks in order to trigger the network screen.
   network_state_test_helper_->service_test()->ClearServices();
+  // TODO(crbug.com/1289309): make it clear what we are waiting for
   base::RunLoop().RunUntilIdle();
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
@@ -201,7 +206,6 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
-  // Ensures that the web element 'cr-dialog' is visible.
   reauth_dialog_helper->ExpectNetworkDialogVisible();
 
   // Click on the actual button to close the dialog.
@@ -222,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
 
   // Disconnect from all networks in order to trigger the network screen.
   network_state_test_helper_->service_test()->ClearServices();
+  // TODO(crbug.com/1289309): make it clear what we are waiting for
   base::RunLoop().RunUntilIdle();
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
@@ -230,7 +235,6 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
-  // Ensures that the web element 'cr-dialog' is visible.
   reauth_dialog_helper->ExpectNetworkDialogVisible();
 
   // Reconnect network.
@@ -238,10 +242,111 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
       /*state=*/shill::kStateOnline, /*visible=*/true);
+
+  // TODO(crbug.com/1289309): make it clear what we are waiting for
   base::RunLoop().RunUntilIdle();
 
   // Ensures that the network dialog is closed.
   reauth_dialog_helper->ExpectNetworkDialogHidden();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  // Disconnect from all networks in order to trigger the network screen.
+  network_state_test_helper_->service_test()->ClearServices();
+  // TODO(crbug.com/1289309): make it clear what we are waiting for
+  base::RunLoop().RunUntilIdle();
+  network_state_test_helper_->service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOffline, /*visible=*/true);
+
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  // Change network to be behind a captive portal.
+  network_state_test_helper_->service_test()->SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStatePortal));
+
+  reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
+  reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
+  reauth_dialog_helper->ExpectCaptivePortalDialogVisible();
+
+  // User actions on captive portal page should lead to network becoming online,
+  // so instead of mocking a portal page we simply switch the network state.
+  network_state_test_helper_->service_test()->SetServiceProperty(
+      kWifiServicePath, shill::kStateProperty,
+      base::Value(shill::kStateOnline));
+
+  reauth_dialog_helper->WaitForCaptivePortalDialogToClose();
+
+  // Ensures that captive portal and network dialogs are closed.
+  reauth_dialog_helper->ExpectCaptivePortalDialogHidden();
+  reauth_dialog_helper->ExpectNetworkDialogHidden();
+}
+
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(reauth_dialog_helper);
+
+  // This test uses NetworkHandlerTestHelper instead of NetworkStateTestHelper
+  // because closing captive portal dialog involves a call to
+  // NetworkHandler::Get()
+  NetworkHandlerTestHelper network_test_helper;
+  network_test_helper.manager_test()->SetupDefaultEnvironment();
+
+  // Disconnect from all networks in order to trigger the network screen.
+  network_test_helper.service_test()->ClearServices();
+  // TODO(crbug.com/1289309): make it clear what we are waiting for
+  base::RunLoop().RunUntilIdle();
+  network_test_helper.service_test()->AddService(
+      /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
+      /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
+      /*state=*/shill::kStateOffline, /*visible=*/true);
+
+  reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
+
+  reauth_dialog_helper->ExpectNetworkDialogVisible();
+
+  auto TriggerAndCloseCaptivePortal = [&network_test_helper,
+                                       &reauth_dialog_helper] {
+    // Change network to be behind a captive portal.
+    network_test_helper.service_test()->SetServiceProperty(
+        kWifiServicePath, shill::kStateProperty,
+        base::Value(shill::kStatePortal));
+
+    reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
+    reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
+    reauth_dialog_helper->ExpectCaptivePortalDialogVisible();
+
+    // Close captive portal dialog and check that we are back to network dialog
+    reauth_dialog_helper->CloseCaptivePortalDialogAndWait();
+    reauth_dialog_helper->ExpectCaptivePortalDialogHidden();
+    reauth_dialog_helper->ExpectNetworkDialogVisible();
+  };
+  // Check that captive portal dialog can be opened and closed multiple times
+  TriggerAndCloseCaptivePortal();
+  TriggerAndCloseCaptivePortal();
+
+  // Close all dialogs at the end of the test - otherwise these tests crash
+  reauth_dialog_helper->ClickCloseNetworkButton();
+  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 }
 
 }  // namespace ash

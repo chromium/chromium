@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
@@ -195,6 +196,33 @@ void LockScreenReauthDialogTestHelper::WaitForNetworkDialogToLoad() {
   }
 }
 
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToLoad() {
+  base::RunLoop run_loop;
+  if (!reauth_dialog_->IsCaptivePortalDialogLoadedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+
+  captive_portal_dialog_ =
+      reauth_dialog_->get_captive_portal_dialog_for_testing();
+}
+
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToShow() {
+  base::RunLoop run_loop;
+  if (!captive_portal_dialog_->IsDialogShownForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
+void LockScreenReauthDialogTestHelper::WaitForCaptivePortalDialogToClose() {
+  base::RunLoop run_loop;
+  if (!captive_portal_dialog_->IsDialogClosedForTesting(
+          run_loop.QuitClosure())) {
+    run_loop.Run();
+  }
+}
+
 void LockScreenReauthDialogTestHelper::WaitForNetworkDialogAndSetHandlers() {
   WaitForNetworkDialogToLoad();
 
@@ -235,6 +263,19 @@ void LockScreenReauthDialogTestHelper::ExpectNetworkDialogHidden() {
 
 void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
   NetworkJS().TapOnPath(kNetworkCancelButton);
+}
+
+void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogVisible() {
+  EXPECT_TRUE(captive_portal_dialog_->IsRunning());
+}
+
+void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogHidden() {
+  EXPECT_FALSE(captive_portal_dialog_->IsRunning());
+}
+
+void LockScreenReauthDialogTestHelper::CloseCaptivePortalDialogAndWait() {
+  captive_portal_dialog_->Close();
+  WaitForCaptivePortalDialogToClose();
 }
 
 }  // namespace ash
