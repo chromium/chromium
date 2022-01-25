@@ -18,7 +18,7 @@
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -643,12 +643,12 @@ void StorageHandler::ClearTrustTokens(
 
 void StorageHandler::OnInterestGroupAccessed(
     const base::Time& access_time,
-    InterestGroupManager::InterestGroupObserverInterface::AccessType type,
+    InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType type,
     const std::string& owner_origin,
     const std::string& name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   using AccessType =
-      InterestGroupManager::InterestGroupObserverInterface::AccessType;
+      InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType;
   std::string type_enum;
   switch (type) {
     case AccessType::kJoin:
@@ -748,9 +748,8 @@ void StorageHandler::GetInterestGroupDetails(
     return;
   }
 
-  InterestGroupManager* manager =
-      static_cast<StoragePartitionImpl*>(storage_partition_)
-          ->GetInterestGroupManager();
+  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
+      storage_partition_->GetInterestGroupManager());
   if (!manager) {
     callback->sendFailure(
         Response::ServerError("Interest group storage is disabled"));
@@ -774,9 +773,8 @@ Response StorageHandler::SetInterestGroupTracking(bool enable) {
   if (!storage_partition_)
     return Response::InternalError();
 
-  InterestGroupManager* manager =
-      static_cast<StoragePartitionImpl*>(storage_partition_)
-          ->GetInterestGroupManager();
+  InterestGroupManagerImpl* manager = static_cast<InterestGroupManagerImpl*>(
+      storage_partition_->GetInterestGroupManager());
   if (!manager)
     return Response::ServerError("Interest group storage is disabled.");
 

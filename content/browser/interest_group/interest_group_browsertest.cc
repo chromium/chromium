@@ -26,7 +26,7 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -197,15 +197,15 @@ function generateBid(
 };
 
 class InterestGroupTestObserver
-    : public InterestGroupManager::InterestGroupObserverInterface {
+    : public InterestGroupManagerImpl::InterestGroupObserverInterface {
  public:
   using Entry = std::tuple<
-      InterestGroupManager::InterestGroupObserverInterface::AccessType,
+      InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType,
       std::string,
       std::string>;
   void OnInterestGroupAccessed(
       const base::Time& access_time,
-      InterestGroupManager::InterestGroupObserverInterface::AccessType type,
+      InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name) override {
     accesses.emplace_back(Entry{type, owner_origin, name});
@@ -243,12 +243,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         base::Unretained(this)));
     network_responder_ = std::make_unique<NetworkResponder>(*https_server_);
     ASSERT_TRUE(https_server_->Start());
-    manager_ =
-        static_cast<StoragePartitionImpl*>(shell()
-                                               ->web_contents()
-                                               ->GetBrowserContext()
-                                               ->GetDefaultStoragePartition())
-            ->GetInterestGroupManager();
+    manager_ = static_cast<InterestGroupManagerImpl*>(
+        shell()
+            ->web_contents()
+            ->GetBrowserContext()
+            ->GetDefaultStoragePartition()
+            ->GetInterestGroupManager());
     observer_ = std::make_unique<InterestGroupTestObserver>();
     content_browser_client_.SetAllowList(
         {url::Origin::Create(https_server_->GetURL("a.test", "/")),
@@ -768,7 +768,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   AllowlistedOriginContentBrowserClient content_browser_client_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_;
   std::unique_ptr<InterestGroupTestObserver> observer_;
-  raw_ptr<InterestGroupManager> manager_;
+  raw_ptr<InterestGroupManagerImpl> manager_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);

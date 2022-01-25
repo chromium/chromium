@@ -21,6 +21,10 @@
 
 class PrefService;
 
+namespace content {
+class InterestGroupManager;
+}
+
 namespace content_settings {
 class CookieSettings;
 }
@@ -65,7 +69,8 @@ class PrivacySandboxService : public KeyedService,
                         policy::PolicyService* policy_service,
                         syncer::SyncService* sync_service,
                         signin::IdentityManager* identity_manager,
-                        federated_learning::FlocIdProvider* floc_id_provider);
+                        federated_learning::FlocIdProvider* floc_id_provider,
+                        content::InterestGroupManager* interest_group_manager);
   ~PrivacySandboxService() override;
 
   // Returns the dialog type that should be shown to the user. This consults
@@ -138,6 +143,12 @@ class PrivacySandboxService : public KeyedService,
 
   // Called when a preference relevant to the the Privacy Sandbox is changed.
   void OnPrivacySandboxPrefChanged();
+
+  // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
+  // interest group. Consults with the InterestGroupManager associated with
+  // |profile_| and formats the returned data for direct display to the user.
+  void GetFledgeJoiningEtldPlusOneForDisplay(
+      base::OnceCallback<void(std::vector<std::string>)> callback);
 
   // KeyedService:
   void Shutdown() override;
@@ -230,6 +241,12 @@ class PrivacySandboxService : public KeyedService,
   // profile startup.
   void LogPrivacySandboxState();
 
+  // Converts the provided list of |top_frames| into eTLD+1s for display, and
+  // provides those to |callback|.
+  void ConvertFledgeJoiningTopFramesForDisplay(
+      base::OnceCallback<void(std::vector<std::string>)> callback,
+      std::vector<url::Origin> top_frames);
+
  private:
   raw_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   raw_ptr<content_settings::CookieSettings> cookie_settings_;
@@ -238,6 +255,7 @@ class PrivacySandboxService : public KeyedService,
   raw_ptr<syncer::SyncService> sync_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<federated_learning::FlocIdProvider> floc_id_provider_;
+  raw_ptr<content::InterestGroupManager> interest_group_manager_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};
@@ -250,6 +268,8 @@ class PrivacySandboxService : public KeyedService,
   // A manual record of whether policy_service_ is being observerd.
   // Unfortunately PolicyService does not support scoped observers.
   bool policy_service_observed_ = false;
+
+  base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

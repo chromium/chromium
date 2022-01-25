@@ -4,6 +4,7 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -33,6 +34,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,6 +60,22 @@ class MockFlocIdProvider : public federated_learning::FlocIdProvider {
   MOCK_METHOD(base::Time, GetApproximateNextComputeTime, (), (const, override));
 };
 
+class TestInterestGroupManager : public content::InterestGroupManager {
+ public:
+  void SetInterestGroupJoiningOrigins(const std::vector<url::Origin>& origins) {
+    origins_ = origins;
+  }
+
+  // content::InterestGroupManager:
+  void GetAllInterestGroupJoiningOrigins(
+      base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
+    std::move(callback).Run(origins_);
+  }
+
+ private:
+  std::vector<url::Origin> origins_;
+};
+
 }  // namespace
 
 class PrivacySandboxServiceTest : public testing::Test {
@@ -73,7 +91,8 @@ class PrivacySandboxServiceTest : public testing::Test {
         PrivacySandboxSettingsFactory::GetForProfile(profile()),
         CookieSettingsFactory::GetForProfile(profile()).get(),
         profile()->GetPrefs(), policy_service(), sync_service(),
-        identity_test_env()->identity_manager(), mock_floc_id_provider());
+        identity_test_env()->identity_manager(), mock_floc_id_provider(),
+        test_interest_group_manager());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -97,6 +116,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   MockFlocIdProvider* mock_floc_id_provider() {
     return &mock_floc_id_provider_;
   }
+  TestInterestGroupManager* test_interest_group_manager() {
+    return &test_interest_group_manager_;
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -107,6 +129,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   syncer::TestSyncService sync_service_;
   MockFlocIdProvider mock_floc_id_provider_;
+  TestInterestGroupManager test_interest_group_manager_;
 
   std::unique_ptr<PrivacySandboxService> privacy_sandbox_service_;
 };
@@ -453,6 +476,59 @@ TEST_F(PrivacySandboxServiceTest, OnPrivacySandboxPrefChanged) {
   profile()->GetTestingPrefService()->SetBoolean(
       prefs::kPrivacySandboxApisEnabled, true);
   testing::Mock::VerifyAndClearExpectations(&mock_privacy_sandbox_observer);
+}
+
+TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
+  // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
+  // actions is correctly converted into a list of eTLD+1s.
+
+  using TestCase =
+      std::pair<std::vector<url::Origin>, std::vector<std::string>>;
+
+  // Items which map to the same eTLD+1 should be coalesced into a single entry.
+  TestCase test_case_1 = {
+      {url::Origin::Create(GURL("https://www.example.com")),
+       url::Origin::Create(GURL("https://example.com:8080")),
+       url::Origin::Create(GURL("http://www.example.com"))},
+      {"example.com"}};
+
+  // eTLD's should return the host instead, this is relevant for sites which
+  // are themselves on the PSL, e.g. github.io.
+  TestCase test_case_2 = {{
+                              url::Origin::Create(GURL("https://co.uk")),
+                              url::Origin::Create(GURL("http://co.uk")),
+                              url::Origin::Create(GURL("http://example.co.uk")),
+                          },
+                          {"co.uk", "example.co.uk"}};
+
+  // IP addresses should also return the host.
+  TestCase test_case_3 = {
+      {
+          url::Origin::Create(GURL("https://192.168.1.2")),
+          url::Origin::Create(GURL("https://192.168.1.2:8080")),
+          url::Origin::Create(GURL("https://192.168.1.3:8080")),
+      },
+      {"192.168.1.2", "192.168.1.3"}};
+
+  std::vector<TestCase> test_cases = {test_case_1, test_case_2, test_case_3};
+
+  for (const auto& origins_to_expected : test_cases) {
+    test_interest_group_manager()->SetInterestGroupJoiningOrigins(
+        {origins_to_expected.first});
+
+    bool callback_called = false;
+    auto callback = base::BindLambdaForTesting(
+        [&](std::vector<std::string> items_for_display) {
+          ASSERT_EQ(items_for_display.size(),
+                    origins_to_expected.second.size());
+          for (size_t i = 0; i < items_for_display.size(); i++)
+            EXPECT_EQ(origins_to_expected.second[i], items_for_display[i]);
+          callback_called = true;
+        });
+
+    privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
+    EXPECT_TRUE(callback_called);
+  }
 }
 
 class PrivacySandboxServiceTestReconciliationBlocked

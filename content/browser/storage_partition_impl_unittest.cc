@@ -43,7 +43,7 @@
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -234,10 +234,12 @@ class RemoveInterestGroupTester {
   bool ContainsInterestGroupOwner(const url::Origin& origin) {
     get_interest_group_success_ = false;
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    storage_partition_->GetInterestGroupManager()->GetInterestGroupsForOwner(
-        origin,
-        base::BindOnce(&RemoveInterestGroupTester::GetInterestGroupsCallback,
-                       base::Unretained(this)));
+    static_cast<InterestGroupManagerImpl*>(
+        storage_partition_->GetInterestGroupManager())
+        ->GetInterestGroupsForOwner(
+            origin, base::BindOnce(
+                        &RemoveInterestGroupTester::GetInterestGroupsCallback,
+                        base::Unretained(this)));
     await_completion_.BlockUntilNotified();
     return get_interest_group_success_;
   }
@@ -248,8 +250,9 @@ class RemoveInterestGroupTester {
     group.owner = origin;
     group.name = "Name";
     group.expiry = base::Time::Now() + base::Days(30);
-    storage_partition_->GetInterestGroupManager()->JoinInterestGroup(
-        group, origin.GetURL());
+    static_cast<InterestGroupManagerImpl*>(
+        storage_partition_->GetInterestGroupManager())
+        ->JoinInterestGroup(group, origin.GetURL());
   }
 
  private:

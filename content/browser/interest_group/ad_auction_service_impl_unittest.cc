@@ -25,7 +25,7 @@
 #include "build/buildflag.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_process_manager.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -361,9 +361,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
     NavigateAndCommit(kUrlA);
 
-    manager_ = (static_cast<StoragePartitionImpl*>(
-                    browser_context()->GetDefaultStoragePartition()))
-                   ->GetInterestGroupManager();
+    manager_ = static_cast<InterestGroupManagerImpl*>(
+        browser_context()
+            ->GetDefaultStoragePartition()
+            ->GetInterestGroupManager());
     // Process creation crashes in the Chrome zygote init in unit tests, so run
     // the auction "processes" in-process instead.
     manager_->set_auction_process_manager_for_testing(
@@ -555,7 +556,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
   raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
-  raw_ptr<InterestGroupManager> manager_;
+  raw_ptr<InterestGroupManagerImpl> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().

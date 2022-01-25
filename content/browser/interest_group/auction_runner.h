@@ -28,7 +28,7 @@
 
 namespace content {
 
-class InterestGroupManager;
+class InterestGroupManagerImpl;
 
 // An AuctionRunner loads and runs the bidder and seller worklets, along with
 // their reporting phases and produces the result via a callback.
@@ -142,7 +142,7 @@ class CONTENT_EXPORT AuctionRunner {
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-      InterestGroupManager* interest_group_manager,
+      InterestGroupManagerImpl* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       const url::Origin& frame_origin,
@@ -205,7 +205,7 @@ class CONTENT_EXPORT AuctionRunner {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-      InterestGroupManager* interest_group_manager,
+      InterestGroupManagerImpl* interest_group_manager,
       blink::mojom::AuctionAdConfigPtr auction_config,
       const url::Origin& frame_origin,
       RunAuctionCallback callback);
@@ -337,7 +337,7 @@ class CONTENT_EXPORT AuctionRunner {
   const raw_ptr<AuctionWorkletManager> auction_worklet_manager_;
   const raw_ptr<AuctionWorkletManager::Delegate>
       auction_worklet_manager_delegate_;
-  const raw_ptr<InterestGroupManager> interest_group_manager_;
+  const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   // Configuration.
   blink::mojom::AuctionAdConfigPtr auction_config_;

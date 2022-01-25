@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -66,7 +66,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 }  // namespace
 
-InterestGroupManager::InterestGroupManager(
+InterestGroupManagerImpl::InterestGroupManagerImpl(
     const base::FilePath& path,
     bool in_memory,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -77,59 +77,67 @@ InterestGroupManager::InterestGroupManager(
       auction_process_manager_(std::make_unique<AuctionProcessManager>()),
       url_loader_factory_(std::move(url_loader_factory)) {}
 
-InterestGroupManager::~InterestGroupManager() = default;
+InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
 
-void InterestGroupManager::JoinInterestGroup(blink::InterestGroup group,
-                                             const GURL& joining_url) {
+void InterestGroupManagerImpl::GetAllInterestGroupJoiningOrigins(
+    base::OnceCallback<void(std::vector<url::Origin>)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupJoiningOrigins)
+      .Then(std::move(callback));
+}
+
+void InterestGroupManagerImpl::JoinInterestGroup(blink::InterestGroup group,
+                                                 const GURL& joining_url) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kJoin,
                               group.owner.Serialize(), group.name);
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(joining_url));
 }
 
-void InterestGroupManager::LeaveInterestGroup(const ::url::Origin& owner,
-                                              const std::string& name) {
+void InterestGroupManagerImpl::LeaveInterestGroup(const ::url::Origin& owner,
+                                                  const std::string& name) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kLeave,
                               owner.Serialize(), name);
   impl_.AsyncCall(&InterestGroupStorage::LeaveInterestGroup)
       .WithArgs(owner, name);
 }
 
-void InterestGroupManager::UpdateInterestGroup(blink::InterestGroup group) {
+void InterestGroupManagerImpl::UpdateInterestGroup(blink::InterestGroup group) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kUpdate,
                               group.owner.Serialize(), group.name);
   impl_.AsyncCall(&InterestGroupStorage::UpdateInterestGroup)
       .WithArgs(std::move(group));
 }
 
-void InterestGroupManager::UpdateInterestGroupsOfOwner(
+void InterestGroupManagerImpl::UpdateInterestGroupsOfOwner(
     const url::Origin& owner,
     network::mojom::ClientSecurityStatePtr client_security_state) {
   ClaimInterestGroupsForUpdate(
       owner,
       base::BindOnce(
-          &InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad,
+          &InterestGroupManagerImpl::DidUpdateInterestGroupsOfOwnerDbLoad,
           weak_factory_.GetWeakPtr(), owner, std::move(client_security_state)));
 }
 
-void InterestGroupManager::RecordInterestGroupBid(const ::url::Origin& owner,
-                                                  const std::string& name) {
+void InterestGroupManagerImpl::RecordInterestGroupBid(
+    const ::url::Origin& owner,
+    const std::string& name) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kBid,
                               owner.Serialize(), name);
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupBid)
       .WithArgs(owner, name);
 }
 
-void InterestGroupManager::RecordInterestGroupWin(const ::url::Origin& owner,
-                                                  const std::string& name,
-                                                  const std::string& ad_json) {
+void InterestGroupManagerImpl::RecordInterestGroupWin(
+    const ::url::Origin& owner,
+    const std::string& name,
+    const std::string& ad_json) {
   NotifyInterestGroupAccessed(InterestGroupObserverInterface::kWin,
                               owner.Serialize(), name);
   impl_.AsyncCall(&InterestGroupStorage::RecordInterestGroupWin)
       .WithArgs(owner, name, std::move(ad_json));
 }
 
-void InterestGroupManager::GetInterestGroup(
+void InterestGroupManagerImpl::GetInterestGroup(
     const url::Origin& owner,
     const std::string& name,
     base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
@@ -138,13 +146,13 @@ void InterestGroupManager::GetInterestGroup(
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::GetAllInterestGroupOwners(
+void InterestGroupManagerImpl::GetAllInterestGroupOwners(
     base::OnceCallback<void(std::vector<url::Origin>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupOwners)
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::GetInterestGroupsForOwner(
+void InterestGroupManagerImpl::GetInterestGroupsForOwner(
     const url::Origin& owner,
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForOwner)
@@ -152,7 +160,7 @@ void InterestGroupManager::GetInterestGroupsForOwner(
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::ClaimInterestGroupsForUpdate(
+void InterestGroupManagerImpl::ClaimInterestGroupsForUpdate(
     const url::Origin& owner,
     base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback) {
   impl_.AsyncCall(&InterestGroupStorage::ClaimInterestGroupsForUpdate)
@@ -160,25 +168,19 @@ void InterestGroupManager::ClaimInterestGroupsForUpdate(
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::GetAllInterestGroupJoiningOrigins(
-    base::OnceCallback<void(std::vector<url::Origin>)> callback) {
-  impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupJoiningOrigins)
-      .Then(std::move(callback));
-}
-
-void InterestGroupManager::DeleteInterestGroupData(
+void InterestGroupManagerImpl::DeleteInterestGroupData(
     base::RepeatingCallback<bool(const url::Origin&)> origin_matcher) {
   impl_.AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)
       .WithArgs(std::move(origin_matcher));
 }
 
-void InterestGroupManager::GetLastMaintenanceTimeForTesting(
+void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(
     base::RepeatingCallback<void(base::Time)> callback) const {
   impl_.AsyncCall(&InterestGroupStorage::GetLastMaintenanceTimeForTesting)
       .Then(std::move(callback));
 }
 
-void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
+void InterestGroupManagerImpl::DidUpdateInterestGroupsOfOwnerDbLoad(
     url::Origin owner,
     network::mojom::ClientSecurityStatePtr client_security_state,
     std::vector<StorageInterestGroup> storage_groups) {
@@ -207,15 +209,15 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerDbLoad(
     (*simple_url_loader_it)
         ->DownloadToString(
             url_loader_factory_.get(),
-            base::BindOnce(
-                &InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch,
-                weak_factory_.GetWeakPtr(), simple_url_loader_it, owner,
-                storage_group.interest_group.name),
+            base::BindOnce(&InterestGroupManagerImpl::
+                               DidUpdateInterestGroupsOfOwnerNetFetch,
+                           weak_factory_.GetWeakPtr(), simple_url_loader_it,
+                           owner, storage_group.interest_group.name),
             kMaxUpdateSize);
   }
 }
 
-void InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch(
+void InterestGroupManagerImpl::DidUpdateInterestGroupsOfOwnerNetFetch(
     UrlLoadersList::iterator simple_url_loader_it,
     url::Origin owner,
     std::string name,
@@ -233,7 +235,7 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerNetFetch(
   data_decoder::DataDecoder::ParseJsonIsolated(
       *fetch_body,
       base::BindOnce(
-          &InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse,
+          &InterestGroupManagerImpl::DidUpdateInterestGroupsOfOwnerJsonParse,
           weak_factory_.GetWeakPtr(), std::move(owner), std::move(name)));
 }
 
@@ -354,7 +356,7 @@ absl::optional<blink::InterestGroup> ParseUpdateJson(
 
 }  // namespace
 
-void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
+void InterestGroupManagerImpl::DidUpdateInterestGroupsOfOwnerJsonParse(
     url::Origin owner,
     std::string name,
     data_decoder::DataDecoder::ValueOrError result) {
@@ -365,14 +367,14 @@ void InterestGroupManager::DidUpdateInterestGroupsOfOwnerJsonParse(
   UpdateInterestGroup(std::move(*interest_group_update));
 }
 
-void InterestGroupManager::ReportUpdateFetchFailed(const url::Origin& owner,
-                                                   const std::string& name,
-                                                   bool net_disconnected) {
+void InterestGroupManagerImpl::ReportUpdateFetchFailed(const url::Origin& owner,
+                                                       const std::string& name,
+                                                       bool net_disconnected) {
   impl_.AsyncCall(&InterestGroupStorage::ReportUpdateFetchFailed)
       .WithArgs(owner, name, net_disconnected);
 }
 
-void InterestGroupManager::NotifyInterestGroupAccessed(
+void InterestGroupManagerImpl::NotifyInterestGroupAccessed(
     InterestGroupObserverInterface::AccessType type,
     const std::string& owner_origin,
     const std::string& name) {

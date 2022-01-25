@@ -199,6 +199,7 @@ source_set("browser_sources") {
     "installability_error.cc",
     "installability_error.h",
     "installed_payment_apps_finder.h",
+    "interest_group_manager.h",
     "invalidate_type.h",
     "jank_monitor.h",
     "javascript_dialog_manager.cc",

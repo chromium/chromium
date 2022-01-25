@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
-#define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
+#ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_
 
 #include <list>
 #include <memory>
@@ -19,6 +19,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,18 +49,19 @@ class InterestGroupStorage;
 //
 // It acts as a proxy to access an InterestGroupStorage, which lives off-thread
 // as it performs blocking file IO when backed by on-disk storage.
-class CONTENT_EXPORT InterestGroupManager {
+class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
  public:
   // Creates an interest group manager using the provided directory path for
   // persistent storage. If `in_memory` is true the path is ignored and only
   // in-memory storage is used.
-  explicit InterestGroupManager(
+  explicit InterestGroupManagerImpl(
       const base::FilePath& path,
       bool in_memory,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~InterestGroupManager();
-  InterestGroupManager(const InterestGroupManager& other) = delete;
-  InterestGroupManager& operator=(const InterestGroupManager& other) = delete;
+  ~InterestGroupManagerImpl() override;
+  InterestGroupManagerImpl(const InterestGroupManagerImpl& other) = delete;
+  InterestGroupManagerImpl& operator=(const InterestGroupManagerImpl& other) =
+      delete;
 
   class CONTENT_EXPORT InterestGroupObserverInterface
       : public base::CheckedObserver {
@@ -70,6 +72,10 @@ class CONTENT_EXPORT InterestGroupManager {
                                          const std::string& owner_origin,
                                          const std::string& name) = 0;
   };
+
+  // InterestGroupManager overrides:
+  void GetAllInterestGroupJoiningOrigins(
+      base::OnceCallback<void(std::vector<url::Origin>)> callback) override;
 
   /******** Proxy function calls to InterestGroupsStorage **********/
 
@@ -121,10 +127,6 @@ class CONTENT_EXPORT InterestGroupManager {
   void ClaimInterestGroupsForUpdate(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
-  // Gets a list of all interest group joining origins. Each joining origin
-  // will only appear once.
-  void GetAllInterestGroupJoiningOrigins(
-      base::OnceCallback<void(std::vector<url::Origin>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(
@@ -195,9 +197,9 @@ class CONTENT_EXPORT InterestGroupManager {
 
   // TODO(crbug.com/1186444): Do we need to test InterestGroupManager
   // destruction during update? If so, how?
-  base::WeakPtrFactory<InterestGroupManager> weak_factory_{this};
+  base::WeakPtrFactory<InterestGroupManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_H_
+#endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_MANAGER_IMPL_H_

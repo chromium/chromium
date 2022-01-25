@@ -25,7 +25,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -925,7 +925,7 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->auction_ad_config_non_shared_params->auction_signals =
         auction_signals_json;
 
-    interest_group_manager_ = std::make_unique<InterestGroupManager>(
+    interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         base::FilePath(), /*in_memory=*/true,
         /*url_loader_factory=*/nullptr);
     if (!auction_process_manager_) {
@@ -1267,7 +1267,7 @@ class AuctionRunnerTest : public testing::Test,
   raw_ptr<MockAuctionProcessManager> mock_auction_process_manager_ = nullptr;
 
   // The InterestGroupManager is recreated and repopulated for each auction.
-  std::unique_ptr<InterestGroupManager> interest_group_manager_;
+  std::unique_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
   std::unique_ptr<AuctionRunner> auction_runner_;
   // This should be inspected using TakeBadMessage(), which also clears it.

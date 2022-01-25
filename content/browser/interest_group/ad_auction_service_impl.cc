@@ -17,7 +17,7 @@
 #include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -499,10 +499,10 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   }
 }
 
-InterestGroupManager& AdAuctionServiceImpl::GetInterestGroupManager() const {
-  return *static_cast<StoragePartitionImpl*>(
-              render_frame_host()->GetStoragePartition())
-              ->GetInterestGroupManager();
+InterestGroupManagerImpl& AdAuctionServiceImpl::GetInterestGroupManager()
+    const {
+  return *static_cast<InterestGroupManagerImpl*>(
+      render_frame_host()->GetStoragePartition()->GetInterestGroupManager());
 }
 
 url::Origin AdAuctionServiceImpl::GetTopWindowOrigin() const {

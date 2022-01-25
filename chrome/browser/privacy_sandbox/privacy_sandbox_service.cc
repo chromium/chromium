@@ -22,8 +22,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -111,14 +113,16 @@ PrivacySandboxService::PrivacySandboxService(
     policy::PolicyService* policy_service,
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
-    federated_learning::FlocIdProvider* floc_id_provider)
+    federated_learning::FlocIdProvider* floc_id_provider,
+    content::InterestGroupManager* interest_group_manager)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       policy_service_(policy_service),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
-      floc_id_provider_(floc_id_provider) {
+      floc_id_provider_(floc_id_provider),
+      interest_group_manager_(interest_group_manager) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -263,6 +267,18 @@ void PrivacySandboxService::OnPrivacySandboxPrefChanged() {
   // but performing it on every pref change achieves the same user visible
   // behavior, and is much simpler.
   ResetFlocId(/*user_initiated=*/false);
+}
+
+void PrivacySandboxService::GetFledgeJoiningEtldPlusOneForDisplay(
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  if (!interest_group_manager_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  interest_group_manager_->GetAllInterestGroupJoiningOrigins(base::BindOnce(
+      &PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay,
+      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PrivacySandboxService::Shutdown() {
@@ -474,4 +490,37 @@ void PrivacySandboxService::LogPrivacySandboxState() {
               kPSDisabledAllowAll);
     }
   }
+}
+
+void PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay(
+    base::OnceCallback<void(std::vector<std::string>)> callback,
+    std::vector<url::Origin> top_frames) {
+  std::set<std::string> display_entries;
+  for (const auto& origin : top_frames) {
+    // Prefer to display the associated eTLD+1, if there is one.
+    auto etld_plus_one = net::registry_controlled_domains::GetDomainAndRegistry(
+        origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+    if (etld_plus_one.length() > 0) {
+      display_entries.emplace(std::move(etld_plus_one));
+      continue;
+    }
+
+    // The next best option is a host, which may be an IP address or an eTLD
+    // itself (e.g. github.io).
+    // TODO(crbug.com/1286276): SetFledgeJoiningAllowed expects a non-empty
+    // eTLD+1 and so is more restrictive than what is allowed here. The logic
+    // there should be made to match this, as the user must be able to block
+    // whatever is displayed.
+    if (origin.host().length() > 0) {
+      display_entries.emplace(origin.host());
+      continue;
+    }
+
+    // Other types of top-frame origins (file, opaque) do not support FLEDGE.
+    NOTREACHED();
+  }
+  // TODO(crbug.com/1286276): Enforce a friendlier ordering instead of just
+  // whatever the database gives back.
+  std::move(callback).Run(
+      std::vector<std::string>{display_entries.begin(), display_entries.end()});
 }

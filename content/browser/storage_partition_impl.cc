@@ -64,7 +64,7 @@
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/host_zoom_level_context.h"
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/native_io/native_io_context_impl.h"
@@ -964,7 +964,7 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::SpecialStoragePolicy* special_storage_policy,
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
-      InterestGroupManager* interest_group_manager,
+      InterestGroupManagerImpl* interest_group_manager,
       AttributionManagerImpl* attribution_manager,
       AggregationServiceImpl* aggregation_service,
       bool perform_storage_cleanup,
@@ -1316,7 +1316,7 @@ void StoragePartitionImpl::Initialize(
   }
 
   if (base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage)) {
-    interest_group_manager_ = std::make_unique<InterestGroupManager>(
+    interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
         path, is_in_memory(), GetURLLoaderFactoryForBrowserProcess());
   }
 
@@ -2345,7 +2345,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     storage::SpecialStoragePolicy* special_storage_policy,
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
-    InterestGroupManager* interest_group_manager,
+    InterestGroupManagerImpl* interest_group_manager,
     AttributionManagerImpl* attribution_manager,
     AggregationServiceImpl* aggregation_service,
     bool perform_storage_cleanup,

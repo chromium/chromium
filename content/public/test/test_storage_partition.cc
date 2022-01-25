@@ -138,6 +138,10 @@ TestStoragePartition::GetPlatformNotificationContext() {
   return platform_notification_context_;
 }
 
+InterestGroupManager* TestStoragePartition::GetInterestGroupManager() {
+  return nullptr;
+}
+
 DevToolsBackgroundServicesContext*
 TestStoragePartition::GetDevToolsBackgroundServicesContext() {
   return devtools_background_services_context_;

@@ -139,6 +139,8 @@ class TestStoragePartition : public StoragePartition {
   }
   PlatformNotificationContext* GetPlatformNotificationContext() override;
 
+  InterestGroupManager* GetInterestGroupManager() override;
+
   void set_devtools_background_services_context(
       DevToolsBackgroundServicesContext* context) {
     devtools_background_services_context_ = context;

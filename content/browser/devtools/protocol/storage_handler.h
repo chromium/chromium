@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -22,10 +22,10 @@ class StoragePartition;
 
 namespace protocol {
 
-class StorageHandler
-    : public DevToolsDomainHandler,
-      public Storage::Backend,
-      private content::InterestGroupManager::InterestGroupObserverInterface {
+class StorageHandler : public DevToolsDomainHandler,
+                       public Storage::Backend,
+                       private content::InterestGroupManagerImpl::
+                           InterestGroupObserverInterface {
  public:
   StorageHandler();
 
@@ -99,10 +99,10 @@ class StorageHandler
   CacheStorageObserver* GetCacheStorageObserver();
   IndexedDBObserver* GetIndexedDBObserver();
 
-  // content::InterestGroupManager::InterestGroupObserverInterface
+  // content::InterestGroupManagerImpl::InterestGroupObserverInterface
   void OnInterestGroupAccessed(
       const base::Time& accessTime,
-      InterestGroupManager::InterestGroupObserverInterface::AccessType type,
+      InterestGroupManagerImpl::InterestGroupObserverInterface::AccessType type,
       const std::string& owner_origin,
       const std::string& name) override;
 

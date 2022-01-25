@@ -24,7 +24,7 @@
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
-#include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -127,7 +127,7 @@ AuctionRunner::BidState::BidState(BidState&&) = default;
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-    InterestGroupManager* interest_group_manager,
+    InterestGroupManagerImpl* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     const url::Origin& frame_origin,
@@ -143,7 +143,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
     AuctionWorkletManager::Delegate* auction_worklet_manager_delegate,
-    InterestGroupManager* interest_group_manager,
+    InterestGroupManagerImpl* interest_group_manager,
     blink::mojom::AuctionAdConfigPtr auction_config,
     const url::Origin& frame_origin,
     RunAuctionCallback callback)
