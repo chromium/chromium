@@ -285,5 +285,10 @@ const base::Feature kOptimizeUpdateLoadInfo{"OptimizeUpdateLoadInfo",
 const base::Feature kCombineResponseBody{"CombineResponseBody",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Don't wait for database write before responding to
+// RestrictedCookieManager::SetCookieFromString.
+const base::Feature kFasterSetCookie{"FasterSetCookie",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace network
