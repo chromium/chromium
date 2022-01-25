@@ -1251,7 +1251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.ApiCallDurationWithoutApp" units="ms"
-    expires_after="2022-06-05">
+    expires_after="2023-01-31">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -1264,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.CallSource" enum="InstantAppsCallSource"
-    expires_after="2022-01-31">
+    expires_after="2023-01-31">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -1285,7 +1285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.EligiblePageLoaded" enum="Boolean"
-    expires_after="2022-01-31">
+    expires_after="2023-01-31">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -1295,7 +1295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.FallbackDuration" units="ms"
-    expires_after="2022-01-31">
+    expires_after="2023-01-31">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -1318,7 +1318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.InstantApps.ShouldShowBanner" enum="InstantAppsBanner"
-    expires_after="2022-06-05">
+    expires_after="2023-01-31">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
