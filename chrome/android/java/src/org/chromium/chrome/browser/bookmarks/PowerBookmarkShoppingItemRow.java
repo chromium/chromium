@@ -137,6 +137,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
 
         setPriceInfoChip(originalPrice, currentPrice);
         setPriceTrackingButton(priceTrackingEnabled);
+        mTitleView.setLabelFor(mEndStartButtonView.getId());
         PowerBookmarkMetrics.reportBookmarkShoppingItemRowPriceTrackingState(
                 PriceTrackingState.PRICE_TRACKING_SHOWN);
     }
@@ -179,6 +180,9 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     /** Sets up the button that allows you to un/subscribe to price-tracking updates. */
     private void setPriceTrackingButton(boolean priceTrackingEnabled) {
         mIsPriceTrackingEnabled = priceTrackingEnabled;
+        mEndStartButtonView.setContentDescription(getContext().getResources().getString(
+                priceTrackingEnabled ? R.string.disable_price_tracking_menu_item
+                                     : R.string.enable_price_tracking_menu_item));
         mEndStartButtonView.setVisibility(View.VISIBLE);
         updatePriceTrackingImageForCurrentState();
         Callback<Integer> subscriptionCallback = (status) -> {
