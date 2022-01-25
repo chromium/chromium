@@ -6259,22 +6259,6 @@
             ]
         }
     ],
-    "TabSearchEntrypointWindowsEntrypoint": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabSearchChevronIcon",
-                        "Win10TabSearchCaptionButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabSearchFuzzySearch": [
         {
             "platforms": [
