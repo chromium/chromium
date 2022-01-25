@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -40,8 +41,19 @@
     self.accessibilityLabel = config.title;
     [_faviconView configureWithAttributes:config.attributes];
     _config = config;
+    [self addInteraction:[[UIContextMenuInteraction alloc]
+                             initWithDelegate:self]];
   }
   return self;
+}
+
+#pragma mark - UIContextMenuInteractionDelegate
+
+- (UIContextMenuConfiguration*)contextMenuInteraction:
+                                   (UIContextMenuInteraction*)interaction
+                       configurationForMenuAtLocation:(CGPoint)location {
+  return [self.menuProvider contextMenuConfigurationForItem:self.config
+                                                   fromView:self];
 }
 
 @end

@@ -24,6 +24,7 @@ source_set("content_suggestions") {
   deps = [
     ":constants",
     ":feature_flags",
+    ":public",
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
@@ -105,6 +106,12 @@ source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("public") {
+  sources = [ "content_suggestions_menu_provider.h" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("content_suggestions_ui") {
   sources = [
     "content_suggestions_collection_controlling.h",
@@ -124,7 +131,6 @@ source_set("content_suggestions_ui") {
     "content_suggestions_header_view_controller_delegate.h",
     "content_suggestions_layout.h",
     "content_suggestions_layout.mm",
-    "content_suggestions_menu_provider.h",
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
@@ -136,6 +142,7 @@ source_set("content_suggestions_ui") {
     ":content_suggestions_constant",
     ":content_suggestions_ui_util",
     ":feature_flags",
+    ":public",
     "resources:content_suggestions_no_image",
     "resources:content_suggestions_offline",
     "resources:ntp_search_icon",

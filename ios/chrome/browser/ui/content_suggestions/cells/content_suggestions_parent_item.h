@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_selection_actions.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 
 @class ContentSuggestionsMostVisitedActionItem;
 @class ContentSuggestionsMostVisitedItem;
@@ -33,6 +34,9 @@
 
 // The target for the Most Visited tiles.
 @property(nonatomic, weak) id<ContentSuggestionsSelectionActions> tapTarget;
+
+// Provider of menu configurations for the Most Visited tiles.
+@property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 
 @end
 

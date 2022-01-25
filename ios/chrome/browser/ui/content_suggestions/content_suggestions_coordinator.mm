@@ -397,23 +397,29 @@
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
-        NSIndexPath* indexPath =
-            [self.suggestionsViewController.collectionViewModel
-                indexPathForItem:item];
+        NSInteger index =
+            IsSingleCellContentSuggestionsEnabled()
+                ? item.index
+                : [self.suggestionsViewController.collectionViewModel
+                      indexPathForItem:item]
+                      .item;
+        CGPoint centerPoint = [view.superview convertPoint:view.center
+                                                    toView:nil];
 
         [menuElements addObject:[actionFactory actionToOpenInNewTabWithBlock:^{
                         [weakSelf.ntpMediator
                             openNewTabWithMostVisitedItem:item
                                                 incognito:NO
-                                                  atIndex:indexPath.item];
+                                                  atIndex:index
+                                                fromPoint:centerPoint];
                       }]];
 
         UIAction* incognitoAction =
             [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-              [weakSelf.ntpMediator
-                  openNewTabWithMostVisitedItem:item
-                                      incognito:YES
-                                        atIndex:indexPath.item];
+              [weakSelf.ntpMediator openNewTabWithMostVisitedItem:item
+                                                        incognito:YES
+                                                          atIndex:index
+                                                        fromPoint:centerPoint];
             }];
 
         if (IsIncognitoModeDisabled(
