@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>:has() pseudo class specificity</title>
+<link rel="author" title="Byungwoo Lee" href="mailto:blee@igalia.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+
+<style>
+  .subject:has(.a.c) {
+    color: green
+  }
+  .subject:has(.b.c) {
+    color: blue
+  }
+  .subject:has(.c) {
+    color: red
+  }
+  .subject:has(child1 + child2) {
+    color: green
+  }
+  .subject:has(child3) {
+    color: red
+  }
+</style>
+<main>
+  <div id=subject1 class=subject>
+    <div class="a b c"></div>
+  </div>
+  <div id=subject2 class=subject>
+    <div class="a c"></div>
+  </div>
+  <div id=subject3 class=subject>
+    <div class="b c"></div>
+  </div>
+  <div id=subject4 class=subject>
+    <child1></child1><child2></child2><child3></child3>
+  </div>
+</main>
+<script>
+  function test_color(test_name, subject, color) {
+    test(function() {
+      assert_equals(getComputedStyle(subject).color, color);
+    }, test_name);
+  }
+
+  test_color(':has(.c) < :has(.a.c) == :has(.b.c), so :has(.b.c) wins', subject1, "rgb(0, 0, 255)");
+  test_color(':has(.c) < :has(.a.c), so :has(.a.c) wins', subject2, "rgb(0, 128, 0)");
+  test_color(':has(.c) < :has(.b.c), so :has(.b.c) wins', subject3, "rgb(0, 0, 255)");
+  test_color(':has(child3) < :has(child1 + child2), so :has(child1 + child2) wins', subject4, "rgb(0, 128, 0)");
+</script>
