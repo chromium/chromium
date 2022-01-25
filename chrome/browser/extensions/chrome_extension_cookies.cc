@@ -22,6 +22,7 @@
 #include "content/public/browser/cookie_store_factory.h"
 #include "extensions/common/constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/restricted_cookie_manager.h"
 
@@ -79,7 +80,7 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &IOData::ComputeCookiePartitionKeyAndCreateRestrictedCookieManager,
+          &IOData::ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager,
           base::Unretained(io_data_.get()), origin, isolation_info,
           first_party_sets_enabled_, std::move(receiver)));
 }
@@ -126,14 +127,14 @@ ChromeExtensionCookies::IOData::~IOData() {
 }
 
 void ChromeExtensionCookies::IOData::
-    ComputeCookiePartitionKeyAndCreateRestrictedCookieManager(
+    ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager(
         const url::Origin& origin,
         const net::IsolationInfo& isolation_info,
         const bool first_party_sets_enabled,
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver) {
-  network::RestrictedCookieManager::ComputeCookiePartitionKey(
-      GetOrCreateCookieStore(), isolation_info,
+  network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
+      origin, GetOrCreateCookieStore(), isolation_info,
       base::BindOnce(&IOData::CreateRestrictedCookieManager,
                      weak_factory_.GetWeakPtr(), origin, isolation_info,
                      first_party_sets_enabled, std::move(receiver)));
@@ -144,7 +145,7 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const net::IsolationInfo& isolation_info,
     const bool first_party_sets_enabled,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
+    net::FirstPartySetMetadata first_party_set_metadata) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   restricted_cookie_managers_.Add(
@@ -153,7 +154,8 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
           GetOrCreateCookieStore(), network_cookie_settings_, origin,
           isolation_info,
           /* null cookies_observer disables logging */
-          mojo::NullRemote(), first_party_sets_enabled, cookie_partition_key),
+          mojo::NullRemote(), first_party_sets_enabled,
+          std::move(first_party_set_metadata)),
       std::move(receiver));
 }
 

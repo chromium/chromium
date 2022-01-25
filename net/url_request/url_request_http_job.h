@@ -220,24 +220,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void OnGotFirstPartySetMetadata(
       FirstPartySetMetadata first_party_set_metadata);
 
-  // Computes and saves the cookie partition key for the request. Partitioned
-  // cookies should be set using this key and only partitioned cookies with this
-  // partition key should be sent.  The cookie partition key is
-  // optional(nullopt) if cookie partitioning is not enabled, or if the NIK has
-  // no top-frame site.
-  //
-  // Must only be called if credentials are allowed to be sent in this request,
-  // and the request instance has an associated cookie store.
-  //
-  // This goes through the CookieAccessDelegate via callbacks, which may be
-  // invoked either synchronously or asynchronously.
-  void ComputeAndSetCookiePartitionKeyAndStart();
-
-  // Sets the cookie partition key associated with this request, then adds
-  // cookie headers and continues the request.
-  void OnComputedCookiePartitionKey(
-      absl::optional<net::CookiePartitionKey> cookie_partition_key);
-
   // Returns true iff this request leg should include the Cookie header. Note
   // that cookies may still be eventually blocked by the CookieAccessDelegate
   // even if this method returns true.
@@ -320,8 +302,10 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
 
-  // Partitioned cookies will be set using this key and only partitioned cookies
-  // with this partition key will be sent.
+  // The cookie partition key for the request. Partitioned cookies should be set
+  // using this key and only partitioned cookies with this partition key should
+  // be sent. The cookie partition key is optional(nullopt) if cookie
+  // partitioning is not enabled, or if the NIK has no top-frame site.
   //
   // Unpartitioned cookies are unaffected by this field.
   //

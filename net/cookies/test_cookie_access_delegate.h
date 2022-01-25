@@ -84,6 +84,10 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   }
 
  private:
+  // Synchronous version of FindFirstPartySetOwner, for convenience.
+  absl::optional<net::SchemefulSite> FindFirstPartySetOwnerSync(
+      const net::SchemefulSite& site) const;
+
   // Discard any leading dot in the domain string.
   std::string GetKeyForDomainValue(const std::string& domain) const;
 

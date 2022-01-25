@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/schemeful_site.h"
@@ -52,24 +53,35 @@ void TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context,
     base::OnceCallback<void(FirstPartySetMetadata)> callback) const {
-  RunMaybeAsync(FirstPartySetMetadata(), std::move(callback));
+  absl::optional<SchemefulSite> top_frame_owner =
+      top_frame_site ? FindFirstPartySetOwnerSync(*top_frame_site)
+                     : absl::nullopt;
+  RunMaybeAsync(net::FirstPartySetMetadata(
+                    net::SamePartyContext(),
+                    base::OptionalOrNullptr(FindFirstPartySetOwnerSync(site)),
+                    base::OptionalOrNullptr(top_frame_owner),
+                    FirstPartySetsContextType::kUnknown),
+                std::move(callback));
+}
+
+absl::optional<net::SchemefulSite>
+TestCookieAccessDelegate::FindFirstPartySetOwnerSync(
+    const net::SchemefulSite& site) const {
+  auto owner_set_iter =
+      base::ranges::find_if(first_party_sets_, [&](const auto& set_iter) {
+        return base::Contains(set_iter.second, site);
+      });
+
+  return owner_set_iter != first_party_sets_.end()
+             ? absl::make_optional(owner_set_iter->first)
+             : absl::nullopt;
 }
 
 void TestCookieAccessDelegate::FindFirstPartySetOwner(
     const net::SchemefulSite& site,
     base::OnceCallback<void(absl::optional<net::SchemefulSite>)> callback)
     const {
-  auto owner_set_iter =
-      base::ranges::find_if(first_party_sets_, [&](const auto& set_iter) {
-        return base::Contains(set_iter.second, site);
-      });
-
-  absl::optional<net::SchemefulSite> owner =
-      owner_set_iter != first_party_sets_.end()
-          ? absl::make_optional(owner_set_iter->first)
-          : absl::nullopt;
-
-  RunMaybeAsync(owner, std::move(callback));
+  RunMaybeAsync(FindFirstPartySetOwnerSync(site), std::move(callback));
 }
 
 void TestCookieAccessDelegate::FindFirstPartySetOwners(
@@ -78,13 +90,9 @@ void TestCookieAccessDelegate::FindFirstPartySetOwners(
         callback) const {
   std::vector<std::pair<SchemefulSite, SchemefulSite>> mapping;
   for (const SchemefulSite& site : sites) {
-    auto owner_set_iter =
-        base::ranges::find_if(first_party_sets_, [&](const auto& set_iter) {
-          return base::Contains(set_iter.second, site);
-        });
-    if (owner_set_iter != first_party_sets_.end()) {
-      mapping.emplace_back(site, owner_set_iter->first);
-    }
+    absl::optional<SchemefulSite> owner = FindFirstPartySetOwnerSync(site);
+    if (owner)
+      mapping.emplace_back(site, *owner);
   }
 
   RunMaybeAsync<base::flat_map<SchemefulSite, SchemefulSite>>(

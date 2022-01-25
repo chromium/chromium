@@ -24,39 +24,6 @@ bool CookieAccessDelegate::ShouldTreatUrlAsTrustworthy(const GURL& url) const {
 }
 
 // static
-void CookieAccessDelegate::CreateCookiePartitionKey(
-    const CookieAccessDelegate* delegate,
-    const NetworkIsolationKey& network_isolation_key,
-    base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
-        callback) {
-  if (!delegate) {
-    std::move(callback).Run(CookiePartitionKey::FromNetworkIsolationKey(
-        network_isolation_key, nullptr));
-    return;
-  }
-
-  absl::optional<SchemefulSite> top_frame_site =
-      network_isolation_key.GetTopFrameSite();
-  if (!top_frame_site) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  delegate->FindFirstPartySetOwner(
-      top_frame_site.value(),
-      base::BindOnce(
-          [](const NetworkIsolationKey& network_isolation_key,
-             base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
-                 callback,
-             absl::optional<net::SchemefulSite> first_party_set_owner) {
-            std::move(callback).Run(CookiePartitionKey::FromNetworkIsolationKey(
-                network_isolation_key,
-                base::OptionalOrNullptr(first_party_set_owner)));
-          },
-          network_isolation_key, std::move(callback)));
-}
-
-// static
 void CookieAccessDelegate::FirstPartySetifyPartitionKey(
     const CookieAccessDelegate* delegate,
     const CookiePartitionKey& cookie_partition_key,

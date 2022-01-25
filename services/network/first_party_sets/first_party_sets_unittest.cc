@@ -1433,85 +1433,86 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeMetadata) {
   // Works as usual for sites that are in First-Party sets.
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_EQ(ComputeMetadataAndWait(owner, &member, {member}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_EQ(ComputeMetadataAndWait(member, &owner, {member}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {owner}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member, owner}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
 
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_EQ(ComputeMetadataAndWait(wss_member, &member, {member, owner}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner,
+                net::SamePartyContext(Type::kSameParty), &owner, &owner,
                 net::FirstPartySetsContextType::kHomogeneous));
 
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &member, {member}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr,
+                net::SamePartyContext(Type::kCrossParty), nullptr, &owner,
                 net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_EQ(ComputeMetadataAndWait(member, &nonmember, {member}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), &owner,
+                net::SamePartyContext(Type::kCrossParty), &owner, nullptr,
                 net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_EQ(ComputeMetadataAndWait(wss_nonmember, &wss_member, {member, owner}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr,
+                net::SamePartyContext(Type::kCrossParty), nullptr, &owner,
                 net::FirstPartySetsContextType::kTopResourceMismatch));
 
   // Top&resource differs from Ancestors.
-  EXPECT_EQ(
-      ComputeMetadataAndWait(member, &member, {nonmember}),
-      net::FirstPartySetMetadata(
-          net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                Type::kSameParty),
-          &owner, net::FirstPartySetsContextType::kTopResourceMatchMixed));
+  EXPECT_EQ(ComputeMetadataAndWait(member, &member, {nonmember}),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                      Type::kSameParty),
+                &owner, &owner,
+                net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   // Metrics values infer singleton sets when appropriate.
-  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                      Type::kSameParty),
-                nullptr, net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_EQ(
+      ComputeMetadataAndWait(nonmember, &nonmember, {nonmember}),
+      net::FirstPartySetMetadata(
+          net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
+                                Type::kSameParty),
+          nullptr, nullptr, net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember1, {nonmember}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr,
+                net::SamePartyContext(Type::kCrossParty), nullptr, nullptr,
                 net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember1, &nonmember, {nonmember}),
             net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr,
+                net::SamePartyContext(Type::kCrossParty), nullptr, nullptr,
                 net::FirstPartySetsContextType::kTopResourceMismatch));
-  EXPECT_EQ(
-      ComputeMetadataAndWait(nonmember, &nonmember, {nonmember1}),
-      net::FirstPartySetMetadata(
-          net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                Type::kSameParty),
-          nullptr, net::FirstPartySetsContextType::kTopResourceMatchMixed));
+  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember1}),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                      Type::kSameParty),
+                nullptr, nullptr,
+                net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
-  EXPECT_EQ(
-      ComputeMetadataAndWait(member, &member, {member, nonmember}),
-      net::FirstPartySetMetadata(
-          net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                Type::kSameParty),
-          &owner, net::FirstPartySetsContextType::kTopResourceMatchMixed));
-  EXPECT_EQ(
-      ComputeMetadataAndWait(nonmember, &nonmember, {member, nonmember}),
-      net::FirstPartySetMetadata(
-          net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                Type::kSameParty),
-          nullptr, net::FirstPartySetsContextType::kTopResourceMatchMixed));
+  EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member, nonmember}),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                      Type::kSameParty),
+                &owner, &owner,
+                net::FirstPartySetsContextType::kTopResourceMatchMixed));
+  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {member, nonmember}),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
+                                      Type::kSameParty),
+                nullptr, nullptr,
+                net::FirstPartySetsContextType::kTopResourceMatchMixed));
 }
 
 TEST_F(PopulatedFirstPartySetsTest, FindOwner) {

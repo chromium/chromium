@@ -83,20 +83,6 @@ class NET_EXPORT CookieAccessDelegate {
           base::flat_map<net::SchemefulSite, net::SchemefulSite>)> callback)
       const = 0;
 
-  // Creates a CookiePartitionKey that takes whether the top-frame site is in a
-  // First-Party Set into account. If FPS are not enabled, it returns a cookie
-  // partition key that does not take FPS into account.
-  //
-  // Should always return nullopt if partitioned cookies are disabled or if
-  // the NIK has no top-frame site.
-  //
-  // May invoke `callback` either synchronously or asynchronously.
-  static void CreateCookiePartitionKey(
-      const CookieAccessDelegate* delegate,
-      const NetworkIsolationKey& network_isolation_key,
-      base::OnceCallback<void(absl::optional<net::CookiePartitionKey>)>
-          callback);
-
   // Converts the CookiePartitionKey's site to its First-Party Set owner if
   // the site is in a nontrivial set.
   //

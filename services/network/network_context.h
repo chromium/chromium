@@ -35,6 +35,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/http/http_auth_preferences.h"
@@ -611,15 +612,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // On connection errors the NetworkContext destroys itself.
   void OnConnectionError();
 
-  // Invoked with the CookiePartitionKey to be associated with the given
+  // Invoked with the FirstPartySetMetadata to be associated with the given
   // RestrictedCookieManager that is being set up.
-  void OnComputedCookiePartitionKey(
+  void OnComputedFirstPartySetMetadata(
       mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
       mojom::RestrictedCookieManagerRole role,
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      absl::optional<net::CookiePartitionKey> cookie_partition_key);
+      net::FirstPartySetMetadata first_party_set_metadata);
 
   GURL GetHSTSRedirect(const GURL& original_url);
 

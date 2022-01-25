@@ -31,6 +31,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/test_cookie_access_delegate.h"
@@ -42,6 +43,7 @@
 #include "services/network/test/test_network_context_client.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace net {
@@ -54,20 +56,20 @@ namespace network {
 
 namespace {
 
-absl::optional<net::CookiePartitionKey> ComputePartitionKeySync(
+net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
+    const url::Origin& origin,
     const net::CookieStore* cookie_store,
     const net::IsolationInfo& isolation_info) {
   base::RunLoop run_loop;
-  absl::optional<net::CookiePartitionKey> cookie_partition_key;
-  RestrictedCookieManager::ComputeCookiePartitionKey(
-      cookie_store, isolation_info,
-      base::BindLambdaForTesting(
-          [&](absl::optional<net::CookiePartitionKey> key) {
-            cookie_partition_key = key;
-            run_loop.Quit();
-          }));
+  net::FirstPartySetMetadata first_party_set_metadata;
+  RestrictedCookieManager::ComputeFirstPartySetMetadata(
+      origin, cookie_store, isolation_info,
+      base::BindLambdaForTesting([&](net::FirstPartySetMetadata metadata) {
+        first_party_set_metadata = std::move(metadata);
+        run_loop.Quit();
+      }));
   run_loop.Run();
-  return cookie_partition_key;
+  return first_party_set_metadata;
 }
 
 }  // namespace
@@ -269,7 +271,9 @@ class RestrictedCookieManagerTest
             isolation_info_,
             recording_client_.GetRemote(),
             kFirstPartySetsEnabled,
-            ComputePartitionKeySync(&cookie_monster_, isolation_info_))),
+            ComputeFirstPartySetMetadataSync(kDefaultOrigin,
+                                             &cookie_monster_,
+                                             isolation_info_))),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
     sync_service_ =

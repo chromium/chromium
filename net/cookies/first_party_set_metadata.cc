@@ -14,10 +14,12 @@ namespace net {
 FirstPartySetMetadata::FirstPartySetMetadata() = default;
 FirstPartySetMetadata::FirstPartySetMetadata(
     const SamePartyContext& context,
-    const SchemefulSite* owner,
+    const SchemefulSite* frame_owner,
+    const SchemefulSite* top_frame_owner,
     FirstPartySetsContextType first_party_sets_context_type)
     : context_(context),
-      owner_(base::OptionalFromPtr(owner)),
+      frame_owner_(base::OptionalFromPtr(frame_owner)),
+      top_frame_owner_(base::OptionalFromPtr(top_frame_owner)),
       first_party_sets_context_type_(first_party_sets_context_type) {}
 
 FirstPartySetMetadata::FirstPartySetMetadata(FirstPartySetMetadata&&) = default;
@@ -28,14 +30,18 @@ FirstPartySetMetadata::~FirstPartySetMetadata() = default;
 
 bool FirstPartySetMetadata::operator==(
     const FirstPartySetMetadata& other) const {
-  return std::make_tuple(context(), owner(), first_party_sets_context_type()) ==
-         std::make_tuple(other.context(), other.owner(),
-                         other.first_party_sets_context_type());
+  return std::tie(context_, frame_owner_, top_frame_owner_,
+                  first_party_sets_context_type_) ==
+         std::tie(other.context_, other.frame_owner_, other.top_frame_owner_,
+                  other.first_party_sets_context_type_);
 }
 
-std::ostream& operator<<(std::ostream& os, const FirstPartySetMetadata& fpsm) {
-  os << "{" << fpsm.context() << ", " << base::OptionalOrNullptr(fpsm.owner())
-     << ", " << static_cast<int>(fpsm.first_party_sets_context_type()) << "}";
+std::ostream& operator<<(std::ostream& os,
+                         const FirstPartySetMetadata& metadata) {
+  os << "{" << metadata.context() << ", "
+     << base::OptionalOrNullptr(metadata.frame_owner()) << ", "
+     << base::OptionalOrNullptr(metadata.top_frame_owner()) << ", "
+     << static_cast<int>(metadata.first_party_sets_context_type()) << "}";
   return os;
 }
 

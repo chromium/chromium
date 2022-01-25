@@ -202,9 +202,12 @@ void FirstPartySets::ComputeMetadata(
   net::FirstPartySetsContextType first_party_sets_context_type =
       ComputeContextType(site, top_frame_site, party_context);
 
+  absl::optional<net::SchemefulSite> top_frame_owner =
+      top_frame_site ? FindOwner(*top_frame_site) : absl::nullopt;
+
   std::move(callback).Run(net::FirstPartySetMetadata(
       context, base::OptionalOrNullptr(FindOwner(site)),
-      first_party_sets_context_type));
+      base::OptionalOrNullptr(top_frame_owner), first_party_sets_context_type));
 }
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(

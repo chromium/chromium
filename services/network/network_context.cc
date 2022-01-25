@@ -57,6 +57,7 @@
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
@@ -707,27 +708,27 @@ void NetworkContext::GetRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
-  RestrictedCookieManager::ComputeCookiePartitionKey(
-      url_request_context_->cookie_store(), isolation_info,
-      base::BindOnce(&NetworkContext::OnComputedCookiePartitionKey,
+  RestrictedCookieManager::ComputeFirstPartySetMetadata(
+      origin, url_request_context_->cookie_store(), isolation_info,
+      base::BindOnce(&NetworkContext::OnComputedFirstPartySetMetadata,
                      weak_factory_.GetWeakPtr(), std::move(receiver), role,
                      origin, isolation_info, std::move(cookie_observer)));
 }
 
-void NetworkContext::OnComputedCookiePartitionKey(
+void NetworkContext::OnComputedFirstPartySetMetadata(
     mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
+    net::FirstPartySetMetadata first_party_set_metadata) {
   restricted_cookie_manager_receivers_.Add(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer),
           network_service_->first_party_sets()->is_enabled(),
-          cookie_partition_key),
+          std::move(first_party_set_metadata)),
       std::move(receiver));
 }
 

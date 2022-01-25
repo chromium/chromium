@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -327,7 +328,15 @@ void URLRequestHttpJob::OnGotFirstPartySetMetadata(
   AddExtraHeaders();
 
   if (ShouldAddCookieHeader()) {
-    ComputeAndSetCookiePartitionKeyAndStart();
+    // We shouldn't overwrite this if we've already computed the key.
+    DCHECK(!cookie_partition_key_.has_value());
+
+    cookie_partition_key_ =
+        absl::make_optional(CookiePartitionKey::FromNetworkIsolationKey(
+            request_->isolation_info().network_isolation_key(),
+            base::OptionalOrNullptr(
+                first_party_set_metadata_.top_frame_owner())));
+    AddCookieHeaderAndStart();
   } else {
     StartTransaction();
   }
@@ -640,7 +649,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
           is_main_frame_navigation, force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.owner().has_value();
+      first_party_set_metadata_.frame_owner().has_value();
   CookieOptions options = CreateCookieOptions(
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
@@ -857,7 +866,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           force_ignore_site_for_cookies);
 
   bool is_in_nontrivial_first_party_set =
-      first_party_set_metadata_.owner().has_value();
+      first_party_set_metadata_.frame_owner().has_value();
   CookieOptions options = CreateCookieOptions(
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
@@ -1726,28 +1735,6 @@ void URLRequestHttpJob::NotifyURLRequestDestroyed() {
       request()->context()->network_quality_estimator();
   if (network_quality_estimator)
     network_quality_estimator->NotifyURLRequestDestroyed(*request());
-}
-
-void URLRequestHttpJob::ComputeAndSetCookiePartitionKeyAndStart() {
-  // This should only be called when credentials are allowed, and we have a
-  // cookie store.
-  DCHECK(request_->allow_credentials());
-  const CookieStore* cookie_store = request_->context()->cookie_store();
-  DCHECK(cookie_store);
-  // We shouldn't call this if we've already computed the key.
-  DCHECK(!cookie_partition_key_.has_value());
-
-  CookieAccessDelegate::CreateCookiePartitionKey(
-      cookie_store->cookie_access_delegate(),
-      request_->isolation_info().network_isolation_key(),
-      base::BindOnce(&URLRequestHttpJob::OnComputedCookiePartitionKey,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void URLRequestHttpJob::OnComputedCookiePartitionKey(
-    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
-  cookie_partition_key_ = absl::make_optional(cookie_partition_key);
-  AddCookieHeaderAndStart();
 }
 
 bool URLRequestHttpJob::ShouldAddCookieHeader() const {
