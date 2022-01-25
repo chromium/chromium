@@ -102,8 +102,8 @@ TokenHandleUtil::~TokenHandleUtil() = default;
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  bool token_rotated = false;
-  known_user.GetBooleanPref(account_id, kTokenHandleRotated, &token_rotated);
+  bool token_rotated =
+      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
   if (!token_rotated && known_user.GetIsEnterpriseManaged(account_id)) {
     // Ignore not rotated token starting from M94 for enterprise users to avoid
     // blocking them on the login screen. Rotation started in M91.
@@ -134,9 +134,9 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
-  bool token_rotated = false;
-  user_manager::known_user::GetBooleanPref(account_id, kTokenHandleRotated,
-                                           &token_rotated);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  bool token_rotated =
+      known_user.FindBoolPath(account_id, kTokenHandleRotated).value_or(false);
   return !HasToken(account_id) || HasTokenStatusInvalid(account_id) ||
          !token_rotated;
 }

@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -177,13 +178,13 @@ class SystemTrayClientClockUnknownPrefTest
   }
   // ash::localStateMixin::Delegate:
   void SetUpLocalState() override {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     // First user does not have a preference.
-    ASSERT_FALSE(user_manager::known_user::GetBooleanPref(
-        account_id1_, ::prefs::kUse24HourClock, nullptr));
+    ASSERT_FALSE(known_user.FindBoolPath(account_id1_, ::prefs::kUse24HourClock)
+                     .has_value());
 
     // Set preference for the second user only.
-    user_manager::known_user::SetBooleanPref(account_id2_,
-                                             ::prefs::kUse24HourClock, false);
+    known_user.SetBooleanPref(account_id2_, ::prefs::kUse24HourClock, false);
   }
 
  protected:

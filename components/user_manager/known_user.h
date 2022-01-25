@@ -73,11 +73,14 @@ class USER_MANAGER_EXPORT KnownUser final {
                      const std::string& path,
                      const std::string& in_value);
 
+  absl::optional<bool> FindBoolPath(const AccountId& account_id,
+                                    base::StringPiece path) const;
+
   // Returns true if |account_id| preference by |path| does exist,
   // fills in |out_value|. Otherwise returns false.
-  bool GetBooleanPref(const AccountId& account_id,
-                      const std::string& path,
-                      bool* out_value);
+  bool GetBooleanPrefForTest(const AccountId& account_id,
+                             const std::string& path,
+                             bool* out_value);
 
   // Updates user's identified by |account_id| boolean preference |path|.
   void SetBooleanPref(const AccountId& account_id,
@@ -260,7 +263,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   // Performs a lookup of properties associated with |account_id|. Returns
   // nullptr if not found.
-  const base::Value* FindPrefs(const AccountId& account_id);
+  const base::Value* FindPrefs(const AccountId& account_id) const;
 
   // Removes all user preferences associated with |account_id|.
   // Not exported as code should not be calling this outside this component
@@ -289,14 +292,6 @@ namespace known_user {
 void USER_MANAGER_EXPORT SetStringPref(const AccountId& account_id,
                                        const std::string& path,
                                        const std::string& in_value);
-
-// Returns true if |account_id| preference by |path| does exist,
-// fills in |out_value|. Otherwise returns false.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::GetBooleanPref
-// instead.
-bool USER_MANAGER_EXPORT GetBooleanPref(const AccountId& account_id,
-                                        const std::string& path,
-                                        bool* out_value);
 
 // Updates user's identified by |account_id| boolean preference |path|.
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SetBooleanPref

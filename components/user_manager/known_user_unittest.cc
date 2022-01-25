@@ -569,13 +569,14 @@ TEST_F(KnownUserTest, CleanObsoletePrefs) {
   known_user.CleanObsoletePrefs();
 
   // Verify that only the obsolete pref has been removed.
-  EXPECT_FALSE(known_user.GetBooleanPref(kDefaultAccountId, kObsoletePrefName,
-                                         /*out_value=*/nullptr));
+  EXPECT_FALSE(known_user.FindBoolPath(kDefaultAccountId, kObsoletePrefName)
+                   .has_value());
 
-  bool custom_pref_value = false;
-  EXPECT_TRUE(known_user.GetBooleanPref(kDefaultAccountId, kCustomPrefName,
-                                        &custom_pref_value));
-  EXPECT_TRUE(custom_pref_value);
+  absl::optional<bool> custom_pref_value =
+      known_user.FindBoolPath(kDefaultAccountId, kCustomPrefName);
+
+  EXPECT_TRUE(custom_pref_value.has_value());
+  EXPECT_TRUE(custom_pref_value.value());
 
   EXPECT_TRUE(known_user.GetIsEnterpriseManaged(kDefaultAccountId));
 }
@@ -627,7 +628,7 @@ struct PrefTypeInfoBoolean {
   using PrefTypeForReading = bool;
 
   static constexpr auto SetFunc = &KnownUser::SetBooleanPref;
-  static constexpr auto GetFunc = &KnownUser::GetBooleanPref;
+  static constexpr auto GetFunc = &KnownUser::GetBooleanPrefForTest;
 
   static PrefType CreatePrefValue() { return true; }
   static bool CheckPrefValue(PrefTypeForReading read_value) {

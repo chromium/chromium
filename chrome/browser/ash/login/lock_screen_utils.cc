@@ -151,14 +151,16 @@ void StopEnforcingPolicyInputMethods() {
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {
-  bool auto_repeat_enabled = kDefaultKeyAutoRepeatEnabled;
-  if (user_manager::known_user::GetBooleanPref(
-          account_id, prefs::kXkbAutoRepeatEnabled, &auto_repeat_enabled) &&
-      !auto_repeat_enabled) {
-    input_method::InputMethodManager::Get()
-        ->GetImeKeyboard()
-        ->SetAutoRepeatEnabled(false);
-    return;
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  if (absl::optional<bool> auto_repeat_enabled =
+          known_user.FindBoolPath(account_id, prefs::kXkbAutoRepeatEnabled);
+      auto_repeat_enabled.has_value()) {
+    if (!auto_repeat_enabled.value()) {
+      input_method::InputMethodManager::Get()
+          ->GetImeKeyboard()
+          ->SetAutoRepeatEnabled(false);
+      return;
+    }
   }
 
   int auto_repeat_delay = kDefaultKeyAutoRepeatDelay.InMilliseconds();

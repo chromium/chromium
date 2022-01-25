@@ -214,7 +214,7 @@ KnownUser::KnownUser(PrefService* local_state) : local_state_(local_state) {
 
 KnownUser::~KnownUser() = default;
 
-const base::Value* KnownUser::FindPrefs(const AccountId& account_id) {
+const base::Value* KnownUser::FindPrefs(const AccountId& account_id) const {
   // UserManager is usually NULL in unit tests.
   if (account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY &&
       UserManager::IsInitialized() &&
@@ -296,19 +296,23 @@ void KnownUser::SetStringPref(const AccountId& account_id,
   SetPath(account_id, path, base::Value(in_value));
 }
 
-bool KnownUser::GetBooleanPref(const AccountId& account_id,
-                               const std::string& path,
-                               bool* out_value) {
+absl::optional<bool> KnownUser::FindBoolPath(const AccountId& account_id,
+                                             base::StringPiece path) const {
   const base::Value* user_pref_dict = FindPrefs(account_id);
   if (!user_pref_dict)
-    return false;
+    return absl::nullopt;
 
-  absl::optional<bool> ret_value = user_pref_dict->FindBoolPath(path);
-  if (!ret_value.has_value())
-    return false;
+  return user_pref_dict->FindBoolPath(path);
+}
 
-  *out_value = ret_value.value();
-  return true;
+bool KnownUser::GetBooleanPrefForTest(const AccountId& account_id,
+                                      const std::string& path,
+                                      bool* out_value) {
+  auto opt_val = FindBoolPath(account_id, path);
+  if (out_value && opt_val.has_value())
+    *out_value = opt_val.value();
+
+  return opt_val.has_value();
 }
 
 void KnownUser::SetBooleanPref(const AccountId& account_id,
@@ -536,10 +540,7 @@ void KnownUser::UpdateUsingSAML(const AccountId& account_id,
 }
 
 bool KnownUser::IsUsingSAML(const AccountId& account_id) {
-  bool using_saml;
-  if (GetBooleanPref(account_id, kUsingSAMLKey, &using_saml))
-    return using_saml;
-  return false;
+  return FindBoolPath(account_id, kUsingSAMLKey).value_or(false);
 }
 
 void KnownUser::UpdateIsUsingSAMLPrincipalsAPI(
@@ -550,12 +551,7 @@ void KnownUser::UpdateIsUsingSAMLPrincipalsAPI(
 }
 
 bool KnownUser::GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id) {
-  bool is_using_saml_principals_api;
-  if (GetBooleanPref(account_id, kIsUsingSAMLPrincipalsAPI,
-                     &is_using_saml_principals_api)) {
-    return is_using_saml_principals_api;
-  }
-  return false;
+  return FindBoolPath(account_id, kIsUsingSAMLPrincipalsAPI).value_or(false);
 }
 
 void KnownUser::SetProfileRequiresPolicy(const AccountId& account_id,
@@ -567,10 +563,11 @@ void KnownUser::SetProfileRequiresPolicy(const AccountId& account_id,
 
 ProfileRequiresPolicy KnownUser::GetProfileRequiresPolicy(
     const AccountId& account_id) {
-  bool requires_policy;
-  if (GetBooleanPref(account_id, kProfileRequiresPolicy, &requires_policy)) {
-    return requires_policy ? ProfileRequiresPolicy::kPolicyRequired
-                           : ProfileRequiresPolicy::kNoPolicyRequired;
+  absl::optional<bool> requires_policy =
+      FindBoolPath(account_id, kProfileRequiresPolicy);
+  if (requires_policy.has_value()) {
+    return requires_policy.value() ? ProfileRequiresPolicy::kPolicyRequired
+                                   : ProfileRequiresPolicy::kNoPolicyRequired;
   }
   return ProfileRequiresPolicy::kUnknown;
 }
@@ -642,10 +639,7 @@ void KnownUser::SetIsEnterpriseManaged(const AccountId& account_id,
 }
 
 bool KnownUser::GetIsEnterpriseManaged(const AccountId& account_id) {
-  bool is_enterprise_managed;
-  if (GetBooleanPref(account_id, kIsEnterpriseManaged, &is_enterprise_managed))
-    return is_enterprise_managed;
-  return false;
+  return FindBoolPath(account_id, kIsEnterpriseManaged).value_or(false);
 }
 
 void KnownUser::SetAccountManager(const AccountId& account_id,
@@ -680,12 +674,8 @@ int KnownUser::GetUserPinLength(const AccountId& account_id) {
 }
 
 bool KnownUser::PinAutosubmitIsBackfillNeeded(const AccountId& account_id) {
-  bool backfill_needed;
-  if (GetBooleanPref(account_id, kPinAutosubmitBackfillNeeded,
-                     &backfill_needed))
-    return backfill_needed;
   // If the pref is not set, the pref needs to be backfilled.
-  return true;
+  return FindBoolPath(account_id, kPinAutosubmitBackfillNeeded).value_or(true);
 }
 
 void KnownUser::PinAutosubmitSetBackfillNotNeeded(const AccountId& account_id) {
@@ -812,16 +802,6 @@ void SetStringPref(const AccountId& account_id,
   if (!local_state)
     return;
   return KnownUser(local_state).SetStringPref(account_id, path, in_value);
-}
-
-bool GetBooleanPref(const AccountId& account_id,
-                    const std::string& path,
-                    bool* out_value) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).GetBooleanPref(account_id, path, out_value);
 }
 
 void SetBooleanPref(const AccountId& account_id,
