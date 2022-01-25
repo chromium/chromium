@@ -20,6 +20,7 @@ static_library("discovery") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
+    "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//components/cast_channel",
     "//components/leveldb_proto:leveldb_proto",

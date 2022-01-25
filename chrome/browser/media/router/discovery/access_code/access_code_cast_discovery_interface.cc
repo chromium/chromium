@@ -14,12 +14,14 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
@@ -31,6 +33,7 @@
 namespace media_router {
 
 namespace {
+bool command_line_enabled_for_testing = false;
 
 // TODO(b/206131520): Add Policy Switches to
 // AccessCodeCastDiscoveryInterface.
@@ -40,9 +43,13 @@ constexpr char kDiscoveryOAuth2Scope[] =
     "https://www.googleapis.com/auth/cast-edu-messaging";
 // TODO(b/215241542): Add a command-line switch to change Cast2Class endpoint
 // URL.
-constexpr char kDiscoveryEndpoint[] =
-    "https://castedumessaging-pa.googleapis.com/";
-constexpr char kDiscoveryServicePath[] = "v1/receivers/";
+constexpr char kDefaultDiscoveryEndpoint[] =
+    "https://castedumessaging-pa.googleapis.com";
+
+// Specifies the URL from which to obtain cast discovery information.
+constexpr char kDiscoveryEndpointSwitch[] = "access-code-cast-url";
+
+constexpr char kDiscoveryServicePath[] = "/v1/receivers";
 constexpr char kDiscoveryOAuthConsumerName[] = "access_code_cast_discovery";
 constexpr char kEmptyPostData[] = "";
 
@@ -97,6 +104,25 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
   )");
 
+bool IsCommandLineSwitchSupported() {
+  if (command_line_enabled_for_testing)
+    return true;
+  version_info::Channel channel = chrome::GetChannel();
+  return channel != version_info::Channel::STABLE &&
+         channel != version_info::Channel::BETA;
+}
+
+std::string GetDiscoveryUrl() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (IsCommandLineSwitchSupported() &&
+      command_line->HasSwitch(kDiscoveryEndpointSwitch)) {
+    return command_line->GetSwitchValueASCII(kDiscoveryEndpointSwitch);
+  }
+
+  return std::string(kDefaultDiscoveryEndpoint) + kDiscoveryServicePath;
+}
+
 // TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
 // check the enum instead of the string
 bool IsResponseValid(const absl::optional<base::Value>& response) {
@@ -122,6 +148,10 @@ bool HasServerError(const std::string& response) {
 }
 
 }  // namespace
+
+void AccessCodeCastDiscoveryInterface::EnableCommandLineSupportForTesting() {
+  command_line_enabled_for_testing = true;
+}
 
 AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
     Profile* profile,
@@ -188,9 +218,8 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
 
   return std::make_unique<EndpointFetcher>(
       profile_, kDiscoveryOAuthConsumerName,
-      GURL(base::StrCat(
-          {kDiscoveryEndpoint, kDiscoveryServicePath, access_code})),
-      kGetMethod, kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
+      GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
+      kContentType, discovery_scopes, kTimeoutMs, kEmptyPostData,
       kTrafficAnnotation);
 }
 

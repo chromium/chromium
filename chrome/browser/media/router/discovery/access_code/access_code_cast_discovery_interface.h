@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
@@ -58,7 +59,13 @@ class AccessCodeCastDiscoveryInterface {
   // AddSinkResultCode::OK is returned.
   void ValidateDiscoveryAccessCode(DiscoveryDeviceCallback callback);
 
+  static void EnableCommandLineSupportForTesting();
+
  private:
+  friend class AccessCodeCastDiscoveryInterfaceTest;
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastDiscoveryInterfaceTest,
+                           CommandLineSwitch);
+
   std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       const std::string& access_code);
 
