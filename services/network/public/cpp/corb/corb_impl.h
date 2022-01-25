@@ -307,15 +307,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
   // type families such as application/xml, application/rss+xml.
   static MimeType GetCanonicalMimeType(base::StringPiece mime_type);
 
- private:
   static SniffingResult SniffForHTML(base::StringPiece data);
   static SniffingResult SniffForXML(base::StringPiece data);
   static SniffingResult SniffForJSON(base::StringPiece data);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForHTML);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForXML);
-  FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest, SniffForJSON);
-  FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
-                           ResponseBlocking);
 
   // Sniff for patterns that indicate |data| only ought to be consumed by XHR()
   // or fetch(). This detects Javascript parser-breaker and particular JS

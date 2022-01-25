@@ -135,6 +135,22 @@ const base::FeatureParam<std::string>
 const base::Feature kDisableKeepaliveFetch{"DisableKeepaliveFetch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Switches Cross-Origin Read Blocking (CORB) to use an early implementation of
+// Opaque Response Blocking (ORB, aka CORB++) behind the scenes.
+//
+// This is ORB v0.1 - it doesn't implement the full spec from
+// https://github.com/annevk/orb:
+// - No Javascript sniffing is done.  Instead the implementation uses all
+//   of CORB's confirmation sniffers (for HTML, XML and JSON).
+// - Blocking is still done by injecting an empty response rather than erroring
+//   out the network request
+// - See other differences in the "ORB v0.1 vs full ORB differences" section in
+//   https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit#heading=h.mptmm5bpjtdn
+//
+// Implementing ORB in Chromium is tracked in https://crbug.com/1178928
+const base::Feature kOpaqueResponseBlockingV01{
+    "OpaqueResponseBlockingV01", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables preprocessing requests with the Trust Tokens API Fetch flags set,
 // and handling their responses, according to the protocol.
 // (See https://github.com/WICG/trust-token-api.)

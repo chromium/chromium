@@ -851,7 +851,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
     return;
   }
 
-  auto corb_analyzer = corb::ResponseAnalyzer::Create();
+  auto corb_analyzer = corb::ResponseAnalyzer::Create(corb_state_);
   auto decision =
       corb_analyzer->Init(loader->url(), loader->request_initiator(),
                           loader->request_mode(), *response_head);

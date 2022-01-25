@@ -1450,7 +1450,8 @@ void URLLoader::ContinueOnResponseStarted() {
       url_request_->url(), url_request_->initiator(), request_mode_,
       request_destination_, *response_);
   if (factory_params_->is_corb_enabled) {
-    corb_analyzer_ = corb::ResponseAnalyzer::Create();
+    corb_analyzer_ = corb::ResponseAnalyzer::Create(
+        url_loader_factory_->mutable_corb_state());
     auto decision =
         corb_analyzer_->Init(url_request_->url(), url_request_->initiator(),
                              request_mode_, *response_);
