@@ -6,28 +6,28 @@
  * Global exports, used locally to separate initialization from declaration.
  */
 (function(exports) {
-  var site;
+  let site;
 
   /**
    * Toggle between filters 0 and 1 in order to force a repaint.
    * TODO(kevers): Consolidate with filter in CVD.
    * @type {!number}
    */
-  var activeFilterIndex = 0;
+  let activeFilterIndex = 0;
 
   /**
    * Save previous state of setup parameters for use in the event of a canceled
    * setup.
    * @type {{type: string, severity: number} | undefined}
    */
-  var restoreSettings = undefined;
+  let restoreSettings = undefined;
 
   /**
    * The strings for CVD Types.
    * TODO(mustaq): Define an enum in cvd.js instead.
    * @const {array{string}}
    */
-  var CVD_TYPES = [
+  const CVD_TYPES = [
     'PROTANOMALY',
     'DEUTERANOMALY',
     'TRITANOMALY'
@@ -37,7 +37,7 @@
    * Vertical offset for displaying the row highlight.
    * @const {number}
    */
-  var HIGHLIGHT_OFFSET = 7;
+  const HIGHLIGHT_OFFSET = 7;
 
   // ======= Swatch generator =======
 
@@ -49,7 +49,7 @@
    * swatch generator tool. See:
    * http://www.color-blindness.com/2007/01/23/confusion-lines-of-the-cie-1931-color-space/
    */
-  var SWATCH_COLORS = [
+  const SWATCH_COLORS = [
     {
       BACKGROUND: [194,66,96],
       PROTANOMALY: [123,73,103],
@@ -102,13 +102,13 @@
    *  @return {!Element} Row of color swatches with a leading radio button.
    */
   function createTestRow(type) {
-    var toCssColor = function(rgb) {
+    const toCssColor = function(rgb) {
       return 'rgb(' + rgb.join(',') + ')';
     };
-    var row = document.createElement('label');
+    const row = document.createElement('label');
     row.classList.add('row');
 
-    var button = document.createElement('input');
+    const button = document.createElement('input');
     button.id = 'select-' + type;
     button.name = 'cvdType';
     button.setAttribute('type', 'radio');
@@ -121,7 +121,7 @@
     button.setAttribute('aria-label', type);
 
     SWATCH_COLORS.forEach(function(data) {
-      var swatch = document.querySelector('.swatch.template').cloneNode(true);
+      const swatch = document.querySelector('.swatch.template').cloneNode(true);
       swatch.style.background = toCssColor(data.BACKGROUND);
       swatch.style.color = toCssColor(data[type]);
       swatch.classList.remove('template');
@@ -138,7 +138,7 @@
    * @return {?string}
    */
   function getCvdTypeSelection() {
-    var active = undefined;
+    let active = undefined;
     CVD_TYPES.forEach(function(str) {
       if ($('select-' + str).checked) {
         active = str;
@@ -156,13 +156,13 @@
    * @return {?string}
    */
   function setCvdTypeSelection(cvdType) {
-    var highlight = $('row-highlight');
+    const highlight = $('row-highlight');
     highlight.hidden = true;
     CVD_TYPES.forEach(function(str) {
-      var checkbox = $('select-' + str);
+      const checkbox = $('select-' + str);
       if (cvdType == str) {
         checkbox.checked = true;
-        var top = checkbox.parentElement.offsetTop - HIGHLIGHT_OFFSET;
+        const top = checkbox.parentElement.offsetTop - HIGHLIGHT_OFFSET;
         highlight.style.top = top + 'px';
         highlight.hidden = false;
       } else {
@@ -210,8 +210,8 @@
    * @return {boolean} True if settings are valid and update performed.
    */
   async function update() {
-    var type = await getDefaultType();
-    var validType = false;
+    const type = await getDefaultType();
+    let validType = false;
     CVD_TYPES.forEach(function(cvdType) {
       if (cvdType == type) {
         validType = true;
@@ -268,7 +268,7 @@
     setDefaultSeverity(value).then(() => {
       update();
       // Apply filter to popup swatches.
-      var filter = window.getDefaultCvdCorrectionFilter(
+      const filter = window.getDefaultCvdCorrectionFilter(
           getCvdTypeSelection(), value);
       injectColorEnhancementFilter(filter);
       // Force a refresh.
@@ -320,10 +320,10 @@
    * the currently visible tab.
    */
   function initialize() {
-    var i18nElements = document.querySelectorAll('*[i18n-content]');
-    for (var i = 0; i < i18nElements.length; i++) {
-      var elem = i18nElements[i];
-      var msg = elem.getAttribute('i18n-content');
+    const i18nElements = document.querySelectorAll('*[i18n-content]');
+    for (let i = 0; i < i18nElements.length; i++) {
+      const elem = i18nElements[i];
+      const msg = elem.getAttribute('i18n-content');
       elem.textContent = chrome.i18n.getMessage(msg);
     }
 
@@ -362,7 +362,7 @@
     };
     $('reset').hidden = !IS_DEV_MODE;
 
-    var closeSetup = function() {
+    const closeSetup = function() {
       $('setup-panel').classList.add('collapsed');
       updateControls();
     };
@@ -383,14 +383,14 @@
       }
     };
 
-    var swatches = $('swatches');
+    const swatches = $('swatches');
     CVD_TYPES.forEach(function(cvdType) {
       swatches.appendChild(createTestRow(cvdType));
     });
 
     chrome.windows.getLastFocused({'populate': true}, function(window) {
-      for (var i = 0; i < window.tabs.length; i++) {
-        var tab = window.tabs[i];
+      for (let i = 0; i < window.tabs.length; i++) {
+        const tab = window.tabs[i];
         if (tab.active) {
           site = siteFromUrl(tab.url);
           debugPrint('init: active tab update for ' + site);
@@ -407,7 +407,7 @@
    * Runs initialize once popup loading is complete.
    */
   exports.initializeOnLoad = function() {
-    var ready = new Promise(function readyPromise(resolve) {
+    const ready = new Promise(function readyPromise(resolve) {
       if (document.readyState === 'complete') {
         resolve();
       }

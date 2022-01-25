@@ -11,10 +11,10 @@ importScripts('./common.js', './storage.js');
  */
 function injectContentScripts() {
   chrome.windows.getAll({'populate': true}, function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
+    for (let i = 0; i < windows.length; i++) {
+      const tabs = windows[i].tabs;
+      for (let j = 0; j < tabs.length; j++) {
+        const url = tabs[j].url;
         if (isDisallowedUrl(url)) {
           continue;
         }
@@ -34,14 +34,14 @@ function injectContentScripts() {
  */
 function updateTabs() {
   chrome.windows.getAll({'populate': true}, async function(windows) {
-    for (var i = 0; i < windows.length; i++) {
-      var tabs = windows[i].tabs;
-      for (var j = 0; j < tabs.length; j++) {
-        var url = tabs[j].url;
+    for (let i = 0; i < windows.length; i++) {
+      const tabs = windows[i].tabs;
+      for (let j = 0; j < tabs.length; j++) {
+        const url = tabs[j].url;
         if (isDisallowedUrl(url)) {
           continue;
         }
-        var msg = {
+        const msg = {
           'delta': await getSiteDelta(siteFromUrl(url)),
           'severity': await getDefaultSeverity(),
           'type': await getDefaultType(),
@@ -57,21 +57,20 @@ function updateTabs() {
 }
 
 async function onInitReceived(sender) {
-  var delta;
+  let delta;
   if (sender.tab) {
     delta = await getSiteDelta(siteFromUrl(sender.tab.url));
   } else {
     delta = await getDefaultDelta();
   }
 
-  var msg = {
+  return {
     'delta': delta,
     'severity': await getDefaultSeverity(),
     'type': await getDefaultType(),
     'simulate': await getDefaultSimulate(),
     'enable': await getDefaultEnable()
   };
-  return msg;
 }
 
 /**

@@ -7,14 +7,13 @@
  * Global exports.  Used by popup to show effect of filter during setup.
  */
 (function(exports) {
-  // TODO(wnwen): Replace var with let.
-  var curDelta = 0;
-  var curSeverity = 0;
-  var curType = 'PROTANOMALY';
-  var curSimulate = false;
-  var curEnable = false;
-  var curFilter = 0;
-  var cssContent = `
+  let curDelta = 0;
+  let curSeverity = 0;
+  let curType = 'PROTANOMALY';
+  let curSimulate = false;
+  let curEnable = false;
+  let curFilter = 0;
+  const cssContent = `
 html[cvd="0"] {
   -webkit-filter: url('#cvd_extension_0');
 }
@@ -24,13 +23,13 @@ html[cvd="1"] {
 `;
 
   /** @const {string} */
-  var SVG_DEFAULT_MATRIX =
+  const SVG_DEFAULT_MATRIX =
     '1 0 0 0 0 ' +
     '0 1 0 0 0 ' +
     '0 0 1 0 0 ' +
     '0 0 0 1 0';
 
-  var svgContent = `
+  const svgContent = `
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
   <defs>
     <filter x="0" y="0" width="99999" height="99999" id="cvd_extension_0">
@@ -51,7 +50,7 @@ html[cvd="1"] {
    * The 3x3 identity matrix.
    * @const {object}
    */
-  var IDENTITY_MATRIX_3x3 = [
+  const IDENTITY_MATRIX_3x3 = [
     [1, 0, 0],
     [0, 1, 0],
     [0, 0, 1]
@@ -65,10 +64,10 @@ html[cvd="1"] {
    * @return {!object} The 3x3 matrix m1 + m2.
    */
   function add3x3(m1, m2) {
-    var result = [];
-    for (var i = 0; i < 3; i++) {
+    const result = [];
+    for (let i = 0; i < 3; i++) {
       result[i] = [];
-      for (var j = 0; j < 3; j++) {
+      for (let j = 0; j < 3; j++) {
         result[i].push(m1[i][j] + m2[i][j]);
       }
     }
@@ -83,10 +82,10 @@ html[cvd="1"] {
    * @return {!object} The 3x3 matrix m1 - m2.
    */
   function sub3x3(m1, m2) {
-    var result = [];
-    for (var i = 0; i < 3; i++) {
+    const result = [];
+    for (let i = 0; i < 3; i++) {
       result[i] = [];
-      for (var j = 0; j < 3; j++) {
+      for (let j = 0; j < 3; j++) {
         result[i].push(m1[i][j] - m2[i][j]);
       }
     }
@@ -101,12 +100,12 @@ html[cvd="1"] {
    * @return {!object} The 3x3 matrix m1 * m2.
    */
   function mul3x3(m1, m2) {
-    var result = [];
-    for (var i = 0; i < 3; i++) {
+    const result = [];
+    for (let i = 0; i < 3; i++) {
       result[i] = [];
-      for (var j = 0; j < 3; j++) {
-        var sum = 0;
-        for (var k = 0; k < 3; k++) {
+      for (let j = 0; j < 3; j++) {
+        let sum = 0;
+        for (let k = 0; k < 3; k++) {
           sum += m1[i][k] * m2[k][j];
         }
         result[i].push(sum);
@@ -123,10 +122,10 @@ html[cvd="1"] {
    * @return {!object} The 3x3 matrix m * k.
    */
   function mul3x3Scalar(m, k) {
-    var result = [];
-    for (var i = 0; i < 3; i++) {
+    const result = [];
+    for (let i = 0; i < 3; i++) {
       result[i] = [];
-      for (var j = 0; j < 3; j++) {
+      for (let j = 0; j < 3; j++) {
         result[i].push(k * m[i][j]);
       }
     }
@@ -142,8 +141,8 @@ html[cvd="1"] {
    * @return {!string} The SVG matrix string for m.
    */
   function svgMatrixStringFrom3x3(m) {
-    var outputRows = [];
-    for (var i = 0; i < 3; i++) {
+    const outputRows = [];
+    for (let i = 0; i < 3; i++) {
       outputRows.push(m[i].join(' ') + ' 0 0');
     }
     // Add the alpha row
@@ -158,10 +157,10 @@ html[cvd="1"] {
    * @return {!string} A human-readable string for m.
    */
   function humanReadbleStringFrom3x3(m) {
-      var result = '';
-      for (var i = 0; i < 3; i++) {
+      let result = '';
+      for (let i = 0; i < 3; i++) {
           result += (i ? ', ' : '') + '[';
-          for (var j = 0; j < 3; j++) {
+          for (let j = 0; j < 3; j++) {
               result += (j ? ', ' : '') + m[i][j].toFixed(2);
           }
           result += ']';
@@ -180,7 +179,7 @@ html[cvd="1"] {
    *
    * @enum {string}
    */
-  var cvdSimulationParams = {
+  const cvdSimulationParams = {
     PROTANOMALY: [
       [0.4720, -1.2946, 0.9857],
       [-0.6128, 1.6326, 0.0187],
@@ -218,7 +217,7 @@ html[cvd="1"] {
 
 
   // TODO(mustaq): This should be nuked, see getCvdCorrectionMatrix().
-  var cvdCorrectionParams = {
+  const cvdCorrectionParams = {
     PROTANOMALY: {
       addendum: [
         [0.0, 0.0, 0.0],
@@ -268,16 +267,16 @@ html[cvd="1"] {
    * @param {number} severity A real number in [0,1] denoting severity.
    */
   function getCvdSimulationMatrix(cvdType, severity) {
-    var cvdSimulationParam = cvdSimulationParams[cvdType];
-    var severity2 = severity * severity;
-    var matrix = [];
-    for (var i = 0; i < 3; i++) {
-      var row = [];
-      for (var j = 0; j < 3; j++) {
-        var paramRow = i*3+j;
-        var val = cvdSimulationParam[paramRow][0] * severity2
-                + cvdSimulationParam[paramRow][1] * severity
-                + cvdSimulationParam[paramRow][2];
+    const cvdSimulationParam = cvdSimulationParams[cvdType];
+    const severity_squared = severity * severity;
+    const matrix = [];
+    for (let i = 0; i < 3; i++) {
+      const row = [];
+      for (let j = 0; j < 3; j++) {
+        const paramRow = i*3+j;
+        const val = cvdSimulationParam[paramRow][0] * severity_squared
+                  + cvdSimulationParam[paramRow][1] * severity
+                  + cvdSimulationParam[paramRow][2];
         row.push(val);
       }
       matrix.push(row);
@@ -315,11 +314,11 @@ html[cvd="1"] {
       return IDENTITY_MATRIX_3x3;
     }
 
-    var effectiveMatrix = getCvdSimulationMatrix(cvdType, severity);
+    let effectiveMatrix = getCvdSimulationMatrix(cvdType, severity);
 
     if (!simulate) {
-      var cvdCorrectionMatrix = getCvdCorrectionMatrix(cvdType, delta);
-      var tmpProduct = mul3x3(cvdCorrectionMatrix, effectiveMatrix);
+      const cvdCorrectionMatrix = getCvdCorrectionMatrix(cvdType, delta);
+      const tmpProduct = mul3x3(cvdCorrectionMatrix, effectiveMatrix);
 
       effectiveMatrix = sub3x3(
           add3x3(IDENTITY_MATRIX_3x3, cvdCorrectionMatrix),
@@ -339,9 +338,9 @@ html[cvd="1"] {
    * Checks for required elements, adding if missing.
    */
   function addElements() {
-    var style = document.getElementById(STYLE_ID);
+    let style = document.getElementById(STYLE_ID);
     if (!style) {
-      var baseUrl = window.location.href.replace(window.location.hash, '');
+      const baseUrl = window.location.href.replace(window.location.hash, '');
       style = document.createElement('style');
       style.id = STYLE_ID;
       style.setAttribute('type', 'text/css');
@@ -349,7 +348,7 @@ html[cvd="1"] {
       document.head.appendChild(style);
     }
 
-    var wrap = document.getElementById(WRAP_ID);
+    let wrap = document.getElementById(WRAP_ID);
     if (!wrap) {
       wrap = document.createElement('span');
       wrap.id = WRAP_ID;
@@ -365,12 +364,12 @@ html[cvd="1"] {
    */
   function setFilter(matrix) {
     addElements();
-    var next = 1 - curFilter;
+    const next = 1 - curFilter;
 
     debugPrint('update: matrix#' + next + '=' +
         humanReadbleStringFrom3x3(matrix));
 
-    var matrixElem = document.getElementById('cvd_matrix_' + next);
+    const matrixElem = document.getElementById('cvd_matrix_' + next);
     matrixElem.setAttribute('values', svgMatrixStringFrom3x3(matrix));
 
     document.documentElement.setAttribute('cvd', next);
@@ -388,7 +387,7 @@ html[cvd="1"] {
         return;
       }
 
-      var effectiveMatrix = getEffectiveCvdMatrix(
+      const effectiveMatrix = getEffectiveCvdMatrix(
           curType, curSeverity, curDelta * 2 - 1, curSimulate, curEnable);
 
       setFilter(effectiveMatrix);
@@ -409,14 +408,14 @@ html[cvd="1"] {
    */
   function onExtensionMessage(message) {
     debugPrint('onExtensionMessage: ' + JSON.stringify(message));
-    var changed = false;
+    let changed = false;
 
     if (!message) {
       return;
     }
 
     if (message['type'] !== undefined) {
-      var type = message.type;
+      const type = message.type;
       if (curType != type) {
         curType = type;
         changed = true;
@@ -424,7 +423,7 @@ html[cvd="1"] {
     }
 
     if (message['severity'] !== undefined) {
-      var severity = message.severity;
+      const severity = message.severity;
       if (curSeverity != severity) {
         curSeverity = severity;
         changed = true;
@@ -432,7 +431,7 @@ html[cvd="1"] {
     }
 
     if (message['delta'] !== undefined) {
-      var delta = message.delta;
+      const delta = message.delta;
       if (curDelta != delta) {
         curDelta = delta;
         changed = true;
@@ -440,7 +439,7 @@ html[cvd="1"] {
     }
 
     if (message['simulate'] !== undefined) {
-      var simulate = message.simulate;
+      const simulate = message.simulate;
       if (curSimulate != simulate) {
         curSimulate = simulate;
         changed = true;
@@ -448,7 +447,7 @@ html[cvd="1"] {
     }
 
     if (message['enable'] !== undefined) {
-      var enable = message.enable;
+      const enable = message.enable;
       if (curEnable != enable) {
         curEnable = enable;
         changed = true;

@@ -35,7 +35,7 @@ function isDisallowedUrl(url) {
  * Whether extension is loaded unpacked or from Chrome Webstore.
  * @const {boolean}
  */
-var IS_DEV_MODE = !('update_url' in chrome.runtime.getManifest());
+const IS_DEV_MODE = !('update_url' in chrome.runtime.getManifest());
 
 
 /**

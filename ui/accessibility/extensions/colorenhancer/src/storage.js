@@ -16,9 +16,9 @@ function store_(key, val, callback) {
 
 // ======= Delta setting =======
 
-/** @const {number} */ var DEFAULT_DELTA = 0.5;
-/** @const {string} */ var LOCAL_STORAGE_TAG_DELTA = 'cvd_delta';
-/** @const {string} */ var LOCAL_STORAGE_TAG_SITE_DELTA = 'cvd_site_delta';
+/** @const {number} */ const DEFAULT_DELTA = 0.5;
+/** @const {string} */ const LOCAL_STORAGE_TAG_DELTA = 'cvd_delta';
+/** @const {string} */ const LOCAL_STORAGE_TAG_SITE_DELTA = 'cvd_site_delta';
 
 function validDelta(delta) {
   return delta >= 0 && delta <= 1;
@@ -51,7 +51,7 @@ function getSiteDelta(site) {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
       let delta;
       try {
-        var siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
+        const siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
         delta = siteDeltas[site];
         if (!validDelta(delta)) {
           getDefaultDelta().then(resolve);
@@ -72,7 +72,7 @@ function setSiteDelta(site, delta) {
       delta = await getDefaultDelta();
     }
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
-      var siteDeltas = {};
+      let siteDeltas = {};
       try {
         siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
       } catch (e) {
@@ -91,8 +91,8 @@ function resetSiteDeltas() {
 
 // ======= Severity setting =======
 
-/** @const {number} */ var DEFAULT_SEVERITY = 1.0;
-/** @const {string} */ var LOCAL_STORAGE_TAG_SEVERITY = 'cvd_severity';
+/** @const {number} */ const DEFAULT_SEVERITY = 1.0;
+/** @const {string} */ const LOCAL_STORAGE_TAG_SEVERITY = 'cvd_severity';
 
 
 function validSeverity(severity) {
@@ -102,7 +102,7 @@ function validSeverity(severity) {
 function getDefaultSeverity() {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SEVERITY], (result) => {
-      var severity = result[LOCAL_STORAGE_TAG_SEVERITY];
+      let severity = result[LOCAL_STORAGE_TAG_SEVERITY];
       if (validSeverity(severity)) {
         resolve(severity);
         return;
@@ -123,8 +123,8 @@ function setDefaultSeverity(severity) {
 
 // ======= Type setting =======
 
-/** @const {string} */ var INVALID_TYPE_PLACEHOLDER = '';
-/** @const {string} */ var LOCAL_STORAGE_TAG_TYPE = 'cvd_type';
+/** @const {string} */ const INVALID_TYPE_PLACEHOLDER = '';
+/** @const {string} */ const LOCAL_STORAGE_TAG_TYPE = 'cvd_type';
 
 function validType(type) {
   return type === 'PROTANOMALY' ||
@@ -135,7 +135,7 @@ function validType(type) {
 function getDefaultType() {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_TYPE], (result) => {
-      var type = result[LOCAL_STORAGE_TAG_TYPE];
+      const type = result[LOCAL_STORAGE_TAG_TYPE];
       if (validType(type)) {
         resolve(type);
       } else {
@@ -156,13 +156,13 @@ function setDefaultType(type) {
 
 // ======= Simulate setting =======
 
-/** @const {boolean} */ var DEFAULT_SIMULATE = false;
-/** @const {string} */ var LOCAL_STORAGE_TAG_SIMULATE = 'cvd_simulate';
+/** @const {boolean} */ const DEFAULT_SIMULATE = false;
+/** @const {string} */ const LOCAL_STORAGE_TAG_SIMULATE = 'cvd_simulate';
 
 function getDefaultSimulate() {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SIMULATE], (result) => {
-      var simulate = result[LOCAL_STORAGE_TAG_SIMULATE];
+      let simulate = result[LOCAL_STORAGE_TAG_SIMULATE];
 
       if (validBoolean(simulate)) {
         resolve(simulate);
@@ -184,13 +184,13 @@ function setDefaultSimulate(simulate) {
 
 // ======= Enable setting =======
 
-/** @const {boolean} */ var DEFAULT_ENABLE = false;
-/** @const {string} */ var LOCAL_STORAGE_TAG_ENABLE = 'cvd_enable';
+/** @const {boolean} */ const DEFAULT_ENABLE = false;
+/** @const {string} */ const LOCAL_STORAGE_TAG_ENABLE = 'cvd_enable';
 
 function getDefaultEnable() {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_ENABLE], (result) => {
-      var enable = result[LOCAL_STORAGE_TAG_ENABLE];
+      let enable = result[LOCAL_STORAGE_TAG_ENABLE];
 
       if (validBoolean(enable)) {
         resolve(enable);
