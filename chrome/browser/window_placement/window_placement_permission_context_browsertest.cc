@@ -162,8 +162,15 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
 }
 
+// TODO(crbug.com/1290805): Test failing on linux-chromeos-chrome.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DismissAndDeny DISABLED_DismissAndDeny
+#else
+#define MAYBE_DismissAndDeny DismissAndDeny
+#endif
 // Tests user activation after dimissing and denying the permission request.
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
+IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+                       MAYBE_DismissAndDeny) {
   const GURL url(https_test_server()->GetURL("a.test", "/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
