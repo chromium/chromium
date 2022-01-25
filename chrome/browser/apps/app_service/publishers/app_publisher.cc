@@ -29,6 +29,10 @@ std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
   app->install_reason = install_reason;
   app->install_source = install_source;
 
+  app->is_platform_app = false;
+  app->recommendable = true;
+  app->searchable = true;
+
   return app;
 }
 

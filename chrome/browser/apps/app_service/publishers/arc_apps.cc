@@ -1550,6 +1550,23 @@ std::unique_ptr<App> ArcApps::CreateApp(
     app->permissions = CreatePermissions(package->permissions);
   }
 
+  auto show = ShouldShow(app_info);
+
+  // All published ARC apps are launchable. All launchable apps should be
+  // permitted to be shown on the shelf, and have their pins on the shelf
+  // persisted.
+  app->show_in_shelf = true;
+  app->show_in_launcher = show;
+
+  if (app_id == arc::kPlayGamesAppId && !show) {
+    // Play Games should only be hidden in the launcher.
+    app->show_in_search = true;
+    app->show_in_management = true;
+  } else {
+    app->show_in_search = show;
+    app->show_in_management = show;
+  }
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

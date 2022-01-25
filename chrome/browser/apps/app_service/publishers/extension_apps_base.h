@@ -75,6 +75,9 @@ class ExtensionAppsBase : public apps::PublisherBase,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
+  virtual void SetShowInFields(const extensions::Extension* extension,
+                               App& app);
+
   virtual void SetShowInFields(apps::mojom::AppPtr& app,
                                const extensions::Extension* extension);
 

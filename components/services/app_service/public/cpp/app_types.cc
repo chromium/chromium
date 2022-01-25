@@ -32,10 +32,14 @@ std::unique_ptr<App> App::Clone() const {
   app->permissions = ClonePermissions(permissions);
   app->install_reason = install_reason;
   app->install_source = install_source;
-
   app->policy_id = policy_id;
-
   app->is_platform_app = is_platform_app;
+  app->recommendable = recommendable;
+  app->searchable = searchable;
+  app->show_in_launcher = show_in_launcher;
+  app->show_in_shelf = show_in_shelf;
+  app->show_in_search = show_in_search;
+  app->show_in_management = show_in_management;
 
   return app;
 }
@@ -170,6 +174,15 @@ InstallSource ConvertMojomInstallSourceToInstallSource(
   }
 }
 
+absl::optional<bool> GetOptionalBool(
+    const apps::mojom::OptionalBool& mojom_optional_bool) {
+  absl::optional<bool> optional_bool;
+  if (mojom_optional_bool != apps::mojom::OptionalBool::kUnknown) {
+    optional_bool = mojom_optional_bool == apps::mojom::OptionalBool::kTrue;
+  }
+  return optional_bool;
+}
+
 std::unique_ptr<App> ConvertMojomAppToApp(
     const apps::mojom::AppPtr& mojom_app) {
   DCHECK(mojom_app);
@@ -207,10 +220,13 @@ std::unique_ptr<App> ConvertMojomAppToApp(
 
   app->policy_id = mojom_app->policy_id;
 
-  if (mojom_app->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
-    app->is_platform_app =
-        mojom_app->is_platform_app == apps::mojom::OptionalBool::kTrue;
-  }
+  app->is_platform_app = GetOptionalBool(mojom_app->is_platform_app);
+  app->recommendable = GetOptionalBool(mojom_app->recommendable);
+  app->searchable = GetOptionalBool(mojom_app->searchable);
+  app->show_in_launcher = GetOptionalBool(mojom_app->show_in_launcher);
+  app->show_in_shelf = GetOptionalBool(mojom_app->show_in_shelf);
+  app->show_in_search = GetOptionalBool(mojom_app->show_in_search);
+  app->show_in_management = GetOptionalBool(mojom_app->show_in_management);
 
   return app;
 }

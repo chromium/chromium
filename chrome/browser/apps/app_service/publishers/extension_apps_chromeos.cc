@@ -650,11 +650,15 @@ void ExtensionAppsChromeOs::UpdateShowInFields(const std::string& app_id) {
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = mojom_app_type();
-  app->app_id = app_id;
-  SetShowInFields(app, extension);
-  PublisherBase::Publish(std::move(app), subscribers());
+  apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+  mojom_app->app_type = mojom_app_type();
+  mojom_app->app_id = app_id;
+  SetShowInFields(mojom_app, extension);
+  PublisherBase::Publish(std::move(mojom_app), subscribers());
+
+  std::unique_ptr<App> app = std::make_unique<App>(app_type(), app_id);
+  SetShowInFields(extension, *app);
+  AppPublisher::Publish(std::move(app));
 }
 
 void ExtensionAppsChromeOs::OnHideWebStoreIconPrefChanged() {
@@ -710,6 +714,23 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
     return false;
   }
   return true;
+}
+
+void ExtensionAppsChromeOs::SetShowInFields(
+    const extensions::Extension* extension,
+    App& app) {
+  if (extension->id() == extension_misc::kWallpaperManagerId) {
+    // Explicitly show the Wallpaper Picker app in search only.
+    app.show_in_launcher = false;
+
+    // Hide from shelf and search if new Personalization SWA is enabled.
+    auto should_show = !ash::features::IsWallpaperWebUIEnabled();
+    app.show_in_shelf = should_show;
+    app.show_in_search = should_show;
+    app.show_in_management = false;
+    return;
+  }
+  ExtensionAppsBase::SetShowInFields(extension, app);
 }
 
 void ExtensionAppsChromeOs::SetShowInFields(
@@ -769,6 +790,15 @@ std::unique_ptr<App> ExtensionAppsChromeOs::CreateApp(
   bool paused = paused_apps_.IsPaused(extension->id());
   app->icon_key = std::move(
       *icon_key_factory().CreateIconKey(GetIconEffects(extension, paused)));
+
+  if (is_app_disabled &&
+      (is_disabled_apps_mode_hidden_ || disable_for_lacros)) {
+    app->show_in_launcher = false;
+    app->show_in_search = false;
+    app->show_in_shelf = false;
+  }
+  if (disable_for_lacros)
+    app->show_in_management = false;
   return app;
 }
 

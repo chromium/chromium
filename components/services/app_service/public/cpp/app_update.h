@@ -149,21 +149,27 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool IsPlatformAppChanged() const;
 
   apps::mojom::OptionalBool Recommendable() const;
+  absl::optional<bool> GetRecommendable() const;
   bool RecommendableChanged() const;
 
   apps::mojom::OptionalBool Searchable() const;
+  absl::optional<bool> GetSearchable() const;
   bool SearchableChanged() const;
 
   apps::mojom::OptionalBool ShowInLauncher() const;
+  absl::optional<bool> GetShowInLauncher() const;
   bool ShowInLauncherChanged() const;
 
   apps::mojom::OptionalBool ShowInShelf() const;
+  absl::optional<bool> GetShowInShelf() const;
   bool ShowInShelfChanged() const;
 
   apps::mojom::OptionalBool ShowInSearch() const;
+  absl::optional<bool> GetShowInSearch() const;
   bool ShowInSearchChanged() const;
 
   apps::mojom::OptionalBool ShowInManagement() const;
+  absl::optional<bool> GetShowInManagement() const;
   bool ShowInManagementChanged() const;
 
   apps::mojom::OptionalBool HandlesIntents() const;

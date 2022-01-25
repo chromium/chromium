@@ -68,6 +68,10 @@ std::unique_ptr<App> RemoteApps::CreateApp(
       InstallReason::kUser, apps::InstallSource::kUnknown);
   app->icon_key =
       std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
+  app->show_in_launcher = true;
+  app->show_in_management = false;
+  app->show_in_search = true;
+  app->show_in_shelf = false;
   return app;
 }
 

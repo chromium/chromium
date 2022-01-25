@@ -119,6 +119,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   void Shutdown();
 
   // Populates the various show_in_* fields of |app|.
+  void SetWebAppShowInFields(const WebApp* web_app, apps::App& app);
+
+  // Populates the various show_in_* fields of |app|.
   void SetWebAppShowInFields(apps::mojom::AppPtr& app, const WebApp* web_app);
 
   // Appends |web_app| permissions to |target|.
@@ -326,6 +329,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       base::OnceCallback<void(content::WebContents*)> callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Updates app visibility.
+  void UpdateAppDisabledMode(apps::App& app);
+
   // Updates app visibility.
   void UpdateAppDisabledMode(apps::mojom::AppPtr& app);
 

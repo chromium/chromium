@@ -81,6 +81,18 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_is_platform_app_;
 
+  absl::optional<bool> expect_recommendable_;
+
+  absl::optional<bool> expect_searchable_;
+
+  absl::optional<bool> expect_show_in_launcher_;
+
+  absl::optional<bool> expect_show_in_shelf_;
+
+  absl::optional<bool> expect_show_in_search_;
+
+  absl::optional<bool> expect_show_in_management_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -120,6 +132,18 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_is_platform_app_, u.GetIsPlatformApp());
 
+    EXPECT_EQ(expect_recommendable_, u.GetRecommendable());
+
+    EXPECT_EQ(expect_searchable_, u.GetSearchable());
+
+    EXPECT_EQ(expect_show_in_launcher_, u.GetShowInLauncher());
+
+    EXPECT_EQ(expect_show_in_shelf_, u.GetShowInShelf());
+
+    EXPECT_EQ(expect_show_in_search_, u.GetShowInSearch());
+
+    EXPECT_EQ(expect_show_in_management_, u.GetShowInManagement());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -145,6 +169,12 @@ class AppUpdateTest : public testing::Test {
     expect_install_source_ = InstallSource::kUnknown;
     expect_policy_id_ = "";
     expect_is_platform_app_ = absl::nullopt;
+    expect_recommendable_ = absl::nullopt;
+    expect_searchable_ = absl::nullopt;
+    expect_show_in_launcher_ = absl::nullopt;
+    expect_show_in_shelf_ = absl::nullopt;
+    expect_show_in_search_ = absl::nullopt;
+    expect_show_in_management_ = absl::nullopt;
     CheckExpects(u);
 
     if (delta) {
@@ -468,6 +498,126 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_is_platform_app_, state->is_platform_app);
+      CheckExpects(u);
+    }
+
+    // Recommendable tests.
+
+    if (state) {
+      state->recommendable = false;
+      expect_recommendable_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->recommendable = true;
+      expect_recommendable_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_recommendable_, state->recommendable);
+      CheckExpects(u);
+    }
+
+    // Searchable tests.
+
+    if (state) {
+      state->searchable = false;
+      expect_searchable_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->searchable = true;
+      expect_searchable_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_searchable_, state->searchable);
+      CheckExpects(u);
+    }
+
+    // ShowInLauncher tests.
+
+    if (state) {
+      state->show_in_launcher = false;
+      expect_show_in_launcher_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->show_in_launcher = true;
+      expect_show_in_launcher_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_show_in_launcher_, state->show_in_launcher);
+      CheckExpects(u);
+    }
+
+    // ShowInShelf tests.
+
+    if (state) {
+      state->show_in_shelf = false;
+      expect_show_in_shelf_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->show_in_shelf = true;
+      expect_show_in_shelf_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_show_in_shelf_, state->show_in_shelf);
+      CheckExpects(u);
+    }
+
+    // ShowInSearch tests.
+
+    if (state) {
+      state->show_in_search = false;
+      expect_show_in_search_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->show_in_search = true;
+      expect_show_in_search_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_show_in_search_, state->show_in_search);
+      CheckExpects(u);
+    }
+
+    // ShowInManagement tests.
+
+    if (state) {
+      state->show_in_management = false;
+      expect_show_in_management_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->show_in_management = true;
+      expect_show_in_management_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_show_in_management_, state->show_in_management);
       CheckExpects(u);
     }
   }

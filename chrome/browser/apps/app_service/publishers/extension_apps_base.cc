@@ -185,6 +185,16 @@ void ExtensionAppsBase::OnExtensionUninstalled(
   AppPublisher::Publish(std::move(app));
 }
 
+void ExtensionAppsBase::SetShowInFields(const extensions::Extension* extension,
+                                        App& app) {
+  auto show =
+      ShouldShow(extension, profile_) && ShouldShownInLauncher(extension);
+  app.show_in_launcher = show;
+  app.show_in_shelf = show;
+  app.show_in_search = show;
+  app.show_in_management = show;
+}
+
 void ExtensionAppsBase::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
@@ -229,6 +239,8 @@ std::unique_ptr<App> ExtensionAppsBase::CreateAppImpl(
   }
 
   app->is_platform_app = extension->is_platform_app();
+
+  SetShowInFields(extension, *app);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;

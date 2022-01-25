@@ -206,6 +206,12 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_ENUM_VALUE(install_source, InstallSource::kUnknown);
   SET_OPTIONAL_VALUE(policy_id);
   SET_OPTIONAL_VALUE(is_platform_app);
+  SET_OPTIONAL_VALUE(recommendable);
+  SET_OPTIONAL_VALUE(searchable);
+  SET_OPTIONAL_VALUE(show_in_launcher);
+  SET_OPTIONAL_VALUE(show_in_shelf);
+  SET_OPTIONAL_VALUE(show_in_search);
+  SET_OPTIONAL_VALUE(show_in_management);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -616,6 +622,10 @@ apps::mojom::OptionalBool AppUpdate::Recommendable() const {
   return apps::mojom::OptionalBool::kUnknown;
 }
 
+absl::optional<bool> AppUpdate::GetRecommendable() const {
+  GET_VALUE_WITH_FALLBACK(recommendable, absl::nullopt)
+}
+
 bool AppUpdate::RecommendableChanged() const {
   return mojom_delta_ &&
          (mojom_delta_->recommendable != apps::mojom::OptionalBool::kUnknown) &&
@@ -634,6 +644,10 @@ apps::mojom::OptionalBool AppUpdate::Searchable() const {
   return apps::mojom::OptionalBool::kUnknown;
 }
 
+absl::optional<bool> AppUpdate::GetSearchable() const {
+  GET_VALUE_WITH_FALLBACK(searchable, absl::nullopt)
+}
+
 bool AppUpdate::SearchableChanged() const {
   return mojom_delta_ &&
          (mojom_delta_->searchable != apps::mojom::OptionalBool::kUnknown) &&
@@ -650,6 +664,10 @@ apps::mojom::OptionalBool AppUpdate::ShowInLauncher() const {
     return mojom_state_->show_in_launcher;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetShowInLauncher() const {
+  GET_VALUE_WITH_FALLBACK(show_in_launcher, absl::nullopt)
 }
 
 bool AppUpdate::ShowInLauncherChanged() const {
@@ -671,6 +689,10 @@ apps::mojom::OptionalBool AppUpdate::ShowInShelf() const {
   return apps::mojom::OptionalBool::kUnknown;
 }
 
+absl::optional<bool> AppUpdate::GetShowInShelf() const {
+  GET_VALUE_WITH_FALLBACK(show_in_shelf, absl::nullopt)
+}
+
 bool AppUpdate::ShowInShelfChanged() const {
   return mojom_delta_ &&
          (mojom_delta_->show_in_shelf != apps::mojom::OptionalBool::kUnknown) &&
@@ -687,6 +709,10 @@ apps::mojom::OptionalBool AppUpdate::ShowInSearch() const {
     return mojom_state_->show_in_search;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetShowInSearch() const {
+  GET_VALUE_WITH_FALLBACK(show_in_search, absl::nullopt)
 }
 
 bool AppUpdate::ShowInSearchChanged() const {
@@ -706,6 +732,10 @@ apps::mojom::OptionalBool AppUpdate::ShowInManagement() const {
     return mojom_state_->show_in_management;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetShowInManagement() const {
+  GET_VALUE_WITH_FALLBACK(show_in_management, absl::nullopt)
 }
 
 bool AppUpdate::ShowInManagementChanged() const {

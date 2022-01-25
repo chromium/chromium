@@ -299,6 +299,33 @@ void WebAppPublisherHelper::Shutdown() {
   is_shutting_down_ = true;
 }
 
+void WebAppPublisherHelper::SetWebAppShowInFields(const WebApp* web_app,
+                                                  apps::App& app) {
+  if (web_app->chromeos_data().has_value()) {
+    auto& chromeos_data = web_app->chromeos_data().value();
+    bool should_show_app = true;
+    // TODO(b/201422755): Remove Web app specific hiding for demo mode once icon
+    // load fixed.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (ash::DemoSession::Get()) {
+      should_show_app = ash::DemoSession::Get()->ShouldShowWebApp(
+          web_app->start_url().spec());
+    }
+#endif
+    app.show_in_launcher = chromeos_data.show_in_launcher && should_show_app;
+    app.show_in_shelf = app.show_in_search =
+        chromeos_data.show_in_search && should_show_app;
+    app.show_in_management = chromeos_data.show_in_management;
+    return;
+  }
+
+  // Show the app everywhere by default.
+  app.show_in_launcher = true;
+  app.show_in_shelf = true;
+  app.show_in_search = true;
+  app.show_in_management = true;
+}
+
 void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
                                                   const WebApp* web_app) {
   if (web_app->chromeos_data().has_value()) {
@@ -473,6 +500,13 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
   }
   app->policy_id = install_url.spec();
   app->permissions = CreatePermissions(web_app);
+
+  SetWebAppShowInFields(web_app, *app);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (readiness != apps::Readiness::kReady)
+    UpdateAppDisabledMode(*app);
+#endif
 
   return app;
 }
@@ -1434,6 +1468,30 @@ void WebAppPublisherHelper::LaunchAppWithIntentImpl(
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
+  if (provider_->policy_manager().IsDisabledAppsModeHidden()) {
+    app.show_in_launcher = false;
+    app.show_in_search = false;
+    app.show_in_shelf = false;
+    return;
+  }
+  app.show_in_launcher = true;
+  app.show_in_search = true;
+  app.show_in_shelf = true;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  auto system_app_type =
+      provider_->system_web_app_manager().GetSystemAppTypeForAppId(app.app_id);
+  if (system_app_type.has_value()) {
+    auto* system_app =
+        provider_->system_web_app_manager().GetSystemApp(*system_app_type);
+    DCHECK(system_app);
+    app.show_in_launcher = system_app->ShouldShowInLauncher();
+    app.show_in_search = system_app->ShouldShowInSearch();
+  }
+#endif
+}
+
 void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   if (provider_->policy_manager().IsDisabledAppsModeHidden()) {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;

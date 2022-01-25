@@ -68,6 +68,18 @@ void SetAppAllowed(apps::mojom::App* app, bool allowed) {
   app->handles_intents = opt_allowed;
 }
 
+void SetAppAllowed(bool allowed, apps::App& app) {
+  app.readiness =
+      allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy;
+
+  app.recommendable = allowed;
+  app.searchable = allowed;
+  app.show_in_launcher = allowed;
+  app.show_in_shelf = allowed;
+  app.show_in_search = allowed;
+  app.show_in_management = allowed;
+}
+
 std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,
                                                   bool allowed) {
   std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
@@ -79,6 +91,8 @@ std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,
   app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
                     IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
+
+  SetAppAllowed(allowed, *app);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
@@ -205,6 +219,8 @@ std::unique_ptr<App> BorealisApps::CreateApp(
   if (registration.app_id() == borealis::kClientAppId) {
     app->permissions = CreatePermissions(profile_);
   }
+
+  SetAppAllowed(!registration.NoDisplay(), *app);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
@@ -470,6 +486,11 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
 
   app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
                           IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);
+  app->recommendable = false;
+  app->searchable = false;
+  app->show_in_launcher = false;
+  app->show_in_shelf = true;
+  app->show_in_search = false;
 
   AppPublisher::Publish(std::move(app));
 }

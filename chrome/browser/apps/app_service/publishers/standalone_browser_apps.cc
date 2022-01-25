@@ -65,6 +65,11 @@ std::unique_ptr<App> StandaloneBrowserApps::CreateStandaloneBrowserApp() {
 
   app->additional_search_terms.push_back("chrome");
   app->icon_key = std::move(*CreateIconKey(/*is_browser_load_success=*/true));
+  app->searchable = true;
+  app->show_in_launcher = true;
+  app->show_in_shelf = true;
+  app->show_in_search = true;
+  app->show_in_management = true;
   return app;
 }
 

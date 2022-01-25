@@ -149,6 +149,13 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   // returns true.
   absl::optional<bool> is_platform_app;
 
+  absl::optional<bool> recommendable;
+  absl::optional<bool> searchable;
+  absl::optional<bool> show_in_launcher;
+  absl::optional<bool> show_in_shelf;
+  absl::optional<bool> show_in_search;
+  absl::optional<bool> show_in_management;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the
@@ -174,6 +181,10 @@ InstallReason ConvertMojomInstallReasonToInstallReason(
 COMPONENT_EXPORT(APP_TYPES)
 InstallSource ConvertMojomInstallSourceToInstallSource(
     apps::mojom::InstallSource mojom_install_source);
+
+COMPONENT_EXPORT(APP_TYPES)
+absl::optional<bool> GetOptionalBool(
+    const apps::mojom::OptionalBool& mojom_optional_bool);
 
 COMPONENT_EXPORT(APP_TYPES)
 std::unique_ptr<App> ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);

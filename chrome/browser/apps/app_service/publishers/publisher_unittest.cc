@@ -203,6 +203,12 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  void VerifyOptionalBool(absl::optional<bool> source,
+                          absl::optional<bool> target) {
+    if (source.has_value()) {
+      EXPECT_EQ(source, target);
+    }
+  }
   void VerifyApp(AppType app_type,
                  const std::string& app_id,
                  const std::string& name,
@@ -213,7 +219,13 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
                  base::Time last_launch_time,
                  base::Time install_time,
                  const apps::Permissions& permissions,
-                 absl::optional<bool> is_platform_app = absl::nullopt) {
+                 absl::optional<bool> is_platform_app = absl::nullopt,
+                 absl::optional<bool> recommendable = absl::nullopt,
+                 absl::optional<bool> searchable = absl::nullopt,
+                 absl::optional<bool> show_in_launcher = absl::nullopt,
+                 absl::optional<bool> show_in_shelf = absl::nullopt,
+                 absl::optional<bool> show_in_search = absl::nullopt,
+                 absl::optional<bool> show_in_management = absl::nullopt) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -236,9 +248,15 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     if (!permissions.empty()) {
       EXPECT_TRUE(IsEqual(permissions, cache.states_[app_id]->permissions));
     }
-    if (is_platform_app.has_value()) {
-      EXPECT_EQ(is_platform_app, cache.states_[app_id]->is_platform_app);
-    }
+    VerifyOptionalBool(is_platform_app, cache.states_[app_id]->is_platform_app);
+    VerifyOptionalBool(recommendable, cache.states_[app_id]->recommendable);
+    VerifyOptionalBool(searchable, cache.states_[app_id]->searchable);
+    VerifyOptionalBool(show_in_launcher,
+                       cache.states_[app_id]->show_in_launcher);
+    VerifyOptionalBool(show_in_shelf, cache.states_[app_id]->show_in_shelf);
+    VerifyOptionalBool(show_in_search, cache.states_[app_id]->show_in_search);
+    VerifyOptionalBool(show_in_management,
+                       cache.states_[app_id]->show_in_management);
   }
 
   void VerifyAppIsRemoved(const std::string& app_id) {
@@ -274,8 +292,10 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
           {}, app_info->last_launch_time, app_info->install_time,
-          apps::Permissions());
-
+          apps::Permissions(), /*is_platform_app=*/false,
+          /*recommendable=*/true, /*searchable=*/true,
+          /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+          /*show_in_search=*/true, /*show_in_management=*/true);
       // Simulate the app is removed.
       RemoveArcApp(app_id);
       VerifyAppIsRemoved(app_id);
@@ -296,7 +316,10 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
           app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
           app_info->sticky ? InstallSource::kSystem : InstallSource::kPlayStore,
           {}, app_info->last_launch_time, app_info->install_time,
-          MakeFakePermissions());
+          MakeFakePermissions(), /*is_platform_app=*/false,
+          /*recommendable=*/true, /*searchable=*/true,
+          /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+          /*show_in_search=*/true, /*show_in_management=*/true);
 
       // Test OnAppLastLaunchTimeUpdated.
       const base::Time before_time = base::Time::Now();
@@ -332,7 +355,10 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
               Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
               additional_search_terms, base::Time(), base::Time(),
-              apps::Permissions());
+              apps::Permissions(), /*is_platform_app=*/false,
+              internal_app.recommendable, internal_app.searchable,
+              internal_app.show_in_launcher, internal_app.searchable,
+              internal_app.searchable, /*show_in_management=*/false);
   }
 }
 
@@ -374,6 +400,12 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
                             /*app_id=*/"a",
                             /*name=*/"TestApp", mojom::Readiness::kReady);
     app->is_platform_app = mojom::OptionalBool::kTrue;
+    app->recommendable = apps::mojom::OptionalBool::kFalse;
+    app->searchable = apps::mojom::OptionalBool::kFalse;
+    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
+    app->show_in_search = apps::mojom::OptionalBool::kFalse;
+    app->show_in_management = apps::mojom::OptionalBool::kFalse;
     apps.push_back(std::move(app));
     chrome_apps->OnApps(std::move(apps));
   }
@@ -392,6 +424,12 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
         apps::mojom::PermissionType::kCamera, /*bool_value=*/false));
     app->permissions.push_back(MakeFakeMojomPermission(
         apps::mojom::PermissionType::kLocation, /*bool_value=*/true));
+    app->recommendable = apps::mojom::OptionalBool::kTrue;
+    app->searchable = apps::mojom::OptionalBool::kTrue;
+    app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+    app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
+    app->show_in_search = apps::mojom::OptionalBool::kTrue;
+    app->show_in_management = apps::mojom::OptionalBool::kTrue;
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
   }
@@ -404,7 +442,11 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
   VerifyApp(AppType::kStandaloneBrowser, extension_misc::kLacrosAppId, "Lacros",
             Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-            {"chrome"}, base::Time(), base::Time(), apps::Permissions());
+            {"chrome"}, base::Time(), base::Time(), apps::Permissions(),
+            /*is_platform_app=*/false,
+            /*recommendable=*/true, /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
@@ -412,14 +454,21 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
   VerifyApp(AppType::kStandaloneBrowserChromeApp, "a", "TestApp",
             Readiness::kReady, InstallReason::kUser, InstallSource::kSync, {},
             base::Time(), base::Time(), apps::Permissions(),
-            /*is_platform_app=*/true);
+            /*is_platform_app=*/true, /*recommendable=*/false,
+            /*searchable=*/false,
+            /*show_in_launcher=*/false, /*show_in_shelf=*/false,
+            /*show_in_search=*/false, /*show_in_management=*/false);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
   WebAppsCrosapiOnApps();
   VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady,
             InstallReason::kUser, InstallSource::kSync, {"TestApp"},
-            kLastLaunchTime, kInstallTime, MakeFakePermissions());
+            kLastLaunchTime, kInstallTime, MakeFakePermissions(),
+            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -437,7 +486,10 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),
-            /*is_platform_app=*/false);
+            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
@@ -445,14 +497,21 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
             Readiness::kUninstalledByUser, InstallReason::kDefault,
             InstallSource::kChromeWebStore, {}, base::Time(), base::Time(),
-            apps::Permissions());
+            apps::Permissions(), /*is_platform_app=*/false,
+            /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 
   // Reinstall the Chrome app.
   service_->AddExtension(store.get());
   VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
             InstallReason::kDefault, InstallSource::kChromeWebStore, {},
             base::Time(), base::Time(), apps::Permissions(),
-            /*is_platform_app=*/false);
+            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 
   // Test OnExtensionLastLaunchTimeChanged.
   extensions::ExtensionPrefs::Get(profile())->SetLastLaunchTime(
@@ -471,7 +530,11 @@ TEST_F(PublisherTest, WebAppsOnApps) {
 
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
             InstallReason::kSync, InstallSource::kBrowser, {}, base::Time(),
-            base::Time(), apps::Permissions());
+            base::Time(), apps::Permissions(), /*is_platform_app=*/false,
+            /*recommendable=*/true,
+            /*searchable=*/true,
+            /*show_in_launcher=*/true, /*show_in_shelf=*/true,
+            /*show_in_search=*/true, /*show_in_management=*/true);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
