@@ -4143,21 +4143,6 @@
             ]
         }
     ],
-    "LauncherSettingsSearch": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LauncherSettingsSearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "LightweightReactions": [
         {
             "platforms": [
