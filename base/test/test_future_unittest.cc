@@ -78,7 +78,7 @@ TEST_F(TestFutureTest, WaitShouldBlockUntilValueArrives) {
   PostDelayedTask(base::BindOnce(future.GetCallback(), expected_value),
                   base::Milliseconds(1));
 
-  (void)future.Wait();
+  std::ignore = future.Wait();
 
   EXPECT_EQ(expected_value, future.Get());
 }

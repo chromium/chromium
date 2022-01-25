@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-constexpr base::Feature kFeature{
+[[maybe_unused]] constexpr base::Feature kFeature{
   "NoCompileFeature", base::FEATURE_DISABLED_BY_DEFAULT};
 
 enum Param { FOO, BAR };
@@ -38,11 +38,5 @@ constexpr base::FeatureParam<Param> kParam{
 constexpr base::FeatureParam<Param>::Option kParamOptions[] = {};
 constexpr base::FeatureParam<Param> kParam{
   &kFeature, "Param", FOO, &kParamOptions};
-
-#else
-
-void suppress_unused_variable_warning() {
-    (void)kFeature;
-}
 
 #endif

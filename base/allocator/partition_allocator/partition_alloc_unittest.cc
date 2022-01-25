@@ -13,6 +13,7 @@
 #include <limits>
 #include <memory>
 #include <random>
+#include <tuple>
 #include <vector>
 
 #include "base/allocator/buildflags.h"
@@ -463,9 +464,8 @@ class MockPartitionStatsDumper : public PartitionStatsDumper {
   }
 
   void PartitionsDumpBucketStats(
-      const char* partition_name,
+      [[maybe_unused]] const char* partition_name,
       const PartitionBucketMemoryStats* stats) override {
-    (void)partition_name;
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->bucket_slot_size & sizeof(void*));
     bucket_stats.push_back(*stats);
@@ -619,7 +619,7 @@ TEST_F(PartitionAllocTest, SlotSpanTransitions) {
       memory::RemaskPtr(SlotSpan::ToSlotSpanStart(slot_span1) + kPointerOffset);
   allocator.root()->Free(reinterpret_cast<void*>(address));
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
-  (void)allocator.root()->Alloc(kTestAllocSize, type_name);
+  std::ignore = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_EQ(slot_span1, bucket->active_slot_spans_head);
   EXPECT_EQ(slot_span2, bucket->active_slot_spans_head->next_slot_span);
 
@@ -1598,8 +1598,8 @@ TEST_F(PartitionAllocTest, SlotSpanRefilling) {
 
   // If we perform two allocations from the same bucket now, we expect to
   // refill both the nearly full slot spans.
-  (void)allocator.root()->Alloc(kTestAllocSize, type_name);
-  (void)allocator.root()->Alloc(kTestAllocSize, type_name);
+  std::ignore = allocator.root()->Alloc(kTestAllocSize, type_name);
+  std::ignore = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_EQ(1u, slot_span->num_allocated_slots);
 
   FreeFullSlotSpan(allocator.root(), slot_span2);

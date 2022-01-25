@@ -250,14 +250,13 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after
   // the clearing to avoid racing with *Scan Sweeper.
-  const bool succeeded =
+  [[maybe_unused]] const bool succeeded =
       state_bitmap->Quarantine(unmasked_slot_start, instance.epoch());
 #if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
   if (UNLIKELY(!succeeded))
     DoubleFreeAttempt();
 #else
   // The compiler is able to optimize cmpxchg to a lock-prefixed and.
-  (void)succeeded;
 #endif
 
   const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);

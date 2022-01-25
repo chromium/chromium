@@ -220,8 +220,7 @@ TEST_F(ActivityTrackerTest, ScopedTaskTest) {
   {
     PendingTask task1(FROM_HERE, DoNothing());
     ScopedTaskRunActivity activity1(task1);
-    ActivityUserData& user_data1 = activity1.user_data();
-    (void)user_data1;  // Tell compiler it's been used.
+    [[maybe_unused]] ActivityUserData& user_data1 = activity1.user_data();
     EXPECT_TRUE(activity1.IsRecorded());
 
     ASSERT_TRUE(tracker->CreateSnapshot(&snapshot));
@@ -232,8 +231,7 @@ TEST_F(ActivityTrackerTest, ScopedTaskTest) {
     {
       PendingTask task2(FROM_HERE, DoNothing());
       ScopedTaskRunActivity activity2(task2);
-      ActivityUserData& user_data2 = activity2.user_data();
-      (void)user_data2;  // Tell compiler it's been used.
+      [[maybe_unused]] ActivityUserData& user_data2 = activity2.user_data();
 
       ASSERT_TRUE(tracker->CreateSnapshot(&snapshot));
       ASSERT_EQ(2U, snapshot.activity_stack_depth);
