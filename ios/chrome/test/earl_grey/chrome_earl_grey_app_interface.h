@@ -16,6 +16,17 @@
 @class FakeChromeIdentity;
 @class NamedGuide;
 
+@interface JavaScriptExecutionResult : NSObject
+@property(readonly, nonatomic) BOOL success;
+@property(readonly, nonatomic) NSString* result;
+
+- (instancetype)initWithResult:(NSString*)result
+           successfulExecution:(BOOL)outcome;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
 // ChromeEarlGreyAppInterface contains the app-side implementation for helpers
 // that primarily work via direct model access. These helpers are compiled into
 // the app binary and can be called from either app or test code.
@@ -461,6 +472,12 @@
 // exception is thrown, returns an NSError indicating why the operation failed,
 // otherwise returns object representing execution result.
 + (id)executeJavaScript:(NSString*)javaScript error:(NSError**)error;
+
+// Executes JavaScript through the WebState's WebFrame and waits for either the
+// completion or timeout. If execution does not complete within a timeout or
+// JavaScript exception is thrown, |success| is NO.
+// otherwise returns object representing execution result.
++ (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
 + (NSString*)mobileUserAgentString;

@@ -590,6 +590,8 @@ UIWindow* GetAnyKeyWindow();
 // induced.
 - (id)executeJavaScript:(NSString*)javaScript;
 
+- (std::unique_ptr<base::Value>)evaluateJavaScript:(NSString*)javaScript;
+
 // Returns the user agent that should be used for the mobile version.
 - (NSString*)mobileUserAgentString;
 

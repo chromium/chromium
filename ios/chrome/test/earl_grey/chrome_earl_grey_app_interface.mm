@@ -54,6 +54,8 @@
 #include "ios/testing/verify_custom_webkit.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/earl_grey/js_test_util.h"
 #import "ios/web/public/test/element_selector.h"
@@ -92,6 +94,19 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
   return base::SysUTF8ToNSString(serialized_value);
 }
 }
+
+@implementation JavaScriptExecutionResult
+
+- (instancetype)initWithResult:(NSString*)result
+           successfulExecution:(BOOL)outcome {
+  self = [super init];
+  if (self) {
+    _result = result;
+    _success = outcome;
+  }
+  return self;
+}
+@end
 
 @implementation ChromeEarlGreyAppInterface
 
@@ -935,6 +950,42 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
     *outError = autoreleasedError;
   }
   return blockResult;
+}
+
++ (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript {
+  __block bool handlerCalled = false;
+  __block NSString* blockResult = nil;
+  __block bool blockError = false;
+
+  std::string script = base::SysNSStringToUTF8(javaScript);
+  web::WebFrame* web_frame =
+      web::GetMainFrame(chrome_test_util::GetCurrentWebState());
+
+  web_frame->ExecuteJavaScript(
+      script, base::BindOnce(^(const base::Value* value, bool error) {
+        handlerCalled = true;
+        blockError = error;
+
+        base::Value none_value(base::Value::Type::NONE);
+        const base::Value* result = value ? value : &none_value;
+        DCHECK(result);
+
+        std::string serialized_value;
+        JSONStringValueSerializer serializer(&serialized_value);
+        serializer.Serialize(*result);
+        blockResult = base::SysUTF8ToNSString(serialized_value);
+      }));
+
+  bool completed = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return handlerCalled;
+  });
+
+  BOOL success = completed && !blockError;
+
+  JavaScriptExecutionResult* result =
+      [[JavaScriptExecutionResult alloc] initWithResult:blockResult
+                                    successfulExecution:success];
+  return result;
 }
 
 + (NSString*)mobileUserAgentString {

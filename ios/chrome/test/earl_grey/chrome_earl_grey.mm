@@ -1152,6 +1152,18 @@ UIWindow* GetAnyKeyWindow() {
   return result;
 }
 
+- (std::unique_ptr<base::Value>)evaluateJavaScript:(NSString*)javaScript {
+  JavaScriptExecutionResult* result =
+      [ChromeEarlGreyAppInterface executeJavaScript:javaScript];
+  EG_TEST_HELPER_ASSERT_TRUE(
+      result.success, @"An error was produced during the script's execution");
+
+  std::string jsonRepresentation = base::SysNSStringToUTF8(result.result);
+  JSONStringValueDeserializer deserializer(jsonRepresentation);
+  return deserializer.Deserialize(/*error_code=*/nullptr,
+                                  /*error_message=*/nullptr);
+}
+
 - (NSString*)mobileUserAgentString {
   return [ChromeEarlGreyAppInterface mobileUserAgentString];
 }
