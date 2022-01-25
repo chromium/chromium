@@ -5,6 +5,7 @@
 #include "chrome/browser/language/language_model_manager_factory.h"
 
 #include "chrome/test/base/testing_profile.h"
+#include "components/language/core/browser/language_model_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -29,4 +30,25 @@ TEST(LanguageModelManagerFactoryTest, SharedWithIncognito) {
 
   // Must wait for task posted in PrepareLanguageModels to complete.
   task_environment.RunUntilIdle();
+}
+
+TEST(LanguageModelManagerFactoryTest, GetLanguageModels) {
+  content::BrowserTaskEnvironment task_environment;
+
+  TestingProfile profile;
+  const language::LanguageModelManager* const manager =
+      LanguageModelManagerFactory::GetForBrowserContext(&profile);
+  EXPECT_THAT(manager, Not(IsNull()));
+
+  // Must wait for task posted in PrepareLanguageModels to complete.
+  task_environment.RunUntilIdle();
+
+  // The test manager should be initially populated with a primary model and a
+  // ULPLanguageModel.
+  EXPECT_THAT(manager->GetPrimaryModel(), Not(IsNull()));
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(
+      manager->GetLanguageModel(language::LanguageModelManager::ModelType::ULP),
+      Not(IsNull()));
+#endif
 }

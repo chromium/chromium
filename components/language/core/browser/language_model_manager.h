@@ -42,7 +42,7 @@ class LanguageModelManager : public KeyedService {
   void SetPrimaryModel(ModelType type);
   LanguageModel* GetPrimaryModel() const;
   ModelType GetPrimaryModelType() const;
-  LanguageModel* GetLanguageModel(ModelType type);
+  LanguageModel* GetLanguageModel(ModelType type) const;
 
  private:
   std::unique_ptr<LanguageModel> default_model_;
