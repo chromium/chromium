@@ -476,7 +476,10 @@ template("test") {
       if (!defined(data_deps)) {
         data_deps = []
       }
-      data_deps += [ "//testing/buildbot/filters:fuchsia_filters" ]
+
+      # TODO(crbug.com/1199334): Because perfetto unit test is defined outside
+      # of chromium, the dependency to the filter file is added here.
+      data_deps += [ "//testing/buildbot/filters:perfetto_unittests_filters" ]
 
       if (use_rts) {
         data_deps += [ ":${target_name}__rts_filters" ]

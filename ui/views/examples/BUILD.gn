@@ -331,6 +331,7 @@ test("views_examples_unittests") {
 
   data_deps = [
     ":views_examples_resources_pak",
+    "//testing/buildbot/filters:views_examples_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
 

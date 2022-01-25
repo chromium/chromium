@@ -1219,7 +1219,10 @@ test("views_unittests") {
     "//url",
   ]
 
-  data_deps = [ "//ui/resources:ui_test_pak_data" ]
+  data_deps = [
+    "//testing/buildbot/filters:views_unittests_filters",
+    "//ui/resources:ui_test_pak_data",
+  ]
 
   if (is_win) {
     public_deps = [

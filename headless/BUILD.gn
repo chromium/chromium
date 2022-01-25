@@ -842,6 +842,8 @@ test("headless_browsertests") {
     "//third_party/pywebsocket3/",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:headless_browsertests_filters" ]
+
   if (is_fuchsia) {
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
@@ -855,7 +857,7 @@ test("headless_browsertests") {
   }
 
   if (is_mac) {
-    data_deps = [ ":mac_helpers" ]
+    data_deps += [ ":mac_helpers" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

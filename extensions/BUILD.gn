@@ -280,7 +280,10 @@ if (enable_extensions) {
       "//ui/gl:test_support",
     ]
 
-    data_deps = [ "//third_party/mesa_headers" ]
+    data_deps = [
+      "//testing/buildbot/filters:extensions_unittests_filters",
+      "//third_party/mesa_headers",
+    ]
 
     if (is_fuchsia) {
       additional_manifest_fragments = [

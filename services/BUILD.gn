@@ -31,6 +31,8 @@ test("services_unittests") {
     "//services/test:run_all_unittests",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:services_unittests_filters" ]
+
   if (!is_ios) {
     deps += [
       "//services/audio:tests",

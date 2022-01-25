@@ -108,6 +108,8 @@ test("snapshot_unittests") {
     "//ui/gl",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:snapshot_unittests_filters" ]
+
   if (use_aura) {
     sources += [ "snapshot_aura_unittest.cc" ]
     deps += [

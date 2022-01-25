@@ -930,6 +930,8 @@ test("skia_unittests") {
     "//ui/gfx/geometry",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:skia_unittests_filters" ]
+
   if (!is_ios) {
     sources += [ "public/mojom/test/mojom_traits_unittest.cc" ]
     deps += [
@@ -945,7 +947,7 @@ test("skia_unittests") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
       "//third_party/test_fonts",
     ]
-    data_deps = [ "//third_party/test_fonts" ]
+    data_deps += [ "//third_party/test_fonts" ]
   }
 
   if (skia_support_skottie) {

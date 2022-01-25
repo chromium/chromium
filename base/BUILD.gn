@@ -2778,6 +2778,7 @@ test("base_perftests") {
   data_deps = [
     # Needed for isolate script to execute.
     "//testing:run_perf_test",
+    "//testing/buildbot/filters:base_perftests_filters",
   ]
 
   if (is_android) {
