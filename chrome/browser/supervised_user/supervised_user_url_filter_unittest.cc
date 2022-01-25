@@ -532,13 +532,16 @@ TEST_F(SupervisedUserURLFilterTest, ChromeWebstoreDownloadsAreAlwaysAllowed) {
 }
 #endif
 
-TEST_F(SupervisedUserURLFilterTest, GoogleFamiliesAlwaysAllowed) {
+TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/something"));
   EXPECT_TRUE(IsURLAllowlisted("http://families.google.com/"));
   EXPECT_FALSE(IsURLAllowlisted("https://subdomain.families.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://myaccount.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://accounts.google.com/"));
+  EXPECT_TRUE(IsURLAllowlisted("https://familylink.google.com/"));
 }
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
