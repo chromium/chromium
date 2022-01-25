@@ -40,11 +40,6 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
     return direct_sockets_service().ValidateOptions(options);
   }
 
-  bool IsAllowedRestrictedApiOrigin(const url::Origin& last_committed_origin) {
-    return direct_sockets_service().IsAllowedRestrictedApiOrigin(
-        last_committed_origin);
-  }
-
   absl::optional<net::IPEndPoint> GetLocalAddr(
       const blink::mojom::DirectSocketOptions& options) {
     return DirectSocketsServiceImpl::GetLocalAddrForTesting(options);
@@ -74,43 +69,6 @@ TEST_F(DirectSocketsUnitTest, WebContentsDestroyed) {
 
   blink::mojom::DirectSocketOptions options;
   EXPECT_EQ(ValidateOptions(options), net::ERR_CONTEXT_SHUT_DOWN);
-}
-
-TEST_F(DirectSocketsUnitTest, IsAllowedRestrictedApiOrigin_Default) {
-  GURL url("https://www.bar.com");
-  url::Origin last_committed_origin(url::Origin::Create(url));
-  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(last_committed_origin));
-}
-
-TEST_F(DirectSocketsUnitTest, IsAllowedRestrictedApiOrigin_Enabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins,
-      "https://www.foo.com,https://www.bar.com");
-
-  GURL url("https://www.bar.com");
-  url::Origin last_committed_origin(url::Origin::Create(url));
-  EXPECT_TRUE(IsAllowedRestrictedApiOrigin(last_committed_origin));
-}
-
-TEST_F(DirectSocketsUnitTest, IsAllowedRestrictedApiOrigin_Disabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins,
-      "https://www.foo.com,https://www.bar.com");
-
-  GURL url("https://www.not-allowed.com");
-  url::Origin last_committed_origin(url::Origin::Create(url));
-  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(last_committed_origin));
-}
-
-TEST_F(DirectSocketsUnitTest, IsAllowedRestrictedApiOrigin_InvalidOriginValue) {
-  std::string origin_string = "hdsdhdfhdh";
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kRestrictedApiOrigins, origin_string);
-
-  // Fails to convert into an origin, which leads into empty origin.
-  GURL url(origin_string);
-  url::Origin last_committed_origin(url::Origin::Create(url));
-  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(last_committed_origin));
 }
 
 TEST_F(DirectSocketsUnitTest, PopulateLocalAddr) {

@@ -759,6 +759,66 @@ TEST_F(ChromeContentBrowserClientCaptivePortalBrowserTest,
 }
 #endif
 
+class ChromeContentBrowserClientRestrictedApiOriginTest
+    : public ChromeContentBrowserClientTest {
+ protected:
+  bool IsAllowedRestrictedApiOrigin(const GURL& origin_url) {
+    return test_content_browser_client_.ShouldUrlUseApplicationIsolationLevel(
+        &profile_, origin_url);
+  }
+
+ private:
+  TestChromeContentBrowserClient test_content_browser_client_;
+};
+
+TEST_F(ChromeContentBrowserClientRestrictedApiOriginTest, Default) {
+  GURL origin_url("https://www.bar.com");
+
+  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(origin_url));
+}
+
+TEST_F(ChromeContentBrowserClientRestrictedApiOriginTest, AllowedOrigin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins,
+      "https://www.foo.com,https://www.bar.com");
+
+  GURL origin_url("https://www.bar.com");
+  EXPECT_TRUE(IsAllowedRestrictedApiOrigin(origin_url));
+}
+
+TEST_F(ChromeContentBrowserClientRestrictedApiOriginTest, ForbiddenOrigin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins,
+      "https://www.foo.com,https://www.bar.com");
+
+  GURL origin_url("https://www.not-allowed.com");
+  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(origin_url));
+}
+
+TEST_F(ChromeContentBrowserClientRestrictedApiOriginTest, InvalidOrigin) {
+  std::string origin_string = "hdsdhdfhdh";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, origin_string);
+
+  // Fails to convert into an origin, which leads to an empty origin.
+  GURL origin_url(origin_string);
+  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(origin_url));
+}
+
+TEST_F(ChromeContentBrowserClientRestrictedApiOriginTest,
+       InvalidCommandLineOrigin) {
+  // Verifies user typo in the origin for the command line flag
+  // doesn't accidentally allow all origins.
+
+  std::string invalid_origin_string = "htps://www.app.com";
+  std::string valid_origin_string = "https://www.app.com";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, invalid_origin_string);
+
+  GURL valid_origin_url(valid_origin_string);
+  EXPECT_FALSE(IsAllowedRestrictedApiOrigin(valid_origin_url));
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class ChromeContentBrowserClientStoragePartitionTest
     : public ChromeContentBrowserClientTest {
@@ -837,10 +897,8 @@ TEST_F(ChromeContentBrowserClientStoragePartitionTest, FeatureEnabled) {
 }
 
 TEST_F(ChromeContentBrowserClientStoragePartitionTest, IsolationLevel_App) {
-  web_app::WebApp app(kAppId);
-  app.SetScope(GURL(kScope));
-  app.SetStorageIsolated(true);
-  web_app::RecordOrRemoveAppIsolationState(profile_.GetPrefs(), app);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, kScope);
 
   TestChromeContentBrowserClient test_content_browser_client;
   bool isolated =

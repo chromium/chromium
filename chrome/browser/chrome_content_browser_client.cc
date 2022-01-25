@@ -2075,6 +2075,34 @@ void ChromeContentBrowserClient::PersistIsolatedOrigin(
 bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     content::BrowserContext* browser_context,
     const GURL& url) {
+  // For short-term use. Enables isolated application level if the URL is in
+  // the list of URLs set for the kRestrictedApiOrigins flag.
+
+  // Extract allowed origins from kRestrictedApiOrigins flag when
+  // ShouldUrlUseApplicationIsolationLevel is called for the first time.
+  if (!restricted_api_origins_) {
+    restricted_api_origins_ = std::make_unique<std::vector<url::Origin>>();
+
+    std::string cmdline_origins(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            switches::kRestrictedApiOrigins));
+
+    std::vector<std::string> origin_strings = base::SplitString(
+        cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    for (std::string& origin_string : origin_strings) {
+      GURL allowed_url(origin_string);
+      url::Origin allowed_url_origin = url::Origin::Create(allowed_url);
+      restricted_api_origins_->push_back(allowed_url_origin);
+    }
+  }
+
+  const url::Origin& url_origin = url::Origin::Create(url);
+  for (const url::Origin& allowed_url_origin : *restricted_api_origins_) {
+    if (url_origin.IsSameOriginWith(allowed_url_origin)) {
+      return true;
+    }
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return web_app::IsUrlInIsolatedAppScope(profile->GetPrefs(), url);

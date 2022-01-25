@@ -20,7 +20,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
@@ -471,34 +470,12 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {
   return frame_host_->GetStoragePartition()->GetNetworkContext();
 }
 
-// static
-bool DirectSocketsServiceImpl::IsAllowedRestrictedApiOrigin(
-    const url::Origin& last_committed_origin) {
-  std::string cmdline_origins(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kRestrictedApiOrigins));
-
-  std::vector<std::string> origin_strings = base::SplitString(
-      cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (std::string& origin_string : origin_strings) {
-    GURL url(std::move(origin_string));
-    if (last_committed_origin.IsSameOriginWith(url)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 net::Error DirectSocketsServiceImpl::ValidateOptions(
     const blink::mojom::DirectSocketOptions& options) {
   DCHECK(base::FeatureList::IsEnabled(features::kDirectSockets));
 
   if (!frame_host_)
     return net::ERR_CONTEXT_SHUT_DOWN;
-
-  if (!IsAllowedRestrictedApiOrigin(frame_host_->GetLastCommittedOrigin()))
-    return net::ERR_NETWORK_ACCESS_DENIED;
 
   if (GetPermissionCallbackForTesting())
     return GetPermissionCallbackForTesting().Run(options);  // IN-TEST

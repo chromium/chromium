@@ -130,9 +130,8 @@ bool IsUrlInIsolatedAppScope(PrefService* prefs, const GURL& url) {
   // application level in tests.
   bool is_isolated_storage_enabled = base::FeatureList::IsEnabled(
       blink::features::kWebAppEnableIsolatedStorage);
-  return base::FeatureList::IsEnabled(features::kDirectSockets) ||
-         (is_isolated_storage_enabled &&
-          web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url)));
+  return is_isolated_storage_enabled &&
+         web_app::GetStorageIsolationKey(prefs, url::Origin::Create(url));
 }
 
 }  // namespace web_app
