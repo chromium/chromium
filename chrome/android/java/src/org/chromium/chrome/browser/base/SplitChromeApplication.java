@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.base;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -36,6 +37,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
     private static SplitPreloader sSplitPreloader;
 
     private String mChromeApplicationClassName;
+
+    private Resources mResources;
 
     public SplitChromeApplication() {
         this(sImplClassName);
@@ -130,9 +133,27 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     BundleUtils.replaceClassLoader(
                             SplitChromeApplication.this, chromeContext.getClassLoader());
                     JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                    // Resources holds a reference to a ClassLoader. Make our Application's
+                    // getResources() return a reference to the Chrome split's resources since there
+                    // are a spots where ContextUtils.getApplicationContext() is used to retrieve
+                    // resources (https://crbug.com/1287000).
+                    mResources = chromeContext.getResources();
                 }
             }
         });
+    }
+
+    @Override
+    public Resources getResources() {
+        // If the cached resources from the Chrome split are available use those. Note that
+        // retrieving resources will use resources from the base split until the Chrome split is
+        // fully loaded. We don't want to ensure the Chrome split is loaded here because resources
+        // may be accessed early in startup, and forcing a load here will reduce the benefits of
+        // preloading the Chrome split in the background.
+        if (mResources != null) {
+            return mResources;
+        }
+        return getBaseContext().getResources();
     }
 
     /** Waits for the specified split to finish preloading if necessary. */
