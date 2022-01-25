@@ -510,6 +510,7 @@
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="152234381334907219">永不儲存</translation>
+<translation id="1523279371236772909">過去一個月看過</translation>
 <translation id="1523978563989812243">「文字轉語音」引擎</translation>
 <translation id="1524430321211440688">鍵盤</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
@@ -1249,6 +1250,7 @@
 <translation id="2232876851878324699">檔案含有一個憑證，但無法匯入：</translation>
 <translation id="2233502537820838181">更多資料(&amp;M)</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
+<translation id="2234827758954819389">隱私權指南</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238379619048995541">頻率狀態數據</translation>
@@ -3104,6 +3106,7 @@
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
 <translation id="4095507791297118304">主要顯示屏</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
+<translation id="4096797685681362305">過去一週看過</translation>
 <translation id="4097406557126260163">應用程式和擴充程式</translation>
 <translation id="409742781329613461">Chrome 提示</translation>
 <translation id="4097560579602855702">搜尋 Google</translation>
@@ -3660,6 +3663,7 @@
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
+<translation id="4701335814944566468">昨天看過</translation>
 <translation id="4708794300267213770">從休眠狀態喚醒時顯示螢幕鎖定畫面</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">還原設定</translation>
@@ -3727,6 +3731,7 @@
 <translation id="479536056609751218">只限網頁的 HTML 部分</translation>
 <translation id="4796142525425001238">一律還原</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />藍牙記錄<ph name="END_LINK" /> (Google 內部)</translation>
+<translation id="479863874072008121">管理裝置</translation>
 <translation id="4800839971935185386">查看名稱和圖示變動</translation>
 <translation id="4801448226354548035">隱藏帳戶</translation>
 <translation id="4801512016965057443">允許流動數據漫遊</translation>
@@ -6450,6 +6455,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要結束無痕模式嗎？</translation>
 <translation id="7659297516559011665">只儲存在此裝置上的密碼</translation>
+<translation id="7659336857671800422">查看隱私權指南</translation>
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
@@ -7972,6 +7978,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 將可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="920045321358709304">透過 <ph name="SEARCH_ENGINE" /> 搜尋</translation>
 <translation id="9201023452444595544">所有離線資料將會被清除</translation>
+<translation id="9201117361710210082">先前看過</translation>
 <translation id="9201220332032049474">螢幕鎖定選項</translation>
 <translation id="9201842707396338580">發生錯誤。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203398526606335860">分析已啟用(&amp;P)</translation>
