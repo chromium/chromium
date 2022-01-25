@@ -671,25 +671,6 @@
             ]
         }
     ],
-    "AssistPersonalInfo": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20201116",
-                    "enable_features": [
-                        "AssistPersonalInfo",
-                        "AssistPersonalInfoAddress",
-                        "AssistPersonalInfoEmail",
-                        "AssistPersonalInfoName",
-                        "AssistPersonalInfoPhoneNumber"
-                    ]
-                }
-            ]
-        }
-    ],
     "AsyncFontAccess": [
         {
             "platforms": [
