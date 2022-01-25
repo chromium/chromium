@@ -59,8 +59,7 @@ ci.builder(
     os = os.MAC_ANY,
 )
 
-# TODO(gbeaty) Switch tester to use ci.thin_tester
-ci.builder(
+ci.thin_tester(
     name = "mac10.11-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -69,7 +68,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.11-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -78,7 +77,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.12-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -87,7 +86,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.12-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -96,7 +95,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.13-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -105,7 +104,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.13-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -114,7 +113,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.14-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -123,7 +122,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.14-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -132,7 +131,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.15-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -141,7 +140,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac10.15-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -150,7 +149,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac11.0-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -159,7 +158,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac11.0-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -168,7 +167,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac-arm64-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|mac",
@@ -177,7 +176,7 @@ ci.builder(
     triggered_by = ["mac-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "mac-arm64-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|mac",
@@ -226,7 +225,7 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win7-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (64)",
@@ -235,7 +234,7 @@ ci.builder(
     triggered_by = ["win-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win7(32)-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (32)",
@@ -244,7 +243,7 @@ ci.builder(
     triggered_by = ["win32-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win7-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|win (64)",
@@ -253,7 +252,7 @@ ci.builder(
     triggered_by = ["win-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win7(32)-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|win (32)",
@@ -262,7 +261,7 @@ ci.builder(
     triggered_by = ["win32-updater-builder-rel"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win10-updater-tester-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (64)",
@@ -271,7 +270,7 @@ ci.builder(
     triggered_by = ["win-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win10-updater-tester-dbg-uac",
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (64)",
@@ -280,7 +279,7 @@ ci.builder(
     triggered_by = ["win-updater-builder-dbg"],
 )
 
-ci.builder(
+ci.thin_tester(
     name = "win10-updater-tester-rel",
     console_view_entry = consoles.console_view_entry(
         category = "release|win (64)",
