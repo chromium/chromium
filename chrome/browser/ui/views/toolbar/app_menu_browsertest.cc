@@ -39,7 +39,13 @@ bool TabRestoreServiceHasClosedWindow(sessions::TabRestoreService* service) {
 // properly (this was triggering a crash in AppMenu where it was trying to make
 // use of RecentTabsMenuModelDelegate before created). See
 // https://crbug.com/1249741 for more.
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
+// TODO(https://crbug.com/1284776): Flakes on lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ShowWithRecentlyClosedWindow DISABLED_ShowWithRecentlyClosedWindow
+#else
+#define MAYBE_ShowWithRecentlyClosedWindow ShowWithRecentlyClosedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, MAYBE_ShowWithRecentlyClosedWindow) {
   // Create an additional browser, close it, and ensure it is added to the
   // TabRestoreService.
   sessions::TabRestoreService* tab_restore_service =
