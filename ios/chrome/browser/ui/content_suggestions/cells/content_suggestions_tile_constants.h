@@ -7,9 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+// The minimum index value of the Bookmarks Shortcut content in the order behind
+// the four Most Visited tiles. NTPCollectionShortcutType is used as a proxy for
+// index value of the Shortcuts content.
+const int kShortcutMinimumIndex = 4;
+
 // Enum listing the collection shortcuts on NTP and similar surfaces.
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType) {
-  NTPCollectionShortcutTypeBookmark = 0,
+  NTPCollectionShortcutTypeBookmark = kShortcutMinimumIndex,
   NTPCollectionShortcutTypeReadingList,
   NTPCollectionShortcutTypeRecentTabs,
   NTPCollectionShortcutTypeHistory,

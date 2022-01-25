@@ -18,7 +18,7 @@
                     atIndex:(NSInteger)mostVisitedIndex;
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
-- (void)openMostRecentTab:(CollectionViewItem*)item;
+- (void)openMostRecentTab;
 // Handles the action that dismisses the "Return to Recent Tab" item.
 - (void)hideMostRecentTab;
 // Displays a context menu for the |mostVisitedItem|.
