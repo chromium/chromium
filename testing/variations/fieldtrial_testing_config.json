@@ -5396,29 +5396,6 @@
             ]
         }
     ],
-    "PrivacySandboxSettings": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "website-url": "https://www.privacysandbox.com"
-                    },
-                    "enable_features": [
-                        "PrivacySandboxSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
