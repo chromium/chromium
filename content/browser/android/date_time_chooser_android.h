@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_DATE_TIME_CHOOSER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
@@ -15,7 +16,7 @@
 namespace content {
 
 // Android implementation for DateTimeChooser dialogs.
-class DateTimeChooserAndroid
+class CONTENT_EXPORT DateTimeChooserAndroid
     : public blink::mojom::DateTimeChooser,
       public WebContentsUserData<DateTimeChooserAndroid> {
  public:
@@ -46,9 +47,13 @@ class DateTimeChooserAndroid
   void CancelDialog(JNIEnv* env, const base::android::JavaRef<jobject>&);
 
  private:
+  friend class content::WebContentsUserData<DateTimeChooserAndroid>;
+  FRIEND_TEST_ALL_PREFIXES(DateTimeChooserBrowserTest,
+                           ResetResponseCallbackViaDisconnectionHandler);
+
   void DismissAndDestroyJavaObject();
 
-  friend class content::WebContentsUserData<DateTimeChooserAndroid>;
+  void OnDateTimeChooserReceiverConnectionError();
 
   OpenDateTimeDialogCallback open_date_time_response_callback_;
 

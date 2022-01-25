@@ -56,6 +56,16 @@ void DateTimeChooserAndroid::OnDateTimeChooserReceiver(
   // Disconnect the previous picker first.
   date_time_chooser_receiver_.reset();
   date_time_chooser_receiver_.Bind(std::move(receiver));
+  date_time_chooser_receiver_.set_disconnect_handler(base::BindOnce(
+      &DateTimeChooserAndroid::OnDateTimeChooserReceiverConnectionError,
+      base::Unretained(this)));
+}
+
+void DateTimeChooserAndroid::OnDateTimeChooserReceiverConnectionError() {
+  // Close a dialog and reset the Mojo receiver and the callback.
+  CloseDateTimeDialog();
+  open_date_time_response_callback_.Reset();
+  date_time_chooser_receiver_.reset();
 }
 
 void DateTimeChooserAndroid::OpenDateTimeDialog(
