@@ -506,21 +506,6 @@
             ]
         }
     ],
-    "AppListZeroStateMixedTypesRanker": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20191017",
-                    "enable_features": [
-                        "EnableZeroStateMixedTypesRanker"
-                    ]
-                }
-            ]
-        }
-    ],
     "ApplyNativeOcclusionToCompositor": [
         {
             "platforms": [
