@@ -247,22 +247,17 @@ class DlpContentManagerReportingBrowserTest
     return test_storage_module;
   }
 
-  void CheckRecord(DlpRulesManager::Restriction restriction,
-                   DlpRulesManager::Level level,
-                   reporting::Record record) {
+  void CheckRecord(DlpPolicyEvent expectedEvent, reporting::Record record) {
     DlpPolicyEvent event;
     EXPECT_TRUE(event.ParseFromString(record.data()));
     EXPECT_EQ(event.source().url(), kSrcPattern);
-    EXPECT_THAT(event, IsDlpPolicyEvent(CreateDlpPolicyEvent(
-                           kSrcPattern, restriction, level)));
+    EXPECT_THAT(event, IsDlpPolicyEvent(expectedEvent));
   }
 
   // Sets an action to execute when an event arrives to the report queue storage
   // module.
-  void SetAddRecordCheck(DlpRulesManager::Restriction restriction,
-                         DlpRulesManager::Level level,
-                         int times) {
-    // TODO(jkopanski): Change to [=, this] when chrome code base is updated to
+  void SetAddRecordCheck(DlpPolicyEvent expectedEvent, int times) {
+    // TODO(1290312): Change to [=, this] when chrome code base is updated to
     // C++20.
     EXPECT_CALL(*test_storage_module(), AddRecord)
         .Times(times)
@@ -273,7 +268,7 @@ class DlpContentManagerReportingBrowserTest
                   FROM_HERE,
                   base::BindOnce(
                       &DlpContentManagerReportingBrowserTest::CheckRecord,
-                      base::Unretained(this), restriction, level,
+                      base::Unretained(this), std::move(expectedEvent),
                       std::move(record)));
               std::move(callback).Run(reporting::Status::StatusOK());
             })));
@@ -345,8 +340,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   // Set up real report queue.
   SetupReportQueue();
   // Sets an action to execute when an event arrives to a storage module.
-  SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
-                    DlpRulesManager::Level::kBlock, /*times=*/2);
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kBlock),
+      /*times=*/2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -385,8 +382,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        PrintingReported) {
   SetupDlpRulesManager();
   SetupReportQueue();
-  SetAddRecordCheck(DlpRulesManager::Restriction::kPrinting,
-                    DlpRulesManager::Level::kReport, /*times=*/2);
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kReport),
+      /*times=*/2);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -414,8 +413,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(crbug.com/1262948): Enable and modify for lacros.
-// TODO(https://crbug.com/1266815): Test reporting for warn/warn proceeded
-// events.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   SetupDlpRulesManager();
   SetupReportQueue();
@@ -428,10 +425,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, kPrintWarned);
 
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kWarn),
+      /*times=*/1);
+
   MockPrintManager* print_manager = GetPrintManager(web_contents);
   testing::InSequence s;
   EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting()).Times(1);
-  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting()).Times(1);
 
   StartPrint(print_manager, web_contents);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
@@ -442,10 +443,23 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
   // There should be no notification about printing restriction.
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(test_storage_module()));
+
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kWarn),
+      /*times=*/1);
 
   // Attempt to print again.
   StartPrint(print_manager, web_contents);
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(test_storage_module()));
+
+  SetAddRecordCheck(CreateDlpPolicyWarningProceededEvent(
+                        kSrcPattern, DlpRulesManager::Restriction::kPrinting),
+                    /*times=*/1);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting()).Times(1);
+
   // Hit Enter to "Print anyway".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
                                               false, false, false));
