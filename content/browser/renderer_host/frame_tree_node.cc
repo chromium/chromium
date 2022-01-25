@@ -357,10 +357,6 @@ void FrameTreeNode::SetCurrentURL(const GURL& url) {
   blame_context_.TakeSnapshot();
 }
 
-void FrameTreeNode::DidCommitNonInitialEmptyDocument() {
-  is_on_initial_empty_document_ = false;
-}
-
 void FrameTreeNode::SetCurrentOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {
