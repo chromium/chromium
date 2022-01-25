@@ -326,6 +326,12 @@ void RecordSameSiteNoneWriteContextMetric(SameSiteNonePartyContextType type) {
   UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteNone.PartyContext.Write", type);
 }
 
+// Converts CookieSameSite to CookieSameSiteForMetrics by adding 1 to it.
+CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
+    CookieSameSite enum_in) {
+  return static_cast<CookieSameSiteForMetrics>((static_cast<int>(enum_in) + 1));
+}
+
 }  // namespace
 
 CookieAccessParams::CookieAccessParams(CookieAccessSemantics access_semantics,
@@ -1081,7 +1087,8 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
           CookieInclusionStatus::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Read", SameSite());
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Read",
+        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 
   return CookieAccessResult(effective_same_site, status,
@@ -1301,7 +1308,8 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
           CookieInclusionStatus::
               WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
     UMA_HISTOGRAM_ENUMERATION(
-        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Write", SameSite());
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion2.Write",
+        CookieSameSiteToCookieSameSiteForMetrics(SameSite()));
   }
 
   return access_result;
