@@ -134,12 +134,15 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void Shutdown();
 
-  // Init reporting queues and collectors that need to start before login,
-  // should only be called once on construction.
-  void Init();
-  // Init reporting queues and collectors that need to start after an
-  // affiliated user login, should only be called once on login.
+  // Init collectors that need to start on startup after a delay, should
+  // only be scheduled once on construction.
+  void DelayedInit();
+  // Init collectors and event observers that need to start after an affiliated
+  // user login with no delay, should only be called once on login.
   void InitOnAffiliatedLogin();
+  // Init collectors and event observers that need to start after an affiliated
+  // user login with a delay, should only be scheduled once on login.
+  void DelayedInitOnAffiliatedLogin();
 
   void InitOneShotCollector(std::unique_ptr<Sampler> sampler,
                             MetricReportQueue* report_queue,
@@ -205,9 +208,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
                           ::ash::DeviceSettingsService::Observer>
       device_settings_observation_{this};
 
-  base::OneShotTimer init_timer_;
+  base::OneShotTimer delayed_init_timer_;
 
-  base::OneShotTimer init_on_login_timer_;
+  base::OneShotTimer delayed_init_on_login_timer_;
 
   base::OneShotTimer initial_upload_timer_;
 };

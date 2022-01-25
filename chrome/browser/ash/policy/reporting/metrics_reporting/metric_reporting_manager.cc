@@ -44,6 +44,9 @@ constexpr base::TimeDelta kDefaultNetworkTelemetryEventCheckingRate =
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(10);
 
+constexpr bool kReportDeviceNetworkStatusDefaultValue = true;
+constexpr bool kReportDeviceAudioStatusDefaultValue = true;
+
 base::TimeDelta GetDefaultRate(base::TimeDelta default_rate,
                                base::TimeDelta testing_rate) {
   // If telemetry testing rates flag is enabled, use `testing_rate` to reduce
@@ -221,8 +224,10 @@ void MetricReportingManager::OnLogin(Profile* profile) {
   if (!delegate_->IsAffiliated(profile)) {
     return;
   }
-  init_on_login_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
-                             &MetricReportingManager::InitOnAffiliatedLogin);
+  InitOnAffiliatedLogin();
+  delayed_init_on_login_timer_.Start(
+      FROM_HERE, delegate_->GetInitDelay(), this,
+      &MetricReportingManager::DelayedInitOnAffiliatedLogin);
 }
 
 void MetricReportingManager::DeviceSettingsUpdated() {
@@ -247,8 +252,8 @@ MetricReportingManager::MetricReportingManager(
       GetDefaultReportUploadFrequency());
   event_report_queue_ = delegate_->CreateMetricReportQueue(
       Destination::EVENT_METRIC, Priority::SLOW_BATCH);
-  init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
-                    &MetricReportingManager::Init);
+  delayed_init_timer_.Start(FROM_HERE, delegate_->GetInitDelay(), this,
+                            &MetricReportingManager::DelayedInit);
 
   if (managed_session_service) {
     managed_session_observation_.Observe(managed_session_service);
@@ -268,7 +273,7 @@ void MetricReportingManager::Shutdown() {
   event_report_queue_.reset();
 }
 
-void MetricReportingManager::Init() {
+void MetricReportingManager::DelayedInit() {
   if (delegate_->IsDeprovisioned()) {
     return;
   }
@@ -298,6 +303,23 @@ void MetricReportingManager::Init() {
 }
 
 void MetricReportingManager::InitOnAffiliatedLogin() {
+  if (delegate_->IsDeprovisioned()) {
+    return;
+  }
+  InitEventObserverManager(
+      std::make_unique<AudioEventsObserver>(),
+      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+      kReportDeviceAudioStatusDefaultValue);
+  if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
+    // Network health events observer.
+    InitEventObserverManager(
+        std::make_unique<NetworkEventsObserver>(),
+        /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+        kReportDeviceNetworkStatusDefaultValue);
+  }
+}
+
+void MetricReportingManager::DelayedInitOnAffiliatedLogin() {
   if (delegate_->IsDeprovisioned()) {
     return;
   }
@@ -399,9 +421,6 @@ void MetricReportingManager::InitNetworkCollectors() {
   auto network_telemetry_sampler =
       std::make_unique<NetworkTelemetrySampler>(https_latency_sampler.get());
   // Network health telemetry.
-  // ReportDeviceNetworkStatus policy is enabled by default, so set its default
-  // value to true.
-  const bool kReportDeviceNetworkStatusDefaultValue = true;
   InitPeriodicCollector(
       std::move(network_telemetry_sampler),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
@@ -420,21 +439,9 @@ void MetricReportingManager::InitNetworkCollectors() {
       kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
       GetDefaulEventCheckingRate(kDefaultNetworkTelemetryEventCheckingRate));
-  // Network health events observer.
-  InitEventObserverManager(
-      std::make_unique<NetworkEventsObserver>(),
-      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      kReportDeviceNetworkStatusDefaultValue);
 }
 
 void MetricReportingManager::InitAudioCollectors() {
-  const bool kReportDeviceAudioStatusDefaultValue = true;
-
-  InitEventObserverManager(
-      std::make_unique<AudioEventsObserver>(),
-      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
-      kReportDeviceAudioStatusDefaultValue);
-
   auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);

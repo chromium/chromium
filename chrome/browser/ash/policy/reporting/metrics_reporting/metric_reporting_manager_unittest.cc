@@ -373,7 +373,6 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   auto fake_reporting_settings =
       std::make_unique<test::FakeReportingSettings>();
   auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
-  const auto init_delay = mock_delegate->GetInitDelay();
   auto* const mock_delegate_ptr = mock_delegate.get();
   auto* const event_queue_ptr = event_queue_.get();
   int observer_manager_count = 0;
@@ -394,15 +393,9 @@ TEST_P(MetricReportingManagerEventTest, Default) {
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate), nullptr);
 
-  task_environment_.FastForwardBy(init_delay);
-
   EXPECT_EQ(observer_manager_count, test_case.expected_count_before_login);
 
   metric_reporting_manager->OnLogin(nullptr);
-
-  EXPECT_EQ(observer_manager_count, test_case.expected_count_before_login);
-
-  task_environment_.FastForwardBy(init_delay);
 
   EXPECT_EQ(observer_manager_count, test_case.expected_count_after_login);
 
