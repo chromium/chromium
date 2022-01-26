@@ -102,7 +102,6 @@
     <dimen name="default_elevation_3">6dp</dimen>
     <dimen name="default_elevation_4">8dp</dimen>
     <dimen name="default_elevation_5">12dp</dimen>
-    <dimen name="default_elevation_6">67dp</dimen>
     <!-- TODO(crbug.com/1236215): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
 
