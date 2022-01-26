@@ -89,7 +89,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     // kEmbedderTriggeredAndRedirected = 32,
     kEmbedderTriggeredAndSameOriginRedirected = 33,
     kEmbedderTriggeredAndCrossOriginRedirected = 34,
-    kMaxValue = kEmbedderTriggeredAndCrossOriginRedirected,
+    kEmbedderTriggeredAndDestroyed = 35,
+    kMaxValue = kEmbedderTriggeredAndDestroyed,
   };
 
   PrerenderHost(const PrerenderAttributes& attributes,
