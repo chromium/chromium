@@ -20,6 +20,12 @@ const char* FormatToString(AudioParameters::Format format) {
       return "BITSTREAM_AC3";
     case AudioParameters::AUDIO_BITSTREAM_EAC3:
       return "BITSTREAM_EAC3";
+    case AudioParameters::AUDIO_BITSTREAM_DTS:
+      return "BITSTREAM_DTS";
+    case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
+      return "BITSTREAM_DTS_HD";
+    case AudioParameters::AUDIO_BITSTREAM_IEC61937:
+      return "BITSTREAM_IEC61937";
     case AudioParameters::AUDIO_FAKE:
       return "FAKE";
   }
@@ -176,7 +182,16 @@ bool AudioParameters::Equals(const AudioParameters& other) const {
 }
 
 bool AudioParameters::IsBitstreamFormat() const {
-  return format_ == AUDIO_BITSTREAM_AC3 || format_ == AUDIO_BITSTREAM_EAC3;
+  switch (format_) {
+    case AUDIO_BITSTREAM_AC3:
+    case AUDIO_BITSTREAM_EAC3:
+    case AUDIO_BITSTREAM_DTS:
+    case AUDIO_BITSTREAM_DTS_HD:
+    case AUDIO_BITSTREAM_IEC61937:
+      return true;
+    default:
+      return false;
+  }
 }
 
 // static

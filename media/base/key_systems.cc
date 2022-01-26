@@ -79,6 +79,10 @@ EmeCodec ToAudioEmeCodec(AudioCodec codec) {
       return EME_CODEC_AC3;
     case AudioCodec::kMpegHAudio:
       return EME_CODEC_MPEG_H_AUDIO;
+    case AudioCodec::kDTS:
+      return EME_CODEC_DTS;
+    case AudioCodec::kDTSXP2:
+      return EME_CODEC_DTSXP2;
     default:
       DVLOG(1) << "Unsupported AudioCodec " << codec;
       return EME_CODEC_NONE;

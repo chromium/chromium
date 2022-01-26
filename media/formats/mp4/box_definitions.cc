@@ -1438,6 +1438,49 @@ bool OpusSpecificBox::Parse(BoxReader* reader) {
   return true;
 }
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+DtsSpecificBox::DtsSpecificBox() {}
+
+DtsSpecificBox::DtsSpecificBox(const DtsSpecificBox& other) = default;
+
+DtsSpecificBox::~DtsSpecificBox() = default;
+
+FourCC DtsSpecificBox::BoxType() const {
+  return FOURCC_DDTS;
+}
+
+bool DtsSpecificBox::Parse(BoxReader* reader) {
+  // Read ddts into buffer.
+  std::vector<uint8_t> dts_data;
+
+  RCHECK(reader->ReadVec(&dts_data, reader->box_size() - reader->pos()));
+  RCHECK(dts.Parse(dts_data, reader->media_log()));
+
+  return true;
+}
+
+DtsUhdSpecificBox::DtsUhdSpecificBox() {}
+
+DtsUhdSpecificBox::DtsUhdSpecificBox(const DtsUhdSpecificBox& other) = default;
+
+DtsUhdSpecificBox::~DtsUhdSpecificBox() = default;
+
+FourCC DtsUhdSpecificBox::BoxType() const {
+  return FOURCC_UDTS;
+}
+
+bool DtsUhdSpecificBox::Parse(BoxReader* reader) {
+  // Read udts into buffer.
+  std::vector<uint8_t> dtsx_data;
+
+  RCHECK(reader->ReadVec(&dtsx_data, reader->box_size() - reader->pos()));
+  RCHECK(dtsx.Parse(dtsx_data, reader->media_log()));
+
+  return true;
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
       data_reference_index(0),
@@ -1488,6 +1531,17 @@ bool AudioSampleEntry::Parse(BoxReader* reader) {
                         "Opus AudioSampleEntry sample rate mismatches "
                         "OpusSpecificBox STREAMINFO channel count");
   }
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  if (format == FOURCC_DTSC) {
+    RCHECK_MEDIA_LOGGED(reader->ReadChild(&ddts), reader->media_log(),
+                        "Failure parsing DtsSpecificBox (ddts)");
+  } else if (format == FOURCC_DTSX) {
+    RCHECK_MEDIA_LOGGED(reader->ReadChild(&udts), reader->media_log(),
+                        "Failure parsing DtsUhdSpecificBox (udts)");
+  }
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   // Read the FLACSpecificBox, even if CENC is signalled.
   if (format == FOURCC_FLAC ||

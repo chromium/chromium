@@ -34,9 +34,10 @@ enum AudioCodec : int {
   kCodecDTS,
   kCodecFLAC,
   kCodecMpegHAudio,
+  kCodecDTSXP2,
 
   kAudioCodecMin = kAudioCodecUnknown,
-  kAudioCodecMax = kCodecMpegHAudio,
+  kAudioCodecMax = kCodecDTSXP2,
 };
 
 enum class ChannelLayout {

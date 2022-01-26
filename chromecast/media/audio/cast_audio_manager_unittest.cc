@@ -213,7 +213,6 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   EXPECT_TRUE(stream);
   // Only run the rest of the test if the device supports AC3.
   if (stream->Open()) {
-    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
     EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
         .WillRepeatedly(Invoke(OnMoreData));
     EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
@@ -225,6 +224,30 @@ TEST_F(CastAudioManagerTest, CanMakeAC3Stream) {
   }
   stream->Close();
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
+  const ::media::AudioParameters kDTSAudioParams(
+      ::media::AudioParameters::AUDIO_BITSTREAM_DTS,
+      ::media::CHANNEL_LAYOUT_5_1, ::media::AudioParameters::kAudioCDSampleRate,
+      256);
+  ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
+      kDTSAudioParams, "", ::media::AudioManager::LogCallback());
+  EXPECT_TRUE(stream);
+  // Only run the rest of the test if the device supports DTS.
+  if (stream->Open()) {
+    EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
+        .WillRepeatedly(Invoke(OnMoreData));
+    EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
+    stream->Start(&mock_source_callback_);
+    RunThreadsUntilIdle();
+
+    stream->Stop();
+    RunThreadsUntilIdle();
+  }
+  stream->Close();
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO))
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {

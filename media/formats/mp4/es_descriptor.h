@@ -24,7 +24,9 @@ enum ObjectType {
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
   kAC3 = 0xa5,                 // AC3
-  kEAC3 = 0xa6                 // EAC3 / Dolby Digital Plus
+  kEAC3 = 0xa6,                // EAC3 / Dolby Digital Plus
+  kDTS = 0xa9,                 // DTS
+  kDTSX = 0xb2                 // DTS:X
 };
 
 // This class parse object type and decoder specific information from an

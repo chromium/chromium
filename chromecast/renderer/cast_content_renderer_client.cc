@@ -74,6 +74,10 @@ bool IsSupportedBitstreamAudioCodecHelper(::media::AudioCodec codec, int mask) {
           (kBitstreamAudioCodecAc3 & mask)) ||
          (codec == ::media::AudioCodec::kEAC3 &&
           (kBitstreamAudioCodecEac3 & mask)) ||
+         (codec == ::media::AudioCodec::kDTS &&
+          (kBitstreamAudioCodecDts & mask)) ||
+         (codec == ::media::AudioCodec::kDTSXP2 &&
+          (kBitstreamAudioCodecDtsXP2 & mask)) ||
          (codec == ::media::AudioCodec::kMpegHAudio &&
           (kBitstreamAudioCodecMpegHAudio & mask));
 }
@@ -251,6 +255,14 @@ bool CastContentRendererClient::IsSupportedAudioType(
   }
   if (type.codec == ::media::AudioCodec::kAC3) {
     return kBitstreamAudioCodecAc3 &
+           supported_bitstream_audio_codecs_info_.codecs;
+  }
+  if (type.codec == ::media::AudioCodec::kDTS) {
+    return kBitstreamAudioCodecDts &
+           supported_bitstream_audio_codecs_info_.codecs;
+  }
+  if (type.codec == ::media::AudioCodec::kDTSXP2) {
+    return kBitstreamAudioCodecDtsXP2 &
            supported_bitstream_audio_codecs_info_.codecs;
   }
   if (type.codec == ::media::AudioCodec::kMpegHAudio) {

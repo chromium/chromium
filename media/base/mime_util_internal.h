@@ -51,7 +51,9 @@ class MEDIA_EXPORT MimeUtil {
     DOLBY_VISION,
     AV1,
     MPEG_H_AUDIO,
-    LAST_CODEC = MPEG_H_AUDIO
+    DTS,
+    DTSXP2,
+    LAST_CODEC = DTSXP2
   };
 
   // Platform configuration structure.  Controls which codecs are supported at

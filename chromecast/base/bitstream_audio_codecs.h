@@ -16,7 +16,8 @@ constexpr int kBitstreamAudioCodecDtsHd = 0b000100;
 constexpr int kBitstreamAudioCodecEac3 = 0b001000;
 constexpr int kBitstreamAudioCodecPcmSurround = 0b010000;
 constexpr int kBitstreamAudioCodecMpegHAudio = 0b100000;
-constexpr int kBitstreamAudioCodecAll = 0b111111;
+constexpr int kBitstreamAudioCodecDtsXP2 = 0b1000000;
+constexpr int kBitstreamAudioCodecAll = 0b1111111;
 
 // Supported bitstream audio codecs and their associated properties.
 struct BitstreamAudioCodecsInfo {

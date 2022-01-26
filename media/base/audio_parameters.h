@@ -131,6 +131,9 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     AUDIO_PCM_LOW_LATENCY,           // Linear PCM, low latency requested.
     AUDIO_BITSTREAM_AC3,             // Compressed AC3 bitstream.
     AUDIO_BITSTREAM_EAC3,            // Compressed E-AC3 bitstream.
+    AUDIO_BITSTREAM_DTS,             // Compressed DTS bitstream.
+    AUDIO_BITSTREAM_DTS_HD,          // Compressed DTS-HD bitstream.
+    AUDIO_BITSTREAM_IEC61937,        // Compressed IEC61937 bitstream.
     AUDIO_FAKE,                      // Creates a fake AudioOutputStream object.
     AUDIO_FORMAT_LAST = AUDIO_FAKE,  // Only used for validation of format.
   };

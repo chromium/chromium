@@ -91,6 +91,12 @@ const StringToCodecMap& GetStringToCodecMap() {
       {"vp8", MimeUtil::VP8},
       {"vp8.0", MimeUtil::VP8},
       {"theora", MimeUtil::THEORA},
+      {"dtsc", MimeUtil::DTS},
+      {"mp4a.a9", MimeUtil::DTS},
+      {"mp4a.A9", MimeUtil::DTS},
+      {"dtsx", MimeUtil::DTSXP2},
+      {"mp4a.b2", MimeUtil::DTSXP2},
+      {"mp4a.B2", MimeUtil::DTSXP2},
   });
 
   return *kStringToCodecMap;
@@ -183,6 +189,10 @@ AudioCodec MimeUtilToAudioCodec(MimeUtil::Codec codec) {
       return AudioCodec::kOpus;
     case MimeUtil::FLAC:
       return AudioCodec::kFLAC;
+    case MimeUtil::DTS:
+      return AudioCodec::kDTS;
+    case MimeUtil::DTSXP2:
+      return AudioCodec::kDTSXP2;
     default:
       break;
   }
@@ -340,6 +350,11 @@ void MimeUtil::AddSupportedMediaFormats() {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   mp4_video_codecs.emplace(AV1);
 #endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  mp4_audio_codecs.emplace(DTS);
+  mp4_audio_codecs.emplace(DTSXP2);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
   CodecSet mp4_codecs(mp4_audio_codecs);
   mp4_codecs.insert(mp4_video_codecs.begin(), mp4_video_codecs.end());
@@ -647,6 +662,14 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
     case AC3:
     case EAC3:
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      return true;
+#else
+      return false;
+#endif
+
+    case DTS:
+    case DTSXP2:
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
       return true;
 #else
       return false;

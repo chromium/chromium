@@ -236,6 +236,14 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
   EXPECT_FALSE(IsSupportedAudioType({AudioCodec::kMpegHAudio,
                                      AudioCodecProfile::kUnknown,
                                      is_spatial_rendering}));
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  EXPECT_FALSE(IsSupportedAudioType(
+      {AudioCodec::kDTS, AudioCodecProfile::kUnknown, is_spatial_rendering}));
+  EXPECT_FALSE(
+      IsSupportedAudioType({AudioCodec::kDTSXP2, AudioCodecProfile::kUnknown,
+                            is_spatial_rendering}));
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&
+        // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   EXPECT_FALSE(
       IsSupportedAudioType({AudioCodec::kUnknown, AudioCodecProfile::kUnknown,
                             is_spatial_rendering}));

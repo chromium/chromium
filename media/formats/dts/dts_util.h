@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 
