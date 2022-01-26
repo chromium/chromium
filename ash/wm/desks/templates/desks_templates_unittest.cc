@@ -32,6 +32,7 @@
 #include "ash/wm/desks/templates/desks_templates_test_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -691,6 +692,23 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   const int expected_deletes = 2;
   histogram_tester.ExpectTotalCount(kDeleteTemplateHistogramName,
                                     expected_deletes);
+}
+
+// Tests that the save desk as template button is aligned with the first
+// overview item. Regression test for https://crbug.com/1285491.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonAligned) {
+  // Create a test window in the current desk.
+  auto test_window = CreateAppWindow();
+  ToggleOverview();
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  auto* overview_grid =
+      GetOverviewSession()->GetGridWithRootWindow(root_window);
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(root_window);
+  auto& window_list = overview_grid->window_list();
+  ASSERT_FALSE(window_list.empty());
+  EXPECT_EQ(window_list.front()->target_bounds().x() + kWindowMargin,
+            save_desk_as_template_widget->GetWindowBoundsInScreen().x());
 }
 
 // Tests that the save desk as template button is disabled when the maximum

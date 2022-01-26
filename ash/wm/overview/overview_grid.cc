@@ -1878,7 +1878,9 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   const gfx::Size preferred_size =
       save_desk_as_template_widget_->GetContentsView()->GetPreferredSize();
   save_desk_as_template_widget_->SetBounds(gfx::Rect(
-      overview_item_bounds.x(),
+      // Align the widget so it is visually aligned with the first overview
+      // item, which has a invisible border of `kWindowMargin` thickness.
+      overview_item_bounds.x() + kWindowMargin,
       overview_item_bounds.y() - kSaveDeskAsTemplateOverviewItemSpacingDp,
       preferred_size.width(), preferred_size.height()));
 
