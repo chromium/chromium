@@ -232,8 +232,6 @@ DlpContentManager::GetScreenShareConfidentialContentsInfoForWebContents(
         GetConfidentialRestrictions(web_contents)
             .GetRestrictionLevelAndUrl(DlpContentRestriction::kScreenShare);
     info.confidential_contents.Add(web_contents);
-  } else {
-    NOTREACHED();
   }
   return info;
 }
