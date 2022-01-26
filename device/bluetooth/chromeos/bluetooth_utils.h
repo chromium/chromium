@@ -151,8 +151,12 @@ DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
 // Record each time a device forget attempt completes.
 DEVICE_BLUETOOTH_EXPORT void RecordForgetResult(ForgetResult forget_result);
 
-// Record the result of each bluetooth device disconnect attempt.
-DEVICE_BLUETOOTH_EXPORT void RecordDisconnectResult(
+// Records each bluetooth device disconnect.
+DEVICE_BLUETOOTH_EXPORT void RecordDeviceDisconnect(
+    BluetoothDeviceType device_type);
+
+// Record the result of each user initiated bluetooth device disconnect attempt.
+DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedDisconnectResult(
     DisconnectResult disconnect_result,
     BluetoothTransport transport);
 

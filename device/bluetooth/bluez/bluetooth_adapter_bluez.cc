@@ -1398,6 +1398,8 @@ void BluetoothAdapterBlueZ::NotifyDeviceConnectedStateChanged(
   if (is_now_connected) {
     device::BluetoothConnectionLogger::RecordDeviceConnected(
         device->GetIdentifier(), device->GetDeviceType());
+  } else {
+    device::RecordDeviceDisconnect(device->GetDeviceType());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 

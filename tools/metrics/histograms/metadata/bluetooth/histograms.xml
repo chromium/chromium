@@ -93,6 +93,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.DeviceDisconnect"
+    enum="BluetoothDeviceType" expires_after="2023-01-24">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>Emitted each time a Bluetooth device is disconnected.</summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}"
     units="ms" expires_after="2022-07-01">
@@ -138,6 +145,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.ChromeOS.Disconnect.Result{BluetoothTransportTypes}"
     enum="DisconnectResult" expires_after="2022-07-21">
+  <obsolete>
+    Removed 2022-01-25. Removed in favor of
+    Bluetooth.ChromeOS.UserInitiatedDisconnect.Result, because this actually
+    recorded only user initiated disconnect results, and a more general
+    Bluetooth.ChromeOS.DeviceDisconnect was introduced to record all device
+    disconnections. check http://b/215601529 for details.
+  </obsolete>
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1024,6 +1038,20 @@ chromium-metrics-reviews@google.com.
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Metric emmitted each time a UI surface is shown.</summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.UserInitiatedDisconnect.Result{BluetoothTransportTypes}"
+    enum="DisconnectResult" expires_after="2023-01-24">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Emitted each time a user attempted disconnection completes.
+    {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram

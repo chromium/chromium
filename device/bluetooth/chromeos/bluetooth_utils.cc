@@ -348,18 +348,24 @@ void RecordForgetResult(ForgetResult forget_result) {
                                 forget_result);
 }
 
-void RecordDisconnectResult(DisconnectResult disconnect_result,
-                            BluetoothTransport transport) {
+void RecordDeviceDisconnect(BluetoothDeviceType device_type) {
+  base::UmaHistogramEnumeration("Bluetooth.ChromeOS.DeviceDisconnect",
+                                device_type);
+}
+
+void RecordUserInitiatedDisconnectResult(DisconnectResult disconnect_result,
+                                         BluetoothTransport transport) {
   std::string transport_name = GetTransportName(transport);
 
   if (transport_name.empty()) {
     return;
   }
 
-  base::UmaHistogramEnumeration("Bluetooth.ChromeOS.Disconnect.Result",
-                                disconnect_result);
   base::UmaHistogramEnumeration(
-      base::StrCat({"Bluetooth.ChromeOS.Disconnect.Result.", transport_name}),
+      "Bluetooth.ChromeOS.UserInitiatedDisconnect.Result", disconnect_result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Bluetooth.ChromeOS.UserInitiatedDisconnect.Result.",
+                    transport_name}),
       disconnect_result);
 }
 

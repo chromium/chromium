@@ -2850,11 +2850,14 @@ TEST_P(BluetoothBlueZTestP, DisconnectDevice) {
   EXPECT_FALSE(device->IsConnected());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  histogram_tester_.ExpectBucketCount("Bluetooth.ChromeOS.Disconnect.Result",
-                                      device::DisconnectResult::kSuccess, 1);
   histogram_tester_.ExpectBucketCount(
-      "Bluetooth.ChromeOS.Disconnect.Result.Classic",
+      "Bluetooth.ChromeOS.UserInitiatedDisconnect.Result",
       device::DisconnectResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedDisconnect.Result.Classic",
+      device::DisconnectResult::kSuccess, 1);
+  histogram_tester_.ExpectBucketCount("Bluetooth.ChromeOS.DeviceDisconnect",
+                                      device->GetDeviceType(), 1);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 

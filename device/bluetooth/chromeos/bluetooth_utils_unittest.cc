@@ -272,4 +272,10 @@ TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {
       2000, 1);
 }
 
+TEST_F(BluetoothUtilsTest, TestDisconnectMetric) {
+  RecordDeviceDisconnect(BluetoothDeviceType::MOUSE);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.DeviceDisconnect",
+                                     BluetoothDeviceType::MOUSE, 1);
+}
+
 }  // namespace device
