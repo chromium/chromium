@@ -198,7 +198,7 @@ Note: Mac platform is supported only.
 `Script tests` provide platform dependent `-SCRIPT` directive to indicate
 a script to run. For example:
 
-`MAC-SCRIPT: input.AXName`
+`@MAC-SCRIPT: input.AXName`
 
 to dump accessible name of an accessible node for a DOM element having
 `input` DOM id on Mac platform. You can also use `:LINE_NUM` syntax to indicate
@@ -206,10 +206,10 @@ an accessible object, where `LINE_NUM` is index of a line where
 the accessible object is placed in the formatted tree. However you should avoid
 using `:LINE_NUM` in a test as it may break the test automatic rebaseling.
 
-You can put multiple instructions under the same `MAC-SCRIPT` directive, for
+You can put multiple instructions under the same `@MAC-SCRIPT` directive, for
 example:
 ```
-MAC-SCRIPT:
+@MAC-SCRIPT:
   input.AXRole
   input.AXName
 ```
@@ -217,6 +217,20 @@ MAC-SCRIPT:
 Calls can be chained, for example:
 
 `input.AXFocusableAncestor.AXRole`
+
+Note: The `.AXAttribute` will dump the accessible attribute for the node only
+if the attribute is supported for that node.
+
+To test for the support of the attribute in mac accessibility API, you can see
+if the attribute is included in the accessibilityAttribute names using
+`has()`. For example, the following will tell you whether the attribute
+`AXInvalid` is supported on an accessible node, regardless of whether the
+attribute has been provided by the web author.
+
+```
+@MAC-SCRIPT:
+  input.accessibilityAttributeNames.has(AXInvalid)
+```
 
 Parameterized attributes are also supported, for example:
 
@@ -248,7 +262,7 @@ You can use `waitfor` instruction to wait for a specific event before the script
 continues, for example:
 
 ```
-MAC-SCRIPT:
+@MAC-SCRIPT:
   button.AXPerformAction(AXPress)
   wait for AXFocusedUIElementChanged
 ```

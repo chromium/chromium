@@ -279,6 +279,17 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForArray(
     }
     return AXOptionalNSObject([NSNumber numberWithInt:[target count]]);
   }
+
+  if (property_node.name_or_value == "has") {
+    for (NSString* attribute : target) {
+      if (property_node.arguments[0].IsMatching(
+              base::SysNSStringToUTF8(attribute))) {
+        return AXOptionalNSObject(static_cast<id>(@"yes"));
+      }
+    }
+    return AXOptionalNSObject(static_cast<id>(@"no"));
+  }
+
   if (!property_node.IsArray() || property_node.arguments.size() != 1) {
     LOG(ERROR) << "Array operator[] is expected, got: "
                << property_node.ToString();

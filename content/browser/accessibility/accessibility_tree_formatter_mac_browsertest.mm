@@ -552,6 +552,24 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array_Has) {
+  TestScript(R"~~(data:text/html,
+                    <button id='b'></button>)~~",
+             {"b.accessibilityAttributeNames.has(AXRole)"},
+             R"~~(b.accessibilityAttributeNames.has(AXRole)='yes'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_Array_Has_No) {
+  TestScript(R"~~(data:text/html,
+                    <button id='b'></button>)~~",
+             {"b.accessibilityAttributeNames.has(AXARIARowCount)"},
+             R"~~(b.accessibilityAttributeNames.has(AXARIARowCount)='no'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_Chain_TextRange_Anchor) {
   TestScript(R"~~(data:text/html,
                     <p id='p'>Paragraph</p>)~~",
