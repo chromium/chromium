@@ -58,7 +58,7 @@ let PageInfo;
 /**
  * @type {!Object<!State, !PageInfo>}
  */
-const StateComponentMapping = {
+export const StateComponentMapping = {
   // It is assumed that if state is kUnknown the error is kRmaNotRequired.
   [State.kUnknown]: {
     componentIs: 'critical-error-page',
