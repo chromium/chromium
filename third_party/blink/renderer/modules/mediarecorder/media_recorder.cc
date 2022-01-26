@@ -228,6 +228,11 @@ String MediaRecorder::state() const {
 }
 
 String MediaRecorder::audioBitrateMode() const {
+  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    // Return a valid enum value; variable is the default.
+    return BitrateModeToString(AudioTrackRecorder::BitrateMode::kVariable);
+  }
+  DCHECK(recorder_handler_);
   return BitrateModeToString(recorder_handler_->AudioBitrateMode());
 }
 
