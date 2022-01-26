@@ -2476,60 +2476,10 @@ sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
   gfx::ColorSpace adjusted_src = src.GetWithSDRWhiteLevel(
       current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
 
-  ColorFilterCacheKey key;
-  key.src = src;
-  key.dst = dst;
-  key.resource_offset = resource_offset;
-  key.resource_multiplier = resource_multiplier;
-  key.sdr_max_luminance_nits =
-      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits();
-  key.dst_max_luminance_relative =
-      current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative();
-  sk_sp<SkRuntimeEffect>& effect = color_filter_cache_[key];
-  if (!effect) {
-    gfx::ColorTransform::Options options;
-    options.tone_map_pq_and_hlg_to_sdr = !dst.IsHDR();
-    options.sdr_max_luminance_nits = key.sdr_max_luminance_nits;
-    options.dst_max_luminance_relative = key.dst_max_luminance_relative;
-    std::unique_ptr<gfx::ColorTransform> transform =
-        gfx::ColorTransform::NewColorTransform(adjusted_src, dst, options);
-
-    const char* hdr = R"(
-uniform half offset;
-uniform half multiplier;
-
-half4 main(half4 color) {
-  // un-premultiply alpha
-  if (color.a > 0)
-    color.rgb /= color.a;
-
-  color.rgb -= offset;
-  color.rgb *= multiplier;
-)";
-    const char* ftr = R"(
-  // premultiply alpha
-  color.rgb *= color.a;
-  return color;
-}
-)";
-
-    std::string shader = hdr + transform->GetSkShaderSource() + ftr;
-
-    auto result = SkRuntimeEffect::MakeForColorFilter(
-        SkString(shader.c_str(), shader.size()),
-        /*options=*/{});
-    DCHECK(result.effect) << std::endl
-                          << result.errorText.c_str() << "\n\nShader Source:\n"
-                          << shader;
-    effect = result.effect;
-  }
-
-  YUVInput input;
-  input.offset = resource_offset;
-  input.multiplier = resource_multiplier;
-  sk_sp<SkData> data = SkData::MakeWithCopy(&input, sizeof(input));
-
-  return effect->makeColorFilter(std::move(data));
+  return color_filter_cache_.Get(
+      adjusted_src, dst, resource_offset, resource_multiplier,
+      current_frame()->display_color_spaces.GetSDRMaxLuminanceNits(),
+      current_frame()->display_color_spaces.GetHDRMaxLuminanceRelative());
 }
 
 namespace {
@@ -3250,28 +3200,5 @@ bool SkiaRenderer::ScopedReadLockComparator::operator()(
   return lhs < rhs.mailbox();
 }
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-
-bool SkiaRenderer::ColorFilterCacheKey::operator==(
-    const ColorFilterCacheKey& other) const {
-  return src == other.src && dst == other.dst &&
-         resource_offset == other.resource_offset &&
-         resource_multiplier == other.resource_multiplier &&
-         sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
-         dst_max_luminance_relative == other.dst_max_luminance_relative;
-}
-
-bool SkiaRenderer::ColorFilterCacheKey::operator!=(
-    const ColorFilterCacheKey& other) const {
-  return !(*this == other);
-}
-
-bool SkiaRenderer::ColorFilterCacheKey::operator<(
-    const ColorFilterCacheKey& other) const {
-  return std::tie(src, dst, resource_offset, resource_multiplier,
-                  sdr_max_luminance_nits, dst_max_luminance_relative) <
-         std::tie(other.src, other.dst, other.resource_offset,
-                  other.resource_multiplier, other.sdr_max_luminance_nits,
-                  other.dst_max_luminance_relative);
-}
 
 }  // namespace viz

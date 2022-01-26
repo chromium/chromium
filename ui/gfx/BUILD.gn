@@ -56,6 +56,8 @@ component("gfx") {
     "break_list.h",
     "color_analysis.cc",
     "color_analysis.h",
+    "color_conversion_sk_filter_cache.cc",
+    "color_conversion_sk_filter_cache.h",
     "color_transform.cc",
     "color_transform.h",
     "decorated_text.cc",

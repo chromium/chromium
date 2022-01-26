@@ -19,10 +19,10 @@
 #include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/latency/latency_info.h"
 
 class SkColorFilter;
-class SkRuntimeEffect;
 
 namespace viz {
 class AggregatedRenderPassDrawQuad;
@@ -362,19 +362,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       awaiting_release_overlay_locks_;
 #endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
-  struct ColorFilterCacheKey {
-    gfx::ColorSpace src;
-    gfx::ColorSpace dst;
-    float resource_offset = 0.f;
-    float resource_multiplier = 1.f;
-    float sdr_max_luminance_nits = 0.f;
-    float dst_max_luminance_relative = 0.f;
-    bool operator==(const ColorFilterCacheKey& other) const;
-    bool operator!=(const ColorFilterCacheKey& other) const;
-    bool operator<(const ColorFilterCacheKey& other) const;
-  };
-  base::flat_map<ColorFilterCacheKey, sk_sp<SkRuntimeEffect>>
-      color_filter_cache_;
+  gfx::ColorConversionSkFilterCache color_filter_cache_;
 
   bool UsingSkiaForDelegatedInk() const;
   uint32_t debug_tint_modulate_count_ = 0;
