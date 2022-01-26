@@ -96,9 +96,12 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug/1282868")
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithoutSync() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        final CoreAccountInfo account2 = mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        final CoreAccountInfo account1 =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
+        final CoreAccountInfo account2 =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
 
@@ -115,9 +118,12 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "crbug/1288469")
     public void testRefreshTokenUpdateWhenDefaultAccountSignsinWithSync() {
-        final CoreAccountInfo account1 = mAccountManagerTestRule.addAccount(TEST_EMAIL1);
-        final CoreAccountInfo account2 = mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        final CoreAccountInfo account1 =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL1);
+        final CoreAccountInfo account2 =
+                mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_EMAIL2);
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 0);
         Assert.assertEquals(Collections.emptySet(), mObserver.mAccountsUpdated);
         final SyncService syncService =
