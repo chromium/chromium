@@ -127,8 +127,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
     // TODO(crbug.com/1197133): Cancel the started prerender and start a new
     // one if the score of the new candidate is higher than the started one's.
-    if (prerender_host_by_frame_tree_node_id_.size() ==
-        kMaxNumOfRunningPrerenders) {
+    if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type)) {
       RecordPrerenderHostFinalStatus(
           PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded,
           attributes.trigger_type, attributes.embedder_histogram_suffix);
@@ -466,6 +465,34 @@ const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
   DCHECK(prerender_host);
 
   return prerender_host->embedder_histogram_suffix();
+}
+
+bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
+    PrerenderTriggerType trigger_type) {
+  // Currently the number prerenders is limited to two per WebContentsImpl.
+  const size_t kMaxNumOfRunningPrerenders = 2;
+
+  if (prerender_host_by_frame_tree_node_id_.size() ==
+      kMaxNumOfRunningPrerenders)
+    return false;
+
+  int trigger_type_count = 0;
+  DCHECK_LT(prerender_host_by_frame_tree_node_id_.size(),
+            kMaxNumOfRunningPrerenders);
+  for (const auto& host_by_id : prerender_host_by_frame_tree_node_id_) {
+    if (host_by_id.second->trigger_type() == trigger_type)
+      ++trigger_type_count;
+  }
+
+  switch (trigger_type) {
+    case PrerenderTriggerType::kSpeculationRule:
+      // Speculation Rules trigger is allowed to start only one prerender.
+      return trigger_type_count < 1;
+    case PrerenderTriggerType::kEmbedder:
+      // Embedder triggers are allowed to start at most 2 concurrent
+      // prerenders.
+      return trigger_type_count < 2;
+  }
 }
 
 }  // namespace content

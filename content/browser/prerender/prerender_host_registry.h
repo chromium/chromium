@@ -170,9 +170,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   void NotifyTrigger(const GURL& url);
 
-  // Currently the number of speculationrules-triggered prerenders is limited to
-  // one per WebContentsImpl.
-  const size_t kMaxNumOfRunningPrerenders = 1;
+  // Returns whether a certain type of PrerenderTriggerType is allowed to be
+  // added to PrerenderHostRegistry according to the limit of the given
+  // PrerenderTriggerType.
+  bool IsAllowedToStartPrerenderingForTrigger(
+      PrerenderTriggerType trigger_type);
 
   // Hosts that are not reserved for activation yet.
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are

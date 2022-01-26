@@ -4601,6 +4601,126 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
 }
 
+// Tests that PrerenderHostRegistry can hold up to two prerendering for the
+// prerender embedders it receives.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
+  const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
+  const GURL kThirdPrerenderingUrl = GetUrl("/empty.html?prerender3");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Start prerendering by embedder triggered prerendering; this should be
+  // trigger successfully.
+  std::unique_ptr<PrerenderHandle> prerender_handle1 =
+      web_contents_impl()->StartPrerendering(
+          kFirstPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle1);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+
+  // Start prerendering by embedder triggered prerendering; this should be
+  // trigger successfully.
+  std::unique_ptr<PrerenderHandle> prerender_handle2 =
+      web_contents_impl()->StartPrerendering(
+          kSecondPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle2);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+
+  // Start prerendering by embedder triggered prerendering; this should hit the
+  // limit.
+  std::unique_ptr<PrerenderHandle> prerender_handle3 =
+      web_contents_impl()->StartPrerendering(
+          kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_FALSE(prerender_handle3);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+}
+
+// Tests that PrerenderHostRegistry can hold up to two prerendering for the
+// prerender speculation rule and prerender embedders in total.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       StartByEmbeddersAndSpeculationRulesMultipleTimes) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
+  const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
+  const GURL kThirdPrerenderingUrl = GetUrl("/empty.html?prerender3");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  // Add the first prerender speculation rule; it should trigger prerendering
+  // successfully.
+  AddPrerender(kFirstPrerenderingUrl);
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+
+  // Start prerendering by embedder triggered prerendering; this should be
+  // trigger successfully.
+  std::unique_ptr<PrerenderHandle> prerender_handle2 =
+      web_contents_impl()->StartPrerendering(
+          kSecondPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle2);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
+
+  // Start prerendering by embedder triggered prerendering; this should hit the
+  // limit.
+  std::unique_ptr<PrerenderHandle> prerender_handle3 =
+      web_contents_impl()->StartPrerendering(
+          kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_FALSE(prerender_handle3);
+
+  histogram_tester.ExpectBucketCount(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
+
+  // Start prerendering by embedder triggered prerendering; this should be
+  // trigger successfully as one of the prerenders is freed.
+  prerender_handle2.reset();
+  prerender_handle3 = web_contents_impl()->StartPrerendering(
+      kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
+      "EmbedderSuffixForTest",
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  EXPECT_TRUE(prerender_handle3);
+}
+
 // Tests that cross-origin urls cannot be prerendered.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
   base::HistogramTester histogram_tester;
