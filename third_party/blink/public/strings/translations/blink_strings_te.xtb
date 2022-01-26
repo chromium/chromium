@@ -100,7 +100,7 @@
 <translation id="3808586225841795776">పదం</translation>
 <translation id="3822383571486410024">దయచేసి ఈ వచనాన్ని <ph name="MIN_CHARACTERS" /> లేదా అంతకంటే ఎక్కువ అక్షరాలకు పొడిగించండి (ప్రస్తుతం మీరు <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'కి ముందు ఉన్న భాగంలో '<ph name="INVALIDCHARACTER" />' చిహ్నం ఉండకూడదు.</translation>
-<translation id="3846214748874656680">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="3846214748874656680">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="3920932319529768807">ముగింపు</translation>
 <translation id="3924558731517983934">అప్లికేషన్‌</translation>
 <translation id="3944740393230681990">ప్రారంభం</translation>
@@ -128,7 +128,7 @@
 <translation id="4698212723196775569">కోడ్</translation>
 <translation id="4718048029184481307">చిత్రంలో చిత్రం మోడ్‌లో ప్లే అవుతోంది</translation>
 <translation id="4742539557769756338">ముఖచిత్రం</translation>
-<translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు పూర్తి స్క్రీన్‌ని సక్రియం చేస్తుంది</translation>
+<translation id="4748357248530471599">డిస్‌ప్లే కత్తిరింపు ఫుల్-స్క్రీన్‌ను సక్రియం చేస్తుంది</translation>
 <translation id="4757246831282535685">ట్యాబ్ ప్యానెల్</translation>
 <translation id="4763480195061959176">వీడియో</translation>
 <translation id="479989351350248267">search</translation>
@@ -162,7 +162,7 @@
 <translation id="5453733299334684579">వృక్షాంశం</translation>
 <translation id="546643433018805598">సబ్‌స్క్రిప్ట్</translation>
 <translation id="5466621249238537318">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి.</translation>
-<translation id="5468998798572797635">పూర్తి స్క్రీన్ నుండి నిష్క్రమించు</translation>
+<translation id="5468998798572797635">ఫుల్-స్క్రీన్‌ నుండి నిష్క్రమించు</translation>
 <translation id="5516235301412634559">0.75</translation>
 <translation id="5516424706154626233">తేదీ ఎంపిక</translation>
 <translation id="5537725057119320332">Cast</translation>
