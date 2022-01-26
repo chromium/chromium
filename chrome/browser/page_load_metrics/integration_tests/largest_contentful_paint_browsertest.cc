@@ -289,7 +289,8 @@ class MouseoverLCPTest : public MetricIntegrationTest {
       // currently a second mouse move call is not dispatching the event as it
       // should. So instead, we dispatch the event directly.
       EXPECT_EQ(
-          EvalJs(web_contents()->GetMainFrame(), "dispatch_event()").error, "");
+          EvalJs(web_contents()->GetMainFrame(), "dispatch_mouseover()").error,
+          "");
 
       // Wait for a third image (potentially) to load and for LCP entry to be
       // there.
