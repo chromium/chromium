@@ -88,8 +88,14 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetContext) {
 
 // Note: if this test is flaky, it may need to be moved to an interactive UI
 // test instead; please contact dfried@.
+// TODO(crbug/1290983): Disabled because of failures on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ToggleFocusForAccessibility DISABLED_ToggleFocusForAccessibility
+#else
+#define MAYBE_ToggleFocusForAccessibility ToggleFocusForAccessibility
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest,
-                       ToggleFocusForAccessibility) {
+                       MAYBE_ToggleFocusForAccessibility) {
   HelpBubbleParams params;
   params.body_text = u"Hello world!";
   HelpBubbleButtonParams button_params;
