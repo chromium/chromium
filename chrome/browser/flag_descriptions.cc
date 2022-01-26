@@ -1607,6 +1607,12 @@ const char kDestroyProfileOnBrowserCloseDescription[] =
     "Release memory and other resources when a Profile's last browser window "
     "is closed, rather than when Chrome closes completely.";
 
+const char kDestroySystemProfilesName[] = "Destroy System Profile";
+const char kDestroySystemProfilesDescription[] =
+    "After you close the Profile Picker, release memory and other resources "
+    "owned by the System Profile. This requires "
+    "#destroy-profile-on-browser-close.";
+
 const char kNewUsbBackendName[] = "Enable new USB backend";
 const char kNewUsbBackendDescription[] =
     "Enables the new experimental USB backend for macOS";

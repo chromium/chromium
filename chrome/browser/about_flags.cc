@@ -5468,6 +5468,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux | kOsFuchsia,
      FEATURE_VALUE_TYPE(features::kDestroyProfileOnBrowserClose)},
 
+    {"destroy-system-profiles", flag_descriptions::kDestroySystemProfilesName,
+     flag_descriptions::kDestroySystemProfilesDescription,
+     kOsCrOS | kOsMac | kOsWin | kOsLinux | kOsFuchsia,
+     FEATURE_VALUE_TYPE(features::kDestroySystemProfiles)},
+
 #if BUILDFLAG(IS_WIN)
     {"use-angle", flag_descriptions::kUseAngleName,
      flag_descriptions::kUseAngleDescriptionWindows, kOsWin,

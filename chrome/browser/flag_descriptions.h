@@ -929,6 +929,9 @@ extern const char kNewCanvas2DAPIDescription[];
 extern const char kDestroyProfileOnBrowserCloseName[];
 extern const char kDestroyProfileOnBrowserCloseDescription[];
 
+extern const char kDestroySystemProfilesName[];
+extern const char kDestroySystemProfilesDescription[];
+
 extern const char kNewUsbBackendName[];
 extern const char kNewUsbBackendDescription[];
 

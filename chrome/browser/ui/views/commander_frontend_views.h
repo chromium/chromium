@@ -20,6 +20,7 @@
 
 class CommanderFocusLossWatcher;
 class CommanderWebView;
+class ScopedProfileKeepAlive;
 
 namespace views {
 class WidgetDelegate;
@@ -98,6 +99,9 @@ class CommanderFrontendViews : public commander::CommanderFrontend,
   raw_ptr<CommanderWebView> web_view_ptr_ = nullptr;
   // |web_view_ptr_| is held here when the widget is *not* showing.
   std::unique_ptr<CommanderWebView> web_view_;
+  // The WebUI can't go out of scope before the System Profile, or it could
+  // cause use-after-free bugs.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   // The browser |widget_| is attached to.
   raw_ptr<Browser> browser_ = nullptr;
   // Whether the web UI interface is loaded and ready to accept view models.

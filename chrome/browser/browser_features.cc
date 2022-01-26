@@ -30,6 +30,11 @@ const base::Feature kColorProviderRedirectionForThemeProvider = {
 const base::Feature kDestroyProfileOnBrowserClose{
     "DestroyProfileOnBrowserClose", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// DestroyProfileOnBrowserClose only covers deleting regular (non-System)
+// Profiles. This flags lets us destroy the System Profile, as well.
+const base::Feature kDestroySystemProfiles{"DestroySystemProfiles",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Nukes profile directory before creating a new profile using
 // ProfileManager::CreateMultiProfileAsync().
 const base::Feature kNukeProfileBeforeCreateMultiAsync{

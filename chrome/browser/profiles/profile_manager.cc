@@ -1462,8 +1462,11 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
   VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
           << "). keep_alives=" << info->keep_alives;
 
-  if (origin == ProfileKeepAliveOrigin::kBrowserWindow)
+  if (origin == ProfileKeepAliveOrigin::kBrowserWindow ||
+      (origin == ProfileKeepAliveOrigin::kProfilePickerView &&
+       base::FeatureList::IsEnabled(features::kDestroySystemProfiles))) {
     ClearFirstBrowserWindowKeepAlive(profile);
+  }
 }
 
 void ProfileManager::RemoveKeepAlive(const Profile* profile,

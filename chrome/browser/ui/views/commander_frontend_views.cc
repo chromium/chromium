@@ -13,6 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/commander_backend.h"
@@ -306,7 +308,11 @@ void CommanderFrontendViews::OnSystemProfileAvailable(
 
 void CommanderFrontendViews::CreateWebView(Profile* profile) {
   DCHECK(!is_web_view_created());
+  DCHECK(profile);
 
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile->GetOriginalProfile(),
+      ProfileKeepAliveOrigin::kCommanderFrontend);
   web_view_ = std::make_unique<CommanderWebView>(profile);
   web_view_->set_allow_accelerators(true);
   // Make the commander WebContents show up in the task manager.

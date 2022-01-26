@@ -107,7 +107,15 @@ enum class ProfileKeepAliveOrigin {
   // An extension .crx is being installed.
   kCrxInstaller = 24,
 
-  kMaxValue = kCrxInstaller,
+  // The ProfilePickerView dialog is visible. This normally refers to the System
+  // Profile, but may be a different one in Lacros.
+  kProfilePickerView = 25,
+
+  // The frontend view for Commander exists (even if it's not visible). It
+  // renders to a WebUI, so we can't just destroy it whenever we want.
+  kCommanderFrontend = 26,
+
+  kMaxValue = kCommanderFrontend,
 };
 
 std::ostream& operator<<(std::ostream& out,

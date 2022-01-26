@@ -51037,6 +51037,7 @@ from previous Chrome versions.
   <int value="-2025330968" label="Journeys:disabled"/>
   <int value="-2024330288" label="RawDraw:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
+  <int value="-2023641192" label="DestroySystemProfiles:enabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
   <int value="-2020721975" label="smart-virtual-keyboard"/>
@@ -54666,6 +54667,7 @@ from previous Chrome versions.
   <int value="595371145" label="OmniboxRichEntitySuggestions:disabled"/>
   <int value="596106994" label="CustomFeedbackUi:enabled"/>
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
+  <int value="598312195" label="DestroySystemProfiles:disabled"/>
   <int value="598827460" label="enable-roboto-font-ui"/>
   <int value="598926697" label="VrLaunchIntent:disabled"/>
   <int value="600037637" label="AndroidSigninPromos:enabled"/>
@@ -73439,6 +73441,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="22" label="kWebAppUpdate"/>
   <int value="23" label="kGettingWebAppInfo"/>
   <int value="24" label="kCrxInstaller"/>
+  <int value="25" label="kProfilePickerView"/>
+  <int value="26" label="kCommanderFrontend"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

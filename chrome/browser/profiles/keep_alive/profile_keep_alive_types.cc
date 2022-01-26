@@ -55,6 +55,10 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kGettingWebAppInfo";
     case ProfileKeepAliveOrigin::kCrxInstaller:
       return out << "kCrxInstaller";
+    case ProfileKeepAliveOrigin::kProfilePickerView:
+      return out << "kProfilePickerView";
+    case ProfileKeepAliveOrigin::kCommanderFrontend:
+      return out << "kCommanderFrontend";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

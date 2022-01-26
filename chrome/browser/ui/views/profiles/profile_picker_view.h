@@ -31,6 +31,7 @@ class ProfilePickerDiceSignInToolbar;
 #endif
 
 class ProfilePickerSignedInFlowController;
+class ScopedProfileKeepAlive;
 
 namespace base {
 class FilePath;
@@ -223,6 +224,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   GURL GetOnSelectProfileTargetUrl() const;
 
   ScopedKeepAlive keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
   ProfilePicker::EntryPoint entry_point_ =
       ProfilePicker::EntryPoint::kOnStartup;
   State state_ = State::kNotStarted;

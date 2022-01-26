@@ -139,7 +139,7 @@ class OffTheRecordProfileImpl : public Profile {
   // The real underlying profile.
   raw_ptr<Profile> profile_;
   // Prevent |profile_| from being destroyed first.
-  ScopedProfileKeepAlive profile_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   const OTRProfileID otr_profile_id_;
 
