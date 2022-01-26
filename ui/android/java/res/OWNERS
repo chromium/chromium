@@ -3,7 +3,3 @@
 # we don't want them.
 set noparent
 file://ui/android/java/res/LAYOUT_OWNERS
-
-per-file ...color*.xml=file://ui/android/java/res/COLOR_OWNERS
-per-file ...style*.xml=file://ui/android/java/res/COLOR_OWNERS
-per-file ...SemanticColorUtils.java=file://ui/android/java/res/COLOR_OWNERS
