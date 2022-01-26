@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -119,9 +120,8 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  // TODO(b/202529859): Replace these with final values
-  const int kDefaultWidth = 512;
-  const int kDefaultHeight = 480;
+  const int kDefaultWidth = 480;
+  const int kDefaultHeight = 341;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
@@ -194,6 +194,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       IDR_ACCESS_CODE_CAST_INDEX_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"accessCodeMessage", IDS_ACCESS_CODE_CAST_ACCESS_CODE_MESSAGE},
       {"back", IDS_ACCESS_CODE_CAST_BACK},
       {"cast", IDS_ACCESS_CODE_CAST_CAST},
       {"close", IDS_CLOSE},

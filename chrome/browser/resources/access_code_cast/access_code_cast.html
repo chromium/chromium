@@ -1,12 +1,23 @@
 <style include="cr-shared-style">
+  .body-1 {
+    font-size: 14px;
+  }
+
+  .title-1 {
+    font-size: 16px;
+  }
+
   .button-image {
     margin-inline-end: 8px;
   }
 
-  .center {
-    left: 50%;
-    top: 50%;
-    transform: translateY(-50%) translateX(-50%);
+  .center-content {
+    text-align: center;
+    width: 100%;
+  }
+
+  .space {
+    height: 48px;
   }
 
   .text-button:not(:focus) {
@@ -27,23 +38,23 @@
   cr-dialog [slot=body] {
     height: 480px;
   }
-
-  #input-container {
-    text-align: center;
-  }
 </style>
 <cr-dialog id="dialog">
-  <div slot="title">$i18n{dialogTitle}</div>
+  <div slot="title" class="title-1">$i18n{dialogTitle}</div>
   <div slot="body">
     <div id="codeInputView">
-      <div id="input-container">
+      <div class="body-1">$i18n{accessCodeMessage}</div>
+      <div class="space"></div>
+      <div class="center-content">
         <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
       </div>
-      <template is="dom-if" if="[[qrScannerEnabled]]">
-        <cr-button on-click="switchToQrInput" class="center text-button">
-          <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
-          $i18n{useCamera}
-        </cr-button>
+      <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
+        <div class="center-content">
+          <cr-button on-click="switchToQrInput" class="center text-button">
+            <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+            $i18n{useCamera}
+          </cr-button>
+        </div>
       </template>
     </div>
     <div id="qrInputView">

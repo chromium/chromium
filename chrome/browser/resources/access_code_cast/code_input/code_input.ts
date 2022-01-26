@@ -137,8 +137,9 @@ export class CodeInputElement extends PolymerElement {
     if (value.length) {
       this.focusNext(index);
       this.getInput(index).value = value.trim().toUpperCase()[0];
-      this.updateValue();
     }
+
+    this.updateValue();
   }
 
   private handleBackspace(index: number) {
@@ -148,6 +149,8 @@ export class CodeInputElement extends PolymerElement {
     } else if (this.getInput(index).inputElement.selectionStart === 0) {
       this.focusPrev(index);
     }
+
+    this.updateValue();
   }
 
   private updateValue() {
