@@ -5308,6 +5308,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Downgrade.TakeSnapshot.FailureCount" units="count"
     expires_after="2021-12-12">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
@@ -5317,12 +5320,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Downgrade.TakeSnapshot.ItemFailure" enum="SnapshotItemId"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
     Indicates the id of an item that failed to be copied when taking a user data
-    snapshot.
+    snapshot. The metrics does not cover the data from 12/12/2021 to 03/29/2022.
   </summary>
 </histogram>
 
@@ -5367,6 +5370,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Downgrade.TakeSnapshot.Result" enum="SnapshotOperationResult"
     expires_after="2021-12-05">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>
