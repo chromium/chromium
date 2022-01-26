@@ -29,14 +29,16 @@ InterceptNavigationThrottle::~InterceptNavigationThrottle() = default;
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillStartRequest() {
   DCHECK(!should_ignore_);
-  return CheckIfShouldIgnoreNavigation(false /* is_redirect */);
+  DCHECK(!navigation_handle()->WasServerRedirect());
+  return CheckIfShouldIgnoreNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 InterceptNavigationThrottle::WillRedirectRequest() {
   if (should_ignore_)
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
-  return CheckIfShouldIgnoreNavigation(true /* is_redirect */);
+  DCHECK(navigation_handle()->WasServerRedirect());
+  return CheckIfShouldIgnoreNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -58,19 +60,19 @@ const char* InterceptNavigationThrottle::GetNameForLogging() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation(bool is_redirect) {
+InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
   if (ShouldCheckAsynchronously()) {
     pending_checks_++;
     ui_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
-                                  weak_factory_.GetWeakPtr(),
-                                  GetNavigationParams(is_redirect)));
+        FROM_HERE,
+        base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
+                       weak_factory_.GetWeakPtr(), GetNavigationParams()));
     return content::NavigationThrottle::PROCEED;
   }
   // No need to set |should_ignore_| since if it is true, we'll cancel the
   // navigation immediately.
   return should_ignore_callback_.Run(navigation_handle()->GetWebContents(),
-                                     GetNavigationParams(is_redirect))
+                                     GetNavigationParams())
              ? content::NavigationThrottle::CANCEL_AND_IGNORE
              : content::NavigationThrottle::PROCEED;
   // Careful, |this| can be deleted at this point.
@@ -113,14 +115,14 @@ bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {
          base::FeatureList::IsEnabled(kAsyncCheck);
 }
 
-NavigationParams InterceptNavigationThrottle::GetNavigationParams(
-    bool is_redirect) const {
+NavigationParams InterceptNavigationThrottle::GetNavigationParams() const {
   return NavigationParams(navigation_handle()->GetURL(),
                           content::Referrer(navigation_handle()->GetReferrer()),
                           navigation_handle()->GetNavigationId(),
                           navigation_handle()->HasUserGesture(),
                           navigation_handle()->IsPost(),
-                          navigation_handle()->GetPageTransition(), is_redirect,
+                          navigation_handle()->GetPageTransition(),
+                          navigation_handle()->WasServerRedirect(),
                           navigation_handle()->IsExternalProtocol(), true,
                           navigation_handle()->IsRendererInitiated(),
                           navigation_handle()->GetBaseURLForDataURL(),

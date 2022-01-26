@@ -57,13 +57,13 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  ThrottleCheckResult CheckIfShouldIgnoreNavigation(bool is_redirect);
+  ThrottleCheckResult CheckIfShouldIgnoreNavigation();
   void RunCheckAsync(const NavigationParams& params);
 
   bool ShouldCheckAsynchronously() const;
 
   // Constructs NavigationParams for this navigation.
-  NavigationParams GetNavigationParams(bool is_redirect) const;
+  NavigationParams GetNavigationParams() const;
 
   // This callback should be called at the start of navigation and every
   // redirect, until |should_ignore_| is true.

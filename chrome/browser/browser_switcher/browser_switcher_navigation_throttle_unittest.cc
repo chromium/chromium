@@ -120,9 +120,14 @@ TEST_F(BrowserSwitcherNavigationThrottleTest, LaunchesOnRedirectRequest) {
       .WillOnce(Return(go()));
   std::unique_ptr<MockNavigationHandle> handle =
       CreateMockNavigationHandle(GURL("https://yahoo.com/"));
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(false));
+
   std::unique_ptr<NavigationThrottle> throttle =
       CreateNavigationThrottle(handle.get());
   EXPECT_EQ(NavigationThrottle::PROCEED, throttle->WillStartRequest());
+
+  ON_CALL(*handle, WasServerRedirect()).WillByDefault(Return(true));
+
   handle->set_url(GURL("https://bing.com/"));
   EXPECT_EQ(NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest());
