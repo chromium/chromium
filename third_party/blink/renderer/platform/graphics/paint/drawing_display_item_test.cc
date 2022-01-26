@@ -206,5 +206,20 @@ TEST_F(DrawingDisplayItemTest, OpaqueRectForDrawRRect) {
   }
 }
 
+TEST_F(DrawingDisplayItemTest, DrawEmptyImage) {
+  auto image = cc::PaintImageBuilder::WithDefault()
+                   .set_paint_record(sk_make_sp<PaintRecord>(), gfx::Rect(), 0)
+                   .set_id(1)
+                   .TakePaintImage();
+  PaintRecorder recorder;
+  recorder.beginRecording(100, 100)->drawImageRect(
+      image, SkRect::MakeEmpty(), SkRect::MakeEmpty(),
+      SkCanvas::kFast_SrcRectConstraint);
+  DrawingDisplayItem item(
+      client_->Id(), DisplayItem::kBoxDecorationBackground, gfx::Rect(10, 20),
+      recorder.finishRecordingAsPicture(), RasterEffectOutset::kNone);
+  EXPECT_TRUE(item.RectKnownToBeOpaque().IsEmpty());
+}
+
 }  // namespace
 }  // namespace blink

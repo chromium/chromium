@@ -225,8 +225,8 @@ gfx::Rect DrawingDisplayItem::CalculateRectKnownToBeOpaqueForRecord(
           const auto* draw_image_rect_op =
               static_cast<const cc::DrawImageRectOp*>(op);
           const auto& image = draw_image_rect_op->image;
-          DCHECK(SkRect::MakeWH(image.width(), image.height())
-                     .contains(draw_image_rect_op->src));
+          DCHECK(gfx::RectF(image.width(), image.height())
+                     .Contains(gfx::SkRectToRectF(draw_image_rect_op->src)));
           if (!image.IsOpaque())
             continue;
           op_opaque_rect =
