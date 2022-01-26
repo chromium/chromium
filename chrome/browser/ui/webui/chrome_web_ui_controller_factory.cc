@@ -324,7 +324,6 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #endif
 
 #if BUILDFLAG(USE_NSS_CERTS) && defined(USE_AURA)
@@ -1142,9 +1141,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<BrowserSwitchUI>;
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
       url.host_piece() == chrome::kChromeUIWebAppSettingsHost) {
-    if (web_app::HasAppSettingsPage(profile, url)) {
-      return &NewWebUI<WebAppSettingsUI>;
-    }
+    return &NewWebUI<WebAppSettingsUI>;
   }
 #endif
   if (IsAboutUI(url))

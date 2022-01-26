@@ -3818,6 +3818,8 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "webui/app_settings/web_app_settings_navigation_throttle.cc",
+      "webui/app_settings/web_app_settings_navigation_throttle.h",
       "webui/app_settings/web_app_settings_ui.cc",
       "webui/app_settings/web_app_settings_ui.h",
     ]
