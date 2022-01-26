@@ -1376,10 +1376,6 @@
         "name": "blink_perf.webaudio/biquad-filter-node.html"
     },
     {
-        "duration": "96.0",
-        "name": "blink_perf.webaudio/dynamics-compressor-node.html"
-    },
-    {
         "duration": "93.0",
         "name": "blink_perf.webaudio/gain-node.html"
     },
