@@ -4765,6 +4765,17 @@ hooks = [
     ],
   },
   {
+    'name': 'Fetch PGO profiles for mac arm',
+    'pattern': '.',
+    'condition': 'checkout_pgo_profiles and checkout_mac',
+    'action': [ 'python3',
+                'src/tools/update_pgo_profiles.py',
+                '--target=mac-arm',
+                'update',
+                '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
+    ],
+  },
+  {
     'name': 'Fetch PGO profiles for linux',
     'pattern': '.',
     'condition': 'checkout_pgo_profiles and checkout_linux',

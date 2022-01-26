@@ -48,8 +48,13 @@ config("pgo_optimization_flags") {
         inputs = [ "//chrome/build/win32.pgo.txt" ]
       }
     } else if (is_mac) {
-      _pgo_target = "mac"
-      inputs = [ "//chrome/build/mac.pgo.txt" ]
+      if (target_cpu == "arm64") {
+        _pgo_target = "mac-arm"
+        inputs = [ "//chrome/build/mac-arm.pgo.txt" ]
+      } else {
+        _pgo_target = "mac"
+        inputs = [ "//chrome/build/mac.pgo.txt" ]
+      }
     } else if (is_linux || is_chromeos_lacros) {
       _pgo_target = "linux"
       inputs = [ "//chrome/build/linux.pgo.txt" ]
