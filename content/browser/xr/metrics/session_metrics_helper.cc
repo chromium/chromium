@@ -251,29 +251,21 @@ void SessionMetricsHelper::MediaStoppedPlaying(
   }
 }
 
-void SessionMetricsHelper::DidStartNavigation(
-    content::NavigationHandle* handle) {
+void SessionMetricsHelper::PrimaryPageChanged(content::Page& page) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // All sessions are terminated on navigations, so to ensure that we log
+  // everything that we have, cleanup any outstanding session trackers now.
+  if (webxr_immersive_session_tracker_)
+    StopAndRecordImmersiveSession();
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (handle && handle->IsInPrimaryMainFrame() && !handle->IsSameDocument()) {
-    // All sessions are terminated on navigations, so to ensure that we log
-    // everything that we have, cleanup any outstanding session trackers now.
-    if (webxr_immersive_session_tracker_) {
-      StopAndRecordImmersiveSession();
-    }
-
-    for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
-      inline_session_tracker.second->SetSessionEnd(base::Time::Now());
-      inline_session_tracker.second->ukm_entry()->SetDuration(
-          inline_session_tracker.second->GetRoundedDurationInSeconds());
-      inline_session_tracker.second->RecordEntry();
-    }
-
-    webxr_inline_session_trackers_.clear();
+  for (auto& inline_session_tracker : webxr_inline_session_trackers_) {
+    inline_session_tracker.second->SetSessionEnd(base::Time::Now());
+    inline_session_tracker.second->ukm_entry()->SetDuration(
+        inline_session_tracker.second->GetRoundedDurationInSeconds());
+    inline_session_tracker.second->RecordEntry();
   }
+
+  webxr_inline_session_trackers_.clear();
 }
 
 }  // namespace content

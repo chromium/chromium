@@ -1789,6 +1789,11 @@ test("content_browsertests") {
     data_deps += [ "//ppapi:ppapi_tests" ]
   }
 
+  if (enable_vr) {
+    sources += [ "../browser/xr/metrics/session_metrics_browsertest.cc" ]
+    deps += [ "//device/vr:vr_fakes" ]
+  }
+
   if ((is_win || is_chromeos || is_linux) && !is_tsan) {
     # NOTE: We don't bother to build these tests when TSan is enabled, because
     # they can't properly launch a child content_shell in that environment.
