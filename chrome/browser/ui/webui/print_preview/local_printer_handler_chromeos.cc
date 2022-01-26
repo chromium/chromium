@@ -119,23 +119,6 @@ base::Value LocalPrinterHandlerChromeos::CapabilityToValue(
       PrinterSemanticCapsAndDefaults::Papers(), caps->has_secure_protocol,
       base::OptionalOrNullptr(caps->capabilities));
 
-  // TODO(b/195001379, jkopanski): This block of code should be removed once
-  // Ash Chrome M94 is on stable channel.
-  base::Value policies(base::Value::Type::DICTIONARY);
-  policies.SetIntKey(kAllowedColorModes, caps->allowed_color_modes_deprecated);
-  policies.SetIntKey(kAllowedDuplexModes,
-                     caps->allowed_duplex_modes_deprecated);
-  policies.SetIntKey(
-      kAllowedPinModes,
-      static_cast<int>(caps->allowed_pin_modes_deprecated_version_1));
-  policies.SetIntKey(kDefaultColorMode,
-                     static_cast<int>(caps->default_color_mode_deprecated));
-  policies.SetIntKey(kDefaultDuplexMode,
-                     static_cast<int>(caps->default_duplex_mode_deprecated));
-  policies.SetIntKey(kDefaultPinMode,
-                     static_cast<int>(caps->default_pin_mode_deprecated));
-  dict.FindKey(kPrinter)->SetKey(kSettingPolicies, std::move(policies));
-
   return dict;
 }
 
