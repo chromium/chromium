@@ -140,8 +140,8 @@ constexpr int kLockedTpmMessageIconSizeDp = 24;
 constexpr int kLockedTpmMessageDeltaDp = 0;
 constexpr int kLockedTpmMessageRoundedCornerRadiusDp = 8;
 
-constexpr int kAuthFactorClickRequiredSlideUpDistanceDp = 42;
-constexpr base::TimeDelta kAuthFactorClickRequiredSlideUpDuration =
+constexpr int kAuthFactorHidingPasswordFieldSlideUpDistanceDp = 42;
+constexpr base::TimeDelta kAuthFactorHidingPasswordFieldSlideUpDuration =
     base::Milliseconds(600);
 
 constexpr int kNonEmptyWidthDp = 1;
@@ -1139,13 +1139,10 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(
             &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
     smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
-    auth_factors_view = std::make_unique<LoginAuthFactorsView>(
-        base::BindRepeating(
+    auth_factors_view =
+        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
             &SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent,
-            base::Unretained(smart_lock_auth_factor_model_)),
-        base::BindRepeating(
-            &LoginAuthUserView::OnAuthFactorClickRequiredChanged,
-            base::Unretained(this)));
+            base::Unretained(smart_lock_auth_factor_model_)));
     auth_factors_view_ = auth_factors_view.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
     auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
@@ -1569,28 +1566,32 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   }
 
   ////////
-  // Slide the auth factors view up/down when entering/leaving the click
-  // required state.
+  // Slide the auth factors view up/down when entering/leaving a state of
+  // |auth_factors_view_| that requests the password field to be hidden.
   if (smart_lock_ui_revamp_enabled_) {
+    bool should_hide_password_field =
+        auth_factors_view_->ShouldHidePasswordField();
+
     {
       CHECK(auth_factors_view_);
       ui::ScopedLayerAnimationSettings settings(
           auth_factors_view_->layer()->GetAnimator());
-      settings.SetTransitionDuration(kAuthFactorClickRequiredSlideUpDuration);
+      settings.SetTransitionDuration(
+          kAuthFactorHidingPasswordFieldSlideUpDuration);
       settings.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
 
       gfx::Transform transform;
       transform.Translate(/*x=*/0,
-                          /*y=*/auth_factor_has_click_required_
-                              ? -kAuthFactorClickRequiredSlideUpDistanceDp
+                          /*y=*/should_hide_password_field
+                              ? -kAuthFactorHidingPasswordFieldSlideUpDistanceDp
                               : 0);
       auth_factors_view_->layer()->GetAnimator()->SetTransform(transform);
     }
 
-    // Translate the user view to its previous position when in the click
-    // required state. This prevents the user view from moving when the password
-    // view collapses.
-    if (auth_factor_has_click_required_) {
+    // Translate the user view to its previous position when in the auth factor
+    // view requests to hide the password field. This prevents the user view
+    // from moving when the password view collapses.
+    if (should_hide_password_field) {
       layer()->GetAnimator()->StopAnimating();
       int non_pin_y_end_in_screen = GetBoundsInScreen().y();
       gfx::Transform transform;
@@ -1823,13 +1824,6 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
     pin_view_->OnPasswordTextChanged(is_empty);
 }
 
-void LoginAuthUserView::OnAuthFactorClickRequiredChanged(bool click_required) {
-  if (click_required == auth_factor_has_click_required_) {
-    return;
-  }
-  auth_factor_has_click_required_ = click_required;
-}
-
 bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
   return (auth_methods_ & auth_method) != 0;
 }
@@ -1906,16 +1900,18 @@ void LoginAuthUserView::OnSwitchButtonClicked() {
   ApplyAnimationPostLayout(/*animate*/ true);
 }
 
+// TODO(b/213926876): Write a unit test for ShouldHidePasswordField() usage.
 void LoginAuthUserView::UpdateInputFieldMode() {
   // There isn't an input field when any of the following is true:
   // - Challenge response is active (Smart Card)
   // - Online sign in message shown
   // - Disabled message shown
   // - No password auth available
-  // - Auth factors view is showing "click to enter"
+  // - Auth factors view is requesting to hide the password/PIN field
   if (HasAuthMethod(AUTH_CHALLENGE_RESPONSE) ||
       HasAuthMethod(AUTH_ONLINE_SIGN_IN) || HasAuthMethod(AUTH_DISABLED) ||
-      !HasAuthMethod(AUTH_PASSWORD) || auth_factor_has_click_required_) {
+      !HasAuthMethod(AUTH_PASSWORD) ||
+      (auth_factors_view_ && auth_factors_view_->ShouldHidePasswordField())) {
     input_field_mode_ = InputFieldMode::NONE;
     return;
   }

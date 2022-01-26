@@ -166,11 +166,9 @@ AuthIconView* LoginAuthFactorsView::TestApi::checkmark_icon() {
 }
 
 LoginAuthFactorsView::LoginAuthFactorsView(
-    base::RepeatingClosure on_click_to_enter,
-    base::RepeatingCallback<void(bool)> on_click_required_changed)
-    : on_click_to_enter_callback_(on_click_to_enter),
-      on_click_required_changed_callback_(on_click_required_changed) {
-  DCHECK(on_click_required_changed);
+    base::RepeatingClosure on_click_to_enter_callback)
+    : on_click_to_enter_callback_(on_click_to_enter_callback) {
+  DCHECK(on_click_to_enter_callback);
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -258,6 +256,10 @@ void LoginAuthFactorsView::SetCanUsePin(bool can_use_pin) {
   UpdateState();
 }
 
+bool LoginAuthFactorsView::ShouldHidePasswordField() {
+  return should_hide_password_field_;
+}
+
 void LoginAuthFactorsView::UpdateState() {
   AuthFactorModel* active_auth_factor =
       GetHighestPriorityAuthFactor(auth_factors_);
@@ -278,17 +280,16 @@ void LoginAuthFactorsView::UpdateState() {
     error_timer_.Stop();
   }
 
-  // Fire a callback whenever entering/leaving the kClickRequired state. Avoid
-  // firing the callback for the kAuthenticated state since we do not want to
-  // change the visibility of the password/PIN fields when transitioning from
-  // kClickRequired to kAuthenticated.
-  bool should_show_arrow_button =
-      state == PrioritizedAuthFactorViewState::kClickRequired;
-  if (on_click_required_changed_callback_ &&
-      should_show_arrow_button != arrow_button_->GetVisible() &&
-      state != PrioritizedAuthFactorViewState::kAuthenticated) {
-    on_click_required_changed_callback_.Run(should_show_arrow_button);
-  }
+  // Update |should_hide_password_field_| when entering/leaving a state that
+  // requires hiding/showing the password/PIN fields.
+  //
+  // At the moment, Smart Lock is the only auth factor which needs to hide
+  // the password field, and it does so only during states kClickRequired and
+  // kAuthenticated.
+  should_hide_password_field_ =
+      active_auth_factor->GetType() == AuthFactorType::kSmartLock &&
+      (state == PrioritizedAuthFactorViewState::kClickRequired ||
+       state == PrioritizedAuthFactorViewState::kAuthenticated);
 
   int ready_label_id;
   size_t num_factors_in_error_background_state;

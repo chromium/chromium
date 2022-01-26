@@ -51,9 +51,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
     LoginAuthFactorsView* const view_;
   };
 
-  LoginAuthFactorsView(
-      base::RepeatingClosure on_click_to_enter,
-      base::RepeatingCallback<void(bool)> on_click_required_changed);
+  LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter_callback);
   LoginAuthFactorsView(LoginAuthFactorsView&) = delete;
   LoginAuthFactorsView& operator=(LoginAuthFactorsView&) = delete;
   ~LoginAuthFactorsView() override;
@@ -70,6 +68,10 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // Used to determine whether strings should mention that PIN can be used as an
   // authentication mechanism.
   void SetCanUsePin(bool can_use_pin);
+
+  // Returns true if the active auth factor is requesting to take visual
+  // precedence, by hiding the password field.
+  bool ShouldHidePasswordField();
 
  private:
   // Recomputes the state and updates the label and icons. Should be called
@@ -145,8 +147,11 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // multiple are visible.
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;
 
+  // True if an active auth factor is requesting to hide the password field.
+  // Changes value based on the current state of the active auth factor.
+  bool should_hide_password_field_ = false;
+
   base::RepeatingClosure on_click_to_enter_callback_;
-  base::RepeatingCallback<void(bool)> on_click_required_changed_callback_;
   base::OneShotTimer error_timer_;
 };
 

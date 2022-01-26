@@ -40,24 +40,38 @@ class ASH_EXPORT AuthFactorModel {
     // hardware that isn’t present.
     kUnavailable,
     // The auth factor cannot be used because of an unrecoverable
-    // error, e.g. Fingerprint’s “Too many attempts”. GetLabel()
-    // and UpdateIcon() show the relevant messages.
+    // error, for example:
+    //   - Fingerprint’s “Too many attempts”,
+    //   - Smart Lock's "Failed to sign-in",
+    //   - etc.
+    // GetLabel() and UpdateIcon() show the relevant messages.
     kErrorPermanent,
     // The auth factor can be used but requires additional steps
-    // before use, e.g. turn on Bluetooth.
+    // before use. For example, Smart Lock will be in this state if Bluetooth
+    // needs to be enabled.
     kAvailable,
     // The auth factor is ready to authenticate. This state should
     // only be returned if authentication can be completed in one
-    // step (two if a click is required).
+    // step (two if a click is required). For each auth factor, this looks like:
+    //   - Fingerprint: the sensor is ready to read the user's finger(s).
+    //   - Smart Lock: the phone has been found/connected, but its screen is
+    //     locked and/or it's too far away.
     kReady,
-    // The auth factor has a non-blocking error to show the
-    // user, e.g. Fingerprint’s “Not recognized”, which clears
-    // after a few seconds. GetLabel() and UpdateIcon() show the
-    // relevant messages.
+    // The auth factor has a non-blocking error to show the user, e.g.,
+    // Fingerprint’s “Not recognized”, which clears after a few seconds.
+    // GetLabel() and UpdateIcon() show the relevant messages.
     kErrorTemporary,
-    // The auth factor requires the user to tap/click to enter.
+    // The auth factor requires the user to tap/click to enter. At the moment,
+    // only Smart Lock enters this state, and it occurs when the phone is
+    // unlocked and nearby.
     kClickRequired,
-    // Authentication is complete.
+    // Authentication is complete. Notes for each auth factor:
+    //   - Fingerprint: this is the last state; Fingerprint will not transition
+    //     to any other state after this.
+    //   - Smart Lock: in the lock screen, this is also Smart Lock's last state.
+    //     However, at the login screen, there is a chance that Cryptohome can
+    //     fail to decrypt the user directory via the phone-provided decryption
+    //     key -- in which case Smart Lock can transition to kErrorPermanent.
     kAuthenticated,
   };
 
