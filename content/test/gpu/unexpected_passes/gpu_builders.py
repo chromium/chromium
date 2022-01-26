@@ -39,8 +39,8 @@ class GpuBuilders(builders.Builders):
   def GetIsolateNames(self):
     if self._isolate_names is None:
       self._isolate_names = {
-          'fuchsia_telemetry_gpu_integration_test',
           'telemetry_gpu_integration_test',
+          'telemetry_gpu_integration_test_fuchsia',
       }
       # Android targets are split based on binary type, so add those using the
       # maintained list of suffixes.
