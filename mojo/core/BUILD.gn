@@ -72,8 +72,8 @@ template("core_impl_source_set") {
     ]
 
     sources = [
-      "atomic_flag.h",
       "atomic_flag.cc",
+      "atomic_flag.h",
       "broker.h",
       "channel.cc",
       "configuration.cc",
@@ -196,7 +196,7 @@ if (is_win) {
   }
 }
 
-if (is_chromeos || is_linux || is_android || is_win) {
+if (is_chromeos || is_linux || is_android || is_win || is_fuchsia) {
   core_impl_source_set("impl_for_shared_library") {
     for_shared_library = true
   }
@@ -258,7 +258,7 @@ if (is_chromeos || is_linux || is_android || is_win) {
                             root_build_dir) ]
   }
 
-  if (is_chromeos || is_linux || is_win) {
+  if (is_chromeos || is_linux || is_win || is_fuchsia) {
     test("mojo_core_unittests") {
       sources = [
         "mojo_core_unittest.cc",
