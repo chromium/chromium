@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/document_transition/document_transition_request.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -35,11 +34,12 @@ namespace blink {
 
 class DocumentTransitionTest : public testing::Test,
                                public PaintTestConfigurations,
-                               private ScopedDocumentTransitionForTest {
+                               private ScopedDocumentTransitionForTest,
+                               private ScopedDocumentTransitionRendererForTest {
  public:
-  DocumentTransitionTest() : ScopedDocumentTransitionForTest(true) {
-    feature_list_.InitWithFeatures({features::kDocumentTransitionRenderer}, {});
-  }
+  DocumentTransitionTest()
+      : ScopedDocumentTransitionForTest(true),
+        ScopedDocumentTransitionRendererForTest(true) {}
 
   static void ConfigureCompositingWebView(WebSettings* settings) {
     settings->SetPreferCompositingToLCDTextEnabled(true);
@@ -161,7 +161,6 @@ class DocumentTransitionTest : public testing::Test,
 
  protected:
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(DocumentTransitionTest);

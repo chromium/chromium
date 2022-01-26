@@ -9,7 +9,6 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
@@ -226,7 +225,7 @@ ScriptPromise DocumentTransition::prepare(
           &DocumentTransition::NotifyPrepareFinished,
           WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
 
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
+  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
     style_tracker_ =
         MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
     style_tracker_->Prepare(active_shared_elements_);
@@ -274,7 +273,7 @@ ScriptPromise DocumentTransition::start(
     // TODO(khushalsagar) : Viz keeps copy results cached for 5 seconds at this
     // point. We should send an early release. See crbug.com/1266500.
     SetActiveSharedElements({});
-    if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
+    if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
       style_tracker_->Abort();
       style_tracker_ = nullptr;
     }
@@ -285,7 +284,7 @@ ScriptPromise DocumentTransition::start(
   state_ = State::kStarted;
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
+  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
     pending_request_ =
         DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
     style_tracker_->Start(active_shared_elements_);
@@ -358,7 +357,7 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
   state_ = State::kIdle;
   SetActiveSharedElements({});
 
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
+  if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
     style_tracker_->StartFinished();
     style_tracker_ = nullptr;
     pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
@@ -390,7 +389,7 @@ void DocumentTransition::PopulateSharedElementAndResourceId(
     // This tags the shared element's content with the resource id used by the
     // first pseudo element. This is okay since in the eventual API we should
     // have a 1:1 mapping between shared elements and pseudo elements.
-    if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
+    if (RuntimeEnabledFeatures::DocumentTransitionRendererEnabled()) {
       if (!resource_id->IsValid()) {
         *resource_id = style_tracker_->GetLiveSnapshotId(element);
       }

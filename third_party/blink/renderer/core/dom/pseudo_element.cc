@@ -28,7 +28,6 @@
 
 #include <utility>
 
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
@@ -143,10 +142,7 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
     case kPseudoIdTransitionContainer:
     case kPseudoIdTransitionNewContent:
     case kPseudoIdTransitionOldContent:
-      return RuntimeEnabledFeatures::DocumentTransitionEnabled(
-                 parent->GetExecutionContext()) &&
-             base::FeatureList::IsEnabled(
-                 features::kDocumentTransitionRenderer);
+      return RuntimeEnabledFeatures::DocumentTransitionRendererEnabled();
     default:
       return true;
   }
