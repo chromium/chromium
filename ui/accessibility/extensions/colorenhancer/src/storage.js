@@ -49,15 +49,9 @@ function setDefaultDelta(delta) {
 function getSiteDelta(site) {
   return new Promise(resolve => {
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
-      let delta;
-      try {
-        const siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
-        delta = siteDeltas[site];
-        if (!validDelta(delta)) {
-          getDefaultDelta().then(resolve);
-          return;
-        }
-      } catch (e) {
+      const siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
+      const delta = siteDeltas[site];
+      if (!validDelta(delta)) {
         getDefaultDelta().then(resolve);
         return;
       }
@@ -72,12 +66,7 @@ function setSiteDelta(site, delta) {
       delta = await getDefaultDelta();
     }
     chrome.storage.local.get([LOCAL_STORAGE_TAG_SITE_DELTA], (result) => {
-      let siteDeltas = {};
-      try {
-        siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
-      } catch (e) {
-        siteDeltas = {};
-      }
+      const siteDeltas = result[LOCAL_STORAGE_TAG_SITE_DELTA] || {};
       siteDeltas[site] = delta;
       store_(LOCAL_STORAGE_TAG_SITE_DELTA, siteDeltas, resolve);
     });
