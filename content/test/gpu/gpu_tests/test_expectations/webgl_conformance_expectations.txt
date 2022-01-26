@@ -647,6 +647,8 @@ crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/re
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] conformance/textures/misc/texture-size.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] deqp/data/gles2/shaders/conversions.html [ Failure ]
 crbug.com/angleproject/4846 [ mac angle-metal passthrough intel ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
+crbug.com/1291005 [ mac angle-metal no-swiftshader-gl intel ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1291005 [ mac angle-metal no-swiftshader-gl intel ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
 
 # Mac / Passthrough command decoder / Metal / NVIDIA
 crbug.com/angleproject/4846 [ mac angle-metal passthrough nvidia ] conformance/rendering/clipping-wide-points.html [ Failure ]
