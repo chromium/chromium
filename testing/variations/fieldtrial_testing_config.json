@@ -7055,32 +7055,6 @@
             ]
         }
     ],
-    "VideoTutorialVoiceSearchStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "VideoTutorialNTPVoiceSearch",
-                    "params": {
-                        "availability": ">=0",
-                        "event_1": "name:search_completed;comparator:any;window:30;storage:30",
-                        "event_2": "name:video_tutorial_iph_clicked_voice_search;comparator:==0;window:30;storage:30",
-                        "event_3": "name:video_tutorial_iph_dismissed_voice_search;comparator:==0;window:30;storage:30",
-                        "event_trigger": "name:tutorial_voice_search_iph_trigger;comparator:any;window:30;storage:30",
-                        "event_used": "name:voice_search;comparator:any;window:30;storage:30",
-                        "session_rate": "any",
-                        "session_rate_impact": "none"
-                    },
-                    "enable_features": [
-                        "IPH_VideoTutorial_NTP_VoiceSearch"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "VideoTutorials": [
         {
             "platforms": [
