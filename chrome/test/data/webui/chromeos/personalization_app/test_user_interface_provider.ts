@@ -31,6 +31,7 @@ export class TestUserProvider extends
     super([
       'setUserImageObserver',
       'getDefaultUserImages',
+      'selectProfileImage',
       'getUserInfo',
       'selectDefaultImage',
     ]);
@@ -56,5 +57,12 @@ export class TestUserProvider extends
 
   selectDefaultImage(index: number) {
     this.methodCalled('selectDefaultImage', index);
+  }
+
+  async selectProfileImage() {
+    this.methodCalled('selectProfileImage');
+    this.profileImage = {
+      url: 'data://updated_test_url',
+    };
   }
 }

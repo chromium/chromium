@@ -42,4 +42,6 @@ void FakePersonalizationAppUserProvider::GetDefaultUserImages(
 
 void FakePersonalizationAppUserProvider::SelectDefaultImage(int index) {}
 
+void FakePersonalizationAppUserProvider::SelectProfileImage() {}
+
 }  // namespace ash

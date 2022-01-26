@@ -53,7 +53,7 @@ export function AvatarListTest() {
     avatarListElement = initElement(AvatarList);
 
     const image =
-        avatarListElement!.shadowRoot!.querySelector(
+        avatarListElement.shadowRoot!.querySelector(
             `img[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`) as
         HTMLImageElement;
 
@@ -85,5 +85,20 @@ export function AvatarListTest() {
     assertDeepEquals(
         testPersonalizationStore.data.user.profileImage,
         testUserProvider.profileImage);
+  });
+
+  test('calls selectProfileImage on click', async () => {
+    testPersonalizationStore.data.user.profileImage =
+        testUserProvider.profileImage;
+    avatarListElement = initElement(AvatarList);
+
+    const image = avatarListElement.shadowRoot!.getElementById(
+                      'profileImage') as HTMLImageElement;
+
+    image.click();
+    await testUserProvider.whenCalled('selectProfileImage');
+    assertDeepEquals(testUserProvider.profileImage, {
+      url: 'data://updated_test_url',
+    });
   });
 }

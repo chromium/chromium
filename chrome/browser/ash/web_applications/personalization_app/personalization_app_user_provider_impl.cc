@@ -101,6 +101,13 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
   user_image_manager->SaveUserDefaultImageIndex(index);
 }
 
+void PersonalizationAppUserProviderImpl::SelectProfileImage() {
+  ash::UserImageManager* user_image_manager =
+      ash::ChromeUserManager::Get()->GetUserImageManager(
+          GetAccountId(profile_));
+  user_image_manager->SaveUserImageFromProfileImage();
+}
+
 void PersonalizationAppUserProviderImpl::OnUserImageChanged(
     const user_manager::User& user) {
   const user_manager::User* desired_user = GetUser(profile_);

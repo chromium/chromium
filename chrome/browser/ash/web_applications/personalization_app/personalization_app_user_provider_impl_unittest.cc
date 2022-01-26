@@ -252,3 +252,13 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
   EXPECT_EQ(GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())),
             current_profile_image());
 }
+
+TEST_F(PersonalizationAppUserProviderImplTest, SelectProfileImage) {
+  SetUserImageObserver();
+
+  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
+  user_provider_remote()->get()->SelectProfileImage();
+  EXPECT_EQ(GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())),
+            current_profile_image());
+}

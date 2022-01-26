@@ -60,6 +60,14 @@ export class AvatarList extends WithPersonalizationStore {
     const index = parseInt(id, 10);
     getUserProvider().selectDefaultImage(index);
   }
+
+  private onSelectProfileImage_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+
+    getUserProvider().selectProfileImage();
+  }
 }
 
 customElements.define(AvatarList.is, AvatarList);
