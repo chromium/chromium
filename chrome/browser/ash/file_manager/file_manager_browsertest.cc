@@ -662,12 +662,21 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewVideo").FilesSwa(),
         TestCase("openQuickViewVideoOnDrive"),
         TestCase("openQuickViewVideoOnDrive").FilesSwa(),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
         TestCase("openQuickViewPdf"),
+#endif
         TestCase("openQuickViewPdf").FilesSwa(),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
         TestCase("openQuickViewPdfPopup"),
+#endif
         TestCase("openQuickViewPdfPopup").FilesSwa(),
         TestCase("openQuickViewPdfPreviewsDisabled"),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(http://crbug.com/1291090): Flaky on ASan non-DEBUG.
         TestCase("openQuickViewPdfPreviewsDisabled").FilesSwa(),
+#endif
         TestCase("openQuickViewKeyboardUpDownChangesView"),
         TestCase("openQuickViewKeyboardUpDownChangesView").FilesSwa(),
         TestCase("openQuickViewKeyboardLeftRightChangesView"),
