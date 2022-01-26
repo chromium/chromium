@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior, loadTimeData} from './i18n_setup.js';
+import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -18,119 +18,101 @@ import {WindowProxy} from './window_proxy.js';
  * Threshold for considering an interim speech transcript result as "confident
  * enough". The more confident the API is about a transcript, the higher the
  * confidence (number between 0 and 1).
- * @type {number}
  */
-const RECOGNITION_CONFIDENCE_THRESHOLD = 0.5;
+const RECOGNITION_CONFIDENCE_THRESHOLD: number = 0.5;
 
 /**
  * Maximum number of characters recognized before force-submitting a query.
  * Includes characters of non-confident recognition transcripts.
- * @type {number}
  */
-const QUERY_LENGTH_LIMIT = 120;
+const QUERY_LENGTH_LIMIT: number = 120;
 
 /**
  * Time in milliseconds to wait before closing the UI if no interaction has
  * occurred.
- * @type {number}
  */
-const IDLE_TIMEOUT_MS = 8000;
+const IDLE_TIMEOUT_MS: number = 8000;
 
 /**
  * Time in milliseconds to wait before closing the UI after an error has
  * occurred. This is a short timeout used when no click-target is present.
- * @type {number}
  */
-const ERROR_TIMEOUT_SHORT_MS = 9000;
+const ERROR_TIMEOUT_SHORT_MS: number = 9000;
 
 /**
  * Time in milliseconds to wait before closing the UI after an error has
  * occurred. This is a longer timeout used when there is a click-target is
  * present.
- * @type {number}
  */
-const ERROR_TIMEOUT_LONG_MS = 24000;
+const ERROR_TIMEOUT_LONG_MS: number = 24000;
 
-/**
- * The minimum transition time for the volume rings.
- * @private
- */
-const VOLUME_ANIMATION_DURATION_MIN_MS = 170;
+// The minimum transition time for the volume rings.
+const VOLUME_ANIMATION_DURATION_MIN_MS: number = 170;
 
-/**
- * The range of the transition time for the volume rings.
- * @private
- */
-const VOLUME_ANIMATION_DURATION_RANGE_MS = 10;
+// The range of the transition time for the volume rings.
+const VOLUME_ANIMATION_DURATION_RANGE_MS: number = 10;
 
-/**
- * The set of controller states.
- * @enum {number}
- * @private
- */
-const State = {
+// The set of controller states.
+enum State {
   // Initial state before voice recognition has been set up.
-  UNINITIALIZED: -1,
+  UNINITIALIZED = -1,
   // Indicates that speech recognition has started, but no audio has yet
   // been captured.
-  STARTED: 0,
+  STARTED = 0,
   // Indicates that audio is being captured by the Web Speech API, but no
   // speech has yet been recognized. UI indicates that audio is being captured.
-  AUDIO_RECEIVED: 1,
+  AUDIO_RECEIVED = 1,
   // Indicates that speech has been recognized by the Web Speech API, but no
   // resulting transcripts have yet been received back. UI indicates that audio
   // is being captured and is pulsating audio button.
-  SPEECH_RECEIVED: 2,
+  SPEECH_RECEIVED = 2,
   // Indicates speech has been successfully recognized and text transcripts have
   // been reported back. UI indicates that audio is being captured and is
   // displaying transcripts received so far.
-  RESULT_RECEIVED: 3,
+  RESULT_RECEIVED = 3,
   // Indicates that speech recognition has failed due to an error (or a no match
   // error) being received from the Web Speech API. A timeout may have occurred
   // as well. UI displays the error message.
-  ERROR_RECEIVED: 4,
+  ERROR_RECEIVED = 4,
   // Indicates speech recognition has received a final search query but the UI
   // has not yet redirected. The UI is displaying the final query.
-  RESULT_FINAL: 5,
-};
+  RESULT_FINAL = 5,
+}
 
 /**
  * Action the user can perform while using voice search. This enum must match
  * the numbering for NewTabPageVoiceAction in enums.xml. These values are
  * persisted to logs. Entries should not be renumbered, removed or reused.
- * @enum {number}
  */
-export const Action = {
-  kActivateSearchBox: 0,
-  kActivateKeyboard: 1,
-  kCloseOverlay: 2,
-  kQuerySubmitted: 3,
-  kSupportLinkClicked: 4,
-  kTryAgainLink: 5,
-  kTryAgainMicButton: 6,
-};
+export enum Action {
+  kActivateSearchBox = 0,
+  kActivateKeyboard = 1,
+  kCloseOverlay = 2,
+  kQuerySubmitted = 3,
+  kSupportLinkClicked = 4,
+  kTryAgainLink = 5,
+  kTryAgainMicButton = 6,
+}
 
 /**
  * Errors than can occur while using voice search. This enum must match the
  * numbering for NewTabPageVoiceError in enums.xml. These values are persisted
  * to logs. Entries should not be renumbered, removed or reused.
- * @enum {number}
  */
-export const Error = {
-  kAborted: 0,
-  kAudioCapture: 1,
-  kBadGrammar: 2,
-  kLanguageNotSupported: 3,
-  kNetwork: 4,
-  kNoMatch: 5,
-  kNoSpeech: 6,
-  kNotAllowed: 7,
-  kOther: 8,
-  kServiceNotAllowed: 9,
-};
+export enum Error {
+  kAborted = 0,
+  kAudioCapture = 1,
+  kBadGrammar = 2,
+  kLanguageNotSupported = 3,
+  kNetwork = 4,
+  kNoMatch = 5,
+  kNoSpeech = 6,
+  kNotAllowed = 7,
+  kOther = 8,
+  kServiceNotAllowed = 9,
+}
 
-/** @param {!Action} action */
-export function recordVoiceAction(action) {
+export function recordVoiceAction(action: Action) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.VoiceActions', action, Object.keys(Action).length);
 }
@@ -138,11 +120,11 @@ export function recordVoiceAction(action) {
 /**
  * Returns the error type based on the error string received from the webkit
  * speech recognition API.
- * @param {string} webkitError The error string received from the webkit speech
+ * @param webkitError The error string received from the webkit speech
  *     recognition API.
- * @return {!Error} The appropriate error state from the Error enum.
+ * @return The appropriate error state from the Error enum.
  */
-function toError(webkitError) {
+function toError(webkitError: string): Error {
   switch (webkitError) {
     case 'aborted':
       return Error.kAborted;
@@ -168,10 +150,10 @@ function toError(webkitError) {
 /**
  * Returns a timeout based on the error received from the webkit speech
  * recognition API.
- * @param {Error} error An error from the Error enum.
- * @return {number} The appropriate timeout in MS for displaying the error.
+ * @param error An error from the Error enum.
+ * @return The appropriate timeout in MS for displaying the error.
  */
-function getErrorTimeout(error) {
+function getErrorTimeout(error: Error): number {
   switch (error) {
     case Error.kAudioCapture:
     case Error.kNoSpeech:
@@ -183,39 +165,38 @@ function getErrorTimeout(error) {
   }
 }
 
-/**
- * Overlay that lats the user perform voice searches.
- * @polymer
- * @extends {PolymerElement}
- */
-class VoiceSearchOverlayElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+// TODO(crbug.com/570968): Remove when bug is fixed.
+declare global {
+  interface Window {
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
+}
+
+interface VoiceSearchOverlayElement {
+  $: {
+    dialog: HTMLDialogElement,
+  };
+}
+
+// Overlay that lats the user perform voice searches.
+class VoiceSearchOverlayElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-voice-search-overlay';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @private */
       interimResult_: String,
-
-      /** @private */
       finalResult_: String,
 
-      /** @private */
       state_: {
         type: Number,
         value: State.UNINITIALIZED,
       },
 
-      /** @private */
       error_: Number,
 
-      /** @private */
       helpUrl_: {
         type: String,
         readOnly: true,
@@ -223,13 +204,11 @@ class VoiceSearchOverlayElement extends mixinBehaviors
             `p=ui_voice_search&hl=${window.navigator.language}`,
       },
 
-      /** @private */
       micVolumeLevel_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       micVolumeDuration_: {
         type: Number,
         value: VOLUME_ANIMATION_DURATION_MIN_MS,
@@ -237,12 +216,22 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     };
   }
 
+  private interimResult_: string;
+  private finalResult_: string;
+  private state_: State;
+  private error_: Error;
+  private helpUrl_: string;
+  private micVolumeLevel_: number;
+  private micVolumeDuration_: number;
+
+  private pageHandler_: PageHandlerRemote;
+  private voiceRecognition_: SpeechRecognition;
+  private timerId_: number|null = null;
+
   constructor() {
     super();
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
-    /** @private {webkitSpeechRecognition} */
-    this.voiceRecognition_ = new webkitSpeechRecognition();
+    this.voiceRecognition_ = new window.webkitSpeechRecognition();
     this.voiceRecognition_.continuous = false;
     this.voiceRecognition_.interimResults = true;
     this.voiceRecognition_.lang = window.navigator.language;
@@ -256,42 +245,34 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     this.voiceRecognition_.onnomatch = () => {
       this.onError_(Error.kNoMatch);
     };
-    /** @private {?number} */
-    this.timerId_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.$.dialog.showModal();
     this.start();
   }
 
-  /** @private */
-  start() {
+  private start() {
     this.voiceRecognition_.start();
     this.state_ = State.STARTED;
     this.resetIdleTimer_();
   }
 
-  /** @private */
-  onOverlayClose_() {
+  private onOverlayClose_() {
     this.voiceRecognition_.abort();
     this.dispatchEvent(new Event('close'));
   }
 
-  /** @private */
-  onOverlayClick_() {
+  private onOverlayClick_() {
     this.$.dialog.close();
     recordVoiceAction(Action.kCloseOverlay);
   }
 
   /**
    * Handles <ENTER> or <SPACE> to trigger a query if we have recognized speech.
-   * @param {KeyboardEvent} e
-   * @private
    */
-  onOverlayKeydown_(e) {
+  private onOverlayKeydown_(e: KeyboardEvent) {
     if (['Enter', ' '].includes(e.key) && this.finalResult_) {
       this.onFinalResult_();
     } else if (e.key === 'Escape') {
@@ -301,10 +282,8 @@ class VoiceSearchOverlayElement extends mixinBehaviors
 
   /**
    * Handles <ENTER> or <SPACE> to simulate click.
-   * @param {KeyboardEvent} e
-   * @private
    */
-  onLinkKeydown_(e) {
+  private onLinkKeydown_(e: KeyboardEvent) {
     if (!['Enter', ' '].includes(e.key)) {
       return;
     }
@@ -312,30 +291,21 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     e.stopPropagation();
     // Otherwise, we open the link twice.
     e.preventDefault();
-    e.target.click();
+    (e.target as HTMLElement).click();
   }
 
-  /** @private */
-  onLearnMoreClick_() {
+  private onLearnMoreClick_() {
     recordVoiceAction(Action.kSupportLinkClicked);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onTryAgainClick_(e) {
+  private onTryAgainClick_(e: Event) {
     // Otherwise, we close the overlay.
     e.stopPropagation();
     this.start();
     recordVoiceAction(Action.kTryAgainLink);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onMicClick_(e) {
+  private onMicClick_(e: Event) {
     if (this.state_ !== State.ERROR_RECEIVED ||
         this.error_ !== Error.kNoMatch) {
       return;
@@ -346,15 +316,13 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     recordVoiceAction(Action.kTryAgainMicButton);
   }
 
-  /** @private */
-  resetIdleTimer_() {
+  private resetIdleTimer_() {
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = WindowProxy.getInstance().setTimeout(
         this.onIdleTimeout_.bind(this), IDLE_TIMEOUT_MS);
   }
 
-  /** @private */
-  onIdleTimeout_() {
+  private onIdleTimeout_() {
     if (this.state_ === State.RESULT_FINAL) {
       // Waiting for query redirect.
       return;
@@ -368,35 +336,25 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     this.onError_(Error.kNoMatch);
   }
 
-  /**
-   * @param {number} duration
-   * @private
-   */
-  resetErrorTimer_(duration) {
+  private resetErrorTimer_(duration: number) {
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
       this.$.dialog.close();
     }, duration);
   }
 
-  /** @private */
-  onAudioStart_() {
+  private onAudioStart_() {
     this.resetIdleTimer_();
     this.state_ = State.AUDIO_RECEIVED;
   }
 
-  /** @private */
-  onSpeechStart_() {
+  private onSpeechStart_() {
     this.resetIdleTimer_();
     this.state_ = State.SPEECH_RECEIVED;
     this.animateVolume_();
   }
 
-  /**
-   * @param {SpeechRecognitionEvent} e
-   * @private
-   */
-  onResult_(e) {
+  private onResult_(e: SpeechRecognitionEvent) {
     this.resetIdleTimer_();
 
     switch (this.state_) {
@@ -450,8 +408,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onFinalResult_() {
+  private onFinalResult_() {
     if (!this.finalResult_) {
       this.onError_(Error.kNoMatch);
       return;
@@ -469,8 +426,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     WindowProxy.getInstance().navigate(queryUrl.href);
   }
 
-  /** @private */
-  onEnd_() {
+  private onEnd_() {
     switch (this.state_) {
       case State.STARTED:
         this.onError_(Error.kAudioCapture);
@@ -491,11 +447,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {Error} error
-   * @private
-   */
-  onError_(error) {
+  private onError_(error: Error) {
     chrome.metricsPrivate.recordEnumerationValue(
         'NewTabPage.VoiceErrors', error, Object.keys(Error).length);
     if (error === Error.kAborted) {
@@ -507,8 +459,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     this.resetErrorTimer_(getErrorTimeout(error));
   }
 
-  /** @private */
-  animateVolume_() {
+  private animateVolume_() {
     this.micVolumeLevel_ = 0;
     this.micVolumeDuration_ = VOLUME_ANIMATION_DURATION_MIN_MS;
     if (this.state_ !== State.SPEECH_RECEIVED &&
@@ -524,11 +475,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
         this.animateVolume_.bind(this), this.micVolumeDuration_);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getText_() {
+  private getText_(): string {
     switch (this.state_) {
       case State.STARTED:
         return 'waiting';
@@ -545,11 +492,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorText_() {
+  private getErrorText_(): string {
     switch (this.error_) {
       case Error.kNoSpeech:
         return 'no-speech';
@@ -571,11 +514,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getErrorLink_() {
+  private getErrorLink_(): string {
     switch (this.error_) {
       case Error.kNoSpeech:
       case Error.kAudioCapture:
@@ -590,11 +529,7 @@ class VoiceSearchOverlayElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getMicClass_() {
+  private getMicClass_(): string {
     switch (this.state_) {
       case State.AUDIO_RECEIVED:
         return 'listening';
@@ -604,6 +539,10 @@ class VoiceSearchOverlayElement extends mixinBehaviors
       default:
         return '';
     }
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

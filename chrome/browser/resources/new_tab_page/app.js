@@ -441,7 +441,12 @@ class AppElement extends mixinBehaviors
     }
   }
 
-  /** @private */
+  /**
+   * TODO(crbug.com/1273590): Remove suppression when app.js is converted to
+   * TypeScript.
+   * @suppress {checkTypes}
+   * @private
+   */
   onOpenVoiceSearch_() {
     this.showVoiceSearchOverlay_ = true;
     recordVoiceAction(VoiceAction.kActivateSearchBox);
@@ -469,6 +474,9 @@ class AppElement extends mixinBehaviors
    * voice search.
    * @param {KeyboardEvent} e
    * @private
+   * TODO(crbug.com/1273590): Remove suppression when app.js is converted to
+   * TypeScript.
+   * @suppress {checkTypes}
    */
   onWindowKeydown_(e) {
     let ctrlKeyPressed = e.ctrlKey;
