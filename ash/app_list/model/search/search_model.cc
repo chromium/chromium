@@ -97,7 +97,7 @@ void SearchModel::PublishResults(
         text_item.SetText(ui_result->title());
         text_item.SetTextTags(ui_result->title_tags());
         text_vector.push_back(text_item);
-        ui_result->set_title_text_vector(text_vector);
+        ui_result->SetTitleTextVector(text_vector);
       }
 
       // Setup TextVector metadata if the result has details text and an empty
@@ -109,7 +109,7 @@ void SearchModel::PublishResults(
         text_item.SetText(ui_result->title());
         text_item.SetTextTags(ui_result->details_tags());
         text_vector.push_back(text_item);
-        ui_result->set_details_text_vector(text_vector);
+        ui_result->SetDetailsTextVector(text_vector);
       }
       results_->Add(std::move(ui_result));
 

@@ -84,10 +84,10 @@ class ProductivityLauncherSearchViewTest
           std::make_unique<TestSearchResult>();
       result->set_result_id(base::NumberToString(init_id + i));
       result->set_display_type(ash::SearchResultDisplayType::kList);
-      result->set_title(
+      result->SetTitle(
           base::UTF8ToUTF16(base::StringPrintf("Result %d", init_id + i)));
       result->set_display_score(display_score);
-      result->set_details(u"Detail");
+      result->SetDetails(u"Detail");
       result->set_best_match(best_match);
       result->set_category(category);
       results->Add(std::move(result));
@@ -103,9 +103,9 @@ class ProductivityLauncherSearchViewTest
         std::make_unique<TestSearchResult>();
     result->set_result_id(base::NumberToString(init_id));
     result->set_display_type(ash::SearchResultDisplayType::kAnswerCard);
-    result->set_title(base::UTF8ToUTF16(base::StringPrintf("Answer Card")));
+    result->SetTitle(base::UTF8ToUTF16(base::StringPrintf("Answer Card")));
     result->set_display_score(1000);
-    result->set_details(u"Answer Card Details");
+    result->SetDetails(u"Answer Card Details");
     result->set_best_match(false);
     results->Add(std::move(result));
 

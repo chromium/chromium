@@ -597,7 +597,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
             std::make_unique<TestSearchResult>();
         result->set_display_type(data.first);
         result->set_display_score(display_score);
-        result->set_title(u"Test");
+        result->SetTitle(u"Test");
         result->set_best_match(true);
         results->Add(std::move(result));
       }
@@ -622,7 +622,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_display_score(display_score);
-      result->set_title(u"Test" + base::NumberToString16(i));
+      result->SetTitle(u"Test" + base::NumberToString16(i));
       result->set_result_id("Test" + base::NumberToString(i));
       if (i == index_open_assistant_ui)
         result->set_is_omnibox_search(true);
@@ -642,7 +642,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
         std::make_unique<TestSearchResult>();
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
-    result->set_title(ASCIIToUTF16(title));
+    result->SetTitle(ASCIIToUTF16(title));
     result->set_best_match(true);
     GetSearchModel()->results()->Add(std::move(result));
     RunPendingMessages();

@@ -1,3 +1,4 @@
+
 // Copyright 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -204,8 +205,8 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     search_result->set_result_id(base::NumberToString(++last_result_id_));
     search_result->set_display_type(display_type);
     search_result->set_display_score(display_score);
-    search_result->set_title(title);
-    search_result->set_details(details);
+    search_result->SetTitle(title);
+    search_result->SetDetails(details);
     search_result->set_best_match(true);
     results()->AddAt(index, std::move(search_result));
   }
@@ -1214,7 +1215,7 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
     auto search_result = std::make_unique<TestSearchResult>();
     search_result->set_result_id(id);
     search_result->set_display_type(SearchResultDisplayType::kList);
-    search_result->set_title(title);
+    search_result->SetTitle(title);
     search_result->set_best_match(true);
     search_results->Add(std::move(search_result));
   }
@@ -1225,7 +1226,7 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
     auto search_result = std::make_unique<TestSearchResult>();
     search_result->set_result_id(id);
     search_result->set_display_type(SearchResultDisplayType::kAnswerCard);
-    search_result->set_title(title);
+    search_result->SetTitle(title);
     search_results->Add(std::move(search_result));
   }
 

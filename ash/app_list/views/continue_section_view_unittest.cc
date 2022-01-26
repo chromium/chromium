@@ -43,7 +43,7 @@ void AddSearchResultToModel(const std::string& id,
                             const std::string& title) {
   auto result = std::make_unique<TestSearchResult>();
   result->set_result_id(id);
-  result->set_title(base::ASCIIToUTF16(title));
+  result->SetTitle(base::ASCIIToUTF16(title));
   result->set_result_type(type);
   result->set_display_type(SearchResultDisplayType::kContinue);
   model->results()->Add(std::move(result));

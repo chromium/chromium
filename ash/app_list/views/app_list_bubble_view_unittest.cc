@@ -70,7 +70,7 @@ void AddSearchResult(const std::string& id, const std::u16string& title) {
   auto search_result = std::make_unique<TestSearchResult>();
   search_result->set_result_id(id);
   search_result->set_display_type(SearchResultDisplayType::kList);
-  search_result->set_title(title);
+  search_result->SetTitle(title);
   search_result->set_best_match(true);
   GetSearchModel()->results()->Add(std::move(search_result));
 }
