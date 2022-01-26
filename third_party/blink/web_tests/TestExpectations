@@ -7571,3 +7571,8 @@ crbug.com/1253323 http/tests/devtools/persistence/automapping-urlencoded-paths.j
 crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Skip ]
 
 crbug.com/1290780 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-012.https.html [ Failure ]
+
+# Sheriff 2022-01-26
+crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
+crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
+crbug.com/1290978 [ Win7 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Crash Failure Pass Timeout Skip ]
