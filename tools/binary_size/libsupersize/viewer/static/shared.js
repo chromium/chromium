@@ -38,10 +38,7 @@
 
 /**
  * @typedef {object} TreeProgress
- * @prop {TreeNode} root Root node and its direct children.
  * @prop {number} percent Number from (0-1] to represent percentage.
- * @prop {boolean} diffMode True if we are currently showing the diff of two
- * different size files.
  * @prop {string} [error] Error message, if an error occured in the worker.
  * If unset, then there was no error.
  */

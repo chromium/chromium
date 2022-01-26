@@ -405,16 +405,51 @@ const newTreeElement = (() => {
   const _dataUrlInput = form.elements.namedItem('load_url');
   const _progress = new ProgressBar('progress');
 
-  /** @type {boolean} */
-  let _doneLoad = false;
-
   /**
-   * Displays the given data as a tree view
-   * @param {TreeProgress} message
+   * @param {!TreeProgress} message
    */
-  function displayTree(message) {
-    const {root, percent, diffMode, error} = message;
+  function onProgressMessage(message) {
+    const {error, percent} = message;
+    _progress.setValue(percent);
+    document.body.classList.toggle('error', Boolean(error));
+  }
+
+  // Process response of an initial load / upload.
+  function processLoadTreeResponse(message) {
+    const {diffMode, beforeBlobUrl, loadBlobUrl, isMultiContainer} =
+        message.loadResults;
+    console.log(
+        '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
+        'font-weight:bold;color:red;', '')
+
+    displayOrHideDownloadButton(beforeBlobUrl, loadBlobUrl);
+
     state.set('diff_mode', diffMode ? 'on' : null);
+    document.body.classList.toggle('diff', Boolean(diffMode));
+    const noSymbols = Object.keys(root.childStats).length === 0;
+    toggleNoSymbolsMessage(noSymbols);
+
+    const groupByEl = document.getElementById('group-by-container');
+    groupByEl.toggleAttribute('disabled', !isMultiContainer);
+    if (isMultiContainer) {
+      groupByEl.checked = true;
+      // Fire a change event manually to reload the tree.
+      // TODO(crbug/1186921): Rework such that we don't build the tree twice.
+      document.getElementById('options').dispatchEvent(new Event('change'));
+    } else {
+      processBuildTreeResponse(message);
+    }
+  }
+
+  // Process the result of a buildTree() message.
+  function processBuildTreeResponse(message) {
+    const {root} = message;
+    _progress.setValue(1);
+
+    if (Object.keys(root.childStats).length === 0) {
+      displayNoSymbolsMessage();
+    }
+
     /** @type {DocumentFragment | null} */
     let rootElement = null;
     if (root) {
@@ -425,36 +460,14 @@ const newTreeElement = (() => {
       link.click();
       link.tabIndex = 0;
     }
-    if (diffMode) {
-      const noSymbols = Object.keys(root.childStats).length === 0;
-      toggleNoSymbolsMessage(noSymbols);
-    }
 
     // Double requestAnimationFrame ensures that the code inside executes in a
     // different frame than the above tree element creation.
-    requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        _progress.setValue(percent);
-        if (error) {
-          document.body.classList.add('error');
-        } else {
-          document.body.classList.remove('error');
-        }
-        if (diffMode) {
-          document.body.classList.add('diff');
-        } else {
-          document.body.classList.remove('diff');
-        }
-
         dom.replace(_symbolTree, rootElement);
-        if (!_doneLoad && percent === 1) {
-          _doneLoad = true;
-          console.log(
-              '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
-              'font-weight:bold; color: red;', '')
-        }
-      })
-    );
+      });
+    });
   }
 
   /**
@@ -489,27 +502,25 @@ const newTreeElement = (() => {
 
   async function performInitialLoad() {
     let accessToken = null;
+    _progress.setValue(0.1);
     if (requiresAuthentication()) {
       accessToken = await fetchAccessToken();
+      _progress.setValue(0.2);
     }
-    let worker = restartWorker(displayTree);
-    let message = await worker.loadTree('from-url://', accessToken);
+    const worker = restartWorker(onProgressMessage);
+    _progress.setValue(0.3);
+    const message = await worker.loadAndBuildTree('from-url://', accessToken);
+    processLoadTreeResponse(message);
+  }
 
-    if (message.isMultiContainer) {
-      document.getElementById('group-by-container').checked = true;
-      // Fire a change event manually to reload the tree (it does not fire on
-      // its own). No need to display the tree since it is going to be
-      // reloaded anyways.
-      document.getElementById('options').dispatchEvent(new Event('change'));
-    } else {
-      document.querySelector('#group-by-container')
-        .toggleAttribute('disabled', true);
-      displayTree(message);
-    }
-    displayOrHideDownloadButton(message.beforeBlobUrl, message.loadBlobUrl);
+  async function rebuildTree() {
+    _progress.setValue(0);
+    const message = await window.supersize.worker.buildTree();
+    processBuildTreeResponse(message);
   }
 
   _fileUpload.addEventListener('change', async (event) => {
+    _progress.setValue(0.1);
     const input = /** @type {HTMLInputElement} */ (event.currentTarget);
     const file = input.files.item(0);
     const fileUrl = URL.createObjectURL(file);
@@ -517,11 +528,10 @@ const newTreeElement = (() => {
     _dataUrlInput.value = '';
     _dataUrlInput.dispatchEvent(new Event('change'));
 
-    displayOrHideDownloadButton();
-
-    let worker = restartWorker(displayTree);
-    let message = await worker.loadTree(fileUrl);
-    displayTree(message);
+    const worker = restartWorker(onProgressMessage);
+    _progress.setValue(0.3);
+    const message = await worker.loadAndBuildTree(fileUrl);
+    processLoadTreeResponse(message);
     // Clean up afterwards so new files trigger event.
     input.value = '';
   });
@@ -531,14 +541,12 @@ const newTreeElement = (() => {
     // Some options update the tree themselves, don't regenerate when those
     // options (marked by `data-dynamic`) are changed.
     if (!event.target.dataset.hasOwnProperty('dynamic')) {
-      _progress.setValue(0);
-      window.supersize.worker.loadTree().then(displayTree);
+      rebuildTree();
     }
   });
   form.addEventListener('submit', event => {
     event.preventDefault();
-    _progress.setValue(0);
-    window.supersize.worker.loadTree().then(displayTree);
+    rebuildTree();
   });
 
   if (new URLSearchParams(location.search).has('load_url')) {

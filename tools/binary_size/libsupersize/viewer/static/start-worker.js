@@ -33,6 +33,7 @@ class TreeWorker {
    *
    * @param {string} action
    * @param {any} data
+   * @returns {any}
    */
   _waitForResponse(action, data) {
     const id = ++this._requestId;
@@ -65,24 +66,32 @@ class TreeWorker {
   }
 
   /**
-   * Loads the tree data given on a worker thread and replaces the tree view in
-   * the UI once complete. Uses query string as state for the options.
-   * Use `onProgress` before calling `loadTree`.
+   * Loads a new file.
    * @param {?string=} input
    * @param {?string=} accessToken
-   * @returns {Promise<TreeProgress>}
+   * @returns {Promise<any>}
    */
-  loadTree(input = null, accessToken = null) {
-    return this._waitForResponse('load', {
+  loadAndBuildTree(input = null, accessToken = null) {
+    return this._waitForResponse('loadAndBuildTree', {
       input,
       accessToken,
+      options: location.search.slice(1),
+    });
+  }
+
+  /**
+   * Rebuilds the tree with the current query parameters.
+   * @returns {Promise<any>}
+   */
+  buildTree() {
+    return this._waitForResponse('buildTree', {
       options: location.search.slice(1),
     });
   }
 }
 
 function restartWorker(onProgressHandler) {
-  let innerWorker = new Worker('tree-worker-wasm.js');
+  const innerWorker = new Worker('tree-worker-wasm.js');
   window.supersize.worker = new TreeWorker(innerWorker, onProgressHandler);
   return window.supersize.worker;
 }
