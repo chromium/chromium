@@ -94,11 +94,12 @@ export function openHelp(): void {
  * @param rootElement Root of DOM subtree to be set up with.
  */
 export function setupI18nElements(rootElement: Element|DocumentFragment): void {
-  const getElements = (attr) =>
-      dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
-  const getMessage = (element, attr) =>
-      loadTimeData.getI18nMessage(element.getAttribute(attr));
-  const setAriaLabel = (element, attr) =>
+  const getElements = (attr: string) =>
+      dom.getAllFrom(rootElement, `[${attr}]`, HTMLElement);
+  const getMessage = (element: HTMLElement, attr: string) =>
+      loadTimeData.getI18nMessage(
+          assertEnumVariant(I18nString, element.getAttribute(attr)));
+  const setAriaLabel = (element: HTMLElement, attr: string) =>
       element.setAttribute('aria-label', getMessage(element, attr));
 
   getElements('i18n-text')
@@ -156,7 +157,7 @@ export function bindElementAriaLabelWithState(
       onLabel: I18nString,
       offLabel: I18nString,
     }): void {
-  const update = (value) => {
+  const update = (value: boolean) => {
     const label = value ? onLabel : offLabel;
     element.setAttribute('i18n-label', label);
     element.setAttribute('aria-label', loadTimeData.getI18nMessage(label));
@@ -215,6 +216,7 @@ export async function createUntrustedJSModule<T>(scriptUrl: string):
   document.body.appendChild(iFrame);
   await untrustedPageReady.wait();
 
+  assert(iFrame.contentWindow !== null);
   // TODO(pihsun): actually get correct type from the function definition.
   const untrustedRemote =
       Comlink.wrap<{loadScript(url: string): Promise<void>}>(
@@ -312,6 +314,6 @@ export function checkEnumVariant<T extends string>(
 export function assertEnumVariant<T extends string>(
     enumType: {[key: string]: T}, value: string|null|undefined): T {
   const ret = checkEnumVariant(enumType, value);
-  assert(ret !== null);
+  assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;
 }
