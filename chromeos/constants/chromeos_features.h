@@ -31,6 +31,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersV2SettingsSubToggle;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kQuickAnswersAlwaysTriggerForSingleWord;
 
 // Keep alphabetized.
 
@@ -40,6 +42,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsDarkLightModeEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsQuickAnswersV2TranslationDisabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersV2SettingsSubToggleEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsQuickAnswersAlwaysTriggerForSingleWord();
 
 }  // namespace features
 }  // namespace chromeos

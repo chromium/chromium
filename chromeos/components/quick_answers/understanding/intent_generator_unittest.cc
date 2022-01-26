@@ -8,11 +8,13 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
@@ -485,4 +487,49 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentUnSupportedEntity) {
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
   EXPECT_EQ("the unfathomable reaches of space", intent_info_.intent_text);
 }
+
+TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWord) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
+
+  // No Annotation provided.
+  std::vector<TextAnnotationPtr> annotations;
+  UseFakeServiceConnection(annotations);
+
+  // Single word selected.
+  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
+      std::make_unique<QuickAnswersRequest>();
+  quick_answers_request->selected_text = "single";
+
+  intent_generator_->GenerateIntent(*quick_answers_request);
+  task_environment_.RunUntilIdle();
+
+  // Should generate dictionary intent for single word.
+  EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
+  EXPECT_EQ("single", intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, ShouldNotTriggerForMultipleWords) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
+
+  // No Annotation provided.
+  std::vector<TextAnnotationPtr> annotations;
+  UseFakeServiceConnection(annotations);
+
+  // Multiple words selected.
+  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
+      std::make_unique<QuickAnswersRequest>();
+  quick_answers_request->selected_text = "multiple words";
+
+  intent_generator_->GenerateIntent(*quick_answers_request);
+  task_environment_.RunUntilIdle();
+
+  // Should fallback to unknown intent.
+  EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
+  EXPECT_EQ("multiple words", intent_info_.intent_text);
+}
+
 }  // namespace quick_answers

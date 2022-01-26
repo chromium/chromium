@@ -35,6 +35,11 @@ const base::Feature kDisableQuickAnswersV2Translation{
 const base::Feature kQuickAnswersV2SettingsSubToggle{
     "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to always trigger Quick Answers with single word selection.
+const base::Feature kQuickAnswersAlwaysTriggerForSingleWord{
+    "QuickAnswersAlwaysTriggerForSingleWord",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsBluetoothAdvertisementMonitoringEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothAdvertisementMonitoring);
 }
@@ -49,6 +54,10 @@ bool IsQuickAnswersV2TranslationDisabled() {
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
+}
+
+bool IsQuickAnswersAlwaysTriggerForSingleWord() {
+  return base::FeatureList::IsEnabled(kQuickAnswersAlwaysTriggerForSingleWord);
 }
 
 }  // namespace features
