@@ -12,14 +12,16 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/combobox_model.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -27,6 +29,7 @@
 
 namespace {
 constexpr int kSidePanelContentViewId = 42;
+constexpr int kSidePanelContentWrapperViewId = 43;
 
 std::unique_ptr<views::ImageButton> CreateControlButton(
     views::View* host,
@@ -51,7 +54,21 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   // TODO(pbos): Consider moving creation of SidePanelEntry into other functions
   // that can easily be unit tested.
   window_registry_.Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kReadingList,
       l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE),
+      base::BindRepeating(
+          [](SidePanelCoordinator* coordinator,
+             Browser* browser) -> std::unique_ptr<views::View> {
+            return std::make_unique<ReadLaterSidePanelWebView>(
+                browser, base::BindRepeating(&SidePanelCoordinator::Close,
+                                             base::Unretained(coordinator)));
+          },
+          this, browser_view->browser())));
+  // TODO(corising): Replace ReadLaterSidePanelWebView with a new WebView for
+  // the bookmarks entry.
+  window_registry_.Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kBookmarks,
+      l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
       base::BindRepeating(
           [](SidePanelCoordinator* coordinator,
              Browser* browser) -> std::unique_ptr<views::View> {
@@ -64,54 +81,21 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
 
-void SidePanelCoordinator::Show() {
-  if (GetContentView() != nullptr)
+void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
+  if (!entry_id.has_value()) {
+    // TODO(corising): Handle reopening to the last seen entry.
+    entry_id = SidePanelEntry::Id::kReadingList;
+  }
+
+  DCHECK_EQ(2u, window_registry_.entries().size());
+  SidePanelEntry* entry = GetEntryForId(entry_id.value());
+  if (!entry)
     return;
-  // TODO(pbos): Make this button observe panel-visibility state instead.
-  browser_view_->toolbar()->side_panel_button()->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
 
-  // TODO(pbos): Handle multiple entries.
-  DCHECK_EQ(1u, window_registry_.entries().size());
-  SidePanelEntry* const entry = window_registry_.entries().front().get();
+  if (GetContentView() == nullptr)
+    InitializeSidePanel();
 
-  auto container = std::make_unique<views::FlexLayoutView>();
-  // Align views vertically top to bottom.
-  container->SetOrientation(views::LayoutOrientation::kVertical);
-  container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  // Stretch views to fill horizontal bounds.
-  container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  container->SetID(kSidePanelContentViewId);
-
-  container->AddChildView(CreateHeader());
-  auto* separator =
-      container->AddChildView(std::make_unique<views::Separator>());
-  // TODO(pbos): Make sure this separator updates per theme changes and does not
-  // pull color provider from BrowserView directly. This is wrong (wrong
-  // provider, wrong to call this before we know it's added to widget and wrong
-  // not to update as the theme changes).
-  const ui::ThemeProvider* const theme_provider =
-      browser_view_->GetThemeProvider();
-  // TODO(pbos): Stop inlining this color (de-duplicate this, SidePanelBorder
-  // and BrowserView).
-  separator->SetColor(color_utils::GetResultingPaintColor(
-      theme_provider->GetColor(
-          ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
-
-  // TODO(pbos): Set some ID on this container so that we can replace the
-  // content in here from the combobox once it exists.
-  auto content_wrapper = std::make_unique<views::View>();
-  content_wrapper->SetUseDefaultFillLayout(true);
-  content_wrapper->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  content_wrapper->AddChildView(entry->CreateContent());
-
-  container->AddChildView(std::move(content_wrapper));
-
-  browser_view_->right_aligned_side_panel()->AddChildView(std::move(container));
+  PopulateSidePanel(entry);
 }
 
 void SidePanelCoordinator::Close() {
@@ -139,6 +123,64 @@ views::View* SidePanelCoordinator::GetContentView() {
       kSidePanelContentViewId);
 }
 
+SidePanelEntry* SidePanelCoordinator::GetEntryForId(
+    SidePanelEntry::Id entry_id) {
+  for (auto const& entry : window_registry_.entries()) {
+    if (entry.get()->id() == entry_id)
+      return entry.get();
+  }
+  return nullptr;
+}
+
+void SidePanelCoordinator::InitializeSidePanel() {
+  // TODO(pbos): Make this button observe panel-visibility state instead.
+  browser_view_->toolbar()->side_panel_button()->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+
+  auto container = std::make_unique<views::FlexLayoutView>();
+  // Align views vertically top to bottom.
+  container->SetOrientation(views::LayoutOrientation::kVertical);
+  container->SetMainAxisAlignment(views::LayoutAlignment::kStart);
+  // Stretch views to fill horizontal bounds.
+  container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  container->SetID(kSidePanelContentViewId);
+
+  container->AddChildView(CreateHeader());
+  auto* separator =
+      container->AddChildView(std::make_unique<views::Separator>());
+  // TODO(pbos): Make sure this separator updates per theme changes and does not
+  // pull color provider from BrowserView directly. This is wrong (wrong
+  // provider, wrong to call this before we know it's added to widget and wrong
+  // not to update as the theme changes).
+  const ui::ThemeProvider* const theme_provider =
+      browser_view_->GetThemeProvider();
+  // TODO(pbos): Stop inlining this color (de-duplicate this, SidePanelBorder
+  // and BrowserView).
+  separator->SetColor(color_utils::GetResultingPaintColor(
+      theme_provider->GetColor(
+          ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
+      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+
+  auto content_wrapper = std::make_unique<views::View>();
+  content_wrapper->SetUseDefaultFillLayout(true);
+  content_wrapper->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  content_wrapper->SetID(kSidePanelContentWrapperViewId);
+  container->AddChildView(std::move(content_wrapper));
+
+  browser_view_->right_aligned_side_panel()->AddChildView(std::move(container));
+}
+
+void SidePanelCoordinator::PopulateSidePanel(SidePanelEntry* entry) {
+  views::View* content_wrapper =
+      GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+  DCHECK(content_wrapper);
+  content_wrapper->RemoveAllChildViews();
+  content_wrapper->AddChildView(entry->CreateContent());
+}
+
 std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   auto header = std::make_unique<views::FlexLayoutView>();
   // ChromeLayoutProvider for providing margins.
@@ -159,17 +201,8 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
   header->SetBackground(views::CreateThemedSolidBackground(
       header.get(), ui::kColorWindowBackground));
 
-  // TODO(pbos): Replace this with a combobox. Note that this combobox will need
-  // to listen to changes to the window registry. This combobox should probably
-  // call SidePanelCoordinator::ShowPanel(panel_id) or similar. This method or
-  // ID does not exist, `panel_id` would probably need to be added to
-  // SidePanelEntry unless we want to use raw pointers. This also implies that
-  // SidePanelCoordinator needs a link to where the SidePanelEntry content is
-  // showing so that it can be replaced (perhaps via a view ID for
-  // `content_wrapper` above).
-  DCHECK_EQ(1u, window_registry_.entries().size());
-  SidePanelEntry* const entry = window_registry_.entries().front().get();
-  header->AddChildView(std::make_unique<views::Label>(entry->name()));
+  DCHECK_EQ(2u, window_registry_.entries().size());
+  header_combobox_ = header->AddChildView(CreateCombobox());
 
   // Create an empty view between branding and buttons to align branding on left
   // without hardcoding margins. This view fills up the empty space between the
@@ -193,4 +226,37 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
 
   return header;
+}
+
+std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
+  std::vector<std::u16string> entry_names;
+  for (auto const& entry : window_registry_.entries())
+    entry_names.push_back(entry.get()->name());
+
+  // TODO(corising): Create new ComboboxModel to hold entry id, name, and icon.
+  // Also make it listen to changes to the window registry.
+  combobox_model_ = std::make_unique<ui::SimpleComboboxModel>(
+      std::vector<ui::SimpleComboboxModel::Item>(entry_names.begin(),
+                                                 entry_names.end()));
+  auto combobox = std::make_unique<views::Combobox>(combobox_model_.get());
+
+  // TODO(corising): Update this to use the SidePanelEntry::Id to select the
+  // correct index once a new combobox model is created.
+  combobox->SetSelectedIndex(0);
+  // TODO(corising): Replace this with something appropriate.
+  combobox->SetAccessibleName(
+      combobox_model_->GetItemAt(combobox->GetSelectedIndex()));
+
+  combobox->SetCallback(base::BindRepeating(
+      &SidePanelCoordinator::OnComboboxChanged, base::Unretained(this)));
+  return combobox;
+}
+
+void SidePanelCoordinator::OnComboboxChanged() {
+  std::u16string entry_name =
+      combobox_model_->GetItemAt(header_combobox_->GetSelectedIndex());
+  for (auto const& entry : window_registry_.entries()) {
+    if (entry.get()->name() == entry_name)
+      Show(entry.get()->id());
+  }
 }

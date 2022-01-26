@@ -15,8 +15,11 @@
 // SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final {
  public:
+  enum class Id { kReadingList, kBookmarks };
+
   // TODO(pbos): Add an icon ImageModel here.
-  SidePanelEntry(std::u16string name,
+  SidePanelEntry(Id id,
+                 std::u16string name,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
@@ -27,9 +30,11 @@ class SidePanelEntry final {
   // shown.
   std::unique_ptr<views::View> CreateContent();
 
+  Id id() const { return id_; }
   const std::u16string& name() const { return name_; }
 
  private:
+  const Id id_;
   const std::u16string name_;
 
   base::RepeatingCallback<std::unique_ptr<views::View>()>

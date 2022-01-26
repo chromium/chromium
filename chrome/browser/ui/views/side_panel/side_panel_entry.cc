@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 
 SidePanelEntry::SidePanelEntry(
+    Id id,
     std::u16string name,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback)
-    : name_(std::move(name)),
+    : id_(id),
+      name_(std::move(name)),
       create_content_callback_(std::move(create_content_callback)) {
   DCHECK(create_content_callback_);
 }
