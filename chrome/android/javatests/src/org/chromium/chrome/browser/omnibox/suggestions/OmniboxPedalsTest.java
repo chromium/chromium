@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.app.omnibox.OmniboxPedalDelegateImpl;
@@ -46,6 +47,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 
 /**
  * Tests of the Omnibox Pedals feature.
@@ -317,6 +319,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     @EnableFeatures("OmniboxPedalsAndroidBatch1")
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/1291207
     public void testViewYourChromeHistoryOmniboxPedalSuggestion() throws InterruptedException {
         // Generate the view chrome history pedal.
         LocationBarLayout locationBarLayout =
