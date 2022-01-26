@@ -154,7 +154,7 @@ void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
             back_forward_cache::DisabledReasonId::
                 kSafeBrowsingTriggeredPopupBlocker));
   } else if (level == SubresourceFilterLevel::WARN) {
-    web_contents()->GetMainFrame()->AddMessageToConsole(
+    navigation_handle->GetRenderFrameHost()->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning, kAbusiveWarnMessage);
     LogAction(Action::kWarningSite);
   }
