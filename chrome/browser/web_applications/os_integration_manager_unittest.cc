@@ -116,6 +116,8 @@ TEST_F(OsIntegrationManagerTest, InstallOsHooksEverything) {
                            app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(Result::kOk));
   EXPECT_CALL(manager, RegisterRunOnOsLogin(app_id, testing::_)).Times(1);
+  EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
+      .Times(1);
 
   InstallOsHooksOptions options;
   options.add_to_desktop = true;

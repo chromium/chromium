@@ -420,7 +420,7 @@ const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
 
 // Enable web app uninstallation from Windows settings or control panel.
 const base::Feature kEnableWebAppUninstallFromOsSettings{
-    "EnableWebAppUninstallFromOsSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnableWebAppUninstallFromOsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Causes extension manifest versions to be included in the extension info
 // section of CBCM reports.
