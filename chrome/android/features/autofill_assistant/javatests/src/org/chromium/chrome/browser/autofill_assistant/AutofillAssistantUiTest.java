@@ -120,7 +120,8 @@ public class AutofillAssistantUiTest {
                     getActivity().getWindowAndroid().getApplicationBottomInsetProvider(),
                     staticDependencies.getAccessibilityUtil(),
                     staticDependencies.createInfoPageUtil(),
-                    staticDependencies.createProfileImageUtilOrNull(getActivity()));
+                    staticDependencies.createProfileImageUtilOrNull(
+                            getActivity(), R.dimen.autofill_assistant_profile_size));
             coordinator.show();
             return coordinator;
         });

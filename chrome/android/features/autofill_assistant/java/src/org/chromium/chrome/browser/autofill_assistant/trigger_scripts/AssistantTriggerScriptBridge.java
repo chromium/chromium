@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantDependencies;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
@@ -67,7 +68,8 @@ public class AssistantTriggerScriptBridge {
         mTriggerScript = new AssistantTriggerScript(dependencies.getActivity(), delegate,
                 webContents, dependencies.getBottomSheetController(),
                 dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
-                dependencies.createProfileImageUtilOrNull(dependencies.getActivity()));
+                dependencies.createProfileImageUtilOrNull(
+                        dependencies.getActivity(), R.dimen.autofill_assistant_profile_size));
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }

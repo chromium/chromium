@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -45,5 +46,6 @@ public interface AssistantStaticDependencies {
     String getSignedInAccountEmailOrNull();
 
     @Nullable
-    AssistantProfileImageUtil createProfileImageUtilOrNull(Context context);
+    AssistantProfileImageUtil createProfileImageUtilOrNull(
+            Context context, @DimenRes int imageSizeRedId);
 }

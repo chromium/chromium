@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.JNINamespace;
@@ -85,11 +86,12 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
 
     @Override
     @Nullable
-    public AssistantProfileImageUtil createProfileImageUtilOrNull(Context context) {
+    public AssistantProfileImageUtil createProfileImageUtilOrNull(
+            Context context, @DimenRes int imageSizeRedId) {
         String signedInAccountEmail = getSignedInAccountEmailOrNull();
         if (signedInAccountEmail == null) return null;
 
-        return new AssistantProfileImageUtilChrome(context, signedInAccountEmail);
+        return new AssistantProfileImageUtilChrome(context, signedInAccountEmail, imageSizeRedId);
     }
 
     @NativeMethods

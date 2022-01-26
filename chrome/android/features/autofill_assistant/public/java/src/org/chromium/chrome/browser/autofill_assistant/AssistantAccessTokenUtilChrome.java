@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.accounts.Account;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -29,6 +30,6 @@ public class AssistantAccessTokenUtilChrome implements AssistantAccessTokenUtil 
 
     private IdentityManager getIdentityManager() {
         return IdentityServicesProvider.get().getIdentityManager(
-                AutofillAssistantUiController.getProfile());
+                Profile.getLastUsedRegularProfile());
     }
 }

@@ -7,8 +7,9 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DimenRes;
+
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 
 /**
@@ -20,10 +21,10 @@ public class AssistantProfileImageUtilChrome
     private final ProfileDataCache mProfileCache;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    public AssistantProfileImageUtilChrome(Context context, String signedInAccountEmail) {
+    public AssistantProfileImageUtilChrome(
+            Context context, String signedInAccountEmail, @DimenRes int imageSizeRedId) {
         mSignedInAccountEmail = signedInAccountEmail;
-        mProfileCache = ProfileDataCache.createWithoutBadge(
-                context, R.dimen.autofill_assistant_profile_size);
+        mProfileCache = ProfileDataCache.createWithoutBadge(context, imageSizeRedId);
     }
 
     @Override
