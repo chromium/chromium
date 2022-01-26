@@ -413,6 +413,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
             mEventDispatcher.setOnDemandEnabled(true);
         }
+
+        // Set whether image descriptions should be enabled for this instance. We do not want
+        // the feature to run in certain cases (e.g. WebView or Chrome Custom Tab).
+        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
+                mNativeObj, WebContentsAccessibilityImpl.this, mAllowImageDescriptions);
     }
 
     @CalledByNative
@@ -811,9 +816,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void setShouldFocusOnPageLoad(boolean on) {
         mShouldFocusOnPageLoad = on;
-
-        // If focus on page load is true, we will allow the image descriptions feature.
-        mAllowImageDescriptions = on;
     }
 
     @Override
@@ -1530,11 +1532,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handlePageLoaded(int id) {
-        // Set whether image descriptions should be enabled for this instance. We do not want
-        // the feature to run in certain cases (e.g. WebView or Chrome Custom Tab).
-        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
-                mNativeObj, WebContentsAccessibilityImpl.this, mAllowImageDescriptions);
-
         if (!mShouldFocusOnPageLoad) return;
         if (mUserHasTouchExplored) return;
         moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
