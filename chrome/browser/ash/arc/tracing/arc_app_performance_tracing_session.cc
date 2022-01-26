@@ -69,9 +69,6 @@ void ArcAppPerformanceTracingSession::StopAndAnalyzeInternal() {
 
 void ArcAppPerformanceTracingSession::OnSurfaceDestroying(
     exo::Surface* surface) {
-  // |scoped_surface_| might be already reset in case window is destroyed
-  // first.
-  DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
   Stop();
 }
 
@@ -98,11 +95,7 @@ void ArcAppPerformanceTracingSession::Start() {
 
   exo::Surface* const surface = exo::GetShellRootSurface(window_);
   DCHECK(surface);
-  // Use scoped surface observer to be safe on the surface
-  // destruction. |exo::GetShellRootSurface| would fail in case
-  // the surface gets destroyed before widget.
-  scoped_surface_ =
-      std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
+  surface->AddSurfaceObserver(this);
 
   // Schedule result analyzing at the end of tracing.
   tracing_start_ = base::TimeTicks::Now();
@@ -120,7 +113,10 @@ void ArcAppPerformanceTracingSession::Start() {
 void ArcAppPerformanceTracingSession::Stop() {
   tracing_active_ = false;
   tracing_timer_.Stop();
-  scoped_surface_.reset();
+  exo::Surface* const surface = exo::GetShellRootSurface(window_);
+  // Surface might be destroyed.
+  if (surface)
+    surface->RemoveSurfaceObserver(this);
 }
 
 void ArcAppPerformanceTracingSession::HandleCommit(
