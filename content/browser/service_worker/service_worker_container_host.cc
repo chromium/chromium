@@ -1158,8 +1158,11 @@ void ServiceWorkerContainerHost::EvictFromBackForwardCache(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK(IsContainerForWindowClient());
+  DCHECK(IsContainerForClient());
   is_in_back_forward_cache_ = false;
+
+  if (!IsContainerForWindowClient())
+    return;
 
   auto* rfh = RenderFrameHostImpl::FromID(GetRenderFrameHostId());
   // |rfh| could be evicted before this function is called.
