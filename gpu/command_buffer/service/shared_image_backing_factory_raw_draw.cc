@@ -11,6 +11,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -26,6 +27,12 @@ class SharedImageBackingFactoryRawDraw;
 
 namespace {
 
+size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
+  size_t estimated_size = 0;
+  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
+  return estimated_size;
+}
+
 class RawDrawBacking : public ClearTrackingSharedImageBacking {
  public:
   RawDrawBacking(const Mailbox& mailbox,
@@ -34,8 +41,7 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
                  const gfx::ColorSpace& color_space,
                  GrSurfaceOrigin surface_origin,
                  SkAlphaType alpha_type,
-                 uint32_t usage,
-                 size_t estimated_size)
+                 uint32_t usage)
       : ClearTrackingSharedImageBacking(mailbox,
                                         format,
                                         size,
@@ -43,8 +49,8 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
                                         surface_origin,
                                         alpha_type,
                                         usage,
-                                        estimated_size,
-                                        true /* is_thread_safe */) {}
+                                        /*estimated_size=*/0,
+                                        /*is_thread_safe=*/true) {}
 
   ~RawDrawBacking() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -83,7 +89,7 @@ class RawDrawBacking : public ClearTrackingSharedImageBacking {
       format_dump->AddScalar(
           base::trace_event::MemoryAllocatorDump::kNameSize,
           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-          static_cast<uint64_t>(EstimatedSizeForMemTracking()));
+          static_cast<uint64_t>(EstimatedSize(format(), size())));
 
       int importance = 2;  // This client always owns the ref.
       pmd->AddOwnershipEdge(client_guid, service_guid, importance);
@@ -373,8 +379,7 @@ SharedImageBackingFactoryRawDraw::CreateSharedImage(
     bool is_thread_safe) {
   DCHECK(!is_thread_safe);
   auto texture = std::make_unique<RawDrawBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      /*estimated_size=*/0);
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage);
   return texture;
 }
 
