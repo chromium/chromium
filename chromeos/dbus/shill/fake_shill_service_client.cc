@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
@@ -389,6 +390,10 @@ void FakeShillServiceClient::ResetTrafficCounters(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   fake_traffic_counters_.ClearList();
+  base::Time reset_time = time_getter_.Run();
+  SetServiceProperty(
+      service_path.value(), shill::kTrafficCounterResetTimeProperty,
+      base::Value(reset_time.ToDeltaSinceWindowsEpoch().InMillisecondsF()));
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
@@ -821,6 +826,11 @@ void FakeShillServiceClient::SetFakeTrafficCounters(
     return;
   }
   fake_traffic_counters_ = std::move(fake_traffic_counters);
+}
+
+void FakeShillServiceClient::SetTimeGetterForTest(
+    base::RepeatingCallback<base::Time()> time_getter) {
+  time_getter_ = std::move(time_getter);
 }
 
 }  // namespace chromeos

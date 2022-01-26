@@ -123,6 +123,17 @@ void NetworkTestHelperBase::ConfigureCallback(const dbus::ObjectPath& result) {
   last_created_service_path_ = result.value();
 }
 
+absl::optional<double> NetworkTestHelperBase::GetServiceDoubleProperty(
+    const std::string& service_path,
+    const std::string& key) {
+  const base::Value* properties =
+      service_test_->GetServiceProperties(service_path);
+  if (properties) {
+    return properties->FindDoubleKey(key);
+  }
+  return absl::nullopt;
+}
+
 std::string NetworkTestHelperBase::GetServiceStringProperty(
     const std::string& service_path,
     const std::string& key) {

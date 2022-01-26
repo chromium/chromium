@@ -115,6 +115,10 @@ class BreakpadConsentWatcher;
 class DarkResumeController;
 }  // namespace system
 
+namespace traffic_counters {
+class TrafficCountersHandler;
+}  // namespace traffic_counters
+
 // ChromeBrowserMainParts implementation for chromeos specific code.
 // NOTE: Chromeos UI (Ash) support should be added to
 // ChromeBrowserMainExtraPartsAsh instead. This class should not depend on
@@ -260,6 +264,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   // The Accessor is constructed before initialization of FeatureList and should
   // only be used by ChromeFeaturesServiceProvider.
   std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor_;
+
+  std::unique_ptr<ash::traffic_counters::TrafficCountersHandler>
+      traffic_counters_handler_;
 };
 
 }  // namespace ash

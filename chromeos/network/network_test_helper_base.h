@@ -54,6 +54,11 @@ class NetworkTestHelperBase {
   // name of the service if no 'Name' key is provided.
   std::string ConfigureService(const std::string& shill_json_string);
 
+  // Returns a double value for property |key| associated with |service_path|.
+  absl::optional<double> GetServiceDoubleProperty(
+      const std::string& service_path,
+      const std::string& key);
+
   // Returns a string value for property |key| associated with |service_path|.
   // The result will be empty if the service or property do not exist.
   std::string GetServiceStringProperty(const std::string& service_path,

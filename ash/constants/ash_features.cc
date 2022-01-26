@@ -1881,6 +1881,10 @@ bool IsTabClusterUIEnabled() {
   return base::FeatureList::IsEnabled(kTabClusterUI);
 }
 
+bool IsTrafficCountersHandlerEnabled() {
+  return base::FeatureList::IsEnabled(kTrafficCountersHandlerEnabled);
+}
+
 bool IsTrilinearFilteringEnabled() {
   static bool use_trilinear_filtering =
       base::FeatureList::IsEnabled(kTrilinearFiltering);

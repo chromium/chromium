@@ -121,6 +121,7 @@
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/net/rollback_network_config/rollback_network_config_service.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
+#include "chrome/browser/ash/net/traffic_counters_handler.h"
 #include "chrome/browser/ash/network_change_manager_client.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/ash/notifications/debugd_notification_handler.h"
@@ -1094,6 +1095,13 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
               ->GetDiagnosticsRemoteAndBindReceiver();
         }));
 
+    if (features::IsTrafficCountersHandlerEnabled()) {
+      // Initialize the TrafficCountersHandler instance.
+      traffic_counters_handler_ =
+          std::make_unique<ash::traffic_counters::TrafficCountersHandler>();
+      traffic_counters_handler_->Start();
+    }
+
     // Initialize input methods.
     input_method::InputMethodManager* manager =
         input_method::InputMethodManager::Get();
@@ -1387,6 +1395,9 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
+  if (features::IsTrafficCountersHandlerEnabled())
+    traffic_counters_handler_.reset();
+
   if (features::IsBluetoothRevampEnabled())
     bluetooth_pref_state_observer_.reset();
 

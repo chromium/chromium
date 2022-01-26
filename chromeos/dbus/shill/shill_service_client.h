@@ -14,6 +14,7 @@
 
 namespace base {
 class Value;
+class Time;
 }
 
 namespace dbus {
@@ -117,6 +118,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
 
     // Sets a fake traffic counters that can be used in tests.
     virtual void SetFakeTrafficCounters(base::Value fake_traffic_counters) = 0;
+
+    // Sets the callback used to get the mocked time in tests.
+    virtual void SetTimeGetterForTest(
+        base::RepeatingCallback<base::Time()>) = 0;
 
    protected:
     virtual ~TestInterface() {}
