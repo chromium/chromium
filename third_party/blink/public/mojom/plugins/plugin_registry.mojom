@@ -27,14 +27,8 @@ struct PluginInfo {
 interface PluginRegistry {
   // Retrieves the list of plugins available to the renderer.
   //
-  // If |refresh| is true, then cached information should not be used to
-  // satisfy this call. |main_frame_origin| is used by the browser process to
-  // filter plugins from the plugin list based on content settings.
-  //
-  // |main_frame_origin| is used to handle exceptions for plugin content
-  // settings.
-  //
-  // TODO(crbug.com/850278): We shouldn't rely on the renderer to tell us the main frame origin.
+  // If `refresh` is true, then cached information should not be used to
+  // satisfy this call.
   [Sync]
-  GetPlugins(bool refresh, url.mojom.Origin main_frame_origin) => (array<PluginInfo> plugins);
+  GetPlugins(bool refresh) => (array<PluginInfo> plugins);
 };

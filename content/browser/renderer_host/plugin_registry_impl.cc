@@ -21,16 +21,14 @@ constexpr auto kPluginRefreshThreshold = base::Seconds(3);
 PluginRegistryImpl::PluginRegistryImpl(int render_process_id)
     : render_process_id_(render_process_id) {}
 
-PluginRegistryImpl::~PluginRegistryImpl() {}
+PluginRegistryImpl::~PluginRegistryImpl() = default;
 
 void PluginRegistryImpl::Bind(
     mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void PluginRegistryImpl::GetPlugins(bool refresh,
-                                    const url::Origin& main_frame_origin,
-                                    GetPluginsCallback callback) {
+void PluginRegistryImpl::GetPlugins(bool refresh, GetPluginsCallback callback) {
   auto* plugin_service = PluginServiceImpl::GetInstance();
 
   // Don't refresh if the specified threshold has not been passed.  Note that
@@ -48,14 +46,12 @@ void PluginRegistryImpl::GetPlugins(bool refresh,
     }
   }
 
-  plugin_service->GetPlugins(base::BindOnce(
-      &PluginRegistryImpl::GetPluginsComplete, weak_factory_.GetWeakPtr(),
-      main_frame_origin, std::move(callback)));
+  plugin_service->GetPlugins(
+      base::BindOnce(&PluginRegistryImpl::GetPluginsComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// TODO(crbug.com/850278): Remove unused parameters.
 void PluginRegistryImpl::GetPluginsComplete(
-    const url::Origin& /*main_frame_origin*/,
     GetPluginsCallback callback,
     const std::vector<WebPluginInfo>& all_plugins) {
   PluginServiceFilter* filter = PluginServiceImpl::GetInstance()->GetFilter();

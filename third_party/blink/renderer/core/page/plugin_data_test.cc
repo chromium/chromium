@@ -15,22 +15,17 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "url/url_util.h"
 
-using testing::Eq;
-using testing::Property;
-
 namespace blink {
 namespace {
 
 class MockPluginRegistry : public mojom::blink::PluginRegistry {
  public:
-  void GetPlugins(bool refresh,
-                  const scoped_refptr<const SecurityOrigin>& origin,
-                  GetPluginsCallback callback) override {
-    DidGetPlugins(refresh, *origin);
+  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
+    DidGetPlugins(refresh);
     std::move(callback).Run(Vector<mojom::blink::PluginInfoPtr>());
   }
 
-  MOCK_METHOD2(DidGetPlugins, void(bool, const SecurityOrigin&));
+  MOCK_METHOD(void, DidGetPlugins, (bool));
 };
 
 // Regression test for https://crbug.com/862282
@@ -56,9 +51,7 @@ TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
           },
           WTF::Unretained(&registry_receiver)));
 
-  EXPECT_CALL(
-      mock_plugin_registry,
-      DidGetPlugins(false, Property(&SecurityOrigin::IsOpaque, Eq(false))));
+  EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
 
   scoped_refptr<SecurityOrigin> non_standard_origin =
       SecurityOrigin::CreateFromString("nonstandard-862282:foo/bar");
