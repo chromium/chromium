@@ -600,9 +600,11 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-// Windows and Google-branded builds will eventually support this test, but for
-// now only Chromium-branded macOS updaters are available in third_party.
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(CHROMIUM_BRANDING)
+// Google-branded builds will eventually support this test, but for
+// now only Chromium-branded updaters are available in third_party.
+#if BUILDFLAG(CHROMIUM_BRANDING)
+// TODO(crbug.com/1268555): Even on Windows, component builds do not work.
+#if !defined(COMPONENT_BUILD)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
   ExpectRegistrationEvent(&test_server, kUpdaterAppId);
@@ -627,6 +629,7 @@ TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ExpectVersionActive(kUpdaterVersion);
   Uninstall();
 }
+#endif
 #endif
 
 TEST_F(IntegrationTest, UpdateServiceStress) {

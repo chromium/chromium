@@ -530,6 +530,16 @@ if (is_win || is_mac || is_linux) {
       if (is_win) {
         inputs = [ "$root_build_dir/UpdaterSetup_test.exe" ]
         deps = [ "//chrome/updater/win/installer:installer_test" ]
+
+        if (is_component_build) {
+          inputs += [
+            "$root_build_dir/base.dll",
+            "$root_build_dir/ui_base.dll",
+          ]
+          data = [ "$root_build_dir/ucrtbased.dll" ]
+
+          deps += [ "//ui/base" ]
+        }
       }
     }
   }
@@ -630,6 +640,17 @@ if (is_win || is_mac || is_linux) {
         "test/data/updater.runtime_deps",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
       ]
+
+      if (target_cpu == "x64") {
+        data += [
+          "//third_party/updater/chromium_win_x86_64/UpdaterSetup_test.exe",
+        ]
+      }
+
+      if (target_cpu == "x86") {
+        data +=
+            [ "//third_party/updater/chromium_win_x86/UpdaterSetup_test.exe" ]
+      }
     }
 
     if (is_mac) {

@@ -564,6 +564,27 @@ deps = {
       ],
   },
 
+  'src/third_party/updater/chromium_win_x86': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_win',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chromium_win_x86',
+          'version': 'zdcQMuiuIXnQQ4eBsYyk0uNTr4N0LaphcQYs0RUByZQC',
+        },
+      ],
+  },
+
+  'src/third_party/updater/chromium_win_x86_64': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_win',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chromium_win_x86_64',
+          'version': 'tpakNFR82tZRgkWuRbgyNlc-O93aCKAm5S2zV26snOkC',
+        },
+      ],
+  },
 
   'src/tools/clang/dsymutil': {
     'packages': [

@@ -33,6 +33,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -817,7 +818,26 @@ void InvokeTestServiceFunction(
 }
 
 void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
-  // TODO(crbug.com/1268555): Implement.
+  base::FilePath source_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  base::FilePath old_updater_path =
+      source_path.Append(FILE_PATH_LITERAL("third_party"))
+          .Append(FILE_PATH_LITERAL("updater"));
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
+#endif
+#endif
+  base::CommandLine command_line(
+      old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe")));
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  ASSERT_EQ(exit_code, 0);
 }
 
 void RunUninstallCmdLine(UpdaterScope scope) {
