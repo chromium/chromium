@@ -611,7 +611,11 @@ TrackEvent* TrackEventThreadLocalEventSink::PrepareTrackEvent(
       legacy_event.GetOrCreate()->set_pid_override(trace_event->process_id());
       legacy_event.GetOrCreate()->set_tid_override(-1);
     } else if (thread_id_ != trace_event->thread_id()) {
-      legacy_event.GetOrCreate()->set_tid_override(trace_event->thread_id());
+      // Some metadata events set thread_id to 0. We avoid setting tid_override
+      // to 0 to avoid clashes with the swapper thread in system traces
+      // (b/215725684).
+      if (trace_event->thread_id() != 0)
+        legacy_event.GetOrCreate()->set_tid_override(trace_event->thread_id());
     }
   }
 
