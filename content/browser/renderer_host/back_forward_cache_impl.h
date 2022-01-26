@@ -507,6 +507,10 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   // The URL of the document corresponding to this subtree's root document.
   const GURL& GetUrl() const { return url_; }
 
+  // Creates and returns an empty tree.
+  static std::unique_ptr<BackForwardCacheCanStoreTreeResult> CreateEmptyTree(
+      RenderFrameHostImpl* rfh);
+
  private:
   BackForwardCacheCanStoreTreeResult(
       RenderFrameHostImpl* rfh,

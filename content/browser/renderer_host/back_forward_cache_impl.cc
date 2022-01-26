@@ -667,18 +667,42 @@ BackForwardCacheImpl::PopulateReasonsForPage(
     BackForwardCacheCanStoreDocumentResult& flattened_result,
     bool include_non_sticky,
     bool create_tree) {
+  // TODO(crbug.com/1275977): This function should only be called when |rfh| is
+  // the primary main frame. Fix |ShouldProactivelySwapBrowsingInstance()| and
+  // |UnloadOldFrame()| so that it will not check bfcache eligibility if not
+  // primary main frame.
   BackForwardCacheCanStoreDocumentResult main_document_specific_result;
-  PopulateReasonsForMainDocument(main_document_specific_result, rfh);
+  // This function can be called during eviction, and |rfh| can be in
+  // back/forward cache, which is considered as non primary main frame.
+  bool main_frame_in_bfcache =
+      rfh->IsInBackForwardCache() && rfh->is_main_frame();
+
+  if (!rfh->IsInPrimaryMainFrame() && !main_frame_in_bfcache) {
+    // When |rfh| is not the primary main frame and is not the bfcache main
+    // frame, e.g. when |rfh| is prerendering, fenced frame root or is not the
+    // main frame, we can reach this block.
+    // We do not need to check the subframes' reasons because callers that reach
+    // here only care about whether can_store is true or false, not about the
+    // reasons.
+    main_document_specific_result.No(
+        BackForwardCacheMetrics::NotRestoredReason::kNotPrimaryMainFrame);
+  } else {
+    // Populate main document specific reasons.
+    PopulateReasonsForMainDocument(main_document_specific_result, rfh);
+  }
   // Add the reasons for main document to the flattened list.
   flattened_result.AddReasonsFrom(main_document_specific_result);
 
   // Call the recursive function that adds the reasons from the subtree to the
   // flattened list, and return the tree if needed.
-  std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree =
-      PopulateReasonsForDocumentAndDescendants(
-          rfh, rfh->GetLastCommittedOrigin(), flattened_result,
-          include_non_sticky, create_tree);
-
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> result_tree;
+  if (rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache) {
+    result_tree = PopulateReasonsForDocumentAndDescendants(
+        rfh, rfh->GetLastCommittedOrigin(), flattened_result,
+        include_non_sticky, create_tree);
+  } else {
+    result_tree = BackForwardCacheCanStoreTreeResult::CreateEmptyTree(rfh);
+  }
   if (!create_tree)
     return nullptr;
   // |result_tree| does not have main document specific reasons such as
@@ -690,9 +714,9 @@ BackForwardCacheImpl::PopulateReasonsForPage(
 void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     BackForwardCacheCanStoreDocumentResult& result,
     RenderFrameHostImpl* rfh) {
-  // Use the BackForwardCache only for the main frame.
-  if (rfh->GetParentOrOuterDocument())
-    result.No(BackForwardCacheMetrics::NotRestoredReason::kNotMainFrame);
+  bool main_frame_in_bfcache =
+      rfh->IsInBackForwardCache() && rfh->is_main_frame();
+  DCHECK(rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache);
 
   // If the the delegate doesn't support back forward cache, disable it.
   if (!rfh->delegate()->IsBackForwardCacheSupported()) {
@@ -700,11 +724,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
                   kBackForwardCacheDisabledForDelegate);
   }
 
-  const bool is_prerendering =
-      rfh->lifecycle_state() ==
-      RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
-  if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
-      is_prerendering || rfh->IsFencedFrameRoot()) {
+  if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_) {
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled);
 
@@ -718,11 +738,6 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     if (!DeviceHasEnoughMemoryForBackForwardCache()) {
       result.No(BackForwardCacheMetrics::NotRestoredReason::
                     kBackForwardCacheDisabledByLowMemory);
-    }
-
-    if (is_prerendering) {
-      result.No(BackForwardCacheMetrics::NotRestoredReason::
-                    kBackForwardCacheDisabledForPrerender);
     }
   }
 
@@ -1423,6 +1438,17 @@ BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
 void BackForwardCacheCanStoreTreeResult::AddReasonsToSubtreeRootFrom(
     const BackForwardCacheCanStoreDocumentResult& result) {
   document_result_.AddReasonsFrom(result);
+}
+
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
+  BackForwardCacheCanStoreDocumentResult empty_result;
+  BackForwardCacheCanStoreTreeResult::ChildrenVector empty_vector;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
+      new BackForwardCacheCanStoreTreeResult(rfh, rfh->GetLastCommittedOrigin(),
+                                             empty_result,
+                                             std::move(empty_vector)));
+  return empty_tree;
 }
 
 BackForwardCacheCanStoreDocumentResultWithTree::

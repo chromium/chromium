@@ -43,7 +43,7 @@ class BackForwardCacheMetrics
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
   enum class NotRestoredReason : uint8_t {
     kMinValue = 0,
-    kNotMainFrame = 0,
+    kNotPrimaryMainFrame = 0,
     // BackForwardCache is disabled due to low memory device, base::Feature or
     // command line. Note that the more specific NotRestoredReasons
     // kBackForwardCacheDisabledByLowMemory and
@@ -94,7 +94,7 @@ class BackForwardCacheMetrics
     kNetworkRequestTimeout = 39,
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
-    kBackForwardCacheDisabledForPrerender = 42,
+    // 42: kBackForwardCacheDisabledForPrerender was removed and merged into 0.
     kUserAgentOverrideDiffers = 43,
     // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
     // ScriptStreamer is supported.

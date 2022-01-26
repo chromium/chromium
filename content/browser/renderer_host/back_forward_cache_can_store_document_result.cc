@@ -82,7 +82,7 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
-    case Reason::kNotMainFrame:
+    case Reason::kNotPrimaryMainFrame:
       return ProtoEnum::NOT_MAIN_FRAME;
     case Reason::kBackForwardCacheDisabled:
       return ProtoEnum::BACK_FORWARD_CACHE_DISABLED;
@@ -155,8 +155,6 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::NETWORK_EXCEEDS_BUFFER_LIMIT;
     case Reason::kNavigationCancelledWhileRestoring:
       return ProtoEnum::NAVIGATION_CANCELLED_WHILE_RESTORING;
-    case Reason::kBackForwardCacheDisabledForPrerender:
-      return ProtoEnum::BACK_FORWARD_CACHE_DISABLED_FOR_PRERENDER;
     case Reason::kUserAgentOverrideDiffers:
       return ProtoEnum::USER_AGENT_OVERRIDE_DIFFERS;
     case Reason::kForegroundCacheLimit:
@@ -273,7 +271,7 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
 
   switch (reason) {
-    case Reason::kNotMainFrame:
+    case Reason::kNotPrimaryMainFrame:
       return "not a main frame";
     case Reason::kBackForwardCacheDisabled:
       return "BackForwardCache disabled";
@@ -356,8 +354,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Network request is open for too long and exceeds time limit";
     case Reason::kNetworkExceedsBufferLimit:
       return "Network request reads too much data and exceeds buffer limit";
-    case Reason::kBackForwardCacheDisabledForPrerender:
-      return "BackForwardCache is disabled for Prerender";
     case Reason::kUserAgentOverrideDiffers:
       return "User-agent override differs";
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:

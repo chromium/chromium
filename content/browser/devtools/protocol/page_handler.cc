@@ -1291,8 +1291,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
-    case Reason::kNotMainFrame:
-      return Page::BackForwardCacheNotRestoredReasonEnum::NotMainFrame;
+    case Reason::kNotPrimaryMainFrame:
+      return Page::BackForwardCacheNotRestoredReasonEnum::NotPrimaryMainFrame;
     case Reason::kBackForwardCacheDisabled:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           BackForwardCacheDisabled;
@@ -1380,9 +1380,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kNavigationCancelledWhileRestoring:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           NavigationCancelledWhileRestoring;
-    case Reason::kBackForwardCacheDisabledForPrerender:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          BackForwardCacheDisabledForPrerender;
     case Reason::kUserAgentOverrideDiffers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           UserAgentOverrideDiffers;
@@ -1653,7 +1650,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   using Reason = BackForwardCacheMetrics::NotRestoredReason;
   switch (reason) {
-    case Reason::kNotMainFrame:
+    case Reason::kNotPrimaryMainFrame:
     case Reason::kBackForwardCacheDisabled:
     case Reason::kRelatedActiveContentsExist:
     case Reason::kHTTPStatusNotOK:
@@ -1692,7 +1689,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kUserAgentOverrideDiffers:
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kBackForwardCacheDisabledForDelegate:
-    case Reason::kBackForwardCacheDisabledForPrerender:
     case Reason::kServiceWorkerUnregistration:
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
