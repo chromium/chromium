@@ -780,6 +780,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         }
     }
 
+    @Override
+    public boolean showTabSwitcherTitle() {
+        return true;
+    }
+
     /**
      * Do clean-up work after the overview hiding animation is finished.
      * @see TabSwitcher.TabListDelegate#postHiding

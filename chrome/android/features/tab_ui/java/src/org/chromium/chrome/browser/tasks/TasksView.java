@@ -147,6 +147,13 @@ class TasksView extends CoordinatorLayoutForPointer {
      */
     void setTabCarouselVisibility(boolean isVisible) {
         mCarouselTabSwitcherContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Set the visibility of the tab carousel title.
+     * @param isVisible Whether it's visible.
+     */
+    void setTabCarouselTitleVisibility(boolean isVisible) {
         findViewById(R.id.tab_switcher_title).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 

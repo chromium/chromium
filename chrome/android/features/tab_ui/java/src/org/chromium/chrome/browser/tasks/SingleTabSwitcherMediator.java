@@ -260,6 +260,11 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
         return false;
     }
 
+    @Override
+    public boolean showTabSwitcherTitle() {
+        return false;
+    }
+
     private void updateSelectedTab(Tab tab) {
         if (tab.isLoading() && TextUtils.isEmpty(tab.getTitle())) {
             TabObserver tabObserver = new EmptyTabObserver() {

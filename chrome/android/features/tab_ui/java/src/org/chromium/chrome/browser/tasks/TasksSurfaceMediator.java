@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
@@ -51,6 +52,7 @@ class TasksSurfaceMediator implements OverviewModeObserver {
             IncognitoCookieControlsManager incognitoCookieControlsManager, boolean isTabCarousel) {
         mModel = model;
         mModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
+        mModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
 
         model.set(INCOGNITO_LEARN_MORE_CLICK_LISTENER, incognitoLearnMoreClickListener);
 

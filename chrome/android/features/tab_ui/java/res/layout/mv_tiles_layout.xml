@@ -11,6 +11,5 @@
     android:id="@+id/mv_tiles_layout"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:paddingBottom="@dimen/tasks_view_items_vertical_spacing">
+    android:orientation="horizontal">
 </org.chromium.chrome.browser.tasks.MvTilesLayout>
