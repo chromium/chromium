@@ -33,7 +33,6 @@ android_resources("java_resources") {
     "java/res/drawable/chevron_right.xml",
     "java/res/drawable/fake_search_box_text_box_bg_incognito.xml",
     "java/res/drawable/hovered_tab_grid_card_background.xml",
-    "java/res/drawable/ic_add_alert_blue.xml",
     "java/res/drawable/ic_check_googblue_20dp_animated.xml",
     "java/res/drawable/ic_group_icon_16dp.xml",
     "java/res/drawable/ic_rating_star_full.xml",
