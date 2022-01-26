@@ -4510,24 +4510,6 @@
             ]
         }
     ],
-    "OptimizationHintsFieldTrials": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "allowed_field_trial_names": "ChromeStart"
-                    },
-                    "enable_features": [
-                        "OptimizationHintsFieldTrials"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeEarlyNavigation": [
         {
             "platforms": [
