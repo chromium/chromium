@@ -2,12 +2,13 @@
 <title>Test Maximum Subframes</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
 
 <body>
 <script>
 promise_test(async (t) => {
-  const maxframes_key = KEYS['maxframes_response'];
+  const maxframes_key = token();
 
   internals.setMaxNumberOfFramesToTen(true);
 
@@ -25,7 +26,9 @@ promise_test(async (t) => {
 
   // Now that the last frame is removed, a new fenced frame can be
   // created since the page is now under the subframe limit.
-  attachFencedFrame('resources/maxframes-inner.html');
+  const frame_url = generateURL("resources/maxframes-inner.html",
+                                [maxframes_key]);
+  attachFencedFrame(frame_url);
   const response = await nextValueFromServer(maxframes_key);
   assert_equals(response, "page loaded", "The inner frame should be loaded.");
 }, 'Max Subframes Test');
