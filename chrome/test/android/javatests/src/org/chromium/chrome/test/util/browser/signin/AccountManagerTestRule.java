@@ -94,11 +94,7 @@ public class AccountManagerTestRule implements TestRule {
             // only if an account is signed in. Otherwise, tearDownRule() ultimately results a crash
             // in SignoutManager::signOut(). This is because sign out is attempted when a sign-out
             // operation is already in progress. See crbug/1102746 for more details.
-            //
-            // We call the force sign out version to make it easier for test writers to write tests
-            // which cleanly tear down (eg. for supervised users who otherwise are not allowed to
-            // sign out).
-            forceSignOut();
+            signOut();
         }
         AccountManagerFacadeProvider.resetInstanceForTests();
         AccountInfoServiceProvider.resetForTests();
@@ -203,36 +199,8 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
             @Nullable SyncService syncService) {
-        return addTestAccountThenSigninAndEnableSync(syncService, false);
-    }
-
-    /**
-     * Adds and signs in a child account with the default name and enables sync.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     *
-     * @param syncService SyncService object to set up sync, if null, sync won't
-     *         start.
-     */
-    public CoreAccountInfo addChildTestAccountThenSigninAndEnableSync(
-            @Nullable SyncService syncService) {
-        return addTestAccountThenSigninAndEnableSync(syncService, true);
-    }
-
-    /**
-     * Adds and signs in an account with the default name and enables sync.
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     *
-     * @param syncService SyncService object to set up sync, if null, sync won't
-     *         start.
-     * @param isChild Whether this is a supervised child account.
-     */
-    public CoreAccountInfo addTestAccountThenSigninAndEnableSync(
-            @Nullable SyncService syncService, boolean isChild) {
         assert !mIsSignedIn : "An account is already signed in!";
-        String email = isChild ? generateChildEmail(TEST_ACCOUNT_EMAIL) : TEST_ACCOUNT_EMAIL;
-        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(email);
+        CoreAccountInfo coreAccountInfo = addAccountAndWaitForSeeding(TEST_ACCOUNT_EMAIL);
         SigninTestUtil.signinAndEnableSync(coreAccountInfo, syncService);
         mIsSignedIn = true;
         return coreAccountInfo;
@@ -261,17 +229,6 @@ public class AccountManagerTestRule implements TestRule {
      */
     public void signOut() {
         SigninTestUtil.signOut();
-        mIsSignedIn = false;
-    }
-
-    /**
-     * Sign out from the current account, ignoring usual checks (suitable for eg. test teardown, but
-     * not feature testing).
-     *
-     * This method invokes native code. It shouldn't be called in a Robolectric test.
-     */
-    public void forceSignOut() {
-        SigninTestUtil.forceSignOut();
         mIsSignedIn = false;
     }
 
