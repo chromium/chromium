@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
@@ -23,7 +24,6 @@
 #include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sessions/core/session_id.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 
@@ -132,7 +132,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     app_launch_info->window_id = window_id;
   } else {
     app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        extension_misc::kChromeAppId, window_id);
+        app_constants::kChromeAppId, window_id);
 
     // If the window is an app type browser window, set `app_type_browser` as
     // true, to call the browser session restore to restore apps for the next
@@ -276,13 +276,13 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
   const int window_id = app_launch_info->window_id.value();
   std::unique_ptr<app_restore::WindowInfo> window_info;
 
-  if (app_id != extension_misc::kChromeAppId) {
+  if (app_id != app_constants::kChromeAppId) {
     // For browser windows, it could have been saved as
-    // extension_misc::kChromeAppId in OnWindowInitialized. However, for the
+    // app_constants::kChromeAppId in OnWindowInitialized. However, for the
     // system web apps, we need to save as the system web app app id and the
     // launch parameter, because system web apps can't be restored by the
     // browser session restore. So remove the record in
-    // extension_misc::kChromeAppId, save the launch info as the system web
+    // app_constants::kChromeAppId, save the launch info as the system web
     // app id, and move window info to the record of the system web app id.
     auto it = window_id_to_app_restore_info_.find(window_id);
     if (it != window_id_to_app_restore_info_.end()) {

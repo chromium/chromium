@@ -9,9 +9,9 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
-#include "extensions/common/constants.h"
 
 namespace app_restore {
 
@@ -78,7 +78,7 @@ base::Value RestoreData::ConvertToValue() const {
 }
 
 bool RestoreData::HasAppTypeBrowser() const {
-  auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
+  auto it = app_id_to_launch_list_.find(app_constants::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
 
@@ -92,7 +92,7 @@ bool RestoreData::HasAppTypeBrowser() const {
 }
 
 bool RestoreData::HasBrowser() const {
-  auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
+  auto it = app_id_to_launch_list_.find(app_constants::kChromeAppId);
   if (it == app_id_to_launch_list_.end())
     return false;
 

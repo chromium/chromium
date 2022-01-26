@@ -255,12 +255,6 @@ EXTENSIONS_EXPORT extern const char kQuickOfficeExtensionId[];
 // The extension id used for testing mimeHandlerPrivate.
 EXTENSIONS_EXPORT extern const char kMimeHandlerPrivateTestExtensionId[];
 
-// The extension id of the Chrome component application.
-EXTENSIONS_EXPORT extern const char kChromeAppId[];
-
-// Fake extension ID for the Lacros chrome browser application.
-EXTENSIONS_EXPORT extern const char kLacrosAppId[];
-
 // The extension id of the Files Manager application.
 EXTENSIONS_EXPORT extern const char kFilesManagerAppId[];
 
@@ -385,6 +379,12 @@ EXTENSIONS_EXPORT extern const char kCryptotokenExtensionId[];
 // allows making requests to the extension after it has been default disabled.
 // TODO(1224886): Delete together with CryptoToken code.
 EXTENSIONS_EXPORT extern const char kCryptotokenDeprecationTrialName[];
+
+// DEPRECATED.
+// The following two identifiers are being moved to
+// //components/app_constants/constants.[h|cc]. Please use those instead.
+EXTENSIONS_EXPORT extern const char kChromeAppId[];
+EXTENSIONS_EXPORT extern const char kLacrosAppId[];
 
 }  // namespace extension_misc
 

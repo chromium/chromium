@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/features.h"
@@ -24,7 +25,6 @@
 #include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/aura_test_helper.h"
@@ -265,7 +265,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
                             std::vector<GURL> urls,
                             int32_t active_tab_index = 0) {
     auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-        extension_misc::kChromeAppId, id);
+        app_constants::kChromeAppId, id);
     launch_info->urls = urls;
     launch_info->active_tab_index = active_tab_index;
     SaveAppLaunchInfo(file_path, std::move(launch_info));
@@ -887,7 +887,7 @@ TEST_F(FullRestoreReadAndSaveTest, ReadBrowserRestoreData) {
   ASSERT_TRUE(restore_data);
   const auto& launch_list = restore_data->app_id_to_launch_list();
   EXPECT_EQ(1u, launch_list.size());
-  const auto launch_list_it = launch_list.find(extension_misc::kChromeAppId);
+  const auto launch_list_it = launch_list.find(app_constants::kChromeAppId);
   EXPECT_TRUE(launch_list_it != launch_list.end());
   EXPECT_EQ(1u, launch_list_it->second.size());
   const auto app_restore_data_it = launch_list_it->second.find(kId1);
@@ -955,21 +955,21 @@ TEST_F(FullRestoreReadAndSaveTest, LacrosBrowserWindowSavingCreateWindowFirst) {
                                    /*restored_browser_session_id=*/0);
 
   // Verify the browser window is saved.
-  EXPECT_EQ(extension_misc::kLacrosAppId,
+  EXPECT_EQ(app_constants::kLacrosAppId,
             save_handler->GetAppId(widget->GetNativeWindow()));
   auto window_info = save_handler->GetWindowInfo(
-      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+      GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
 
   // Modify the window info.
   SaveWindowInfo(window, kActivationIndex2);
   window_info = save_handler->GetWindowInfo(
-      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+      GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex2, window_info->activation_index.value());
 
   widget.reset();
   ASSERT_FALSE(save_handler->GetWindowInfo(
-      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId));
+      GetPath(), app_constants::kLacrosAppId, kBrowserSessionId));
 
   timer->FireNow();
   // Wait for the restore data to be written to the full restore file.
@@ -1004,15 +1004,15 @@ TEST_F(FullRestoreReadAndSaveTest,
   SaveWindowInfo(window.get(), kActivationIndex1);
 
   // Verify the browser window is saved.
-  EXPECT_EQ(extension_misc::kLacrosAppId, save_handler->GetAppId(window.get()));
+  EXPECT_EQ(app_constants::kLacrosAppId, save_handler->GetAppId(window.get()));
   auto window_info = save_handler->GetWindowInfo(
-      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+      GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex1, window_info->activation_index.value());
 
   // Modify the window info.
   SaveWindowInfo(window.get(), kActivationIndex2);
   window_info = save_handler->GetWindowInfo(
-      GetPath(), extension_misc::kLacrosAppId, kBrowserSessionId);
+      GetPath(), app_constants::kLacrosAppId, kBrowserSessionId);
   EXPECT_EQ(kActivationIndex2, window_info->activation_index.value());
 
   window.reset();

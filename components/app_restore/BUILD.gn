@@ -54,10 +54,11 @@ component("app_restore") {
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
     "//components/sessions:session_id",
-    "//extensions/common:common_constants",
     "//ui/aura",
     "//ui/views",
   ]
+
+  deps = [ "//components/app_constants" ]
 }
 
 source_set("unit_tests") {
@@ -71,6 +72,7 @@ source_set("unit_tests") {
 
   deps = [
     ":app_restore",
+    "//components/app_constants",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura:test_support",

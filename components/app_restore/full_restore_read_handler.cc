@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/desk_template_read_handler.h"
@@ -25,7 +26,6 @@
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/sessions/core/session_id.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 
 namespace full_restore {
@@ -368,7 +368,7 @@ void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
     const base::FilePath& profile_path) {
   auto session_id = SessionID::NewUnique();
   auto app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
-      extension_misc::kChromeAppId, session_id.id());
+      app_constants::kChromeAppId, session_id.id());
   app_launch_info->app_type_browser = true;
 
   if (profile_path_to_restore_data_.find(profile_path) ==
@@ -380,7 +380,7 @@ void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(
   profile_path_to_restore_data_[profile_path]->AddAppLaunchInfo(
       std::move(app_launch_info));
   window_id_to_app_restore_info_[session_id.id()] =
-      std::make_pair(profile_path, extension_misc::kChromeAppId);
+      std::make_pair(profile_path, app_constants::kChromeAppId);
 }
 
 std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
@@ -449,7 +449,7 @@ void FullRestoreReadHandler::OnGetRestoreData(
               std::make_pair(profile_path, app_id);
           // TODO(crbug.com/1239984): Remove restore data from
           // `lacros_read_handler_` for ash browser apps.
-          if (lacros_read_handler_ && app_id != extension_misc::kChromeAppId &&
+          if (lacros_read_handler_ && app_id != app_constants::kChromeAppId &&
               primary_profile_path_ == profile_path) {
             lacros_read_handler_->AddRestoreData(app_id, window_id);
           }

@@ -4,11 +4,11 @@
 
 #include "components/app_restore/lacros_save_handler.h"
 
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/window_info.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/window.h"
 
 namespace full_restore {
@@ -39,7 +39,7 @@ void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
         profile_path_, app_id);
     app_launch_info->window_id = window_id;
   } else {
-    app_id = extension_misc::kLacrosAppId;
+    app_id = app_constants::kLacrosAppId;
     app_launch_info =
         std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
   }
@@ -85,15 +85,15 @@ void LacrosSaveHandler::OnBrowserWindowAdded(aura::Window* const window,
                                        it->second.window_id);
   }
 
-  window_candidates_[lacros_window_id].app_id = extension_misc::kLacrosAppId;
+  window_candidates_[lacros_window_id].app_id = app_constants::kLacrosAppId;
   window_candidates_[lacros_window_id].window_id = browser_session_id;
 
   save_handler->AddAppLaunchInfo(
       profile_path_, std::make_unique<app_restore::AppLaunchInfo>(
-                         extension_misc::kLacrosAppId, browser_session_id));
+                         app_constants::kLacrosAppId, browser_session_id));
 
   if (window_info) {
-    save_handler->ModifyWindowInfo(profile_path_, extension_misc::kLacrosAppId,
+    save_handler->ModifyWindowInfo(profile_path_, app_constants::kLacrosAppId,
                                    browser_session_id, *window_info);
   }
 }
