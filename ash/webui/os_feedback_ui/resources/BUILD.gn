@@ -62,6 +62,7 @@ js_library("confirmation_page") {
 
 js_library("help_content") {
   deps = [
+    ":feedback_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

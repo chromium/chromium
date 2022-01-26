@@ -6,6 +6,8 @@ import './os_feedback_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {HelpContentList} from './feedback_types.js';
+
 /**
  * @fileoverview
  * 'help-content' displays list of help contents.
@@ -17,6 +19,16 @@ export class HelpContentElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * An implicit array of help contents to be displayed.
+       * @type {!HelpContentList}
+       */
+      helpContentList: {type: HelpContentList, value: () => []}
+    };
   }
 }
 

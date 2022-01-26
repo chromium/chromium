@@ -1,7 +1,16 @@
 <style include="os-feedback-shared">
+  .help-item {
+  }
 </style>
 <div id="helpContentContainer">
   <!--TODO(xiangdongkong): use localized strings -->
   <p id="helpContentLabel">Suggested help content:</p>
-  <!--TODO(xiangdongkong): display help content list -->
+  <dom-repeat items="[[helpContentList]]">
+    <template>
+      <div class="help-item">
+        <!--TODO(xiangdongkong): add icon -->
+        <a href="[[item.url]]" target="_blank">[[item.title]]</a>
+      </div>
+    </template>
+  </dom-repeat>
 </div>
