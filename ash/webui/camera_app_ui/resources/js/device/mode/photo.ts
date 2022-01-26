@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '../../assert.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../mojo/image_capture.js';
 import {
+  CameraMetadata,
   CameraMetadataTag,
   StreamType,
 } from '../../mojo/type.js';
@@ -200,7 +202,7 @@ export class Photo extends ModeBase {
       return;
     }
 
-    const cameraMetadataTagInverseLookup = {};
+    const cameraMetadataTagInverseLookup: Record<number, string> = {};
     Object.entries(CameraMetadataTag).forEach(([key, value]) => {
       if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
         return;
@@ -208,8 +210,10 @@ export class Photo extends ModeBase {
       cameraMetadataTagInverseLookup[value] = key;
     });
 
-    const callback = (metadata) => {
-      const parsedMetadata = /** @type {!Record<string, unknown>} */ ({});
+    const callback = (metadata: CameraMetadata) => {
+      const parsedMetadata: Record<string, unknown> = {};
+      // TODO(b/215648588): Make CameraMetadata.entries mandatory.
+      assert(metadata.entries !== undefined);
       for (const entry of metadata.entries) {
         const key = cameraMetadataTagInverseLookup[entry.tag];
         if (key === undefined) {
@@ -225,6 +229,7 @@ export class Photo extends ModeBase {
     };
 
     const {deviceId} = this.video.getVideoSettings();
+    assert(deviceId !== undefined);
     this.metadataObserver = await deviceOperator.addMetadataObserver(
         deviceId, callback, StreamType.JPEG_OUTPUT);
   }
