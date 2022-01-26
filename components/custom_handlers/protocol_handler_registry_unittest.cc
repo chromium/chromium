@@ -15,28 +15,26 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/custom_handlers/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
 using content::ProtocolHandler;
-using custom_handlers::ProtocolHandlerRegistry;
 
-namespace {
+namespace custom_handlers {
 
 std::unique_ptr<base::DictionaryValue> GetProtocolHandlerValue(
     const std::string& protocol,
@@ -120,9 +118,13 @@ class ProtocolHandlerRegistryTest : public testing::Test {
 
   TestProtocolHandlerRegistryDelegate* delegate() const { return delegate_; }
   ProtocolHandlerRegistry* registry() { return registry_.get(); }
-  TestingProfile* profile() const { return profile_.get(); }
   const ProtocolHandler& test_protocol_handler() const {
     return test_protocol_handler_;
+  }
+
+  PrefService* GetPrefs() {
+    DCHECK(browser_context_);
+    return user_prefs::UserPrefs::Get(browser_context_.get());
   }
 
   ProtocolHandler CreateProtocolHandler(
@@ -160,7 +162,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   int InPrefHandlerCount() {
-    const base::Value* in_pref_handlers = profile()->GetPrefs()->GetList(
+    const base::Value* in_pref_handlers = GetPrefs()->GetList(
         custom_handlers::prefs::kRegisteredProtocolHandlers);
     return static_cast<int>(in_pref_handlers->GetList().size());
   }
@@ -175,8 +177,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
 
   int InPrefIgnoredHandlerCount() {
     const base::Value* in_pref_ignored_handlers =
-        profile()->GetPrefs()->GetList(
-            custom_handlers::prefs::kIgnoredProtocolHandlers);
+        GetPrefs()->GetList(custom_handlers::prefs::kIgnoredProtocolHandlers);
     return static_cast<int>(in_pref_ignored_handlers->GetList().size());
   }
 
@@ -188,25 +189,28 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     return in_memory_ignored_handler_count;
   }
 
-  // Returns a new registry, initializing it if |initialize| is true.
-  // Caller assumes ownership for the object
+  // It creates a new instance of the ProtocolHandlerRegistry class,
+  // initializing it if |initialize| is true, for the registry_ member variable.
   void SetUpRegistry(bool initialize) {
+    DCHECK(browser_context_);
     auto delegate = std::make_unique<TestProtocolHandlerRegistryDelegate>();
     delegate_ = delegate.get();
-    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(),
-                                                          std::move(delegate));
-    if (initialize) registry_->InitProtocolSettings();
+    registry_ = std::make_unique<ProtocolHandlerRegistry>(
+        browser_context_.get(), std::move(delegate));
+    if (initialize)
+      registry_->InitProtocolSettings();
   }
 
   void TeadDownRegistry() {
     registry_->Shutdown();
     registry_.reset();
-    // Registry owns the delegate_ it handles deletion of that object.
   }
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
-    CHECK(profile_->GetPrefs());
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    user_prefs::UserPrefs::Set(browser_context_.get(), &pref_service_);
+    ProtocolHandlerRegistry::RegisterProfilePrefs(pref_service_.registry());
+    CHECK(GetPrefs());
     SetUpRegistry(true);
     test_protocol_handler_ =
         CreateProtocolHandler("news", GURL("https://test.com/%s"));
@@ -217,14 +221,13 @@ class ProtocolHandlerRegistryTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::TestBrowserContext> browser_context_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   raw_ptr<TestProtocolHandlerRegistryDelegate>
       delegate_;  // Registry assumes ownership of delegate_.
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler test_protocol_handler_;
 };
-
-}  // namespace
 
 TEST_F(ProtocolHandlerRegistryTest, AcceptProtocolHandlerHandlesProtocol) {
   ASSERT_FALSE(registry()->IsHandledProtocol("news"));
@@ -387,7 +390,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestEnabledDisabled) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest,
-    DisallowRegisteringExternallyHandledProtocols) {
+       DisallowRegisteringExternallyHandledProtocols) {
   ASSERT_TRUE(!delegate()->IsExternalHandlerRegistered("news"));
   delegate()->RegisterExternalHandler("news");
   ASSERT_FALSE(registry()->CanSchemeBeOverridden("news"));
@@ -822,12 +825,10 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
   handlers_registered_by_policy.Append(
       GetProtocolHandlerValueWithDefault("mailto", URL_p3u1, true));
 
-  profile()->GetPrefs()->Set(
-      custom_handlers::prefs::kRegisteredProtocolHandlers,
-      handlers_registered_by_pref);
-  profile()->GetPrefs()->Set(
-      custom_handlers::prefs::kPolicyRegisteredProtocolHandlers,
-      handlers_registered_by_policy);
+  GetPrefs()->Set(custom_handlers::prefs::kRegisteredProtocolHandlers,
+                  handlers_registered_by_pref);
+  GetPrefs()->Set(custom_handlers::prefs::kPolicyRegisteredProtocolHandlers,
+                  handlers_registered_by_policy);
   registry()->InitProtocolSettings();
 
   // Duplicate p1u2 eliminated in memory but not yet saved in pref
@@ -901,11 +902,10 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("news", URL_p1u3));
   handlers_ignored_by_policy.Append(GetProtocolHandlerValue("im", URL_p2u1));
 
-  profile()->GetPrefs()->Set(custom_handlers::prefs::kIgnoredProtocolHandlers,
-                             handlers_ignored_by_pref);
-  profile()->GetPrefs()->Set(
-      custom_handlers::prefs::kPolicyIgnoredProtocolHandlers,
-      handlers_ignored_by_policy);
+  GetPrefs()->Set(custom_handlers::prefs::kIgnoredProtocolHandlers,
+                  handlers_ignored_by_pref);
+  GetPrefs()->Set(custom_handlers::prefs::kPolicyIgnoredProtocolHandlers,
+                  handlers_ignored_by_policy);
   registry()->InitProtocolSettings();
 
   // Duplicate p1u2 eliminated in memory but not yet saved in pref
@@ -1184,3 +1184,5 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
       "ext+foo", https_handler_url,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }
+
+}  // namespace custom_handlers

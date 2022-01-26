@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -37,6 +36,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -1044,7 +1044,8 @@ TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
 
 TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   custom_handlers::ProtocolHandlerRegistry registry(
-      profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
+      profile(),
+      std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 
   const GURL page_url("https://toplevel.example/");
@@ -1111,7 +1112,8 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
 
 TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
   custom_handlers::ProtocolHandlerRegistry registry(
-      profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
+      profile(),
+      std::make_unique<custom_handlers::TestProtocolHandlerRegistryDelegate>());
   registry.InitProtocolSettings();
 
   const GURL page_url("https://toplevel.example/");

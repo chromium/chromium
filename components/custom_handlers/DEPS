@@ -2,7 +2,10 @@ include_rules = [
   "+components/keyed_service",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/sync_preferences",
   "+components/user_prefs",
-  "+content/public/common",
   "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+third_party/blink/public/common/security",
 ]

@@ -19,3 +19,37 @@ static_library("custom_handlers") {
     "//content/public/common",
   ]
 }
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_protocol_handler_registry_delegate.cc",
+    "test_protocol_handler_registry_delegate.h",
+  ]
+  deps = [
+    ":custom_handlers",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "protocol_handler_registry_unittest.cc" ]
+
+  deps = [
+    ":custom_handlers",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/pref_registry",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+}

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
+#include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 
 #include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/threading/thread_task_runner_handle.h"
+
+namespace custom_handlers {
 
 TestProtocolHandlerRegistryDelegate::TestProtocolHandlerRegistryDelegate() =
     default;
@@ -69,3 +71,5 @@ void TestProtocolHandlerRegistryDelegate::Reset() {
   os_registered_protocols_.clear();
   force_os_failure_ = false;
 }
+
+}  // namespace custom_handlers

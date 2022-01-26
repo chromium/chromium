@@ -24,10 +24,6 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace {
-class ProtocolHandlerRegistryTest;
-}  // namespace
-
 using content::ProtocolHandler;
 using DefaultClientCallback = base::OnceCallback<void(bool)>;
 
@@ -227,7 +223,7 @@ class ProtocolHandlerRegistry : public KeyedService {
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::IO>;
 
-  friend class ::ProtocolHandlerRegistryTest;
+  friend class ProtocolHandlerRegistryTest;
 
   // Puts the given handler at the top of the list of handlers for its
   // protocol.

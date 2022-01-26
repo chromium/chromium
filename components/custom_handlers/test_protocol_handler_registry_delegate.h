@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_
-#define CHROME_BROWSER_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_
+#ifndef COMPONENTS_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_
+#define COMPONENTS_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_
 
 #include <set>
 #include <string>
 
 #include "components/custom_handlers/protocol_handler_registry.h"
+
+namespace custom_handlers {
 
 // A test ProtocolHandlerRegistry::Delegate implementation that keeps track of
 // registered protocols and doesn't change any OS settings.
@@ -48,4 +50,6 @@ class TestProtocolHandlerRegistryDelegate
   bool force_os_failure_{false};
 };
 
-#endif  // CHROME_BROWSER_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_
+}  // namespace custom_handlers
+
+#endif  // COMPONENTS_CUSTOM_HANDLERS_TEST_PROTOCOL_HANDLER_REGISTRY_DELEGATE_H_

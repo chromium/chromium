@@ -15,12 +15,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +43,9 @@ class SiteSettingsCounterTest : public testing::Test {
 #endif
     handler_registry_ =
         std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
-            profile(), std::make_unique<TestProtocolHandlerRegistryDelegate>());
+            profile(),
+            std::make_unique<
+                custom_handlers::TestProtocolHandlerRegistryDelegate>());
 
     counter_ = std::make_unique<SiteSettingsCounter>(
         map(), zoom_map(), handler_registry(), profile_->GetPrefs());
