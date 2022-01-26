@@ -552,9 +552,7 @@ config("compiler") {
     }
 
     # TODO(crbug.com/1235145): Investigate why/if this should be needed.
-    if (is_win) {
-      cflags += [ "/clang:-ffp-contract=off" ]
-    } else {
+    if (is_android) {
       cflags += [ "-ffp-contract=off" ]
     }
 
