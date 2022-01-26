@@ -121,25 +121,6 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
   return result;
 }
 
-bool IsDriverName(const char* device_file_name, const char* driver) {
-  base::ScopedFD fd(open(device_file_name, O_RDWR));
-  if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to open DRM device " << device_file_name;
-    return false;
-  }
-
-  ScopedDrmVersionPtr version(drmGetVersion(fd.get()));
-  if (!version) {
-    LOG(ERROR) << "Failed to query DRM version " << device_file_name;
-    return false;
-  }
-
-  if (strncmp(driver, version->name, version->name_len) == 0)
-    return true;
-
-  return false;
-}
-
 HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd) {
   auto [displays, invalid_crtcs] = GetDisplayInfosAndInvalidCrtcs(fd);
   // Disable invalid CRTCs to allow the preferred CRTCs to be enabled later

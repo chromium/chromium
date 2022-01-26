@@ -38,9 +38,6 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
     const std::vector<display::GammaRampRGBEntry>& lut_in,
     size_t desired_size);
 
-// Check DRM driver name match.
-bool IsDriverName(const char* device_file_name, const char* driver);
-
 // Returns the display infos parsed in
 // |GetDisplayInfosAndInvalidCrtcs| and disables the invalid CRTCs
 // that weren't picked as preferred CRTCs.
