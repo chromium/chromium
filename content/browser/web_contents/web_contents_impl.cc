@@ -9026,10 +9026,12 @@ void WebContentsImpl::OnColorProviderChanged() {
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 }
 
-const ui::ColorProvider* WebContentsImpl::GetColorProvider() const {
+const ui::ColorProvider& WebContentsImpl::GetColorProvider() const {
   auto* source = GetColorProviderSource();
   DCHECK(source);
-  return source->GetColorProvider();
+  auto* color_provider = source->GetColorProvider();
+  DCHECK(color_provider);
+  return *color_provider;
 }
 
 blink::mojom::FrameWidgetInputHandler*

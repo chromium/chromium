@@ -83,6 +83,7 @@ class InterfaceProvider;
 namespace ui {
 struct AXPropertyFilter;
 struct AXTreeUpdate;
+class ColorProvider;
 class ColorProviderSource;
 }
 
@@ -494,6 +495,10 @@ class WebContents : public PageNavigator,
   // current source is destroyed. WebContents will receive updates when the
   // source's ColorProvider changes.
   virtual void SetColorProviderSource(ui::ColorProviderSource* source) = 0;
+
+  // Returns the ColorProvider instance for this WebContents object. This will
+  // always return a valid ColorProvider instance.
+  virtual const ui::ColorProvider& GetColorProvider() const = 0;
 
   // Returns the committed WebUI if one exists.
   virtual WebUI* GetWebUI() = 0;

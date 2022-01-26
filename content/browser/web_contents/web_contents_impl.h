@@ -1748,7 +1748,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Returns the ColorProvider instance for this WebContents object. This will
   // always return a valid ColorProvider instance.
-  const ui::ColorProvider* GetColorProvider() const;
+  const ui::ColorProvider& GetColorProvider() const override;
 
   // Sets the visibility to |new_visibility| and propagates this to the
   // renderer side, taking into account the current capture state. This
