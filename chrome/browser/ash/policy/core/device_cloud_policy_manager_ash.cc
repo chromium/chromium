@@ -135,11 +135,11 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   syslog_uploader_.reset();
   status_uploader_.reset();
   managed_session_service_.reset();
+  euicc_status_uploader_.reset();
   external_data_manager_->Disconnect();
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
   signin_profile_forwarding_schema_registry_.reset();
-  euicc_status_uploader_.reset();
 }
 
 // static
