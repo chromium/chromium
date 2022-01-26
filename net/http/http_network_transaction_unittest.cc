@@ -9314,7 +9314,7 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   session_deps_.socket_factory->AddSocketDataProvider(&data1);
   SSLSocketDataProvider ssl1(ASYNC, OK);
   // When creating the second connection, only HTTP/1.1 should be allowed.
-  ssl1.next_protos_expected_in_ssl_config = NextProtoVector{};
+  ssl1.next_protos_expected_in_ssl_config = NextProtoVector{kProtoHTTP11};
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl1);
 
   session_deps_.enable_websocket_over_http2 = true;
