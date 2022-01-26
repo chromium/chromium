@@ -112,6 +112,7 @@ public class OmniboxTestUtils {
      * @param active Whether the Omnibox is expected to have focus or not.
      */
     public void checkFocus(boolean active) {
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     "unexpected Omnibox focus state", mUrlBar.hasFocus(), Matchers.is(active));
