@@ -9,5 +9,17 @@
       "symbol_level": 1,
       "use_goma": true
     }
+  },
+  "DevTools Linux Fastbuild": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "devtools_skip_typecheck": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
   }
 }

@@ -99,8 +99,10 @@ class WebTestBuilders(builders.Builders):
         if self._non_chromium_builders is None:
             str_builders = {
                 'devtools_frontend_linux_blink_light_rel',
+                'devtools_frontend_linux_blink_light_rel_fastbuild',
                 'devtools_frontend_linux_blink_rel',
                 'DevTools Linux',
+                'DevTools Linux Fastbuild',
                 'DevTools Linux (chromium)',
                 # Could be used in the future, but has never run any builds.
                 'linux-exp-code-coverage',

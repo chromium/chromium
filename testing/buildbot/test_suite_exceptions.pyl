@@ -415,6 +415,14 @@
           'shards': 4,
         },
       },
+      'devtools_frontend_linux_blink_light_rel_fastbuild': {
+        'args': [
+          'http/tests/devtools',
+        ],
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'fuchsia-fyi-x64-rel': {
         'args': [
           '--platform=fuchsia',

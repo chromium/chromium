@@ -647,6 +647,7 @@
 
     'client.devtools-frontend.integration': {
       'DevTools Linux': 'release_trybot_blink',
+      'DevTools Linux Fastbuild': 'release_trybot_blink_skip_typecheck',
     },
 
     'client.openscreen.chromium': {
@@ -1222,6 +1223,7 @@
     'tryserver.devtools-frontend': {
       # Align devtools blink builders with chromium linux-rel
       'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink',
+      'devtools_frontend_linux_blink_light_rel_fastbuild': 'release_trybot_blink_skip_typecheck',
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink',
     },
 
@@ -2990,6 +2992,10 @@
       'release_trybot_blink',
     ],
 
+    'release_trybot_blink_skip_typecheck': [
+      'release_trybot_blink', 'devtools_skip_typecheck',
+    ],
+
     'release_trybot_dcheck_off': [
       'release_trybot_dcheck_off',
     ],
@@ -3427,6 +3433,10 @@
 
     'debug_static_bot_reclient': {
       'mixins': ['debug', 'static', 'minimal_symbols', 'reclient'],
+    },
+
+    'devtools_skip_typecheck': {
+      'gn_args': 'devtools_skip_typecheck=true',
     },
 
     'disable_nacl': {
