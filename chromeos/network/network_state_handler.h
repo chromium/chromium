@@ -696,6 +696,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // availability changed.
   void UpdateManagedWifiNetworkAvailable();
 
+  // Check if the cellular device has received update and calls
+  // |UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular())|
+  void UpdateBlockedCellularNetworks();
+
   // Calls |UpdateBlockedByPolicy()| for each given |network_type| network.
   void UpdateBlockedNetworksInternal(const NetworkTypePattern& network_type);
 
