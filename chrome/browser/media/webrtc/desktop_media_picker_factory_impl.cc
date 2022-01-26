@@ -24,12 +24,12 @@ DesktopMediaPickerFactoryImpl* DesktopMediaPickerFactoryImpl::GetInstance() {
   return impl.get();
 }
 
-std::unique_ptr<DesktopMediaPicker> DesktopMediaPickerFactoryImpl::CreatePicker(
-    const content::MediaStreamRequest* request) {
+std::unique_ptr<DesktopMediaPicker>
+DesktopMediaPickerFactoryImpl::CreatePicker() {
 // DesktopMediaPicker is implemented only for Windows, OSX and Aura Linux
 // builds.
 #if defined(TOOLKIT_VIEWS)
-  return DesktopMediaPicker::Create(request);
+  return DesktopMediaPicker::Create();
 #else
   return nullptr;
 #endif

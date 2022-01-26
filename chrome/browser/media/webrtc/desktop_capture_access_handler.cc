@@ -476,9 +476,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
   if (pending_request->request.requested_video_device_id.empty()) {
-    // TODO(https://crbug.com/1284714): Remove CreatePicker()'s parameter.
-    pending_request->picker =
-        picker_factory_->CreatePicker(&pending_request->request);
+    pending_request->picker = picker_factory_->CreatePicker();
     if (!pending_request->picker) {
       std::move(pending_request->callback)
           .Run(blink::MediaStreamDevices(),
