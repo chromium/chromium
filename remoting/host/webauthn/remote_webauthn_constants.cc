@@ -11,9 +11,11 @@ const char kRemoteWebAuthnDataChannelName[] = "remote-webauthn";
 const char kIsUvpaaMessageType[] = "isUvpaa";
 const char kGetRemoteStateMessageType[] = "getRemoteState";
 const char kCreateMessageType[] = "create";
+const char kCancelMessageType[] = "cancel";
 
 const char kIsUvpaaResponseIsAvailableKey[] = "isAvailable";
 const char kGetRemoteStateResponseIsRemotedKey[] = "isRemoted";
+const char kCancelResponseWasCanceledKey[] = "wasCanceled";
 const char kCreateRequestDataKey[] = "requestData";
 const char kCreateResponseErrorNameKey[] = "errorName";
 const char kCreateResponseDataKey[] = "responseData";

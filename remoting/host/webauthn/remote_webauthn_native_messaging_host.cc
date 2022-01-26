@@ -4,6 +4,7 @@
 
 #include "remoting/host/webauthn/remote_webauthn_native_messaging_host.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/bind.h"
@@ -14,6 +15,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "remoting/host/chromoting_host_services_client.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/webauthn/remote_webauthn_constants.h"
@@ -31,7 +33,11 @@ RemoteWebAuthnNativeMessagingHost::RemoteWebAuthnNativeMessagingHost(
     std::unique_ptr<ChromotingHostServicesProvider> host_service_api_client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : task_runner_(task_runner),
-      host_service_api_client_(std::move(host_service_api_client)) {}
+      host_service_api_client_(std::move(host_service_api_client)) {
+  request_cancellers_.set_disconnect_handler(base::BindRepeating(
+      &RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected,
+      base::Unretained(this)));
+}
 
 RemoteWebAuthnNativeMessagingHost::~RemoteWebAuthnNativeMessagingHost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -59,6 +65,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     ProcessGetRemoteState(std::move(response));
   } else if (type == kCreateMessageType) {
     ProcessCreate(request, std::move(response));
+  } else if (type == kCancelMessageType) {
+    ProcessCancel(request, std::move(response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
   }
@@ -122,20 +130,73 @@ void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
     return;
   }
 
-  const std::string* request_data =
-      request.FindStringKey(kCreateRequestDataKey);
-  if (!request_data) {
-    LOG(ERROR) << "Request data not found in create request.";
-    // navigator.credentials.create() throws NotSupportedError if the parameter
-    // is unexpected.
+  // navigator.credentials.create() throws NotSupportedError if it is called
+  // with unexpected parameters.
+
+  const base::Value* message_id = request.FindKey(kMessageId);
+  if (!message_id) {
+    LOG(ERROR) << "Message ID not found in create request.";
     response.SetStringKey(kCreateResponseErrorNameKey, "NotSupportedError");
     SendMessageToClient(std::move(response));
     return;
   }
 
+  const std::string* request_data =
+      request.FindStringKey(kCreateRequestDataKey);
+  if (!request_data) {
+    LOG(ERROR) << "Request data not found in create request.";
+    response.SetStringKey(kCreateResponseErrorNameKey, "NotSupportedError");
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  mojo::PendingRemote<mojom::WebAuthnRequestCanceller>
+      pending_request_canceller;
+  auto request_canceller_receiver =
+      pending_request_canceller.InitWithNewPipeAndPassReceiver();
+  id_to_request_canceller_.emplace(
+      message_id->Clone(),
+      request_cancellers_.Add(std::move(pending_request_canceller)));
+
   remote_->Create(
-      *request_data,
+      *request_data, std::move(request_canceller_receiver),
       base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnCreateResponse,
+                     base::Unretained(this), std::move(response)));
+}
+
+void RemoteWebAuthnNativeMessagingHost::ProcessCancel(
+    const base::Value& request,
+    base::Value response) {
+  // Cancel request: {id: string, type: 'cancel'}
+  // Create response:
+  //   {id: string, type: 'cancelResponse', wasCanceled: boolean}
+
+  if (!EnsureIpcConnection()) {
+    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  const base::Value* message_id = request.FindKey(kMessageId);
+  if (!message_id) {
+    LOG(ERROR) << "Message ID not found in cancel request.";
+    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  auto it = id_to_request_canceller_.find(*message_id);
+  if (it == id_to_request_canceller_.end()) {
+    LOG(ERROR) << "No cancelable request found for message ID " << *message_id;
+    response.SetBoolKey(kCancelResponseWasCanceledKey, false);
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  auto* canceller = request_cancellers_.Get(it->second);
+  CHECK(canceller);
+  canceller->Cancel(
+      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnCancelResponse,
                      base::Unretained(this), std::move(response)));
 }
 
@@ -205,6 +266,24 @@ void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
     }
   }
 
+  const base::Value* message_id = response.FindKey(kMessageId);
+  if (message_id) {
+    RemoveRequestCancellerByMessageId(*message_id);
+  }
+
+  SendMessageToClient(std::move(response));
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnCancelResponse(base::Value response,
+                                                         bool was_canceled) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  const base::Value* message_id = response.FindKey(kMessageId);
+  if (message_id) {
+    RemoveRequestCancellerByMessageId(*message_id);
+  }
+
+  response.SetBoolKey(kCancelResponseWasCanceledKey, was_canceled);
   SendMessageToClient(std::move(response));
 }
 
@@ -268,6 +347,37 @@ void RemoteWebAuthnNativeMessagingHost::SendMessageToClient(
     return;
   }
   client_->PostMessageFromNativeHost(message_json);
+}
+
+void RemoteWebAuthnNativeMessagingHost::RemoveRequestCancellerByMessageId(
+    const base::Value& message_id) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  auto it = id_to_request_canceller_.find(message_id);
+  if (it != id_to_request_canceller_.end()) {
+    request_cancellers_.Remove(it->second);
+    id_to_request_canceller_.erase(it);
+  } else {
+    LOG(WARNING) << "Cannot find receiver for message ID " << message_id;
+  }
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnRequestCancellerDisconnected(
+    mojo::RemoteSetElementId disconnecting_canceller) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  auto it = std::find_if(id_to_request_canceller_.begin(),
+                         id_to_request_canceller_.end(),
+                         [disconnecting_canceller](const auto& pair) {
+                           return pair.second == disconnecting_canceller;
+                         });
+  if (it != id_to_request_canceller_.end()) {
+    id_to_request_canceller_.erase(it);
+  }
+
+  if (on_request_canceller_disconnected_for_testing_) {
+    on_request_canceller_disconnected_for_testing_.Run();
+  }
 }
 
 }  // namespace remoting

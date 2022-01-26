@@ -10,7 +10,7 @@ package remoting.protocol;
 
 // Composite message type for messages sent over the remote-webauthn data
 // channel.
-// Next ID: 6
+// Next ID: 8
 message RemoteWebAuthn {
   // Requests the client to handle a call to
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
@@ -44,7 +44,21 @@ message RemoteWebAuthn {
     }
   }
 
-  // Unique ID used to multiplex requests.
+  // Requests the client to abort an ongoing Create or Get request.
+  // The |id| field of this message should be set to the same value as the
+  // to-be-canceled GetRequest/CreateRequest's |id| field.
+  message CancelRequest {}
+
+  // Response for CancelRequest.
+  // Next ID: 2
+  message CancelResponse {
+    // Boolean indicating whether the request has been successfully canceled.
+    // If this is true, no future CreateResponse/GetResponse will be delivered
+    // for the same |id|.
+    optional bool was_canceled = 1;
+  }
+
+  // ID used to multiplex requests.
   optional uint64 id = 1;
 
   oneof message {
@@ -53,5 +67,8 @@ message RemoteWebAuthn {
 
     CreateRequest create_request = 4;
     CreateResponse create_response = 5;
+
+    CancelRequest cancel_request = 6;
+    CancelResponse cancel_response = 7;
   }
 }

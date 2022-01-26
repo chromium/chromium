@@ -18,6 +18,16 @@ union WebAuthnCreateResponse {
   string response_data;
 };
 
+// An interface for the client (CRD WebAuthn Native Messaging Host) to cancel
+// an ongoing remote Create or Get request.
+interface WebAuthnRequestCanceller {
+  // Cancels the ongoing Create or Get request.
+  //
+  // Returns a boolean indicating whether the request has been successfully
+  // canceled.
+  Cancel() => (bool was_canceled);
+};
+
 // An interface for the host-side chromoting extension to pass intercepted Web
 // Authentication API requests to the client side chromoting security extension
 // through a chromoting host process.
@@ -44,10 +54,17 @@ interface WebAuthnProxy {
   IsUserVerifyingPlatformAuthenticatorAvailable() => (bool is_available);
 
   // Handles a navigator.credentials.create() call remotely.
-  // |request_data| is the string-serialized representation of the parameters
-  // passed to the create() call. It is opaque to chromoting host processes and
-  // will be passed verbatim to the client.
+  //
+  // |request_data|: the string-serialized representation of the parameters
+  //     passed to the create() call. It is opaque to chromoting host processes
+  //     and will be passed verbatim to the client.
+  // |request_canceller|: interface for the caller to cancel the Create request
+  //     before it has been resolved. The receiver will be closed once the
+  //     cancelation has succeeded, or a CreateResponse has been returned.
+  //
   // If |response| is null, it means that the remote create() call has yielded
   // `null`, which is still a valid response according to the spec.
-  Create(string request_data) => (WebAuthnCreateResponse? response);
+  Create(string request_data,
+         pending_receiver<WebAuthnRequestCanceller> request_canceller) =>
+      (WebAuthnCreateResponse? response);
 };

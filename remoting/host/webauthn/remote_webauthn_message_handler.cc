@@ -4,25 +4,31 @@
 
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 
+#include <stdint.h>
+
+#include <limits>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
 namespace {
 
-template <typename CallbackType, typename ResponseType>
+template <typename CallbackType, typename... ResponseType>
 void FindAndRunCallback(base::flat_map<uint64_t, CallbackType>& callback_map,
                         uint64_t id,
-                        ResponseType response) {
+                        ResponseType&&... response) {
   auto it = callback_map.find(id);
   if (it == callback_map.end()) {
     LOG(WARNING) << "No callback found associated with ID: " << id;
     return;
   }
-  std::move(it->second).Run(std::move(response));
+  std::move(it->second).Run(std::forward<ResponseType>(response)...);
   callback_map.erase(it);
 }
 
@@ -37,6 +43,9 @@ RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
   receiver_set_.set_disconnect_handler(
       base::BindRepeating(&RemoteWebAuthnMessageHandler::OnReceiverDisconnected,
                           base::Unretained(this)));
+  request_cancellers_.set_disconnect_handler(base::BindRepeating(
+      &RemoteWebAuthnMessageHandler::OnRequestCancellerDisconnected,
+      base::Unretained(this)));
 }
 
 RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() {
@@ -68,6 +77,10 @@ void RemoteWebAuthnMessageHandler::OnIncomingMessage(
     case protocol::RemoteWebAuthn::kCreateResponse:
       OnCreateResponse(remote_webauthn->id(),
                        remote_webauthn->create_response());
+      break;
+    case protocol::RemoteWebAuthn::kCancelResponse:
+      OnCancelResponse(remote_webauthn->id(),
+                       remote_webauthn->cancel_response());
       break;
     default:
       LOG(ERROR) << "Unknown message case: " << remote_webauthn->message_case();
@@ -104,17 +117,43 @@ void RemoteWebAuthnMessageHandler::
   Send(remote_webauthn, base::DoNothing());
 }
 
-void RemoteWebAuthnMessageHandler::Create(const std::string& request_data,
-                                          CreateCallback callback) {
+void RemoteWebAuthnMessageHandler::Create(
+    const std::string& request_data,
+    mojo::PendingReceiver<mojom::WebAuthnRequestCanceller> request_canceller,
+    CreateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   uint64_t id = AssignNextMessageId();
   create_callbacks_[id] = std::move(callback);
+  message_id_to_request_canceller_[id] = request_cancellers_.Add(
+      this, std::move(request_canceller), /* context= */ id);
 
   protocol::RemoteWebAuthn remote_webauthn;
   remote_webauthn.set_id(id);
   remote_webauthn.mutable_create_request()->set_request_details_json(
       request_data);
+  Send(remote_webauthn, base::DoNothing());
+}
+
+void RemoteWebAuthnMessageHandler::Cancel(CancelCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  uint64_t id = request_cancellers_.current_context();
+
+  // TODO(yuweih): Check |get_callbacks_| here.
+  if (!base::Contains(create_callbacks_, id)) {
+    LOG(ERROR) << "No ongoing request is associated with message ID " << id;
+    std::move(callback).Run(false);
+    RemoveRequestCancellerByMessageId(id);
+    return;
+  }
+
+  cancel_callbacks_[id] = std::move(callback);
+
+  protocol::RemoteWebAuthn remote_webauthn;
+  remote_webauthn.set_id(id);
+  // This creates an empty cancel request.
+  remote_webauthn.mutable_cancel_request();
   Send(remote_webauthn, base::DoNothing());
 }
 
@@ -133,6 +172,11 @@ void RemoteWebAuthnMessageHandler::ClearReceivers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   receiver_set_.Clear();
+  request_cancellers_.Clear();
+  message_id_to_request_canceller_.clear();
+  is_uvpaa_callbacks_.clear();
+  create_callbacks_.clear();
+  cancel_callbacks_.clear();
 }
 
 void RemoteWebAuthnMessageHandler::NotifyWebAuthnStateChange() {
@@ -183,13 +227,62 @@ void RemoteWebAuthnMessageHandler::OnCreateResponse(
       NOTREACHED() << "Unknown create result case: " << response.result_case();
   }
 
+  RemoveRequestCancellerByMessageId(id);
   FindAndRunCallback(create_callbacks_, id, std::move(mojo_response));
+}
+
+void RemoteWebAuthnMessageHandler::OnCancelResponse(
+    uint64_t id,
+    const protocol::RemoteWebAuthn_CancelResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!response.was_canceled()) {
+    LOG(WARNING) << "Client failed to cancel request with ID " << id;
+    FindAndRunCallback(cancel_callbacks_, id, /* was_canceled= */ false);
+    // Don't remove request canceller here since cancelation might succeed after
+    // retrying.
+    return;
+  }
+
+  if (base::Contains(create_callbacks_, id)) {
+    FindAndRunCallback(cancel_callbacks_, id, /* was_canceled= */ true);
+    FindAndRunCallback(
+        create_callbacks_, id,
+        mojom::WebAuthnCreateResponse::NewErrorName("AbortError"));
+    RemoveRequestCancellerByMessageId(id);
+    return;
+  }
+
+  // TODO(yuweih): Check |get_callbacks_| here.
+
+  LOG(WARNING) << "Can't find cancelable request associated with ID " << id;
+  FindAndRunCallback(cancel_callbacks_, id, /* was_canceled= */ false);
+  RemoveRequestCancellerByMessageId(id);
 }
 
 uint64_t RemoteWebAuthnMessageHandler::AssignNextMessageId() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return current_message_id_++;
+}
+
+void RemoteWebAuthnMessageHandler::RemoveRequestCancellerByMessageId(
+    uint64_t message_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = message_id_to_request_canceller_.find(message_id);
+  if (it != message_id_to_request_canceller_.end()) {
+    request_cancellers_.Remove(it->second);
+    message_id_to_request_canceller_.erase(it);
+  } else {
+    LOG(WARNING) << "Cannot find receiver for message ID " << message_id;
+  }
+}
+
+void RemoteWebAuthnMessageHandler::OnRequestCancellerDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  message_id_to_request_canceller_.erase(request_cancellers_.current_context());
 }
 
 }  // namespace remoting
