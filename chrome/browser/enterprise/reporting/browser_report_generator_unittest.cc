@@ -85,8 +85,10 @@ void VerifyBrowserVersionAndChannel(em::BrowserReport* report,
   }
 }
 
-void VerifyBuildState(em::BrowserReport* report) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+void VerifyBuildState(em::BrowserReport* report, bool with_version_info) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!with_version_info)
+    return;
   const auto* build_state = g_browser_process->GetBuildState();
   if (build_state->update_type() == BuildState::UpdateType::kNone ||
       !build_state->installed_version()) {
@@ -227,7 +229,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               bool with_version_info = true;
 #endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
               VerifyBrowserVersionAndChannel(report.get(), with_version_info);
-              VerifyBuildState(report.get());
+              VerifyBuildState(report.get(), with_version_info);
               VerifyExtendedStableChannel(report.get());
               VerifyProfile(report.get());
               VerifyPlugins(report.get());
@@ -251,7 +253,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
               VerifyBrowserVersionAndChannel(report.get(),
                                              /*with_version_info=*/true);
-              VerifyBuildState(report.get());
+              VerifyBuildState(report.get(), /*with_version_info=*/true);
               VerifyExtendedStableChannel(report.get());
               EXPECT_LE(0, report->plugins_size());
 
