@@ -21,7 +21,7 @@ export interface MaxTimeOption {
  */
 abstract class RecordTimeBase {
   private readonly recordTime = dom.get('#record-time', HTMLElement);
-  protected readonly maxTimeOption: MaxTimeOption|null;
+  protected readonly maxTimeOption: MaxTimeOption|null = null;
 
   /**
    * Timeout to count every tick of elapsed recording time.
@@ -42,10 +42,6 @@ abstract class RecordTimeBase {
    * The total duration of the recording in milliseconds.
    */
   private totalDuration = 0;
-
-  constructor(maxTimeOption?: MaxTimeOption) {
-    this.maxTimeOption = maxTimeOption || null;
-  }
 
   /**
    * @return Time interval to update ticks in milliseconds.
@@ -86,8 +82,10 @@ abstract class RecordTimeBase {
         this.ticks++;
       } else {
         this.maxTimeOption.onMaxTimeout();
-        clearInterval(this.tickTimeout);
-        this.tickTimeout = null;
+        if (this.tickTimeout !== null) {
+          clearInterval(this.tickTimeout);
+          this.tickTimeout = null;
+        }
       }
       this.update();
     }, this.getTimeInterval());
@@ -136,7 +134,7 @@ export class RecordTime extends RecordTimeBase {
 
   getTimeMessage(ticks: number): string {
     // Format time into HH:MM:SS or MM:SS.
-    const pad = (n) => {
+    const pad = (n: number) => {
       return (n < 10 ? '0' : '') + n;
     };
     let hh = '';
@@ -152,6 +150,13 @@ export class RecordTime extends RecordTimeBase {
  * Record time for gif record type.
  */
 export class GifRecordTime extends RecordTimeBase {
+  declare protected readonly maxTimeOption: MaxTimeOption;
+
+  constructor(maxTimeOption: MaxTimeOption) {
+    super();
+    this.maxTimeOption = maxTimeOption;
+  }
+
   getTimeInterval(): number {
     return 100;
   }
