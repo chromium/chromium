@@ -15,6 +15,10 @@
 #include "base/task/task_runner.h"
 #include "base/types/pass_key.h"
 
+namespace ash {
+class PSIMemoryMetrics;
+}
+
 namespace blink {
 class TimerBase;
 }
@@ -38,6 +42,9 @@ class PostDelayedTaskPassKey {
   friend class base::internal::DelayTimerBase;
   friend class base::DeadlineTimer;
   friend class blink::TimerBase;
+  // TODO(pmonette): Remove this once PSIMemoryMetrics no longer uses
+  // PostCancelableDelayedTask.
+  friend class ash::PSIMemoryMetrics;
   friend class PostDelayedTaskPassKeyForTesting;
 };
 
