@@ -220,7 +220,7 @@ class DesksTemplatesTest : public OverviewTestBase {
     ASSERT_TRUE(templates_grid_view);
 
     std::vector<DesksTemplatesItemView*> grid_items =
-        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+        templates_grid_view->grid_items();
 
     // Check the current grid item count.
     ASSERT_EQ(expected_current_item_count, grid_items.size());
@@ -608,7 +608,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
         static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
     ASSERT_TRUE(templates_grid_view);
     std::vector<DesksTemplatesItemView*> grid_items =
-        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+        templates_grid_view->grid_items();
 
     ASSERT_EQ(2ul, grid_items.size());
 
@@ -1484,7 +1484,7 @@ TEST_F(DesksTemplatesTest, TemplatesAreVisibleAfterSecondSave) {
   ASSERT_TRUE(templates_grid_view);
 
   std::vector<DesksTemplatesItemView*> grid_items =
-      DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+      templates_grid_view->grid_items();
   ASSERT_EQ(1ul, grid_items.size());
 
   // Tests that bounds of the views are not empty.

@@ -45,25 +45,6 @@ class DesksTemplatesPresenterTestApi {
   DesksTemplatesPresenter* const presenter_;
 };
 
-// Wrapper for `DesksTemplatesGridView` that exposes internal state to test
-// functions.
-class DesksTemplatesGridViewTestApi {
- public:
-  explicit DesksTemplatesGridViewTestApi(
-      const DesksTemplatesGridView* grid_view);
-  DesksTemplatesGridViewTestApi(const DesksTemplatesGridViewTestApi&) = delete;
-  DesksTemplatesGridViewTestApi& operator=(
-      const DesksTemplatesGridViewTestApi&) = delete;
-  ~DesksTemplatesGridViewTestApi();
-
-  const std::vector<DesksTemplatesItemView*>& grid_items() const {
-    return grid_view_->grid_items_;
-  }
-
- private:
-  const DesksTemplatesGridView* grid_view_;
-};
-
 // Wrapper for `DesksTemplatesItemView` that exposes internal state to test
 // functions.
 class DesksTemplatesItemViewTestApi {

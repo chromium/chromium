@@ -56,7 +56,6 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
 
  private:
   friend class DesksTemplatesEventHandler;
-  friend class DesksTemplatesGridViewTestApi;
 
   // Updates the visibility state of the hover buttons on all the `grid_items_`
   // as a result of mouse and gesture events.

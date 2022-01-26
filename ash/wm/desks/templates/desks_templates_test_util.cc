@@ -46,14 +46,6 @@ void DesksTemplatesPresenterTestApi::SetOnUpdateUiClosure(
   presenter_->on_update_ui_closure_for_testing_ = std::move(closure);
 }
 
-DesksTemplatesGridViewTestApi::DesksTemplatesGridViewTestApi(
-    const DesksTemplatesGridView* grid_view)
-    : grid_view_(grid_view) {
-  DCHECK(grid_view_);
-}
-
-DesksTemplatesGridViewTestApi::~DesksTemplatesGridViewTestApi() = default;
-
 DesksTemplatesItemViewTestApi::DesksTemplatesItemViewTestApi(
     const DesksTemplatesItemView* item_view)
     : item_view_(item_view) {
@@ -93,7 +85,7 @@ DesksTemplatesItemView* GetItemViewFromTemplatesGrid(int grid_item_index) {
   DCHECK(templates_grid_view);
 
   std::vector<DesksTemplatesItemView*> grid_items =
-      DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+      templates_grid_view->grid_items();
   DesksTemplatesItemView* item_view = grid_items.at(grid_item_index);
   DCHECK(item_view);
   return item_view;
