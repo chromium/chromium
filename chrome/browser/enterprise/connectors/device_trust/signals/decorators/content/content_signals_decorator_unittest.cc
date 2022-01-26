@@ -11,6 +11,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +30,9 @@ class ContentSignalsDecoratorTest : public testing::Test {
     // Register prefs in test pref services.
     policy::URLBlocklistManager::RegisterProfilePrefs(
         fake_profile_prefs_.registry());
-    blocklist_service_.emplace(
-        std::make_unique<policy::URLBlocklistManager>(&fake_profile_prefs_));
+    blocklist_service_.emplace(std::make_unique<policy::URLBlocklistManager>(
+        &fake_profile_prefs_, policy::policy_prefs::kUrlBlocklist,
+        policy::policy_prefs::kUrlAllowlist));
 
     decorator_.emplace(&blocklist_service_.value());
   }

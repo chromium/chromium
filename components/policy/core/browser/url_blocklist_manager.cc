@@ -81,9 +81,25 @@ constexpr char kIosNtpHost[] = "newtab";
 std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value* block,
                                              const base::Value* allow) {
   auto blocklist = std::make_unique<URLBlocklist>();
-  blocklist->Block(&base::Value::AsListValue(*block));
-  blocklist->Allow(&base::Value::AsListValue(*allow));
+  if (block)
+    blocklist->Block(&base::Value::AsListValue(*block));
+  if (allow)
+    blocklist->Allow(&base::Value::AsListValue(*allow));
   return blocklist;
+}
+
+const base::Value* GetPrefValue(PrefService* pref_service,
+                                absl::optional<std::string> pref_path) {
+  DCHECK(pref_service);
+
+  if (!pref_path)
+    return nullptr;
+
+  DCHECK(!pref_path->empty());
+
+  return pref_service->HasPrefPath(*pref_path)
+             ? pref_service->GetList(*pref_path)
+             : nullptr;
 }
 
 bool BypassBlocklistWildcardForURL(const GURL& url) {
@@ -196,8 +212,16 @@ bool URLBlocklist::FilterTakesPrecedence(const FilterComponents& lhs,
   return false;
 }
 
-URLBlocklistManager::URLBlocklistManager(PrefService* pref_service)
-    : pref_service_(pref_service), blocklist_(new URLBlocklist) {
+URLBlocklistManager::URLBlocklistManager(
+    PrefService* pref_service,
+    absl::optional<std::string> blocklist_pref_path,
+    absl::optional<std::string> allowlist_pref_path)
+    : pref_service_(pref_service),
+      blocklist_pref_path_(std::move(blocklist_pref_path)),
+      allowlist_pref_path_(std::move(allowlist_pref_path)),
+      blocklist_(new URLBlocklist) {
+  DCHECK(blocklist_pref_path_ || allowlist_pref_path_);
+
   // This class assumes that it is created on the same thread that
   // |pref_service_| lives on.
   ui_task_runner_ = base::SequencedTaskRunnerHandle::Get();
@@ -207,17 +231,17 @@ URLBlocklistManager::URLBlocklistManager(PrefService* pref_service)
   pref_change_registrar_.Init(pref_service_);
   base::RepeatingClosure callback = base::BindRepeating(
       &URLBlocklistManager::ScheduleUpdate, base::Unretained(this));
-  pref_change_registrar_.Add(policy_prefs::kUrlBlocklist, callback);
-  pref_change_registrar_.Add(policy_prefs::kUrlAllowlist, callback);
+  if (blocklist_pref_path_)
+    pref_change_registrar_.Add(*blocklist_pref_path_, callback);
+  if (allowlist_pref_path_)
+    pref_change_registrar_.Add(*allowlist_pref_path_, callback);
 
   // Start enforcing the policies without a delay when they are present at
   // startup.
-  if (pref_service_->HasPrefPath(policy_prefs::kUrlBlocklist) ||
-      pref_service_->HasPrefPath(policy_prefs::kUrlAllowlist)) {
-    SetBlocklist(
-        BuildBlocklist(pref_service_->GetList(policy_prefs::kUrlBlocklist),
-                       pref_service_->GetList(policy_prefs::kUrlAllowlist)));
-  }
+  const base::Value* block = GetPrefValue(pref_service_, blocklist_pref_path_);
+  const base::Value* allow = GetPrefValue(pref_service_, allowlist_pref_path_);
+  if (block || allow)
+    SetBlocklist(BuildBlocklist(block, allow));
 }
 
 URLBlocklistManager::~URLBlocklistManager() {
@@ -241,14 +265,16 @@ void URLBlocklistManager::Update() {
 
   // The URLBlocklist is built in the background. Once it's ready, it is passed
   // to the URLBlocklistManager back on ui_task_runner_.
+  const base::Value* block = GetPrefValue(pref_service_, blocklist_pref_path_);
+  const base::Value* allow = GetPrefValue(pref_service_, allowlist_pref_path_);
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
-          base::Owned(base::Value::ToUniquePtrValue(
-              pref_service_->GetList(policy_prefs::kUrlBlocklist)->Clone())),
-          base::Owned(base::Value::ToUniquePtrValue(
-              pref_service_->GetList(policy_prefs::kUrlAllowlist)->Clone()))),
+          base::Owned(block ? base::Value::ToUniquePtrValue(block->Clone())
+                            : nullptr),
+          base::Owned(allow ? base::Value::ToUniquePtrValue(allow->Clone())
+                            : nullptr)),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }

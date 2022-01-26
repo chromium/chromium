@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/web/public/browser_state.h"
@@ -51,8 +52,9 @@ PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
   PrefService* prefs =
       ChromeBrowserState::FromBrowserState(browser_state)->GetPrefs();
-  auto url_blocklist_manager =
-      std::make_unique<policy::URLBlocklistManager>(prefs);
+  auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
+      prefs, policy::policy_prefs::kUrlBlocklist,
+      policy::policy_prefs::kUrlAllowlist);
   return std::make_unique<PolicyBlocklistService>(
       browser_state, std::move(url_blocklist_manager));
 }

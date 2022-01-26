@@ -33,6 +33,7 @@ source_set("unit_tests") {
     "//components/component_updater",
     "//components/policy/content",
     "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
