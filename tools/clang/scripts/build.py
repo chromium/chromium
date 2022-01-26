@@ -1169,6 +1169,7 @@ def main():
 
       libs_want = [
           'lib/linux/libclang_rt.asan-{0}-android.so',
+          'lib/linux/libclang_rt.asan_static-{0}-android.a',
           'lib/linux/libclang_rt.ubsan_standalone-{0}-android.so',
           'lib/linux/libclang_rt.profile-{0}-android.a',
       ]

@@ -557,6 +557,14 @@ config("compiler") {
     } else {
       cflags += [ "-ffp-contract=off" ]
     }
+
+    # TODO(crbug.com/1290191): Some ios tests fail without this.
+    if (is_ios) {
+      cflags += [
+        "-Xclang",
+        "-disable-noundef-analysis",
+      ]
+    }
   }
 
   # C11/C++11 compiler flags setup.
@@ -2308,6 +2316,10 @@ config("symbols") {
       # clang defaults to DWARF2 on macOS unless mac_deployment_target is
       # at least 10.11.
       # TODO(thakis): Remove this once mac_deployment_target is 10.11.
+      cflags += [ "-gdwarf-4" ]
+    } else if (!use_dwarf5 && !is_nacl) {
+      # Recent clang versions default to DWARF5 on Linux, and Android is about
+      # to switch. TODO: Adopt that in controlled way.
       cflags += [ "-gdwarf-4" ]
     }
 
