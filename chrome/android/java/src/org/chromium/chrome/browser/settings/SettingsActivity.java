@@ -443,13 +443,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
     }
 
-    @Override
-    protected void applyThemeOverlays() {
-        super.applyThemeOverlays();
-
-        setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
-    }
-
     /**
      * Set device status bar to match the activity background color, if supported.
      */

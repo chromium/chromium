@@ -205,15 +205,10 @@
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
     </style>
 
-    <!-- It's logically backward, but this is applied to SettingsActivity when
-         THEME_REFACTOR_ANDROID is disabled. -->
-    <style name="ThemeRefactorOverlay.Disabled.Settings" parent="">
+    <!-- Applied to the SettingsActivity's AppBarLayout to disable the
+         liftOnScroll color-fill effect. -->
+    <style name="ThemeOverlay.Settings.DisableElevationOverlay" parent="">
         <item name="elevationOverlayEnabled">false</item>
-    </style>
-    <!-- This is applied to view of MaterialCardViewNoShadow
-        in SettingsActivity. -->
-    <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
-        <item name="elevationOverlayEnabled">true</item>
     </style>
     <style name="ThemeOverlay.BrowserUI.DynamicColors" parent="ThemeOverlay.Material3.DynamicColors.DayNight">
         <item name="elevationOverlayColor">?attr/colorPrimary</item>
