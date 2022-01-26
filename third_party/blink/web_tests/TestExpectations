@@ -7559,6 +7559,10 @@ crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/br
 crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-formats-write-read.tentative.https.html [ Failure Pass ]
 crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipboard/async-custom-format-write-read.tentative.https.html [ Failure Pass ]
 
+# Flakiness of WIP MediaStreamTrack on workers.
+crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-worker.https.html [ Crash Pass ]
+crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Crash Pass ]
+
 # Sheriff 2022-01-25
 crbug.com/1289992 virtual/document-transition/document-transition/paint-order.html [ Skip ]
 # Temporarily disable test to land branded types related changes.
