@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Framebust.ClickThroughPosition"
-    enum="ListItemPosition" expires_after="2021-01-30">
+    enum="ListItemPosition" expires_after="M110">
   <owner>csharrison@chromium.org</owner>
   <owner>japhet@chromium.org</owner>
   <summary>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Framebust.InterventionOutcome"
-    enum="FramebustInterventionOutcome" expires_after="2021-01-30">
+    enum="FramebustInterventionOutcome" expires_after="M110">
   <owner>csharrison@chromium.org</owner>
   <owner>japhet@chromium.org</owner>
   <summary>
