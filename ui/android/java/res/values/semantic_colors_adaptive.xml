@@ -116,6 +116,7 @@
     <color name="menu_action_bar_bg_color_baseline">@color/menu_action_bar_bg_color_light_baseline</color>
     <color name="menu_action_bar_bg_color_light_baseline">@color/default_bg_color_light_elev_1_baseline</color>
     <color name="menu_action_bar_bg_color_dark_baseline">@color/default_bg_color_dark_elev_6_baseline</color>
+    <color name="menu_item_bg_color_baseline">@color/menu_item_bg_color</color>
     <color name="menu_item_bg_color">@color/menu_item_bg_color_light_baseline</color>
     <color name="menu_item_bg_color_light_baseline">@color/default_bg_color_light</color>
     <color name="menu_item_bg_color_dark_baseline">@color/default_bg_color_dark_elev_5_baseline</color>

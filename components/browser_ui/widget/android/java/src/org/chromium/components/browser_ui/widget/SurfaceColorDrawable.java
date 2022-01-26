@@ -66,7 +66,25 @@ public class SurfaceColorDrawable extends GradientDrawable {
 
     @Override
     public boolean canApplyTheme() {
+        // Attributes needed for color calculations are in the theme.
         return true;
+    }
+
+    @Override
+    public ConstantState getConstantState() {
+        // Must hide GradientDrawable's ConstantState, otherwise usage will cause GradientDrawable
+        // objects to be created, instead of this class. Returning null means that these drawables
+        // will not be able to be shared.
+        return null;
+    }
+
+    @Override
+    public Callback getCallback() {
+        // LayerDrawable attempts to do ownership checks by ensuring this callback is null.
+        // Unfortunately it more or less makes it incompatible for classes that return null for
+        // constant state, otherwise warning stack traces are logged. Even when returning null here,
+        // transition animations still seem to play correctly.
+        return null;
     }
 
     @Override
