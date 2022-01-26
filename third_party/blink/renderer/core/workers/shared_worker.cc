@@ -79,6 +79,12 @@ SharedWorker* SharedWorker::Create(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
+  if (context->IsContextDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The context provided is invalid.");
+    return nullptr;
+  }
+
   // We don't currently support nested workers, so workers can only be created
   // from windows.
   LocalDOMWindow* window = To<LocalDOMWindow>(context);
