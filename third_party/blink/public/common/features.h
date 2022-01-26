@@ -594,6 +594,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheAppBanner;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDefaultStyleSheetsEarlyInit;
 
+BLINK_COMMON_EXPORT extern const base::Feature kSystemColorChooser;
+
 }  // namespace features
 }  // namespace blink
 

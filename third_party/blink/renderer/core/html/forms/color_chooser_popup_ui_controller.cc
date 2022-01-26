@@ -27,6 +27,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -113,6 +114,11 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddProperty("isEyeDropperEnabled", ::features::IsEyeDropperEnabled(), data);
 #if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
+  if (base::FeatureList::IsEnabled(features::kSystemColorChooser)) {
+    AddProperty("isSystemColorChooserEnabled", true, data);
+    AddLocalizedProperty("systemColorChooserLabel", IDS_SYSTEM_COLOR_CHOOSER,
+                         data);
+  }
 #endif
   // We don't create PagePopups on Android, so these strings are excluded
   // from blink_strings.grd on Android to save binary size.  We have to
@@ -272,6 +278,11 @@ void ColorChooserPopupUIController::OpenEyeDropper() {
   eye_dropper_chooser_->Choose(
       WTF::Bind(&ColorChooserPopupUIController::EyeDropperResponseHandler,
                 WrapWeakPersistent(this)));
+}
+
+void ColorChooserPopupUIController::OpenSystemColorChooser() {
+  // TODO(crbug.com/1230817): Implement the other half of this flow.
+  LOG(INFO) << "OpenSystemColorChooser() Called";
 }
 
 }  // namespace blink

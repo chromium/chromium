@@ -20,6 +20,7 @@ class ColorPagePopupController final : public PagePopupController {
   ColorPagePopupController(Page&, PagePopup&, ColorChooserPopupUIController*);
 
   void openEyeDropper();
+  void openSystemColorChooser();
 };
 
 }  // namespace blink

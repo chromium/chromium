@@ -1197,5 +1197,7 @@ const base::Feature kBackForwardCacheAppBanner{
 const base::Feature kDefaultStyleSheetsEarlyInit{
     "DefaultStyleSheetsEarlyInit", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSystemColorChooser{"SystemColorChooser",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 }  // namespace blink
