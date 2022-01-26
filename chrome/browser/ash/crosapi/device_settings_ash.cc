@@ -7,6 +7,11 @@
 #include <utility>
 
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/policy/chrome_policy_conversions_client.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -35,6 +40,23 @@ void DeviceSettingsAsh::AddDeviceSettingsObserver(
     mojo::PendingRemote<mojom::DeviceSettingsObserver> observer) {
   mojo::Remote<mojom::DeviceSettingsObserver> remote(std::move(observer));
   observers_.Add(std::move(remote));
+}
+
+void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
+  if (!g_browser_process->platform_part()
+           ->browser_policy_connector_ash()
+           ->IsDeviceEnterpriseManaged()) {
+    std::move(callback).Run(base::Value(), base::Value());
+    return;
+  }
+
+  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
+      ProfileManager::GetActiveUserProfile());
+  client->EnableUserPolicies(false);
+
+  // TODO(crbug.com/1243869): Get device_status from |client| and pass as the
+  // second parameter.
+  std::move(callback).Run(client->GetChromePolicies(), base::Value());
 }
 
 }  // namespace crosapi

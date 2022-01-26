@@ -726,6 +726,17 @@ PolicyUIHandler::~PolicyUIHandler() {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void PolicyUIHandler::OnGotDevicePolicy(base::Value device_policy,
+                                        base::Value legend_data) {
+  // TODO(crbug.com/1243869): Parse also legend_data and use it.
+  if (device_policy != device_policy_) {
+    device_policy_ = std::move(device_policy);
+    SendPolicies();
+  }
+}
+#endif
+
 void PolicyUIHandler::AddCommonLocalizedStringsToSource(
     content::WebUIDataSource* source) {
   source->AddLocalizedStrings(policy::kPolicySources);
@@ -882,6 +893,21 @@ void PolicyUIHandler::RegisterMessages() {
   extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
       ->AddObserver(this);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  // Get device policy.
+  if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
+      service->GetInterfaceVersion(
+          crosapi::mojom::DeviceSettingsService::Uuid_) >=
+          static_cast<int>(crosapi::mojom::DeviceSettingsService::
+                               kGetDevicePolicyMinVersion)) {
+    service->GetRemote<crosapi::mojom::DeviceSettingsService>()
+        ->GetDevicePolicy(base::BindOnce(&PolicyUIHandler::OnGotDevicePolicy,
+                                         weak_factory_.GetWeakPtr()));
+  }
+#endif
+
   policy::SchemaRegistry* registry = Profile::FromWebUI(web_ui())
                                          ->GetOriginalProfile()
                                          ->GetPolicySchemaRegistryService()
@@ -1004,9 +1030,13 @@ base::Value PolicyUIHandler::GetPolicyValues() {
   }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  return policy::ArrayPolicyConversions(std::move(client))
-      .EnableConvertValues(true)
-      .ToValue();
+  auto policy_conversions = policy::ArrayPolicyConversions(std::move(client));
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  policy_conversions.WithAdditionalChromePolicies(device_policy_.Clone());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return policy_conversions.EnableConvertValues(true).ToValue();
 }
 
 void PolicyUIHandler::AddExtensionPolicyNames(
