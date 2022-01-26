@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
@@ -130,6 +131,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     // Set at the end of the Omnibox interaction to indicate whether the user selected an item
     // from the list (true) or left the Omnibox and suggestions list with no action taken (false).
     private boolean mOmniboxFocusResultedInNavigation;
+    // Facilitate detection of Autocomplete actions being scheduled from an Autocomplete action.
+    private boolean mIsExecutingAutocompleteAction;
 
     /**
      * The text shown in the URL bar (user text + inline autocomplete) after the most recent set of
@@ -964,15 +967,16 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      *         Use SCHEDULE_FOR_IMMEDIATE_EXECUTION to post action at front of the message queue.
      */
     private void postAutocompleteRequest(@NonNull Runnable action, long delayMillis) {
+        assert !mIsExecutingAutocompleteAction : "Can't schedule conflicting autocomplete action";
+        assert ThreadUtils.runningOnUiThread() : "Detected input from a non-UI thread. Test error?";
+
         cancelAutocompleteRequests();
         mCurrentAutocompleteRequest = new Runnable() {
             @Override
             public void run() {
+                mIsExecutingAutocompleteAction = true;
                 action.run();
-                // Catch any AutocompleteRequests that post subsequent AutocompleteRequest.
-                // Note: we have to explicitly instantiate a Runnable class, otherwise
-                // 'this' will resolve into a parent class and Runnable.this won't work.
-                assert mCurrentAutocompleteRequest == this;
+                mIsExecutingAutocompleteAction = false;
                 // Release completed Runnable.
                 mCurrentAutocompleteRequest = null;
             }
