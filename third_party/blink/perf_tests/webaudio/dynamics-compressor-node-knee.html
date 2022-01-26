@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      Test performance of 100 DynamicsCompressorNodes.
+      Test performance of 100 DynamicsCompressorNodes (knee).
     </title>
     <script src="../resources/runner.js"></script>
     <script src="resources/webaudio-perf-utils.js"></script>
@@ -11,11 +11,15 @@
     <script>
       function graphBuilder() {
         const context = new OfflineAudioContext(1, 48000, 48000);
-        const source = new ConstantSourceNode(context);
-        const testNodes =
-            createAndConnectNodesInSeries(context, 'DynamicsCompressorNode', 100);
-        source.connect(testNodes.head);
-        testNodes.tail.connect(context.destination);
+        // -24 dB default threshold is about 0.063, use 0.07
+        const source = new ConstantSourceNode(context, {offset: 0.07});
+        const testNodes = createNodes(
+	    context, 'DynamicsCompressorNode', 100,
+            {attack: .003, knee: 30, ratio: 12, release: .25, threshold: -24});
+        for (let i = 0; i < testNodes.length; ++i) {
+          source.connect(testNodes[i]);
+          testNodes[i].connect(context.destination);
+        }
         source.start();
         return context;
       }
