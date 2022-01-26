@@ -461,11 +461,6 @@ class MockDnsClient : public DnsClient {
   absl::optional<AddressList> preset_addrs_;
 };
 
-// Convert a list of templates into a list of server configs.
-// All templates in the list must be valid.
-std::vector<DnsOverHttpsServerConfig> ParseDohTemplates(
-    std::vector<std::string> server_templates);
-
 }  // namespace net
 
 #endif  // NET_DNS_DNS_TEST_UTIL_H_

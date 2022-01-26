@@ -55,6 +55,7 @@
 #include "net/dns/dns_udp_tracker.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -1252,7 +1253,7 @@ class DnsTransactionImpl : public DnsTransaction,
     absl::optional<std::string> doh_provider_id;
     if (secure_ && result.attempt) {
       size_t server_index = result.attempt->server_index();
-      doh_provider_id = GetDohProviderIdForHistogramFromDohConfig(
+      doh_provider_id = GetDohProviderIdForHistogramFromServerConfig(
           session_->config().dns_over_https_servers[server_index]);
     }
 

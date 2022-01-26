@@ -5,9 +5,6 @@
 #ifndef NET_DNS_PUBLIC_UTIL_H_
 #define NET_DNS_PUBLIC_UTIL_H_
 
-#include <string>
-
-#include "base/strings/string_piece.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -16,13 +13,6 @@ namespace net {
 
 // Basic utility functions for interaction with MDNS and host resolution.
 namespace dns_util {
-
-// Returns true if the URI template is acceptable for sending requests. If so,
-// the |server_method| is set to "GET" if the template contains a "dns" variable
-// and to "POST" otherwise. Any "dns" variable may not be part of the hostname,
-// and the expanded template must parse to a valid HTTPS URL.
-NET_EXPORT_PRIVATE bool IsValidDohTemplate(base::StringPiece server_template,
-                                           std::string* server_method);
 
 // Gets the endpoint for the multicast group a socket should join to receive
 // MDNS messages. Such sockets should also bind to the endpoint from

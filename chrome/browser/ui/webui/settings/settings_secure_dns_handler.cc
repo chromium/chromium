@@ -21,7 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
@@ -178,8 +178,10 @@ void SecureDnsHandler::HandleParseCustomDnsEntry(const base::ListValue* args) {
 
   // Return all templates in the entry, or none if they are not all valid.
   base::Value templates(base::Value::Type::LIST);
-  if (secure_dns::IsValidGroup(custom_entry)) {
-    for (base::StringPiece t : secure_dns::SplitGroup(custom_entry)) {
+  absl::optional<net::DnsOverHttpsConfig> parsed =
+      net::DnsOverHttpsConfig::FromString(custom_entry);
+  if (parsed.has_value()) {
+    for (base::StringPiece t : parsed->ToStrings()) {
       templates.Append(t);
     }
   }

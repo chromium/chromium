@@ -785,16 +785,4 @@ scoped_refptr<DnsSession> MockDnsClient::BuildSession() {
       null_random_callback, nullptr /* net_log */);
 }
 
-std::vector<DnsOverHttpsServerConfig> ParseDohTemplates(
-    std::vector<std::string> server_templates) {
-  std::vector<DnsOverHttpsServerConfig> out;
-  out.reserve(server_templates.size());
-  base::ranges::transform(server_templates, std::back_inserter(out),
-                          [](std::string& server_template) {
-                            return *DnsOverHttpsServerConfig::FromString(
-                                std::move(server_template));
-                          });
-  return out;
-}
-
 }  // namespace net

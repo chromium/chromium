@@ -529,7 +529,7 @@ std::string ResolveContext::GetDohProviderIdForUma(size_t server_index,
   DCHECK(IsCurrentSession(session));
 
   if (is_doh_server) {
-    return GetDohProviderIdForHistogramFromDohConfig(
+    return GetDohProviderIdForHistogramFromServerConfig(
         session->config().dns_over_https_servers[server_index]);
   }
 
@@ -544,7 +544,7 @@ bool ResolveContext::GetProviderUseExtraLogging(size_t server_index,
 
   DohProviderEntry::List matching_entries;
   if (is_doh_server) {
-    DnsOverHttpsServerConfig server_config =
+    const DnsOverHttpsServerConfig& server_config =
         session->config().dns_over_https_servers[server_index];
     matching_entries = FindDohProvidersMatchingServerConfig(server_config);
   } else {

@@ -126,7 +126,7 @@ GetDohUpgradeServersFromNameservers(
 
 // Returns the provider id to use in UMA histogram names. If there is no
 // provider id that matches |doh_server|, returns "Other".
-NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromDohConfig(
+NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server);
 
 // Returns the provider id to use in UMA histogram names. If there is no

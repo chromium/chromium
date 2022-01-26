@@ -20,6 +20,8 @@ source_set("public") {
   sources = [
     "dns_config_overrides.cc",
     "dns_config_overrides.h",
+    "dns_over_https_config.cc",
+    "dns_over_https_config.h",
     "dns_over_https_server_config.cc",
     "dns_over_https_server_config.h",
     "dns_protocol.h",
@@ -67,9 +69,9 @@ if (is_android) {
 source_set("tests") {
   testonly = true
   sources = [
+    "dns_over_https_config_unittest.cc",
     "dns_over_https_server_config_unittest.cc",
     "doh_provider_entry_unittest.cc",
-    "util_unittest.cc",
   ]
 
   if (is_posix && !is_android) {
@@ -82,6 +84,7 @@ source_set("tests") {
 
   deps = [
     "//net",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

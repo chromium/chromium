@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,7 +29,10 @@ class NET_EXPORT DnsOverHttpsServerConfig {
   bool operator<(const DnsOverHttpsServerConfig& other) const;
 
   const std::string& server_template() const;
+  base::StringPiece server_template_piece() const;
   bool use_post() const;
+
+  base::Value ToValue() const;
 
  private:
   DnsOverHttpsServerConfig(std::string server_template, bool use_post)

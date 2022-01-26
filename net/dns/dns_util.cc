@@ -26,7 +26,6 @@
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/url_canon.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
@@ -315,7 +314,7 @@ std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
   return doh_servers;
 }
 
-std::string GetDohProviderIdForHistogramFromDohConfig(
+std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
   const auto it =

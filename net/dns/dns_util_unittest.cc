@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -487,11 +488,11 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
 
   doh_servers = GetDohUpgradeServersFromNameservers(nameservers,
                                                     std::vector<std::string>());
-  EXPECT_EQ(ParseDohTemplates(
-                {"https://chrome.cloudflare-dns.com/dns-query",
-                 "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
-                 "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"}),
-            doh_servers);
+  auto expected_config = *DnsOverHttpsConfig::FromStrings(
+      {"https://chrome.cloudflare-dns.com/dns-query",
+       "https://doh.cleanbrowsing.org/doh/family-filter{?dns}",
+       "https://doh.cleanbrowsing.org/doh/security-filter{?dns}"});
+  EXPECT_EQ(expected_config.servers(), doh_servers);
 
   doh_servers = GetDohUpgradeServersFromNameservers(
       nameservers, std::vector<std::string>(
@@ -501,12 +502,12 @@ TEST_F(DNSUtilTest, GetDohUpgradeServersFromNameservers) {
                   "https://doh.cleanbrowsing.org/doh/family-filter{?dns}")));
 }
 
-TEST_F(DNSUtilTest, GetDohProviderIdForHistogramFromDohConfig) {
+TEST_F(DNSUtilTest, GetDohProviderIdForHistogramFromServerConfig) {
   EXPECT_EQ("Cloudflare",
-            GetDohProviderIdForHistogramFromDohConfig(
+            GetDohProviderIdForHistogramFromServerConfig(
                 *DnsOverHttpsServerConfig::FromString(
                     "https://chrome.cloudflare-dns.com/dns-query")));
-  EXPECT_EQ("Other", GetDohProviderIdForHistogramFromDohConfig(
+  EXPECT_EQ("Other", GetDohProviderIdForHistogramFromServerConfig(
                          *DnsOverHttpsServerConfig::FromString(
                              "https://unexpected.dohserver.com/dns-query")));
 }

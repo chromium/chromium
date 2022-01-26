@@ -38,14 +38,6 @@ net::DohProviderEntry::List RemoveDisabledProviders(
     const net::DohProviderEntry::List& providers,
     const std::vector<std::string>& disabled_providers);
 
-// Implements the whitespace-delimited group syntax for DoH templates.
-std::vector<base::StringPiece> SplitGroup(base::StringPiece group);
-
-// Returns true if a group of templates are all valid per
-// net::dns_util::IsValidDohTemplate().  This should be checked before updating
-// stored preferences.
-bool IsValidGroup(base::StringPiece group);
-
 // When the selected template changes, call this function to update the
 // Selected, Unselected, and Ignored histograms for all the included providers,
 // and also for the custom provider option.  If the old or new selection is the

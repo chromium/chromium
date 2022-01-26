@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <string>
-#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -19,11 +18,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "net/dns/public/dns_config_overrides.h"
-#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/doh_provider_entry.h"
-#include "net/dns/public/util.h"
-#include "net/third_party/uri_template/uri_template.h"
-#include "url/gurl.h"
 
 namespace chrome_browser_net {
 
@@ -110,7 +105,7 @@ std::vector<std::string> GetDisabledProviders() {
 
 net::DohProviderEntry::List RemoveDisabledProviders(
     const net::DohProviderEntry::List& providers,
-    const std::vector<string>& disabled_providers) {
+    const std::vector<std::string>& disabled_providers) {
   net::DohProviderEntry::List filtered_providers;
   std::copy_if(providers.begin(), providers.end(),
                std::back_inserter(filtered_providers),
@@ -118,21 +113,6 @@ net::DohProviderEntry::List RemoveDisabledProviders(
                  return !base::Contains(disabled_providers, entry->provider);
                });
   return filtered_providers;
-}
-
-std::vector<base::StringPiece> SplitGroup(base::StringPiece group) {
-  // Templates in a group are whitespace-separated.
-  return SplitStringPiece(group, " ", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-}
-
-bool IsValidGroup(base::StringPiece group) {
-  // All templates must be valid for the group to be considered valid.
-  std::vector<base::StringPiece> templates = SplitGroup(group);
-  return std::all_of(templates.begin(), templates.end(), [](auto t) {
-    return net::DnsOverHttpsServerConfig::FromString(std::string(t))
-        .has_value();
-  });
 }
 
 void UpdateDropdownHistograms(

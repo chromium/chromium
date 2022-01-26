@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 
@@ -121,7 +122,7 @@ static jboolean JNI_SecureDnsBridge_SetTemplates(
     return true;
   }
 
-  if (secure_dns::IsValidGroup(templates)) {
+  if (net::DnsOverHttpsConfig::FromString(templates).has_value()) {
     local_state->SetString(prefs::kDnsOverHttpsTemplates, templates);
     return true;
   }
@@ -156,7 +157,9 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_SplitTemplateGroup(
     JNIEnv* env,
     const JavaParamRef<jstring>& jgroup) {
   std::string group = base::android::ConvertJavaStringToUTF8(jgroup);
-  std::vector<base::StringPiece> templates = secure_dns::SplitGroup(group);
+  auto config = net::DnsOverHttpsConfig::FromString(group);
+  DCHECK(config);  // `group` must already have been validated
+  std::vector<base::StringPiece> templates = config->ToStrings();
   std::vector<std::string> templates_copy(templates.begin(), templates.end());
   return base::android::ToJavaArrayOfStrings(env, templates_copy);
 }

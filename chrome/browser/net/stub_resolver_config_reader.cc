@@ -31,7 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -365,28 +365,18 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
     }
   }
 
-  std::string doh_templates =
-      local_state_->GetString(prefs::kDnsOverHttpsTemplates);
-  std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers;
-  if (!doh_templates.empty() && secure_dns_mode != net::SecureDnsMode::kOff) {
-    for (base::StringPiece server_template :
-         chrome_browser_net::secure_dns::SplitGroup(doh_templates)) {
-      auto server_config = net::DnsOverHttpsServerConfig::FromString(
-          std::string(server_template));
-      if (!server_config)
-        continue;
-
-      dns_over_https_servers.push_back(std::move(*server_config));
-    }
+  net::DnsOverHttpsConfig doh_config;
+  if (secure_dns_mode != net::SecureDnsMode::kOff) {
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(
+        local_state_->GetString(prefs::kDnsOverHttpsTemplates));
   }
-
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
-        GetInsecureStubResolverEnabled(), secure_dns_mode,
-        dns_over_https_servers, additional_dns_query_types_enabled);
+        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config.servers(),
+        additional_dns_query_types_enabled);
   }
 
-  return SecureDnsConfig(secure_dns_mode, std::move(dns_over_https_servers),
+  return SecureDnsConfig(secure_dns_mode, doh_config.servers(),
                          forced_management_mode);
 }
 
