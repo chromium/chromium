@@ -8432,6 +8432,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="262" label="RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH"/>
   <int value="263" label="MSDH_INVALID_STREAM_TYPE_COMBINATION"/>
   <int value="264" label="AUTH_INVALID_FENCED_FRAME"/>
+  <int value="265" label="BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME"/>
+  <int value="266" label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
