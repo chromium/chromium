@@ -130,7 +130,7 @@ class Popup {
    * @return {boolean} True if settings are valid and update performed.
    */
   async update() {
-    const type = await getDefaultType();
+    const type = await storage.getDefaultType();
     let validType = false;
     Popup.CVD_TYPES.forEach((cvdType) => {
       if (cvdType == type) {
@@ -143,22 +143,22 @@ class Popup {
       return false;
 
     if (this.site) {
-      $('delta').value = await getSiteDelta(this.site);
+      $('delta').value = await storage.getSiteDelta(this.site);
     } else {
-      $('delta').value = await getDefaultDelta();
+      $('delta').value = await storage.getDefaultDelta();
     }
 
-    $('severity').value = await getDefaultSeverity();
+    $('severity').value = await storage.getDefaultSeverity();
 
     if (!$('setup-panel').classList.contains('collapsed'))
-      this.setCvdTypeSelection(await getDefaultType());
-    $('enable').checked = await getDefaultEnable();
+      this.setCvdTypeSelection(await storage.getDefaultType());
+    $('enable').checked = await storage.getDefaultEnable();
 
     debugPrint(
         'update: ' +
         ' del=' + $('delta').value + ' sev=' + $('severity').value +
-        ' typ=' + await getDefaultType() + ' enb=' + $('enable').checked +
-        ' for ' + this.site);
+        ' typ=' + await storage.getDefaultType() +
+        ' enb=' + $('enable').checked + ' for ' + this.site);
     chrome.runtime.sendMessage('updateTabs');
     return true;
   }
@@ -171,9 +171,9 @@ class Popup {
   onDeltaChange(value) {
     debugPrint('onDeltaChange: ' + value + ' for ' + this.site);
     if (this.site) {
-      setSiteDelta(this.site, value).then(this.update.bind(this));
+      storage.setSiteDelta(this.site, value).then(this.update.bind(this));
     }
-    setDefaultDelta(value).then(this.update.bind(this));
+    storage.setDefaultDelta(value).then(this.update.bind(this));
   }
 
   /**
@@ -183,7 +183,7 @@ class Popup {
    */
   onSeverityChange(value) {
     debugPrint('onSeverityChange: ' + value + ' for ' + this.site);
-    setDefaultSeverity(value).then(() => {
+    storage.setDefaultSeverity(value).then(() => {
       this.update();
       // Apply filter to popup swatches.
       const filter = window.getDefaultCvdCorrectionFilter(
@@ -201,7 +201,7 @@ class Popup {
    */
   onTypeChange(value) {
     debugPrint('onTypeChange: ' + value + ' for ' + this.site);
-    setDefaultType(value).then(() => {
+    storage.setDefaultType(value).then(() => {
       this.update();
       $('severity').value = 0;
       this.updateControls();
@@ -215,7 +215,7 @@ class Popup {
   */
   onEnableChange(value) {
     debugPrint('onEnableChange: ' + value + ' for ' + this.site);
-    setDefaultEnable(value).then(() => {
+    storage.setDefaultEnable(value).then(() => {
       if (!this.update()) {
         // Settings are not valid for a reconfiguration.
         $('setup').onclick();
@@ -239,8 +239,8 @@ class Popup {
       $('setup-panel').classList.remove('collapsed');
       // Store current settings in the event of a canceled setup.
       this.restoreSettings = {
-        type: await getDefaultType(),
-        severity: await getDefaultSeverity()
+        type: await storage.getDefaultType(),
+        severity: await storage.getDefaultSeverity()
       };
       // Initialize controls based on current settings.
       this.setCvdTypeSelection(this.restoreSettings.type);
@@ -259,9 +259,9 @@ class Popup {
     });
 
     $('reset').onclick = () => {
-      setDefaultSeverity(0);
-      setDefaultType('');
-      setDefaultEnable(false);
+      storage.setDefaultSeverity(0);
+      storage.setDefaultType('');
+      storage.setDefaultEnable(false);
       $('severity').value = 0;
       $('enable').checked = false;
       this.setCvdTypeSelection('');
@@ -286,8 +286,8 @@ class Popup {
             'restore previous settings: ' +
             'type = ' + this.restoreSettings.type +
             ', severity = ' + this.restoreSettings.severity);
-        setDefaultType(this.restoreSettings.type);
-        setDefaultSeverity(this.restoreSettings.severity);
+        storage.setDefaultType(this.restoreSettings.type);
+        storage.setDefaultSeverity(this.restoreSettings.severity);
       }
     };
 
@@ -380,4 +380,7 @@ Popup.SWATCH_COLORS = [
   },
 ];
 
-window.addEventListener('DOMContentLoaded', () => window.popup = new Popup());
+window.addEventListener('DOMContentLoaded', () => {
+  window.popup = new Popup();
+  window.storage = new Storage();
+});
