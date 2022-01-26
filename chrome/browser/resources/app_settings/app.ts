@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
+import 'chrome://resources/cr_components/app_management/permission_item.js';
+import 'chrome://resources/cr_components/app_management/icons.js';
+
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 export class WebAppSettingsAppElement extends PolymerElement {
   static get is() {
@@ -11,6 +20,45 @@ export class WebAppSettingsAppElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      app_: Object,
+      iconUrl_: {type: String, computed: 'getAppIcon_(app_)'},
+      showSearch_: {type: Boolean, value: false, readonly: true},
+    };
+  }
+
+  private appId_: string;
+  private app_: App|null;
+  private iconUrl_: string;
+  private showSearch_: boolean;
+
+  connectedCallback() {
+    super.connectedCallback();
+    const urlPath = new URL(document.URL).pathname;
+    if (urlPath.length <= 1) {
+      return;
+    }
+    const appId = urlPath.substring(1);
+    BrowserProxy.getInstance().handler.getApp(appId).then((result) => {
+      this.app_ = result.app;
+    });
+
+    // Listens to app update.
+    const callbackRouter = BrowserProxy.getInstance().callbackRouter;
+    callbackRouter.onAppChanged.addListener(this.onAppChanged_.bind(this));
+  }
+
+  private onAppChanged_(app: App) {
+    if (this.app_ && app.id === this.app_.id) {
+      this.app_ = app;
+    }
+  }
+
+  private getAppIcon_(app: App|null): string {
+    return app ? getAppIcon(app) : '';
   }
 }
 

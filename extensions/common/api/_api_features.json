@@ -341,7 +341,8 @@
       "chrome://sync-confirmation/*",
       "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip.top-chrome/*",
-      "chrome://welcome/*"
+      "chrome://welcome/*",
+      "chrome://app-settings/*"
     ]
   }, {
     "channel": "stable",
