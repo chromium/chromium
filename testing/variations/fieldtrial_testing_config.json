@@ -4017,21 +4017,6 @@
             ]
         }
     ],
-    "LiveCaptionChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2021_03_09",
-                    "enable_features": [
-                        "LiveCaption"
-                    ]
-                }
-            ]
-        }
-    ],
     "LongMessageDurationIOS": [
         {
             "platforms": [
