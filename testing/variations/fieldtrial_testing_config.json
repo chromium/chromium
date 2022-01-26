@@ -6154,21 +6154,6 @@
             ]
         }
     ],
-    "SyncTrustedVaultPassphraseRecovery": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SyncTrustedVaultPassphraseRecovery"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabHoverCardImages": [
         {
             "platforms": [
