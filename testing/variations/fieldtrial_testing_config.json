@@ -6325,26 +6325,6 @@
             ]
         }
     ],
-    "TranslateRankerModelAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enforcement20170918",
-                    "params": {
-                        "translate-ranker-model-url": "https://www.gstatic.com/chrome/intelligence/assist/ranker/models/translate/android/translate_ranker_model_android_20170918.pb.bin"
-                    },
-                    "enable_features": [
-                        "TranslateRankerEnforcement",
-                        "TranslateRankerQuery"
-                    ]
-                }
-            ]
-        }
-    ],
     "TreatPreconnectAsDefault": [
         {
             "platforms": [
