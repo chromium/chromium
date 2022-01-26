@@ -7786,6 +7786,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCloseAllTabsModalDialog)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"traffic-counters-handler-enabled",
+     flag_descriptions::kTrafficCountersHandlerEnabledName,
+     flag_descriptions::kTrafficCountersHandlerEnabledDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTrafficCountersHandlerEnabled)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

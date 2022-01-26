@@ -1225,6 +1225,10 @@ const base::Feature kTerminalSSH{"TerminalSSH",
 const base::Feature kTerminalTmuxIntegration{"TerminalTmuxIntegration",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the TrafficCountersHandler class to handle traffic counter resets.
+const base::Feature kTrafficCountersHandlerEnabled{
+    "TrafficCountersHandlerEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Settings UI to show data usage for cellular networks.
 const base::Feature kTrafficCountersSettingsUi{
     "TrafficCountersSettingsUi", base::FEATURE_ENABLED_BY_DEFAULT};
