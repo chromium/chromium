@@ -4826,6 +4826,7 @@ void RenderFrameHostImpl::TakeFocus(bool reverse) {
   if (parent_or_outer_document) {
     RenderFrameProxyHost* proxy_host = GetProxyToOuterDelegate();
     DCHECK(proxy_host);
+    parent_or_outer_document->DidFocusFrame();
     parent_or_outer_document->AdvanceFocus(
         reverse ? blink::mojom::FocusType::kBackward
                 : blink::mojom::FocusType::kForward,

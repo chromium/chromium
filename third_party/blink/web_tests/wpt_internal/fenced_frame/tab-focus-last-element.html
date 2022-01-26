@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Tab focus</title>
+<title>Tab focus last element</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -12,10 +12,6 @@
 
   <input id="input"></input>
   <fencedframe id="fenced_frame"></fencedframe>
-  <select id="select">
-    <option>A</option>
-    <option>B</option>
-  </select>
 
 <script>
   var events = [];
@@ -29,7 +25,6 @@
     });
   }
   addEventListeners(document.getElementById('input'), "input");
-  addEventListeners(document.getElementById('select'), "select");
 
   document.body.addEventListener('focusout', () => {
     combined_events.push(...events);
@@ -41,7 +36,7 @@
     const focus_changed_key = token();
 
     const frame_url = generateURL("resources/tab-focus-inner.html",
-      [focus_ready_key, focus_changed_key, /*send_reverse_sequence=*/true]);
+      [focus_ready_key, focus_changed_key, /*send_reverse_sequence=*/false]);
     document.getElementById('fenced_frame').src = frame_url;
 
     document.getElementById('input').focus();
@@ -55,14 +50,13 @@
     var focus_result = await nextValueFromServer(focus_changed_key);
     combined_events.push(...focus_result.split(','));
 
-    // Now send focus in reverse. Use eventSender as test_driver doesn't
-    // support key modifiers nor does TestDriver::Actions support key events
-    // yet.
-    eventSender.keyDown('Tab', ['shiftKey']);
+    // Now cycle reset focus to another element and continue.
+    document.getElementById('input').focus();
+    test_driver.send_keys(document.documentElement, '\uE004');
 
     focus_result = await nextValueFromServer(focus_changed_key);
-    combined_events.push(...focus_result.split(','));
     combined_events.push(...events);
+    combined_events.push(...focus_result.split(','));
 
     var expected_events = [
         "input/focus",
@@ -71,13 +65,12 @@
         "fencedframe_input/blur",
         "fencedframe_select/focus",
         "fencedframe_select/blur",
-        "select/focus",
-        "select/blur",
-        "fencedframe_select/focus",
-        "fencedframe_select/blur",
+        "input/focus",
+        "input/blur",
         "fencedframe_input/focus",
         "fencedframe_input/blur",
-        "input/focus"
+        "fencedframe_select/focus",
+        "fencedframe_select/blur",
     ];
     assert_array_equals(combined_events, expected_events, "events do not match");
   });

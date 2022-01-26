@@ -13,7 +13,7 @@
   </select>
 
   <script>
-    const [focus_ready_key, focus_changed_key] = parseKeylist();
+    const [focus_ready_key, focus_changed_key, send_reverse_sequence] = parseKeylist();
     var events = [];
     var reverse = false;
     testRunner.setBrowserHandlesFocus(true);
@@ -36,8 +36,10 @@
     document.body.addEventListener('focusout', () => {
       if (events.length == 4) {
         writeValueToServer(focus_changed_key, events);
-          events = [];
+        events = [];
+        if (send_reverse_sequence === 'true') {
           reverse = !reverse;
+        }
       }
     });
     writeValueToServer(focus_ready_key, 'loaded');

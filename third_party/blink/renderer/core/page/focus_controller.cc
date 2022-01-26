@@ -924,6 +924,12 @@ void FocusController::SetFocused(bool focused) {
   is_focused_ = focused;
   if (!is_emulating_focus_)
     FocusHasChanged();
+
+  // If the page has completely lost focus ensure we clear the focused
+  // frame.
+  if (!is_focused_ && page_->IsMainFrameFencedFrameRoot()) {
+    SetFocusedFrame(nullptr);
+  }
 }
 
 void FocusController::SetFocusEmulationEnabled(bool emulate_focus) {
