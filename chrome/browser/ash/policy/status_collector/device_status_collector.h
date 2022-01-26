@@ -18,6 +18,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
@@ -414,6 +415,10 @@ class DeviceStatusCollector : public StatusCollector,
 
   // Power manager client. Used to listen to power changed events.
   chromeos::PowerManagerClient* const power_manager_;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observation_{this};
 
   // The most recent CPU readings.
   uint64_t last_cpu_active_ = 0;

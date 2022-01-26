@@ -1677,8 +1677,7 @@ DeviceStatusCollector::DeviceStatusCollector(
   stats_reporting_pref_subscription_ =
       cros_settings_->AddSettingsObserver(ash::kStatsReportingPref, callback);
 
-  // TODO(b/191986061):: consider using ScopedObservation instead.
-  power_manager_->AddObserver(this);
+  power_manager_observation_.Observe(power_manager_);
 
   // Fetch the current values of the policies.
   UpdateReportingSettings();
@@ -1730,9 +1729,7 @@ DeviceStatusCollector::DeviceStatusCollector(
           DeviceStatusCollector::GraphicsStatusFetcher(),
           DeviceStatusCollector::CrashReportInfoFetcher()) {}
 
-DeviceStatusCollector::~DeviceStatusCollector() {
-  power_manager_->RemoveObserver(this);
-}
+DeviceStatusCollector::~DeviceStatusCollector() = default;
 
 // static
 constexpr base::TimeDelta DeviceStatusCollector::kIdlePollInterval;
