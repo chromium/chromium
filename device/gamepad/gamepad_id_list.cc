@@ -589,7 +589,7 @@ constexpr struct GamepadInfo {
     {0x28de, 0x1106, kXInputTypeNone},
     {0x28de, 0x1142, kXInputTypeNone},
     {0x28de, 0x11fc, kXInputTypeNone},
-    {0x28de, 0x11ff, kXInputTypeNone},
+    {0x28de, 0x11ff, kXInputTypeXbox360},
     {0x28de, 0x1201, kXInputTypeNone},
     {0x28de, 0x1202, kXInputTypeNone},
     {0x2c22, 0x2000, kXInputTypeNone},
