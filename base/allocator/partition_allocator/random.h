@@ -9,7 +9,9 @@
 
 #include "base/base_export.h"
 
-namespace base {
+namespace partition_alloc {
+
+namespace internal {
 
 // Returns a random value. The generator's internal state is initialized with
 // `base::RandUint64` which is very unpredictable, but which is expensive due to
@@ -17,11 +19,13 @@ namespace base {
 // entirely user-space function after initialization.
 BASE_EXPORT uint32_t RandomValue();
 
+}  // namespace internal
+
 // Sets the seed for the random number generator to a known value, to cause the
 // RNG to generate a predictable sequence of outputs. May be called multiple
 // times.
 BASE_EXPORT void SetMmapSeedForTesting(uint64_t seed);
 
-}  // namespace base
+}  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_RANDOM_H_

@@ -53,7 +53,8 @@ size_t EasyAllocSize() {
 
 // A huge amount of memory, greater than or equal to the ASLR space.
 size_t HugeMemoryAmount() {
-  return std::max(internal::ASLRMask(), std::size_t{2} * internal::ASLRMask());
+  return std::max(::partition_alloc::internal::ASLRMask(),
+                  std::size_t{2} * ::partition_alloc::internal::ASLRMask());
 }
 
 }  // namespace

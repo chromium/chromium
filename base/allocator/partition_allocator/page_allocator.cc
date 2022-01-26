@@ -182,7 +182,8 @@ uintptr_t AllocPagesWithAlignOffset(
 
   // If the client passed null as the address, choose a good one.
   if (!address) {
-    address = (GetRandomPageBase() & align_base_mask) + align_offset;
+    address = (::partition_alloc::GetRandomPageBase() & align_base_mask) +
+              align_offset;
   }
 
   // First try to force an exact-size, aligned allocation from our random base.
@@ -218,7 +219,8 @@ uintptr_t AllocPagesWithAlignOffset(
     address = ((ret + align_offset_mask) & align_base_mask) + align_offset;
 #else  // defined(ARCH_CPU_64_BITS)
     // Keep trying random addresses on systems that have a large address space.
-    address = NextAlignedWithOffset(GetRandomPageBase(), align, align_offset);
+    address = NextAlignedWithOffset(::partition_alloc::GetRandomPageBase(),
+                                    align, align_offset);
 #endif
   }
 
@@ -229,7 +231,7 @@ uintptr_t AllocPagesWithAlignOffset(
 
   do {
     // Continue randomizing only on POSIX.
-    address = kHintIsAdvisory ? GetRandomPageBase() : 0;
+    address = kHintIsAdvisory ? ::partition_alloc::GetRandomPageBase() : 0;
     ret = AllocPagesIncludingReserved(address, try_length, accessibility,
                                       page_tag);
     // The retries are for Windows, where a race can steal our mapping on

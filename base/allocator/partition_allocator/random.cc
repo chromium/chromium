@@ -9,8 +9,8 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/rand_util.h"
 
-namespace base {
 namespace partition_alloc {
+
 class RandomGenerator {
  public:
   constexpr RandomGenerator() {}
@@ -48,20 +48,22 @@ class RandomGenerator {
 // non-trivial default destructor. Not meant to be destructed anyway.
 static_assert(std::is_trivially_destructible<RandomGenerator>::value, "");
 
-}  // namespace partition_alloc
-
 namespace {
 
-partition_alloc::RandomGenerator g_generator = {};
+RandomGenerator g_generator = {};
 
 }  // namespace
+
+namespace internal {
 
 uint32_t RandomValue() {
   return g_generator.RandomValue();
 }
 
+}  // namespace internal
+
 void SetMmapSeedForTesting(uint64_t seed) {
   return g_generator.SeedForTesting(seed);
 }
 
-}  // namespace base
+}  // namespace partition_alloc

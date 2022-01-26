@@ -59,11 +59,11 @@ size_t PageAllocator::CommitPageSize() {
 }
 
 void PageAllocator::SetRandomMmapSeed(int64_t seed) {
-  base::SetMmapSeedForTesting(seed);
+  ::partition_alloc::SetMmapSeedForTesting(seed);
 }
 
 void* PageAllocator::GetRandomMmapAddr() {
-  return reinterpret_cast<void*>(base::GetRandomPageBase());
+  return reinterpret_cast<void*>(::partition_alloc::GetRandomPageBase());
 }
 
 void* PageAllocator::AllocatePages(void* address,

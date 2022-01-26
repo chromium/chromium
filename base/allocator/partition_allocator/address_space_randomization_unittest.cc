@@ -20,7 +20,7 @@
 #include <versionhelpers.h>
 #endif
 
-namespace base {
+namespace partition_alloc {
 
 namespace {
 
@@ -49,7 +49,7 @@ uintptr_t GetMask() {
 const size_t kSamples = 100;
 
 uintptr_t GetAddressBits() {
-  return base::GetRandomPageBase();
+  return GetRandomPageBase();
 }
 
 uintptr_t GetRandomBits() {
@@ -64,10 +64,10 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   if (!mask) {
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
     // ASLR should be turned off on 32-bit Windows.
-    EXPECT_EQ(0u, base::GetRandomPageBase());
+    EXPECT_EQ(0u, GetRandomPageBase());
 #else
     // Otherwise, 0 is very unexpected.
-    EXPECT_NE(0u, base::GetRandomPageBase());
+    EXPECT_NE(0u, GetRandomPageBase());
 #endif
   }
 }
@@ -79,7 +79,8 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
-    EXPECT_EQ(0ULL, (address & PageAllocationGranularityOffsetMask()));
+    EXPECT_EQ(0ULL,
+              (address & internal::PageAllocationGranularityOffsetMask()));
   }
 }
 
@@ -103,14 +104,14 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
     return;
 
   const uint64_t kInitialSeed = 0xfeed5eedULL;
-  base::SetMmapSeedForTesting(kInitialSeed);
+  SetMmapSeedForTesting(kInitialSeed);
 
   std::vector<uintptr_t> sequence;
   for (size_t i = 0; i < kSamples; ++i) {
     sequence.push_back(GetRandomPageBase());
   }
 
-  base::SetMmapSeedForTesting(kInitialSeed);
+  SetMmapSeedForTesting(kInitialSeed);
 
   for (size_t i = 0; i < kSamples; ++i) {
     EXPECT_EQ(GetRandomPageBase(), sequence[i]);
@@ -243,4 +244,4 @@ TEST_RANDOM_BIT(48)
 
 #undef TEST_RANDOM_BIT
 
-}  // namespace base
+}  // namespace partition_alloc

@@ -42,7 +42,7 @@ ALWAYS_INLINE bool RandomPeriod() {
   static thread_local uint8_t counter = 0;
   if (UNLIKELY(counter == 0)) {
     // It's OK to truncate this value.
-    counter = static_cast<uint8_t>(base::RandomValue());
+    counter = static_cast<uint8_t>(::partition_alloc::internal::RandomValue());
   }
   // If `counter` is 0, this will wrap. That is intentional and OK.
   counter--;

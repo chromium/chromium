@@ -4,12 +4,8 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
-#include <cstdint>
-
-#include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/check_op.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -18,14 +14,14 @@
 #include <versionhelpers.h>
 #endif
 
-namespace base {
+namespace partition_alloc {
 
 uintptr_t GetRandomPageBase() {
-  uintptr_t random = static_cast<uintptr_t>(RandomValue());
+  uintptr_t random = static_cast<uintptr_t>(internal::RandomValue());
 
 #if defined(ARCH_CPU_64_BITS)
   random <<= 32ULL;
-  random |= static_cast<uintptr_t>(RandomValue());
+  random |= static_cast<uintptr_t>(internal::RandomValue());
 
 // The ASLRMask() and ASLROffset() constants will be suitable for the
 // OS and build configuration.
@@ -63,8 +59,8 @@ uintptr_t GetRandomPageBase() {
   random += internal::ASLROffset();
 #endif  // defined(ARCH_CPU_32_BITS)
 
-  PA_DCHECK(!(random & PageAllocationGranularityOffsetMask()));
+  PA_DCHECK(!(random & internal::PageAllocationGranularityOffsetMask()));
   return random;
 }
 
-}  // namespace base
+}  // namespace partition_alloc
