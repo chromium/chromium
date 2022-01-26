@@ -1222,7 +1222,7 @@ void FrameSchedulerImpl::SetOnIPCTaskPostedWhileInBackForwardCacheHandler() {
               base::BindOnce(
                   &FrameSchedulerImpl::OnIPCTaskPostedWhileInBackForwardCache,
                   frame_scheduler, task.ipc_hash, task.ipc_interface_name),
-              base::TimeDelta());
+              base::Seconds(1));
         },
         main_thread_scheduler_->BackForwardCacheIpcTrackingTaskRunner(),
         GetInvalidatingOnBFCacheRestoreWeakPtr()));
