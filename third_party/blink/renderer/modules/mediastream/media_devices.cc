@@ -114,6 +114,43 @@ enum class DisplayCapturePolicyResult {
   kMaxValue = kAllowed
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Note: The mismatch between "CropId" and "CropTarget" is due to spec-changes
+// as part of the work in the W3C working group. These will be reflected in
+// code at a later point.
+// TODO(crbug.com/1291140): Remove above explanation once implementation
+// is updated to CropTargets.
+enum class ProduceCropTargetFunctionResult {
+  kPromiseProduced = 0,
+  kGenericError = 1,
+  kInvalidContext = 2,
+  kDuplicateCallBeforePromiseResolution = 3,
+  kDuplicateCallAfterPromiseResolution = 4,
+  kMaxValue = kDuplicateCallAfterPromiseResolution
+};
+
+void RecordUma(ProduceCropTargetFunctionResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.RegionCapture.ProduceCropTarget.Function.Result", result);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProduceCropTargetPromiseResult {
+  kPromiseResolved = 0,
+  kPromiseRejected = 1,
+  kMaxValue = kPromiseRejected
+};
+
+void RecordUma(ProduceCropTargetPromiseResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.RegionCapture.ProduceCropTarget.Promise.Result", result);
+}
+#endif
+
 }  // namespace
 
 const char MediaDevices::kSupplementName[] = "MediaDevices";
@@ -350,11 +387,13 @@ ScriptPromise MediaDevices::produceCropId(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
+    RecordUma(ProduceCropTargetFunctionResult::kInvalidContext);
     return ScriptPromise();
   }
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   if (!window) {
+    RecordUma(ProduceCropTargetFunctionResult::kGenericError);
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Missing execution context.");
     return ScriptPromise();
@@ -374,6 +413,8 @@ ScriptPromise MediaDevices::produceCropId(
     const ScriptPromise promise = resolver->Promise();
     resolver->Resolve(WTF::String(
         blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    RecordUma(
+        ProduceCropTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
     return promise;
   }
 
@@ -383,6 +424,8 @@ ScriptPromise MediaDevices::produceCropId(
     // has already been kicked off, and a response will soon arrive from
     // the browser process. The Promise we return here will be resolved along
     // with the original one.
+    RecordUma(
+        ProduceCropTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
     return it->value->Promise();
   }
 
@@ -394,6 +437,7 @@ ScriptPromise MediaDevices::produceCropId(
   GetDispatcherHost(window->GetFrame())
       ->ProduceCropId(WTF::Bind(&MediaDevices::ResolveProduceCropIdPromise,
                                 WrapPersistent(this), WrapPersistent(element)));
+  RecordUma(ProduceCropTargetFunctionResult::kPromiseProduced);
   return promise;
 #endif
 }
@@ -696,12 +740,14 @@ void MediaDevices::ResolveProduceCropIdPromise(Element* element,
 
   if (crop_id.IsEmpty()) {
     resolver->Reject();
+    RecordUma(ProduceCropTargetPromiseResult::kPromiseRejected);
   } else {
     const base::GUID guid = base::GUID::ParseLowercase(crop_id.Ascii());
     DCHECK(guid.is_valid());
     element->SetRegionCaptureCropId(
         std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
     resolver->Resolve(crop_id);
+    RecordUma(ProduceCropTargetPromiseResult::kPromiseResolved);
   }
 }
 #endif

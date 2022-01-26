@@ -73020,6 +73020,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="NACL_BROKER_PROCESS"/>
 </enum>
 
+<enum name="ProduceCropTargetFunctionResult">
+  <int value="0" label="PromiseProduced"/>
+  <int value="1" label="GenericError"/>
+  <int value="2" label="InvalidContext"/>
+  <int value="3" label="DuplicateCallBeforePromiseResolution"/>
+  <int value="4" label="DuplicateCallAfterPromiseResolution"/>
+</enum>
+
+<enum name="ProduceCropTargetPromiseResult">
+  <int value="0" label="PromiseResolved"/>
+  <int value="1" label="PromiseRejected"/>
+</enum>
+
 <enum name="Profile">
   <int value="0" label="Guest Profile"/>
   <int value="1" label="Profile 01"/>
