@@ -1377,21 +1377,6 @@
             ]
         }
     ],
-    "CWPCollectionOnHostAndGuest": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CWPCollectionOnHostAndGuest"
-                    ]
-                }
-            ]
-        }
-    ],
     "CacheCodeOnIdle": [
         {
             "platforms": [
