@@ -431,9 +431,7 @@ class ContextualSearchInternalStateController {
                 transitionTo(InternalState.START_SHOWING_TAP_UI);
                 break;
             case InternalState.START_SHOWING_TAP_UI:
-                transitionTo(mPolicy.isLiteralSearchTapEnabled()
-                                ? InternalState.SHOWING_LITERAL_SEARCH
-                                : InternalState.SHOW_RESOLVING_UI);
+                transitionTo(InternalState.SHOW_RESOLVING_UI);
                 break;
             case InternalState.SHOW_RESOLVING_UI:
                 transitionTo(mPolicy.shouldPreviousGestureResolve()

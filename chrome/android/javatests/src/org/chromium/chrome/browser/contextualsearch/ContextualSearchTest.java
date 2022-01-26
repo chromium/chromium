@@ -57,8 +57,7 @@ import org.chromium.ui.touch_selection.SelectionEventType;
 // can be tested too.  Or just remove this whole suite if it's not useful for
 // these experimental triggering changes.
 @Features.DisableFeatures({ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE,
-        ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS,
-        ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP})
+        ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS})
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest {
     @ClassRule

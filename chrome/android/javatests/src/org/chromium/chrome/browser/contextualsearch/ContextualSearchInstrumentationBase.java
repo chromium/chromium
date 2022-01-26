@@ -118,21 +118,18 @@ public class ContextualSearchInstrumentationBase {
      */
     private static final ImmutableMap<String, Boolean> ENABLE_NONE =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
     /**
-     * This represents the Longpress with LiteralTap configurations, a good launch candidate.
+     * This represents the Longpress configuration, currently launching.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_LONGPRESS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, true,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
     /**
-     * This represents the Translations addition to the Longpress with LiteralTap configuration.
+     * This represents the Translations addition to the Longpress configuration.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
-                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
     /**
@@ -301,13 +298,10 @@ public class ContextualSearchInstrumentationBase {
     private class ContextualSearchInstrumentationTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
-            if (mPolicy.isLiteralSearchTapEnabled()) {
-                clickWordNode(nodeId);
-            } else if (!mPolicy.canResolveLongpress()) {
+            if (!mPolicy.canResolveLongpress() || mPolicy.isUserUndecided()) {
                 longPressNode(nodeId);
             } else {
-                Assert.fail(
-                        "Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
+                Assert.fail("Cannot trigger a non-resolving gesture!");
             }
         }
 

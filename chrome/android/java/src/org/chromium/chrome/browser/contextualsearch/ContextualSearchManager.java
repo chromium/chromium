@@ -1824,8 +1824,7 @@ public class ContextualSearchManager
                     // Also clear any tap-based selection unless the Tap IPH is showing. In the
                     // latter case we preserve the selection so the help bubble has something to
                     // point to.
-                    if (!mPolicy.isLiteralSearchTapEnabled()
-                            && mSelectionController.getSelectionType() == SelectionType.TAP
+                    if (mSelectionController.getSelectionType() == SelectionType.TAP
                             && !mInProductHelp.isShowingForTappedButShouldLongpress()) {
                         mSelectionController.clearSelection();
                     }
