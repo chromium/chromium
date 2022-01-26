@@ -77,7 +77,6 @@
 #include "extensions/renderer/process_info_native_handler.h"
 #include "extensions/renderer/render_frame_observer_natives.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "extensions/renderer/renderer_i18n_util.h"
 #include "extensions/renderer/runtime_custom_bindings.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
@@ -85,6 +84,7 @@
 #include "extensions/renderer/script_injection.h"
 #include "extensions/renderer/script_injection_manager.h"
 #include "extensions/renderer/set_icon_natives.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "extensions/renderer/static_v8_external_one_byte_string_resource.h"
 #include "extensions/renderer/test_features_native_handler.h"
 #include "extensions/renderer/test_native_handler.h"
@@ -1148,7 +1148,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 
   // Invalidates the messages map for the extension in case the extension is
   // reloaded with a new messages map.
-  i18n_util::EraseRendererMessagesMap(extension_id);
+  SharedL10nMap::GetInstance().EraseMessagesMap(extension_id);
 
   // Update the origin access map so that any content scripts injected no longer
   // have dedicated allow/block lists for extra origins.

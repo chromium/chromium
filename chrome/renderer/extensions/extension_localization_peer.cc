@@ -14,7 +14,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/message_bundle.h"
-#include "extensions/renderer/renderer_i18n_util.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "ipc/ipc_sender.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -241,14 +241,8 @@ void ExtensionLocalizationPeer::ReplaceMessages() {
     return;
 
   std::string extension_id = request_url_.host();
-  const extensions::i18n_util::L10nMessagesMap* l10n_messages =
-      extensions::i18n_util::GetRendererMessagesMap(extension_id,
-                                                    message_sender_);
-  DCHECK(l10n_messages);
-
-  std::string error;
-  if (extensions::MessageBundle::ReplaceMessagesWithExternalDictionary(
-          *l10n_messages, &data_, &error)) {
+  if (extensions::SharedL10nMap::GetInstance().ReplaceMessages(
+          extension_id, &data_, message_sender_)) {
     data_.resize(data_.size());
   }
 }

@@ -18,8 +18,8 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/get_script_context.h"
-#include "extensions/renderer/renderer_i18n_util.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
@@ -152,13 +152,9 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     content::RenderFrame* render_frame,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
-  const i18n_util::L10nMessagesMap* l10n_messages =
-      i18n_util::GetRendererMessagesMap(extension_id, render_frame);
-  if (!l10n_messages)
-    return v8::Undefined(isolate);
 
-  std::string message =
-      MessageBundle::GetL10nMessage(message_name, *l10n_messages);
+  std::string message = SharedL10nMap::GetInstance().GetMessage(
+      extension_id, message_name, render_frame);
 
   std::vector<std::string> substitutions;
   // For now, we just suppress all errors, but that's really not the best.
