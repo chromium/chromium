@@ -6,6 +6,7 @@
 
 #include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert_db_initializer_impl.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -53,4 +54,9 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
 
 bool CertDbInitializerFactory::ServiceIsNULLWhileTesting() const {
   return true;
+}
+
+content::BrowserContext* CertDbInitializerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
