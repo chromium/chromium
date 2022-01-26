@@ -48,7 +48,10 @@ source_set("mf_cdm_proxy") {
 
 source_set("dcomp_texture_wrapper") {
   sources = [ "dcomp_texture_wrapper.h" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gfx:memory_buffer",
+  ]
 }
 
 source_set("test_support") {

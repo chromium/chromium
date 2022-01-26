@@ -7,6 +7,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
+#include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/video_frame.h"
@@ -31,8 +32,9 @@ class DCOMPTextureMailboxResources;
 // - We create a SharedImage mailbox representing the DCOMPTexture at a given
 //   size.
 // - We create a VideoFrame which takes ownership of this SharedImage mailbox.
-class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
-                                public DCOMPTextureHost::Listener {
+class CONTENT_EXPORT DCOMPTextureWrapperImpl
+    : public media::DCOMPTextureWrapper,
+      public DCOMPTextureHost::Listener {
  public:
   static std::unique_ptr<media::DCOMPTextureWrapper> Create(
       scoped_refptr<DCOMPTextureFactory> factory,
@@ -52,6 +54,10 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
       SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) override;
   void CreateVideoFrame(const gfx::Size& natural_size,
                         CreateVideoFrameCB create_video_frame_cb) override;
+  void CreateVideoFrame(const gfx::Size& natural_size,
+                        gfx::GpuMemoryBufferHandle dx_handle,
+                        const base::UnguessableToken& token,
+                        CreateDXVideoFrameCB create_video_frame_cb) override;
 
  private:
   DCOMPTextureWrapperImpl(
@@ -63,6 +69,9 @@ class DCOMPTextureWrapperImpl : public media::DCOMPTextureWrapper,
   // DCOMPTextureHost::Listener:
   void OnSharedImageMailboxBound(gpu::Mailbox mailbox) override;
   void OnOutputRectChange(gfx::Rect output_rect) override;
+
+  void OnDXVideoFrameDestruction(const gpu::SyncToken& sync_token,
+                                 const gpu::Mailbox& image_mailbox);
 
   scoped_refptr<DCOMPTextureFactory> factory_;
   scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;

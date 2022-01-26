@@ -126,7 +126,8 @@ class GPU_EXPORT GpuChannelHost
   // running tests and is otherwise ignored.
   void TerminateGpuProcessForTesting();
 
-  std::unique_ptr<ClientSharedImageInterface>
+  // Virtual for testing.
+  virtual std::unique_ptr<ClientSharedImageInterface>
   CreateClientSharedImageInterface();
 
   ImageDecodeAcceleratorProxy* image_decode_accelerator_proxy() {
