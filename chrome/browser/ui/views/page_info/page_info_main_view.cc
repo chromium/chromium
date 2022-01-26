@@ -121,8 +121,6 @@ PageInfoMainView::PageInfoMainView(
 
   if (base::FeatureList::IsEnabled(features::kPrivacySandboxSettings3)) {
     ads_personalization_section_ = AddChildView(CreateContainerView());
-    ads_personalization_section_->AddChildView(
-        CreateAdPersonalizationSection());
   }
 
   presenter_->InitializeUiState(this, std::move(initialized_callback));
@@ -430,6 +428,20 @@ void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 
   PreferredSizeChanged();
 #endif
+}
+
+void PageInfoMainView::SetAdPersonalizationInfo(
+    const AdPersonalizationInfo& info) {
+  if (!ads_personalization_section_)
+    return;
+  ads_personalization_section_->RemoveAllChildViews();
+
+  if (!info.has_joined_user_to_interest_group)
+    return;
+
+  ads_personalization_section_->AddChildView(CreateAdPersonalizationSection());
+
+  PreferredSizeChanged();
 }
 
 void PageInfoMainView::OnPermissionChanged(

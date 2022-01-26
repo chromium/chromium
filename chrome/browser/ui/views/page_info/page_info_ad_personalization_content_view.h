@@ -20,8 +20,13 @@ class PageInfoAdPersonalizationContentView : public views::View,
   explicit PageInfoAdPersonalizationContentView(PageInfo* presenter);
   ~PageInfoAdPersonalizationContentView() override;
 
+  // PageInfoUI implementations.
+  void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
+
  private:
   raw_ptr<PageInfo> presenter_;
+
+  views::View* info_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_AD_PERSONALIZATION_CONTENT_VIEW_H_

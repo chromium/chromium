@@ -410,6 +410,7 @@ void PageInfo::InitializeUiState(PageInfoUI* ui, base::OnceClosure done) {
   PresentSiteIdentity();
   PresentPageFeatureInfo();
   PresentSiteData(std::move(done));
+  PresentAdPersonalizationData();
 }
 
 void PageInfo::UpdateSecurityState() {
@@ -1062,6 +1063,18 @@ void PageInfo::PresentPageFeatureInfo() {
       delegate_->IsContentDisplayedInVrHeadset();
 
   ui_->SetPageFeatureInfo(info);
+}
+
+void PageInfo::PresentAdPersonalizationData() {
+  PageInfoUI::AdPersonalizationInfo info;
+  auto* settings = GetPageSpecificContentSettings();
+  if (!settings)
+    return;
+
+  // TODO(olesiamarukhno): Use actual info.
+  info.has_joined_user_to_interest_group =
+      site_url_ == GURL("https://example.com");
+  ui_->SetAdPersonalizationInfo(info);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

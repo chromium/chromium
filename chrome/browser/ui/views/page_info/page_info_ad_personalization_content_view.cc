@@ -21,25 +21,11 @@
 PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
     PageInfo* presenter)
     : presenter_(presenter) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const auto button_insets =
-      layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
-
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  auto* info_container = AddChildView(std::make_unique<views::View>());
-  info_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+  info_container_ = AddChildView(std::make_unique<views::View>());
+  info_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-
-  // TODO(olesiamarukhno): Use actual strings.
-  auto* description_label =
-      info_container->AddChildView(std::make_unique<views::Label>(
-          u"Duis ligula nisl, volutpat non est id, molestie cursus mauris. "
-          u"Vestibulum iaculis, urna a finibus.",
-          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  description_label->SetMultiLine(true);
-  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_label->SetProperty(views::kMarginsKey, button_insets);
 
   AddChildView(PageInfoViewFactory::CreateSeparator());
   // TODO(olesiamarukhno): Use correct strings.
@@ -59,3 +45,26 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
 
 PageInfoAdPersonalizationContentView::~PageInfoAdPersonalizationContentView() =
     default;
+
+void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
+    const AdPersonalizationInfo& info) {
+  if (!info.has_joined_user_to_interest_group)
+    return;
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const auto button_insets =
+      layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
+
+  // TODO(olesiamarukhno): Show different strings based on info.
+  // TODO(olesiamarukhno): Use actual strings.
+  auto* description_label =
+      info_container_->AddChildView(std::make_unique<views::Label>(
+          u"Duis ligula nisl, volutpat non est id, molestie cursus mauris. "
+          u"Vestibulum iaculis, urna a finibus.",
+          views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+  description_label->SetMultiLine(true);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetProperty(views::kMarginsKey, button_insets);
+
+  PreferredSizeChanged();
+}

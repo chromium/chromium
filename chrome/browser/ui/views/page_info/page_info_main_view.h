@@ -68,6 +68,7 @@ class PageInfoMainView : public views::View,
                          ChosenObjectInfoList chosen_object_info_list) override;
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
+  void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
 
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
