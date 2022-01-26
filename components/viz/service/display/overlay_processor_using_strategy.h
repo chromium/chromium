@@ -314,7 +314,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   void LogCheckOverlaySupportMetrics();
 
   struct ProposedCandidateKey {
-    OverlayCandidate::TrackingId tracking_id;
+    OverlayCandidate::TrackingId tracking_id =
+        OverlayCandidate::kDefaultTrackingId;
     OverlayStrategy strategy_id = OverlayStrategy::kUnknown;
 
     bool operator==(const ProposedCandidateKey& other) const {
