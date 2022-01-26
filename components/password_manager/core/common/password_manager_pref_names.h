@@ -88,6 +88,10 @@ extern const char kPasswordHashDataList[];
 // submitted by the user were part of a leak.
 extern const char kPasswordLeakDetectionEnabled[];
 
+// Boolean indicating whether users can mute (aka dismiss) alerts resulting from
+// compromised credentials that were submitted by the user.
+extern const char kPasswordDismissCompromisedAlertEnabled[];
+
 // Timestamps of when credentials from the profile / account store were last
 // used to fill a form, in microseconds since Windows epoch.
 extern const char kProfileStoreDateLastUsedForFilling[];

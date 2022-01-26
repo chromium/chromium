@@ -57,6 +57,9 @@ const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 const char kPasswordLeakDetectionEnabled[] =
     "profile.password_manager_leak_detection";
 
+const char kPasswordDismissCompromisedAlertEnabled[] =
+    "profile.password_dismiss_compromised_alert";
+
 const char kProfileStoreDateLastUsedForFilling[] =
     "password_manager.profile_store_date_last_used_for_filling";
 const char kAccountStoreDateLastUsedForFilling[] =

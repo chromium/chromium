@@ -428,6 +428,7 @@
         'PasswordManagerEnabled',
         'PasswordManagerAllowShowPasswords',
         'PasswordLeakDetectionEnabled',
+        'PasswordDismissCompromisedAlertEnabled',
       ],
     },
     {
@@ -3923,6 +3924,40 @@
       If the policy is set, users can't change it in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. If not set, credential leak checking is allowed, but the user can turn it off. 
 
       This behavior will not trigger if Safe Browsing is disabled (either by policy or by the user). In order to force Safe Browsing on, use the <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME">SafeBrowsingEnabled</ph> policy or the <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy.''',
+    },
+    {
+      'name': 'PasswordDismissCompromisedAlertEnabled',
+      'owners': ['file://components/password_manager/OWNERS', 'eliaskh@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': [
+        'chrome.*: 100-',
+        'chrome_os: 100-',
+      ],
+      'features': {
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable dismissing compromised password alerts',
+        },
+        {
+          'value': False,
+          'caption': 'Disable dismissing compromised password alerts',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 946,
+      'caption': '''Enable dismissing compromised password alerts for entered credentials''',
+      'tags': [],
+
+      'desc': '''Setting the policy to Enabled or leaving it unset gives the user the option to dismiss/restore compromised password alerts.
+
+      If you disable this setting, users will not be able to dismiss alerts about compromised passwords. If enabled, users will be able to dismiss alerts about compromised passwords.''',
     },
     {
       'name': 'AutoFillEnabled',
@@ -30488,6 +30523,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 945,
+  'highest_id_currently_used': 946,
   'highest_atomic_group_id_currently_used': 41
 }

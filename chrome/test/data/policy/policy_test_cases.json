@@ -1800,6 +1800,26 @@
       }
     ]
   },
+  "PasswordDismissCompromisedAlertEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PasswordDismissCompromisedAlertEnabled": false
+        },
+        "prefs": {
+          "profile.password_dismiss_compromised_alert": {}
+        }
+      }
+    ]
+  },
   "ContextualSearchEnabled": {
     "os": [
       "android"
