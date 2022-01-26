@@ -28608,6 +28608,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EnterpriseUploadJobSuccess">
+  <obsolete>
+    Deprecated 01/2022
+  </obsolete>
   <summary>
     Number of UploadJob retries as defined in
     chrome/browser/ash/policy/uploading/upload_job_impl.cc.

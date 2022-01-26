@@ -1873,6 +1873,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.UploadJobSuccess" enum="EnterpriseUploadJobSuccess"
     expires_after="M87">
+  <obsolete>
+    Removed 2022/01
+  </obsolete>
   <owner>bmalcolm@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
   <summary>
