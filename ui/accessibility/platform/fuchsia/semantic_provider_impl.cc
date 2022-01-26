@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/fuchsia/semantic_provider.h"
+#include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 
 #include <lib/sys/cpp/component_context.h>
 
@@ -16,36 +16,36 @@ namespace {
 
 using fuchsia::accessibility::semantics::Node;
 
-constexpr uint32_t kFuchsiaRootNodeId = 0;
 constexpr size_t kMaxOperationsPerBatch = 16;
 
 }  // namespace
 
-AXFuchsiaSemanticProvider::Batch::Batch(Type type) : type_(type) {}
-AXFuchsiaSemanticProvider::Batch::Batch(Batch&& other) = default;
-AXFuchsiaSemanticProvider::Batch::~Batch() = default;
+AXFuchsiaSemanticProviderImpl::Batch::Batch(Type type) : type_(type) {}
+AXFuchsiaSemanticProviderImpl::Batch::Batch(Batch&& other) = default;
+AXFuchsiaSemanticProviderImpl::Batch::~Batch() = default;
 
-bool AXFuchsiaSemanticProvider::Batch::IsFull() const {
+bool AXFuchsiaSemanticProviderImpl::Batch::IsFull() const {
   return (
       (type_ == Type::kUpdate && updates_.size() >= kMaxOperationsPerBatch) ||
       (type_ == Type::kDelete &&
        delete_node_ids_.size() >= kMaxOperationsPerBatch));
 }
 
-void AXFuchsiaSemanticProvider::Batch::Append(
+void AXFuchsiaSemanticProviderImpl::Batch::Append(
     fuchsia::accessibility::semantics::Node node) {
   DCHECK_EQ(type_, Type::kUpdate);
   DCHECK(!IsFull());
   updates_.push_back(std::move(node));
 }
 
-void AXFuchsiaSemanticProvider::Batch::AppendDeletion(uint32_t delete_node_id) {
+void AXFuchsiaSemanticProviderImpl::Batch::AppendDeletion(
+    uint32_t delete_node_id) {
   DCHECK_EQ(type_, Type::kDelete);
   DCHECK(!IsFull());
   delete_node_ids_.push_back(delete_node_id);
 }
 
-void AXFuchsiaSemanticProvider::Batch::Apply(
+void AXFuchsiaSemanticProviderImpl::Batch::Apply(
     fuchsia::accessibility::semantics::SemanticTreePtr* semantic_tree) {
   if (type_ == Type::kUpdate && !updates_.empty())
     (*semantic_tree)->UpdateSemanticNodes(std::move(updates_));
@@ -53,18 +53,18 @@ void AXFuchsiaSemanticProvider::Batch::Apply(
     (*semantic_tree)->DeleteSemanticNodes(std::move(delete_node_ids_));
 }
 
-AXFuchsiaSemanticProvider::NodeInfo ::NodeInfo() = default;
-AXFuchsiaSemanticProvider::NodeInfo ::~NodeInfo() = default;
+AXFuchsiaSemanticProviderImpl::NodeInfo ::NodeInfo() = default;
+AXFuchsiaSemanticProviderImpl::NodeInfo ::~NodeInfo() = default;
 
-AXFuchsiaSemanticProvider::Delegate::Delegate() = default;
-AXFuchsiaSemanticProvider::Delegate::~Delegate() = default;
+AXFuchsiaSemanticProviderImpl::Delegate::Delegate() = default;
+AXFuchsiaSemanticProviderImpl::Delegate::~Delegate() = default;
 
-AXFuchsiaSemanticProvider::AXFuchsiaSemanticProvider(
+AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
     fuchsia::ui::views::ViewRef view_ref,
-    float pixel_scale,
+    base::RepeatingCallback<float()> get_pixel_scale,
     Delegate* delegate)
     : view_ref_(std::move(view_ref)),
-      pixel_scale_(pixel_scale),
+      get_pixel_scale_(std::move(get_pixel_scale)),
       delegate_(delegate),
       semantic_listener_binding_(this) {
   sys::ComponentContext* component_context = base::ComponentContextForProcess();
@@ -83,9 +83,9 @@ AXFuchsiaSemanticProvider::AXFuchsiaSemanticProvider(
   });
 }
 
-AXFuchsiaSemanticProvider::~AXFuchsiaSemanticProvider() = default;
+AXFuchsiaSemanticProviderImpl::~AXFuchsiaSemanticProviderImpl() = default;
 
-bool AXFuchsiaSemanticProvider::Update(
+bool AXFuchsiaSemanticProviderImpl::Update(
     fuchsia::accessibility::semantics::Node node) {
   if (!semantic_updates_enabled())
     return false;
@@ -124,7 +124,7 @@ bool AXFuchsiaSemanticProvider::Update(
   return true;
 }
 
-void AXFuchsiaSemanticProvider::TryToCommit() {
+void AXFuchsiaSemanticProviderImpl::TryToCommit() {
   // Don't send out updates while the tree is mid-mutation.
   if (commit_inflight_ || batches_.empty())
     return;
@@ -143,11 +143,11 @@ void AXFuchsiaSemanticProvider::TryToCommit() {
 
   batches_.clear();
   semantic_tree_->CommitUpdates(
-      fit::bind_member(this, &AXFuchsiaSemanticProvider::OnCommitComplete));
+      fit::bind_member(this, &AXFuchsiaSemanticProviderImpl::OnCommitComplete));
   commit_inflight_ = true;
 }
 
-bool AXFuchsiaSemanticProvider::Delete(uint32_t node_id) {
+bool AXFuchsiaSemanticProviderImpl::Delete(uint32_t node_id) {
   if (!semantic_updates_enabled())
     return false;
 
@@ -173,16 +173,16 @@ bool AXFuchsiaSemanticProvider::Delete(uint32_t node_id) {
   return true;
 }
 
-void AXFuchsiaSemanticProvider::SendEvent(
+void AXFuchsiaSemanticProviderImpl::SendEvent(
     fuchsia::accessibility::semantics::SemanticEvent event) {
   semantic_tree_->SendSemanticEvent(std::move(event), [](auto...) {});
 }
 
-bool AXFuchsiaSemanticProvider::HasPendingUpdates() const {
+bool AXFuchsiaSemanticProviderImpl::HasPendingUpdates() const {
   return commit_inflight_ || !batches_.empty();
 }
 
-bool AXFuchsiaSemanticProvider::Clear() {
+bool AXFuchsiaSemanticProviderImpl::Clear() {
   if (!semantic_updates_enabled())
     return false;
 
@@ -195,7 +195,7 @@ bool AXFuchsiaSemanticProvider::Clear() {
   return true;
 }
 
-void AXFuchsiaSemanticProvider::OnAccessibilityActionRequested(
+void AXFuchsiaSemanticProviderImpl::OnAccessibilityActionRequested(
     uint32_t node_id,
     fuchsia::accessibility::semantics::Action action,
     fuchsia::accessibility::semantics::SemanticListener::
@@ -209,17 +209,18 @@ void AXFuchsiaSemanticProvider::OnAccessibilityActionRequested(
   callback(false);
 }
 
-void AXFuchsiaSemanticProvider::HitTest(fuchsia::math::PointF local_point,
-                                        HitTestCallback callback) {
+void AXFuchsiaSemanticProviderImpl::HitTest(fuchsia::math::PointF local_point,
+                                            HitTestCallback callback) {
+  float pixel_scale = get_pixel_scale_.Run();
   fuchsia::math::PointF point;
-  point.x = local_point.x * pixel_scale_;
-  point.y = local_point.y * pixel_scale_;
+  point.x = local_point.x * pixel_scale;
+  point.y = local_point.y * pixel_scale;
 
   delegate_->OnHitTest(point, std::move(callback));
   return;
 }
 
-void AXFuchsiaSemanticProvider::OnSemanticsModeChanged(
+void AXFuchsiaSemanticProviderImpl::OnSemanticsModeChanged(
     bool update_enabled,
     OnSemanticsModeChangedCallback callback) {
   if (semantic_updates_enabled_ != update_enabled)
@@ -229,7 +230,7 @@ void AXFuchsiaSemanticProvider::OnSemanticsModeChanged(
   callback();
 }
 
-void AXFuchsiaSemanticProvider::MarkChildrenAsNotReachable(
+void AXFuchsiaSemanticProviderImpl::MarkChildrenAsNotReachable(
     const std::vector<uint32_t>& child_ids,
     uint32_t parent_id) {
   for (const uint32_t child_id : child_ids) {
@@ -253,7 +254,7 @@ void AXFuchsiaSemanticProvider::MarkChildrenAsNotReachable(
   }
 }
 
-void AXFuchsiaSemanticProvider::MarkChildrenAsReachable(
+void AXFuchsiaSemanticProviderImpl::MarkChildrenAsReachable(
     const std::vector<uint32_t>& child_ids,
     uint32_t parent_id) {
   for (const uint32_t child_id : child_ids) {
@@ -270,7 +271,7 @@ void AXFuchsiaSemanticProvider::MarkChildrenAsReachable(
   }
 }
 
-absl::optional<uint32_t> AXFuchsiaSemanticProvider::GetParentForNode(
+absl::optional<uint32_t> AXFuchsiaSemanticProviderImpl::GetParentForNode(
     const uint32_t node_id) {
   const auto it = nodes_.find(node_id);
   if (it != nodes_.end()) {
@@ -291,8 +292,8 @@ absl::optional<uint32_t> AXFuchsiaSemanticProvider::GetParentForNode(
   return absl::nullopt;
 }
 
-AXFuchsiaSemanticProvider::Batch&
-AXFuchsiaSemanticProvider::GetCurrentUnfilledBatch(Batch::Type type) {
+AXFuchsiaSemanticProviderImpl::Batch&
+AXFuchsiaSemanticProviderImpl::GetCurrentUnfilledBatch(Batch::Type type) {
   if (batches_.empty() || batches_.back().type() != type ||
       batches_.back().IsFull())
     batches_.push_back(Batch(type));
@@ -300,9 +301,16 @@ AXFuchsiaSemanticProvider::GetCurrentUnfilledBatch(Batch::Type type) {
   return batches_.back();
 }
 
-void AXFuchsiaSemanticProvider::OnCommitComplete() {
+void AXFuchsiaSemanticProviderImpl::OnCommitComplete() {
   commit_inflight_ = false;
   TryToCommit();
+}
+
+float AXFuchsiaSemanticProviderImpl::GetPixelScale() const {
+  if (get_pixel_scale_)
+    return get_pixel_scale_.Run();
+
+  return 1.f;
 }
 
 }  // namespace ui

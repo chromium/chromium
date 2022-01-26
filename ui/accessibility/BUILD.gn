@@ -288,7 +288,10 @@ test("accessibility_unittests") {
   data_deps = [ "//testing/buildbot/filters:accessibility_unittests_filters" ]
 
   if (is_fuchsia) {
-    sources += [ "platform/fuchsia/semantic_provider_unittest.cc" ]
+    sources += [
+      "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",
+      "platform/fuchsia/semantic_provider_unittest.cc",
+    ]
 
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",

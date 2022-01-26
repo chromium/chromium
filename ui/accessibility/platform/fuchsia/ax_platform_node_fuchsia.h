@@ -25,7 +25,7 @@ class AX_EXPORT AXPlatformNodeFuchsia : public AXPlatformNodeBase {
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 
   // Requests that the delegate perform the specified action.
-  void PerformAction(const AXActionData& data);
+  virtual void PerformAction(const AXActionData& data);
 
   // TODO(fxb.dev/89485): Implement fuchsia node conversion.
 };

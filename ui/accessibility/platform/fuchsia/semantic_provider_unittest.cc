@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "semantic_provider.h"
+#include "semantic_provider_impl.h"
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
@@ -45,8 +45,10 @@ class AXFuchsiaSemanticProviderDelegate
     return true;
   }
 
-  void OnHitTest(fuchsia::math::PointF point,
-                 AXFuchsiaSemanticProvider::HitTestCallback callback) override {
+  void OnHitTest(
+      fuchsia::math::PointF point,
+      fuchsia::accessibility::semantics::SemanticListener::HitTestCallback
+          callback) override {
     on_hit_test_called_ = true;
     on_hit_test_point_ = std::move(point);
   }
@@ -114,8 +116,9 @@ class AXFuchsiaSemanticProviderTest
     auto view_ref_pair = scenic::ViewRefPair::New();
     delegate_ = std::make_unique<AXFuchsiaSemanticProviderDelegate>();
 
-    semantic_provider_ = std::make_unique<AXFuchsiaSemanticProvider>(
-        std::move(view_ref_pair.view_ref), 2.0f, delegate_.get());
+    semantic_provider_ = std::make_unique<ui::AXFuchsiaSemanticProviderImpl>(
+        std::move(view_ref_pair.view_ref),
+        base::BindRepeating([]() { return 2.0f; }), delegate_.get());
 
     // Spin the loop to allow registration with the SemanticsManager to be
     // processed.
@@ -136,6 +139,7 @@ class AXFuchsiaSemanticProviderTest
       ADD_FAILURE();
     });
     semantic_tree_binding_.Bind(std::move(semantic_tree_request));
+    semantic_listener_->OnSemanticsModeChanged(true, []() {});
   }
 
   // fuchsia::accessibility::semantics::SemanticTree implementation.
@@ -172,7 +176,7 @@ class AXFuchsiaSemanticProviderTest
   fidl::Binding<fuchsia::accessibility::semantics::SemanticTree>
       semantic_tree_binding_;
   std::unique_ptr<AXFuchsiaSemanticProviderDelegate> delegate_;
-  std::unique_ptr<AXFuchsiaSemanticProvider> semantic_provider_;
+  std::unique_ptr<ui::AXFuchsiaSemanticProviderImpl> semantic_provider_;
 };
 
 TEST_F(AXFuchsiaSemanticProviderTest,
