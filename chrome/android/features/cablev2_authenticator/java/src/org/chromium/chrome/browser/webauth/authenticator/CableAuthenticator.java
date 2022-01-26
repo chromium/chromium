@@ -69,6 +69,8 @@ class CableAuthenticator {
     private final String mQRURI;
     // mLinkQR stores whether a QR transaction should send linking information.
     private boolean mLinkQR;
+    // mAccessory contains the USB device, if operating in USB mode.
+    private UsbAccessory mAccessory;
 
     // mHandle is the opaque ID returned by the native code to ensure that
     // |stop| doesn't apply to a transaction that this instance didn't create.
@@ -95,6 +97,7 @@ class CableAuthenticator {
         mFCMEvent = fcmEvent;
         mServerLinkData = serverLink;
         mQRURI = qrURI;
+        mAccessory = accessory;
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
@@ -103,13 +106,7 @@ class CableAuthenticator {
 
         CableAuthenticatorJni.get().setup(registration, networkContext, secret, metricsEnabled);
 
-        if (accessory != null) {
-            // USB mode can start immediately.
-            mHandle = CableAuthenticatorJni.get().startUSB(
-                    this, new USBHandler(context, mTaskRunner, accessory));
-        }
-
-        // Otherwise wait for |onBluetoothReady|.
+        // Wait for |onTransportReady|.
     }
 
     // Calls from native code.
@@ -324,16 +321,20 @@ class CableAuthenticator {
     }
 
     /**
-     * Called to indicate that Bluetooth is now enabled and a cloud message can be processed.
+     * Called to indicate that either USB or Bluetooth transports are ready for processing.
      */
-    void onBluetoothReady() {
+    void onTransportReady() {
         assert mTaskRunner.belongsToCurrentThread();
+
         if (mServerLinkData != null) {
             mHandle = CableAuthenticatorJni.get().startServerLink(this, mServerLinkData);
         } else if (mQRURI != null) {
             mHandle = CableAuthenticatorJni.get().startQR(this, getName(), mQRURI, mLinkQR);
-        } else {
+        } else if (mFCMEvent != null) {
             mHandle = CableAuthenticatorJni.get().startCloudMessage(this, mFCMEvent);
+        } else {
+            mHandle = CableAuthenticatorJni.get().startUSB(
+                    this, new USBHandler(mContext, mTaskRunner, mAccessory));
         }
     }
 

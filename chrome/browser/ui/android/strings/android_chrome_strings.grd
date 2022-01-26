@@ -4784,6 +4784,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> needs Nearby devices permission in order to connect to your device
       </message>
 
+      <message name="IDS_CABLEV2_ERROR_NO_SCREENLOCK" desc="The description of an error shown when the user is trying to use their phone to register or authenticate with a website on a laptop, but no screen lock is set on the phone. The term 'screen lock' refers to setting a pattern, PIN, or fingerprint that is used each time the phone is unlocked. This is needed when using the phone to authenticate because we want the owner of the phone to prove that they authorize the action. This message appears above a button that opens the phone's settings directly at the screen for configuring a screen lock.">
+        To use this device as a security key, set a screen lock
+      </message>
+
       <message name="IDS_CABLEV2_ERROR_GENERIC" desc="The description of an error shown when the user is trying to use their phone to sign into a website on a laptop, but some generic error occured.">
         Try another verification option
       </message>
