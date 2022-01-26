@@ -54,24 +54,6 @@ void FontManager::Trace(blink::Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void FontManager::DidShowFontChooser(
-    ScriptPromiseResolver* resolver,
-    FontEnumerationStatus status,
-    Vector<mojom::blink::FontMetadataPtr> fonts) {
-  if (RejectPromiseIfNecessary(status, resolver))
-    return;
-
-  auto entries = HeapVector<Member<FontMetadata>>();
-  for (const auto& font : fonts) {
-    auto entry = FontEnumerationEntry{.postscript_name = font->postscript_name,
-                                      .full_name = font->full_name,
-                                      .family = font->family,
-                                      .style = font->style};
-    entries.push_back(FontMetadata::Create(std::move(entry)));
-  }
-  resolver->Resolve(std::move(entries));
-}
-
 void FontManager::DidGetEnumerationResponse(
     ScriptPromiseResolver* resolver,
     const Vector<String>& selection,

@@ -37,9 +37,6 @@ class FontManager final : public ScriptWrappable,
   void Trace(blink::Visitor*) const override;
 
  private:
-  void DidShowFontChooser(ScriptPromiseResolver* resolver,
-                          mojom::blink::FontEnumerationStatus status,
-                          Vector<mojom::blink::FontMetadataPtr> fonts);
   void DidGetEnumerationResponse(ScriptPromiseResolver* resolver,
                                  const Vector<String>& selection,
                                  mojom::blink::FontEnumerationStatus,
