@@ -159,6 +159,13 @@ gfx::Size RotationAdjustedSize(media::VideoRotation rotation,
   return size;
 }
 
+// UpdateCurrentFrame() callbacks can stop when the tab is hidden or the page
+// area containing the video frame is scrolled out of view. Maximum allowed
+// delay in the callbacks which will drop all the pending decoder output frames
+// and reset the frame queue.
+constexpr base::TimeDelta kMaximumVsyncDelayForLowLatencyRenderer =
+    base::Milliseconds(50);
+
 }  // anonymous namespace
 
 WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
@@ -395,7 +402,13 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // Since some hardware decoders only have a limited number of output frames,
   // we must aggressively release frames in this case.
   const base::TimeTicks now = base::TimeTicks::Now();
-  if (now > last_deadline_max_) {
+  const base::TimeDelta vsync_delay = now - last_deadline_max_;
+  base::TimeDelta maximum_vsync_delay_for_renderer_reset;
+  if (frame->metadata().maximum_composition_delay_in_frames) {
+    maximum_vsync_delay_for_renderer_reset =
+        kMaximumVsyncDelayForLowLatencyRenderer;
+  }
+  if (vsync_delay > maximum_vsync_delay_for_renderer_reset) {
     // Note: the frame in |rendering_frame_buffer_| with lowest index is the
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
