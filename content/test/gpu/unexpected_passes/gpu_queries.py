@@ -232,8 +232,7 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
     # Only consider specific test cases that were found to have active
     # expectations in the above query. Also perform any initial query splitting.
     target_num_ids = queries_module.TARGET_RESULTS_PER_QUERY / self._num_samples
-    return GpuSplitQueryGenerator(builder.builder_type, test_ids,
-                                  target_num_ids)
+    return GpuSplitQueryGenerator(builder, test_ids, target_num_ids)
 
   def _GetRelevantExpectationFilesForQueryResult(self, _):
     # Only one expectation file is ever used for the GPU tests, so just use
