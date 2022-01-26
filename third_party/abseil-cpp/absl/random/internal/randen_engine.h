@@ -42,7 +42,7 @@ namespace random_internal {
 // 'Strong' (well-distributed, unpredictable, backtracking-resistant) random
 // generator, faster in some benchmarks than std::mt19937_64 and pcg64_c32.
 template <typename T>
-class alignas(8) randen_engine {
+class alignas(16) randen_engine {
  public:
   // C++11 URBG interface:
   using result_type = T;
@@ -58,8 +58,7 @@ class alignas(8) randen_engine {
     return (std::numeric_limits<result_type>::max)();
   }
 
-  randen_engine() : randen_engine(0) {}
-  explicit randen_engine(result_type seed_value) { seed(seed_value); }
+  explicit randen_engine(result_type seed_value = 0) { seed(seed_value); }
 
   template <class SeedSequence,
             typename = typename absl::enable_if_t<
@@ -68,27 +67,17 @@ class alignas(8) randen_engine {
     seed(seq);
   }
 
-  // alignment requirements dictate custom copy and move constructors.
-  randen_engine(const randen_engine& other)
-      : next_(other.next_), impl_(other.impl_) {
-    std::memcpy(state(), other.state(), kStateSizeT * sizeof(result_type));
-  }
-  randen_engine& operator=(const randen_engine& other) {
-    next_ = other.next_;
-    impl_ = other.impl_;
-    std::memcpy(state(), other.state(), kStateSizeT * sizeof(result_type));
-    return *this;
-  }
+  randen_engine(const randen_engine&) = default;
 
   // Returns random bits from the buffer in units of result_type.
   result_type operator()() {
     // Refill the buffer if needed (unlikely).
-    auto* begin = state();
     if (next_ >= kStateSizeT) {
       next_ = kCapacityT;
-      impl_.Generate(begin);
+      impl_.Generate(state_);
     }
-    return little_endian::ToHost(begin[next_++]);
+
+    return little_endian::ToHost(state_[next_++]);
   }
 
   template <class SeedSequence>
@@ -103,10 +92,9 @@ class alignas(8) randen_engine {
   void seed(result_type seed_value = 0) {
     next_ = kStateSizeT;
     // Zeroes the inner state and fills the outer state with seed_value to
-    // mimic the behaviour of reseed
-    auto* begin = state();
-    std::fill(begin, begin + kCapacityT, 0);
-    std::fill(begin + kCapacityT, begin + kStateSizeT, seed_value);
+    // mimics behaviour of reseed
+    std::fill(std::begin(state_), std::begin(state_) + kCapacityT, 0);
+    std::fill(std::begin(state_) + kCapacityT, std::end(state_), seed_value);
   }
 
   // Inserts entropy into (part of) the state. Calling this periodically with
@@ -117,6 +105,7 @@ class alignas(8) randen_engine {
     using sequence_result_type = typename SeedSequence::result_type;
     static_assert(sizeof(sequence_result_type) == 4,
                   "SeedSequence::result_type must be 32-bit");
+
     constexpr size_t kBufferSize =
         Randen::kSeedBytes / sizeof(sequence_result_type);
     alignas(16) sequence_result_type buffer[kBufferSize];
@@ -130,8 +119,8 @@ class alignas(8) randen_engine {
     if (entropy_size < kBufferSize) {
       // ... and only request that many values, or 256-bits, when unspecified.
       const size_t requested_entropy = (entropy_size == 0) ? 8u : entropy_size;
-      std::fill(buffer + requested_entropy, buffer + kBufferSize, 0);
-      seq.generate(buffer, buffer + requested_entropy);
+      std::fill(std::begin(buffer) + requested_entropy, std::end(buffer), 0);
+      seq.generate(std::begin(buffer), std::begin(buffer) + requested_entropy);
 #ifdef ABSL_IS_BIG_ENDIAN
       // Randen expects the seed buffer to be in Little Endian; reverse it on
       // Big Endian platforms.
@@ -157,9 +146,9 @@ class alignas(8) randen_engine {
         std::swap(buffer[--dst], buffer[--src]);
       }
     } else {
-      seq.generate(buffer, buffer + kBufferSize);
+      seq.generate(std::begin(buffer), std::end(buffer));
     }
-    impl_.Absorb(buffer, state());
+    impl_.Absorb(buffer, state_);
 
     // Generate will be called when operator() is called
     next_ = kStateSizeT;
@@ -170,10 +159,9 @@ class alignas(8) randen_engine {
     count -= step;
 
     constexpr uint64_t kRateT = kStateSizeT - kCapacityT;
-    auto* begin = state();
     while (count > 0) {
       next_ = kCapacityT;
-      impl_.Generate(*reinterpret_cast<result_type(*)[kStateSizeT]>(begin));
+      impl_.Generate(state_);
       step = std::min<uint64_t>(kRateT, count);
       count -= step;
     }
@@ -181,9 +169,9 @@ class alignas(8) randen_engine {
   }
 
   bool operator==(const randen_engine& other) const {
-    const auto* begin = state();
     return next_ == other.next_ &&
-           std::equal(begin, begin + kStateSizeT, other.state());
+           std::equal(std::begin(state_), std::end(state_),
+                      std::begin(other.state_));
   }
 
   bool operator!=(const randen_engine& other) const {
@@ -197,12 +185,11 @@ class alignas(8) randen_engine {
     using numeric_type =
         typename random_internal::stream_format_type<result_type>::type;
     auto saver = random_internal::make_ostream_state_saver(os);
-    auto* it = engine.state();
-    for (auto* end = it + kStateSizeT; it < end; ++it) {
+    for (const auto& elem : engine.state_) {
       // In the case that `elem` is `uint8_t`, it must be cast to something
       // larger so that it prints as an integer rather than a character. For
       // simplicity, apply the cast all circumstances.
-      os << static_cast<numeric_type>(little_endian::FromHost(*it))
+      os << static_cast<numeric_type>(little_endian::FromHost(elem))
          << os.fill();
     }
     os << engine.next_;
@@ -228,7 +215,7 @@ class alignas(8) randen_engine {
     if (is.fail()) {
       return is;
     }
-    std::memcpy(engine.state(), state, sizeof(state));
+    std::memcpy(engine.state_, state, sizeof(engine.state_));
     engine.next_ = next;
     return is;
   }
@@ -239,21 +226,9 @@ class alignas(8) randen_engine {
   static constexpr size_t kCapacityT =
       Randen::kCapacityBytes / sizeof(result_type);
 
-  // Returns the state array pointer, which is aligned to 16 bytes.
-  // The first kCapacityT are the `inner' sponge; the remainder are available.
-  result_type* state() {
-    return reinterpret_cast<result_type*>(
-        (reinterpret_cast<uintptr_t>(&raw_state_) & 0xf) ? (raw_state_ + 8)
-                                                         : raw_state_);
-  }
-  const result_type* state() const {
-    return const_cast<randen_engine*>(this)->state();
-  }
-
-  // raw state array, manually aligned in state(). This overallocates
-  // by 8 bytes since C++ does not guarantee extended heap alignment.
-  alignas(8) char raw_state_[Randen::kStateBytes + 8];
-  size_t next_;  // index within state()
+  // First kCapacityT are `inner', the others are accessible random bits.
+  alignas(16) result_type state_[kStateSizeT];
+  size_t next_;  // index within state_
   Randen impl_;
 };
 

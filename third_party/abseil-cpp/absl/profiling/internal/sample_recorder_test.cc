@@ -36,7 +36,7 @@ using ::testing::UnorderedElementsAre;
 
 struct Info : public Sample<Info> {
  public:
-  void PrepareForSampling(int64_t w) { weight = w; }
+  void PrepareForSampling() {}
   std::atomic<size_t> size;
   absl::Time create_time;
 };
@@ -49,14 +49,8 @@ std::vector<size_t> GetSizes(SampleRecorder<Info>* s) {
   return res;
 }
 
-std::vector<int64_t> GetWeights(SampleRecorder<Info>* s) {
-  std::vector<int64_t> res;
-  s->Iterate([&](const Info& info) { res.push_back(info.weight); });
-  return res;
-}
-
-Info* Register(SampleRecorder<Info>* s, int64_t weight, size_t size) {
-  auto* info = s->Register(weight);
+Info* Register(SampleRecorder<Info>* s, size_t size) {
+  auto* info = s->Register();
   assert(info != nullptr);
   info->size.store(size);
   return info;
@@ -64,15 +58,13 @@ Info* Register(SampleRecorder<Info>* s, int64_t weight, size_t size) {
 
 TEST(SampleRecorderTest, Registration) {
   SampleRecorder<Info> sampler;
-  auto* info1 = Register(&sampler, 31, 1);
+  auto* info1 = Register(&sampler, 1);
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(1));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(31));
 
-  auto* info2 = Register(&sampler, 32, 2);
+  auto* info2 = Register(&sampler, 2);
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(1, 2));
   info1->size.store(3);
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(3, 2));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(31, 32));
 
   sampler.Unregister(info1);
   sampler.Unregister(info2);
@@ -82,22 +74,18 @@ TEST(SampleRecorderTest, Unregistration) {
   SampleRecorder<Info> sampler;
   std::vector<Info*> infos;
   for (size_t i = 0; i < 3; ++i) {
-    infos.push_back(Register(&sampler, 33 + i, i));
+    infos.push_back(Register(&sampler, i));
   }
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(0, 1, 2));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(33, 34, 35));
 
   sampler.Unregister(infos[1]);
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(0, 2));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(33, 35));
 
-  infos.push_back(Register(&sampler, 36, 3));
-  infos.push_back(Register(&sampler, 37, 4));
+  infos.push_back(Register(&sampler, 3));
+  infos.push_back(Register(&sampler, 4));
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(0, 2, 3, 4));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(33, 35, 36, 37));
   sampler.Unregister(infos[3]);
   EXPECT_THAT(GetSizes(&sampler), UnorderedElementsAre(0, 2, 4));
-  EXPECT_THAT(GetWeights(&sampler), UnorderedElementsAre(33, 35, 37));
 
   sampler.Unregister(infos[0]);
   sampler.Unregister(infos[2]);
@@ -111,18 +99,18 @@ TEST(SampleRecorderTest, MultiThreaded) {
   ThreadPool pool(10);
 
   for (int i = 0; i < 10; ++i) {
-    pool.Schedule([&sampler, &stop, i]() {
+    pool.Schedule([&sampler, &stop]() {
       std::random_device rd;
       std::mt19937 gen(rd());
 
       std::vector<Info*> infoz;
       while (!stop.HasBeenNotified()) {
         if (infoz.empty()) {
-          infoz.push_back(sampler.Register(i));
+          infoz.push_back(sampler.Register());
         }
         switch (std::uniform_int_distribution<>(0, 2)(gen)) {
           case 0: {
-            infoz.push_back(sampler.Register(i));
+            infoz.push_back(sampler.Register());
             break;
           }
           case 1: {
@@ -131,7 +119,6 @@ TEST(SampleRecorderTest, MultiThreaded) {
             Info* info = infoz[p];
             infoz[p] = infoz.back();
             infoz.pop_back();
-            EXPECT_EQ(info->weight, i);
             sampler.Unregister(info);
             break;
           }
@@ -156,8 +143,8 @@ TEST(SampleRecorderTest, MultiThreaded) {
 TEST(SampleRecorderTest, Callback) {
   SampleRecorder<Info> sampler;
 
-  auto* info1 = Register(&sampler, 39, 1);
-  auto* info2 = Register(&sampler, 40, 2);
+  auto* info1 = Register(&sampler, 1);
+  auto* info2 = Register(&sampler, 2);
 
   static const Info* expected;
 

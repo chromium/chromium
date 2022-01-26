@@ -106,13 +106,7 @@ class BadStatusOrAccess : public std::exception {
 
 // Returned StatusOr objects may not be ignored.
 template <typename T>
-#if ABSL_HAVE_CPP_ATTRIBUTE(nodiscard)
-// TODO(b/176172494): ABSL_MUST_USE_RESULT should expand to the more strict
-// [[nodiscard]]. For now, just use [[nodiscard]] directly when it is available.
-class [[nodiscard]] StatusOr;
-#else
 class ABSL_MUST_USE_RESULT StatusOr;
-#endif  // ABSL_HAVE_CPP_ATTRIBUTE(nodiscard)
 
 // absl::StatusOr<T>
 //

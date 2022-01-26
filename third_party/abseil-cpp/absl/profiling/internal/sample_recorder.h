@@ -46,7 +46,6 @@ struct Sample {
   absl::Mutex init_mu;
   T* next = nullptr;
   T* dead ABSL_GUARDED_BY(init_mu) = nullptr;
-  int64_t weight;  // How many sampling events were required to sample this one.
 };
 
 // Holds samples and their associated stack traces with a soft limit of

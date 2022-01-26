@@ -30,7 +30,6 @@ absl_cc_library(
     absl::core_headers
     absl::endian
     absl::fixed_array
-    absl::function_ref
     absl::meta
     absl::int128
     absl::strings
@@ -69,11 +68,7 @@ absl_cc_test(
     absl::hash
     absl::hash_testing
     absl::core_headers
-    absl::btree
-    absl::flat_hash_map
     absl::flat_hash_set
-    absl::node_hash_map
-    absl::node_hash_set
     absl::spy_hash_state
     absl::meta
     absl::int128
