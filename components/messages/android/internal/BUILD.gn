@@ -95,8 +95,10 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-v24/message_bg_tinted.xml",
     "java/res/drawable/message_bg_tinted.xml",
     "java/res/layout/message_banner_view.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
