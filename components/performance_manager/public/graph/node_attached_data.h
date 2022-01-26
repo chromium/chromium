@@ -67,7 +67,7 @@ class ExternalNodeAttachedDataImpl : public NodeAttachedData {
   static bool Destroy(const NodeType* node);
 
  private:
-  static constexpr int kUserDataKey = 0;
+  static const int kUserDataKey = 0;
   static const void* UserDataKey() { return &kUserDataKey; }
 };
 
