@@ -31,7 +31,7 @@ export interface PortraitResult {
   resolution: Resolution;
   blob: Blob;
   metadata: Metadata|null;
-  pendingPortrait: Promise<{blob: Blob, metadata: Metadata|null}>|null;
+  pendingPortrait: Promise<{blob: Blob, metadata: Metadata|null}|null>;
 }
 
 /**
