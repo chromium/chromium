@@ -550,7 +550,7 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 #endif  // defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) &&
         // defined(PA_HAS_64_BITS_POINTERS)
 
-  auto* entry = PartitionFreelistEntry::InitForThreadCache(
+  auto* entry = PartitionFreelistEntry::EmplaceAndInitForThreadCache(
       slot_start, bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;

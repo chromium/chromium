@@ -392,8 +392,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
       return nullptr;
     }
 
-    auto* next_entry =
-        new (reinterpret_cast<void*>(slot_start)) PartitionFreelistEntry();
+    auto* next_entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
     page->slot_span_metadata.SetFreelistHead(next_entry);
 
     map_extent = &metadata->direct_map_extent;
@@ -784,8 +783,7 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     if (LIKELY(size <= kMaxMemoryTaggingSize)) {
       next_slot = memory::TagMemoryRangeRandomly(next_slot, size);
     }
-    auto* entry =
-        new (reinterpret_cast<void*>(next_slot)) PartitionFreelistEntry();
+    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(next_slot);
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
@@ -1033,9 +1031,11 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionFreelistEntry* entry =
         new_slot_span->PopForAlloc(new_bucket->slot_size);
 
-    // We likely set *is_already_zeroed to true above, make sure that the
-    // freelist entry doesn't contain data.
-    return reinterpret_cast<uintptr_t>(entry->ClearForAllocation());
+    // We may have set *is_already_zeroed to true above, make sure that the
+    // freelist entry doesn't contain data. Either way, it wouldn't be a good
+    // idea to let users see our internal data.
+    uintptr_t slot_start = entry->ClearForAllocation();
+    return slot_start;
   }
 
   // Otherwise, we need to provision more slots by committing more pages. Build

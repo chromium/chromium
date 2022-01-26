@@ -244,16 +244,16 @@ static size_t PartitionPurgeSlotSpan(
         slot_size;
     PA_DCHECK(slot_index < num_slots);
     slot_usage[slot_index] = 0;
-    entry = entry->GetNext(slot_size);
 #if !BUILDFLAG(IS_WIN)
-    // If we have a slot where the masked freelist entry is 0, we can actually
-    // discard that freelist entry because touching a discarded page is
-    // guaranteed to return original content or 0. (Note that this optimization
-    // won't fire on big-endian machines because the masking function is
+    // If we have a slot where the encoded next pointer is 0, we can actually
+    // discard that entry because touching a discarded page is guaranteed to
+    // return the original content or 0. (Note that this optimization won't be
+    // effective on big-endian machines because the masking function is
     // negation.)
-    if (!internal::PartitionFreelistEntry::Encode(entry))
+    if (entry->IsEncodedNextPtrZero())
       last_slot = slot_index;
 #endif
+    entry = entry->GetNext(slot_size);
   }
 
   // If the slot(s) at the end of the slot span are not in used, we can truncate
@@ -294,9 +294,8 @@ static size_t PartitionPurgeSlotSpan(
         if (slot_usage[slot_index])
           continue;
 
-        auto* entry = new (
-            reinterpret_cast<void*>(slot_span_start + (slot_size * slot_index)))
-            internal::PartitionFreelistEntry();
+        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
+            slot_span_start + (slot_size * slot_index));
         if (!head) {
           head = entry;
           back = entry;

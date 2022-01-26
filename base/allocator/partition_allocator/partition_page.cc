@@ -282,8 +282,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
       if (free_slots[slot_number]) {
         uintptr_t slot_address =
             memory::RemaskPtr(slot_span_start + (slot_size * slot_number));
-        auto* entry = new (reinterpret_cast<void*>(slot_address))
-            PartitionFreelistEntry();
+        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_address);
 
         if (!head)
           head = entry;

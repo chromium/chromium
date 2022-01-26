@@ -1014,8 +1014,7 @@ void UnmarkInCardTable(uintptr_t object,
 
   const auto bitmap_iterator = [&](uintptr_t address) {
     SlotSpan* current_slot_span = SlotSpan::FromSlotStart(address);
-    auto* ptr = reinterpret_cast<void*>(memory::RemaskPtr(address));
-    auto* entry = new (ptr) PartitionFreelistEntry();
+    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(address);
 
     if (current_slot_span != previous_slot_span) {
       // We started scanning a new slot span. Flush the accumulated freelist to
