@@ -6,16 +6,18 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {ActivityLogStreamElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
 
 suite('ExtensionsActivityLogStreamTest', function() {
   /**
    * Backing extension id, same id as the one in createExtensionInfo
-   * @type {string}
    */
-  const EXTENSION_ID = 'a'.repeat(32);
+  const EXTENSION_ID: string = 'a'.repeat(32);
 
   const activity1 = {
     extensionId: EXTENSION_ID,
@@ -45,11 +47,10 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
   /**
    * Extension activityLogStream created before each test.
-   * @type {ActivityLogStream}
    */
-  let activityLogStream;
-  let proxyDelegate;
-  let boundTestVisible;
+  let activityLogStream: ActivityLogStreamElement;
+  let proxyDelegate: TestService;
+  let boundTestVisible: (selector: string, expectedVisible: boolean) => void;
 
   // Initialize an extension activity log item before each test.
   setup(function() {
@@ -72,8 +73,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
   // Returns a list of visible stream items. The not([hidden]) selector is
   // needed for iron-list as it reuses components but hides them when not in
   // use.
-  function getStreamItems() {
-    return activityLogStream.shadowRoot.querySelectorAll(
+  function getStreamItems(): NodeListOf<HTMLElement> {
+    return activityLogStream.shadowRoot!.querySelectorAll<HTMLElement>(
         'activity-log-stream-item:not([hidden])');
   }
 
@@ -85,7 +86,8 @@ suite('ExtensionsActivityLogStreamTest', function() {
     boundTestVisible('#empty-stream-message', true);
     boundTestVisible('#stream-started-message', true);
 
-    activityLogStream.shadowRoot.querySelector('#toggle-stream-button').click();
+    activityLogStream.shadowRoot!
+        .querySelector<HTMLElement>('#toggle-stream-button')!.click();
     boundTestVisible('#stream-stopped-message', true);
   });
 
@@ -99,11 +101,11 @@ suite('ExtensionsActivityLogStreamTest', function() {
         // One event coming in. Since the stream is on, we should be able to see
         // it.
         let streamItems = getStreamItems();
-        expectEquals(1, streamItems.length);
+        assertEquals(1, streamItems.length);
 
         // Pause the stream.
-        activityLogStream.shadowRoot.querySelector('#toggle-stream-button')
-            .click();
+        activityLogStream.shadowRoot!
+            .querySelector<HTMLElement>('#toggle-stream-button')!.click();
         proxyDelegate.getOnExtensionActivity().callListeners(
             contentScriptActivity);
 
@@ -111,22 +113,24 @@ suite('ExtensionsActivityLogStreamTest', function() {
         // One event was fired but the stream was paused, we should still see
         // only one item.
         streamItems = getStreamItems();
-        expectEquals(1, streamItems.length);
+        assertEquals(1, streamItems.length);
 
         // Resume the stream.
-        activityLogStream.shadowRoot.querySelector('#toggle-stream-button')
-            .click();
+        activityLogStream.shadowRoot!
+            .querySelector<HTMLElement>('#toggle-stream-button')!.click();
         proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
         flush();
         streamItems = getStreamItems();
-        expectEquals(2, streamItems.length);
+        assertEquals(2, streamItems.length);
 
-        expectEquals(
-            streamItems[0].shadowRoot.querySelector('#activity-name').innerText,
+        assertEquals(
+            streamItems[0]!.shadowRoot!
+                .querySelector<HTMLElement>('#activity-name')!.innerText!,
             'testAPI.testMethod');
-        expectEquals(
-            streamItems[1].shadowRoot.querySelector('#activity-name').innerText,
+        assertEquals(
+            streamItems[1]!.shadowRoot!
+                .querySelector<HTMLElement>('#activity-name')!.innerText!,
             'testAPI.DOMMethod');
       });
 
@@ -138,29 +142,28 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(activity2);
 
     flush();
-    expectEquals(2, getStreamItems().length);
+    assertEquals(2, getStreamItems().length);
 
     const search =
-        activityLogStream.shadowRoot.querySelector('cr-search-field');
+        activityLogStream.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
 
     // Search for the apiCall of |activity1|.
-    search.setValue('testMethod');
+    search!.setValue('testMethod');
     flush();
 
     const filteredStreamItems = getStreamItems();
-    expectEquals(1, getStreamItems().length);
-    expectEquals(
-        filteredStreamItems[0]
-            .shadowRoot.querySelector('#activity-name')
-            .innerText,
+    assertEquals(1, getStreamItems().length);
+    assertEquals(
+        filteredStreamItems[0]!.shadowRoot!
+            .querySelector<HTMLElement>('#activity-name')!.innerText!,
         'testAPI.testMethod');
 
     // search again, expect none
-    search.setValue('not expecting any activities to match');
+    search!.setValue('not expecting any activities to match');
     flush();
 
-    expectEquals(0, getStreamItems().length);
+    assertEquals(0, getStreamItems().length);
     boundTestVisible('#empty-stream-message', false);
     boundTestVisible('#empty-search-message', true);
 
@@ -168,13 +171,13 @@ suite('ExtensionsActivityLogStreamTest', function() {
     // returns no results.
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
 
-    search.shadowRoot.querySelector('#clearSearch').click();
+    search!.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!.click();
     flush();
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is
     // split into 2 items) should be processed and stored in the stream
     // regardless of the search input.
-    expectEquals(4, getStreamItems().length);
+    assertEquals(4, getStreamItems().length);
   });
 
   test('content script events are split by content script names', function() {
@@ -182,14 +185,16 @@ suite('ExtensionsActivityLogStreamTest', function() {
 
     flush();
     let streamItems = getStreamItems();
-    expectEquals(2, streamItems.length);
+    assertEquals(2, streamItems.length);
 
     // We should see two items: one for every script called.
-    expectEquals(
-        streamItems[0].shadowRoot.querySelector('#activity-name').innerText,
+    assertEquals(
+        streamItems[0]!.shadowRoot!
+            .querySelector<HTMLElement>('#activity-name')!.innerText!,
         'script1.js');
-    expectEquals(
-        streamItems[1].shadowRoot.querySelector('#activity-name').innerText,
+    assertEquals(
+        streamItems[1]!.shadowRoot!
+            .querySelector<HTMLElement>('#activity-name')!.innerText!,
         'script2.js');
   });
 
@@ -197,13 +202,13 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
     flush();
-    expectEquals(1, getStreamItems().length);
+    assertEquals(1, getStreamItems().length);
     boundTestVisible('.activity-table-headings', true);
-    activityLogStream.shadowRoot.querySelector('.clear-activities-button')
-        .click();
+    activityLogStream.shadowRoot!
+        .querySelector<HTMLElement>('.clear-activities-button')!.click();
 
     flush();
-    expectEquals(0, getStreamItems().length);
+    assertEquals(0, getStreamItems().length);
     boundTestVisible('.activity-table-headings', false);
   });
 });

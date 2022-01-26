@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement, navigation, Page} from 'chrome://extensions/extensions.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 
@@ -13,25 +14,22 @@ suite('ExtensionsActivityLogTest', function() {
   /**
    * Backing extension id, same id as the one in
    * createExtensionInfo
-   * @type {string}
    */
-  const EXTENSION_ID = 'a'.repeat(32);
+  const EXTENSION_ID: string = 'a'.repeat(32);
 
   /**
    * Extension activityLog created before each test.
-   * @type {ActivityLog}
    */
-  let activityLog;
+  let activityLog: ExtensionsActivityLogElement;
 
   /**
    * Backing extension info for the activity log.
-   * @type {chrome.developerPrivate.ExtensionInfo|
-   *        ActivityLogExtensionPlaceholder}
    */
-  let extensionInfo;
+  let extensionInfo: chrome.developerPrivate.ExtensionInfo|
+      ActivityLogExtensionPlaceholder;
 
-  let proxyDelegate;
-  let boundTestVisible;
+  let proxyDelegate: TestService;
+  let boundTestVisible: (selector: string, expectedVisible: boolean) => void;
 
   const testActivities = {activities: []};
 
@@ -63,7 +61,7 @@ suite('ExtensionsActivityLogTest', function() {
     document.body.appendChild(activityLog);
 
     activityLog.dispatchEvent(
-        new CustomEvent('view-enter-start', {bubbles: true, comosed: true}));
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
 
     // Wait until we have finished making the call to fetch the activity log.
     return proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -77,8 +75,8 @@ suite('ExtensionsActivityLogTest', function() {
   // needed for iron-list as it reuses components but hides them when not in
   // use.
   function getStreamItems() {
-    return activityLog.shadowRoot.querySelector('activity-log-stream')
-        .shadowRoot.querySelectorAll('activity-log-stream-item:not([hidden])');
+    return activityLog.shadowRoot!.querySelector('activity-log-stream')!
+        .shadowRoot!.querySelectorAll('activity-log-stream-item:not([hidden])');
   }
 
   test('clicking on back button navigates to the details page', function() {
@@ -89,8 +87,8 @@ suite('ExtensionsActivityLogTest', function() {
       currentPage = newPage;
     });
 
-    activityLog.shadowRoot.querySelector('#closeButton').click();
-    expectDeepEquals(
+    activityLog.$.closeButton.click();
+    assertDeepEquals(
         currentPage, {page: Page.DETAILS, extensionId: EXTENSION_ID});
   });
 
@@ -106,8 +104,8 @@ suite('ExtensionsActivityLogTest', function() {
           currentPage = newPage;
         });
 
-        activityLog.shadowRoot.querySelector('#closeButton').click();
-        expectDeepEquals(currentPage, {page: Page.LIST});
+        activityLog.$.closeButton.click();
+        assertDeepEquals(currentPage, {page: Page.LIST});
       });
 
   test('tab transitions', async () => {
@@ -117,7 +115,7 @@ suite('ExtensionsActivityLogTest', function() {
     boundTestVisible('activity-log-history', true);
 
     // Navigate to the activity log stream.
-    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
+    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
     flush();
 
     // One activity is recorded and should appear in the stream.
@@ -125,10 +123,10 @@ suite('ExtensionsActivityLogTest', function() {
 
     flush();
     boundTestVisible('activity-log-stream', true);
-    expectEquals(1, getStreamItems().length);
+    assertEquals(1, getStreamItems().length);
 
     // Navigate back to the activity log history tab.
-    activityLog.shadowRoot.querySelector('cr-tabs').selected = 0;
+    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 0;
 
     // Expect a refresh of the activity log.
     await proxyDelegate.whenCalled('getExtensionActivityLog');
@@ -139,11 +137,11 @@ suite('ExtensionsActivityLogTest', function() {
     // the stream is inactive.
     proxyDelegate.getOnExtensionActivity().callListeners(activity1);
 
-    activityLog.shadowRoot.querySelector('cr-tabs').selected = 1;
+    activityLog.shadowRoot!.querySelector('cr-tabs')!.selected = 1;
     flush();
 
     // The one activity in the stream should have persisted between tab
     // switches.
-    expectEquals(1, getStreamItems().length);
+    assertEquals(1, getStreamItems().length);
   });
 });

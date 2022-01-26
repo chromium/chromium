@@ -4,34 +4,33 @@
 
 /** @fileoverview Suite of tests for activity-log-stream-item. */
 
-import {ARG_URL_PLACEHOLDER} from 'chrome://extensions/extensions.js';
-
+import {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {testVisible} from './test_util.js';
 
 suite('ExtensionsActivityLogStreamItemTest', function() {
   /**
    * Extension activityLogStreamItem created before each test.
-   * @type {ActivityLogStreamItem}
    */
-  let activityLogStreamItem;
-  let boundTestVisible;
+  let activityLogStreamItem: ActivityLogStreamItemElement;
+  let boundTestVisible: (selector: string, expectedVisible: boolean) => void;
 
   /**
    * StreamItem data for the activityLogStreamItem
-   * @type {StreamItem}
    */
-  let testStreamItem;
+  let testStreamItem: StreamItem;
 
   // Initialize an activity log stream item before each test.
   setup(function() {
     document.body.innerHTML = '';
     testStreamItem = {
-      id: 'testAPI.testMethod1550101623113',
       name: 'testAPI.testMethod',
       timestamp: 1550101623113,
       activityType: chrome.activityLogPrivate.ExtensionActivityType.API_CALL,
       pageUrl: '',
+      argUrl: '',
       args: JSON.stringify([]),
       expanded: false
     };
@@ -59,12 +58,12 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
       'page URL, args and web request info visible when item is expanded',
       function() {
         testStreamItem = {
-          id: 'testAPI.testMethod1550101623113',
           name: 'testAPI.testMethod',
           timestamp: 1550101623113,
           activityType:
               chrome.activityLogPrivate.ExtensionActivityType.API_CALL,
           pageUrl: 'example.url',
+          argUrl: '',
           args: JSON.stringify([null]),
           webRequestInfo: 'web request info',
           expanded: false
@@ -74,8 +73,8 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
         flush();
         boundTestVisible('cr-expand-button', true);
-        activityLogStreamItem.shadowRoot.querySelector('cr-expand-button')
-            .click();
+        activityLogStreamItem.shadowRoot!.querySelector(
+                                             'cr-expand-button')!.click();
 
         flush();
         boundTestVisible('#page-url-link', true);
@@ -91,7 +90,6 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
     const escapedPlaceholder = '\\u003Carg_url>';
 
     testStreamItem = {
-      id: 'testAPI.testMethod1550101623113',
       name: 'testAPI.testMethod',
       timestamp: 1550101623113,
       activityType: chrome.activityLogPrivate.ExtensionActivityType.API_CALL,
@@ -109,19 +107,20 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
     flush();
     boundTestVisible('cr-expand-button', true);
-    activityLogStreamItem.shadowRoot.querySelector('cr-expand-button').click();
+    activityLogStreamItem.shadowRoot!.querySelector(
+                                         'cr-expand-button')!.click();
 
     flush();
     boundTestVisible('#args-list', true);
 
     const argsDisplayed =
-        activityLogStreamItem.shadowRoot.querySelectorAll('.arg');
-    expectEquals(4, argsDisplayed.length);
+        activityLogStreamItem.shadowRoot!.querySelectorAll<HTMLElement>('.arg');
+    assertEquals(4, argsDisplayed.length);
 
-    expectEquals(`"${argUrl}"`, argsDisplayed[0].innerText);
-    expectEquals(`"${argUrl}"`, argsDisplayed[1].innerText);
-    expectEquals(`["${argUrl}"]`, argsDisplayed[2].innerText);
-    expectEquals(`{"url":"${argUrl}"}`, argsDisplayed[3].innerText);
+    assertEquals(`"${argUrl}"`, argsDisplayed[0]!.innerText!);
+    assertEquals(`"${argUrl}"`, argsDisplayed[1]!.innerText!);
+    assertEquals(`["${argUrl}"]`, argsDisplayed[2]!.innerText!);
+    assertEquals(`{"url":"${argUrl}"}`, argsDisplayed[3]!.innerText!);
   });
 
   teardown(function() {

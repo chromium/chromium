@@ -56,7 +56,7 @@ function processActivityForStream(
                              }));
 }
 
-class ActivityLogStreamElement extends PolymerElement {
+export class ActivityLogStreamElement extends PolymerElement {
   static get is() {
     return 'activity-log-stream';
   }

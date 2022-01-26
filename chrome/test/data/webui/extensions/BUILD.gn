@@ -18,9 +18,9 @@ preprocessed_files = [ "toolbar_test.ts" ]
 non_preprocessed_files = [
   "activity_log_history_item_test.ts",
   "activity_log_history_test.ts",
-  "activity_log_stream_item_test.js",
-  "activity_log_stream_test.js",
-  "activity_log_test.js",
+  "activity_log_stream_item_test.ts",
+  "activity_log_stream_test.ts",
+  "activity_log_test.ts",
   "code_section_test.js",
   "detail_view_test.js",
   "error_console_test.js",

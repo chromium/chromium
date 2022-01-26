@@ -47,7 +47,7 @@ export type ActivityLogExtensionPlaceholder = {
   isPlaceholder: boolean,
 }
 
-interface ExtensionsActivityLogElement {
+export interface ExtensionsActivityLogElement {
   $: {
     closeButton: HTMLElement,
   };
@@ -56,7 +56,8 @@ interface ExtensionsActivityLogElement {
 const ExtensionsActivityLogElementBase =
     I18nMixin(CrContainerShadowMixin(PolymerElement));
 
-class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
+export class ExtensionsActivityLogElement extends
+    ExtensionsActivityLogElementBase {
   static get is() {
     return 'extensions-activity-log';
   }
@@ -168,6 +169,13 @@ class ExtensionsActivityLogElement extends ExtensionsActivityLogElementBase {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-activity-log': ExtensionsActivityLogElement;
+  }
+}
+
 
 customElements.define(
     ExtensionsActivityLogElement.is, ExtensionsActivityLogElement);

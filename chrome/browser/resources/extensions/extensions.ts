@@ -5,9 +5,11 @@
 import './manager.js';
 
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+export {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement} from './activity_log/activity_log.js';
 export {ActivityLogHistoryElement, ActivityLogPageState} from './activity_log/activity_log_history.js';
 export {ActivityGroup, ActivityLogHistoryItemElement} from './activity_log/activity_log_history_item.js';
-export {ARG_URL_PLACEHOLDER} from './activity_log/activity_log_stream_item.js';
+export {ActivityLogStreamElement} from './activity_log/activity_log_stream.js';
+export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from './activity_log/activity_log_stream_item.js';
 export {ItemDelegate} from './item.js';
 export {UserAction} from './item_util.js';
 // <if expr="chromeos">

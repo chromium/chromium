@@ -46,7 +46,7 @@ export const ARG_URL_PLACEHOLDER: string = '<arg_url>';
  */
 const ARG_URL_PLACEHOLDER_REGEX: RegExp = /"<arg_url>"/g;
 
-class ActivityLogStreamItemElement extends PolymerElement {
+export class ActivityLogStreamItemElement extends PolymerElement {
   static get is() {
     return 'activity-log-stream-item';
   }
@@ -133,6 +133,12 @@ class ActivityLogStreamItemElement extends PolymerElement {
       this.set('data.expanded', !this.data.expanded);
       this.dispatchEvent(new CustomEvent('resize-stream'));
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-stream-item': ActivityLogStreamItemElement;
   }
 }
 
