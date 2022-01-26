@@ -108,6 +108,8 @@ declare_args() {
   # with this flag have no behavior difference, except for setting a synthetic
   # Finch.
   use_fake_binary_experiment = false
+
+  use_asan_backup_ref_ptr = false
 }
 
 # Prevent using BackupRefPtr when PartitionAlloc-Everywhere isn't used.
@@ -135,3 +137,11 @@ assert(
 # is true.
 assert(use_backup_ref_ptr || !enable_backup_ref_ptr_slow_checks,
        "Can't enable additional BackupRefPtr checks if it isn't enabled at all")
+
+# BackupRefPtr and AsanBackupRefPtr are mutually exclusive variants of raw_ptr.
+assert(
+    !use_backup_ref_ptr || !use_asan_backup_ref_ptr,
+    "Both BackupRefPtr and AsanBackupRefPtr can't be enabled at the same time")
+
+assert(!use_asan_backup_ref_ptr || is_asan,
+       "AsanBackupRefPtr requires AddressSanitizer")

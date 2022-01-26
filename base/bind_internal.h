@@ -85,6 +85,14 @@ template <typename T>
 class UnretainedWrapper {
  public:
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
+
+  // Trick to only instantiate this constructor if it is used. Otherwise,
+  // instantiating UnretainedWrapper with a T that is not supported by
+  // raw_ptr would trigger raw_ptr<T>'s static_assert.
+  template <typename U = T>
+  // Avoids having a raw_ptr<T> -> T* -> raw_ptr<T> round trip, which
+  // would trigger the raw_ptr error detector if T* was dangling.
+  explicit UnretainedWrapper(const raw_ptr<U>& o) : ptr_(o) {}
   T* get() const { return ptr_; }
 
  private:

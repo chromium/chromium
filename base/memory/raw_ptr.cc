@@ -18,9 +18,7 @@
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 
-namespace base {
-
-namespace internal {
+namespace base::internal {
 
 void BackupRefPtrImpl::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
@@ -64,8 +62,76 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 }
 #endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
-}  // namespace internal
+}  // namespace base::internal
 
-}  // namespace base
+#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#include <sanitizer/asan_interface.h>
+#include "base/logging.h"
+
+namespace base::internal {
+
+namespace {
+bool IsFreedHeapPointer(void const volatile* ptr) {
+  if (!__asan_address_is_poisoned(ptr))
+    return false;
+
+  // Make sure the address is on the heap and is not in a redzone.
+  void* region_ptr;
+  size_t region_size;
+  const char* allocation_type = __asan_locate_address(
+      const_cast<void*>(ptr), nullptr, 0, &region_ptr, &region_size);
+
+  auto address = reinterpret_cast<uintptr_t>(ptr);
+  auto region_address = reinterpret_cast<uintptr_t>(region_ptr);
+  return strcmp(allocation_type, "heap") == 0 && region_address <= address &&
+         address < region_address + region_size;
+}
+
+// Force a non-optimizable memory load operation to trigger an ASan crash.
+void ForceRead(void const volatile* ptr) {
+  auto unused = *reinterpret_cast<char const volatile*>(ptr);
+  asm volatile("" : "+r"(unused));
+}
+}  // namespace
+
+void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
+    void const volatile* ptr) {
+  if (IsFreedHeapPointer(ptr)) {
+    LOG(ERROR) << "BackupRefPtr: Constructing a raw_ptr from a pointer "
+                  "to an already freed allocation at "
+               << const_cast<void*>(ptr) << " leads to memory corruption.";
+    ForceRead(ptr);
+  }
+}
+
+void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
+    void const volatile* ptr) {
+  if (IsFreedHeapPointer(ptr)) {
+    LOG(ERROR)
+        << "BackupRefPtr: Dereferencing a raw_ptr to an already "
+           "freed allocation at "
+        << const_cast<void*>(ptr)
+        << ".\nThis issue is covered by BackupRefPtr in production builds.";
+    ForceRead(ptr);
+  }
+}
+
+void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
+    void const volatile* ptr) {
+  if (IsFreedHeapPointer(ptr)) {
+    LOG(ERROR)
+        << "BackupRefPtr: Extracting from a raw_ptr to an already "
+           "freed allocation at "
+        << const_cast<void*>(ptr)
+        << ".\nIf ASan reports a use-after-free on a related address, it "
+           "*may be* covered by BackupRefPtr in production builds but the issue"
+           "requires a manual analysis to determine if that's the case.";
+    // Don't trigger ASan manually to avoid false-positives when the extracted
+    // pointer is never dereferenced.
+  }
+}
+
+}  // namespace base::internal
+
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

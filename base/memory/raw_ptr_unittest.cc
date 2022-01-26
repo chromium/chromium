@@ -1054,5 +1054,67 @@ TEST(BackupRefPtrImpl, ReinterpretCast) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+struct AsanStruct {
+  int x;
+
+  void func() { ++x; }
+};
+
+TEST(AsanBackupRefPtrImpl, Dereference) {
+  raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
+
+  // The four statements below should succeed.
+  (*protected_ptr).x = 1;
+  (*protected_ptr).func();
+  ++(protected_ptr->x);
+  protected_ptr->func();
+
+  delete protected_ptr.get();
+
+  EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).x = 1,
+                            "BackupRefPtr: Dereferencing a raw_ptr");
+  EXPECT_DEATH_IF_SUPPORTED((*protected_ptr).func(),
+                            "BackupRefPtr: Dereferencing a raw_ptr");
+  EXPECT_DEATH_IF_SUPPORTED(++(protected_ptr->x),
+                            "BackupRefPtr: Dereferencing a raw_ptr");
+  EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
+                            "BackupRefPtr: Dereferencing a raw_ptr");
+}
+
+TEST(AsanBackupRefPtrImpl, Extraction) {
+  raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
+
+  AsanStruct* ptr1 = protected_ptr;  // Shouldn't crash.
+  ptr1->x = 0;
+
+  delete protected_ptr.get();
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        AsanStruct* ptr2 = protected_ptr;
+        ptr2->x = 1;
+      },
+      "BackupRefPtr: Extracting from a raw_ptr");
+}
+
+TEST(AsanBackupRefPtrImpl, Instantiation) {
+  AsanStruct* ptr = new AsanStruct;
+
+  raw_ptr<AsanStruct> protected_ptr1 = ptr;  // Shouldn't crash.
+  protected_ptr1 = nullptr;
+
+  delete ptr;
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        raw_ptr<AsanStruct> protected_ptr2 = ptr;
+        ALLOW_UNUSED_LOCAL(protected_ptr2);
+      },
+      "BackupRefPtr: Constructing a raw_ptr");
+}
+#endif
+
 }  // namespace internal
 }  // namespace base

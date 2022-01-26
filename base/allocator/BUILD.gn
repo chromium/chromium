@@ -35,6 +35,7 @@ buildflag_header("buildflags") {
     "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
 
     "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
+    "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",

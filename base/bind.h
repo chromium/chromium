@@ -142,7 +142,7 @@ inline internal::UnretainedWrapper<T> Unretained(T* o) {
 
 template <typename T>
 inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T>& o) {
-  return internal::UnretainedWrapper<T>(o.get());
+  return internal::UnretainedWrapper<T>(o);
 }
 
 // RetainedRef() accepts a ref counted object and retains a reference to it.

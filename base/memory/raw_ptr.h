@@ -305,6 +305,83 @@ struct BackupRefPtrImpl {
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
+// Implementation that allows us to detect BackupRefPtr problems in ASan builds.
+struct AsanBackupRefPtrImpl {
+  // Wraps a pointer.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* WrapRawPtr(T* ptr) {
+    AsanCheckIfValidInstantiation(ptr);
+    return ptr;
+  }
+
+  // Notifies the allocator when a wrapped pointer is being removed or replaced.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES void ReleaseWrappedPtr(T*) {}
+
+  // Unwraps the pointer, while asserting that memory hasn't been freed. The
+  // function is allowed to crash on nullptr.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForDereference(
+      T* wrapped_ptr) {
+    AsanCheckIfValidDereference(wrapped_ptr);
+    return wrapped_ptr;
+  }
+
+  // Unwraps the pointer, while asserting that memory hasn't been freed. The
+  // function must handle nullptr gracefully.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* SafelyUnwrapPtrForExtraction(
+      T* wrapped_ptr) {
+    AsanCheckIfValidExtraction(wrapped_ptr);
+    return wrapped_ptr;
+  }
+
+  // Unwraps the pointer, without making an assertion on whether memory was
+  // freed or not.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* UnsafelyUnwrapPtrForComparison(
+      T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
+  // Upcasts the wrapped pointer.
+  template <typename To, typename From>
+  static RAW_PTR_FUNC_ATTRIBUTES constexpr To* Upcast(From* wrapped_ptr) {
+    static_assert(std::is_convertible<From*, To*>::value,
+                  "From must be convertible to To.");
+    // Note, this cast may change the address if upcasting to base that lies in
+    // the middle of the derived object.
+    return wrapped_ptr;
+  }
+
+  // Advance the wrapped pointer by |delta| bytes.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* Advance(T* wrapped_ptr,
+                                            ptrdiff_t delta_elems) {
+    return wrapped_ptr + delta_elems;
+  }
+
+  // Returns a copy of a wrapped pointer, without making an assertion on whether
+  // memory was freed or not.
+  template <typename T>
+  static RAW_PTR_FUNC_ATTRIBUTES T* Duplicate(T* wrapped_ptr) {
+    return wrapped_ptr;
+  }
+
+  // This is for accounting only, used by unit tests.
+  static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void
+  IncrementPointerToMemberOperatorCountForTest() {}
+
+ private:
+  static BASE_EXPORT NOINLINE void AsanCheckIfValidInstantiation(
+      void const volatile* ptr);
+  static BASE_EXPORT NOINLINE void AsanCheckIfValidDereference(
+      void const volatile* ptr);
+  static BASE_EXPORT NOINLINE void AsanCheckIfValidExtraction(
+      void const volatile* ptr);
+};
+
 }  // namespace internal
 
 namespace raw_ptr_traits {
@@ -406,6 +483,8 @@ struct IsSupportedType<T,
 template <typename T,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>
+#elif BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+          typename Impl = internal::AsanBackupRefPtrImpl>
 #else
           typename Impl = internal::RawPtrNoOpImpl>
 #endif
