@@ -124,6 +124,11 @@
       feature_default: "EnableForAll",
     },
     {
+      name: "ClientHintUAFull",
+      permissions_policy_name: "ch-ua-full",
+      depends_on: ["SendFullUserAgentAfterReduction"],
+    },
+    {
       name: "ClientHintUAFullVersion",
       permissions_policy_name: "ch-ua-full-version",
     },

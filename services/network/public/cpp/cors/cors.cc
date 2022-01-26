@@ -373,6 +373,14 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // full version for each brand in its brands list.
       // https://wicg.github.io/ua-client-hints/#sec-ch-ua-full-version-list
       "sec-ch-ua-full-version-list",
+
+      // The `Sec-CH-UA-Full` header field is a temporary client hint, which
+      // will only be sent in the presence of a valid Origin Trial token.  It
+      // was introduced to enable sites to register for the deprecation UA
+      // reduction origin trial and continue to receive the full UA string for
+      // some period, once UA reduction rolls out.
+      "sec-ch-ua-full",
+
   });
 
   if (!base::Contains(safe_names, lower_name))

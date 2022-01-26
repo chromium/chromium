@@ -68,6 +68,8 @@ ClientHintToWebFeatureMap MakeClientHintToWebFeatureMap() {
        WebFeature::kClientHintsViewportWidth},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        WebFeature::kClientHintsUAFullVersionList},
+      {network::mojom::WebClientHintsType::kFullUserAgent,
+       WebFeature::kClientHintsUAFull},
   };
 }
 

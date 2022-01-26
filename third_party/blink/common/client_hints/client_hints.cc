@@ -73,6 +73,8 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintViewportWidth},
       {network::mojom::WebClientHintsType::kUAFullVersionList,
        mojom::PermissionsPolicyFeature::kClientHintUAFullVersionList},
+      {network::mojom::WebClientHintsType::kFullUserAgent,
+       mojom::PermissionsPolicyFeature::kClientHintUAFull},
   };
 }
 

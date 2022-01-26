@@ -182,6 +182,16 @@ enum PermissionsPolicyFeature {
   // Client Hint for the full version for each brand.
   kClientHintUAFullVersionList = 93,
 
+  // Client hint for indicating that the User-Agent header contains the full
+  // user agent string.
+  //
+  // The `Sec-CH-UA-Full` header field is a temporary client hint, which
+  // will only be sent in the presence of a valid Origin Trial token.  It was
+  // introduced to enable sites to register for the deprecation UA reduction
+  // origin trial and continue to receive the full UA string for some period, once
+  // UA reduction rolls out.
+  kClientHintUAFull = 94,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

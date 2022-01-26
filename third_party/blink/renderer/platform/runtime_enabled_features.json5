@@ -2096,6 +2096,12 @@
       status: "stable",
     },
     {
+      name: "SendFullUserAgentAfterReduction",
+      origin_trial_feature_name: "SendFullUserAgentAfterReduction",
+      origin_trial_allows_third_party: true,
+      status: "experimental",
+    },
+    {
       name: "SendMouseEventsDisabledFormControls",
       status: "experimental",
     },

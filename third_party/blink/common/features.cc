@@ -97,6 +97,12 @@ const base::Feature kFreezePurgeMemoryAllPagesFrozen{
 const base::Feature kReduceUserAgent{"ReduceUserAgent",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the `sec-ch-ua-full` client hint to be sent along with the full user
+// agent string in the HTTP request headers, as well as surfacing the full user
+// agent string in the JS APIs (navigator.userAgent, etc).
+const base::Feature kFullUserAgent{"FullUserAgent",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the frequency capping for detecting overlay popups. Overlay-popups
 // are the interstitials that pop up and block the main content of the page.
 const base::Feature kFrequencyCappingForOverlayPopupDetection{

@@ -36911,6 +36911,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4146" label="FrameNameContainsBrace"/>
   <int value="4147" label="FrameNameContainsNewline"/>
   <int value="4148" label="AbortSignalThrowIfAborted"/>
+  <int value="4149" label="ClientHintsUAFull"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -37024,6 +37025,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="91" label="RunAdAuction"/>
   <int value="92" label="JoinAdInterestGroup"/>
   <int value="93" label="ClientHintUAFullVersionList"/>
+  <int value="94" label="ClientHintUAFull"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

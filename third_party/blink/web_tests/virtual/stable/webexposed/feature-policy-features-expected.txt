@@ -13,6 +13,7 @@ ch-rtt
 ch-ua
 ch-ua-arch
 ch-ua-bitness
+ch-ua-full
 ch-ua-full-version
 ch-ua-full-version-list
 ch-ua-mobile
