@@ -49,7 +49,7 @@ suite('InternetDetailMenu', function() {
   /** @param {boolean=} opt_isGuest */
   async function init(opt_isGuest) {
     const isGuest = !!opt_isGuest;
-    loadTimeData.overrideValues({isGuest: isGuest});
+    loadTimeData.overrideValues({esimPolicyEnabled: true, isGuest: isGuest});
 
     const params = new URLSearchParams;
     params.append('guid', 'cellular_guid');
@@ -265,7 +265,8 @@ suite('InternetDetailMenu', function() {
   });
 
   test('Menu is disabled on managed profile', async function() {
-    addEsimCellularNetwork('100000', '11111111111111111111111111111111', true);
+    addEsimCellularNetwork(
+        '100000', '11111111111111111111111111111111', /*is_managed=*/ true);
     init();
 
     const params = new URLSearchParams;
@@ -276,12 +277,6 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
     const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
     assertTrue(!!tripleDot);
-    assertFalse(tripleDot.disabled);
-
-    internetDetailMenu.deviceState = {
-      type: mojom.NetworkType.kCellular,
-      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
-    };
     assertTrue(tripleDot.disabled);
   });
 
