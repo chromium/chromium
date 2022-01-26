@@ -603,7 +603,8 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testConvertProtoLaunchTypeToTabLaunchType() {
-        for (int type = 0; type < LaunchTypeAtCreation.names.length; type++) {
+        for (int type = LaunchTypeAtCreation.SIZE;
+                type < LaunchTypeAtCreation.names.length + LaunchTypeAtCreation.SIZE; type++) {
             if (type == LaunchTypeAtCreation.UNKNOWN) continue;
             CriticalPersistedTabData.getLaunchType(type);
         }
@@ -635,5 +636,34 @@ public class CriticalPersistedTabDataTest {
             Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
                     tabUserAgent, TabUserAgent.SIZE);
         }
+    }
+
+    @SmallTest
+    @Test
+    public void testFlatBufferValuesUnchanged() {
+        // FlatBuffer enum values should not be changed as they are persisted across restarts.
+        // Changing them would cause backward compatibility issues crbug.com/1286984.
+        Assert.assertEquals(-2, LaunchTypeAtCreation.SIZE);
+        Assert.assertEquals(-1, LaunchTypeAtCreation.UNKNOWN);
+        Assert.assertEquals(0, LaunchTypeAtCreation.FROM_LINK);
+        Assert.assertEquals(1, LaunchTypeAtCreation.FROM_EXTERNAL_APP);
+        Assert.assertEquals(2, LaunchTypeAtCreation.FROM_CHROME_UI);
+        Assert.assertEquals(3, LaunchTypeAtCreation.FROM_RESTORE);
+        Assert.assertEquals(4, LaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND);
+        Assert.assertEquals(5, LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND);
+        Assert.assertEquals(6, LaunchTypeAtCreation.FROM_REPARENTING);
+        Assert.assertEquals(7, LaunchTypeAtCreation.FROM_LAUNCHER_SHORTCUT);
+        Assert.assertEquals(8, LaunchTypeAtCreation.FROM_SPECULATIVE_BACKGROUND_CREATION);
+        Assert.assertEquals(9, LaunchTypeAtCreation.FROM_BROWSER_ACTIONS);
+        Assert.assertEquals(10, LaunchTypeAtCreation.FROM_LAUNCH_NEW_INCOGNITO_TAB);
+        Assert.assertEquals(11, LaunchTypeAtCreation.FROM_STARTUP);
+        Assert.assertEquals(12, LaunchTypeAtCreation.FROM_START_SURFACE);
+        Assert.assertEquals(13, LaunchTypeAtCreation.FROM_TAB_GROUP_UI);
+        Assert.assertEquals(14, LaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
+        Assert.assertEquals(15, LaunchTypeAtCreation.FROM_APP_WIDGET);
+        Assert.assertEquals(
+                "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
+                        + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
+                18, LaunchTypeAtCreation.names.length);
     }
 }
