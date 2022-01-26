@@ -97,10 +97,13 @@ void PluginData::RefreshBrowserSidePluginCache() {
   registry->GetPlugins(true, &plugins);
 }
 
-void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
+void PluginData::UpdatePluginList() {
+  if (updated_)
+    return;
+
   SCOPED_UMA_HISTOGRAM_TIMER("Blink.Plugin.UpdateTime");
   ResetPluginData();
-  main_frame_origin_ = main_frame_origin;
+  updated_ = true;
 
   mojo::Remote<mojom::blink::PluginRegistry> registry;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
@@ -137,7 +140,7 @@ void PluginData::UpdatePluginList(const SecurityOrigin* main_frame_origin) {
 void PluginData::ResetPluginData() {
   plugins_.clear();
   mimes_.clear();
-  main_frame_origin_ = nullptr;
+  updated_ = false;
 }
 
 bool PluginData::SupportsMimeType(const String& mime_type) const {

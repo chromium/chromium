@@ -408,14 +408,11 @@ void Page::InitialStyleChanged() {
   }
 }
 
-PluginData* Page::GetPluginData(const SecurityOrigin* main_frame_origin) {
+PluginData* Page::GetPluginData() {
   if (!plugin_data_)
     plugin_data_ = MakeGarbageCollected<PluginData>();
 
-  if (!plugin_data_->Origin() ||
-      !main_frame_origin->IsSameOriginWith(plugin_data_->Origin()))
-    plugin_data_->UpdatePluginList(main_frame_origin);
-
+  plugin_data_->UpdatePluginList();
   return plugin_data_.Get();
 }
 

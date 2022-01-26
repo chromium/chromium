@@ -80,7 +80,6 @@ class PointerLockController;
 class ScopedPagePauser;
 class ScrollingCoordinator;
 class ScrollbarTheme;
-class SecurityOrigin;
 class Settings;
 class SpatialNavigationController;
 class TopDocumentRootScrollerController;
@@ -148,8 +147,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   ViewportDescription GetViewportDescription() const;
 
-  // Returns the plugin data associated with |main_frame_origin|.
-  PluginData* GetPluginData(const SecurityOrigin* main_frame_origin);
+  // Returns the plugin data.
+  PluginData* GetPluginData();
 
   // Resets the plugin data for all pages in the renderer process and notifies
   // PluginsChangedObservers.

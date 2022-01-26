@@ -10,10 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
-#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "url/url_util.h"
 
 namespace blink {
 namespace {
@@ -28,12 +25,8 @@ class MockPluginRegistry : public mojom::blink::PluginRegistry {
   MOCK_METHOD(void, DidGetPlugins, (bool));
 };
 
-// Regression test for https://crbug.com/862282
-TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
+TEST(PluginDataTest, UpdatePluginList) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> support;
-  // Create a scheme that's local but nonstandard, as in bug 862282.
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddLocalScheme("nonstandard-862282");
 
   MockPluginRegistry mock_plugin_registry;
   mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
@@ -53,11 +46,8 @@ TEST(PluginDataTest, NonStandardUrlSchemeRequestsPluginsWithUniqueOrigin) {
 
   EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
 
-  scoped_refptr<SecurityOrigin> non_standard_origin =
-      SecurityOrigin::CreateFromString("nonstandard-862282:foo/bar");
-  EXPECT_FALSE(non_standard_origin->IsOpaque());
   auto* plugin_data = MakeGarbageCollected<PluginData>();
-  plugin_data->UpdatePluginList(non_standard_origin.get());
+  plugin_data->UpdatePluginList();
 }
 
 }  // namespace
