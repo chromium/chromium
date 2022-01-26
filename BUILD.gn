@@ -669,7 +669,6 @@ group("gn_all") {
       "//sandbox/win:sbox_unittests",
       "//sandbox/win:sbox_validation_tests",
       "//testing/gtest:gtest_main",
-      "//third_party/tcmalloc:addr2line-pdb",
 
       # The following two are accessibility API debugging tools.
       "//tools/accessibility/inspect:ax_dump_events",
