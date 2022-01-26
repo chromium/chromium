@@ -55,10 +55,6 @@ export class RepairComponentChipElement extends PolymerElement {
   onComponentButtonClicked_() {
     this.checked = !this.checked;
   }
-
-  click() {
-    this.onComponentButtonClicked_();
-  }
 }
 
 customElements.define(

@@ -41,9 +41,7 @@ export function repairComponentChipElementTest() {
    */
   function clickChip() {
     assertTrue(!!component);
-
-    const button = component.shadowRoot.querySelector('#containerButton');
-    button.click();
+    component.shadowRoot.querySelector('#componentButton').click();
     return flushTasks();
   }
 
@@ -58,10 +56,10 @@ export function repairComponentChipElementTest() {
     assertEquals(componentNameSpanElement.textContent, 'cpu');
   });
 
-  test('ComponentToggleChecked', async () => {
+  test('ComponentToggleCheckedOnClick', async () => {
     await initializeRepairComponentChip('cpu');
 
-    const checkIcon = component.shadowRoot.querySelector('#checkedIcon');
+    const checkIcon = component.shadowRoot.querySelector('#checkIcon');
 
     await clickChip();
     assertTrue(component.checked);
@@ -77,11 +75,15 @@ export function repairComponentChipElementTest() {
     component.disabled = true;
     await flushTasks();
 
-    const infoIcon = component.shadowRoot.querySelector('#infoIcon');
-    assertTrue(isVisible(infoIcon));
+    const checkIcon = component.shadowRoot.querySelector('#checkIcon');
+
+    assertFalse(component.checked);
+    assertFalse(isVisible(checkIcon));
 
     await clickChip();
 
+    // Confirm the state does not change after the attempted click.
     assertFalse(component.checked);
+    assertFalse(isVisible(checkIcon));
   });
 }

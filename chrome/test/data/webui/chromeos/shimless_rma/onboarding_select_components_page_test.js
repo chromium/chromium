@@ -75,7 +75,7 @@ export function onboardingSelectComponentsPageTest() {
         component.shadowRoot.querySelector('#componentCamera');
     assertTrue(!!cameraComponent);
     assertFalse(cameraComponent.disabled);
-    cameraComponent.click();
+    cameraComponent.shadowRoot.querySelector('#componentButton').click();
     return flushTasks();
   }
 
