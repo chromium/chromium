@@ -62,7 +62,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationLocksFocus) {
 class WebXrControllerInputMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   void WaitNumFrames(unsigned int num_frames) {
@@ -244,7 +244,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
 };
 
 void WebXrControllerInputMock::OnFrameSubmitted(
-    std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   num_submitted_frames_++;
   if (wait_loop_ && target_submitted_frames_ == num_submitted_frames_) {

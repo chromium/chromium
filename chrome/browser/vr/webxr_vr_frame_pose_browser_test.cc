@@ -20,7 +20,7 @@ namespace {
 const float kIPD = 0.2f;
 
 struct Frame {
-  std::vector<device_test::mojom::SubmittedFrameDataPtr> submitted;
+  std::vector<device_test::mojom::ViewDataPtr> views;
   device_test::mojom::PoseFrameDataPtr pose;
   device_test::mojom::DeviceConfigPtr config;
 };
@@ -28,7 +28,7 @@ struct Frame {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
@@ -86,17 +86,16 @@ unsigned int ParseColorFrameId(const device_test::mojom::ColorPtr& color) {
 }
 
 void MyXRMock::OnFrameSubmitted(
-    std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   // Since we clear the entire context to a single color, every view in the
   // frame has the same color (see onImmersiveXRFrameCallback in
   // test_webxr_poses.html).
-  unsigned int frame_id = ParseColorFrameId(frame_data[0]->color);
+  unsigned int frame_id = ParseColorFrameId(views[0]->color);
   DLOG(ERROR) << "Frame Submitted: " << num_frames_submitted_ << " "
               << frame_id;
-  submitted_frames.push_back({std::move(frame_data),
-                              last_immersive_frame_data.Clone(),
-                              GetDeviceConfig()});
+  submitted_frames.push_back(
+      {std::move(views), last_immersive_frame_data.Clone(), GetDeviceConfig()});
 
   num_frames_submitted_++;
   if (num_frames_submitted_ >= wait_frame_count_ && wait_frame_count_ > 0 &&
@@ -203,7 +202,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
   std::set<unsigned int> seen_right;
   unsigned int max_frame_id = 0;
   for (const auto& frame : my_mock.submitted_frames) {
-    for (const auto& data : frame.submitted) {
+    for (const auto& data : frame.views) {
       // The test page encodes the frame id as the clear color.
       unsigned int frame_id = ParseColorFrameId(data->color);
 

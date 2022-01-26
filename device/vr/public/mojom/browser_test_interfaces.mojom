@@ -20,7 +20,7 @@ enum Eye {
   NONE = 3
 };
 
-struct SubmittedFrameData {
+struct ViewData {
   Color color;
   Eye eye;
   gfx.mojom.Rect viewport;
@@ -122,7 +122,7 @@ interface XRTestHook {
   // frame_data is an array of all the views that are active in the frame. This
   // is generally the left and right eye view, but may contain additional
   // secondary views as well if secondary view configurations are enabled.
-  [Sync] OnFrameSubmitted(array<SubmittedFrameData> frame_data) => ();
+  [Sync] OnFrameSubmitted(array<ViewData> frame_data) => ();
 
   // Called by the XR runtime to retrieve the XR device's configuration set by
   // the test.

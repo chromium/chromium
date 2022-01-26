@@ -19,7 +19,7 @@ const float kIpd = 0.7f;
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final {
     frame_count_++;
     std::move(callback).Run();

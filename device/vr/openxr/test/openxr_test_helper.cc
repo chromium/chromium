@@ -137,7 +137,7 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
 void OpenXrTestHelper::OnPresentedFrame() {
   DCHECK_NE(textures_arr_.size(), 0ull);
 
-  std::vector<device::SubmittedFrameData> submitted_data;
+  std::vector<device::ViewData> submitted_views;
   uint32_t current_x = 0;
 
   for (XrViewConfigurationType view_config_type : view_configs_enabled_) {
@@ -148,7 +148,7 @@ void OpenXrTestHelper::OnPresentedFrame() {
           view_config.Properties();
       for (uint32_t i = 0; i < view_properties.size(); i++) {
         const XrViewConfigurationView& properties = view_properties[i];
-        device::SubmittedFrameData& data = submitted_data.emplace_back();
+        device::ViewData& data = submitted_views.emplace_back();
         data.viewport =
             gfx::Rect(current_x, 0, properties.recommendedImageRectWidth,
                       properties.recommendedImageRectHeight);
@@ -164,19 +164,17 @@ void OpenXrTestHelper::OnPresentedFrame() {
   if (!test_hook_)
     return;
 
-  test_hook_->OnFrameSubmitted(submitted_data);
+  test_hook_->OnFrameSubmitted(submitted_views);
 }
 
-void OpenXrTestHelper::CopyTextureDataIntoFrameData(
-    uint32_t x_start,
-    device::SubmittedFrameData& data) {
+void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
+                                                    device::ViewData& data) {
   DCHECK(d3d_device_);
   DCHECK_NE(textures_arr_.size(), 0ull);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
   d3d_device_->GetImmediateContext(&context);
 
-  constexpr uint32_t buffer_size =
-      sizeof(device::SubmittedFrameData::raw_buffer);
+  constexpr uint32_t buffer_size = sizeof(device::ViewData::raw_buffer);
   constexpr uint32_t buffer_size_pixels = buffer_size / sizeof(device::Color);
 
   // We copy the submitted texture to a new texture, so we can map it, and
@@ -207,7 +205,7 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(
   D3D11_MAPPED_SUBRESOURCE map_data = {};
   hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
   DCHECK_EQ(hr, S_OK);
-  // We have a 1-pixel image, so store it in the provided SubmittedFrameData
+  // We have a 1-pixel image, so store it in the provided ViewData
   // along with the raw data.
   device::Color* color = static_cast<device::Color*>(map_data.pData);
   data.color = color[0];

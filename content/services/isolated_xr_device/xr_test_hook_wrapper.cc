@@ -49,20 +49,19 @@ XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
 
-void XRTestHookWrapper::OnFrameSubmitted(
-    const std::vector<SubmittedFrameData>& frame_data) {
+void XRTestHookWrapper::OnFrameSubmitted(const std::vector<ViewData>& views) {
   if (hook_) {
-    std::vector<device_test::mojom::SubmittedFrameDataPtr> submitted;
-    for (const SubmittedFrameData& data : frame_data) {
-      device_test::mojom::SubmittedFrameDataPtr submitted_data =
-          device_test::mojom::SubmittedFrameData::New();
-      submitted_data->color = device_test::mojom::Color::New(
-          data.color.r, data.color.g, data.color.b, data.color.a);
-      submitted_data->viewport = data.viewport;
-      submitted_data->eye = XrEyeToMojoEye(data.eye);
-      submitted.push_back(std::move(submitted_data));
+    std::vector<device_test::mojom::ViewDataPtr> submitted_views;
+    for (const ViewData& view : views) {
+      device_test::mojom::ViewDataPtr view_data =
+          device_test::mojom::ViewData::New();
+      view_data->color = device_test::mojom::Color::New(
+          view.color.r, view.color.g, view.color.b, view.color.a);
+      view_data->viewport = view.viewport;
+      view_data->eye = XrEyeToMojoEye(view.eye);
+      submitted_views.push_back(std::move(view_data));
     }
-    hook_->OnFrameSubmitted(std::move(submitted));
+    hook_->OnFrameSubmitted(std::move(submitted_views));
   }
 }
 

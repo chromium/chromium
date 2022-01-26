@@ -20,7 +20,7 @@ namespace vr {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   void WaitForFrame() {
@@ -42,11 +42,11 @@ class MyXRMock : public MockXRDeviceHookBase {
 };
 
 void MyXRMock::OnFrameSubmitted(
-    std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   // Since we clear the entire context to a single color (see onXRFrame() in
   // webxr_boilerplate.js), every view in the frame has the same color.
-  last_submitted_color_ = std::move(frame_data[0]->color);
+  last_submitted_color_ = std::move(views[0]->color);
   num_submitted_frames_++;
 
   if (wait_loop_) {

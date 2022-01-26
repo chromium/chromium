@@ -181,8 +181,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
     ActionProperties(const ActionProperties& other);
   };
 
-  void CopyTextureDataIntoFrameData(uint32_t x_start,
-                                    device::SubmittedFrameData& data);
+  void CopyTextureDataIntoFrameData(uint32_t x_start, device::ViewData& data);
   void ReinitializeTextures();
   void CreateTextures(uint32_t width, uint32_t height);
   void AddDimensions(const device::OpenXrViewConfiguration& view_config,

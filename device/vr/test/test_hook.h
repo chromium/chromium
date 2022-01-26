@@ -74,7 +74,7 @@ struct Color {
   unsigned char a;
 };
 
-struct SubmittedFrameData {
+struct ViewData {
   Color color;
   XrEye eye;
   gfx::Rect viewport;
@@ -140,8 +140,7 @@ inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {
 // Tests may implement this, and register it to control behavior of VR runtime.
 class VRTestHook {
  public:
-  virtual void OnFrameSubmitted(
-      const std::vector<SubmittedFrameData>& frame_data) = 0;
+  virtual void OnFrameSubmitted(const std::vector<ViewData>& frame_data) = 0;
   virtual DeviceConfig WaitGetDeviceConfig() = 0;
   virtual PoseFrameData WaitGetPresentingPose() = 0;
   virtual PoseFrameData WaitGetMagicWindowPose() = 0;
