@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/password_manager_test_base.h"
-#include "base/memory/raw_ptr.h"
 
 #include <map>
 #include <string>
@@ -12,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

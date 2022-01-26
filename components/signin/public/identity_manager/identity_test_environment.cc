@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "base/memory/raw_ptr.h"
 
 #include <limits>
 #include <memory>
@@ -13,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"

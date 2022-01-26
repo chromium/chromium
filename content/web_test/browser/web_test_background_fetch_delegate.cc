@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_background_fetch_delegate.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/download/content/factory/download_service_factory_helper.h"
