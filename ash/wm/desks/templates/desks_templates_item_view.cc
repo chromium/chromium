@@ -93,8 +93,9 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
     : desk_template_(desk_template->Clone()) {
-  auto launch_template_callback = base::BindRepeating(
-      &DesksTemplatesItemView::OnGridItemPressed, base::Unretained(this));
+  auto launch_template_callback =
+      base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
+                          weak_ptr_factory_.GetWeakPtr());
 
   const std::u16string template_name = desk_template_->template_name();
   auto* color_provider = AshColorProvider::Get();
@@ -159,30 +160,30 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth, kTimeViewHeight)),
                   views::Builder<views::View>().CopyAddressTo(&spacer),
-                  views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
-                      &icon_container_view_)),
-          views::Builder<views::View>().CopyAddressTo(&hover_container_))
+                  views::Builder<DesksTemplatesIconContainer>()
+                      .CopyAddressTo(&icon_container_view_)
+                      .PopulateIconContainerFromTemplate(desk_template_.get())
+                      .SetVisible(true)),
+          views::Builder<views::View>()
+              .CopyAddressTo(&hover_container_)
+              .SetUseDefaultFillLayout(true)
+              .SetVisible(false))
       .BuildChildren();
 
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON),
       PillButton::Type::kIconless, /*icon=*/nullptr));
 
   delete_button_ = hover_container_->AddChildView(std::make_unique<CloseButton>(
       base::BindRepeating(&DesksTemplatesItemView::OnDeleteButtonPressed,
-                          base::Unretained(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       CloseButton::Type::kMedium));
 
   name_view_->set_controller(this);
   name_view_observation_.Observe(name_view_);
 
-  hover_container_->SetUseDefaultFillLayout(true);
-  hover_container_->SetVisible(false);
-
-  icon_container_view_->PopulateIconContainerFromTemplate(desk_template_.get());
-  icon_container_view_->SetVisible(true);
   card_container->SetFlexForView(spacer, 1);
 
   StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
@@ -378,11 +379,12 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
       DesksTemplatesDialogController::Get()->ShowReplaceDialog(
           root_window, new_name,
           base::BindOnce(
-              &DesksTemplatesItemView::ReplaceTemplate, base::Unretained(this),
+              &DesksTemplatesItemView::ReplaceTemplate,
+              weak_ptr_factory_.GetWeakPtr(),
               template_item->desk_template_->uuid().AsLowercaseString(),
               new_name),
           base::BindOnce(&DesksTemplatesItemView::RevertTemplateName,
-                         base::Unretained(this)));
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
     }
   }
@@ -541,7 +543,7 @@ void DesksTemplatesItemView::OnDeleteButtonPressed() {
   dialog_controller->ShowDeleteDialog(
       Shell::GetPrimaryRootWindow(), name_view_->GetAccessibleName(),
       base::BindOnce(&DesksTemplatesItemView::OnDeleteTemplate,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesksTemplatesItemView::OnGridItemPressed(const ui::Event& event) {

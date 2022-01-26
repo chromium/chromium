@@ -81,6 +81,9 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
 BEGIN_VIEW_BUILDER(/* no export */,
                    DesksTemplatesIconContainer,
                    views::BoxLayoutView)
+VIEW_BUILDER_METHOD(PopulateIconContainerFromTemplate, DeskTemplate*)
+VIEW_BUILDER_METHOD(PopulateIconContainerFromWindows,
+                    const std::vector<aura::Window*>&)
 END_VIEW_BUILDER
 
 }  // namespace ash

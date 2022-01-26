@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -167,6 +168,8 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
 
   base::ScopedObservation<views::View, views::ViewObserver>
       name_view_observation_{this};
+
+  base::WeakPtrFactory<DesksTemplatesItemView> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesItemView, views::Button)

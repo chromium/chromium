@@ -52,6 +52,8 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // |""| as the error string with the pointer to the captured desk template,
   // otherwise, |callback| will be invoked with a description of the error as
   // the |error| with a nullptr.
+  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
+  // further uses of this method.
   void CaptureActiveDeskAndSaveTemplate(
       CaptureActiveDeskAndSaveTemplateCallback callback);
 
@@ -63,6 +65,8 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // storage. If no such existing desk template can be found or the file
   // operation has failed, |callback| will be invoked with a description of the
   // error as the |error|.
+  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
+  // further uses of this method.
   void UpdateDeskTemplate(const std::string& template_uuid,
                           const std::u16string& template_name,
                           UpdateDeskTemplateCallback callback);
@@ -73,13 +77,17 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // deleted, |callback| will be invoked with a description of the error.
   // If it can be deleted successfully, or there is no such |template_uuid|
   // to be removed,|callback| will be invoked with an empty error string.
+  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
+  // further uses of this method.
   void DeleteDeskTemplate(const std::string& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
-  using TemplateList = std::vector<ash::DeskTemplate*>;
   using GetDeskTemplatesCallback =
-      base::OnceCallback<void(const TemplateList&, std::string error)>;
+      base::OnceCallback<void(const std::vector<ash::DeskTemplate*>&,
+                              std::string error)>;
   // Returns the current available saved desk templates.
+  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
+  // further uses of this method.
   void GetDeskTemplates(GetDeskTemplatesCallback callback);
 
   using GetTemplateJsonCallback =
@@ -98,6 +106,8 @@ class DesksTemplatesClient : public ash::SessionObserver {
   // no such id can be found or we are at the max desk limit (currently is 8)
   // so can't create new desk for the desk template, |callback| will be invoked
   // with a description of the error.
+  // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
+  // further uses of this method.
   void LaunchDeskTemplate(const std::string& template_uuid,
                           LaunchDeskTemplateCallback callback);
 
@@ -183,8 +193,8 @@ class DesksTemplatesClient : public ash::SessionObserver {
                          desks_storage::DeskModel::GetTemplateJsonStatus status,
                          const std::string& json_representation);
 
-  // Convenience pointer to ash::DesksController.
-  // Guaranteed to be not null for the duration of `this`.
+  // Convenience pointer to ash::DesksController. Guaranteed to be not null for
+  // the duration of `this`.
   ash::DesksController* const desks_controller_;
 
   Profile* active_profile_ = nullptr;

@@ -346,6 +346,9 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   DesksTemplatesClientTest& operator=(const DesksTemplatesClientTest&) = delete;
   ~DesksTemplatesClientTest() override = default;
 
+  // TODO(crbug.com/1286515): These functions will be removed with the
+  // extension. Avoid further uses of this method and create or launch templates
+  // by mocking clicks on the system UI.
   void SetTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
     DesksTemplatesClient::Get()->launch_template_for_test_ =
         std::move(launch_template);

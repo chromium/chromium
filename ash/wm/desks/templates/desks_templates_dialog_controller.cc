@@ -149,7 +149,6 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
   unsupported_apps_callback_ = std::move(callback);
   unsupported_apps_template_ = std::move(desk_template);
 
-  DesksTemplatesIconContainer* icon_container = nullptr;
   auto dialog =
       views::Builder<DesksTemplatesDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
@@ -180,10 +179,9 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
                               kTextColorPrimary))
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
-              views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
-                  &icon_container))
+              views::Builder<DesksTemplatesIconContainer>()
+                  .PopulateIconContainerFromWindows(unsupported_apps))
           .Build();
-  icon_container->PopulateIconContainerFromWindows(unsupported_apps);
   CreateDialogWidget(std::move(dialog), root_window);
   RecordUnsupportedAppDialogShowHistogram();
 }

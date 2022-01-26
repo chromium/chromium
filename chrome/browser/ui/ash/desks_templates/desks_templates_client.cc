@@ -184,7 +184,6 @@ void DesksTemplatesClient::LaunchDeskTemplate(
   MaybeCreateAppLaunchHandler();
   DCHECK(app_launch_handler_);
 
-  // TODO: Verify this method works in tests when reading from storage.
   if (launch_template_for_test_) {
     OnGetTemplateForDeskLaunch(
         std::move(callback),
