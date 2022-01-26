@@ -4,10 +4,15 @@
 
 // https://gpuweb.github.io/gpuweb/
 
+enum GPUDeviceLostReason {
+  "destroyed"
+};
+
 [
     Exposed(Window WebGPU, DedicatedWorker WebGPU),
     SecureContext
 ] interface GPUDeviceLostInfo {
     readonly attribute DOMString message;
+    readonly attribute GPUDeviceLostReason? reason;
 };
 

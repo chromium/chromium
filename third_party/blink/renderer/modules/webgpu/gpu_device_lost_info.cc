@@ -6,12 +6,26 @@
 
 namespace blink {
 
-GPUDeviceLostInfo::GPUDeviceLostInfo(const String& message) {
+GPUDeviceLostInfo::GPUDeviceLostInfo(const WGPUDeviceLostReason reason,
+                                     const String& message) {
   message_ = message;
+  switch (reason) {
+    case WGPUDeviceLostReason_Destroyed:
+      reason_ = "destroyed";
+      break;
+    default:
+      // Leave the reason as null indicating that it is not an expected scenario
+      // for the device to be lost.
+      break;
+  }
 }
 
 const String& GPUDeviceLostInfo::message() const {
   return message_;
+}
+
+const String& GPUDeviceLostInfo::reason() const {
+  return reason_;
 }
 
 }  // namespace blink

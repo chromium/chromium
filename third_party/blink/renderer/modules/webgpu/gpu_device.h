@@ -82,6 +82,8 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   GPUQueue* queue();
 
+  void destroy();
+
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);
   GPUTexture* createTexture(const GPUTextureDescriptor* descriptor,
                             ExceptionState& exception_state);
