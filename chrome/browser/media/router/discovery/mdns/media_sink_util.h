@@ -16,9 +16,6 @@ struct DnsSdService;
 // The DNS-SD service type for Cast devices.
 static constexpr char kCastServiceType[] = "_googlecast._tcp.local";
 
-// Default Cast control port to open Cast Socket.
-static constexpr int kCastControlPort = 8009;
-
 // Returns the icon type to use according to |capabilities|. |capabilities| is
 // a bit set of cast_channel::CastDeviceCapabilities in CastSinkExtraData.
 SinkIconType GetCastSinkIconType(uint8_t capabilities);

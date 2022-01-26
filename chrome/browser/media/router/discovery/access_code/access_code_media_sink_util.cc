@@ -11,8 +11,8 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -88,9 +88,9 @@ CreateAccessCodeMediaSink(const DiscoveryDevice& discovery_device) {
 
   CastSinkExtraData extra_data;
   const std::string& port = discovery_device.network_info().port();
-  int port_value = 0;
+  int port_value = kCastControlPort;
   // Convert port from string to int
-  if (port.empty() || !base::StringToInt(port, &port_value)) {
+  if (!port.empty() && !base::StringToInt(port, &port_value)) {
     return std::make_pair(absl::nullopt,
                           CreateCastMediaSinkResult::kMissingOrInvalidPort);
   }
