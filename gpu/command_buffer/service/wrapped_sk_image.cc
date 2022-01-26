@@ -115,9 +115,13 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     auto destroy_resources = [](scoped_refptr<SharedContextState> context_state,
                                 sk_sp<SkPromiseImageTexture> promise_texture,
                                 GrBackendTexture backend_texture) {
-      DCHECK(promise_texture);
       context_state->MakeCurrent(nullptr);
-      context_state->EraseCachedSkSurface(promise_texture.get());
+
+      // Note that if we fail to initialize this backing, |promise_texture| will
+      // not be created and hence could be null while backing is destroyed after
+      // a failed init.
+      if (promise_texture)
+        context_state->EraseCachedSkSurface(promise_texture.get());
       promise_texture.reset();
 
       if (backend_texture.isValid())
