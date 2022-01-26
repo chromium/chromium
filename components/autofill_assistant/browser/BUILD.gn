@@ -21,6 +21,10 @@ proto_library("proto") {
   ]
 }
 
+proto_library("test_proto") {
+  sources = [ "parse_jspb_test.proto" ]
+}
+
 static_library("browser") {
   sources = [
     "actions/action.cc",
@@ -174,6 +178,8 @@ static_library("browser") {
     "metrics.h",
     "onboarding_result.h",
     "overlay_state.h",
+    "parse_jspb.cc",
+    "parse_jspb.h",
     "protocol_utils.cc",
     "protocol_utils.h",
     "radio_button_controller.cc",
@@ -448,6 +454,7 @@ source_set("unit_tests") {
     "generic_ui_replace_placeholders_unittest.cc",
     "mock_client_context.cc",
     "mock_client_context.h",
+    "parse_jspb_unittest.cc",
     "protocol_utils_unittest.cc",
     "radio_button_controller_unittest.cc",
     "retry_timer_unittest.cc",
@@ -508,6 +515,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":proto",
+    ":test_proto",
     ":unit_test_support",
     "//base",
     "//base/test:test_support",

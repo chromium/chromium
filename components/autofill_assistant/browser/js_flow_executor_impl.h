@@ -39,7 +39,10 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   //
   // - [id] is a field tag number in the ActionProto.action_info oneof
   // - [action] is a string containing a base64-encoded serialized proto of the
-  //            type appropriate for [id]
+  //            type appropriate for [id]. It can also be a JSON array
+  //            containing a proto in the JSPB wire format, though this comes
+  //            with severe limitations and will not work for all protos. See
+  //            parse_jspb.h for details.
   // - |status| is an int corresponding to a ProcessedActionStatusProto.
   // - [result] is a struct containing the result value, or an empty struct if
   //            no result was returned. The specific contents depend on the

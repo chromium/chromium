@@ -1,0 +1,45 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package autofill_assistant.testing;
+
+option optimize_for = LITE_RUNTIME;
+
+message TestProto {
+  optional int32 int32_field = 1;
+  optional int64 int64_field = 2;
+  enum MyEnum {
+    MY_ENUM_0 = 0;
+    MY_ENUM_1 = 1;
+    MY_ENUM_2 = 2;
+  }
+  optional MyEnum enum_field = 3;
+  optional bool bool_field = 4;
+  optional string string_field = 5;
+  optional TestProto inner = 6;
+  repeated string repeated_string_field = 7;
+  optional float float_field = 8;
+
+  // Unsupported field types. If encountered during parsing, the resulting proto
+  // will have these fields unset.
+  optional double double_field = 9;
+  optional fixed32 fixed32_field = 10;
+  optional sfixed32 sfixed32_field = 11;
+  optional fixed64 fixed64_field = 12;
+  optional sfixed64 sfixed64_field = 13;
+
+  // Unsupported fields that are unreliable and so dangerous to use.
+  //
+  // WARNING: uint32 and uint64 are unsupported too, but the resulting proto may
+  // skip those fields depending on the values. These types should never be
+  // used!
+  optional uint32 uint32_field = 14;
+  optional uint64 uint64_field = 15;
+
+  // Bytes field are treated as string field and will contain the base64-encoded
+  // data instead of the decoded bytes.
+  optional bytes bytes_field = 16;
+}

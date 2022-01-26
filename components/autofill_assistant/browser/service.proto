@@ -865,6 +865,12 @@ message ActionProto {
   // pass this back unchanged in the next request
   optional bytes server_payload = 4;
 
+  // The action to be executed.
+  //
+  // WARNING: proto messages in this oneof and all protos they depend on must
+  // meet the requirements listed on jspb_parse.h to be callable conveniently
+  // from RunJsFlow. In practice, this means don't add any new fields of type
+  // bytes, uint32, uint64, fixed32, fixed64, sfixed32 or sfixed64.
   oneof action_info {
     SelectOptionProto select_option = 7;
     NavigateProto navigate = 9;

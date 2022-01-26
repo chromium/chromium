@@ -7,10 +7,17 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {
 namespace {
+
+// Messages must have a JSPB message ID starting with this prefix to be
+// parseable in JSPB wire format.
+//
+// Such a message ID is used to distinguish arrays from JSPB messages.
+constexpr char kMessageIdPrefix[] = "aa.msg";
 
 // Initializes a |globalFlowState| variable on first run, and renews the
 // promises that will let JS flows request native actions.
@@ -33,6 +40,28 @@ constexpr char kFulfillActionPromise[] = R"(
 
 constexpr char kMainFrame[] = "";
 
+absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
+                                                 std::string* error_message) {
+  if (action == nullptr) {
+    *error_message = "Null value";
+    return absl::nullopt;
+  }
+  if (action->is_string()) {
+    std::string bytes;
+    // A base64-encoded string containing a serialized proto.
+    if (base::Base64Decode(action->GetString(), &bytes)) {
+      *error_message = "Invalid Base64-encoded string";
+      return bytes;
+    }
+    return absl::nullopt;
+  }
+  if (action->is_list()) {
+    // A JSON array containing a proto message in the JSPB wire format.
+    return ParseJspb(kMessageIdPrefix, *action, error_message);
+  }
+  *error_message = "Unexpected value type";
+  return absl::nullopt;
+}
 }  // namespace
 
 JsFlowExecutorImpl::JsFlowExecutorImpl(content::WebContents* web_contents,
@@ -225,14 +254,10 @@ void JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved(
   }
 
   absl::optional<int> id;
-  absl::optional<std::string> action;
+  base::Value* action = nullptr;
   if (action_request->is_dict()) {
     id = action_request->FindIntKey("id");
-
-    if (auto* value = action_request->FindStringKey("action");
-        value != nullptr) {
-      action = *value;
-    }
+    action = action_request->FindKey("action");
   }
   if (!id) {
     DVLOG(1) << "id passed to runNativeAction(id, action) is not a number in "
@@ -240,23 +265,18 @@ void JsFlowExecutorImpl::OnNativeActionRequestFulfillPromiseRetrieved(
     RunCallback(ClientStatus(INVALID_ACTION), nullptr);
     return;
   }
-  if (!action) {
-    DVLOG(1)
-        << "action passed to runNativeAction(id, action) is not a string in "
-        << action_request->DebugString();
-    RunCallback(ClientStatus(INVALID_ACTION), nullptr);
-    return;
-  }
-  std::string action_bytes;
-  if (!base::Base64Decode(*action, &action_bytes)) {
-    DVLOG(1) << "action passed to runNativeAction(id, action) is not a "
-                "base64-encoded string in "
+  std::string error_message;
+  absl::optional<std::string> action_bytes =
+      ConvertActionToBytes(action, &error_message);
+  if (!action_bytes) {
+    DVLOG(1) << "action passed to runNativeAction(id, action) cannot "
+             << "be parsed: " << error_message << " in "
              << action_request->DebugString();
     RunCallback(ClientStatus(INVALID_ACTION), nullptr);
     return;
   }
   delegate_->RunNativeAction(
-      *id, action_bytes,
+      *id, *action_bytes,
       base::BindOnce(&JsFlowExecutorImpl::OnNativeActionFinished,
                      weak_ptr_factory_.GetWeakPtr(),
                      fulfill_promise_object->GetObjectId()));

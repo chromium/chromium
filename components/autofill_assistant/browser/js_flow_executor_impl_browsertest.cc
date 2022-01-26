@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/tick_clock.h"
 #include "components/autofill_assistant/browser/js_flow_executor_impl.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionWithReturnValue) {
     )"));
 }
 
-IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeAction) {
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeActionAsBase64String) {
   EXPECT_CALL(mock_delegate_, RunNativeAction)
       .WillOnce([&](int action_id, const std::string& action, auto callback) {
         EXPECT_EQ(12, action_id);
@@ -207,6 +208,36 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, RunNativeAction) {
   std::unique_ptr<base::Value> result;
   EXPECT_THAT(RunTest(R"(
       let [status, value] = await runNativeAction(12, "dGVzdA==" /*test*/);
+      return status;
+  )",
+                      result),
+              Property(&ClientStatus::proto_status, ACTION_APPLIED));
+  EXPECT_EQ(*result, *base::JSONReader::Read(R"(
+      {
+        "result": {
+          "description": "2",
+          "type": "number",
+          "value": 2
+        }
+      }
+    )"));
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
+                       RunNativeActionAsSerializedProto) {
+  EXPECT_CALL(mock_delegate_, RunNativeAction)
+      .WillOnce([&](int action_id, const std::string& action, auto callback) {
+        EXPECT_EQ(ActionProto::kTell, action_id);
+        TellProto tell;
+        EXPECT_TRUE(tell.ParseFromString(action));
+        EXPECT_EQ(tell.message(), "my message");
+        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      });
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_THAT(RunTest(R"(
+      let [status, value] = await runNativeAction(
+          11, ["aa.msg", "my message"]);
       return status;
   )",
                       result),
@@ -406,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
   EXPECT_CALL(mock_delegate_, RunNativeAction).Times(0);
   ClientStatus status = RunTest(
       R"(
-        // {} is not a string, so this should fail.
+        // {} is not a string or an array, so this should fail.
         let [status, result] = await runNativeAction(1, {});
         return status;
       )",
