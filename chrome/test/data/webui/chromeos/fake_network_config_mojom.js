@@ -261,7 +261,10 @@
     assert(!!network, 'Network not found: ' + guid);
     const managed = this.managedProperties_.get(guid);
     if (managed) {
-      managed.trafficCounterResetTime = lastResetTime;
+      assert(
+          !!managed.trafficCounterProperties,
+          'Missing traffic counter properties for network: ' + guid);
+      managed.trafficCounterProperties.lastResetTime = lastResetTime;
     }
     this.onActiveNetworksChanged();
   }

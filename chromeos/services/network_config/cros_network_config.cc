@@ -65,6 +65,9 @@ const char kErrorNotReady[] = "Error.NotReady";
 // WireGuard string from Shill SupportedVPNType property.
 const char kWireGuardVPNType[] = "wireguard";
 
+// Default traffic counter reset day.
+const int kDefaultResetDay = 1;
+
 std::string ShillToOnc(const std::string& shill_string,
                        const onc::StringTranslationEntry table[]) {
   std::string onc_string;
@@ -604,15 +607,6 @@ int32_t GetInt32(const base::Value* dict, const char* key) {
     return false;
   }
   return v ? v->GetInt() : false;
-}
-
-double GetDouble(const base::Value* dict, const char* key) {
-  const base::Value* v = dict->FindKey(key);
-  if (v && !v->is_double()) {
-    NET_LOG(ERROR) << "Expected double, found: " << *v;
-    return false;
-  }
-  return v ? v->GetDouble() : false;
 }
 
 std::vector<int32_t> GetInt32List(const base::Value* dict, const char* key) {
@@ -1528,11 +1522,6 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   if (saved_ip_config)
     result->saved_ip_config = GetIPConfig(saved_ip_config);
 
-  double traffic_counter_reset_time =
-      GetDouble(properties, ::onc::network_config::kTrafficCounterResetTime);
-  result->traffic_counter_reset_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Milliseconds(traffic_counter_reset_time));
-
   // Managed properties
   result->ip_address_config_type = GetRequiredManagedString(
       properties, ::onc::network_config::kIPAddressConfigType);
@@ -1777,6 +1766,38 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       NOTREACHED() << "NetworkStateProperties can not be of type: " << type;
       break;
   }
+
+  // Traffic Counter Properties
+  auto traffic_counter_properties = mojom::TrafficCounterProperties::New();
+  const base::Value* last_reset_time =
+      properties->FindKey(::onc::network_config::kTrafficCounterResetTime);
+  if (last_reset_time && last_reset_time->is_double()) {
+    traffic_counter_properties->last_reset_time =
+        base::Time::FromDeltaSinceWindowsEpoch(
+            base::Milliseconds(last_reset_time->GetDouble()));
+  } else {
+    traffic_counter_properties->last_reset_time = absl::nullopt;
+  }
+
+  const base::Value* auto_reset =
+      NetworkHandler::IsInitialized()
+          ? NetworkHandler::Get()
+                ->network_metadata_store()
+                ->GetEnableTrafficCountersAutoReset(result->guid)
+          : nullptr;
+  traffic_counter_properties->auto_reset =
+      auto_reset && auto_reset->is_bool() ? auto_reset->GetBool() : false;
+  const base::Value* user_specified_reset_day =
+      NetworkHandler::IsInitialized()
+          ? NetworkHandler::Get()
+                ->network_metadata_store()
+                ->GetDayOfTrafficCountersAutoReset(result->guid)
+          : nullptr;
+  traffic_counter_properties->user_specified_reset_day =
+      user_specified_reset_day && user_specified_reset_day->is_int()
+          ? user_specified_reset_day->GetInt()
+          : kDefaultResetDay;
+  result->traffic_counter_properties = std::move(traffic_counter_properties);
 
   return result;
 }
@@ -3211,6 +3232,39 @@ void CrosNetworkConfig::ResetTrafficCounters(const std::string& guid) {
     return;
   }
   network_state_handler_->ResetTrafficCounters(service_path);
+}
+
+void CrosNetworkConfig::SetTrafficCountersAutoReset(
+    const std::string& guid,
+    bool auto_reset,
+    mojom::UInt32ValuePtr day,
+    SetTrafficCountersAutoResetCallback callback) {
+  if (day && !auto_reset) {
+    NET_LOG(ERROR) << "Failed to set auto reset day for " << guid
+                   << ": auto reset must be enabled.";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!day && auto_reset) {
+    NET_LOG(ERROR) << "Failed to enable auto reset for " << guid << ": a valid "
+                   << "day between 1 and 31 (inclusive) must be provided.";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (day && (day->value < 1 || day->value > 31)) {
+    NET_LOG(ERROR) << "Failed to set auto reset day " << day->value << " for "
+                   << guid << ": day must be between 1 and 31 (inclusive)";
+    std::move(callback).Run(false);
+    return;
+  }
+  NetworkHandler::Get()
+      ->network_metadata_store()
+      ->SetEnableTrafficCountersAutoReset(guid, auto_reset);
+  NetworkHandler::Get()
+      ->network_metadata_store()
+      ->SetDayOfTrafficCountersAutoReset(
+          guid, day ? absl::optional<int>(day->value) : absl::nullopt);
+  std::move(callback).Run(true);
 }
 
 // static

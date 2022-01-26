@@ -686,6 +686,19 @@ union NetworkTypeManagedProperties {
   ManagedWiFiProperties wifi;
 };
 
+struct UInt32Value {
+  uint32 value;
+};
+
+struct TrafficCounterProperties {
+  // Time when the traffic counters for a Service were last reset.
+  mojo_base.mojom.Time? last_reset_time;
+  // Whether traffic counters are reset automatically.
+  bool auto_reset;
+  // User selected day of month when traffic counters are reset.
+  uint32 user_specified_reset_day;
+};
+
 // Managed properties provided by getManagedProperties. See onc_spec.md for
 // details about each property.
 struct ManagedProperties {
@@ -710,8 +723,8 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Represents when the traffic counters for a Service were last reset.
-  mojo_base.mojom.Time? traffic_counter_reset_time;
+  // Contains traffic counter related information for this network.
+  TrafficCounterProperties traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
@@ -1141,6 +1154,12 @@ interface CrosNetworkConfig {
 
   // Resets traffic counters for a service with ID |guid|.
   ResetTrafficCounters(string guid);
+
+  // Sets whether traffic counters should be automatically reset and the day of
+  // the month on which traffic counters are automatically reset. In order for
+  // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
+  SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
+    (bool success);
 };
 
 interface CrosNetworkConfigObserver {

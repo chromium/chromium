@@ -107,6 +107,8 @@ export class TrafficCountersAdapter {
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
       return null;
     }
-    return managedPropertiesPromise.result.trafficCounterResetTime || null;
+    return managedPropertiesPromise.result.trafficCounterProperties
+               .lastResetTime ||
+        null;
   }
 }

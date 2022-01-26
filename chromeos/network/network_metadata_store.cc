@@ -461,8 +461,9 @@ void NetworkMetadataStore::SetEnableTrafficCountersAutoReset(
 
 void NetworkMetadataStore::SetDayOfTrafficCountersAutoReset(
     const std::string& network_guid,
-    int day) {
-  SetPref(network_guid, kDayOfTrafficCountersAutoReset, base::Value(day));
+    const absl::optional<int>& day) {
+  auto value = day.has_value() ? base::Value(day.value()) : base::Value();
+  SetPref(network_guid, kDayOfTrafficCountersAutoReset, std::move(value));
 }
 
 const base::Value* NetworkMetadataStore::GetEnableTrafficCountersAutoReset(

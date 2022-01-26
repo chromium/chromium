@@ -776,6 +776,7 @@
       ipAddressConfigType: OncMojo.createManagedString('DHCP'),
       nameServersConfigType: OncMojo.createManagedString('DHCP'),
       portalState: mojom.PortalState.kUnknown,
+      trafficCounterProperties: OncMojo.createTrafficCounterProperties(),
     };
     switch (type) {
       case mojom.NetworkType.kCellular:
@@ -1132,6 +1133,17 @@
       activeValue: b,
       policySource: chromeos.networkConfig.mojom.PolicySource.kNone,
       policyValue: false
+    };
+  }
+
+  /**
+   * @return {!chromeos.networkConfig.mojom.TrafficCounterProperties}
+   */
+  static createTrafficCounterProperties() {
+    return {
+      lastResetTime: null,
+      autoReset: false,
+      userSpecifiedResetDay: 1
     };
   }
 

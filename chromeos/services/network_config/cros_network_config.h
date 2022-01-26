@@ -102,6 +102,11 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void RequestTrafficCounters(const std::string& guid,
                               RequestTrafficCountersCallback callback) override;
   void ResetTrafficCounters(const std::string& guid) override;
+  void SetTrafficCountersAutoReset(
+      const std::string& guid,
+      bool auto_reset,
+      mojom::UInt32ValuePtr day,
+      SetTrafficCountersAutoResetCallback callback) override;
 
   // static
   static mojom::TrafficCounterSource GetTrafficCounterEnumForTesting(

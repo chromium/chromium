@@ -531,19 +531,29 @@ TEST_F(NetworkMetadataStoreTest, SetTrafficCountersAutoResetDay) {
       metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
   EXPECT_EQ(nullptr, value);
 
-  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid, /*day=*/5);
+  metadata_store()->SetDayOfTrafficCountersAutoReset(
+      kGuid, /*day=*/absl::optional<int>(5));
   base::RunLoop().RunUntilIdle();
 
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
   ASSERT_TRUE(value && value->is_int());
   EXPECT_EQ(5, value->GetInt());
 
-  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid, /*day=*/31);
+  metadata_store()->SetDayOfTrafficCountersAutoReset(
+      kGuid, /*day=*/absl::optional<int>(31));
   base::RunLoop().RunUntilIdle();
 
   value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
   ASSERT_TRUE(value && value->is_int());
   EXPECT_EQ(31, value->GetInt());
+
+  metadata_store()->SetDayOfTrafficCountersAutoReset(kGuid,
+                                                     /*day=*/absl::nullopt);
+  base::RunLoop().RunUntilIdle();
+
+  value = metadata_store()->GetDayOfTrafficCountersAutoReset(kGuid);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->is_none());
 }
 
 }  // namespace chromeos
