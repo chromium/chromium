@@ -73,6 +73,11 @@
 <translation id="1071917609930274619">Datenverschlüsselung</translation>
 <translation id="1072700771426194907">USB-Gerät erkannt</translation>
 <translation id="107278043869924952">Zusätzlich zum Passwort die PIN verwenden</translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen dazu, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen des Chrome OS-Geräts Ihres Kindes aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn Sie diese Funktion deaktivieren, kann das Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ im Google-Konto Ihres Kindes aktiviert ist, werden die Daten Ihres Kindes möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com finden Sie weitere Informationen zu dieser Einstellung. Dort erfahren Sie auch, wie Sie sie ändern können.<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />Wenn der Eigentümer des Geräts die Option „Nutzungsdaten &amp; Fehlerberichte senden“ aktiviert, werden möglicherweise auch Absturzberichte bei Google hochgeladen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Mit einem Textcursor auf den Seiten bewegen</translation>
 <translation id="1076698951459398590">Design aktivieren</translation>
 <translation id="1076766328672150609">Ihr Kind kann das Gerät mit einer PIN entsperren.</translation>
@@ -102,6 +107,7 @@
 <translation id="1100504063505580045">Aktuelles Symbol</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1108600514891325577">&amp;Anhalten</translation>
+<translation id="1108938384783527433">Verlauf synchronisieren</translation>
 <translation id="1110155001042129815">Warten</translation>
 <translation id="1110965959145884739">Wählen Sie aus, welche Sprachen auf diesem Gerät installiert werden sollen. Sprachendateien werden von Nutzern gemeinsam verwendet, um Speicherplatz zu sparen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -1333,6 +1339,10 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2328561734797404498">Bitte starten Sie Ihr Gerät neu, um <ph name="APP_NAME" /> verwenden zu können.</translation>
 <translation id="2328636661627946415">Wenn Sie im Inkognitomodus sind, können Websites nur Cookies verwenden, um Ihre Browseraktivitäten auf der eigenen Website einzusehen. Am Ende der Inkognitositzung werden die Cookies gelöscht.</translation>
 <translation id="2329597144923131178">Melden Sie sich an, um Ihre Lesezeichen, Ihren Verlauf, Ihre Passwörter und andere Einstellungen auf allen Ihren Geräten aufzurufen.</translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Ihre Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps sowie Fehler enthalten – außerdem Angaben dazu, welche Funktionen Sie verwenden und wie viel Speicher in der Regel genutzt wird. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen Ihres Chrome OS-Geräts aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ in Ihrem Google-Konto aktiviert ist, werden Ihre Android-Daten möglicherweise in Ihrem Google-Konto gespeichert. Unter account.google.com können Sie Ihre Daten sehen und löschen sowie Ihre Kontoeinstellungen ändern.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Wenn der Eigentümer des Geräts die Option „Nutzungsdaten &amp; Fehlerberichte senden“ aktiviert, werden möglicherweise auch Absturzberichte bei Google hochgeladen<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Im Store ansehen</translation>
 <translation id="2332192922827071008">Einstellungen öffnen</translation>
 <translation id="2332515770639153015">Erweitertes Safe Browsing ist aktiviert</translation>
@@ -2044,6 +2054,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3030967311408872958">Sonnenuntergang bis -aufgang</translation>
 <translation id="3031417829280473749">Agentin X</translation>
 <translation id="3031557471081358569">Zu importierende Daten wählen:</translation>
+<translation id="3032587662022429783">Weitere Informationen über Diagnose und Nutzungsdaten.</translation>
 <translation id="3033348223765101500">Sie bestimmen über Ihre Daten</translation>
 <translation id="3036327949511794916">Die Rückgabefrist für dieses <ph name="DEVICE_TYPE" /> ist abgelaufen.</translation>
 <translation id="3036546437875325427">Flash aktivieren</translation>
@@ -2593,6 +2604,9 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3629631988386925734">Geben Sie Ihr Passwort ein, um Smart Lock zu aktivieren. Beim nächsten Mal wird Ihr <ph name="DEVICE_TYPE" /> durch Ihr Smartphone entsperrt. Sie können Smart Lock in den Einstellungen deaktivieren.</translation>
 <translation id="3630132874740063857">Mein Smartphone</translation>
 <translation id="3630995161997703415">Fügen Sie diese Website Ihrer Ablage hinzu, um sie jederzeit zu verwenden</translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Ihre Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen über Chrome OS-Abstürze und Angaben dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen Ihres Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn Sie diese Funktion deaktivieren, kann Ihr Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und ‑sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">Berechtigungsanfrage abgelaufen</translation>
 <translation id="3635199270495525546">Trusted Platform Module (TPM) erkannt</translation>
 <translation id="3635353578505343390">Feedback an Google senden</translation>
@@ -2613,6 +2627,10 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3651488188562686558">Die WLAN-Verbindung trennen</translation>
 <translation id="3652817283076144888">Initialisierung läuft</translation>
 <translation id="3653160965917900914">Netzwerkfreigaben</translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen dazu enthalten, welche Funktionen verwendet wurden und wie viel Speicher in der Regel genutzt wurde.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen des Chrome OS-Geräts Ihres Kindes aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn Sie diese Funktion deaktivieren, kann das Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Wenn der Eigentümer des Geräts die Option „Nutzungsdaten &amp; Fehlerberichte senden“ aktiviert, werden möglicherweise auch Absturzberichte bei Google hochgeladen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" /> weiterhin Zugriff auf mein Mikrofon gestatten</translation>
 <translation id="3654045516529121250">Einstellungen für Bedienungshilfen lesen</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Dauerhafter Zugriff auf eine Datei}other{Dauerhafter Zugriff auf # Dateien}}</translation>
@@ -2858,7 +2876,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3888586133700543064">Diese Informationen helfen uns, Ihr Problem mit Assistant besser zu verstehen. Sie werden bis zu 90 Tage gespeichert und der Zugriff ist auf die zuständigen Entwickler- und Feedbackteams beschränkt.</translation>
 <translation id="3888900458694486810">Seitensuche schließen</translation>
 <translation id="3890064827463908288">Chrome-Synchronisierung aktivieren, um WLAN-Synchronisation zu verwenden</translation>
-<translation id="3892414795099177503">OpenVPN/L2TP hinzufügen…</translation>
 <translation id="389313931326656921">Schalter für „Weiter“ zuweisen</translation>
 <translation id="3893295674388762059">Schließen Sie alle Inkognitofenster, um die Daten zu löschen</translation>
 <translation id="3893536212201235195">Einstellungen für Eingabehilfen lesen und ändern</translation>
@@ -3108,6 +3125,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4132183752438206707">Entdecken Sie Apps im Google Play Store</translation>
 <translation id="4132364317545104286">eSIM-Profil umbenennen</translation>
 <translation id="4133076602192971179">Sie können Ihr Passwort in der App ändern</translation>
+<translation id="4135746311382563554">Zusätzliche Nutzungsbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="4136203100490971508">Das Nachtlicht wird automatisch bei Sonnenaufgang deaktiviert</translation>
 <translation id="41365691917097717">Wenn Sie fortfahren, erlauben Sie der ADB-Fehlerbehebung, Android-Apps zu erstellen und zu testen. Durch diese Aktion können Android-Apps installiert werden, die nicht von Google geprüft wurden. Zum Deaktivieren ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
 <translation id="4138267921960073861">Nutzernamen und Fotos auf der Anmeldeseite anzeigen</translation>
@@ -3807,6 +3825,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4900652253009739885">Der einzige Schalter, der „Auswählen“ zugewiesen ist, kann nicht entfernt werden. Drücken Sie zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="4901309472892185668">Wählen Sie den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus.</translation>
 <translation id="49027928311173603">Die vom Server heruntergeladene Richtlinie ist ungültig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904511036057277323">Lassen Sie Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern. Bestimmte aggregierte Daten sind auch für Android-Apps und Google Partner nützlich. Wenn die Einstellung „Zusätzliche Web- &amp; App-Aktivitäten“ im Google-Konto Ihres Kindes aktiviert ist, werden die Android-Daten Ihres Kindes möglicherweise in seinem Google-Konto gespeichert.</translation>
 <translation id="4906490889887219338">Netzwerkfreigaben einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Festlegen, wann diese Erweiterung Ihre Websitedaten lesen und ändern darf</translation>
 <translation id="4907161631261076876">Diese Datei ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>
@@ -3974,6 +3993,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5093569275467863761">Inkognito-Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">Mit zusammenarbeitenden nativen Anwendungen kommunizieren</translation>
 <translation id="5097002363526479830">Verbinden mit dem Netzwerk "<ph name="NAME" />" fehlgeschlagen: <ph name="DETAILS" /></translation>
+<translation id="5097306410549350357">Weitere Informationen zur Standortnutzung</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klicken, wenn der Cursor stoppt</translation>
 <translation id="5101839224773798795">Automatisch klicken, wenn der Cursor anhält</translation>
@@ -4263,6 +4283,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5407167491482639988">Unverständlich</translation>
 <translation id="5408750356094797285">Zoom: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Aus Ihrem Google-Konto</translation>
+<translation id="5413640305322530561">Weitere Informationen über Diagnose und Nutzungsdaten</translation>
 <translation id="5414198321558177633">Profilliste wird aktualisiert. Das kann einige Minuten dauern.</translation>
 <translation id="5414566801737831689">Die Symbole der von Ihnen besuchten Websites lesen</translation>
 <translation id="5417312524372586921">Browserdesigns</translation>
@@ -4937,7 +4958,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6112931163620622315">Smartphone prüfen</translation>
 <translation id="6113434369102685411">Hier können Sie die Standardsuchmaschine für den Chrome-Browser und <ph name="DEVICE_TYPE" /> Launcher festlegen</translation>
 <translation id="6113942107547980621">Wenn Sie Smart Lock verwenden möchten, wechseln Sie zum Profil des Hauptnutzers Ihres Smartphones</translation>
-<translation id="611684075852771314">Diese Protokolle wurden unter „Meine Dateien“ gespeichert als</translation>
 <translation id="6116921718742659598">Sprach- und Eingabeeinstellungen ändern</translation>
 <translation id="6119927814891883061">Gerät als „<ph name="DEVICE_NAME" />“ benennen</translation>
 <translation id="6120205520491252677">Diese Seite an Startbildschirm anpinnen...</translation>
@@ -5190,6 +5210,10 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unbenannte Gruppe – 1 Tab}other{Unbenannte Gruppe – # Tab}}</translation>
 <translation id="6385149369087767061">Stellen Sie eine Internetverbindung her und versuchen Sie es noch einmal</translation>
 <translation id="6385543213911723544">Websites können Cookiedaten speichern und lesen.</translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Ihre Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Informationen dazu enthalten, welche Funktionen Sie verwenden und wie viel Speicher in der Regel genutzt wird.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen Ihres Chrome-Geräts aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn Sie diese Funktion deaktivieren, kann Ihr Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und ‑sicherheit erforderlich sind.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Wenn der Eigentümer des Geräts die Option „Nutzungsdaten &amp; Fehlerberichte senden“ aktiviert, werden möglicherweise auch Absturzberichte bei Google hochgeladen.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Achtung: Die detaillierte Protokollierung ist aktiviert. Die Protokolle können URLs oder andere vertrauliche Informationen enthalten. Bitte überprüfen Sie diese und bestätigen Sie, dass Sie mit dem Senden dieser Informationen einverstanden sind.</translation>
 <translation id="6387674443318562538">Vertikal teilen</translation>
 <translation id="6388429472088318283">Nach Sprache suchen</translation>
@@ -5306,6 +5330,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6504601948739128893">Darf keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="6504611359718185067">Internetverbindung herstellen, um einen Drucker hinzuzufügen</translation>
 <translation id="6506374932220792071">X9.62-ECDSA-Signatur mit SHA-256</translation>
+<translation id="6507936476364432879">Lassen Sie Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern.</translation>
 <translation id="6508248480704296122">Verknüpft mit <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medienlizenz</translation>
@@ -5923,6 +5948,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7149839598364933473">Machen Sie aus diesem Gerät ein <ph name="DEVICE_OS" />-Gerät.</translation>
 <translation id="7149893636342594995">Letzte 24 Stunden</translation>
+<translation id="7152478047064750137">Diese Erweiterung erfordert keine speziellen Berechtigungen</translation>
 <translation id="7154130902455071009">Startseite in <ph name="START_PAGE" /> ändern</translation>
 <translation id="7155171745945906037">Vorhandenes Foto von der Kamera oder als Datei</translation>
 <translation id="7163202347044721291">Aktivierungscode wird geprüft…</translation>
@@ -6126,7 +6152,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7384687527486377545">Automatische Wiederholung für Tastatur</translation>
 <translation id="7385490373498027129">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> werden dauerhaft gelöscht.</translation>
 <translation id="7385854874724088939">Beim Drucken ist ein Fehler aufgetreten. Bitte überprüfen Sie Ihren Drucker und versuchen Sie es erneut.</translation>
-<translation id="7385896526023870365">Diese Erweiterung ermöglicht keinen zusätzlichen Websitezugriff.</translation>
 <translation id="7387273928653486359">Akzeptabel</translation>
 <translation id="7387951778417998929">Sie können eine andere Suchmaschine als Ihre Standardsuchmaschine verwenden, indem Sie das zugehörige Kürzel in die Adressleiste eingeben und dann das von Ihnen bevorzugte Tastenkürzel drücken. Außerdem können Sie hier Ihre Standardsuchmaschine ändern.</translation>
 <translation id="7388209873137778229">Nur unterstützte Geräte werden angezeigt.</translation>
@@ -6565,6 +6590,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf Ihre Kamera gestatten</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> streamen</translation>
+<translation id="7811886112806886172">Lassen Sie Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern. Bestimmte aggregierte Daten sind auch für Android-Apps und Google Partner nützlich. Wenn die Einstellung „Web- &amp; App-Aktivitäten“ in Ihrem Google-Konto aktiviert ist, werden Ihre Android-Daten möglicherweise in Ihrem Google-Konto gespeichert.</translation>
 <translation id="7814277578404816512">Neuigkeiten auf Ihrem <ph name="DEVICE_TYPE" /> ansehen</translation>
 <translation id="7814458197256864873">&amp;Kopieren</translation>
 <translation id="7815680994978050279">Gefährlicher Download blockiert</translation>
@@ -6617,6 +6643,9 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7847212883280406910">Drücken Sie Strg + Alt + S, um zu <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> zu wechseln.</translation>
 <translation id="7849264908733290972">B&amp;ild in neuem Tab öffnen</translation>
 <translation id="784934925303690534">Zeitraum</translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Wenn Sie zulassen, dass Ihre Chrome OS-Geräte automatisch erstellte Berichte an Google senden, helfen Sie uns dabei, Probleme in Chrome OS zu beheben und das Betriebssystem zu verbessern. Diese Berichte können Diagnose- und Nutzungsdaten von Android-Apps enthalten – außerdem Informationen über Chrome OS-Abstürze und Angaben dazu, welche Funktionen Sie verwenden und wie viel Speicher in der Regel genutzt wird. Bestimmte aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Das Teilen dieser Berichte können Sie jederzeit in den Einstellungen Ihres Chrome OS-Geräts aktivieren oder deaktivieren. Als Domainadministrator können Sie diese Einstellungen auch in der Admin-Konsole ändern.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Wenn die Einstellung „Web- &amp; App-Aktivitäten“ in Ihrem Google-Konto aktiviert ist, werden Ihre Android-Daten möglicherweise in Ihrem Google-Konto gespeichert. Unter account.google.com können Sie Ihre Daten sehen und löschen sowie Ihre Kontoeinstellungen ändern.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme oder einer Aufnahme Ihrer Stimme kann möglicherweise auf Ihre persönlichen Ergebnisse oder Ihren Assistant zugreifen. Zur Schonung des Akkus können Sie in den Assistant-Einstellungen festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="7851457902707056880">Die Anmeldung ist nur über das Eigentümerkonto möglich. Bitte starten Sie das Gerät neu und melden Sie sich dann mit dem Eigentümerkonto an. Das Gerät wird in 30 Sekunden automatisch neu gestartet.</translation>
 <translation id="7851716364080026749">Kamera- und Mikrofonzugriff immer blockieren</translation>
@@ -7918,6 +7947,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, finden Sie
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücken Sie zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9188732951356337132">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
+<translation id="919686179725692564">Weitere Informationen zum Sichern von Apps</translation>
 <translation id="9198090666959937775">Android-Smartphone als Sicherheitsschlüssel verwenden</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> kann Dateien in <ph name="FOLDERNAME" /> bearbeiten</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" />-Suche</translation>

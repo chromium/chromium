@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Aktuelna ikona</translation>
 <translation id="1103523840287552314">Uvek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop (Zaustavi)</translation>
+<translation id="1108938384783527433">Sinhronizacija istorije</translation>
 <translation id="1110155001042129815">Sačekaj</translation>
 <translation id="1110965959145884739">Odaberite koje jezike ćete instalirati na ovom uređaju. Korisnici mogu da dele fajlove za jezike da bi uštedeli prostor na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -2883,7 +2884,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3888586133700543064">Ove informacije nam pomažu da bolje razumemo problem koji imate sa Pomoćnikom. Čuvaju se najviše 90 dana, a pristup je ograničen na odgovarajuće timove za inženjering i povratne informacije.</translation>
 <translation id="3888900458694486810">Zatvorite bočnu pretragu</translation>
 <translation id="3890064827463908288">Uključite Chrome sinhronizaciju da biste koristili WiFi sinhronizaciju</translation>
-<translation id="3892414795099177503">Dodaj OpenVPN/L2TP...</translation>
 <translation id="389313931326656921">Dodelite prekidač radnji Sledeće</translation>
 <translation id="3893295674388762059">Da biste obrisali podatke, zatvorite sve prozore bez arhiviranja</translation>
 <translation id="3893536212201235195">Čitanje i menjanje vaših podešavanja pristupačnosti</translation>
@@ -4974,7 +4974,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6112931163620622315">Proverite telefon</translation>
 <translation id="6113434369102685411">Podesite podrazumevani pretraživač za Chrome pregledač i pokretač za <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Da biste koristili Smart Lock, pređite na primarni korisnički profil na telefonu</translation>
-<translation id="611684075852771314">Ova evidencija je sačuvana u Mojim fajlovima kao</translation>
 <translation id="6116921718742659598">Promeni podešavanja jezika i unosa</translation>
 <translation id="6119927814891883061">Promenite naziv uređaja u <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Zakači ovu stranicu na Početni ekran...</translation>
@@ -5967,6 +5966,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="7149839598364933473">Pretvorite ovaj uređaj u <ph name="DEVICE_OS" /> uređaj.</translation>
 <translation id="7149893636342594995">Poslednja 24 sata</translation>
+<translation id="7152478047064750137">Ovaj dodatak ne zahteva nikakve specijalne dozvole</translation>
 <translation id="7154130902455071009">Promenite početnu stranicu u: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Postojeća fotografija iz kamere ili datoteke</translation>
 <translation id="7163202347044721291">Verifikuje se aktivacioni kôd…</translation>
@@ -6171,7 +6171,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7384687527486377545">Automatsko ponavljanje na tastaturi</translation>
 <translation id="7385490373498027129">Svi fajlovi i lokalni podaci za sve korisnike na ovom uređaju (<ph name="DEVICE_TYPE" />) trajno se brišu.</translation>
 <translation id="7385854874724088939">Došlo je do greške pri pokušaju štampanja. Proverite štampač i pokušajte ponovo.</translation>
-<translation id="7385896526023870365">Ovaj dodatak nema dodatni pristup sajtu.</translation>
 <translation id="7387273928653486359">Prihvatljiv</translation>
 <translation id="7387951778417998929">Da ne biste koristili podrazumevani pretraživač nego neki drugi, unesite njegovu prečicu u traku za adresu i svoju željenu tastersku prečicu. Podrazumevani pretraživač možete da promenite i ovde.</translation>
 <translation id="7388209873137778229">Prikazani su samo podržani uređaji.</translation>

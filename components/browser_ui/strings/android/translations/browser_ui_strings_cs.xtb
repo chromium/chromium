@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Povolit soubory cookie pro konkrétní web.</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
+<translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkce NFC je v tomto zařízení vypnutá. Zapnete ji v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Bránit webům v zobrazení a změně informací na zařízeních NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokovat soubory cookie pro konkrétní web.</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>

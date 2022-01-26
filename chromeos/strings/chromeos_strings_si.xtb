@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">ස්කෑනරය මත තව පිටුවක් තබන්න</translation>
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2878387241690264070">තත්පර <ph name="NUM_SECONDS" />ක් තුළ <ph name="RATE" /> විසර්ජනය වේ.</translation>
+<translation id="291142119251986300">සුදුසුකම් නොලත් සංරචක</translation>
+<translation id="2926057806159140518">ඔබගේ පරිශීලක නාමය සහ මුරපදය ඇතුළත් කරන්න හෝ ඔබගේ QR කේතය ස්කෑන් කරන්න</translation>
 <translation id="3008341117444806826">නැවුම් කරන්න</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -322,7 +324,6 @@
 <translation id="5423849171846380976">සක්‍රිය කෙරිණි</translation>
 <translation id="5430931332414098647">ක්ෂණික ටෙදරින්</translation>
 <translation id="5431318178759467895">වර්ණය</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">අමුත්තෙකු ලෙස බ්‍රව්ස් කරන්න</translation>
 <translation id="54609108002486618">කළමනාකරණය කෙරේ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{උත්සාහයන් {0}ක් ඉතිරිය}one{උත්සාහයන් {0}ක් ඉතිරිය}other{උත්සාහයන් {0}ක් ඉතිරිය}}</translation>

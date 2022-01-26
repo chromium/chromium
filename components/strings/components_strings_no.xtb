@@ -1228,6 +1228,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
           <ph name="LIST_ITEM" />Arbeidsgivere og skoler kan spore nettleseraktivitet.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ignorert fordi regelen kun kan angis via brukerinnstillinger i nettskyen.</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4838327282952368871">Drømmende</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>

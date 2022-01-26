@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icona actual</translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Atura</translation>
+<translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1110155001042129815">Espera</translation>
 <translation id="1110965959145884739">Tria quins idiomes vols instal·lar en aquest dispositiu. Els fitxers d'idioma es comparteixen entre els usuaris per estalviar espai de disc. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2877,7 +2878,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3888586133700543064">Aquesta informació ens ajuda a entendre millor el problema que tens amb l'Assistent. S'emmagatzema durant 90 dies com a màxim i només hi poden accedir els equips corresponents d'enginyeria i suggeriments.</translation>
 <translation id="3888900458694486810">Tanca la cerca lateral</translation>
 <translation id="3890064827463908288">Activa l'opció Sincronització de Chrome per utilitzar la funció Sincronització Wi‑Fi</translation>
-<translation id="3892414795099177503">Afegeix OpenVPN/L2TP…</translation>
 <translation id="389313931326656921">Assigna l'interruptor a Següent</translation>
 <translation id="3893295674388762059">Per suprimir les dades, tanca totes les finestres d'incògnit</translation>
 <translation id="3893536212201235195">Llegir i canviar la configuració d'accessibilitat</translation>
@@ -4963,7 +4963,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6112931163620622315">Comprova el telèfon</translation>
 <translation id="6113434369102685411">Defineix el motor de cerca predeterminat per al navegador Chrome i el menú d'aplicacions de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Per fer servir Smart Lock, ves al perfil d'usuari principal del telèfon</translation>
-<translation id="611684075852771314">Aquests registres s'han desat a Els meus fitxers com a</translation>
 <translation id="6116921718742659598">Canvia la configuració d'idioma i d'introducció de text</translation>
 <translation id="6119927814891883061">Anomena el dispositiu a <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fixa aquesta pàgina a la pantalla d'inici...</translation>
@@ -5954,6 +5953,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7149839598364933473">Converteix aquest dispositiu en un dispositiu <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
+<translation id="7152478047064750137">Aquesta extensió no requereix cap permís especial</translation>
 <translation id="7154130902455071009">Canvia la pàgina d'inici per: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existent de la càmera o d'un fitxer</translation>
 <translation id="7163202347044721291">S'està verificant el codi d'activació...</translation>
@@ -6157,7 +6157,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7384687527486377545">Repetició automàtica del teclat</translation>
 <translation id="7385490373498027129">Tots els fitxers i totes les dades locals de tots els usuaris d'aquest dispositiu <ph name="DEVICE_TYPE" /> se suprimiran permanentment.</translation>
 <translation id="7385854874724088939">S'ha produït un problema en intentar imprimir. Comproveu la impressora i torneu-ho a provar.</translation>
-<translation id="7385896526023870365">Aquesta extensió no té accés a llocs web addicionals.</translation>
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">Per utilitzar un motor de cerca diferent del predeterminat, escriu la drecera corresponent a la barra d'adreces, seguida de la tecla de drecera que prefereixis. També pots canviar el motor de cerca predeterminat aquí.</translation>
 <translation id="7388209873137778229">Només es mostren els dispositius compatibles.</translation>

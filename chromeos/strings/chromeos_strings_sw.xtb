@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Weka ukurasa mwingine kwenye kichanganuzi</translation>
 <translation id="2872961005593481000">Zima</translation>
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
+<translation id="291142119251986300">Vipengele visivyotimiza masharti</translation>
+<translation id="2926057806159140518">Weka neno lako la mtumiaji na nenosiri au uchanganue msimbo wako wa QR</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>
@@ -321,7 +323,6 @@
 <translation id="5423849171846380976">Imeamilishwa</translation>
 <translation id="5430931332414098647">Mtandao wa Kusambazwa Papo Hapo</translation>
 <translation id="5431318178759467895">Rangi</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Vinjari kama Mgeni</translation>
 <translation id="54609108002486618">Imedhibitiwa</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Umebakisha mara {0} ya kujaribu}other{Umebakisha mara {0} za kujaribu}}</translation>

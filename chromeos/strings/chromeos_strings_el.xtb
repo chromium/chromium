@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Τοποθετήστε μια άλλη σελίδα στον σαρωτή</translation>
 <translation id="2872961005593481000">Τερματισμός λειτουργίας</translation>
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
+<translation id="291142119251986300">Ακατάλληλα στοιχεία</translation>
+<translation id="2926057806159140518">Εισαγάγετε το όνομα χρήστη και τον κωδικό πρόσβασής σας ή σαρώστε τον κωδικό QR σας</translation>
 <translation id="3008341117444806826">ΑΝΑΝΕΩΣΗ</translation>
 <translation id="3009958530611748826">Επιλέξτε έναν φάκελο στον οποίο θέλετε να γίνεται αποθήκευση.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -323,7 +325,6 @@
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Απομένει {0} προσπάθεια}other{Απομένουν {0} προσπάθειες}}</translation>

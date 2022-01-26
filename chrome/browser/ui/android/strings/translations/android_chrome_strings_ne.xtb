@@ -31,7 +31,6 @@
 <translation id="114825011539563458">गोपनीयता तथा नियन्त्रणसम्बन्धी सबैभन्दा महत्त्वपूर्ण सेटिङ एकै ठाउँमा उपलब्ध छन्</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1154704303112745282">यो पृष्ठ अफलाइन मोडमा उपलब्ध छैन: <ph name="VIOLATED_URL" /></translation>
-<translation id="116280672541001035">प्रयोग भएको डेटा</translation>
 <translation id="1171770572613082465">"शीर्ष साइटहरू" नामक बटनमा ट्याप गरी लोकप्रिय वेबसाइटहरू हेर्नुहोस्</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
@@ -130,7 +129,6 @@
 <translation id="1754404134430936718">पाठ कपी गरियो</translation>
 <translation id="1772137089884020309">पुस्तक चिन्ह लगाइएका फोल्डरहरूको सूची बन्द गरिएको छ</translation>
 <translation id="1779766957982586368">सन्झ्याल बन्द गर्नुहोस्</translation>
-<translation id="1782483593938241562">अन्तिम मिति: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">स्थापना गरियो</translation>
 <translation id="1792959175193046959">डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
 <translation id="1795251344124198516">Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू</translation>
@@ -139,7 +137,6 @@
 <translation id="1829244130665387512">पृष्ठमा फेला पार्नुहोस्</translation>
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
 <translation id="1843805151597803366">अझ राम्रो अनुवाद पाउन Google खोजलाई हालको पृष्ठ प्रयोग गर्न दिनुहोस्</translation>
-<translation id="1856325424225101786">लाइट मोड रिसेट गर्ने हो?</translation>
 <translation id="1868024384445905608">Chrome ले अब फाइलहरू अझ छिटो डाउनलोड गर्छ</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
 <translation id="1883903952484604915">मेरा फाइलहरू</translation>
@@ -200,7 +197,6 @@
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2154710561487035718">URL प्रतिलिपि गर्नुहोस्</translation>
-<translation id="2156074688469523661">बाँकी साइटहरू (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">तपाईंको फोनको कुनै कुरा अर्को यन्त्रसँग आदान प्रदान गर्न दुवै यन्त्रमा Chrome को सेटिङमा गई सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="2158408438301413340">Chrome ले सबै पासवर्डहरू जाँच्न सकेन</translation>
 <translation id="2169830938017475061">अहिले</translation>
@@ -285,7 +281,6 @@
 <translation id="2604446170045642109">तपाईं सेटिङमा गई साइटहरूका हकमा अँध्यारो थिम अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="2612676031748830579">कार्ड नम्बर</translation>
 <translation id="2625189173221582860">पासवर्ड प्रतिलिपि गरियो</translation>
-<translation id="2631006050119455616">बचत गरिएको डेटा</translation>
 <translation id="2634905176438867146">Chrome लाई डिफल्ट ब्राउजरका रूपमा तय गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="2645657967708199252">तपाईंले अहिले <ph name="CONNECTION_TYPE" /> नेटवर्क चलाइरहनुभएको हुनाले डाउनलोडको गति सुस्त हुन सक्छ</translation>
 <translation id="2647434099613338025">भाषा थप्नुहोस्</translation>
@@ -303,7 +298,6 @@
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2718846868787000099">तपाईंले चाहेको भाषामा सामग्री देखाउन तपाईंले प्रयोग गर्ने साइटहरूले तपाईंका प्राथमिकताहरू देख्न सक्छन्</translation>
 <translation id="2723001399770238859">अडियो</translation>
-<translation id="2728754400939377704">साइटद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="2732063072010454421">भ्वाइस सर्चबाट अझ राम्रो अनुभव पाउनुहोस्</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
@@ -385,7 +379,6 @@
 <translation id="3123734510202723619">घोषणाहरू</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome को गृहपृष्ठ</translation>
-<translation id="3157842584138209013">थप विकल्पहरू नामक बटनमार्फत आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3166827708714933426">ट्याब र विन्डोका सर्टकटहरू</translation>
 <translation id="316694332262407393">यसमा अहिले Chrome चलिरहेको छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
@@ -421,7 +414,6 @@
 <translation id="3297344142967351106">आवाज सहायता</translation>
 <translation id="3303414029551471755">सामग्री डाउनलोड गर्न अगाडि बढ्ने हो?</translation>
 <translation id="3334729583274622784">फाइलको एक्स्टेन्सन परिवर्तन गर्ने हो?</translation>
-<translation id="3341058695485821946">आफूले सुरक्षित गरेको डेटाको मात्रा हेर्नुहोस्</translation>
 <translation id="3341262203274374114">अनफलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="3359667936385849800">तपाईंको हालको सेवा प्रदायक प्रयोग गर्नुहोस्</translation>
 <translation id="3367813778245106622">सिंक सुरु गर्न फेरि साइन इन गर्नुहोस्</translation>
@@ -472,7 +464,6 @@
 <translation id="3632295766818638029">पासवर्डको मास्क हटाउनुहोस्</translation>
 <translation id="363596933471559332">भण्डारण गरिएका प्रमाणपत्रहरूको प्रयोग गरेर स्वचालित रूपमा वेबसाइटहरूमा साइन इन गर्नुहोस्। यो सुविधा बन्द हुँदा तपाईँलाई हरेक पटक वेबसाइटमा साइन इन गर्नुभन्दा पहिले प्रमाणीकरणको लागि सोधिने छ।</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
-<translation id="3658159451045945436">रिसेट गर्नुले हेरिएका साइटहरूको सूचीलगायत तपाईंको डेटा बचतको इतिहास मेटाउँछ।</translation>
 <translation id="3677911431265050325">मोबाइल साइट अनुरोध गर्नुहोस्</translation>
 <translation id="3687645719033307815">तपाईं यो पेजको प्रिभ्यू हेर्दै हुनुहुन्छ</translation>
 <translation id="3690369331356918524">डेटा चोरीका घटनामा पासवर्डहरू खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ</translation>
@@ -552,7 +543,6 @@
 <translation id="4162867837470729563">सेयर गर्ने सुविधासम्बन्धी विकल्पहरूको सूची पूरै स्क्रिन ओगट्ने गरी खोलिएको छ।</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
 <translation id="4170011742729630528">यो सेवा उपलब्ध छैन, पछि पुन: प्रयास गर्नुहोस्।</translation>
-<translation id="4179980317383591987"><ph name="AMOUNT" /> प्रयोग गरियो</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="4196597275619698563">कार्ड बनाउनुहोस्</translation>
@@ -584,7 +574,6 @@
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>
 <translation id="4409271659088619928">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
-<translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4425140285732600465">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ। कुनै साइटमा मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्।</translation>
 <translation id="4450672886426705087">Google मा खोज्दा भेटिएका परिणामहरू।</translation>
@@ -683,7 +672,6 @@
 <translation id="4909709702739934280">तपाईंका एड्मिन तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4912413785358399818">ट्याब सार्नुहोस्</translation>
-<translation id="4913161338056004800">तथ्याङ्कहरू रिसेट गर्नुहोस्</translation>
 <translation id="4913169188695071480">पुन: ताजा गर्ने काम रोक्नुहोस्</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# पृष्ठ}other{# पृष्ठहरू}}</translation>
 <translation id="4925120120285606924">स्क्रिनसट <ph name="CURRENT_DATE_ISO" /></translation>
@@ -852,7 +840,6 @@
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">सक्रिय गर्नुहोस्</translation>
 <translation id="5862731021271217234">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
-<translation id="5864174910718532887">विवरणहरू: साइटको नामअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="5864419784173784555">अर्को डाउनलोडको प्रतीक्षा गर्दै…</translation>
 <translation id="5865733239029070421">प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः Google मा पठाउँछ</translation>
 <translation id="5869522115854928033">बचत गरिएका पासवर्डहरू</translation>
@@ -862,8 +849,6 @@
 <translation id="5906513782029855931">Google सहायकलाई साइटहरूको URL थाहा भएका खण्डमा सहायक तपाईंलाई कार्यहरू पूरा गर्न मद्दत गर्न सक्छ। तपाईं Chrome का सेटिङमा गई सहायक अफ गर्न सक्नुहुन्छ।</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5919204609460789179">सिंक सुरु गर्न <ph name="PRODUCT_NAME" /> लाई अपडेट गर्नुहोस्</translation>
-<translation id="5937580074298050696"><ph name="AMOUNT" /> बचत गरियो</translation>
-<translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="5942872142862698679">खोजीका लागि Google प्रयोग गर्दै</translation>
 <translation id="5945035219773565305">हालको सुझाव:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">लाइभ पेज हेरिँदै छ</translation>
@@ -897,7 +882,6 @@
 <translation id="60923314841986378"><ph name="HOURS" /> घन्टा बाँकी छ</translation>
 <translation id="6095578583683628124">तपाईंको डिफल्ट सर्च इन्जिन Google नै हो भने तपाईं अझ उपयुक्त र सान्दर्भिक सुझावहरू देख्नु हुने छ</translation>
 <translation id="6108923351542677676">सेटअप प्रगतिमा छ...</translation>
-<translation id="6111020039983847643">प्रयोग भएको डेटा</translation>
 <translation id="6112702117600201073">पृष्ठ पुनः ताजा गर्दै</translation>
 <translation id="6122831415929794347">सुरक्षित ब्राउजिङ निष्क्रिय पार्ने हो?</translation>
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
@@ -909,7 +893,6 @@
 <translation id="614940544461990577">यसो गरी हेर्नुहोस्:</translation>
 <translation id="6150320133806434356">बुकमार्क सेभ गरियो</translation>
 <translation id="6154478581116148741">यो यन्त्रबाट आफ्ना पासवर्डहरू निर्यात गर्न सेटिङहरूमा गई स्क्रिन लक सक्रिय गर्नुहोस्</translation>
-<translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6159729262978459665">यसले सिंक गरिएका सबै डिभाइसबाट इतिहास मेटाउँछ।</translation>
 <translation id="6162892189396105610">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज प्रिलोड गरेर राखिन्छ।</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
@@ -944,7 +927,6 @@
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="6363990818884053551">सिंक गर्ने कार्य सुरु गर्न यो काम गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
-<translation id="6378173571450987352">विवरणहरू: प्रयोग गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। जारी राखेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
 <translation id="6380100320871303656">यो मोड अन हुँदा Chrome लाई तपाईं जुन जुन पेज खोल्न सक्नुहुन्छ भन्ने लाग्छ ती पेज अझ छिटो अन्तरालमा प्रिलोड गरेर राखिन्छ। यो सेटिङ अन हुँदा बढी डेटा प्रयोग हुन सक्छ।</translation>
 <translation id="6395288395575013217">लिंक</translation>
@@ -1008,7 +990,6 @@
 <translation id="6637100877383020115">Chrome ले यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि Google लाई यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">सधैँ ब्लक गर्नुहोस्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
-<translation id="6643649862576733715">बचत गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="6645629752388991326">यो डिभाइस सुरक्षा साँचोका रूपमा प्रयोग गरी कुन कुन डिभाइसमा साइन इन गर्न दिने भन्ने कुरा नियन्त्रण गर्नुहोस्।</translation>
 <translation id="6648459603387803038">तपाईंका एड्मिन टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्नुहुन्छ। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट पनि व्यवस्थापन गरिन सक्छ।</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
@@ -1122,10 +1103,8 @@
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
 <translation id="729975465115245577">तपाईंको डिभाइसमा पासवर्डहरूको फाइल भण्डारण गर्ने कुनै एप छैन।</translation>
-<translation id="7302081693174882195">विवरणहरू: बचत गरिएको डेटाको मात्राअनुसार क्रमबद्ध गरिएको</translation>
 <translation id="7304873321153398381">अफलाइन छ। Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन।</translation>
 <translation id="7313188324932846546">सिंक सुविधा सेटअप गर्न ट्याप गर्नुहोस्</translation>
-<translation id="7328017930301109123">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नुका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ।</translation>
 <translation id="7332075081379534664">साइन इन गरियो</translation>
 <translation id="7333031090786104871">अघिल्लो साइट अझै थपिँदै</translation>
 <translation id="7339898014177206373">नयाँ विन्डो</translation>
@@ -1143,12 +1122,10 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">पहिलोपटक Chrome चलाउँदाको अनुभव</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
-<translation id="7413229368719586778">सुरु हुने मिति: <ph name="DATE" /></translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गरियोस्</translation>
 <translation id="7431991332293347422">खोज र थप कुराहरू वैयक्तीकृत गर्ने प्रयोजनका लागि तपाईंको ब्राउजिङ इतिहासको प्रयोग गरिने तरिका नियन्त्रण गर्नुहोस्</translation>
 <translation id="7435356471928173109">तपाईंका एड्मिनले अफ गर्नुभएको</translation>
 <translation id="7437998757836447326">Chrome बाट साइन आउट गर्नुहोस्</translation>
-<translation id="7438641746574390233">लाइट मोड सक्रिय हुँदा, Chrome ले पृष्ठहरू अझ छिटो लोड गर्ने प्रयोजनका लागि Google का सर्भरहरूको प्रयोग गर्छ। लाइट मोडले अत्यावश्यक सामग्री मात्र लोड गर्नका निम्ति धेरै सुस्त पृष्ठहरू पुनर्लेखन गर्छ। इन्कोग्निटो ट्याबहरूमा भने लाइट मोड लागू हुँदैन।</translation>
 <translation id="7443901082822119557">इन्कोग्निटो मोडमा ब्राउज गर्दा साइटहरूले तपाईंका रुचिअनुसारका विज्ञापन देखाउने जस्ता प्रयोजनहरूका लागि तपाईंले ब्राउजरमार्फत विभिन्न साइटहरूमा गर्नुभएको क्रियाकलाप हेर्न तपाईंका कुकीहरू प्रयोग गर्न सक्दैनन्। तर कतिपय साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="7444811645081526538">थप कोटिहरू</translation>
 <translation id="7453467225369441013">तपाईंलाई धेरैजसो साइटहरूबाट साइन आउट गर्छ। तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन।</translation>
@@ -1166,7 +1143,6 @@
 <translation id="7485033510383818941">फिडमा भएका सामग्री रिफ्रेस गर्न पेज तलतिर तान्नुहोस्</translation>
 <translation id="749294055653435199">यो डिभाइसमा Google लेन्स उपलब्ध छैन</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (अद्यावधिक गरियो <ph name="TIME_SINCE_UPDATE" />)</translation>
-<translation id="7494974237137038751">बचत गरिएको डेटा</translation>
 <translation id="7498271377022651285">प्रतीक्षा गर्नुहोस्...</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध छैनन्</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
@@ -1224,7 +1200,6 @@
 <translation id="7808889146555843082">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन। <ph name="SITE" /> मा रहेको तपाईंको खाता अन्य मान्छेहरूबाट सुरक्षित राख्न आफ्नो पासवर्ड परिवर्तन गर्नुहोस् वा उक्त खाता मेटाउनुहोस्।</translation>
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
-<translation id="7821588508402923572">तपाईंले बचत गर्नुभएको डेटा यहाँ देखिने छ</translation>
 <translation id="78270725016672455">तपाईंको कम्प्युटर कुनै साइटमा साइन इन गर्ने प्रयोजनका लागि यो डिभाइस दर्ता गर्न चाहन्छ</translation>
 <translation id="7844171778363018843">सिंक गर्नका लागि कुनै पनि डेटा चयन गरिएको छैन</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
@@ -1325,7 +1300,6 @@
 <translation id="8310344678080805313">मानक ट्याबहरू</translation>
 <translation id="831192587911042850">यसले तपाईंले फलो गरिरहेका वेबसाइटहरूको सूचीमा हालको वेबसाइट थप्छ।</translation>
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगरियोस्</translation>
-<translation id="8349013245300336738">प्रयोग गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="8352996530981010042">प्रतिक्रियाहरू डाउनलोड गर्न सकिँदैन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8354977102499939946">आफ्नो आवाज प्रयोग गरी छिटोछरितो रूपमा खोज्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> वटा डाउनलोड रिस्टोर गरिए</translation>

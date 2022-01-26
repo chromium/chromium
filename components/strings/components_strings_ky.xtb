@@ -212,6 +212,7 @@
 <translation id="1567040042588613346">Бул саясат талаптагыдай иштеп жатат, бирок ал башка жерде коюлган окшош мааниге алмаштырып койду.</translation>
 <translation id="1569487616857761740">Насыя картасынын жарамдуулук мөөнөтүн киргизиңиз</translation>
 <translation id="1581080074034554886">CVC</translation>
+<translation id="1581767074483369314">Виртуалдык картага катталыңыз</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Бул веб-баракча жүктөлүп жатканда бир жерден ката кетти.</translation>
 <translation id="1586541204584340881">Кайсы кеңейтүүлөрдү орнотуп алдыңыз</translation>
@@ -377,6 +378,7 @@
 <translation id="2101225219012730419">Версиясы:</translation>
 <translation id="2102134110707549001">Татаал сырсөз сунушталсын…</translation>
 <translation id="2102495993840063010">Android Колдонмолору</translation>
+<translation id="2106249949168291652">Сакталды. Анын коопсуздугун виртуалдык картанын жардамы менен бекемдейсизби?</translation>
 <translation id="2107021941795971877">Басып чыгарууну колдоо</translation>
 <translation id="2108755909498034140">Компьютериңизди өчүрүп-күйгүзүңүз</translation>
 <translation id="2111166930115883695">Ойноп баштоо үчүн боштук баскычын басыңыз</translation>
@@ -532,6 +534,7 @@
 <translation id="262745152991669301">USB түзмөктөргө туташууга уруксат сурай алат</translation>
 <translation id="2629325967560697240">Chrome’ду жогорку деңгээлде коопсуздандыруу үчүн <ph name="BEGIN_ENHANCED_PROTECTION_LINK" />өркүндөтүлгөн коргоону күйгүзүңүз<ph name="END_ENHANCED_PROTECTION_LINK" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверинин IP дареги табылбай койду.</translation>
+<translation id="2638001509205834345">Картаңыздын коопсуздугун бекемдейсизби?</translation>
 <translation id="2639739919103226564">Статус:</translation>
 <translation id="264810637653812429">Шайкеш түзмөктөр табылган жок.</translation>
 <translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
@@ -664,6 +667,7 @@
 <translation id="3113284927548439113">Үчүнчү смена</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> дайындарыңыздын камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> төзмөгүн кайтарууну талап кылууда.</translation>
 <translation id="3116158981186517402">Ламинациялоо</translation>
+<translation id="311958134571892113">төмөнкү карта менен байланыштырылды:</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Туташуу мүчүлүштүгүн аныктоону иштетип көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> колдонмосуна өтүү</translation>
@@ -1227,6 +1231,7 @@
           <ph name="LIST_ITEM" />Жумуш берүүчүлөр же окуу жайлар колдонуучулардын серепчидеги аракеттерине көз сала алышат<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернет кызматын жабдуучулар веб трафикти көзөмөлдөй алышат<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Четке кагылды, анткени саясатты булуттагы колдонуучулар үчүн саясат аркылуу гана тууралоого болот.</translation>
 <translation id="483241715238664915">Эскертүүлөрдү күйгүзүү</translation>
 <translation id="4838327282952368871">Кыялкеч</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
@@ -2364,6 +2369,7 @@
 <translation id="8669306706049782872">Терезелерди ачып, экранга жайгаштыруу үчүн экрандар тууралуу маалыматты колдонуу</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8676424191133491403">Дароо</translation>
+<translation id="8679903780129190080">Ооба, макулмун</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жооп, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> дарегиндеги веб-баракча жүктөлбөй койду, анткени:</translation>
 <translation id="8685155993131031756">Prc-16K</translation>
@@ -2537,6 +2543,7 @@
 <translation id="9215416866750762878">Иштеп жаткан колдонмо Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат</translation>
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="922152298093051471">Chrome'ду ыңгайлаштыруу</translation>
+<translation id="922274508605516859">Шылуундуктан коргоого көмөктөшүү үчүн виртуалдык карта чыныгы картаңыздын маалыматын жашырат.</translation>
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="935608979562296692">ФОРМАНЫ ТАЗАЛОО</translation>
 <translation id="936474030629450166">Super-B</translation>

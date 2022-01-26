@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Дазвол выкарыстання файлаў cookie ад канкрэтнага сайта.</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
 <translation id="4165986682804962316">Налады сайта</translation>
+<translation id="4194328954146351878">Пытацца, перш чым дазваляць сайтам праглядаць і змяняць інфармацыю на прыладах NFC (рэкамендуецца)</translation>
 <translation id="4200726100658658164">Адкрыць налады месцазнаходжання</translation>
 <translation id="4226663524361240545">Апавяшчэнні могуць уключаць вібрацыю прылады</translation>
 <translation id="4259722352634471385">Пераход па наступным адрасе заблакіраваны: <ph name="URL" /></translation>
@@ -135,7 +136,7 @@
 <translation id="4505788138578415521">URL-адрас разгорнуты</translation>
 <translation id="4534723447064627427">Каб даць праграме "<ph name="APP_NAME" />" доступ да мікрафона, уключыце апошні ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Падрабязныя звесткі</translation>
-<translation id="4645575059429386691">Пад кіраваннем вашых бацькоў</translation>
+<translation id="4645575059429386691">Пад кіраваннем бацькоў</translation>
 <translation id="4670064810192446073">Віртуальная рэальнасць</translation>
 <translation id="4751476147751820511">Датчыкі руху або святла</translation>
 <translation id="4836046166855586901">Дазволіць сайтам запытваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай</translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Павялічыць маштаб</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функцыя NFC выключана на гэтай прыладзе. Уключыце яе ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Забараніць сайтам праглядаць і змяняць інфармацыю на прыладах NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блакіраваць файлы cookie для пэўнага сайта.</translation>
 <translation id="8959122750345127698">Пераход па наступным адрасе недаступны: <ph name="URL" /></translation>

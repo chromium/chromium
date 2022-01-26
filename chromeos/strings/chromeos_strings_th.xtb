@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
+<translation id="291142119251986300">คอมโพเนนต์ไม่ตรงตามข้อกำหนด</translation>
+<translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -323,7 +325,6 @@
 <translation id="5423849171846380976">เปิดอยู่</translation>
 <translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ลองได้อีก {0} ครั้ง}other{ลองได้อีก {0} ครั้ง}}</translation>

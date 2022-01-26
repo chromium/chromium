@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Jarri beste orri bat eskanerrean</translation>
 <translation id="2872961005593481000">Itzali</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> deskargatu da <ph name="NUM_SECONDS" /> segundoan.</translation>
+<translation id="291142119251986300">Osagai ez-bateragarriak</translation>
+<translation id="2926057806159140518">Idatzi erabiltzaile-izena eta pasahitza, edo eskaneatu QR kodea</translation>
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -170,6 +172,7 @@
 <translation id="357889014807611375">wifi neurtua</translation>
 <translation id="3583278742022654445">Seinalearen indarra ahula da. Saiatu wifi-seinalearen iturburura hurbiltzen.</translation>
 <translation id="3595596368722241419">Bateria beteta dago</translation>
+<translation id="3603829704940252505">Abatarra</translation>
 <translation id="360565022852130722">WEP 802.1x protokolo ahulak babesten du wifi-sarea</translation>
 <translation id="3606583719724308068">Latentzia handia HTTPS darabilten webguneak kargatzeko</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> neurtzeko proba</translation>
@@ -322,7 +325,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5423849171846380976">Aktibatuta</translation>
 <translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} saiaketa gelditzen da}other{{0} saiakera gelditzen dira}}</translation>
@@ -421,6 +423,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>
 <translation id="6910312834584889076">Eskanerraren estalkia irekita dago. Itxi ezazu eta saiatu berriro.</translation>
 <translation id="6911383237894364323">Ezin da konektatu multimedia-zerbitzarietara</translation>
+<translation id="6935486296377631201">Pantaila-babeslea</translation>
 <translation id="6957231940976260713">Zerbitzuaren izena</translation>
 <translation id="6961170852793647506">Hasteko, jarri dokumentua eskanerrean</translation>
 <translation id="6965382102122355670">Ados</translation>

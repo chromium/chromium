@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Дозволете колачиња за конкретен сајт.</translation>
 <translation id="4046123991198612571">Следна песна</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
+<translation id="4194328954146351878">Прашај пред да дозволиш сајтовите да гледаат и менуваат податоци на NFC-уреди (се препорачува)</translation>
 <translation id="4200726100658658164">Отворете ги поставките за локација</translation>
 <translation id="4226663524361240545">Известувањата може да предизвикаат вибрации на уредот</translation>
 <translation id="4259722352634471385">Навигацијата е блокирана: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC е исклучена за уредов. Вклучете ја во <ph name="BEGIN_LINK" />„Поставки за Android“<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Блокирај сајтовите да не ги гледаат и менуваат податоците на NFC-уреди</translation>
 <translation id="8941729603749328384">www.primer.com</translation>
 <translation id="8958424370300090006">Блокирајте колачиња за одреден сајт.</translation>
 <translation id="8959122750345127698">Навигацијата е недостапна: <ph name="URL" /></translation>

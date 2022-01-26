@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Палажыце чарговую старонку ў сканер</translation>
 <translation id="2872961005593481000">Завяршыць працу</translation>
 <translation id="2878387241690264070">Разраджана: <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
+<translation id="291142119251986300">Кампаненты, не спраўджаныя на сумяшчальнасць</translation>
+<translation id="2926057806159140518">Увядзіце імя карыстальніка і пароль або адсканіруйце QR-код</translation>
 <translation id="3008341117444806826">АБНАВІЦЬ</translation>
 <translation id="3009958530611748826">Выберыце папку для захавання</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
@@ -322,7 +324,6 @@
 <translation id="5423849171846380976">Уключана</translation>
 <translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Праглядаць як госць</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Засталася {0} спроба}one{Засталася {0} спроба}few{Засталося {0} спробы}many{Засталося {0} спроб}other{Засталося {0} спробы}}</translation>

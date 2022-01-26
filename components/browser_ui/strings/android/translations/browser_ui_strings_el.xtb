@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Επιτρέπει τα cookie για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
+<translation id="4194328954146351878">Να γίνεται ερώτηση πριν επιτραπεί στους ιστοτόπους να βλέπουν και να αλλάζουν πληροφορίες σε συσκευές NFC (συνιστάται)</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Μεγέθυνση</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Το NFC είναι ανενεργό για αυτήν τη συσκευή. Ενεργοποιήστε το στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Αποκλεισμός ιστοτόπων από την εμφάνιση και την αλλαγή πληροφοριών σε συσκευές NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Αποκλεισμός cookie για έναν συγκεκριμένο ιστοτόπο.</translation>
 <translation id="8959122750345127698">Δεν είναι δυνατή η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>

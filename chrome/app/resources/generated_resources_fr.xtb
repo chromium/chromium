@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icône actuelle</translation>
 <translation id="1103523840287552314">Toujours traduire les pages en <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Arrêter</translation>
+<translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1110155001042129815">Attendre</translation>
 <translation id="1110965959145884739">Sélectionnez les langues à installer sur cet appareil. Les fichiers de langue sont partagés entre les utilisateurs pour libérer de l'espace disque. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projecteur</translation>
@@ -2879,7 +2880,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3888586133700543064">Ces informations nous aident à mieux comprendre le problème que vous rencontrez avec l'Assistant. Elles sont conservées pendant 90 jours au maximum et ne peuvent être consultées que par nos ingénieurs et nos équipes responsables du traitement des commentaires.</translation>
 <translation id="3888900458694486810">Fermer le panneau latéral de recherche</translation>
 <translation id="3890064827463908288">Activer la synchronisation Chrome pour utiliser Sync Wi-Fi</translation>
-<translation id="3892414795099177503">Ajouter une connexion OpenVPN/L2TP…</translation>
 <translation id="389313931326656921">Associer un contacteur à "Suivant"</translation>
 <translation id="3893295674388762059">Pour supprimer les données, fermez toutes les fenêtres de navigation privée</translation>
 <translation id="3893536212201235195">Consulter et modifier vos paramètres d'accessibilité</translation>
@@ -4965,7 +4965,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6112931163620622315">Vérifier le téléphone</translation>
 <translation id="6113434369102685411">Définissez un moteur de recherche par défaut pour le navigateur Chrome et le Lanceur d'applications <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pour utiliser Smart Lock, passez au profil de l'utilisateur principal sur votre téléphone</translation>
-<translation id="611684075852771314">Ces journaux ont été enregistrés dans "Mes fichiers" en tant que</translation>
 <translation id="6116921718742659598">Modifier les paramètres de langue et de saisie</translation>
 <translation id="6119927814891883061">Nommer l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Épingler cette page à l'écran de démarrage…</translation>
@@ -5956,6 +5955,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7149839598364933473">Installez <ph name="DEVICE_OS" /> sur l'appareil.</translation>
 <translation id="7149893636342594995">Dernières 24 heures</translation>
+<translation id="7152478047064750137">Cette extension ne nécessite aucune autorisation spéciale</translation>
 <translation id="7154130902455071009">Utiliser l'adresse <ph name="START_PAGE" /> comme page de démarrage ?</translation>
 <translation id="7155171745945906037">Photo existante au niveau de l'appareil photo ou dans les fichiers</translation>
 <translation id="7163202347044721291">Vérification du code d'activation…</translation>
@@ -6159,7 +6159,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7384687527486377545">Répétition automatique du clavier</translation>
 <translation id="7385490373498027129">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) seront supprimés définitivement.</translation>
 <translation id="7385854874724088939">Erreur lors de la tentative d'impression. Vérifiez votre imprimante et réessayez.</translation>
-<translation id="7385896526023870365">Cette extension n'a accès à aucun site supplémentaire.</translation>
 <translation id="7387273928653486359">Acceptable</translation>
 <translation id="7387951778417998929">Pour utiliser un autre moteur de recherche que celui défini par défaut, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix. Vous pouvez aussi modifier votre moteur de recherche par défaut ici.</translation>
 <translation id="7388209873137778229">Seuls les appareils compatibles sont affichés.</translation>

@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">सध्याचा आयकन</translation>
 <translation id="1103523840287552314">नेहमी भाषांतर करा <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;थांबा</translation>
+<translation id="1108938384783527433">इतिहास सिंक करा</translation>
 <translation id="1110155001042129815">प्रतीक्षा करा</translation>
 <translation id="1110965959145884739">या डिव्हाइसवर कोणत्या भाषा इंस्टॉल करायच्या ते निवडा. डिस्कमधील जागेची बचत करण्यासाठी वापरकर्त्यांमध्ये भाषेच्या फाइल शेअर केल्या जातात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">प्रोजेक्टर</translation>
@@ -1033,6 +1034,7 @@
 <translation id="2022395138980869975">बाजूला असलेला शोध टॉगल करा</translation>
 <translation id="2023167225947895179">पिनचा अंदाज घेणे सोपे असू शकते</translation>
 <translation id="202352106777823113">डाउनलोडला खूप वेळ लागत होता आणि नेटवर्कद्वारे थांबविले.</translation>
+<translation id="2024195579772565064">शोध इंजीन हटवा</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> क्रॅश झाला. एक्स्टेंशन रीलोड करण्यासाठी या फुग्यावर क्लिक करा.</translation>
 <translation id="2028449514182362831">मोशन सेन्सरची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="202918510990975568">सुरक्षितता कॉंफिगर करण्यासाठी आणि साइन इन करण्यासाठी तुमचा पासवर्ड एंटर करा</translation>
@@ -1174,6 +1176,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">वाय-फाय जोडा...</translation>
 <translation id="2162155940152307086">तुम्ही सिंक सेटिंग्ज सोडल्यास सिंक सुरू होईल</translation>
+<translation id="2162926944953615670">कोणत्याही उपलब्ध eSIM प्रोफाइल नाहीत</translation>
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
@@ -1870,6 +1873,7 @@
 <translation id="2828650939514476812">वाय-फाय नेटवर्कवर कनेक्ट करा</translation>
 <translation id="2831430281393059038">डिव्हाइसला सपोर्ट नाही</translation>
 <translation id="2832124733806557606">या डिव्हाइसवर साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी, तुमचे लहान मूल पिन वापरू शकते.</translation>
+<translation id="2835177225987815960">असाइन केलेले सर्व स्विच आणि ऑटो-स्कॅन वेगाशी संबंधित प्राधान्ये यांसह तुमचे सध्याचे स्कॅनिंग सेटअप रीसेट केले जाईल.</translation>
 <translation id="2835547721736623118">स्पीच रेकग्निशन सेवा</translation>
 <translation id="2836269494620652131">क्रॅश</translation>
 <translation id="2836635946302913370">या वापरकर्तानावासह साइन इन करणे तुमच्या ॲडमिनिस्ट्रेटरद्वारे अक्षम केले गेले आहे.</translation>
@@ -2894,7 +2898,6 @@
 <translation id="3888586133700543064">Assistant शी संबंधित तुमच्या समस्या आणखी चांगल्या प्रकारे समजून घेण्यात ही माहिती आम्हाला मदत करते. ती ९० दिवसांपर्यंत स्टोअर केली जाते आणि तिचा अ‍ॅक्सेस योग्य इंजिनीयरिंग आणि फीडबॅक टीमपुरता मर्यादित असतो.</translation>
 <translation id="3888900458694486810">बाजूला असलेला शोध बंद करा</translation>
 <translation id="3890064827463908288">वाय-फाय सिंक वापरणासाठी Chrome सिंक सुरू करा</translation>
-<translation id="3892414795099177503">OpenVPN / L2TP जोडा...</translation>
 <translation id="389313931326656921">“पुढील” साठी स्विच असाइन करा</translation>
 <translation id="3893295674388762059">डेटा साफ करण्यासाठी, सर्व गुप्त विंडो बंद करा</translation>
 <translation id="3893536212201235195">तुमच्या ॲक्सेसिबिलिटी सेटिंग्ज जोडा आणि बदला</translation>
@@ -3515,6 +3518,7 @@
 <translation id="4547659257713117923">अन्य डिव्हाइसेसवरील कोणतेही टॅब नाहीत</translation>
 <translation id="4547672827276975204">आपोआप सेट करा</translation>
 <translation id="4549791035683739768">तुमच्या सिक्युरिटी कीवर कोणतीही फिंगरप्रिंट स्टोअर केलेली नाहीत</translation>
+<translation id="4550926046134589611">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> मध्ये उघडतील.</translation>
 <translation id="4551763574344810652">पहिल्यासारखे करण्यासाठी <ph name="MODIFIER_KEY_DESCRIPTION" /> दाबा</translation>
 <translation id="4553526521109675518">डिव्हाइसची भाषा बदलण्यासाठी तुम्हाला तुमचे Chromebook रीस्टार्ट करावे लागेल. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून शोधण्यासाठी इमेजवर ड्रॅग करा</translation>
@@ -3805,6 +3809,7 @@
 <translation id="48704129375571883">अतिरिक्त वैशिष्ट्ये जोडा</translation>
 <translation id="4870758487381879312">कॉंफिगरेशन माहिती मिळवण्यासाठी ॲडमिनने पुरवलेला पासवर्ड एंटर करा</translation>
 <translation id="4870903493621965035">कोणतेही जोडणी केलेले डिव्हाइस नाहीत</translation>
+<translation id="4870995365819149457">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी एका अ‍ॅपमध्ये उघडतील.</translation>
 <translation id="4871308555310586478">Chrome वेब स्टोअरमधून नाही.</translation>
 <translation id="4871322859485617074">पिनमध्ये अवैध वर्ण आहेत</translation>
 <translation id="4871370605780490696">बुकमार्क जोडा</translation>
@@ -4841,6 +4846,7 @@
 <translation id="5969728632630673489">कीबोर्ड शॉर्टकटशी संबंधित सूचना डिसमिस केली</translation>
 <translation id="5971037678316050792">ब्लूटूथ अडाप्टर स्थिती आणि पेअरिंग नियंत्रित करा</translation>
 <translation id="597235323114979258">आणखी गंतव्यस्थाने पहा</translation>
+<translation id="5972543790327947908">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> किंवा <ph name="APP_NAME_3" /> मध्ये उघडतील.</translation>
 <translation id="5972666587303800813">नो-ऑप सेवा</translation>
 <translation id="5972708806901999743">शीर्षस्थानी हलवा</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> सुरू करा</translation>
@@ -4982,7 +4988,6 @@
 <translation id="6112931163620622315">तुमचा फोन तपासा</translation>
 <translation id="6113434369102685411">Chrome ब्राउझर आणि <ph name="DEVICE_TYPE" /> लाँचरसाठी तुमचे डीफॉल्ट शोध इंजीन सेट करा</translation>
 <translation id="6113942107547980621">स्मार्ट लॉक वापरण्यासाठी, तुमच्या फोनवर प्राथमिक वापरकर्ता प्रोफाइलवर स्विच करा</translation>
-<translation id="611684075852771314">हे लॉग माझ्या फाइल मध्ये या स्वरूपात सेव्ह केले आहेत</translation>
 <translation id="6116921718742659598">भाषा आणि इनपुट सेटिंग्ज बदला</translation>
 <translation id="6119927814891883061">डिव्हाइसला नाव <ph name="DEVICE_NAME" /> द्या</translation>
 <translation id="6120205520491252677">या पृष्‍ठास सुरू स्‍क्रीनवर पिन करा...</translation>
@@ -5212,6 +5217,7 @@
 <translation id="6355789186038748882">(अल्फा गुणवत्तेचा) प्रायोगिक ब्राउझर! काही वैशिष्ट्ये उपलब्ध नाहीत किंवा अपूर्ण आहेत. अशा प्रकारे समस्यांची तक्रार करा: मदत &gt; "समस्येची तक्रार करा...".</translation>
 <translation id="635609604405270300">डिव्हाइस सुरू ठेवा</translation>
 <translation id="63566973648609420">फक्त तुमचा सांकेतिक पासफ्रेझ असलेली एखादी व्यक्ती तुमचा एंक्रिप्ट केलेला डेटा वाचू शकते. सांकेतिक पासफ्रेझ Google कडे पाठविला किंवा त्याद्वारे स्टोअर केला जात नाही.  तुमचा सांकेतिक पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलू इच्छित असल्यास, तुम्हाला <ph name="BEGIN_LINK" />सिंक रीसेट करण्याची आवश्यकता असेल<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> किंवा  <ph name="APP_NAME_2" /> मध्ये उघडतील.</translation>
 <translation id="6358884629796491903">ड्रॅगन</translation>
 <translation id="6359706544163531585">फिकट थीम बंद करा</translation>
 <translation id="6361850914223837199">एरर तपशील:</translation>
@@ -5730,6 +5736,7 @@
 <translation id="6900284862687837908">पार्श्वभूमी ॲप: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">वर्धित संरक्षण</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> अपडेट करण्यासाठी पुन्हा साइन इन करा</translation>
+<translation id="6900654715912436255">तुम्हाला हे शोध इंजीन नक्की हटवायचे आहे का?</translation>
 <translation id="6902066522699286937">पूर्वावलोकनासाठी व्हॉइस</translation>
 <translation id="6902336033320348843">विभाग सपोर्ट करत नाही: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">डोमेनशी डिव्हाइस जोडा</translation>
@@ -5973,6 +5980,7 @@
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7149839598364933473">हे डिव्हाइस <ph name="DEVICE_OS" /> डिव्हाइसमध्ये रूपांतरित करा.</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
+<translation id="7152478047064750137">या एक्स्टेंशनला कोणत्याही विशिष्ट परवानग्यांची आवश्यकता नाही</translation>
 <translation id="7154130902455071009">तुमचे सुरू पृष्ठ यावर बदला: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">कॅमेरा किंवा फाईल मधील विद्यमान फोटो</translation>
 <translation id="7163202347044721291">अ‍ॅक्टिव्हेशन कोडची पडताळणी करत आहे…</translation>
@@ -6000,6 +6008,7 @@
 <translation id="7189234443051076392">तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा</translation>
 <translation id="7189451821249468368">तुमच्याकडे या डिव्हाइसची नोंदणी करण्यासाठी पुरेसे अपग्रेड नाहीत. कृपया आणखी खरेदी करण्यासाठी विक्रीशी विभागाशी संपर्क साधा. हा मेसेज एररमुळे दिसत आहे असे वाटत असल्यास, कृपया सपोर्टशी संपर्क साधा.</translation>
 <translation id="7189965711416741966">फिंगरप्रिंट जोडले.</translation>
+<translation id="7191063546666816478">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी <ph name="NUMBER_OF_OTHER_APPS" /> अ‍ॅप्स मध्ये उघडतील.</translation>
 <translation id="7191159667348037">अज्ञात मुद्रक (USB)</translation>
 <translation id="7193051357671784796">हे अ‍ॅप तुमच्या संस्थेमध्ये जोडले गेले आहे. इंस्टॉल करणे पूर्ण करण्यासाठी अ‍ॅप रीस्टार्ट करा.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> चे कोणतेही पासवर्ड सेव्ह केलेले नाहीत</translation>
@@ -6176,7 +6185,6 @@
 <translation id="7384687527486377545">कीबोर्ड ऑटो-रिपीट</translation>
 <translation id="7385490373498027129">या <ph name="DEVICE_TYPE" /> वरील सर्व वापरकर्त्यांसाठी सर्व फाइल आणि स्थानिक डेटा कायमचा हटवला जाईल.</translation>
 <translation id="7385854874724088939">प्रिंट करण्याचा प्रयत्न करताना काहीतरी चूक झाली. कृपया तुमचा प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="7385896526023870365">या एक्स्टेंशनला अतिरिक्त साइट अ‍ॅक्सेस नाही.</translation>
 <translation id="7387273928653486359">स्वीकारण्यायोग्य</translation>
 <translation id="7387951778417998929">डीफॉल्टपेक्षा वेगळे शोध इंजीन वापरण्यासाठी, त्याचा शॉर्टकट आणि त्यानंतर तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट अ‍ॅड्रेस बारमध्ये टाइप करा. तुम्ही येथे तुमचे डीफॉल्ट शोध इंजीनदेखील बदलू शकता.</translation>
 <translation id="7388209873137778229">फक्त सपोर्ट असलेली डिव्हाइस दाखवली आहेत.</translation>

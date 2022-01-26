@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
 <translation id="1364382257761975320">Chromebook আনলক করতে, আপনার ফিঙ্গারপ্রিন্ট ব্যবহার করুন</translation>
+<translation id="1364618750746929654">ট্রান্সক্রিপশন জেনারেট করা যাচ্ছে না</translation>
 <translation id="1383597849754832576">স্পিচ ফাইল ডাউনলোড করা যাবে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">চালু করা আছে</translation>
@@ -679,6 +680,7 @@
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5465662442746197494">সাহায্য চান?</translation>
 <translation id="547979256943495781">শেল্ফ ডান দিকে দেখানো হচ্ছে</translation>
+<translation id="5491186829646618080">ফার্মওয়্যারের আপডেট উপলভ্য আছে</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">আপনার অ্যাডমিনিস্ট্রেটর সকল ই-সিম প্রোফাইল সরিয়ে দিয়েছেন। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> কানেক্ট করা হচ্ছে।</translation>
@@ -1177,6 +1179,7 @@
 <translation id="8876661425082386199">আপনার ইন্টারনেট কানেকশন চেক করুন</translation>
 <translation id="8877788021141246043">রিমাইন্ডার সেট করুন</translation>
 <translation id="8878886163241303700">স্ক্রিন সম্প্রসারণ করা হচ্ছে</translation>
+<translation id="888982883502837004">আপনার ডিভাইসের জন্য ফার্মওয়্যার আপডেট উপলভ্য। পর্যালোচনা এবং আপডেটের জন্য ক্লিক করুন।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> স্থায়ীভাবে মুছে ফেলা হবে</translation>
 <translation id="890616557918890486">সোর্স পরিবর্তন করুন</translation>
 <translation id="8909138438987180327">ব্যাটারিতে <ph name="PERCENTAGE" /> শতাংশ চার্জ আছে।</translation>

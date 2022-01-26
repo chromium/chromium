@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Biểu tượng hiện tại</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Dừng</translation>
+<translation id="1108938384783527433">Đồng bộ nhật ký</translation>
 <translation id="1110155001042129815">Chờ</translation>
 <translation id="1110965959145884739">Chọn ngôn ngữ để cài đặt trên thiết bị này. Các tệp ngôn ngữ được chia sẻ giữa những người dùng để tiết kiệm dung lượng ổ đĩa. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Máy chiếu</translation>
@@ -2893,7 +2894,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3888586133700543064">Thông tin này sẽ giúp chúng tôi hiểu rõ hơn vấn đề liên quan đến Trợ lý của bạn. Chúng tôi lưu trữ thông tin này trong tối đa 90 ngày và chỉ các nhóm liên quan phụ trách kỹ thuật và phản hồi mới được phép truy cập.</translation>
 <translation id="3888900458694486810">Đóng tính bảng tìm kiếm bên</translation>
 <translation id="3890064827463908288">Bật Chrome Sync để dùng tính năng Đồng bộ hóa Wi-Fi</translation>
-<translation id="3892414795099177503">Thêm OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">Gán công tắc cho thao tác "Tiếp theo"</translation>
 <translation id="3893295674388762059">Để xóa dữ liệu, hãy đóng mọi Cửa sổ ẩn danh</translation>
 <translation id="3893536212201235195">Đọc và thay đổi cài đặt khả năng truy cập của bạn</translation>
@@ -4979,7 +4979,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6112931163620622315">Kiểm tra điện thoại của bạn</translation>
 <translation id="6113434369102685411">Thiết lập công cụ tìm kiếm mặc định cho trình duyệt Chrome và Trình chạy trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Để sử dụng Smart Lock, hãy chuyển sang hồ sơ người dùng chính trên điện thoại của bạn</translation>
-<translation id="611684075852771314">Các bản ghi nhật ký này đã được lưu vào Tệp của tôi dưới dạng</translation>
 <translation id="6116921718742659598">Thay đổi cài đặt ngôn ngữ và phương thức nhập</translation>
 <translation id="6119927814891883061">Đặt tên cho thiết bị <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Ghim trang này vào màn hình Bắt đầu...</translation>
@@ -5970,6 +5969,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7144878232160441200">Thử lại</translation>
 <translation id="7149839598364933473">Chuyển đổi thiết bị này thành thiết bị <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 giờ qua</translation>
+<translation id="7152478047064750137">Tiện ích này không yêu cầu quyền đặc biệt</translation>
 <translation id="7154130902455071009">Thay đổi trang chủ của bạn thành: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Ảnh hiện có từ máy ảnh hoặc tệp</translation>
 <translation id="7163202347044721291">Đang xác minh mã kích hoạt...</translation>
@@ -6173,7 +6173,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7384687527486377545">Tự động lặp lại trên bàn phím</translation>
 <translation id="7385490373498027129">Tất cả tệp và dữ liệu dành cho mọi người dùng trên <ph name="DEVICE_TYPE" /> này sẽ bị xóa vĩnh viễn.</translation>
 <translation id="7385854874724088939">Có trục trặc xảy ra khi in. Hãy kiểm tra máy in của bạn và thử lại.</translation>
-<translation id="7385896526023870365">Tiện ích này không có quyền truy cập vào trang web bổ sung.</translation>
 <translation id="7387273928653486359">Chấp nhận được</translation>
 <translation id="7387951778417998929">Để dùng một công cụ tìm kiếm khác với công cụ mặc định, hãy nhập lối tắt của công cụ đó trong thanh địa chỉ rồi nhập phím tắt ưu tiên của bạn. Bạn cũng có thể thay đổi công cụ tìm kiếm mặc định tại đây.</translation>
 <translation id="7388209873137778229">Chỉ những thiết bị được hỗ trợ mới hiển thị.</translation>

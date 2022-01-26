@@ -172,6 +172,7 @@
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="3583278742022654445">신호 강도가 약합니다. Wi-Fi 신호 소스 가까이 이동해 보세요.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
+<translation id="3603829704940252505">아바타</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
@@ -324,7 +325,6 @@
 <translation id="5423849171846380976">활성화됨</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">게스트로 로그인</translation>
 <translation id="54609108002486618">관리</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{남은 시도 {0}회}other{남은 시도 {0}회}}</translation>
@@ -423,6 +423,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> 페이지로 돌아가기</translation>
 <translation id="6910312834584889076">스캐너의 덮개가 열려 있습니다. 덮개를 닫은 후 다시 시도해 보세요.</translation>
 <translation id="6911383237894364323">미디어 서버에 연결할 수 없음</translation>
+<translation id="6935486296377631201">화면 보호기</translation>
 <translation id="6957231940976260713">서비스 이름</translation>
 <translation id="6961170852793647506">시작하려면 스캐너에 문서를 올리세요.</translation>
 <translation id="6965382102122355670">확인</translation>

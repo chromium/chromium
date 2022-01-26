@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Ikon semasa</translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Berhenti</translation>
+<translation id="1108938384783527433">Penyegerakan sejarah</translation>
 <translation id="1110155001042129815">Tunggu</translation>
 <translation id="1110965959145884739">Pilih bahasa yang hendak dipasang pada peranti ini. Fail bahasa dikongsi antara beberapa pengguna untuk menjimatkan ruang cakera. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -2895,7 +2896,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3888586133700543064">Maklumat ini membantu kami memahami isu Assistant anda dengan lebih baik. Maklumat ini akan disimpan selama maksimum 90 hari dan akses dihadkan kepada pasukan kejuruteraan dan maklum balas yang berkenaan.</translation>
 <translation id="3888900458694486810">Tutup carian sisi</translation>
 <translation id="3890064827463908288">Hidupkan Penyegerakan Chrome untuk menggunakan Penyegerakan Wi-Fi</translation>
-<translation id="3892414795099177503">Tambahkan OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">Tetapkan suis untuk “Seterusnya”</translation>
 <translation id="3893295674388762059">Untuk mengosongkan data, tutup semua tetingkap Inkognito</translation>
 <translation id="3893536212201235195">Baca dan tukar tetapan kebolehaksesan anda</translation>
@@ -4984,7 +4984,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="6112931163620622315">Semak telefon anda</translation>
 <translation id="6113434369102685411">Tetapkan enjin carian lalai anda untuk penyemak imbas Chrome dan Pelancar <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Untuk menggunakan Smart Lock, beralih kepada profil pengguna utama pada telefon anda</translation>
-<translation id="611684075852771314">Log ini telah disimpan dalam Fail Saya sebagai</translation>
 <translation id="6116921718742659598">Tukar tetapan bahasa dan input</translation>
 <translation id="6119927814891883061">Namakan peranti kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pin halaman ini pada skrin Mula...</translation>
@@ -5975,6 +5974,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7149839598364933473">Tukar peranti ini kepada peranti <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">24 jam yang lalu</translation>
+<translation id="7152478047064750137">Sambungan ini tidak memerlukan kebenaran khas</translation>
 <translation id="7154130902455071009">Tukar halaman permulaan anda kepada: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto sedia ada daripada kamera atau fail</translation>
 <translation id="7163202347044721291">Mengesahkan kod pengaktifan...</translation>
@@ -6178,7 +6178,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7384687527486377545">Autoulang papan kekunci</translation>
 <translation id="7385490373498027129">Semua fail dan data setempat untuk semua pengguna pada <ph name="DEVICE_TYPE" /> ini akan dipadamkan secara kekal.</translation>
 <translation id="7385854874724088939">Sesuatu tidak kena apabila mencuba untuk mencetak.  Sila periksa pencetak anda dan cuba semula.</translation>
-<translation id="7385896526023870365">Sambungan ini tiada akses tapak tambahan.</translation>
 <translation id="7387273928653486359">Sederhana</translation>
 <translation id="7387951778417998929">Untuk menggunakan enjin carian lain selain yang lalai, taip pintasan enjin carian tersebut dalam bar alamat diikuti dengan pintasan papan kekunci pilihan anda. Anda juga boleh menukar enjin carian lalai anda di sini.</translation>
 <translation id="7388209873137778229">Hanya peranti yang disokong ditunjukkan.</translation>

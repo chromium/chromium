@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">किसी खास साइट के लिए कुकी की मंज़ूरी दें.</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
+<translation id="4194328954146351878">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर, जानकारी देखने और उसमें बदलाव करने की अनुमति देने से पहले पूछा जाए (सुझाई गई सेटिंग)</translation>
 <translation id="4200726100658658164">जगह की सेटिंग खोलें</translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">ज़ूम इन करें</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">इस डिवाइस पर NFC बंद है. <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में इसे चालू करें.</translation>
+<translation id="8928445016601307354">साइटों को एनएफ़सी की सुविधा वाले डिवाइसों पर जानकारी देखने और उसमें बदलाव करने से रोकें</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">किसी खास साइट के लिए कुकी ब्लॉक करें.</translation>
 <translation id="8959122750345127698">मार्गदर्शक तक नहीं पहुंचा जा सकता: <ph name="URL" /></translation>

@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Icono actual</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Detener</translation>
+<translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que se instalarán en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Proyector</translation>
@@ -2878,7 +2879,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3888586133700543064">Esta información nos ayudará a entender mejor tu problema con el Asistente. Se almacena durante un máximo de 90 días y solo podrán acceder a estos datos los equipos correspondientes de ingeniería y sugerencias.</translation>
 <translation id="3888900458694486810">Cerrar búsqueda lateral</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi‑Fi</translation>
-<translation id="3892414795099177503">Añadir OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">Asignar interruptor para "Siguiente"</translation>
 <translation id="3893295674388762059">Para borrar los datos, cierra todas las ventanas de incógnito</translation>
 <translation id="3893536212201235195">Leer y cambiar tu configuración de accesibilidad</translation>
@@ -4962,7 +4962,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6112931163620622315">Comprueba tu teléfono</translation>
 <translation id="6113434369102685411">Establece el buscador predeterminado para el navegador Chrome y el menú de aplicaciones de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Si quieres usar Smart Lock, cambia al perfil del usuario principal en tu teléfono.</translation>
-<translation id="611684075852771314">Estos registros se han guardado en Mis archivos como</translation>
 <translation id="6116921718742659598">Cambiar configuración de idioma y de introducción de texto</translation>
 <translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
 <translation id="6120205520491252677">Fijar esta página en la pantalla de inicio...</translation>
@@ -5501,7 +5500,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6678717876183468697">URL de la consulta</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
-<translation id="6681668084120808868">Sacar foto</translation>
+<translation id="6681668084120808868">Hacer foto</translation>
 <translation id="6683087162435654533">R&amp;estaurar todas las pestañas</translation>
 <translation id="6684827949542560880">Descargando la última actualización</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
@@ -5953,6 +5952,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar página de inicio por: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto de la cámara o archivo</translation>
 <translation id="7163202347044721291">Verificando código de activación...</translation>
@@ -6156,7 +6156,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7384687527486377545">Repetición automática del teclado</translation>
 <translation id="7385490373498027129">Todos los archivos y datos locales de todos los usuarios de este <ph name="DEVICE_TYPE" /> se eliminarán de forma permanente.</translation>
 <translation id="7385854874724088939">Se ha producido un error al intentar realizar la impresión. Comprueba la impresora e inténtalo de nuevo.</translation>
-<translation id="7385896526023870365">Esta extensión no tiene acceso adicional al sitio web.</translation>
 <translation id="7387273928653486359">Aceptable</translation>
 <translation id="7387951778417998929">Para usar un buscador distinto del predeterminado, escribe su acceso directo en la barra de direcciones seguido de tu atajo de teclado preferido. También puedes cambiar tu buscador predeterminado aquí.</translation>
 <translation id="7388209873137778229">Solo se muestran los dispositivos compatibles.</translation>

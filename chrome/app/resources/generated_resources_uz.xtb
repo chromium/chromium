@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Joriy belgi</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> tilidan har doim tarjima qilinsin</translation>
 <translation id="1108600514891325577">&amp;To‘xtatish</translation>
+<translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
 <translation id="1110155001042129815">Kutish</translation>
 <translation id="1110965959145884739">Bu qruilmada oʻrnatiladigan tillarni tanlang Diskda joy egallamaslik uchun til fayllari foydalanuvchilararo ulashiladi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -2886,7 +2887,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3888586133700543064">Bu axborot Assistent muammosini yaxshiroq tushunishga yordam beradi. Axborot 90 kungacha saqlanadi va faqatgina muayyan jamoa yoki muhandislar tomonidan ishlatiladi.</translation>
 <translation id="3888900458694486810">Yondagi qidiruvni yopish</translation>
 <translation id="3890064827463908288">Wi-Fi Sync ishlatish uchun Chrome Sync funksiyasini yoqing</translation>
-<translation id="3892414795099177503">OpenVPN yoki L2TP qo‘shish...</translation>
 <translation id="389313931326656921">“Keyingi” uchun kalitni tayinlash</translation>
 <translation id="3893295674388762059">Maʼlumotlarni tozalash uchun barcha Inkognito oynalarni yoping</translation>
 <translation id="3893536212201235195">Maxsus imkoniyatlar sozlamarini o‘qish va o‘zgartirish</translation>
@@ -4978,7 +4978,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6112931163620622315">Telefoningizni tekshiring</translation>
 <translation id="6113434369102685411">Chrome brauzeri va <ph name="DEVICE_TYPE" /> launcherida asosiy qidiruv tizimi sifatida belgilash</translation>
 <translation id="6113942107547980621">Smart Lock himoyasini yoqish uchun telefondagi asosiy profilga oʻting</translation>
-<translation id="611684075852771314">Bu jurnal qaydlari Fayllarim jildida quyidagi faylga saqlandi:</translation>
 <translation id="6116921718742659598">Til va kiritish usuli sozlamalarini o‘zgartirish</translation>
 <translation id="6119927814891883061">Qurilmani nomlash: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Ushbu sahifani bosh ekranga qadab qo‘yish...</translation>
@@ -5972,6 +5971,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7149839598364933473">Bu qurilmani <ph name="DEVICE_OS" /> qurilmasiga aylantiring.</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
+<translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
 <translation id="7163202347044721291">Aktivatsiya kodi tasdiqlanmoqda…</translation>
@@ -6176,7 +6176,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7384687527486377545">Klaviaturada avtomatik qayta kiritish</translation>
 <translation id="7385490373498027129">Ushbu <ph name="DEVICE_TYPE" /> qurilmasidagi barcha fayllar va foydalanuvchi maʼlumotlari butunlay tozalanadi.</translation>
 <translation id="7385854874724088939">Chop etish vaqtida xatolik yuz berdi. Printeringizni tekshiring va qaytadan urinib ko‘ring.</translation>
-<translation id="7385896526023870365">Bu kengaytmaning saytga qoʻshimcha ruxsati yoʻq.</translation>
 <translation id="7387273928653486359">Qoniqarli</translation>
 <translation id="7387951778417998929">Boshqa qidiruv vositasidan foydalanish uchun manzillar qatorida buyruqni kiritib, keyin oldindan belgilangan tezkor tugmani bosing. Shuningdek, asosiy qidiruv tizimini shu yerdan almashtirish mumkin.</translation>
 <translation id="7388209873137778229">Faqat quyidagi qurilmalarda ishlaydi.</translation>

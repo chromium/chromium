@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">ອະນຸຍາດຄຸກກີ້ສຳລັບເວັບໄຊສະເພາະ.</translation>
 <translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
+<translation id="4194328954146351878">ຖາມກ່ອນການອະນຸຍາດໃຫ້ເວັບໄຊເບິ່ງເຫັນ ແລະ ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC (ແນະນຳ)</translation>
 <translation id="4200726100658658164">ເປີດການຕັ້ງຄ່າສະຖານທີ່</translation>
 <translation id="4226663524361240545">ການແຈ້ງເຕືອນອາດຈະເຮັດໃຫ້ອຸປະກອນສັ່ນ</translation>
 <translation id="4259722352634471385">ການນໍາທາງຖືກບລັອກໄວ້: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">ຊຸມເຂົ້າ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ປິດຢູ່ສຳລັບອຸປະກອນນີ້. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">ບລັອກເວັບໄຊບໍ່ໃຫ້ເບິ່ງເຫັນ ແລະ ບໍ່ໃຫ້ປ່ຽນຂໍ້ມູນຢູ່ອຸປະກອນ NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ບລັອກຄຸກກີ້ສຳລັບເວັບໄຊສະເພາະ.</translation>
 <translation id="8959122750345127698">ການນຳທາງແມ່ນບໍ່ສາມາດເຂົ້າເຖິງໄດ້: <ph name="URL" /></translation>

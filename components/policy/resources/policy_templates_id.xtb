@@ -1500,6 +1500,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2650049181907741121">Tindakan yang akan diambil saat pengguna menutup penutupnya</translation>
 <translation id="2658653824183107970">Menggunakan implementasi <ph name="CORS" /> lama, bukan <ph name="CORS" /> baru.</translation>
 <translation id="2660846099862559570">Jangan pernah gunakan proxy</translation>
+<translation id="2664391398878045611">Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia</translation>
 <translation id="2664682171745499686">Menyembunyikan peringatan domain yang mirip di domain</translation>
 <translation id="2665422249821137126">Mengaktifkan kursor besar di layar login</translation>
 <translation id="2672012807430078509">Kontrol yang mengaktifkan NTLM sebagai protokol autentikasi untuk pemasangan SMB</translation>
@@ -1931,6 +1932,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3180671894201217988">Jika kebijakan disetel ke Aktif atau tidak disetel, software pihak ketiga tidak dapat memasukkan kode yang dapat dieksekusi ke dalam proses <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3182503302060513467">Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia</translation>
 <translation id="3184161739683646075">Mengontrol mode DNS-over-HTTPS</translation>
 <translation id="3185009703220253572">sejak versi <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Mengonfigurasi setelan masa berlaku data penjelajahan untuk <ph name="PRODUCT_NAME" />. Kebijakan ini mengizinkan admin mengonfigurasi (per jenis data) kapan data akan dihapus oleh browser. Hal ini berguna bagi pelanggan yang bekerja dengan data pelanggan yang sensitif. Kebijakan akan berpengaruh jika <ph name="SYNC_DISABLED_POLICY_NAME" /> disetel ke benar (true).
@@ -2431,6 +2433,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan fitur Smart Lock Signin.
 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
+<translation id="3794413118360704299">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal.
+
+      Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Lihat <ph name="WEB_APP_ID_REFERENCE_URL" /> untuk petunjuk terkait cara menentukan ID bagi aplikasi web terinstal.
+      Konfigurasi default dapat disetel menggunakan ID khusus <ph name="DEFAULT_SCOPE" />, yang diterapkan ke semua aplikasi web tanpa konfigurasi khusus di kebijakan ini.
+
+      Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat dijalankan selama login OS. Jika kolom ini disetel ke <ph name="BLOCKED" />, aplikasi web tidak akan dijalankan selama login OS dan pengguna tidak akan dapat mengaktifkannya nanti. Jika kolom ini disetel ke <ph name="RUN_WINDOWED" />, aplikasi web akan dijalankan selama login OS dan pengguna tidak akan dapat menonaktifkannya nanti. Jika kolom ini disetel ke <ph name="ALLOWED" />, pengguna akan dapat mengonfigurasi aplikasi web untuk dijalankan saat login OS. Konfigurasi default hanya mengizinkan nilai <ph name="ALLOWED" /> dan <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Alat pilih profil tersedia saat browser dimulai</translation>
 <translation id="3798922329287609568">Jika kebijakan disetel, mode dupleks pencetakan akan dibatasi.
 
@@ -2603,6 +2612,7 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan disetel ke Salah (False), isi otomatis tidak akan menyarankan atau mengisi informasi kartu kredit, juga tidak menyimpan informasi kartu kredit tambahan yang mungkin dikirimkan pengguna saat menjelajahi web.</translation>
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
+<translation id="3994043824457743421">Menampilkan pengumuman slot tengah di Halaman Tab Baru</translation>
 <translation id="3997519162482760140">URL yang akan diberi akses ke perangkat perekam video di halaman masuk SAML</translation>
 <translation id="4004523942550416237">Jangan tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="4007646377576030214"> Perlu diperhatikan bahwa kebijakan ini tidak digunakan lagi di M87 dan dihapus di M89. Sebagai gantinya, gunakan <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> untuk mengonfigurasi peringatan privasi sesi tamu terkelola.
@@ -5449,6 +5459,12 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7434202861148928348">Mengonfigurasi nama domain wajib untuk klien akses jarak jauh</translation>
 <translation id="7443356543619955157">Jika kebijakan disetel, pendorongan konfigurasi jaringan akan diizinkan untuk semua pengguna perangkat <ph name="PRODUCT_OS_NAME" />. Konfigurasi jaringan berupa string berformat JSON, seperti yang didefinisikan oleh format Konfigurasi Jaringan Terbuka.</translation>
 <translation id="7448430478749155471">Mengaktifkan fitur klik untuk diucapkan di layar login</translation>
+<translation id="7456922722153109956">Kebijakan ini mengontrol visibilitas pengumuman slot tengah di Halaman Tab Baru.
+
+      Jika kebijakan disetel ke Aktif, Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia.
+
+      Jika kebijakan disetel ke Nonaktif, Halaman Tab Baru tidak akan menampilkan pengumuman slot tengah meskipun jika tersedia.
+      </translation>
 <translation id="7458437477941640506">Jangan kembalikan ke versi target jika versi OS lebih baru daripada target. Update juga dinonaktifkan.</translation>
 <translation id="7459601923199346224">Mengontrol kebijakan pengguna dan perangkat untuk pengelolaan sertifikat.</translation>
 <translation id="7459633275230216698">Izinkan dialog pemilihan file</translation>

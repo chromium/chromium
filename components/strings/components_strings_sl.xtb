@@ -1228,6 +1228,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
           <ph name="LIST_ITEM" />delodajalci ali šole lahko spremljajo vaše brskanje;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />ponudniki internetnih storitev morda spremljajo spletni promet.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Prezrto, ker lahko pravilnik nastavi samo uporabniški pravilnik za oblak.</translation>
 <translation id="483241715238664915">Vklopi opozorila</translation>
 <translation id="4838327282952368871">Zasanjano</translation>
 <translation id="4840250757394056958">Ogled zgodovine v Chromu</translation>

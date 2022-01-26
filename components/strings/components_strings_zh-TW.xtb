@@ -1219,6 +1219,7 @@
           <ph name="LIST_ITEM" />雇主或學校可以追蹤瀏覽活動<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />網際網路服務供應商可能會監控網路流量<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">由於這項政策只能透過雲端使用者政策加以設定，因此系統予以忽略。</translation>
 <translation id="483241715238664915">開啟警告</translation>
 <translation id="4838327282952368871">夢幻</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>

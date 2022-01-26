@@ -1500,6 +1500,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2650049181907741121">Acción que se realiza cuando el usuario cierra la tapa</translation>
 <translation id="2658653824183107970">Permite usar la implementación antigua de <ph name="CORS" /> en vez de la nueva implementación de <ph name="CORS" />.</translation>
 <translation id="2660846099862559570">No utilizar nunca un proxy</translation>
+<translation id="2664391398878045611">La página Nueva pestaña no mostrará el anuncio del espacio intermedio aunque esté disponible</translation>
 <translation id="2664682171745499686">Eliminar las advertencias de dominio similares en dominios</translation>
 <translation id="2665422249821137126">Habilitar el cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="2672012807430078509">Controla la habilitación de NTLM como protocolo de autenticación para activaciones SMB.</translation>
@@ -1931,6 +1932,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3180671894201217988">Si se habilita la política o no se le asigna ningún valor, se impide que software de terceros pueda insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si se inhabilita la política, el software podrá insertar este tipo de código en los procesos de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3182503302060513467">La página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible</translation>
 <translation id="3184161739683646075">Controla el modo DNS-over-HTTPS</translation>
 <translation id="3185009703220253572">desde la versión <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Configura los ajustes del periodo de vida de los datos de navegación de <ph name="PRODUCT_NAME" />. Esta política permite a los administradores configurar (por tipo de dato) cuándo eliminará los datos el navegador. Es útil para las personas que trabajan con datos sensibles de clientes. Esta política solo tendrá efecto si se le asigna el valor true a <ph name="SYNC_DISABLED_POLICY_NAME" />.
@@ -2432,6 +2434,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si este ajuste está inhabilitado, los usuarios no podrán iniciar sesión con Smart Lock.
 
       Si esta política no se configura, Smart Lock se inhabilita para los usuarios administrados por empresas y se habilita para los no administrados.</translation>
+<translation id="3794413118360704299">Esta política permite que un administrador especifique ajustes para las aplicaciones web instaladas.
+
+      Esta política asociará un ID de aplicación web a su ajuste específico. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver las instrucciones sobre cómo determinar el ID de una aplicación web instalada.
+      Se puede definir una configuración predeterminada mediante el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web para las que no se haya definido una configuración personalizada en esta política.
+
+      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web se puede ejecutar durante el inicio de sesión en el sistema operativo. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el sistema operativo. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Selector de perfil disponible al iniciar</translation>
 <translation id="3798922329287609568">Si se establece esta política, se restringe el modo de impresión por las dos caras.
 
@@ -2604,6 +2613,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se le asigna el valor "False", la función Autocompletar nunca sugerirá ni completará información de tarjetas de crédito, ni tampoco guardará la información adicional de tarjetas de crédito que puedan enviar los usuarios mientras navegan por la Web.</translation>
 <translation id="3989829840000169163">Bloquea los puntos de extensión antiguos del navegador</translation>
+<translation id="3994043824457743421">Mostrar el anuncio del espacio intermedio en la página Nueva pestaña</translation>
 <translation id="3997519162482760140">URLs a las que los dispositivos de captura de vídeo podrán acceder en las páginas de inicio de sesión con SAML</translation>
 <translation id="4004523942550416237">No mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="4007646377576030214"> Ten en cuenta que esta política está obsoleta en M87 y se ha retirado en M89. Usa <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar las advertencias de privacidad para las sesiones de invitado gestionadas.
@@ -5450,6 +5460,12 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7434202861148928348">Configurar los nombres de dominio requeridos para los clientes de acceso remoto</translation>
 <translation id="7443356543619955157">Establecer esta política permite aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una cadena escrita en formato JSON, tal como se define en la especificación Open Network Configuration.</translation>
 <translation id="7448430478749155471">Habilita la función Enunciar selección en la pantalla de inicio de sesión</translation>
+<translation id="7456922722153109956">Esta política controla la visibilidad del anuncio del espacio intermedio en la página Nueva pestaña.
+
+      Si se habilita esta política, la página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible.
+
+      Si se inhabilita esta política, la página Nueva pestaña no mostrará el anuncio del espacio intermedio aunque esté disponible.
+      </translation>
 <translation id="7458437477941640506">No vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. También inhabilita las actualizaciones.</translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
@@ -6541,9 +6557,9 @@ OverrideSecurityRestrictionsOnInsecureOrigin. Si ambas políticas están present
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="8703488928438047864">Informar sobre el estado de la placa</translation>
 <translation id="8704831857353097849">Lista de complementos inhabilitados</translation>
-<translation id="8705895771006864851">Si se le asigna el valor "Habilitada" a esta política, se proporcionará a los usuarios la posibilidad de traducir mediante una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" />, si procede, y una opción para traducir en el menú contextual que aparece al hacer clic con el botón derecho. Si se le asigna el valor "Inhabilitada", se desactivarán todas las funciones de traducción integradas.
+<translation id="8705895771006864851">Si se le asigna el valor "True" a esta política, se proporcionará a los usuarios la posibilidad de traducir mediante una barra de herramientas de traducción integrada en <ph name="PRODUCT_NAME" />, si procede, y una opción para traducir en el menú contextual que aparece al hacer clic con el botón derecho. Si se le asigna el valor "Inhabilitada", se desactivarán todas las funciones de traducción integradas.
 
-      Si se configura la política, los usuarios no podrán cambiar esta función. Si no se le asigna ningún valor, podrán cambiar esta opción.</translation>
+Si se configura la política, los usuarios no podrán cambiar esta función. Si no se le asigna ningún valor, podrán cambiar esta opción.</translation>
 <translation id="8707790573162457301">Ejecuta una limpieza de disco automática al iniciar sesión</translation>
 <translation id="8713535263782304771">Inhabilitar Navegación segura</translation>
 <translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>

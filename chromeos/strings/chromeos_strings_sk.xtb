@@ -324,7 +324,6 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5423849171846380976">Aktivované</translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Farebne</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Prehliadať ako hosť</translation>
 <translation id="54609108002486618">Spravovaný</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zostáva {0} pokus}few{Zostávajú {0} pokusy}many{{0} attempts left}other{Zostáva {0} pokusov}}</translation>

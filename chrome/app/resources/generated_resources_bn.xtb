@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">বর্তমান আইকন</translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
+<translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
 <translation id="1110155001042129815">অপেক্ষা করুন</translation>
 <translation id="1110965959145884739">এই ডিভাইসে কোন ভাষা ইনস্টল করতে হবে তা বেছে নিন। ডিস্ক স্টোরেজে খালি জায়গা সেভ করার জন্য ব্যবহারকারীদের মধ্যে ভাষার ফাইল শেয়ার করা হয়। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">প্রোজেক্টর</translation>
@@ -512,6 +513,7 @@
 <translation id="1521442365706402292">শংসাপত্রগুলি পরিচালনা করুন</translation>
 <translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="152234381334907219">কখনও সংরক্ষিত হয়নি</translation>
+<translation id="1523279371236772909">গত মাসে দেখা হয়েছে</translation>
 <translation id="1523978563989812243">টেক্সট-টু-স্পিচ ইঞ্জিন</translation>
 <translation id="1524430321211440688">কীবোর্ড</translation>
 <translation id="1524563461097350801">না থাক</translation>
@@ -1254,6 +1256,7 @@
 <translation id="2232876851878324699">ফাইলটিতে একটি সার্টিফিকেট রয়েছে, এটি আমদানি করা হয়নি:</translation>
 <translation id="2233502537820838181">&amp;আরো তথ্য</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
+<translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
@@ -2896,7 +2899,6 @@
 <translation id="3888586133700543064">এই তথ্য আপনার Assistant সংক্রান্ত সমস্যা আমাদের আরও ভালভাবে বুঝতে সাহায্য করে। এটি ৯০ দিন পর্যন্ত সেভ করা থাকে এবং অ্যাক্সেস যথাযথ ইঞ্জিনিয়ারিং এবং মতামত টিমের মধ্যে সীমাবদ্ধ থাকে।</translation>
 <translation id="3888900458694486810">সাইড সার্চ বন্ধ করুন</translation>
 <translation id="3890064827463908288">ওয়াই-ফাই সিঙ্ক ব্যবহার করতে Chrome সিঙ্ক চালু করুন</translation>
-<translation id="3892414795099177503">OpenVPN / L2TP যোগ করুন...</translation>
 <translation id="389313931326656921">“পরবর্তী” বিকল্পের জন্য সুইচ অ্যাসাইন করুন</translation>
 <translation id="3893295674388762059">ডেটা মুছে ফেলতে, সব ছদ্মবেশী উইন্ডো বন্ধ করুন</translation>
 <translation id="3893536212201235195">আপনার অ্যাক্সেসিবিলিটি সেটিংস পড়ুন ও পরিবর্তন করুন</translation>
@@ -3109,6 +3111,7 @@
 <translation id="4095264805865317199">সেলুলার চালু করার UI খুলুন</translation>
 <translation id="4095507791297118304">প্রাথমিক প্রদর্শন</translation>
 <translation id="4096508467498758490">ডেভেলপার মোড এক্সটেনশন বন্ধ করুন</translation>
+<translation id="4096797685681362305">গত সপ্তাহে দেখা হয়েছে</translation>
 <translation id="4097406557126260163">অ্যাপ ও এক্সটেনশন</translation>
 <translation id="409742781329613461">Chrome ব্যবহারের জন্য পরামর্শ</translation>
 <translation id="4097560579602855702">Google-এ সার্চ করুন</translation>
@@ -3666,6 +3669,7 @@
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
 <translation id="4699357559218762027">(স্বয়ংক্রিয়ভাবে- লঞ্চ হয়েছে)</translation>
 <translation id="4701025263201366865">অভিভাবকের সাইন-ইন</translation>
+<translation id="4701335814944566468">গতকাল দেখা হয়েছে</translation>
 <translation id="4708794300267213770">নিদ্রা মোড থেকে জাগার সময় লক স্ক্রিন দেখান</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> থেকে প্রস্থান করুন</translation>
 <translation id="4711638718396952945">সেটিংস পুনরুদ্ধার করুন</translation>
@@ -3733,6 +3737,7 @@
 <translation id="479536056609751218">Webpage, HTML Only</translation>
 <translation id="4796142525425001238">সবসময় ফিরিয়ে আনুন</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ব্লুটুথ লগ<ph name="END_LINK" /> যোগ করুন (Google ইন্টারনাল)</translation>
+<translation id="479863874072008121">ডিভাইস ম্যানেজ করুন</translation>
 <translation id="4800839971935185386">নাম এবং আইকনের আপডেট দেখে নিন</translation>
 <translation id="4801448226354548035">অ্যাকাউন্টগুলি লুকান</translation>
 <translation id="4801512016965057443">মোবাইল ডেটা রোমিংয়ের অনুমতি দিন</translation>
@@ -4985,7 +4990,6 @@
 <translation id="6112931163620622315">আপনার ফোনে দেখুন</translation>
 <translation id="6113434369102685411">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চারের জন্য আপনার ডিফল্ট সার্চ ইঞ্জিন সেট করুন</translation>
 <translation id="6113942107547980621">Smart Lock ব্যবহার করতে, আপনার ফোনের প্রাথমিক ব্যবহারকারীর প্রোফাইলে পাল্টান</translation>
-<translation id="611684075852771314">এই লগগুলি আমার ফাইল হিসেবে সেভ করা হয়েছে</translation>
 <translation id="6116921718742659598">ভাষা এবং ইনপুট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6119927814891883061">ডিভাইসের নাম <ph name="DEVICE_NAME" /> দিন</translation>
 <translation id="6120205520491252677">স্টার্ট স্ক্রীনে এই পৃষ্ঠাটিকে পিন করুন...</translation>
@@ -5978,6 +5982,7 @@
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7149839598364933473">এই ডিভাইসকে <ph name="DEVICE_OS" /> ডিভাইসে রূপান্তরিত করুন।</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
+<translation id="7152478047064750137">এই এক্সটেনশনটির জন্য কোনও বিশেষ অনুমতির প্রয়োজন নেই</translation>
 <translation id="7154130902455071009">আপনার সূচনা পৃষ্ঠাকে এতে পরিবর্তন করুন: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">ক্যামেরা বা ফাইল থেকে বিদ্যমান ফটো</translation>
 <translation id="7163202347044721291">অ্যাক্টিভেশন কোড যাচাই করা হচ্ছে...</translation>
@@ -6182,7 +6187,6 @@
 <translation id="7384687527486377545">কীবোর্ড অটো-রিপিট</translation>
 <translation id="7385490373498027129">এই <ph name="DEVICE_TYPE" /> থেকে সব ব্যবহারকারীর সমস্ত ফাইল ও স্থানীয় ডেটা স্থায়ীভাবে মুছে ফেলা হবে।</translation>
 <translation id="7385854874724088939">প্রিন্টের চেষ্টা করার সময় কোন সমস্যা হয়েছে৷  অনুগ্রহ করে আপনার প্রিন্টার চেক করে আবার চেষ্টা করুন৷</translation>
-<translation id="7385896526023870365">এই এক্সটেনশনে অতিরিক্ত কোনও সাইটের অ্যাক্সেস নেই।</translation>
 <translation id="7387273928653486359">ঠিকঠাক</translation>
 <translation id="7387951778417998929">ডিফল্ট সার্চ ইঞ্জিনের পরিবর্তে অন্য কোনও একটি ব্যবহার করতে, অ্যাড্রেস বারে সেটির শর্টকাট টাইপ করে আপনার পছন্দের কীবোর্ড শর্টকাট প্রেস করুন। এছাড়াও, আপনি এখান থেকে আপনার ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="7388209873137778229">যেসব ডিভাইসে কাজ করে শুধু সেগুলিই দেখানো হচ্ছে।</translation>
@@ -6462,6 +6466,7 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7659154729610375585">যাই হোক, ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসতে চান?</translation>
 <translation id="7659297516559011665">শুধুমাত্র এই ডিভাইসে সেভ করা পাসওয়ার্ড</translation>
+<translation id="7659336857671800422">গোপনীয়তা সংক্রান্ত গাইডে যান</translation>
 <translation id="7659584679870740384">আপনার কাছে এই ডিভাইস ব্যবহারের অনুমতি নেই৷ অনুগ্রহ করে সাইন-ইন করার অনুমতির জন্য অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন৷</translation>
 <translation id="7661259717474717992">সাইটগুলিকে কুকি ডেটা পড়ার ও সংরক্ষণ করার মঞ্জুরি দিন</translation>
 <translation id="7661451191293163002">একটি নিবন্ধীকরণ সার্টিফিকেট পাওয়া যায়নি।</translation>
@@ -7984,6 +7989,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> এ খুঁজুন</translation>
 <translation id="9201023452444595544">যেকোনও অফলাইন ডেটা মুছে ফেলা যাবে</translation>
+<translation id="9201117361710210082">আগে দেখা হয়েছে</translation>
 <translation id="9201220332032049474">স্ক্রিন লক-এর বিকল্পগুলি</translation>
 <translation id="9201842707396338580">কিছু সমস্যা হয়েছে। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">&amp;প্রোফাইলিং সক্ষমিত</translation>

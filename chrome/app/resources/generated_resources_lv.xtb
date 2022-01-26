@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Pašreizējā ikona</translation>
 <translation id="1103523840287552314">Vienmēr tulkot <ph name="LANGUAGE" /> valodas saturu</translation>
 <translation id="1108600514891325577">&amp;Apturēt</translation>
+<translation id="1108938384783527433">Vēstures sinhronizēšana</translation>
 <translation id="1110155001042129815">Uzgaidiet</translation>
 <translation id="1110965959145884739">Izvēlieties, kuras valodas instalēt šajā ierīcē. Lai ietaupītu vietu diskā, valodu failus var izmantot visi lietotāji. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2880,7 +2881,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3888586133700543064">Šī informācija palīdz mums labāk izprast jūsu problēmu ar Asistentu. Informācija tiek glabāta ne ilgāk par 90 dienām, un piekļuve ir pieejama tikai attiecīgajām inženieru un atsauksmju komandām.</translation>
 <translation id="3888900458694486810">Aizvērt sānu meklēšanas joslu</translation>
 <translation id="3890064827463908288">Lai izmantotu Wi-Fi sinhronizāciju, ieslēdziet Chrome sinhronizāciju</translation>
-<translation id="3892414795099177503">Pievienot OpenVPN/otrā slāņa tunelēšanas protokolu...</translation>
 <translation id="389313931326656921">Slēdža piešķiršanai darbībai “Nākamais”</translation>
 <translation id="3893295674388762059">Lai notīrītu datus, aizveriet visus inkognito režīma logus</translation>
 <translation id="3893536212201235195">Skatīt un mainīt jūsu pieejamības iestatījumus</translation>
@@ -4965,7 +4965,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6112931163620622315">Pārbaudiet savu tālruni</translation>
 <translation id="6113434369102685411">Iestatiet noklusējuma meklētājprogrammu pārlūkam Chrome un <ph name="DEVICE_TYPE" /> palaidējam.</translation>
 <translation id="6113942107547980621">Lai izmantotu Smart Lock, pārslēdzieties uz tālruņa primāro lietotāja profilu</translation>
-<translation id="611684075852771314">Šie žurnāli ir saglabāti mapē “Mani faili” kā</translation>
 <translation id="6116921718742659598">Mainīt valodas un ievades iestatījumus</translation>
 <translation id="6119927814891883061">Piešķirt ierīcei nosaukumu <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Piespraust šo lapu sākuma ekrānam...</translation>
@@ -5956,6 +5955,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="7149839598364933473">Pārveidojiet šo ierīci par <ph name="DEVICE_OS" /> ierīci.</translation>
 <translation id="7149893636342594995">Pēdējās 24 stundas</translation>
+<translation id="7152478047064750137">Šim paplašinājumam nav nepieciešamas īpašas atļaujas.</translation>
 <translation id="7154130902455071009">Mainiet savu sākumlapu uz šo: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Esošs fotoattēls no kameras vai faila</translation>
 <translation id="7163202347044721291">Notiek aktivizācijas koda verifikācija…</translation>
@@ -6159,7 +6159,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7384687527486377545">Tastatūras darbību automātiska atkārtošana</translation>
 <translation id="7385490373498027129">No šīs ierīces (<ph name="DEVICE_TYPE" />) tiks pilnīgi un neatgriezeniski izdzēsti visu lietotāju faili un lokālie dati.</translation>
 <translation id="7385854874724088939">Mēģinot drukāt, radās kļūda. Lūdzu, pārbaudiet printeri un mēģiniet vēlreiz.</translation>
-<translation id="7385896526023870365">Šim paplašinājumam nav papildu piekļuves vietnēm.</translation>
 <translation id="7387273928653486359">Pieņemama</translation>
 <translation id="7387951778417998929">Lai izmantotu meklētājprogrammu, kas nav noklusējuma meklētājprogramma, ievadiet tās saīsni adreses joslā un nospiediet izvēlēto īsinājumtaustiņu Šeit varat arī nomainīt noklusējuma meklētājprogrammu.</translation>
 <translation id="7388209873137778229">Tiek rādītas tikai atbalstītās ierīces.</translation>

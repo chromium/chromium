@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Pictograma actuală</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Oprește</translation>
+<translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1110155001042129815">Așteaptă</translation>
 <translation id="1110965959145884739">Alege limbile pe care dorești să le instalezi pe dispozitiv. Fișierele de limbă sunt trimise utilizatorilor pentru a economisi spațiu pe disc. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2884,7 +2885,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3888586133700543064">Aceste informații ne ajută să înțelegem mai bine problema cu Asistentul. Informațiile sunt stocate timp de cel mult 90 de zile, iar accesul la ele este restricționat la echipele de ingineri și de feedback adecvate.</translation>
 <translation id="3888900458694486810">Închide căutarea laterală</translation>
 <translation id="3890064827463908288">Activează Sincronizarea Chrome pentru a folosi Sincronizarea Wi-Fi</translation>
-<translation id="3892414795099177503">Adaugă OpenVPN/L2TP…</translation>
 <translation id="389313931326656921">Atribuie un comutator pentru Înainte</translation>
 <translation id="3893295674388762059">Pentru a șterge date, închide toate ferestrele incognito</translation>
 <translation id="3893536212201235195">Citește și modifică setările de accesibilitate</translation>
@@ -4975,7 +4975,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6112931163620622315">Verifică pe telefon</translation>
 <translation id="6113434369102685411">Setează motorul de căutare prestabilit pentru browserul Chrome și lansatorul pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Pentru a folosi Smart Lock, comută la profilul de utilizator principal de pe telefon</translation>
-<translation id="611684075852771314">Aceste jurnale au fost salvate în Fișierele mele ca</translation>
 <translation id="6116921718742659598">Schimbați setările pentru limbă și introducere de text</translation>
 <translation id="6119927814891883061">Denumește dispozitivul <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fixați această pagină pe ecranul de pornire...</translation>
@@ -5968,6 +5967,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="7149839598364933473">Transformă dispozitivul într-un dispozitiv <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
+<translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
 <translation id="7154130902455071009">Schimbați pagina de start la: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Fotografie existentă din camera foto sau din fișier</translation>
 <translation id="7163202347044721291">Este verificat codul de activare...</translation>
@@ -6172,7 +6172,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7384687527486377545">Repetarea automată de la tastatură</translation>
 <translation id="7385490373498027129">Toate fișierele și datele locale pentru utilizatorii de pe acest <ph name="DEVICE_TYPE" /> vor fi șterse definitiv.</translation>
 <translation id="7385854874724088939">A apărut o eroare la printare. Verifică imprimanta și încearcă din nou.</translation>
-<translation id="7385896526023870365">Această extensie nu are acces suplimentar la site.</translation>
 <translation id="7387273928653486359">Acceptabilă</translation>
 <translation id="7387951778417998929">Pentru a folosi alt motor de căutare decât cel prestabilit, introdu comanda rapidă respectivă în bara de adrese, urmată de comanda rapidă de la tastatură preferată. Poți să schimbi motorul de căutare prestabilit și de aici.</translation>
 <translation id="7388209873137778229">Se afișează numai dispozitivele compatibile.</translation>

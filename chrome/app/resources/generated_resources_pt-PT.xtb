@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Ícone atual</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Parar</translation>
+<translation id="1108938384783527433">Sincronização do histórico</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Escolha que idiomas pretende instalar neste dispositivo. Os ficheiros de idioma são partilhados entre utilizadores para poupar espaço em disco. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projetor</translation>
@@ -1691,6 +1692,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2684004000387153598">Para continuar, clique em OK e, de seguida, clique em Adicionar pessoa para criar um novo perfil para o seu endereço de email.</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="2687407218262674387">Termos de Utilização do Google</translation>
+<translation id="2687621393791886981">Perguntar depois</translation>
 <translation id="2688196195245426394">Erro ao registar o dispositivo no servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Mostrar opções de idioma</translation>
 <translation id="2691385045260836588">Modelo</translation>
@@ -2883,7 +2885,6 @@ Pretende pará-lo?</translation>
 <translation id="3888586133700543064">Estas informações ajudam-nos a compreender melhor o seu problema com o Assistente. Ficam armazenadas durante, no máximo, 90 dias e o acesso está restrito às equipas de engenharia e feedback dedicadas.</translation>
 <translation id="3888900458694486810">Fechar pesquisa lateral</translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
-<translation id="3892414795099177503">Adicionar OpenVPN/L2TP...</translation>
 <translation id="389313931326656921">Atribua um interruptor para "Seguinte"</translation>
 <translation id="3893295674388762059">Para limpar os dados, feche todas as janelas de navegação anónima</translation>
 <translation id="3893536212201235195">Ler e alterar as suas definições de acessibilidade</translation>
@@ -4972,7 +4973,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6112931163620622315">Verificar o seu telemóvel</translation>
 <translation id="6113434369102685411">Selecione o motor de pesquisa predefinido para o navegador Chrome e o Launcher <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Para utilizar o Smart Lock, mude para o perfil de utilizador principal no seu telemóvel</translation>
-<translation id="611684075852771314">Estes registos foram guardados em Os meus ficheiros como</translation>
 <translation id="6116921718742659598">Alterar idioma e definições de introdução</translation>
 <translation id="6119927814891883061">Atribuir o nome <ph name="DEVICE_NAME" /> ao dispositivo</translation>
 <translation id="6120205520491252677">Fixar esta página ao ecrã Inicial...</translation>
@@ -5965,6 +5965,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7163202347044721291">A validar o código de ativação…</translation>
@@ -6169,7 +6170,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7384687527486377545">Repetição automática do teclado</translation>
 <translation id="7385490373498027129">Todos os ficheiros e dados locais para todos os utilizadores neste dispositivo <ph name="DEVICE_TYPE" /> serão permanentemente eliminados.</translation>
 <translation id="7385854874724088939">Ocorreu um erro ao tentar imprimir. Verifique a impressora e tente novamente.</translation>
-<translation id="7385896526023870365">Esta extensão não tem acesso adicional a sites.</translation>
 <translation id="7387273928653486359">Aceitável</translation>
 <translation id="7387951778417998929">Para utilizar outro motor de pesquisa que não seja o predefinido, introduza o respetivo atalho na barra de endereço, seguido do seu atalho de teclado favorito. Também pode alterar o seu motor de pesquisa predefinido aqui.</translation>
 <translation id="7388209873137778229">São apresentados apenas os dispositivos suportados.</translation>
@@ -7208,6 +7208,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Permitiu <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Perguntar primeiro (recomendado)</translation>
+<translation id="8414249071344507766">Memórias ocultas durante dois dias</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (caixa)</translation>
 <translation id="8417548266957501132">Palavra-passe do Pai ou Mãe</translation>
 <translation id="8418445294933751433">Mo&amp;strar como separador</translation>

@@ -172,6 +172,7 @@
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="3583278742022654445">सिग्नलची क्षमता कमकुवत आहे. वाय-फाय सिग्नल स्रोताच्या जवळ जाण्याचा प्रयत्न करा.</translation>
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
+<translation id="3603829704940252505">अवतार</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
@@ -324,7 +325,6 @@
 <translation id="5423849171846380976">सक्रिय</translation>
 <translation id="5430931332414098647">झटपट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">अतिथी म्हणून ब्राउझ करा</translation>
 <translation id="54609108002486618">व्यवस्‍थापित</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} प्रयत्न शिल्लक}other{{0} प्रयत्न शिल्लक}}</translation>
@@ -423,6 +423,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> वर परत या</translation>
 <translation id="6910312834584889076">स्कॅनरचे कव्हर उघडे आहे. कव्हर बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6911383237894364323">मीडिया सर्व्हरशी कनेक्ट करता आले नाही</translation>
+<translation id="6935486296377631201">स्क्रीनसेव्हर</translation>
 <translation id="6957231940976260713">सेवेचे नाव</translation>
 <translation id="6961170852793647506">सुरुवात करण्यासाठी, तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>

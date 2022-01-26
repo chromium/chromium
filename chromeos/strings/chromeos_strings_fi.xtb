@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Aseta toinen sivu skanneriin</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2878387241690264070">Tyhjentynyt <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekunnissa.</translation>
+<translation id="291142119251986300">Sopimattomat osat</translation>
+<translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="3008341117444806826">PÄIVITÄ</translation>
 <translation id="3009958530611748826">Valitse tallennuskansio</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -322,7 +324,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5423849171846380976">Aktivoitu</translation>
 <translation id="5430931332414098647">Yhteyden pikajakaminen</translation>
 <translation id="5431318178759467895">Väri</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Selaa vierailijana</translation>
 <translation id="54609108002486618">Ylläpidetty</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} yritys jäljellä}other{{0} yritystä jäljellä}}</translation>

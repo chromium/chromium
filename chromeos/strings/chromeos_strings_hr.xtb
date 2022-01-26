@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Postavite još jednu stranicu na skener</translation>
 <translation id="2872961005593481000">Isključi</translation>
 <translation id="2878387241690264070">Ispražnjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
+<translation id="291142119251986300">Nekvalificirane komponente</translation>
+<translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -323,7 +325,6 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431318178759467895">Boja</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Pregledavaj kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je {0} pokušaj.}one{Preostao je {0} pokušaj.}few{Preostala su {0} pokušaja.}other{Preostalo je {0} pokušaja.}}</translation>

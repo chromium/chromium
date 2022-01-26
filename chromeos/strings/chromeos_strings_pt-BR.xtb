@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Coloque outra página no scanner</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
+<translation id="291142119251986300">Componentes não qualificados</translation>
+<translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o código QR</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione em que pasta quer salvar</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -323,7 +325,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="5423849171846380976">Ativado</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
 <translation id="5431318178759467895">Colorido</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Navegar como visitante</translation>
 <translation id="54609108002486618">Gerenciado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante}one{{0} tentativa restante}other{{0} tentativas restantes}}</translation>

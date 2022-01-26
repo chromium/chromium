@@ -1498,6 +1498,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
+<translation id="2664391398878045611">La página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible</translation>
 <translation id="2664682171745499686">Elimina advertencias de dominios similares en dominios</translation>
 <translation id="2665422249821137126">Habilita el cursor grande en la pantalla de acceso</translation>
 <translation id="2672012807430078509">Controlar el uso de NTLM como protocolo de autenticación para las activaciones de archivos compartidos SMB</translation>
@@ -1927,6 +1928,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3180671894201217988">Si habilitas la política o no la estableces, el software de terceros no podrá insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
 
       Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3182503302060513467">La página Nueva pestaña mostrará la notificación del espacio del medio (si está disponible)</translation>
 <translation id="3184161739683646075">Controla el modo de DNS sobre HTTPS</translation>
 <translation id="3185009703220253572">desde la versión <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Establece la configuración de la duración de los datos de navegación para <ph name="PRODUCT_NAME" />. Esta política les permite a los administradores configurar (por tipo de datos) cuándo el navegador borra los datos. Esto es útil para los clientes que trabajan con datos sensibles de clientes. La política solo tendrá efecto si se establece <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera.
@@ -2424,6 +2426,13 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si se inhabilita esta configuración, los usuarios no podrán utilizar el acceso mediante Smart Lock.
 
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
+<translation id="3794413118360704299">Esta política permite que un administrador especifique la configuración para las aplicaciones web instaladas.
+
+      Esta política asigna una ID de aplicación web a su parámetro de configuración específico. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> para obtener instrucciones sobre cómo determinar la ID de una aplicación web instalada.
+      Puedes establecer un parámetro de configuración determinado con la ID especial <ph name="DEFAULT_SCOPE" />, que aplica a todas las aplicaciones web y no tiene una configuración personalizada en su política.
+
+      El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si se puede ejecutar una aplicación web durante el acceso al SO. Si este campo se establece como <ph name="BLOCKED" />, no se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si este campo se establece como <ph name="RUN_WINDOWED" />, se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si este campo se establece como <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el acceso al SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Selector de perfiles disponible en el inicio</translation>
 <translation id="3798922329287609568">Si estableces la política, se restringirá el modo de impresión doble.
 
@@ -2596,6 +2605,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Si la estableces como falsa, la función Autocompletar nunca sugerirá ni completará información de las tarjetas de crédito, ni guardará información adicional relacionada que envíen los usuarios cuando navegan por la Web.</translation>
 <translation id="3989829840000169163">Bloquear los puntos de extensiones heredados del navegador</translation>
+<translation id="3994043824457743421">Mostrar la notificación del espacio del medio en la página Nueva pestaña</translation>
 <translation id="3997519162482760140">URL a las que se les concede acceso a los dispositivos de captura de video en las páginas de acceso de SAML</translation>
 <translation id="4004523942550416237">No mostrar el flujo de Voice Match de Asistente de Google durante la configuración inicial</translation>
 <translation id="4007646377576030214"> Ten en cuenta que esta política dejará de estar disponible en la versión M87 y se quitará en la versión M89. En su lugar, utiliza <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar las advertencias de privacidad de las sesiones de invitado administradas.
@@ -5435,6 +5445,12 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7434202861148928348">Configurar los nombres de dominio obligatorios para clientes de acceso remoto</translation>
 <translation id="7443356543619955157">Si estableces la política, se podrá aplicar la configuración de red a todos los usuarios de un dispositivo <ph name="PRODUCT_OS_NAME" />. La configuración de red es una string en formato JSON, como la define el formato Open Network Configuration.</translation>
 <translation id="7448430478749155471">Habilita la función de Seleccionar para pronunciar en la pantalla de acceso</translation>
+<translation id="7456922722153109956">Esta política controla la visibilidad de la notificación del espacio del medio en la página Nueva pestaña.
+
+      Si habilitas la política, la página Nueva pestaña mostrará la notificación del espacio del medio (si está disponible).
+
+      Si la inhabilitas, la página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible.
+      </translation>
 <translation id="7458437477941640506">No implementes una reversión a la versión objetivo si la versión del sistema operativo es más reciente que la objetivo. Las actualizaciones también se inhabilitan.</translation>
 <translation id="7459601923199346224">Controla las políticas de dispositivo y usuario para la administración de certificados.</translation>
 <translation id="7459633275230216698">Permite los diálogos de selección de archivos</translation>

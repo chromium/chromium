@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Ընթացիկ պատկերակ</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
 <translation id="1108600514891325577">&amp;Դադարեցնել</translation>
+<translation id="1108938384783527433">Պատմության համաժամացում</translation>
 <translation id="1110155001042129815">Սպասել</translation>
 <translation id="1110965959145884739">Ընտրեք, թե որ լեզուները տեղադրել այս սարքում։ Սկավառակի վրա տարածքը խնայելու համար լեզվի փաթեթները հասանելի են բոլոր օգտատերերին։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -1024,6 +1025,7 @@
 <translation id="2022395138980869975">Միացնել/անջատել կողային որոնումը</translation>
 <translation id="2023167225947895179">PIN կոդը հեշտ է կռահել</translation>
 <translation id="202352106777823113">Ներբեռնումը չափից երկար էր տևում, ուստի դադարեցվեց ցանցի կողմից:</translation>
+<translation id="2024195579772565064">Որոնողական համակարգի ջնջում</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" />-ը խափանվել է: Ընդլայնումը վերաբեռնելու համար սեղմեք այս փուչիկի վրա:</translation>
 <translation id="2028449514182362831">Գործառույթները, որոնց համար պահանջվում են շարժման տվիչները, չեն աշխատի</translation>
 <translation id="202918510990975568">Անվտանգությունն ու հաշվի մուտքը կարգավորելու համար մուտքագրեք ձեր գաղտնաբառը</translation>
@@ -1165,6 +1167,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Ավելացնել Wi-Fi…</translation>
 <translation id="2162155940152307086">Համաժամացումը կսկսվի, երբ դուրս գաք համաժամացման կարգավորումներից</translation>
+<translation id="2162926944953615670">Հասանելի eSIM պրոֆիլներ չկան։</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> սարք մուտք գործելու համար միացեք համացանցին:</translation>
 <translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
@@ -1857,6 +1860,7 @@
 <translation id="2828650939514476812">Միացեք Wi-Fi ցանցի</translation>
 <translation id="2831430281393059038">Սարքն աջակցվում է</translation>
 <translation id="2832124733806557606">Ձեր երեխան կարող է մտնել հաշիվ կամ ապակողպել սարքը PIN կոդի միջոցով։</translation>
+<translation id="2835177225987815960">Սկանավորման ձեր ընթացիկ կարգավորումները (այդ թվում՝ նշանակված փոխանջատիչները և ավտոմատ սկանավորման արագության պարամետրերը) կզրոյացվեն։</translation>
 <translation id="2835547721736623118">Խոսքի ճանաչման ծառայություն</translation>
 <translation id="2836269494620652131">Խափանում</translation>
 <translation id="2836635946302913370">Այս օգտանունով մուտքը կասեցվել է ձեր ադմինիստրատորի կողմից:</translation>
@@ -2881,7 +2885,6 @@
 <translation id="3888586133700543064">Այս տեղեկությունները կօգնեն ավելի լավ հասկանալ ձեր Օգնականի հետ կապված խնդրի էությունը։ Տեղեկությունները պահվում են մինչև 90 օր և հասանելի են միայն ինժեներների և օգնության թիմերին։</translation>
 <translation id="3888900458694486810">Փակել կողային որոնումը</translation>
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
-<translation id="3892414795099177503">Ավելացնել OpenVPN կամ L2TP...</translation>
 <translation id="389313931326656921">Նշանակեք փոխանջատիչ «Առաջ» գործողության համար</translation>
 <translation id="3893295674388762059">Տվյալները ջնջելու համար փակեք բոլոր ինկոգնիտո պատուհանները</translation>
 <translation id="3893536212201235195">Կարդալ և փոփոխել ձեր մատչելիության կարգավորումները</translation>
@@ -3503,6 +3506,7 @@
 <translation id="4547659257713117923">Այլ սարքերից ներդիրներ չկան</translation>
 <translation id="4547672827276975204">Ավտոմատ որոշում</translation>
 <translation id="4549791035683739768">Անվտանգության բանալու վրա պահված մատնահետքեր չկան</translation>
+<translation id="4550926046134589611">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" /> հավելվածում։</translation>
 <translation id="4551763574344810652">Հետարկելու համար սեղմեք <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Սարքի լեզուն փոխելու համար վերագործարկեք Chromebook-ը։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Քաշել տարածքը և որոնել ըստ պատկերների <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
@@ -3793,6 +3797,7 @@
 <translation id="48704129375571883">Ավելացնել լրացուցիչ գործառույթներ</translation>
 <translation id="4870758487381879312">Մուտքագրեք ադմինիստրատորի տրամադրած գաղտնաբառը՝ կազմաձևման մասին տեղեկությունները տեսնելու համար</translation>
 <translation id="4870903493621965035">Զուգակցված սարքեր չկան</translation>
+<translation id="4870995365819149457">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ու ևս 1 հավելվածում։</translation>
 <translation id="4871308555310586478">Chrome Web Store-ից չէ:</translation>
 <translation id="4871322859485617074">PIN կոդում անվավեր նիշեր կան</translation>
 <translation id="4871370605780490696">Ավելացնել էջանիշ</translation>
@@ -4831,6 +4836,7 @@
 <translation id="5969728632630673489">Ստեղնային դյուրանցման ծանուցումը փակվեց</translation>
 <translation id="5971037678316050792">Վերահսկել Bluetooth ադապտերի վիճակը և զուգավորումը</translation>
 <translation id="597235323114979258">Տեսնել այլ նպատակակետեր</translation>
+<translation id="5972543790327947908">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> կամ <ph name="APP_NAME_3" /> հավելվածում։</translation>
 <translation id="5972666587303800813">Առանց գործառույթի ծառայություն</translation>
 <translation id="5972708806901999743">Տեղափոխել վերև</translation>
 <translation id="5972826969634861500">Մեկնարկել <ph name="PRODUCT_NAME" />-ը</translation>
@@ -4972,7 +4978,6 @@
 <translation id="6112931163620622315">Ստուգեք հեռախոսը</translation>
 <translation id="6113434369102685411">Ընտրեք կանխադրված որոնողական համակարգ Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի համար</translation>
 <translation id="6113942107547980621">Smart Lock-ն օգտագործելու համար ձեր հեռախոսում անցեք հիմնական օգտատիրոջ պրոֆիլ</translation>
-<translation id="611684075852771314">Այս մատյանները պահված են «Իմ ֆայլերը» պանակում որպես</translation>
 <translation id="6116921718742659598">Փոխել լեզուն և ներածման կարգավորումները</translation>
 <translation id="6119927814891883061"><ph name="DEVICE_NAME" /> սարքի անվան փոփոխություն</translation>
 <translation id="6120205520491252677">Ամրացնել այս էջը մեկնարկի էկրանին…</translation>
@@ -5202,6 +5207,7 @@
 <translation id="6355789186038748882">Սա փորձնական դիտարկիչ է (ալֆա տարբերակ)։ Որոշ գործառույթներ կարող են բացակայել կամ թերի լինել։ Խնդիրների մասին կարող եք հաղորդել՝ սեղմելով Օգնություն &gt; «Հաղորդել խնդրի մասին»։</translation>
 <translation id="635609604405270300">Սարքը մի՛ անջատեք</translation>
 <translation id="63566973648609420">Միայն ձեր անցաբառն ունեցող օգտատերը կարող է կարդալ ձեր գաղտնագրված տվյալները: Անցաբառը չի ուղարկվում Google-ին և չի պահվում դրա կողմից: Անցաբառը մոռանալու դեպքում ձեզ անհրաժեշտ կլինի <ph name="BEGIN_LINK" />վերակայել համաժամացումը<ph name="END_LINK" />:</translation>
+<translation id="6357305427698525450">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" /> կամ <ph name="APP_NAME_2" /> հավելվածում։</translation>
 <translation id="6358884629796491903">Վիշապ</translation>
 <translation id="6359706544163531585">Անջատել բաց թեման</translation>
 <translation id="6361850914223837199">Սխալի մանրամասներ՝</translation>
@@ -5720,6 +5726,7 @@
 <translation id="6900284862687837908">Ետին պլանի հավելված՝ <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Բարելավված պաշտպանություն</translation>
 <translation id="6900651018461749106">Նորից մուտք գործեք՝ <ph name="USER_EMAIL" /> հաշիվը թարմացնելու համար</translation>
+<translation id="6900654715912436255">Իսկապե՞ս ուզում եք ջնջել այս որոնողական համակարգը։</translation>
 <translation id="6902066522699286937">Ձայնի նախնական հնչեցում</translation>
 <translation id="6902336033320348843">Բաժինը չի աջակցվում՝ <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Միացրեք սարքը տիրույթին</translation>
@@ -5963,6 +5970,7 @@
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="7149839598364933473">Տեղադրել <ph name="DEVICE_OS" />-ն այս սարքում</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
+<translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>
 <translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7163202347044721291">Ակտիվացման կոդը ստուգվում է…</translation>
@@ -5990,6 +5998,7 @@
 <translation id="7189234443051076392">Համոզվեք, որ ձեր սարքում բավարար տարածք կա</translation>
 <translation id="7189451821249468368">Ձեր լիցենզիաները բավարար չեն այս սարքը գրանցելու համար։ Լրացուցիչ լիցենզիաներ գնելու համար դիմեք վաճառքների բաժին։ Եթե կարծում եք, որ այս հաղորդագրությունը սխալմամբ է ձեզ ուղարկվել, դիմեք աջակցման կենտրոն։</translation>
 <translation id="7189965711416741966">Մատնահետքն ավելացված է:</translation>
+<translation id="7191063546666816478">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ու ևս <ph name="NUMBER_OF_OTHER_APPS" /> հավելվածում։</translation>
 <translation id="7191159667348037">Անհայտ տպիչ (USB)</translation>
 <translation id="7193051357671784796">Այս հավելվածն ավելացվել է ձեր կազմակերպության կողմից: Վերագործարկեք հավելվածը՝ տեղադրումն ավարտելու համար:</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> կայքի համար գաղտնաբառեր չեն պահվել</translation>
@@ -6166,7 +6175,6 @@
 <translation id="7384687527486377545">Ստեղնաշարի ներածման ինքնակրկնում</translation>
 <translation id="7385490373498027129">Այս <ph name="DEVICE_TYPE" /> սարքի բոլոր օգտատերերի ֆայլերն ու տեղային տվյալները ընդմիշտ կջնջվեն։</translation>
 <translation id="7385854874724088939">Տպման ընթացքում սխալ առաջացավ: Ստուգեք տպիչը և կրկին փորձեք:</translation>
-<translation id="7385896526023870365">Այս ընդլայնումը հավելյալ հասանելիություն չունի կայքին։</translation>
 <translation id="7387273928653486359">Ընդունելի</translation>
 <translation id="7387951778417998929">Կանխադրված որոնողական համակարգի փոխարեն մեկ ուրիշն օգտագործելու համար հասցեագոտում մուտքագրեք դրա դյուրանցումը, ապա՝ ձեր նախընտրած ստեղնային դյուրանցումը։ Այստեղ կարող եք նաև փոխել ձեր կանխադրված որոնողական համակարգը։</translation>
 <translation id="7388209873137778229">Ցուցադրվում են միայն աջակցվող սարքերը։</translation>

@@ -415,6 +415,7 @@
       來源比對格式與 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策使用的格式類似，請見以下頁面說明：http://www.chromium.org/administrators/url-blocklist-filter-format。
 
       不過，這項政策的來源比對格式不能包含「/path」或「@query」元素。系統會忽略所有包含「/path」或「@query」元素的格式。</translation>
+<translation id="1508588104835702000">停用受管理瀏覽器的雲端報告功能</translation>
 <translation id="1509377996969000672">你可以透過這項政策設定已連接到裝置的企業印表機。其格式與 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 條目相符，且針對每台印表機另外設有「id」或「guid」必填欄位，用於指明要加入許可清單或拒絕清單。相關檔案大小不得超過 5 MB，且必須採用 JSON 格式。一個 5 MB 的編碼檔案可包含約 21,000 台印表機的資料。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個檔案，而且只要網址或雜湊一有變動，就會重新下載檔案。<ph name="PRODUCT_OS_NAME" />會下載這個檔案來設定印表機，並依據 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 開放使用印表機。
 
       這項政策：
@@ -744,6 +745,32 @@
 <translation id="1861206724856734193">設定防止資料外洩的規則清單。</translation>
 <translation id="1862267110714201519">停用 ghost 視窗功能。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
+<translation id="1867025364110179456">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
+
+      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
+      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
+
+      5 個選擇性元素：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)。
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於針對不是漸進式網頁應用程式 (PWA) 的應用程式覆寫名稱，或是針對暫時性安裝，而且需經過驗證才能完成安裝的 PWA 應用程式覆寫名稱。如果同時提供 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，後者會被忽略)。
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於為所有網頁應用程式和 PWA 永久覆寫應用程式名稱。
+
+      目前僅支援
+      <ph name="PRODUCT_OS_NAME" />)。
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 99 以上版本，可用於覆寫安裝版應用程式的應用程式圖示。該圖示必須為方形，大小不得超過 1 MB，且採用下列其中一種格式：jpeg、png、gif、webp、ico。雜湊值必須是圖示檔案的 SHA256 雜湊。目前僅支援
+      <ph name="PRODUCT_OS_NAME" />)。
+
+      請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 瞭解如何將應用程式固定到 <ph name="PRODUCT_OS_NAME" /> 檔案櫃。</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="1881649377321404593">
       這項政策已在 M80 版中遭到移除，因為 WebDriver 現階段與所有現有政策相容，因此不再需要使用這項政策。
@@ -919,6 +946,7 @@
 <translation id="208566302163036794">封鎖已停用的功能</translation>
 <translation id="208623333578980446">允許電源管理的螢幕 Wake Lock</translation>
 <translation id="2086944573376916479">受管理帳戶必須是主要帳戶，而且不能有次要帳戶。</translation>
+<translation id="2089541797660774692">啟用受管理瀏覽器的雲端報告功能</translation>
 <translation id="2090304907729569435">停止在瀏覽器側邊面板中顯示 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> 搜尋結果。</translation>
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
@@ -1518,6 +1546,13 @@
 
       如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。</translation>
 <translation id="2730419309754848345">預設以圖片形式列印 PDF</translation>
+<translation id="2731299561202635374">這項政策可控管即時檢查網址以識別不安全網址的功能。
+
+      如果不設定這項政策或設為「停用」，系統會套用一般使用者的安全瀏覽檢查。一般使用者的安全瀏覽檢查仍可能包含即時查詢，實際情況取決於「改善搜尋和瀏覽體驗」的設定值和 UrlKeyedAnonymizedDataCollectionEnabled 政策的值。
+
+      如果將這項政策設為「啟用」，系統會依照《Chrome Enterprise 服務條款》傳送網址進行即時掃描。Chrome 會將網址傳送給 Google Cloud 或第三方，以便依照你的選擇進行即時檢查。系統會關閉一般使用者版本的安全瀏覽即時查詢功能。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="2731627323327011390">禁止 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」憑證</translation>
 <translation id="2742843273354638707">在新分頁和 <ph name="PRODUCT_OS_NAME" />應用程式啟動畫面中隱藏 Chrome 線上應用程式商店和底端連結。
 
@@ -1679,6 +1714,11 @@
       如果未設定 (或設為無效網址)，<ph name="PRODUCT_NAME" /> 不會使用這項政策做為切換瀏覽器的規則來源。
 
       注意：這項政策指向和 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策採用相同格式的 XML 檔案。因此，系統會從 XML 檔案載入規則，但不會與 <ph name="IE_PRODUCT_NAME" /> 共用這些規則。如要進一步瞭解 <ph name="IE_PRODUCT_NAME" /> 的 <ph name="IEEM_SITELIST_POLICY" /> 政策，請前往 https://docs.microsoft.com/internet-explorer/ie11-deploy-guide/what-is-enterprise-mode</translation>
+<translation id="2940653651012844682">指定要套用至 <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在 Chrome 中發生安全性事件時觸發。安全性事件包含分析 Enterprise 連接器指出的負面結果、重複使用密碼、瀏覽不安全的頁面，以及其他攸關安全性的使用者動作。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的報告服務供應商，<ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> 欄位則可用來指定針對這個供應商啟用的事件。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="2947111924404450461">你可以透過這項政策設定企業印表機。其格式與 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 條目相符，且針對每台印表機另外設有 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 必填欄位，用於指明要加入許可清單或拒絕清單。相關檔案大小不得超過 5 MB，且必須採用 JSON 格式。一個 5 MB 的編碼檔案可包含約 21,000 台印表機的資料。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個檔案，而且只要網址或雜湊一有變動，就會重新下載檔案。<ph name="PRODUCT_OS_NAME" />會下載這個檔案來設定印表機，並依據 <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="BULK_PRINTERS_WHITELIST" /> 和 <ph name="BULK_PRINTERS_BLACKLIST" /> 開放使用印表機。
 
       這項政策不在干預使用者是否能在個別裝置上設定印表機，而是讓個別使用者的印表機設定更為完善。
@@ -1867,6 +1907,23 @@
 <translation id="3144173889708944482">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
+<translation id="3157857846231611820">指定要套用至 <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在檔案附加至 Chrome 時觸發。
+
+      將檔案附加至特定網頁時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要在該檔案的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的模式，且不符合該標記的「disable」模式，系統就會在分析要求中加入與「enable」模式對應的標記。當要求中加入至少 1 個標記，系統就會進行分析。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
+
+      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回應，再授予頁面存取檔案的權限。如果設為其他整數值，Chrome 會立即授予頁面存取檔案的權限。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許受到密碼保護的檔案。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許超過大小上限而無法分析的檔案。
+
+      當掃描結果顯示可略過的警告時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 欄位來判斷連接器該在哪些標記中要求使用者輸入略過掃描的原因。如果不設定這個欄位，系統會認定不需要輸入原因。
+
+      當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「learn_more_url」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「language」欄位為選填，包含訊息所用語言。如果將「language」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「custom_messages」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3164531087779621747">列印 PostScript 模式</translation>
 <translation id="3165468162820163252">這項政策可控管登入畫面的 WebUI 部分要一律在啟動時載入，或是只在顯示前才載入。這項政策適用於登入畫面。
@@ -1989,6 +2046,16 @@
           這項政策不會禁止企業管理員連線至受管理的 Chrome OS 裝置。
 
           在啟用、留空或未設定的情況下，這項政策不會有任何作用。</translation>
+<translation id="3246744067327836077">
+      這項政策可針對特定受管理的設定檔，控管 <ph name="PRODUCT_NAME" /> 雲端報告功能。
+
+      如果不設定這項政策或設為停用，系統不會收集或上傳資料。
+      如果啟用這項政策，系統會收集資料並上傳至 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+      這份報告包含設定檔狀態和使用資訊，包括但不限於 OS 版本、瀏覽器版本、已安裝的擴充功能和應用政策。
+
+      這項政策只能設為雲端使用者政策。
+      </translation>
 <translation id="3251500716404598358">設定政策以便切換瀏覽器。
 
       設定的網站會自動在 <ph name="PRODUCT_NAME" /> 以外的另一個瀏覽器中開啟。</translation>
@@ -3908,6 +3975,7 @@
       如果不設定這項政策，快取的 GPO 將可供重複使用，效期最長可達 25 小時。
 
       注意：重新啟動裝置及登出帳戶都會清除快取。</translation>
+<translation id="5717973246079053225">停用受管理設定檔的雲端報告功能</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5728154254076636808">允許建立 <ph name="PRODUCT_NAME" /> 設定檔資料的漫遊複本</translation>
 <translation id="5729308727912841256">Kerberos 密碼。<ph name="PASSWORD_PLACEHOLDER" /> 預留位置會由登入密碼取代。</translation>
@@ -4221,6 +4289,21 @@
 <translation id="6135398260575578389">已啟用強化模式中的安全瀏覽功能。這個模式可提供更完善的安全防護機制，但使用者必須提供更多瀏覽資訊給 Google。</translation>
 <translation id="6135552820180449830">Crosh (自 99 版起開始支援)</translation>
 <translation id="6138636318340561140">即時檢查網址的安全瀏覽狀態</translation>
+<translation id="6140635914906859015">指定要套用至 <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在使用者以剪貼簿或拖曳網頁內容的方式在 Chrome 中輸入資料時觸發。
+
+      在特定網頁中輸入資料時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送資料進行分析，以及要在該資料的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的模式，且不符合該標記的「disable」模式，系統就會在分析要求中加入與「enable」模式對應的標記。當要求中加入至少 1 個標記，系統就會進行分析。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
+
+      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回應，再授予頁面存取資料的權限。如果設為其他整數值，Chrome 會立即授予頁面存取資料的權限。
+
+      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 欄位代表在 Chrome 中輸入的資料大小下限 (以位元組為單位)，要掃描的資料大小必須大於或等於這個值。如果不設定這個欄位，預設值為 100 個位元組。
+
+      當掃描結果顯示可略過的警告時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 欄位來判斷連接器該在哪些標記中要求使用者輸入略過掃描的原因。如果不設定這個欄位，系統會認定不需要輸入原因。
+
+      當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「learn_more_url」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「language」欄位為選填，包含訊息所用語言。如果將「language」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「custom_messages」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="6141402445226505817">一律使用約略時區偵測功能</translation>
 <translation id="6142501278956229253">列印光柵化 PDF 的每英寸像素數</translation>
 <translation id="6144046700495610112">如果將這項政策設為啟用，瀏覽器會在首次執行時，從先前的預設瀏覽器中匯入自動填入表單資料。如果將這項政策設為停用或不設定，瀏覽器首次執行時就不會匯入任何自動填入表單資料。
@@ -4622,6 +4705,21 @@
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
+<translation id="6637946190026453735">指定要套用至 <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 <ph name="PRODUCT_NAME" /> Enterprise 連接器服務設定清單，這份清單會在透過 <ph name="PRODUCT_NAME" /> 列印網頁或檔案時觸發。
+
+      在特定網頁中觸發列印功能時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送資料進行分析，以及要在分析要求中加入哪些標記。當要求中加入至少 1 個標記，系統就會進行分析。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
+
+      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，<ph name="PRODUCT_NAME" /> 會先等候分析服務的回應，再允許系統為列印頁面顯示列印預覽對話方塊。如果設為其他整數值，<ph name="PRODUCT_NAME" /> 會立即顯示列印預覽對話方塊。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 <ph name="PRODUCT_NAME" /> 要封鎖還是允許超過大小上限而無法分析的檔案/網頁。
+
+      當掃描結果顯示可略過的警告時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 欄位來判斷連接器該在哪些標記中要求使用者輸入略過掃描的原因。如果不設定這個欄位，系統會認定不需要輸入原因。
+
+      當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。系統管理員可以自訂訊息，長度上限為 200 個半形字元。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="6640355849038068978">如果啟用這項設定，使用者將可以透過像是點選 Phone Hub 通知的方式，啟動 Eche 應用程式。
 
       如果停用這項設定，使用者就無法啟動 Eche 應用程式。
@@ -4654,6 +4752,7 @@
       如果將這項政策設為停用或不設定，則列印指令會觸發列印預覽畫面。</translation>
 <translation id="6658245400435704251">指定裝置可以任意延遲下載某項更新的秒數上限 (以該項更新初次被推送到伺服器的時間為準)。你可以將這項裝置等待時間的其中一部分設定為等待的時間長度，剩下的部分則設定為檢查更新的次數。不論採取哪種方式，分散時間皆不得超過固定時間長度，這樣就可以避免裝置由於持續等待下載某項更新而停止回應。</translation>
 <translation id="6659537776197644458">不觸發驗證流程，也不同步處理密碼</translation>
+<translation id="6661178198729301029">啟用受管理設定檔的雲端報告功能</translation>
 <translation id="6665670272107384733">設定使用者使用快速解鎖功能時需輸入密碼的頻率</translation>
 <translation id="6667586534922258705">在登入畫面和鎖定畫面上啟用密碼顯示按鈕</translation>
 <translation id="6669700740683748046">這項功能可讓系統在網址列中顯示完整網址。
@@ -5399,6 +5498,23 @@
 <translation id="7477149584454865826">布林值標記，表示是否要使用 IPP Everywhere 設定印表機。</translation>
 <translation id="7477231245051133709">啟用單聲道音訊無障礙功能</translation>
 <translation id="7477239290070847560">可支援無須調整設定 (mDNS 和 DNS-SD) 的通訊協定目的地</translation>
+<translation id="7480826412572122600">指定要套用至 <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在透過 Chrome 下載檔案時觸發。
+
+      從特定網頁下載檔案時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 欄位來判斷連接器是否要傳送檔案進行分析，以及要在該檔案的分析要求中加入哪些標記。系統會比對標記對應的模式，如果頁面網址符合與該標記相關聯的模式，且不符合該標記的「disable」模式，系統就會在分析要求中加入與「enable」模式對應的標記。當要求中加入至少 1 個標記，系統就會進行分析。
+
+      <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> 欄位可用來指定與設定對應的分析服務供應商。
+
+      如果將 <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD" /> 欄位設為 1，Chrome 會先等候分析服務的回應，再授予使用者存取下載檔案的權限。如果設為其他整數值，Chrome 會立即授予使用者存取檔案的權限。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許受到密碼保護的檔案。
+
+      <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD" /> 欄位可控制 Chrome 要封鎖還是允許超過大小上限而無法分析的檔案。
+
+      當掃描結果顯示可略過的警告時，系統會使用 <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD" /> 欄位來判斷連接器該在哪些標記中要求使用者輸入略過掃描的原因。如果不設定這個欄位，系統會認定不需要輸入原因。
+
+      當掃描結果判定檔案有問題時，系統會根據 <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> 欄位設定要向使用者顯示的訊息。「message」欄位包含要向使用者顯示的文字，長度上限為 200 個半形字元。「learn_more_url」欄位包含由管理員提供的網址，使用者點選後可取得更多由客戶提供的資訊，瞭解動作遭到封鎖的原因。「language」欄位為選填，包含訊息所用語言。如果將「language」欄位留空或設為「default」值，表示在找不到使用者語言的訊息時，系統會使用預設訊息。「tag」欄位可用來指定要顯示訊息的掃描類型。「custom_messages」清單可以有零或多個項目，每個項目都必須包括非空白的「message」和「tag」欄位。
+
+      這項政策需要額外設定才會生效，詳情請參閱 https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting。</translation>
 <translation id="7485481791539008776">預設印表機選取規則</translation>
 <translation id="7486205887492534734">當有多個憑證相符時，在登入畫面中顯示提示訊息</translation>
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
@@ -6624,6 +6740,7 @@
 <translation id="8917070657147922192">允許使用者管理已安裝的 CA 憑證。</translation>
 <translation id="8919100556245407184">將使用者登出前的緩衝天數。如果使用者未在自動更新期限訊息顯示後將 <ph name="PRODUCT_OS_NAME" />版本更新為指定的 <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> 版，系統會在設定的天數過後將該使用者登出</translation>
 <translation id="8919369436496201075">允許裝置接收長期支援更新</translation>
+<translation id="8921669704201370845">為受管理的設定檔啟用 <ph name="PRODUCT_NAME" /> 雲端報告功能</translation>
 <translation id="8930064580550462145">透過螢幕鎖定畫面登入時，<ph name="PRODUCT_OS_NAME" />可以透過伺服器進行線上驗證，或使用快取密碼進行離線驗證。
 
       如果為這項政策設定 -2 的值，系統會根據 <ph name="POLICY" /> 政策決定登入畫面的離線登入時限值。
@@ -6870,6 +6987,13 @@
 <translation id="9220314833408124365">使用預設的 no-referrer-when-downgrade 參照網址政策</translation>
 <translation id="922540222991413931">設定擴充功能、應用程式和使用者指令碼安裝來源</translation>
 <translation id="924557436754151212">第一次執行時從預設瀏覽器匯入已儲存的密碼</translation>
+<translation id="926104720905645793">這項政策可控管 <ph name="PRODUCT_NAME" /> 雲端報告功能，該功能會將瀏覽器運作資訊上傳至 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+      如果不設定這項政策或設為停用，系統不會收集或上傳資料。
+      如果啟用這項政策，系統會收集資料並上傳至 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />。
+
+      如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
+      如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
 <translation id="927384371566552478">如果將這項政策設為啟用或不設定，系統會向使用者顯示匯出 - 匯入 UI。如果將這項政策設為停用，系統不會向使用者顯示匯出 - 匯入 UI。</translation>
 <translation id="927444535723396977">如果將這項政策設為 1，網站即可執行 JavaScript。如果將這項政策設為 2，網站將無法執行 JavaScript。
 

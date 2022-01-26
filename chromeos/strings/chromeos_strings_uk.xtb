@@ -172,6 +172,7 @@
 <translation id="357889014807611375">Wi-Fi із тарифікацією трафіку</translation>
 <translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
+<translation id="3603829704940252505">Аватар</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велика затримка для веб-сайтів HTTPS</translation>
 <translation id="3689839747745352263">Перевірка "<ph name="TEST_NAME" />"</translation>
@@ -324,7 +325,6 @@
 <translation id="5423849171846380976">Активовано</translation>
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
-<translation id="5431825016875453137">OpenVPN або L2TP</translation>
 <translation id="5457599981699367932">Переглядати в режимі гостя</translation>
 <translation id="54609108002486618">Керований</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Залишилася {0} спроба}one{Залишилася {0} спроба}few{Залишилися {0} спроби}many{Залишилося {0} спроб}other{Залишилося {0} спроби}}</translation>
@@ -423,6 +423,7 @@
 <translation id="6905724422583748843">Повернутися на сторінку <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Кришка сканера відкрита. Закрийте її та повторіть спробу.</translation>
 <translation id="6911383237894364323">Не вдалося підключитися до медіасерверів</translation>
+<translation id="6935486296377631201">Заставка</translation>
 <translation id="6957231940976260713">Назва служби</translation>
 <translation id="6961170852793647506">Щоб почати, покладіть документ на сканер</translation>
 <translation id="6965382102122355670">OK</translation>

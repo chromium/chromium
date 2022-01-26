@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Aktuelt ikon</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
+<translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1110155001042129815">Vent</translation>
 <translation id="1110965959145884739">Vælg, hvilke sprog der skal installeres på denne enhed. Sprogfiler deles mellem brugere for at spare på diskpladsen. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2894,7 +2895,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3888586133700543064">Disse oplysninger hjælper os til bedre at forstå dit problem med Assistent. Oplysningerne opbevares i op til 90 dage, og adgangen til oplysningerne er begrænset til de relevante udvikler- og feedbackteams.</translation>
 <translation id="3888900458694486810">Luk sideløbende søgning</translation>
 <translation id="3890064827463908288">Aktivér Chrome-synkronisering for at bruge Wi-Fi-synkronisering</translation>
-<translation id="3892414795099177503">Tilføj OpenVPN/L2TP...</translation>
 <translation id="389313931326656921">Tildel kontakt for handlingen "Næste"</translation>
 <translation id="3893295674388762059">Luk alle inkognitovinduer for at rydde data</translation>
 <translation id="3893536212201235195">Læse og redigere dine indstillinger for hjælpefunktioner</translation>
@@ -4980,7 +4980,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6112931163620622315">Tjek din telefon</translation>
 <translation id="6113434369102685411">Angiv din standardsøgemaskine for Chrome-browseren og applisten på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Skift til den primære brugerprofil på din telefon for at bruge Smart Lock</translation>
-<translation id="611684075852771314">Disse logs er blevet gemt i Mine filer som</translation>
 <translation id="6116921718742659598">Rediger indstillingerne for sprog og indtastning</translation>
 <translation id="6119927814891883061">Navngiv enheden: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fastgør denne side til startskærmen...</translation>
@@ -5971,6 +5970,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="7149839598364933473">Konverter denne enhed til en <ph name="DEVICE_OS" />-enhed.</translation>
 <translation id="7149893636342594995">De seneste 24 timer</translation>
+<translation id="7152478047064750137">Denne udvidelse kræver ikke nogen særlige tilladelser</translation>
 <translation id="7154130902455071009">Skifte din startside til: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Eksisterende billede fra kamera eller fil</translation>
 <translation id="7163202347044721291">Bekræfter aktiveringskode...</translation>
@@ -6174,7 +6174,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7384687527486377545">Automatisk gentagelse på tastatur</translation>
 <translation id="7385490373498027129">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> slettes permanent.</translation>
 <translation id="7385854874724088939">Noget gik galt, da du prøvede at udskrive. Tjek din printer, og prøv igen.</translation>
-<translation id="7385896526023870365">Denne udvidelse har ingen yderligere adgang til websites.</translation>
 <translation id="7387273928653486359">Acceptabel</translation>
 <translation id="7387951778417998929">Hvis du vil bruge en søgemaskine, der ikke er din standardsøgemaskine, skal du angive genvejen til den i adresselinjen efterfulgt af din foretrukne tastaturgenvej. Du kan også ændre din standardsøgemaskine her.</translation>
 <translation id="7388209873137778229">Der vises kun understøttede enheder.</translation>

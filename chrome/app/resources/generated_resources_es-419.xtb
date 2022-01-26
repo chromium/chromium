@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Ícono actual</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Interrumpir</translation>
+<translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1110155001042129815">Esperar</translation>
 <translation id="1110965959145884739">Elige los idiomas que quieres instalar en este dispositivo. Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Proyector</translation>
@@ -2875,7 +2876,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3888586133700543064">Esta información nos permite entender mejor tu problema con Asistente. Estos datos se almacenan por 90 días. El acceso a esta información está restringido a los equipos de ingeniería y comentarios correspondientes.</translation>
 <translation id="3888900458694486810">Cerrar la búsqueda lateral</translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi-Fi</translation>
-<translation id="3892414795099177503">Agregar OpenVPN/L2TP…</translation>
 <translation id="389313931326656921">Asignar interruptor a "Siguiente"</translation>
 <translation id="3893295674388762059">Para borrar los datos, cierra todas las ventanas de incógnito</translation>
 <translation id="3893536212201235195">Leer y cambiar la configuración de accesibilidad</translation>
@@ -4960,7 +4960,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6112931163620622315">Revisa el teléfono</translation>
 <translation id="6113434369102685411">Configura tu motor de búsqueda predeterminado para el navegador Chrome y el Selector de <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Para usar Smart Lock, cambia al perfil del usuario principal en tu teléfono</translation>
-<translation id="611684075852771314">Se guardaron estos registros en Mis archivos como</translation>
 <translation id="6116921718742659598">Cambiar la configuración de idioma y de entrada de texto</translation>
 <translation id="6119927814891883061">Elegir <ph name="DEVICE_NAME" /> como nombre del dispositivo</translation>
 <translation id="6120205520491252677">Fijar esta página a la Pantalla de inicio...</translation>
@@ -5951,6 +5950,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7154130902455071009">Cambiar la página de inicio por <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente de la cámara o archivo</translation>
 <translation id="7163202347044721291">Verificando el código de activación…</translation>
@@ -6154,7 +6154,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7384687527486377545">Repetición automática del teclado</translation>
 <translation id="7385490373498027129">Se borrarán de forma permanente todos los archivos y datos locales de todos los usuarios de este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7385854874724088939">Algo falló al intentar imprimir. Comprueba tu impresora e inténtalo nuevamente.</translation>
-<translation id="7385896526023870365">Esta extensión no tiene acceso al sitio.</translation>
 <translation id="7387273928653486359">Aceptable</translation>
 <translation id="7387951778417998929">Para usar un motor de búsqueda que no sea el predeterminado, escribe el atajo correspondiente en la barra de direcciones seguido de la combinación de teclas que hayas elegido. Aquí también puedes cambiar el motor de búsqueda predeterminado.</translation>
 <translation id="7388209873137778229">Solo se muestran dispositivos compatibles.</translation>

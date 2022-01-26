@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Praegune ikoon</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Peata</translation>
+<translation id="1108938384783527433">Ajaloo sünkroonimine</translation>
 <translation id="1110155001042129815">Oota</translation>
 <translation id="1110965959145884739">Valige, millised keeled sellesse seadmesse installida. Keelefaile jagatakse kasutajate vahel, et kettaruumi säästa. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -2884,7 +2885,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3888586133700543064">See teave aitab meil teie assistendiga seotud probleemi paremini mõista. See salvestakse kuni 90 päevaks ning sellele pääsevad juurde ainult asjakohased inseneri- ja tagasisidetiimid.</translation>
 <translation id="3888900458694486810">Sule kõrvalotsing</translation>
 <translation id="3890064827463908288">WiFi sünkroonimise kasutamiseks lülitage sisse Chrome'i sünkroonimine</translation>
-<translation id="3892414795099177503">Lisa OpenVPN/L2TP …</translation>
 <translation id="389313931326656921">Lüliti määramine toimingule „Järgmine“</translation>
 <translation id="3893295674388762059">Andmete kustutamiseks sulgege kõik inkognito aknad</translation>
 <translation id="3893536212201235195">Juurdepääsetavuse seadete lugemine ja muutmine</translation>
@@ -4969,7 +4969,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6112931163620622315">Kontrollige oma telefoni</translation>
 <translation id="6113434369102685411">Määrake Chrome’i brauseri ja seadme <ph name="DEVICE_TYPE" /> rakenduse Käivitaja jaoks vaikeotsingumootor</translation>
 <translation id="6113942107547980621">Funktsiooni Smart Lock kasutamiseks lülitage telefonis peamisele kasutajaprofiilile</translation>
-<translation id="611684075852771314">Need logid salvestati jaotisse Minu failid nimega</translation>
 <translation id="6116921718742659598">Keele ja sisestusseadete muutmine</translation>
 <translation id="6119927814891883061">Määra seadme nimeks <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Kinnita see leht avakuvale ...</translation>
@@ -5960,6 +5959,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7149839598364933473">Teisendage see seade operatsioonisüsteemiga <ph name="DEVICE_OS" /> seadmeks.</translation>
 <translation id="7149893636342594995">Viimased 24 tundi</translation>
+<translation id="7152478047064750137">Selle laienduse jaoks pole erilube vaja</translation>
 <translation id="7154130902455071009">Määrake avaleheks <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Olemasolev foto kaamerast või failist</translation>
 <translation id="7163202347044721291">Aktiveerimiskoodi kinnitamine …</translation>
@@ -6163,7 +6163,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7384687527486377545">Klaviatuuri automaatne kordus</translation>
 <translation id="7385490373498027129">Kõigi seadmes <ph name="DEVICE_TYPE" /> olevate kasutajate kõik failid ja kohalikud andmed kustutatakse jäädavalt.</translation>
 <translation id="7385854874724088939">Printimisel tekkis mingi tõrge. Kontrollige oma printerit ja proovige uuesti.</translation>
-<translation id="7385896526023870365">Sellel laiendusel ei ole lisajuurdepääsu saidile.</translation>
 <translation id="7387273928653486359">Rahuldav</translation>
 <translation id="7387951778417998929">Kui soovite kasutada muud otsingumootorit peale vaikeotsingumootori, sisestage selle otsetee aadressiribale ja seejärel vajutage valitud klaviatuuriotseteed. Samuti saate siin oma vaikeotsingumootorit muuta.</translation>
 <translation id="7388209873137778229">Näidatakse ainult toetatud seadmeid.</translation>

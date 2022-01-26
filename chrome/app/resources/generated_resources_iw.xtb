@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">הסמל הנוכחי</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1108600514891325577">&amp;הפסקה</translation>
+<translation id="1108938384783527433">סנכרון ההיסטוריה</translation>
 <translation id="1110155001042129815">יש להמתין</translation>
 <translation id="1110965959145884739">צריך לבחור את השפות שרוצים להגדיר במכשיר הזה. קובצי השפה משותפים עם משתמשים כדי לחסוך מקום בכונן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -2893,7 +2894,6 @@
 <translation id="3888586133700543064">‏המידע הזה עוזר לנו להבין בצורה טובה יותר את הבעיה שלך ב-Assistant. הוא נשמר לתקופה של עד 90 ימים והגישה אליו מוגבלת: רק צוותי ההנדסה והמשוב המתאימים רשאים לגשת אליו.</translation>
 <translation id="3888900458694486810">סגירת החיפוש בצד הדף</translation>
 <translation id="3890064827463908288">‏צריך להפעיל סנכרון Chrome כדי להשתמש בסנכרון Wi-Fi</translation>
-<translation id="3892414795099177503">‏הוספת OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">הקצאת מתג לפעולה "הבא"</translation>
 <translation id="3893295674388762059">כדי לנקות נתונים, יש לצאת מכל החלונות האנונימיים</translation>
 <translation id="3893536212201235195">קריאה ושינוי של הגדרות הנגישות שלך</translation>
@@ -4979,7 +4979,6 @@
 <translation id="6112931163620622315">בדיקת הטלפון</translation>
 <translation id="6113434369102685411">‏עליך להגדיר את מנוע החיפוש שיוגדר כברירת המחדל לדפדפן Chrome ולמרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">‏כדי להשתמש ב-Smart Lock יש לעבור אל פרופיל המשתמש הראשי בטלפון</translation>
-<translation id="611684075852771314">היומנים האלה נשמרו ב'קבצים שלי' בתור</translation>
 <translation id="6116921718742659598">שינוי הגדרות הקלט והשפה</translation>
 <translation id="6119927814891883061">שמירת שם המכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">הצמדת דף זה למסך הפתיחה...</translation>
@@ -5970,6 +5969,7 @@
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="7149839598364933473">אפשר להמיר את המכשיר הזה למכשיר <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
+<translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">תמונה קיימת ממצלמה או מקובץ</translation>
 <translation id="7163202347044721291">מתבצע אימות של קוד הפעלה...</translation>
@@ -6173,7 +6173,6 @@
 <translation id="7384687527486377545">חזרה אוטומטית על פעולת מקלדת</translation>
 <translation id="7385490373498027129">כל הקבצים והנתונים המקומיים של כל המשתמשים במכשיר <ph name="DEVICE_TYPE" /> זה יימחקו באופן סופי.</translation>
 <translation id="7385854874724088939">משהו השתבש בעת ניסיון הדפסה. יש לבדוק את המדפסת ולנסות שוב.</translation>
-<translation id="7385896526023870365">לתוסף הזה אין הרשאות גישה נוספות לאתרים.</translation>
 <translation id="7387273928653486359">סביר</translation>
 <translation id="7387951778417998929">כדי להשתמש במנוע חיפוש שלא מוגדר כברירת מחדל, מקלידים את קיצור הדרך שלו בסרגל הכתובות ולאחר מכן מקישים על מקש הקיצור המועדף. בנוסף, אפשר לשנות כאן את מנוע החיפוש המוגדר כברירת מחדל.</translation>
 <translation id="7388209873137778229">רק מכשירים נתמכים מוצגים.</translation>

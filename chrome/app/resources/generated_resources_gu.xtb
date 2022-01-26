@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">હાલનું આઇકન</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="1108600514891325577">&amp;Stop</translation>
+<translation id="1108938384783527433">ઇતિહાસ સિંક કરો</translation>
 <translation id="1110155001042129815">રાહ જુઓ</translation>
 <translation id="1110965959145884739">આ ડિવાઇસ પર કઈ ભાષાઓ ઇન્સ્ટૉલ કરવી છે, તે પસંદ કરો. ડિસ્ક સ્પેસ સાચવવા માટે, વપરાશકર્તાઓમાં ભાષાની ફાઇલો શેર કરવામાં આવે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">પ્રોજેક્ટર</translation>
@@ -1019,6 +1020,7 @@
 <translation id="2022395138980869975">બાજુની શોધ ટૉગલ કરો</translation>
 <translation id="2023167225947895179">PIN અનુમાન કરવામાં સરળ હોઈ શકે છે</translation>
 <translation id="202352106777823113">ડાઉનલોડ ઘણો સમય લઈ રહ્યું હતું અને નેટવર્ક દ્વારા રોકવામાં આવ્યું હતું.</translation>
+<translation id="2024195579772565064">શોધ એન્જિન ડિલીટ કરો</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> ક્રેશ થયું છે. એક્સ્ટેંશનને ફરીથી લોડ કરવા માટે આ બલૂન ક્લિક કરો.</translation>
 <translation id="2028449514182362831">મોશન સેન્સરની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય નહીં કરે</translation>
 <translation id="202918510990975568">સુરક્ષા ગોઠવવા અને સાઇન ઇન કરવા માટે તમારો પાસવર્ડ દાખલ કરો</translation>
@@ -1160,6 +1162,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">વાઇ-ફાઇ ઉમેરો...</translation>
 <translation id="2162155940152307086">એકવાર તમે સિંકના સેટિંગમાંથી બહાર નીકળશો એટલે સિંક શરૂ થઈ જશે</translation>
+<translation id="2162926944953615670">કોઈ ઇ-સિમ પ્રોફાઇલ ઉપલબ્ધ નથી</translation>
 <translation id="2163470535490402084">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> માં સાઇન ઇન કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="2163937499206714165">ઘેરો મોડ ચાલુ કરો</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
@@ -1854,6 +1857,7 @@
 <translation id="2828650939514476812">વાઇ-ફાઇ નેટવર્ક પર કનેક્ટ કરો</translation>
 <translation id="2831430281393059038">ડિવાઇસને સપોર્ટ આપવામાં આવે છે</translation>
 <translation id="2832124733806557606">ડિવાઇસમાં સાઇન ઇન કરવા માટે કે તેને અનલૉક કરવા માટે, તમારું બાળક કોઈ પિનનો ઉપયોગ કરી શકે છે.</translation>
+<translation id="2835177225987815960">કોઈપણ સોંપવામાં આવેલી સ્વિચ અને ઑટો-સ્કૅન માટે ઝડપના સેટિંગ સહિત સ્કૅન કરવા માટેના તમારા હાલના સેટઅપને રીસેટ કરવામાં આવશે.</translation>
 <translation id="2835547721736623118">વાણી ઓળખ સેવા</translation>
 <translation id="2836269494620652131">ક્રૅશ</translation>
 <translation id="2836635946302913370">તમારા વ્યવસ્થાપક દ્વારા આ વપરાશકર્તા સાથે સાઇન ઇન કરવું અક્ષમ કરવામાં આવ્યું છે.</translation>
@@ -2878,7 +2882,6 @@
 <translation id="3888586133700543064">તમારા Assistant સંબંધિત સમસ્યાને વધુ સારી રીતે સમજવામાં આ માહિતી અમને સહાય કરે છે. તેને વધુમાં વધુ 90 દિવસ સુધી સ્ટોર કરવામાં આવે છે અને તેનો ઍક્સેસ એન્જિનિયરિંગ તેમજ પ્રતિસાદ ટીમ સુધી મર્યાદિત હોય છે.</translation>
 <translation id="3888900458694486810">બાજુની શોધ બંધ કરો</translation>
 <translation id="3890064827463908288">વાઇ-ફાઇ સિંકનો ઉપયોગ કરવા માટે 'Chrome સિંક' ચાલુ કરો</translation>
-<translation id="3892414795099177503">OpenVPN / L2TP ઉમેરો...</translation>
 <translation id="389313931326656921">“આગળ” માટે સ્વિચની સોંપણી કરો</translation>
 <translation id="3893295674388762059">ડેટા સાફ કરવા માટે, બધી છુપી વિન્ડો બંધ કરો</translation>
 <translation id="3893536212201235195">તમારા ઍક્સેસિબિલિટી સેટિંગને વાંચો અને બદલો</translation>
@@ -3500,6 +3503,7 @@
 <translation id="4547659257713117923">અન્ય ડિવાઇસમાંથી કોઈ ટેબ નથી</translation>
 <translation id="4547672827276975204">ઑટોમૅટિક રીતે સેટ કરો</translation>
 <translation id="4549791035683739768">તમારી સિક્યુરિટી કીમાં કોઈ ફિંગરપ્રિન્ટ સંગ્રહિત નથી</translation>
+<translation id="4550926046134589611">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />માં ખૂલશે.</translation>
 <translation id="4551763574344810652">છેલ્લો ફેરફાર રદ કરવા માટે <ph name="MODIFIER_KEY_DESCRIPTION" /> દબાવો</translation>
 <translation id="4553526521109675518">ડિવાઇસની ભાષા બદલવા માટે તમારે તમારું Chromebook ફરી ચાલુ કરવું જરૂરી છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે શોધવા માટે છબીઓની ઉપર ખેંચો</translation>
@@ -3790,6 +3794,7 @@
 <translation id="48704129375571883">વધારાની સુવિધાઓ ઉમેરો</translation>
 <translation id="4870758487381879312">ગોઠવણીની માહિતી મેળવવા માટે, વ્યવસ્થાપક દ્વારા અપાયેલો પાસવર્ડ દાખલ કરો</translation>
 <translation id="4870903493621965035">કોઈ જોડી કરેલા ઉપકરણો નથી</translation>
+<translation id="4870995365819149457">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય 1 ઍપમાં ખૂલશે.</translation>
 <translation id="4871308555310586478">Chrome વેબ દુકાનમાંથી નહીં.</translation>
 <translation id="4871322859485617074">પિનમાં અમાન્ય અક્ષરો છે</translation>
 <translation id="4871370605780490696">બુકમાર્ક ઉમેરો</translation>
@@ -4827,6 +4832,7 @@ USB ડિવાઇસ</translation>
 <translation id="5969728632630673489">કીબોર્ડ શૉર્ટકટની નોટિસ છોડી દીધી</translation>
 <translation id="5971037678316050792">Bluetooth એડેપ્ટર સ્થિતિ અને જોડીનું નિયંત્રણ કરો</translation>
 <translation id="597235323114979258">વધુ સ્થાનો જુઓ</translation>
+<translation id="5972543790327947908">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> અથવા <ph name="APP_NAME_3" />માં ખૂલશે.</translation>
 <translation id="5972666587303800813">નો-ઑપ સેવાઓ</translation>
 <translation id="5972708806901999743">ટોચ પર જાઓ</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" />  શરૂ કરો</translation>
@@ -4968,7 +4974,6 @@ USB ડિવાઇસ</translation>
 <translation id="6112931163620622315">તમારો ફોન તપાસો</translation>
 <translation id="6113434369102685411">Chrome બ્રાઉઝર અને <ph name="DEVICE_TYPE" /> લૉન્ચર માટે તમારું ડિફૉલ્ટ શોધ એન્જિન સેટ કરો</translation>
 <translation id="6113942107547980621">Smart Lockનો ઉપયોગ કરવા માટે, તમારા ફોન પર પ્રાથમિક વપરાશકર્તા પ્રોફાઇલ પર સ્વિચ કરો</translation>
-<translation id="611684075852771314">આ લૉગ 'મારી ફાઇલો'માં આ નામથી સાચવવામાં આવ્યા છે</translation>
 <translation id="6116921718742659598">ભાષા અને ઇનપુટ સેટિંગ બદલો</translation>
 <translation id="6119927814891883061">ડિવાઇસને <ph name="DEVICE_NAME" /> નામ આપો</translation>
 <translation id="6120205520491252677">શરૂઆતની સ્ક્રીન પર આ પેજ પિન કરો...</translation>
@@ -5198,6 +5203,7 @@ USB ડિવાઇસ</translation>
 <translation id="6355789186038748882">પ્રાયોગિક (આલ્ફા-ક્વૉલિટી) બ્રાઉઝર! અમુક સુવિધાઓ ઉપલબ્ધ નથી અથવા અધૂરી છે. આ સંબંધિત સમસ્યાઓની જાણ કરવા માટે: સહાય &gt; "સમસ્યાની જાણ કરો…".</translation>
 <translation id="635609604405270300">ડિવાઇસને ચાલુ રાખો</translation>
 <translation id="63566973648609420">માત્ર તમારા પાસફ્રેઝ સાથેની કોઈ વ્યક્તિ જ તમારા એન્ક્રિપ્ટ કરેલા ડેટાને વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે એના દ્વારા સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માંગતા હો, તો તમારે <ph name="BEGIN_LINK" />સિંકને ફરીથી સેટ<ph name="END_LINK" /> કરવું પડશે.</translation>
+<translation id="6357305427698525450">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" /> અથવા <ph name="APP_NAME_2" />માં ખૂલશે.</translation>
 <translation id="6358884629796491903">ડ્રેગન</translation>
 <translation id="6359706544163531585">ઝાંખી થીમ બંધ કરો</translation>
 <translation id="6361850914223837199">ભૂલ વિગતો:</translation>
@@ -5716,6 +5722,7 @@ USB ડિવાઇસ</translation>
 <translation id="6900284862687837908">બૅકગ્રાઉન્ડ ઍપ: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">વધારેલું સંરક્ષણ</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />ને અપડેટ કરવા માટે ફરીથી સાઇન ઇન કરો</translation>
+<translation id="6900654715912436255">શું તમે ખરેખર આ શોધ એન્જિન ડિલીટ કરવા માગો છો?</translation>
 <translation id="6902066522699286937">ટેક્સ્ટ ટૂ સ્પીચના વૉઇસ પ્રીવ્યૂ માટે</translation>
 <translation id="6902336033320348843">વિભાગની સુવિધા નથી: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">ઉપકરણને ડોમેન સાથે જોડો</translation>
@@ -5959,6 +5966,7 @@ USB ડિવાઇસ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="7149839598364933473">આ ડિવાઇસને <ph name="DEVICE_OS" /> ડિવાઇસમાં રૂપાંતરિત કરો.</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
+<translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
 <translation id="7154130902455071009">તમારા શરૂઆતના પેજને આનાથી બદલો: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાંનો ફોટો</translation>
 <translation id="7163202347044721291">સક્રિયકરણનો કોડ ચકાસી રહ્યાં છીએ...</translation>
@@ -5986,6 +5994,7 @@ USB ડિવાઇસ</translation>
 <translation id="7189234443051076392">ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે</translation>
 <translation id="7189451821249468368">આ ડિવાઇસની નોંધણી કરવા માટે તમે પૂરતા અપગ્રેડ ધરાવતા નથી. વધુ ખરીદવા માટે કૃપા કરીને વેચાણનો સંપર્ક કરો. જો તમે માનતા હો કે આ સંદેશ તમને ભૂલથી દેખાઈ રહ્યો છે, તો કૃપા કરીને સપોર્ટનો સંપર્ક કરો.</translation>
 <translation id="7189965711416741966">ફિંગરપ્રિન્ટ ઉમેરી.</translation>
+<translation id="7191063546666816478">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય <ph name="NUMBER_OF_OTHER_APPS" /> ઍપમાં ખૂલશે.</translation>
 <translation id="7191159667348037">અજાણ્યું પ્રિન્ટર (USB)</translation>
 <translation id="7193051357671784796">આ ઍપ તમારી સંસ્થા દ્વારા ઉમેરવામાં આવી છે. ઍપને ઇન્સ્ટૉલ કરવાનું સમાપ્ત કરવા માટે તેને ફરી શરૂ કરો.</translation>
 <translation id="7193374945610105795"><ph name="ORIGIN" /> માટે કોઈ પાસવર્ડ સાચવેલા નથી</translation>
@@ -6162,7 +6171,6 @@ USB ડિવાઇસ</translation>
 <translation id="7384687527486377545">કીબોર્ડનું ઑટોમૅટિક રીતે પુનરાવર્તન</translation>
 <translation id="7385490373498027129">આ <ph name="DEVICE_TYPE" /> પરના બધા વપરાશકર્તાઓ માટેની તમામ ફાઇલો અને સ્થાનિક ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે.</translation>
 <translation id="7385854874724088939">છાપવાનો પ્રયાસ કરતી વખતે કાંઈક ખોટું થઈ ગયું. કૃપા કરી તમારું પ્રિન્ટ તપાસો અને ફરી પ્રયાસ કરો.</translation>
-<translation id="7385896526023870365">આ એક્સ્ટેંશનને કોઈ વધારાની સાઇટનો ઍક્સેસ નથી.</translation>
 <translation id="7387273928653486359">સ્વીકાર્ય</translation>
 <translation id="7387951778417998929">ડિફૉલ્ટ સિવાયના શોધ એન્જિનનો ઉપયોગ કરવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી તમારી પસંદગીનો કીબોર્ડ શૉર્ટકટ ટાઇપ કરો. તમે અહીં તમારા ડિફૉલ્ટ શોધ એન્જિનને બદલી પણ શકો છો.</translation>
 <translation id="7388209873137778229">માત્ર સપોર્ટ હોય તેવા ડિવાઇસ બતાવાય છે.</translation>

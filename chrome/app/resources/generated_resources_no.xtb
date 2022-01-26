@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Nåværende ikon</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Stopp</translation>
+<translation id="1108938384783527433">Loggsynkronisering</translation>
 <translation id="1110155001042129815">Vent</translation>
 <translation id="1110965959145884739">Velg hvilke språk som skal installeres på denne enheten. Språkfiler deles blant brukere for å spare diskplass. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -508,6 +509,7 @@
 <translation id="1521442365706402292">Administrer sertifikater</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="152234381334907219">Aldri lagret</translation>
+<translation id="1523279371236772909">Vist den siste måneden</translation>
 <translation id="1523978563989812243">Motorer for tekst til tale</translation>
 <translation id="1524430321211440688">Tastatur</translation>
 <translation id="1524563461097350801">Nei takk</translation>
@@ -1027,6 +1029,7 @@
 <translation id="2022395138980869975">Slå av/på sidesøket</translation>
 <translation id="2023167225947895179">Det kan være lett å gjette seg til PIN-koden</translation>
 <translation id="202352106777823113">Nedlastingen tok for lang tid og ble stoppet av nettverket.</translation>
+<translation id="2024195579772565064">Slett søkemotoren</translation>
 <translation id="2025632980034333559"><ph name="APP_NAME" /> har fått programstopp. Klikk på denne ballongen for å laste inn denne utvidelsen på nytt.</translation>
 <translation id="2028449514182362831">Funksjoner som krever bevegelsessensorer, kommer ikke til å virke</translation>
 <translation id="202918510990975568">Skriv inn passordet ditt for å konfigurere sikkerhet og pålogging</translation>
@@ -1168,6 +1171,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Legg til Wi-Fi</translation>
 <translation id="2162155940152307086">Synkroniseringen starter når du går ut av synkroniseringsinnstillingene</translation>
+<translation id="2162926944953615670">Ingen tilgjengelige e-SIM-kortprofiler</translation>
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
@@ -1245,6 +1249,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2232876851878324699">Filen inneholdt ett sertifikat som ikke ble importert:</translation>
 <translation id="2233502537820838181">Mer informasjon</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
+<translation id="2234827758954819389">Personvernveiledning</translation>
 <translation id="2234876718134438132">Synkronisering/Google-tjenester</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2238379619048995541">Data om frekvenstilstand</translation>
@@ -1863,6 +1868,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2828650939514476812">Koble til Wi-Fi-nettverk</translation>
 <translation id="2831430281393059038">Enheten støttes</translation>
 <translation id="2832124733806557606">Barnet ditt kan bruke en PIN-kode for å logge på eller låse opp enheten.</translation>
+<translation id="2835177225987815960">Den nåværende konfigurasjonen din for skanning blir tilbakestilt, inkludert eventuelle brytere som er tilordnet, og hastighetsinnstillinger for automatisk skanning.</translation>
 <translation id="2835547721736623118">Tjeneste for talegjenkjenning</translation>
 <translation id="2836269494620652131">Programstopp</translation>
 <translation id="2836635946302913370">Pålogging med dette brukernavnet er deaktivert av administratoren din.</translation>
@@ -2887,7 +2893,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3888586133700543064">Denne informasjonen gir oss bedre forståelse av Assistent-problemet. Den lagres i opptil 90 dager, og bare relevante tekniske team og tilbakemeldingsteam får tilgang.</translation>
 <translation id="3888900458694486810">Lukk sidesøket</translation>
 <translation id="3890064827463908288">Slå på Chrome-synkronisering for å bruke Wi-Fi-synkronisering</translation>
-<translation id="3892414795099177503">Legg til OpenVPN/L2TP</translation>
 <translation id="389313931326656921">Tilordne bryter for «Neste»</translation>
 <translation id="3893295674388762059">For å slette data, lukk alle inkognitovinduer</translation>
 <translation id="3893536212201235195">lese og endre innstillingene for tilgjengelighet</translation>
@@ -3099,6 +3104,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4095264805865317199">Åpne UI for aktivering med mobiltelefon</translation>
 <translation id="4095507791297118304">Hovedskjerm</translation>
 <translation id="4096508467498758490">Deaktiver utvidelser for utviklermodus</translation>
+<translation id="4096797685681362305">Vist den siste uken</translation>
 <translation id="4097406557126260163">Apper og utvidelser</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
 <translation id="4097560579602855702">Søk på Google</translation>
@@ -3506,6 +3512,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4547659257713117923">Ingen faner fra andre enheter</translation>
 <translation id="4547672827276975204">Angi automatisk</translation>
 <translation id="4549791035683739768">Det er ikke lagret noen fingeravtrykk på sikkerhetsnøkkelen</translation>
+<translation id="4550926046134589611">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Trykk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for å angre</translation>
 <translation id="4553526521109675518">Du må starte Chromebooken på nytt for å bytte enhetsspråket. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Dra over bilder for å søke med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3654,6 +3661,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4699357559218762027">(automatisk oppstart)</translation>
 <translation id="4701025263201366865">Pålogging av forelder</translation>
+<translation id="4701335814944566468">Vist i går</translation>
 <translation id="4708794300267213770">Vis låseskjermen ved oppvåkning etter hvilemodus</translation>
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gjenopprett innstillingene</translation>
@@ -3721,6 +3729,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="479536056609751218">Nettside – bare HTML</translation>
 <translation id="4796142525425001238">Alltid gjenopprett</translation>
 <translation id="4798236378408895261">Legg ved <ph name="BEGIN_LINK" />Bluetooth-logger<ph name="END_LINK" /> (Google-internt)</translation>
+<translation id="479863874072008121">Administrer enheter</translation>
 <translation id="4800839971935185386">Gjennomgå navne- og ikonoppdateringer</translation>
 <translation id="4801448226354548035">Skjul kontoer</translation>
 <translation id="4801512016965057443">Tillat mobildatabruk på andre nettverk</translation>
@@ -3794,6 +3803,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="48704129375571883">Legg til flere funksjoner</translation>
 <translation id="4870758487381879312">Skriv inn passordet du fikk fra administratoren, for å få informasjon om oppsett</translation>
 <translation id="4870903493621965035">Ingen sammenkoblede enheter</translation>
+<translation id="4870995365819149457">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og 1 app til.</translation>
 <translation id="4871308555310586478">Ikke fra Chrome Nettmarked.</translation>
 <translation id="4871322859485617074">PIN-koden inneholder ugyldige tegn.</translation>
 <translation id="4871370605780490696">Legg til bokmerke</translation>
@@ -4828,6 +4838,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5969728632630673489">Lukket et hurtigtastvarsel</translation>
 <translation id="5971037678316050792">kontrollere statusen og tilkoblingen for Bluetooth-adapteren</translation>
 <translation id="597235323114979258">Se flere destinasjoner</translation>
+<translation id="5972543790327947908">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> eller <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">Eksperimenttjeneste</translation>
 <translation id="5972708806901999743">Flytt øverst</translation>
 <translation id="5972826969634861500">Start <ph name="PRODUCT_NAME" /></translation>
@@ -4969,7 +4980,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6112931163620622315">Sjekk telefonen din</translation>
 <translation id="6113434369102685411">Angi standard søkemotor for Chrome-nettleseren og appoversikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">For å bruke Smart Lock, bytt til den primære brukerprofilen på telefonen din</translation>
-<translation id="611684075852771314">Disse loggene er lagret i Mine filer som</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
 <translation id="6119927814891883061">Gi enheten navnet <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fest denne siden til startsiden</translation>
@@ -5199,6 +5209,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6355789186038748882">Nettleser på forsøksstadiet (alfaversjon)! Noen funksjoner mangler eller er uferdige. Rapportér problemer via Hjelp &gt; «Rapportér et problem».</translation>
 <translation id="635609604405270300">Hold enheten påslått</translation>
 <translation id="63566973648609420">Bare de som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret av oss. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" /> eller <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Drage</translation>
 <translation id="6359706544163531585">Slå av lyst tema</translation>
 <translation id="6361850914223837199">Feildetaljer:</translation>
@@ -5717,6 +5728,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6900284862687837908">Bakgrunnsapp: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>
 <translation id="6900651018461749106">Logg på igjen for å oppdatere <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Er du sikker på at du vil slette denne søkemotoren?</translation>
 <translation id="6902066522699286937">Forhåndsutdrag av tekst til tale</translation>
 <translation id="6902336033320348843">Seksjonen støttes ikke: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Knytt enhet til domene</translation>
@@ -5960,6 +5972,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7149839598364933473">Konverter denne enheten til en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
+<translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7163202347044721291">Bekrefter aktiveringskoden …</translation>
@@ -5987,6 +6000,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7189234443051076392">Sørg for at det er nok plass på enheten</translation>
 <translation id="7189451821249468368">Du har ikke tilstrekkelige oppgraderinger for å registrere denne enheten. Ta kontakt med salgsavdelingen for å kjøpe flere. Hvis du tror dette er en feil, kan du ta kontakt med brukerstøtten.</translation>
 <translation id="7189965711416741966">Fingeravtrykket er lagt til.</translation>
+<translation id="7191063546666816478">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> apper til.</translation>
 <translation id="7191159667348037">Ukjent skriver (USB)</translation>
 <translation id="7193051357671784796">Denne appen er lagt til av organisasjonen din. Start appen på nytt for å fullføre installasjonen.</translation>
 <translation id="7193374945610105795">Ingen passord er lagret for <ph name="ORIGIN" /></translation>
@@ -6163,7 +6177,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7384687527486377545">Automatisk gjentakelse for tastaturet</translation>
 <translation id="7385490373498027129">Alle filer og lokale data for alle brukerne på denne <ph name="DEVICE_TYPE" />-enheten slettes permanent.</translation>
 <translation id="7385854874724088939">Det oppstod en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
-<translation id="7385896526023870365">Denne utvidelsen har ingen ytterligere nettstedstilgang.</translation>
 <translation id="7387273928653486359">Akseptabel</translation>
 <translation id="7387951778417998929">For å bruke en annen søkemotor enn standard, skriv inn snarveien for søkemotoren i adressefeltet, etterfulgt av hurtigtasten du foretrekker. Du kan også endre standard søkemotor her.</translation>
 <translation id="7388209873137778229">Kun støttede enheter vises.</translation>
@@ -6443,6 +6456,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659154729610375585">Vil du avslutte Inkognitomodus likevel?</translation>
 <translation id="7659297516559011665">Passord kun på denne enheten</translation>
+<translation id="7659336857671800422">Gjennomgå personvernveiledningen</translation>
 <translation id="7659584679870740384">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med administratoren for å få tillatelse til å logge på.</translation>
 <translation id="7661259717474717992">La nettsteder lagre og lese data i informasjonskapsler</translation>
 <translation id="7661451191293163002">Kunne ikke anskaffe noe registreringssertifikat.</translation>
@@ -7964,6 +7978,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> får tilgang til å redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Søk med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Eventuelle frakoblede data blir slettet.</translation>
+<translation id="9201117361710210082">Vist tidligere</translation>
 <translation id="9201220332032049474">Alternativer for skjermlås</translation>
 <translation id="9201842707396338580">Noe gikk galt. Kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilering aktivert</translation>

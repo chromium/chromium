@@ -1232,6 +1232,7 @@
           <ph name="LIST_ITEM" />नौकरी देने वाली कंपनियां या स्कूल, ब्राउज़िंग गतिविधि को ट्रैक कर सकते हैं<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />इंटरनेट सेवा देने वाली कंपनियां, वेब ट्रैफ़िक की निगरानी कर सकती हैं<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">अनदेखा कर दिया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के ज़रिए सेट किया जा सकता है.</translation>
 <translation id="483241715238664915">सुरक्षा चेतावनियां चालू करें</translation>
 <translation id="4838327282952368871">ख्वाब जैसा</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
@@ -1335,6 +1336,7 @@
 <translation id="5138227688689900538">कम दिखाएं</translation>
 <translation id="5145883236150621069">नीति प्रतिसाद में गड़बड़ी कोड मौजूद है</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> के लिए सूचनाओं को ब्लॉक किया गया है</translation>
+<translation id="514704532284964975"><ph name="URL" /> को इस बात की अनुमति चाहिए कि जब आप अपने फ़ोन से एनएफ़सी की सुविधा वाले डिवाइसों पर टैप करें, तब वह उन पर मौजूद जानकारी देख सके और उसमें बदलाव कर सके.</translation>
 <translation id="5148809049217731050">सीधा करके रखें</translation>
 <translation id="515292512908731282">सी4 (एन्वेलप)</translation>
 <translation id="5158275234811857234">कवर</translation>

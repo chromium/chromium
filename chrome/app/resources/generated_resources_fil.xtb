@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Kasalukuyang icon</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Huminto</translation>
+<translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1110155001042129815">Mag-intay</translation>
 <translation id="1110965959145884739">Piliin kung aling mga wika ang ii-install sa device na ito. Ibinabahagi ang mga file ng wika sa mga user para makatipid ng disk space. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projector</translation>
@@ -1034,6 +1035,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2022395138980869975">I-toggle ang side search</translation>
 <translation id="2023167225947895179">Maaaring mahulaan agad ang PIN na ito</translation>
 <translation id="202352106777823113">Masyadong matagal ang pag-download at pinahinto ito ng network.</translation>
+<translation id="2024195579772565064">I-delete ang search engine</translation>
 <translation id="2025632980034333559">Nag-crash ang <ph name="APP_NAME" />. Mag-click sa lobong ito upang i-reload ang extension.</translation>
 <translation id="2028449514182362831">Hindi gagana ang mga feature na nangangailangan ng mga sensor ng paggalaw</translation>
 <translation id="202918510990975568">Ilagay ang iyong password para i-configure ang seguridad at pag-sign in</translation>
@@ -1175,6 +1177,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162155940152307086">Magsisimula ang pag-sync sa sandaling umalis ka sa mga setting ng pag-sync</translation>
+<translation id="2162926944953615670">Walang available na profile ng eSIM</translation>
 <translation id="2163470535490402084">Mangyaring kumonekta sa Internet upang mag-sign in sa iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at 1 pang switch</translation>
@@ -1870,6 +1873,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2828650939514476812">Kumonekta sa Wi-Fi network</translation>
 <translation id="2831430281393059038">Sinusuportahan ang device</translation>
 <translation id="2832124733806557606">Puwedeng gumamit ng PIN ang iyong anak para mag-sign in sa o i-unlock ang device.</translation>
+<translation id="2835177225987815960">Mare-reset ang iyong kasalukuyang setup ng pag-scan, kasama ang anumang nakatalagang switch at kagustuhan sa bilis ng awtomatikong pag-scan.</translation>
 <translation id="2835547721736623118">Serbisyo ng pagkilala sa speech</translation>
 <translation id="2836269494620652131">Nag-crash</translation>
 <translation id="2836635946302913370">Hindi pinagana ng iyong administrator ang pag-sign in gamit ang username na ito.</translation>
@@ -2894,7 +2898,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3888586133700543064">Nakakatulong sa amin ang impormasyong ito na maunawaan nang mas mabuti ang iyong isyu sa Assistant. Sino-store ito nang hanggang 90 araw at paghihigpitan ang access sa mga naaangkop na engineering team at feedback team.</translation>
 <translation id="3888900458694486810">Isara ang side search</translation>
 <translation id="3890064827463908288">I-on ang Chrome Sync para gamitin ang Wi-Fi Sync</translation>
-<translation id="3892414795099177503">Idagdag ang OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">Magtalaga ng switch para sa “Susunod”</translation>
 <translation id="3893295674388762059">Para i-clear ang data, isara ang lahat ng Incognito window</translation>
 <translation id="3893536212201235195">Basahin at baguhin ang iyong mga setting ng accessibility</translation>
@@ -3516,6 +3519,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4547659257713117923">Walang Mga Tab Mula Sa Ibang Mga Device</translation>
 <translation id="4547672827276975204">Awtomatikong itakda</translation>
 <translation id="4549791035683739768">Walang naka-store na fingerprint sa iyong security key</translation>
+<translation id="4550926046134589611">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pindutin ang <ph name="MODIFIER_KEY_DESCRIPTION" /> para i-undo</translation>
 <translation id="4553526521109675518">Kailangan mong i-restart ang iyong Chromebook para mapalitan ang wika ng device. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Mag-drag ng mga larawan para maghanap gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3804,6 +3808,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="48704129375571883">Magdagdag ng mga karagdagang feature</translation>
 <translation id="4870758487381879312">Ilagay ang password na ibinigay ng admin para makuha ang impormasyon sa pag-configure</translation>
 <translation id="4870903493621965035">Walang nakapares na device</translation>
+<translation id="4870995365819149457">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at 1 pang app.</translation>
 <translation id="4871308555310586478">Hindi mula sa Chrome Web Store.</translation>
 <translation id="4871322859485617074">Naglalaman ang PIN ng mga invalid na character</translation>
 <translation id="4871370605780490696">Magdagdag ng bookmark</translation>
@@ -4839,6 +4844,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5969728632630673489">Na-dismiss ang abiso sa keyboard shortcut</translation>
 <translation id="5971037678316050792">Kontrolin ang estado at pagpapares ng Bluetooth adapter</translation>
 <translation id="597235323114979258">Tumingin pa ng mga destinasyon</translation>
+<translation id="5972543790327947908">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, o <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">No-op na Serbisyo</translation>
 <translation id="5972708806901999743">Ilipat sa itaas</translation>
 <translation id="5972826969634861500">Simulan ang <ph name="PRODUCT_NAME" /></translation>
@@ -4980,7 +4986,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6112931163620622315">Tingnan ang iyong telepono</translation>
 <translation id="6113434369102685411">Itakda ang iyong default na search engine para sa Chrome browser at <ph name="DEVICE_TYPE" /> Launcher</translation>
 <translation id="6113942107547980621">Para gamitin ang Smart Lock, lumipat sa profile ng pangunahing user sa iyong telepono</translation>
-<translation id="611684075852771314">Na-save ang mga log na ito sa Aking Mga File bilang</translation>
 <translation id="6116921718742659598">Baguhin ang mga setting ng wika at input</translation>
 <translation id="6119927814891883061">Pangalanan ang device na <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">I-pin ang pahinang ito screen ng Simula...</translation>
@@ -5210,6 +5215,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6355789186038748882">Pang-eksperimento (alpha-quality) na browser! Nawawala o hindi kumpleto ang ilang feature. Iulat ang mga isyu sa : Tulong &gt; "Mag-ulat ng isyu...".</translation>
 <translation id="635609604405270300">Panatilihing naka-on ang device</translation>
 <translation id="63566973648609420">Ang taong may alam ng passphrase mo lang ang makakabasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o iniimbak ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, kakailanganin mong <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" /> o <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6359706544163531585">I-disable ang maliwanag na tema</translation>
 <translation id="6361850914223837199">Mga detalye ng error:</translation>
@@ -5728,6 +5734,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6900284862687837908">Background App: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900651018461749106">Mag-sign in ulit para i-update ang <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Sigurado ka bang gusto mong i-delete ang search engine na ito?</translation>
 <translation id="6902066522699286937">Boses na ipi-preview</translation>
 <translation id="6902336033320348843">Hindi sinusuportahan ang seksyon: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Isama ang device sa domain</translation>
@@ -5971,6 +5978,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="7149839598364933473">I-convert ang device na ito sa <ph name="DEVICE_OS" /> device.</translation>
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
+<translation id="7152478047064750137">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot</translation>
 <translation id="7154130902455071009">Gawing ito ang iyong panimulang pahina: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kasalukuyang larawan mula sa camera o file</translation>
 <translation id="7163202347044721291">Vine-verify ang code sa pag-activate...</translation>
@@ -5998,6 +6006,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7189234443051076392">Tiyaking may sapat na espasyo sa iyong device</translation>
 <translation id="7189451821249468368">Wala kang sapat na mga upgrade para i-enroll ang device na ito. Makipag-ugnayan sa sales para bumili ng higit pa. Kung naniniwala kang nakikita mo ang mensaheng ito dahil sa error, makipag-ugnayan sa suporta.</translation>
 <translation id="7189965711416741966">Naidagdag ang fingerprint.</translation>
+<translation id="7191063546666816478">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at <ph name="NUMBER_OF_OTHER_APPS" /> pang app.</translation>
 <translation id="7191159667348037">Hindi Alam na Printer (USB)</translation>
 <translation id="7193051357671784796">Idinagdag ng iyong organisasyon ang app na ito. I-restart ang app para tapusin ang pag-install nito.</translation>
 <translation id="7193374945610105795">Walang naka-save na password para sa <ph name="ORIGIN" /></translation>
@@ -6174,7 +6183,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7384687527486377545">Awtomatikong pag-uulit ng keyboard</translation>
 <translation id="7385490373498027129">Permanenteng made-delete ang lahat ng file at lokal na data para sa lahat ng user sa <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="7385854874724088939">May nangyaring mali noong sinusubukang mag-print.  Pakisuri ang iyong printer at subukang muli.</translation>
-<translation id="7385896526023870365">Walang karagdagang access sa site ang extension na ito.</translation>
 <translation id="7387273928653486359">Katanggap-tanggap</translation>
 <translation id="7387951778417998929">Para gumamit ng search engine na hindi ang default, i-type ang shortcut nito sa address bar kasunod ang iyong gustong keyboard shortcut. Puwede mo ring palitan ang iyong default na search engine dito.</translation>
 <translation id="7388209873137778229">Ang mga sinusuportahang device lang ang ipinapakita.</translation>

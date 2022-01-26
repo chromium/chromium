@@ -324,7 +324,6 @@
 <translation id="5423849171846380976">מופעל</translation>
 <translation id="5430931332414098647">שיתוף אינטרנט מיידי בין ניידים</translation>
 <translation id="5431318178759467895">צבע</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">גלישה כאורח</translation>
 <translation id="54609108002486618">מנוהל</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{נותר ניסיון אחד ({0})}two{נותרו {0} ניסיונות}many{נותרו {0} ניסיונות}other{נותרו {0} ניסיונות}}</translation>

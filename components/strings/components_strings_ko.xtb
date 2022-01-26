@@ -1219,6 +1219,7 @@
           <ph name="LIST_ITEM" />직장 또는 학교에서 탐색 활동을 추적할 수 있습니다.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />인터넷 서비스 제공업체에서 웹 트래픽을 모니터링할 수 있습니다.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">클라우드 사용자 정책으로만 설정할 수 있는 정책이므로 무시되었습니다.</translation>
 <translation id="483241715238664915">경고 켜기</translation>
 <translation id="4838327282952368871">꿈</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>

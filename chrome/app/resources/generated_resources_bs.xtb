@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1103523840287552314">Uvijek prevodi <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Zaustavi</translation>
+<translation id="1108938384783527433">Sihnronizacija historije</translation>
 <translation id="1110155001042129815">Sačekaj</translation>
 <translation id="1110965959145884739">Odaberite koje jezike želite instalirati na ovaj uređaj. Fajlovi za jezik se dijele između korisnika da se uštedi prostor na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -1706,6 +1707,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2684004000387153598">Da nastavite, kliknite na Uredu, a zatim kliknite na Dodaj osobu da kreirate novi profil za svoju adresu e-pošte.</translation>
 <translation id="2687403674020088961">Blokiraj sve kolačiće (ne preporučuje se)</translation>
 <translation id="2687407218262674387">Googleovi uslovi korištenja usluge</translation>
+<translation id="2687621393791886981">Pitaj me kasnije</translation>
 <translation id="2688196195245426394">Pogreška pri registraciji uređaja na poslužitelju: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Prikaži opcije jezika</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -2896,7 +2898,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3888586133700543064">Ove informacije nam pomažu da bolje razumijemo problem s Asistentom. Pohranjuju se do 90 dana i pristup je ograničen na određene timove za inženjering i povratne informacije.</translation>
 <translation id="3888900458694486810">Zatvaranje bočnog pretraživanja</translation>
 <translation id="3890064827463908288">Uključivanje Sinhronizacije Chromea radi korištenja WiFi sinhronizacije</translation>
-<translation id="3892414795099177503">Dodaj OpenVPN/L2TP...</translation>
 <translation id="389313931326656921">Dodijeli prekidač za "Naprijed"</translation>
 <translation id="3893295674388762059">Da obrišete podatke, zatvorite sve anonimne prozore</translation>
 <translation id="3893536212201235195">Čitanje i mijenjanje postavki pristupačnosti</translation>
@@ -4988,7 +4989,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6112931163620622315">Provjerite telefon</translation>
 <translation id="6113434369102685411">Postavite zadani pretraživač za preglednik Chrome i pokretač uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Za korištenje Pametnog zaključavanja, na telefonu prebacite na profil primarnog korisnika</translation>
-<translation id="611684075852771314">Ovi zapisnici su sačuvani u Mojim fajlovima kao</translation>
 <translation id="6116921718742659598">Promijenite postavke jezika i unosa</translation>
 <translation id="6119927814891883061">Imenovanje uređaja u <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Zakači ovu stranicu za Početni ekran…</translation>
@@ -5981,6 +5981,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
 <translation id="7149839598364933473">Pretvorite ovaj uređaj u <ph name="DEVICE_OS" /> uređaj.</translation>
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
+<translation id="7152478047064750137">Za ovu ekstenziju nisu potrebna posebna odobrenja</translation>
 <translation id="7154130902455071009">Promijenite početnu stranicu na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Postojeća fotografija sa kamere ili fajl</translation>
 <translation id="7163202347044721291">Potvrđivanje koda za aktivaciju...</translation>
@@ -6185,7 +6186,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7384687527486377545">Automatsko ponavljanje tastature</translation>
 <translation id="7385490373498027129">Trajno ćete izbrisati sve fajlove i lokalne podatke za sve korisnike na ovom uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7385854874724088939">Došlo je do problema pri pokušaju štampanja.  Provjerite štampač i pokušajte ponovo.</translation>
-<translation id="7385896526023870365">Ova ekstenzija nema dodatnog pristupa web lokacijama.</translation>
 <translation id="7387273928653486359">Prihvatljivo</translation>
 <translation id="7387951778417998929">Da koristite drugi pretraživač mimo zadanog, unesite njegovu prečicu na traci za adresu, a nakon toga pritisnite željenu prečicu na tastaturi. Zadani pretraživač također možete promijeniti ovdje.</translation>
 <translation id="7388209873137778229">Prikazani su samo podržani uređaji.</translation>
@@ -7225,6 +7225,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Dozvoljeno: <ph name="PERMISSION" /> i još <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Prvo pitaj (preporučeno)</translation>
+<translation id="8414249071344507766">Uspomene su skrivene na dva dana</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kućište)</translation>
 <translation id="8417548266957501132">Lozinka roditelja</translation>
 <translation id="8418445294933751433">&amp;Prikaži kao karticu</translation>

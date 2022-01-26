@@ -105,6 +105,7 @@
 <translation id="1100504063505580045">Cari işarə</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
 <translation id="1108600514891325577">Dayandırın</translation>
+<translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1110155001042129815">Gözləyin</translation>
 <translation id="1110965959145884739">Bu cihazda hansı dilləri quraşdıracağınızı seçin. Diskdə yer saxlamaq üçün dil faylları istifadəçilər arasında paylaşılır. <ph name="BEGIN_LINK_LEARN_MORE" />Ətraflı məlumat<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -2881,7 +2882,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3888586133700543064">Bu məlumat Assistent ilə bağlı problemləri daha yaxşı anlamağımıza kömək edir. Bu, 90 günə qədər saxlanılır. Müvafiq texniki və rəy komandaları üçün giriş məhduddur.</translation>
 <translation id="3888900458694486810">Yan axtarışı bağlayın</translation>
 <translation id="3890064827463908288">Wi-Fi Sinxronlaşdırmasını istifadə etmək üçün Chrome Sinxronlaşdırmasını aktiv edin</translation>
-<translation id="3892414795099177503">OpenVPN / L2TP əlavə edin...</translation>
 <translation id="389313931326656921">"Sonrakı" əməliyyatına keçirici təyin edin</translation>
 <translation id="3893295674388762059">Datanı silmək üçün bütün Anonim pəncərələri bağlayın</translation>
 <translation id="3893536212201235195">Əlçatımlıq ayarlarını oxuyun və dəyişin</translation>
@@ -4968,7 +4968,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6112931163620622315">Telefonunuzu yoxlayın</translation>
 <translation id="6113434369102685411">Chrome brauzeri və <ph name="DEVICE_TYPE" /> Başladıcısı üçün defolt axtarış sisteminizi ayarlayın</translation>
 <translation id="6113942107547980621">Smart Lock istifadə etmək üçün telefonda əsas istifadəçi profilinə keçin</translation>
-<translation id="611684075852771314">Bu qeydlər Fayllarımda aşağıdakı kimi saxlanılıb</translation>
 <translation id="6116921718742659598">Dil və daxiletmə ayarlarını dəyişdirin...</translation>
 <translation id="6119927814891883061">Cihazı <ph name="DEVICE_NAME" /> adlandırın</translation>
 <translation id="6120205520491252677">Ekrana başlamaq üçün bu səhifəni sancın...</translation>
@@ -5961,6 +5960,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="7149839598364933473">Bu cihazı <ph name="DEVICE_OS" /> cihazına çevirin.</translation>
 <translation id="7149893636342594995">Son 24 saat</translation>
+<translation id="7152478047064750137">Bu artırma xüsusi icazələr tələb etmir</translation>
 <translation id="7154130902455071009">Başlanğıc səhifənizi buna dəyişin: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Kamera və ya fayldan mövcud foto</translation>
 <translation id="7163202347044721291">Aktivləşdirmə kodu doğrulanır...</translation>
@@ -6165,7 +6165,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7384687527486377545">Klaviaturanın avto-təkrarlanması</translation>
 <translation id="7385490373498027129">Bu <ph name="DEVICE_TYPE" /> cihazındakı bütün istifadəçilər üçün bütün fayllar və yerli data həmişəlik silinəcək.</translation>
 <translation id="7385854874724088939">Çap etməyə çalışarkən xəta oldu. Printeri yoxlayın və yenidən cəhd edin.</translation>
-<translation id="7385896526023870365">Əlavə saytların bu artırmaya girişi yoxdur.</translation>
 <translation id="7387273928653486359">Məqbul</translation>
 <translation id="7387951778417998929">Defolt olmayan axtarış sistemini istifadə etmək üçün onun qısayolunu, sonra da istədiyiniz klaviatura qısayolunu ünvan panelinə yazın. Defolt axtarış sisteminizi burada da dəyişə bilərsiniz.</translation>
 <translation id="7388209873137778229">Yalnız dəstəklənən cihazlar göstərilir.</translation>

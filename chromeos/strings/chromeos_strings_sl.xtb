@@ -172,6 +172,7 @@
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
 <translation id="3583278742022654445">Šibka moč signala. Poskusite se premakniti bliže viru signala omrežja Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterija je polna</translation>
+<translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka zakasnitev do spletnih mest HTTPS.</translation>
 <translation id="3689839747745352263">Preizkus <ph name="TEST_NAME" /></translation>
@@ -324,7 +325,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Brskajte kot gost</translation>
 <translation id="54609108002486618">Upravljan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Na voljo imate še {0} poskus}one{Na voljo imate še {0} poskus}two{Na voljo imate še {0} poskusa}few{Na voljo imate še {0} poskuse}other{Na voljo imate še {0} poskusov}}</translation>
@@ -423,6 +423,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6905724422583748843">Nazaj na stran <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Pokrov optičnega bralnika je odprt. Zaprite ga in poskusite znova.</translation>
 <translation id="6911383237894364323">Povezave s strežniki za predstavnost ni bilo mogoče vzpostaviti.</translation>
+<translation id="6935486296377631201">Ohranjevalnik zaslona</translation>
 <translation id="6957231940976260713">Ime storitve</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>

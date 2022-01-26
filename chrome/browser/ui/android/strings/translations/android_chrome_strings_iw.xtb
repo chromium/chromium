@@ -31,7 +31,6 @@
 <translation id="114825011539563458">אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה מרוכזים במקום אחד</translation>
 <translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1154704303112745282">הדף הזה לא זמין ללא חיבור לאינטרנט: <ph name="VIOLATED_URL" /></translation>
-<translation id="116280672541001035">צרכת</translation>
 <translation id="1171770572613082465">הקשה על הלחצן "אתרים נבחרים" תציג אתרים פופולריים</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
@@ -129,7 +128,6 @@
 <translation id="1754404134430936718">הטקסט הועתק</translation>
 <translation id="1772137089884020309">רשימת תיקיות הסימניות סגורה</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
-<translation id="1782483593938241562">תאריך סיום <ph name="DATE" /></translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
 <translation id="1795251344124198516">‏תנאים והגבלות נוספים של Chrome ושל Chrome OS</translation>
@@ -138,7 +136,6 @@
 <translation id="1829244130665387512">חיפוש בדף</translation>
 <translation id="1832459821645506983">כן, אני רוצה</translation>
 <translation id="1843805151597803366">‏כדי לשפר את התרגומים, יש לאפשר לחיפוש Google להשתמש בדף הנוכחי</translation>
-<translation id="1856325424225101786">לאפס את מצב הטעינה המהירה?</translation>
 <translation id="1868024384445905608">‏הורדת קבצים ב-Chrome מתבצעת עכשיו מהר יותר</translation>
 <translation id="1877026089748256423">‏Chrome אינו מעודכן</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
@@ -199,7 +196,6 @@
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2154484045852737596">עריכת כרטיס</translation>
 <translation id="2154710561487035718">העתקת כתובת אתר</translation>
-<translation id="2156074688469523661">אתרים שנותרו (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">‏כדי לשתף משהו מהטלפון שלך עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות Chrome בשני המכשירים</translation>
 <translation id="2158408438301413340">‏Chrome לא הצליח לבדוק את כל הסיסמאות</translation>
 <translation id="2169830938017475061">עכשיו</translation>
@@ -283,7 +279,6 @@
 <translation id="2604446170045642109">בהגדרות, יש לך אפשרות לכבות את העיצוב הכהה באתרים.</translation>
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
-<translation id="2631006050119455616">חסכת</translation>
 <translation id="2634905176438867146">‏כך מגדירים את Chrome כדפדפן ברירת המחדל</translation>
 <translation id="2645657967708199252">חיבור ה-<ph name="CONNECTION_TYPE" /> עשוי להאט את ההורדה</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
@@ -300,7 +295,6 @@
 <translation id="2718352093833049315">‏רק ב-Wi-Fi</translation>
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2723001399770238859">אודיו</translation>
-<translation id="2728754400939377704">מיון לפי אתר</translation>
 <translation id="2732063072010454421">אפשר ליהנות מחוויה טובה יותר בחיפוש קולי</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
@@ -379,7 +373,6 @@
 <translation id="3123734510202723619">הודעות</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
-<translation id="3157842584138209013">בעזרת הלחצן 'אפשרויות נוספות' אפשר לבדוק את החיסכון בצריכת נתונים</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -415,7 +408,6 @@
 <translation id="3297344142967351106">האסיסטנט</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
-<translation id="3341058695485821946">בדיקת החיסכון בצריכת נתונים</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
 <translation id="3367813778245106622">יש להיכנס שוב כדי להתחיל בסנכרון</translation>
@@ -466,7 +458,6 @@
 <translation id="3632295766818638029">חשוף סיסמה</translation>
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
-<translation id="3658159451045945436">האיפוס גורם למחיקת ההיסטוריה של החיסכון בנתונים, כולל רשימת האתרים שביקרת בהם.</translation>
 <translation id="3677911431265050325">בקשת אתר לנייד</translation>
 <translation id="3687645719033307815">מוצגת לך תצוגה מקדימה של הדף הזה</translation>
 <translation id="3690369331356918524">במצב הזה המערכת מזהירה אותך אם סיסמאות נחשפות כתוצאה מפרצה באבטחת המידע</translation>
@@ -546,7 +537,6 @@
 <translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
 <translation id="4170011742729630528">השירות אינו זמין. יש לנסות שוב מאוחר יותר.</translation>
-<translation id="4179980317383591987">נעשה שימוש ב-<ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196597275619698563">ליצירת כרטיס</translation>
@@ -578,7 +568,6 @@
 <translation id="4404568932422911380">ללא סימניות</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
 <translation id="4409271659088619928">מנוע החיפוש שלך הוא <ph name="DSE" />. ניתן לעיין בהוראות שלו לגבי מחיקת היסטוריית החיפושים, אם רלוונטי.</translation>
-<translation id="4411535500181276704">מצב טעינה מהירה</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
 <translation id="4450672886426705087">‏תוצאות חיפוש מ-Google.</translation>
@@ -678,7 +667,6 @@
 <translation id="4909709702739934280">הדפדפן מנוהל על ידי מנהל המערכת</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4912413785358399818">העברת הכרטיסייה</translation>
-<translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{דף אחד (#)}two{# דפים}many{# דפים}other{# דפים}}</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
@@ -846,7 +834,6 @@
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="5862731021271217234">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון</translation>
-<translation id="5864174910718532887">פרטים: ממוינות לפי שם האתר</translation>
 <translation id="5864419784173784555">בהמתנה להורדה נוספת…</translation>
 <translation id="5865733239029070421">‏שליחת דוחות קריסה וסטטיסטיקת שימוש אל Google באופן אוטומטי</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
@@ -856,8 +843,6 @@
 <translation id="5906513782029855931">‏אם מכירים כתובות של אתרים, Google Assistant יכולה לעזור להשלים משימות. ניתן להשבית את Assistant דרך ההגדרות של Chrome.</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
-<translation id="5937580074298050696"><ph name="AMOUNT" /> נחסכו</translation>
-<translation id="5939518447894949180">איפוס</translation>
 <translation id="5942872142862698679">‏שימוש ב-Google לחיפוש</translation>
 <translation id="5945035219773565305">המלצה נוכחית:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">מוצג דף פעיל</translation>
@@ -891,7 +876,6 @@
 <translation id="60923314841986378">נותרו <ph name="HOURS" /> שעות</translation>
 <translation id="6095578583683628124">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
-<translation id="6111020039983847643">צרכת בפועל</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
@@ -903,7 +887,6 @@
 <translation id="614940544461990577">כדאי לנסות:</translation>
 <translation id="6150320133806434356">הסימנייה נשמרה</translation>
 <translation id="6154478581116148741">יש להפעיל נעילת מסך ב'הגדרות' כדי לייצא את הסיסמאות מהמכשיר הזה</translation>
-<translation id="6159335304067198720">חיסכון בצריכת נתונים בשיעור של <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">ניקוי ההיסטוריה בכל המכשירים המסונכרנים.</translation>
 <translation id="6162892189396105610">‏מערכת Chrome טוענת מראש דפים שסביר שהמשתמש יעבור אליהם.</translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>
@@ -938,7 +921,6 @@
 <translation id="6345878117466430440">סימון כפריט שנקרא</translation>
 <translation id="6363990818884053551">כדי להתחיל בסנכרון עליך לאמת את זהותך</translation>
 <translation id="6364438453358674297">האם להסיר את ההצעה מההיסטוריה?</translation>
-<translation id="6378173571450987352">פרטים: מיון לפי נפח הנתונים שנצרכו</translation>
 <translation id="6379829913050047669">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">‏מערכת Chrome טוענת מראש בתדירות גבוהה יותר דפים שסביר שהמשתמש יעבור אליהם. ההגדרה הזו יכולה לגרום לשימוש מוגבר בנתונים.</translation>
 <translation id="6395288395575013217">קישור</translation>
@@ -1002,7 +984,6 @@
 <translation id="6637100877383020115">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_UMA_LINK" />ניהול<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">חסימה כל הזמן</translation>
 <translation id="6643016212128521049">ניקוי</translation>
-<translation id="6643649862576733715">מיון לפי כמות הנתונים שנחסכו</translation>
 <translation id="6645629752388991326">שליטה במכשירים שיקבלו הרשאה לכניסה לחשבון, תוך שימוש בטלפון הזה כמפתח אבטחה.</translation>
 <translation id="6648459603387803038">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. בנוסף, ניתן לנהל את הפעילות במכשיר הזה מחוץ ל-Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוסף}two{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}many{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}other{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}}</translation>
@@ -1113,10 +1094,8 @@
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="729975465115245577">אין במכשיר אפליקציה לאחסון קובץ הסיסמאות.</translation>
-<translation id="7302081693174882195">פרטים: מיון לפי נפח הנתונים שנחסכו</translation>
 <translation id="7304873321153398381">‏אין חיבור לאינטרנט. ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך.</translation>
 <translation id="7313188324932846546">יש להקיש כדי להגדיר סנכרון</translation>
-<translation id="7328017930301109123">‏במצב טעינה מהירה, Chrome טוען דפים מהר יותר ומפחית את השימוש בנתונים בשיעור של עד 60 אחוזים.</translation>
 <translation id="7332075081379534664">הכניסה בוצעה בהצלחה</translation>
 <translation id="7333031090786104871">עדיין מוסיף את האתר הקודם</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
@@ -1134,12 +1113,10 @@
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
 <translation id="741204030948306876">כן, אני רוצה</translation>
-<translation id="7413229368719586778">תאריך התחלה <ph name="DATE" /></translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>
 <translation id="7431991332293347422">קביעת אופן השימוש בהיסטוריית הגלישה להתאמה אישית של החיפוש ועוד</translation>
 <translation id="7435356471928173109">מנהל המערכת כיבה את התכונה הזו</translation>
 <translation id="7437998757836447326">‏יציאה מ-Chrome</translation>
-<translation id="7438641746574390233">‏כשמצב הטעינה המהירה מופעל, Chrome משתמש בשרתים של Google כדי להאיץ את טעינת הדפים. אם מדובר בדפים איטיים מאוד, במצב הטעינה המהירה הם עוברים שכתוב כך שרק התוכן החיוני שלהם נטען. מצב הטעינה המהירה לא חל על כרטיסיות מצב אנונימי.</translation>
 <translation id="7443901082822119557">‏במצב פרטי, אתרים לא יכולים להשתמש בקובצי ה-cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים שונים, למשל, לצורך התאמה אישית של מודעות. ייתכן שתכונות באתרים מסוימים לא יפעלו כראוי.</translation>
 <translation id="7444811645081526538">קטגוריות נוספות</translation>
 <translation id="7453467225369441013">‏הפעולה תוציא אותך מרוב האתרים אבל לא מחשבון Google שלך.</translation>
@@ -1157,7 +1134,6 @@
 <translation id="7485033510383818941">כדי לרענן את התוכן בפיד, מושכים את הדף כלפי מטה</translation>
 <translation id="749294055653435199">‏Google Lens לא זמין במכשיר הזה</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
-<translation id="7494974237137038751">חיסכון בחבילת הגלישה</translation>
 <translation id="7498271377022651285">נא להמתין…</translation>
 <translation id="750228856503700085">אין עדכונים זמינים</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
@@ -1213,7 +1189,6 @@
 <translation id="7808889146555843082">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="SITE" />.</translation>
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
-<translation id="7821588508402923572">ערכי החיסכון בנתונים יופיעו כאן</translation>
 <translation id="78270725016672455">התקבלה מהמחשב בקשה לרשום את המכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
@@ -1313,7 +1288,6 @@
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
-<translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
 <translation id="8352996530981010042">לא ניתן להוריד תגובות. אפשר לנסות שוב.</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="835847953965672673">שוחזרו <ph name="NUMBER_OF_DOWNLOADS" /> הורדות</translation>

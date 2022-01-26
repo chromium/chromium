@@ -172,6 +172,7 @@
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="3583278742022654445">Mahina ang signal. Subukang mas lumapit sa source ng signal ng Wi-Fi.</translation>
 <translation id="3595596368722241419">Puno na ang baterya</translation>
+<translation id="3603829704940252505">Avatar</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
 <translation id="3689839747745352263">Pagsusuri sa <ph name="TEST_NAME" /></translation>
@@ -324,7 +325,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5423849171846380976">Na-activate</translation>
 <translation id="5430931332414098647">Instant na Pag-tether</translation>
 <translation id="5431318178759467895">Kulay</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Mag-browse bilang Bisita</translation>
 <translation id="54609108002486618">Pinamamahalaan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} pagsubok na lang ang natitira}one{{0} pagsubok na lang ang natitira}other{{0} na pagsubok na lang ang natitira}}</translation>
@@ -423,6 +423,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6905724422583748843">Bumalik sa <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Nakabukas ang takip ng scanner. Isara ang takip at subukan ulit.</translation>
 <translation id="6911383237894364323">Hindi makakonekta sa mga media server</translation>
+<translation id="6935486296377631201">Screensaver</translation>
 <translation id="6957231940976260713">Pangalan ng serbisyo</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
 <translation id="6965382102122355670">OK</translation>

@@ -31,7 +31,6 @@
 <translation id="114825011539563458">Todos os controles de privacidade e segurança mais importantes em um só lugar</translation>
 <translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1154704303112745282">Página indisponível off-line: <ph name="VIOLATED_URL" /></translation>
-<translation id="116280672541001035">Dados usados</translation>
 <translation id="1171770572613082465">Toque no botão "Sites famosos" para ver os sites muito acessados</translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1177863135347784049">Personalizado</translation>
@@ -129,7 +128,6 @@
 <translation id="1754404134430936718">Texto copiado</translation>
 <translation id="1772137089884020309">A lista de pastas de favoritos está fechada</translation>
 <translation id="1779766957982586368">Fechar janela</translation>
-<translation id="1782483593938241562">Data de término: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792959175193046959">Altere o local padrão de download a qualquer momento</translation>
 <translation id="1795251344124198516">Termos de Serviço adicionais do Google Chrome e do Chrome OS</translation>
@@ -138,7 +136,6 @@
 <translation id="1829244130665387512">Encontrar na página</translation>
 <translation id="1832459821645506983">Sim, vamos lá</translation>
 <translation id="1843805151597803366">Para ver traduções melhores, permita que a Pesquisa Google use a página atual</translation>
-<translation id="1856325424225101786">Redefinir o Modo Lite?</translation>
 <translation id="1868024384445905608">Agora o Chrome faz o download de arquivos mais rapidamente</translation>
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
@@ -199,7 +196,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 <translation id="2149973817440762519">Editar favoritos</translation>
 <translation id="2154484045852737596">Editar cartão</translation>
 <translation id="2154710561487035718">Copiar URL</translation>
-<translation id="2156074688469523661">Sites restantes (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">Para compartilhar conteúdo do seu smartphone com outro dispositivo, ative a sincronização nas configurações do Chrome nos dois dispositivos</translation>
 <translation id="2158408438301413340">Não foi possível verificar todas as senhas com o Chrome</translation>
 <translation id="2169830938017475061">Agora</translation>
@@ -283,7 +279,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2604446170045642109">Nas configurações, é possível desativar o tema escuro para sites.</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
-<translation id="2631006050119455616">Salvo</translation>
 <translation id="2634905176438867146">Aprenda a definir o Chrome como o navegador padrão</translation>
 <translation id="2645657967708199252">Sua conexão <ph name="CONNECTION_TYPE" /> pode deixar o download mais lento</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
@@ -300,7 +295,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2718846868787000099">Os sites que você visita podem ver suas preferências para exibir conteúdo nos seus idiomas preferidos</translation>
 <translation id="2723001399770238859">áudio</translation>
-<translation id="2728754400939377704">Classificar por site</translation>
 <translation id="2732063072010454421">Tenha uma melhor experiência de pesquisa por voz</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Toque em uma palavra para pesquisar instantaneamente ou ver as ações relacionadas</translation>
@@ -379,7 +373,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3123734510202723619">Anúncios</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
-<translation id="3157842584138209013">Veja o volume de dados que você economizou no botão Mais opções</translation>
 <translation id="3166827708714933426">Atalhos de guias e janelas</translation>
 <translation id="316694332262407393">O Chrome já está aberto.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -415,7 +408,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3297344142967351106">Assistente por voz</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
-<translation id="3341058695485821946">Veja o volume de dados que você economizou</translation>
 <translation id="3341262203274374114">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="3359667936385849800">Usar o provedor de serviços atual</translation>
 <translation id="3367813778245106622">Faça login novamente para começar a sincronizar</translation>
@@ -466,7 +458,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3632295766818638029">Reautenticar para ver senha</translation>
 <translation id="363596933471559332">Faça login automaticamente nos websites usando as credenciais armazenadas. Se o recurso estiver desativado, será preciso fazer a verificação sempre antes de fazer login em um website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
-<translation id="3658159451045945436">A redefinição limpa o histórico da economia de dados, incluindo a lista de sites visitados.</translation>
 <translation id="3677911431265050325">Solicitar site móvel</translation>
 <translation id="3687645719033307815">Esta é uma visualização dessa página</translation>
 <translation id="3690369331356918524">Avisa caso suas senhas sejam expostas em uma violação de dados</translation>
@@ -546,7 +537,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
-<translation id="4179980317383591987"><ph name="AMOUNT" /> usado(s)</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195643157523330669">Abrir em uma nova guia</translation>
 <translation id="4196597275619698563">Criar card</translation>
@@ -578,7 +568,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4404568932422911380">Nenhum favorito</translation>
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4409271659088619928">Seu mecanismo de pesquisa é o <ph name="DSE" />. Veja as instruções dele para excluir o histórico de pesquisa, se aplicável.</translation>
-<translation id="4411535500181276704">Modo Lite</translation>
 <translation id="4415276339145661267">Gerenciar sua Conta do Google</translation>
 <translation id="4425140285732600465">Monitorando o preço. Receba alertas se houver uma redução no preço em algum site.</translation>
 <translation id="4450672886426705087">Resultados da pesquisa do Google.</translation>
@@ -588,6 +577,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4472118726404937099">Para sincronizar e personalizar vários dispositivos, faça login e ative a sincronização</translation>
 <translation id="4479839115899251637">Excluir da lista de leitura</translation>
 <translation id="4479972344484327217">Instalando <ph name="MODULE" /> para o Chrome…</translation>
+<translation id="4484496141267039529">Sem conexão. Tente novamente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de app Chrome serão excluídos permanentemente. Isso inclui todos os arquivos, configurações, contas, bancos de dados etc.</translation>
 <translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4504667196171871375">Com Wi-Fi e dados móveis</translation>
@@ -678,7 +668,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4909709702739934280">O navegador é gerenciado pelo seu administrador</translation>
 <translation id="4910889077668685004">Apps de pagamento</translation>
 <translation id="4912413785358399818">Mover guia</translation>
-<translation id="4913161338056004800">Redefinir estatísticas</translation>
 <translation id="4913169188695071480">Parar de atualizar</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# página}one{# página}other{# páginas}}</translation>
 <translation id="4925120120285606924">Captura de tela <ph name="CURRENT_DATE_ISO" /></translation>
@@ -846,7 +835,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5862731021271217234">Para ver as guias dos seus outros dispositivos, ative a sincronização</translation>
-<translation id="5864174910718532887">Detalhes: classificados por nome do site</translation>
 <translation id="5864419784173784555">Aguardando outro download…</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
@@ -856,8 +844,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5906513782029855931">Ao saber os URLs de sites, o Google Assistente pode ajudar você a realizar tarefas. É possível desativar o Assistente nas configurações do Chrome.</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5919204609460789179">Atualize <ph name="PRODUCT_NAME" /> para iniciar a sincronização</translation>
-<translation id="5937580074298050696"><ph name="AMOUNT" /> economizado(s)</translation>
-<translation id="5939518447894949180">Redefinir</translation>
 <translation id="5942872142862698679">Usando o Google para pesquisar</translation>
 <translation id="5945035219773565305">Recomendação atual:  <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Visualizando página ativa</translation>
@@ -891,7 +877,6 @@ Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão dispon
 <translation id="60923314841986378"><ph name="HOURS" /> horas restantes</translation>
 <translation id="6095578583683628124">Se o Google também for seu mecanismo de pesquisa padrão, você receberá sugestões melhores e relevantes para o contexto</translation>
 <translation id="6108923351542677676">Configuração em andamento...</translation>
-<translation id="6111020039983847643">dados usados</translation>
 <translation id="6112702117600201073">Atualizando página</translation>
 <translation id="6122831415929794347">Desativar "Navegação segura"?</translation>
 <translation id="6127379762771434464">Item removido</translation>
@@ -903,7 +888,6 @@ Os testes dessa tecnologia ainda estão em desenvolvimento ativo e estão dispon
 <translation id="614940544461990577">Tente:</translation>
 <translation id="6150320133806434356">Favorito salvo</translation>
 <translation id="6154478581116148741">Ative o bloqueio da tela em Configurações para exportar suas senhas deste dispositivo</translation>
-<translation id="6159335304067198720">Economia de dados de <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Limpa o histórico de todos os dispositivos sincronizados.</translation>
 <translation id="6162892189396105610">Pré-carrega páginas que o Chrome acredita que você irá acessar.</translation>
 <translation id="6186394685773237175">Não foram encontradas senhas comprometidas</translation>
@@ -938,7 +922,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6345878117466430440">Marcar como lida</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, confirme sua identidade</translation>
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
-<translation id="6378173571450987352">Detalhes: classificados pela quantidade de dados usados</translation>
 <translation id="6379829913050047669">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Pré-carrega com mais frequência páginas que o Chrome acredita serem de seu interesse. Esta configuração pode resultar em aumento no uso de dados.</translation>
 <translation id="6395288395575013217">LINK</translation>
@@ -1002,7 +985,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6637100877383020115">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6643016212128521049">Limpar</translation>
-<translation id="6643649862576733715">Classificar pelo volume de dados economizados</translation>
 <translation id="6645629752388991326">Usar este dispositivo como uma chave de segurança para controlar quais dispositivos podem fazer login.</translation>
 <translation id="6648459603387803038">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1113,10 +1095,8 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7291910923717764901">Descrições de imagens adicionadas a esta página</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="729975465115245577">Seu dispositivo não tem um app para armazenar o arquivo de senhas.</translation>
-<translation id="7302081693174882195">Detalhes: classificados pela quantidade de dados economizados</translation>
 <translation id="7304873321153398381">Off-line. Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7313188324932846546">Toque para configurar sincronização</translation>
-<translation id="7328017930301109123">Com o Modo Lite, as páginas são carregadas mais rapidamente no Chrome, e há uma economia de dados de até 60 por cento.</translation>
 <translation id="7332075081379534664">Login concluído</translation>
 <translation id="7333031090786104871">Ainda adicionando o site anterior</translation>
 <translation id="7339898014177206373">Nova janela</translation>
@@ -1134,12 +1114,10 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Tela de apresentação do Chrome</translation>
 <translation id="741204030948306876">Sim</translation>
-<translation id="7413229368719586778">Data de início: <ph name="DATE" /></translation>
 <translation id="7419565702166471774">Sempre usar conexões seguras</translation>
 <translation id="7431991332293347422">Controla como o histórico de navegação é usado para personalizar a Pesquisa e muito mais</translation>
 <translation id="7435356471928173109">Desativado pelo administrador</translation>
 <translation id="7437998757836447326">Sair do Google Chrome</translation>
-<translation id="7438641746574390233">Quando o Modo Lite está ativado, o Chrome usa os servidores do Google para carregar páginas mais rapidamente. O Modo Lite reescreve páginas muito lentas de forma a carregar apenas o conteúdo essencial. O Modo Lite não se aplica a guias anônimas.</translation>
 <translation id="7443901082822119557">Na navegação anônima, os sites não podem usar os cookies para ver sua atividade de navegação em outros sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="7444811645081526538">Mais categorias</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
@@ -1157,7 +1135,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7485033510383818941">Para atualizar o conteúdo do feed, puxe a página para baixo</translation>
 <translation id="749294055653435199">O Google Lens não está disponível neste dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (atualizada <ph name="TIME_SINCE_UPDATE" />)</translation>
-<translation id="7494974237137038751">de dados economizados</translation>
 <translation id="7498271377022651285">Aguarde...</translation>
 <translation id="750228856503700085">Atualizações indisponíveis</translation>
 <translation id="7507207699631365376">Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste provedor</translation>
@@ -1213,7 +1190,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7808889146555843082">Remover a senha não excluirá a conta em <ph name="SITE" />. Mude a senha ou exclua a conta em <ph name="SITE" /> para protegê-la.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
-<translation id="7821588508402923572">Sua economia de dados será exibida aqui</translation>
 <translation id="78270725016672455">O computador quer registrar este dispositivo para fazer login em um site</translation>
 <translation id="7844171778363018843">Nenhum dado selecionado para sincronização</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>
@@ -1313,7 +1289,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8310344678080805313">Guias padrão</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>
-<translation id="8349013245300336738">Classificar por quantidade de dados usados</translation>
 <translation id="8352996530981010042">Não foi possível fazer o download das reações. Tente novamente.</translation>
 <translation id="8354977102499939946">Pesquisar rapidamente usando sua voz. Para editar esse atalho, acesse as Configurações.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restaurados</translation>

@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Trenutna ikona</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Ustavi</translation>
+<translation id="1108938384783527433">Sinhronizacija zgodovine</translation>
 <translation id="1110155001042129815">Počakaj</translation>
 <translation id="1110965959145884739">Izberite, katere jezike želite namestiti v tej napravi. Jezikovne datoteke so zaradi varčevanja s prostorom na disku skupne za vse uporabnike. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -1036,6 +1037,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="2022395138980869975">Preklop stranskega iskanja</translation>
 <translation id="2023167225947895179">Kodo PIN je morda preprosto uganiti</translation>
 <translation id="202352106777823113">Prenos je trajal predolgo in ga je ustavilo omrežje.</translation>
+<translation id="2024195579772565064">Izbris iskalnika</translation>
 <translation id="2025632980034333559">Razširitev <ph name="APP_NAME" /> se je zrušila. Kliknite ta oblaček, da jo znova naložite.</translation>
 <translation id="2028449514182362831">Funkcije, ki potrebujejo tipala gibanja, ne bodo delovale</translation>
 <translation id="202918510990975568">Vnesite geslo, če želite konfigurirati varnost in prijavo</translation>
@@ -1177,6 +1179,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sinhronizacija se bo začela, ko zaprete nastavitve sinhronizacije</translation>
+<translation id="2162926944953615670">Ni razpoložljivih profilov za e-SIM.</translation>
 <translation id="2163470535490402084">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
@@ -1872,6 +1875,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2828650939514476812">Povezava z omrežjem Wi-Fi</translation>
 <translation id="2831430281393059038">Naprava je podprta.</translation>
 <translation id="2832124733806557606">Otrok lahko uporabi kodo PIN za prijavo ali odklepanje naprave.</translation>
+<translation id="2835177225987815960">Trenutna nastavitev optičnega branja bo ponastavljena, vključno z vsemi dodeljenimi stikali in nastavitvami hitrosti samodejnega iskanja.</translation>
 <translation id="2835547721736623118">Storitev prepoznavanja govora</translation>
 <translation id="2836269494620652131">Zrušitev</translation>
 <translation id="2836635946302913370">Skrbnik je onemogočil prijavo s tem uporabniškim imenom.</translation>
@@ -2896,7 +2900,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3888586133700543064">S temi podatki si pomagamo pri razumevanju vaše težave s Pomočnikom. Shranjeni so do 90 dni in dostop je omogočen samo ustreznim skupinam inženirjev in skupinam za povratne informacije.</translation>
 <translation id="3888900458694486810">Zapiranje stranskega iskanja</translation>
 <translation id="3890064827463908288">Vklopite sinhronizacijo za Chrome, če želite uporabljati sinhronizacijo poverilnic za Wi-Fi</translation>
-<translation id="3892414795099177503">Dodaj OpenVPN/L2TP ...</translation>
 <translation id="389313931326656921">Dodelitev stikala za »Naprej«</translation>
 <translation id="3893295674388762059">Če želite izbrisati podatke, zaprite vsa anonimna okna</translation>
 <translation id="3893536212201235195">Branje in spreminjanje nastavitev funkcij za ljudi s posebnimi potrebami</translation>
@@ -3518,6 +3521,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4547659257713117923">Ni zavihkov iz drugih naprav</translation>
 <translation id="4547672827276975204">Nastavi samodejno</translation>
 <translation id="4549791035683739768">Varnostni ključ nima shranjenih prstnih odtisov</translation>
+<translation id="4550926046134589611">Nekatere podprte povezave se bodo še vedno odprle v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">Pritisnite <ph name="MODIFIER_KEY_DESCRIPTION" /> za razveljavitev</translation>
 <translation id="4553526521109675518">Če želite spremeniti jezik naprave, morate znova zagnati Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Povlecite čez slike za iskanje s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -3806,6 +3810,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="48704129375571883">Dodajanje dodatnih funkcij</translation>
 <translation id="4870758487381879312">Vnesite geslo, ki ga je priskrbel skrbnik, da pridobite podatke o konfiguraciji</translation>
 <translation id="4870903493621965035">Ni seznanjenih naprav</translation>
+<translation id="4870995365819149457">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še 1 aplikaciji.</translation>
 <translation id="4871308555310586478">Ni iz Spletne trgovine Chrome.</translation>
 <translation id="4871322859485617074">Koda PIN vsebuje neveljavne znake</translation>
 <translation id="4871370605780490696">Dodajanje zaznamka</translation>
@@ -4843,6 +4848,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5969728632630673489">Obvestilo glede bližnjične tipke je bilo opuščeno</translation>
 <translation id="5971037678316050792">Nadzor nad stanjem vmesnika Bluetooth in seznanjanjem</translation>
 <translation id="597235323114979258">Več ciljev</translation>
+<translation id="5972543790327947908">Nekatere podprte povezave se bodo še vedno odprle v aplikaciji <ph name="APP_NAME" />, <ph name="APP_NAME_2" /> ali <ph name="APP_NAME_3" />.</translation>
 <translation id="5972666587303800813">Nedelujoča storitev</translation>
 <translation id="5972708806901999743">Premakni na vrh</translation>
 <translation id="5972826969634861500">Zaženi <ph name="PRODUCT_NAME" /></translation>
@@ -4984,7 +4990,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6112931163620622315">Preverite telefon</translation>
 <translation id="6113434369102685411">Nastavite privzeti iskalnik za brskalnik Chrome in zaganjalnik naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Če želite uporabljati Smart Lock, v telefonu preklopite na primarni uporabniški profil</translation>
-<translation id="611684075852771314">Ti dnevniki so v Mojih datotekah shranjeni kot</translation>
 <translation id="6116921718742659598">Spreminjanje nastavitev jezika in vnosa</translation>
 <translation id="6119927814891883061">Poimenovanje naprave v <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pripnite to stran na začetni zaslon ...</translation>
@@ -5214,6 +5219,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6355789186038748882">Poskusni brskalnik (kakovosti alfa)! Nekatere funkcije manjkajo ali so nepopolne. Težave prijavite tukaj: Pomoč &gt; »Prijava težave …«.</translation>
 <translation id="635609604405270300">Naprava naj ostane vklopljena</translation>
 <translation id="63566973648609420">Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali če želite spremeniti to nastavitev, boste morali <ph name="BEGIN_LINK" />sinhronizacijo ponastaviti<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Nekatere podprte povezave se bodo še vedno odprle v aplikaciji <ph name="APP_NAME" /> ali <ph name="APP_NAME_2" />.</translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6359706544163531585">Onemogočanje svetle teme</translation>
 <translation id="6361850914223837199">Podrobnosti o napaki:</translation>
@@ -5732,6 +5738,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6900284862687837908">Aplikacija v ozadju: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Izboljšana zaščita</translation>
 <translation id="6900651018461749106">Znova se prijavite, če želite posodobiti račun <ph name="USER_EMAIL" /></translation>
+<translation id="6900654715912436255">Ali ste prepričani, da želite izbrisati ta iskalnik?</translation>
 <translation id="6902066522699286937">Predhodno poslušanje glasu</translation>
 <translation id="6902336033320348843">Razdelek ni podprt: <ph name="ERROR_LINE" /></translation>
 <translation id="6902837902700739466">Pridružite napravo v domeno</translation>
@@ -5975,6 +5982,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="7149839598364933473">To napravo spremenite v napravo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Zadnjih 24 ur</translation>
+<translation id="7152478047064750137">Za to razširitev niso potrebna posebna dovoljenja</translation>
 <translation id="7154130902455071009">Sprememba začetne strani na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Obstoječa fotografija iz fotoaparata ali datoteke</translation>
 <translation id="7163202347044721291">Preverjanje kode za aktiviranje …</translation>
@@ -6002,6 +6010,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7189234443051076392">Poskrbite, da je v napravi dovolj prostora</translation>
 <translation id="7189451821249468368">Nimate dovolj nadgradenj za včlanitev te naprave. Obrnite se na prodajni oddelek za nakup dodatnih. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="7189965711416741966">Prstni odtis dodan.</translation>
+<translation id="7191063546666816478">Nekatere podprte povezave se bodo še vedno odprle v aplikacijah <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> in še toliko drugih aplikacijah: <ph name="NUMBER_OF_OTHER_APPS" />.</translation>
 <translation id="7191159667348037">Neznan tiskalnik (USB)</translation>
 <translation id="7193051357671784796">To aplikacijo je dodala vaša organizacija. Aplikacijo znova zaženite, če želite dokončati namestitev.</translation>
 <translation id="7193374945610105795">Za <ph name="ORIGIN" /> ni shranjenih gesel</translation>
@@ -6178,7 +6187,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7384687527486377545">Samodejno ponavljanje tipkovnice</translation>
 <translation id="7385490373498027129">Vse datoteke in lokalni podatki za vse uporabnike v tej napravi <ph name="DEVICE_TYPE" /> bodo trajno izbrisani.</translation>
 <translation id="7385854874724088939">Napaka pri tiskanju. Preverite tiskalnik in poskusite znova.</translation>
-<translation id="7385896526023870365">Ta razširitev nima dodatnega dostopa do spletnih mest.</translation>
 <translation id="7387273928653486359">Sprejemljivo</translation>
 <translation id="7387951778417998929">Če želite uporabiti iskalnik, ki ni privzet, v naslovno vrstico vnesite ustrezno bližnjico, ki ji sledijo želene bližnjične tipke. Tu lahko spremenite tudi privzeti iskalnik.</translation>
 <translation id="7388209873137778229">Prikazane so samo podprte naprave.</translation>

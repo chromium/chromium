@@ -109,6 +109,7 @@
 <translation id="1100504063505580045">Dabartinė piktograma</translation>
 <translation id="1103523840287552314">Visada versti <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Sustabdyti</translation>
+<translation id="1108938384783527433">Istorijos sinchronizavimas</translation>
 <translation id="1110155001042129815">Palaukti</translation>
 <translation id="1110965959145884739">Pasirinkite, kurias kalbas įdiegti šiame įrenginyje. Kalbų failai bendrinami naudotojų taupant vietą diske. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektorius</translation>
@@ -2896,7 +2897,6 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3888586133700543064">Ši informacija padeda mums geriau suprasti jums iškilusią Padėjėjo problemą. Ji saugoma iki 90 dienų ir ją gali pasiekti tik atitinkami inžinierių ir atsiliepimų komandų nariai.</translation>
 <translation id="3888900458694486810">Uždaryti šoninę paiešką</translation>
 <translation id="3890064827463908288">Norėdami naudoti „Wi-Fi“ sinchronizavimą, įjunkite „Chrome“ sinchronizavimo funkciją</translation>
-<translation id="3892414795099177503">Atidaryti „OpenVPN“ / L2TP...</translation>
 <translation id="389313931326656921">Veiksmo „Kitas“ jungiklio priskyrimas</translation>
 <translation id="3893295674388762059">Norėdami pašalinti duomenis, uždarykite visus inkognito langus</translation>
 <translation id="3893536212201235195">Skaityti ir keisti pritaikymo neįgaliesiems nustatymus</translation>
@@ -4983,7 +4983,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6112931163620622315">Patikrinkite telefoną</translation>
 <translation id="6113434369102685411">Nustatykite numatytąjį „Chrome“ naršyklės ir „<ph name="DEVICE_TYPE" />“ paleidimo priemonės paieškos variklį</translation>
 <translation id="6113942107547980621">Norėdami naudoti „Smart Lock“ telefone pereikite į pagrindinio naudotojo profilį</translation>
-<translation id="611684075852771314">Šie žurnalai išsaugoti aplanke „Mano failai“ kaip</translation>
 <translation id="6116921718742659598">Keisti kalbos ir įvesties nustatymus</translation>
 <translation id="6119927814891883061">Įrenginį pavadinti „<ph name="DEVICE_NAME" />“</translation>
 <translation id="6120205520491252677">Prisegti šį puslapį prie pradžios ekrano...</translation>
@@ -5974,6 +5973,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="7149839598364933473">Konvertuokite šį įrenginį į „<ph name="DEVICE_OS" />“ įrenginį.</translation>
 <translation id="7149893636342594995">Pastarosios 24 valandos</translation>
+<translation id="7152478047064750137">Šiam plėtiniui nereikia specialių leidimų</translation>
 <translation id="7154130902455071009">Pakeiskite pradžios puslapį į: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Esama nuotrauka iš fotoaparato arba failo</translation>
 <translation id="7163202347044721291">Patvirtinamas aktyvinimo kodas...</translation>
@@ -6177,7 +6177,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7384687527486377545">Klaviatūros automatinis kartojimas</translation>
 <translation id="7385490373498027129">Visam laikui bus ištrinti visų naudotojų bet kurie failai ir vietiniai duomenys, esantys šiame įrenginyje (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7385854874724088939">Bandant spausdinti atsirado triktis. Patikrinkite spausdintuvą ir bandykite dar kartą.</translation>
-<translation id="7385896526023870365">Šiam plėtiniui nesuteikta papildoma svetainės prieiga.</translation>
 <translation id="7387273928653486359">Priimtina</translation>
 <translation id="7387951778417998929">Jei norite naudoti kitą nei numatytąjį paieškos variklį, įveskite jo šaukinį adreso juostoje ir paspauskite norimą spartųjį klavišą. Taip pat čia galite pakeisti numatytąjį paieškos variklį.</translation>
 <translation id="7388209873137778229">Rodomi tik palaikomi įrenginiai.</translation>

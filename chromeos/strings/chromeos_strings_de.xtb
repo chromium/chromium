@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Legen Sie eine andere Seite in den Scanner</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
 <translation id="2878387241690264070"><ph name="RATE" /> in <ph name="NUM_SECONDS" /> Sekunden entladen.</translation>
+<translation id="291142119251986300">Nicht qualifizierte Komponenten</translation>
+<translation id="2926057806159140518">Geben Sie Nutzernamen und Passwort ein oder scannen Sie Ihren QR-Code</translation>
 <translation id="3008341117444806826">AKTUALISIEREN</translation>
 <translation id="3009958530611748826">Ordner als Speicherort auswählen</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -322,7 +324,6 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5423849171846380976">Aktiviert</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Noch {0} Versuch}other{Noch {0} Versuche}}</translation>

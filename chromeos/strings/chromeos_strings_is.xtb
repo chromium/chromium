@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">Settu aðra síðu á skannann</translation>
 <translation id="2872961005593481000">Slökkva</translation>
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
+<translation id="291142119251986300">Ósamhæfir íhlutir</translation>
+<translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -322,7 +324,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5423849171846380976">Virkjuð</translation>
 <translation id="5430931332414098647">Skynditjóðrun</translation>
 <translation id="5431318178759467895">Í lit</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Vafra sem gestur</translation>
 <translation id="54609108002486618">Stjórnað</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tilraun eftir}one{{0} tilraun eftir}other{{0} tilraunir eftir}}</translation>

@@ -1228,6 +1228,7 @@
           <ph name="LIST_ITEM" />کارفرما یا کارکنان مدرسه می‌توانند فعالیت مرور را ردیابی کنند<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />«رسانندگان خدمات اینترنتی» می‌توانند ترافیک وب را پایش کنند<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">نادیده گرفته شد چون این خط‌مشی را فقط خط‌مشی کاربر ابری می‌تواند تنظیم کند.</translation>
 <translation id="483241715238664915">روشن کردن هشدارها</translation>
 <translation id="4838327282952368871">رؤیایی</translation>
 <translation id="4840250757394056958">‏مشاهده سابقه Chrome</translation>

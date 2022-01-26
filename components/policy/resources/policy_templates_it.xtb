@@ -1484,6 +1484,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2650049181907741121">Azione da compiere quando l'utente chiude lo schermo</translation>
 <translation id="2658653824183107970">Usa l'implementazione <ph name="CORS" /> legacy anziché la nuova implementazione <ph name="CORS" /></translation>
 <translation id="2660846099862559570">Non utilizzare mai un proxy</translation>
+<translation id="2664391398878045611">Nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile</translation>
 <translation id="2664682171745499686">Elimina gli avvisi di domini simili dai domini</translation>
 <translation id="2665422249821137126">Attiva il puntatore grande nella schermata di accesso</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
@@ -1915,6 +1916,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3180671894201217988">Se il criterio viene impostato su Attivato o se non viene configurato, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
 
       Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3182503302060513467">Nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>
 <translation id="3185009703220253572">a partire dalla versione <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Consente di configurare le impostazioni del periodo di validità dei dati di navigazione per <ph name="PRODUCT_NAME" />. Questo criterio consente agli amministratori di configurare (per tipo di dati) quando il browser dovrà eliminare i dati. Questa funzionalità è utile per i clienti che gestiscono dati cliente sensibili. Il criterio ha effetto soltanto se il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> è impostato su vero.
@@ -2411,6 +2413,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Se questa impostazione viene disattivata, gli utenti non potranno usare l'accesso tramite Smart Lock.
 
       Se questa norma non viene impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
+<translation id="3794413118360704299">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate.
+
+      Questo criterio associa un ID app web alla relativa impostazione specifica. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID di un'app web installata.
+      È possibile impostare una configurazione predefinita usando l'ID speciale <ph name="DEFAULT_SCOPE" />, che si applica a tutte le app web senza configurazione personalizzata in questo criterio.
+
+      Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se è possibile o meno eseguire un'app web durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
+      </translation>
 <translation id="3796527892245558832">Selettore profilo disponibile all'avvio</translation>
 <translation id="3798922329287609568">La configurazione del criterio consente di limitare la modalità di stampa fronte/retro.
 
@@ -2582,6 +2591,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se il criterio è impostato su false, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul Web.</translation>
 <translation id="3989829840000169163">Blocca punti di estensioni precedenti nel browser</translation>
+<translation id="3994043824457743421">Mostra la comunicazione dell'area centrale nella pagina Nuova scheda</translation>
 <translation id="3997519162482760140">URL a cui verrà concesso l'accesso ai dispositivi di acquisizione video su pagine di accesso SAML</translation>
 <translation id="4004523942550416237">Non mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="4007646377576030214"> Tieni presente che questo criterio è stato deprecato nella versione M87 e verrà rimosso nella versione M89. Utilizza invece <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> per configurare gli avvisi sulla privacy delle sessioni Ospite gestite.
@@ -5420,6 +5430,12 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7434202861148928348">Configura i nomi di dominio richiesti per i client di accesso remoto</translation>
 <translation id="7443356543619955157">La configurazione del criterio consente di forzare l'applicazione della configurazione di rete per tutti gli utenti di un dispositivo <ph name="PRODUCT_OS_NAME" />. La configurazione di rete è una stringa in formato JSON come definita nel formato Open Network Configuration.</translation>
 <translation id="7448430478749155471">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
+<translation id="7456922722153109956">Questo criterio consente di stabilire la visibilità della comunicazione dell'area centrale nella pagina Nuova scheda.
+
+      Se viene impostato su Attivato, nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile.
+
+      Se viene impostato su Disattivato, nella pagina Nuova scheda non verrà mostrata la comunicazione dell'area centrale, anche se è disponibile.
+      </translation>
 <translation id="7458437477941640506">Non eseguire il rollback alla versione target se la versione del sistema operativo è più nuova del target. Anche gli aggiornamenti sono disattivati.</translation>
 <translation id="7459601923199346224">Consente di controllare i criteri relativi agli utenti e ai dispositivi per la gestione dei certificati.</translation>
 <translation id="7459633275230216698">Consenti finestre di dialogo per la selezione di file</translation>

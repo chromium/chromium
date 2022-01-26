@@ -324,7 +324,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentative restante}one{{0} tentative restante}other{{0} tentatives restantes}}</translation>

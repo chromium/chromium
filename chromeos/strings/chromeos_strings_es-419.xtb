@@ -324,7 +324,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="5431318178759467895">Color</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Gestionado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento.}other{Quedan {0} intentos.}}</translation>

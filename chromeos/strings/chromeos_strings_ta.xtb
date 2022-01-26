@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">ஸ்கேனரில் மற்றொரு பக்கத்தை வைக்கவும்</translation>
 <translation id="2872961005593481000">நிறுத்து</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> வினாடிகளில் <ph name="RATE" /> சார்ஜ் இறங்கியது.</translation>
+<translation id="291142119251986300">தகுதிபெறாத பாகங்கள்</translation>
+<translation id="2926057806159140518">உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் டைப் செய்யவும் அல்லது QR குறியீட்டை ஸ்கேன் செய்யவும்</translation>
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -322,7 +324,6 @@
 <translation id="5423849171846380976">செயலாக்கப்பட்டது</translation>
 <translation id="5430931332414098647">உடனடி இணைப்பு முறை</translation>
 <translation id="5431318178759467895">வண்ணம்</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">கெஸ்டாக உலாவுங்கள்</translation>
 <translation id="54609108002486618">நிர்வகிக்கப்பட்டது</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} முயற்சி மீதமுள்ளது}other{{0} முயற்சிகள் மீதமுள்ளன}}</translation>

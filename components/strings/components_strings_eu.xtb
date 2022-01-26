@@ -1215,6 +1215,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
           <ph name="LIST_ITEM" />Enpresek edo ikastetxeek arakatze-jardueren jarraipena egin dezakete.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Baliteke Interneteko zerbitzu-hornitzaileek sareko trafikoa gainbegiratzea.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ez ikusi egin zaio hodeiko erabiltzaile-gidalerro batek soilik ezar dezakeelako gidalerroa.</translation>
 <translation id="483241715238664915">Aktibatu abisuak</translation>
 <translation id="4838327282952368871">Ametsezkoa</translation>
 <translation id="4840250757394056958">Ikusi Chrome-ko historia</translation>
@@ -1318,6 +1319,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5138227688689900538">Erakutsi gutxiago</translation>
 <translation id="5145883236150621069">Errore-kode gidalerroaren erantzunean dago</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> webgunearen jakinarazpenak blokeatu egin dira</translation>
+<translation id="514704532284964975"><ph name="URL" /> webguneak informazioa ikusi eta aldatu nahi du NFC darabilten gailuetan baldin eta telefonoa gerturatzen badiezu</translation>
 <translation id="5148809049217731050">Ahoz gora</translation>
 <translation id="515292512908731282">C4 (gutun-azala)</translation>
 <translation id="5158275234811857234">Azala</translation>

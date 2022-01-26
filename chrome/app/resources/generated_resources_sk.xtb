@@ -107,6 +107,7 @@
 <translation id="1100504063505580045">Aktuálna ikona</translation>
 <translation id="1103523840287552314">Vždy preložiť nasledujúci jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Zastaviť</translation>
+<translation id="1108938384783527433">Synchronizácia histórie</translation>
 <translation id="1110155001042129815">Čakajte, prosím.</translation>
 <translation id="1110965959145884739">Vyberte, ktoré jazyky chcete inštalovať v tomto zariadení. Jazykové súbory sa zdieľajú medzi používateľmi, aby sa šetrilo miesto na disku. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1111781754511998498">Projektor</translation>
@@ -1692,6 +1693,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2684004000387153598">Ak chcete pokračovať, kliknite na OK a potom kliknutím na možnosť Pridať osobu vytvorte nový profil pre svoju e-mailovú adresu.</translation>
 <translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="2687407218262674387">Zmluvné podmienky spoločnosti Google</translation>
+<translation id="2687621393791886981">Spýtať sa neskôr</translation>
 <translation id="2688196195245426394">Pri registrácii zariadenia na serveri <ph name="CLIENT_ERROR" /> sa vyskytla chyba.</translation>
 <translation id="2690024944919328218">Zobraziť možnosti jazyka</translation>
 <translation id="2691385045260836588">Model</translation>
@@ -2882,7 +2884,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3888586133700543064">Tieto informácie nám pomôžu lepšie pochopiť problém s vaším Asistentom. Budú uložené maximálne 90 dní a prístup k nim je obmedzený len na príslušné tímy zodpovedajúce za programovanie a spätnú väzbu.</translation>
 <translation id="3888900458694486810">Zavrieť bočné vyhľadávanie</translation>
 <translation id="3890064827463908288">Zapnite synchronizáciu Chromu, aby ste mohli používať Synchronizáciu Wi-Fi</translation>
-<translation id="3892414795099177503">Pridať OpenVPN / L2TP...</translation>
 <translation id="389313931326656921">Prideľte prepínač akcii Ďalej</translation>
 <translation id="3893295674388762059">Ak chcete údaje vymazať, zavrite všetky okná inkognito</translation>
 <translation id="3893536212201235195">Čítať a zmeniť nastavenia zjednodušenia ovládania</translation>
@@ -4970,7 +4971,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6112931163620622315">Skontrolujte telefón</translation>
 <translation id="6113434369102685411">Nastavte si predvolený vyhľadávač pre prehliadač Chrome a Spúštač v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Ak chcete používať funkcie Smart Lock, prepnite na profil hlavného používateľa v telefóne</translation>
-<translation id="611684075852771314">Tieto denníky boli uložené v priečinku Moje súbory ako</translation>
 <translation id="6116921718742659598">Zmeniť nastavenia jazyka a vstupu</translation>
 <translation id="6119927814891883061">Pomenovať zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pripnúť túto stránku na Úvodnú obrazovku...</translation>
@@ -5961,6 +5961,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="7149839598364933473">Zmeňte toto zariadenie na zariadenie s operačným systémom <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
+<translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
 <translation id="7154130902455071009">Zmeniť úvodnú stránku na: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Existujúca fotka z fotoaparátu alebo súboru</translation>
 <translation id="7163202347044721291">Overuje sa aktivačný kód…</translation>
@@ -6164,7 +6165,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7384687527486377545">Automatické opakovanie na klávesnici</translation>
 <translation id="7385490373498027129">Všetky súbory a miestne údaje všetkých používateľov v tomto zariadení <ph name="DEVICE_TYPE" /> budú natrvalo odstránené.</translation>
 <translation id="7385854874724088939">Pri pokuse o tlač sa vyskytla chyba. Skontrolujte svoju tlačiareň a skúste to znova.</translation>
-<translation id="7385896526023870365">Toto rozšírenie nemá žiadny ďalší prístup k webu.</translation>
 <translation id="7387273928653486359">Prijateľná</translation>
 <translation id="7387951778417998929">Ak chcete použiť iný ako predvolený vyhľadávač, zadajte jeho odkaz do panela s adresou a potom preferovanú klávesovú skratku. Tu môžete zmeniť aj svoj predvolený vyhľadávač.</translation>
 <translation id="7388209873137778229">Zobrazené sú len podporované zariadenia.</translation>
@@ -7203,6 +7203,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Je aktivované povolenie <ph name="PERMISSION" /> a ďalšie (<ph name="COUNT" />)</translation>
 <translation id="8413385045638830869">Najprv sa opýtať (odporúčané)</translation>
+<translation id="8414249071344507766">Spomienky skryté dva dni</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (puzdro)</translation>
 <translation id="8417548266957501132">Heslo rodiča</translation>
 <translation id="8418445294933751433">&amp;Zobraziť ako kartu</translation>

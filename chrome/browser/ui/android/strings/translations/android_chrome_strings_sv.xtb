@@ -31,7 +31,6 @@
 <translation id="114825011539563458">De viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
 <translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1154704303112745282">Sidan är inte tillgänglig offline: <ph name="VIOLATED_URL" /></translation>
-<translation id="116280672541001035">Använt</translation>
 <translation id="1171770572613082465">Visa populära webbplatser genom att trycka på Populärt</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1177863135347784049">Anpassat</translation>
@@ -129,7 +128,6 @@
 <translation id="1754404134430936718">Texten har kopierats</translation>
 <translation id="1772137089884020309">Listan över bokmärkesmappar är stängd</translation>
 <translation id="1779766957982586368">Stäng fönstret</translation>
-<translation id="1782483593938241562">Slutdatum <ph name="DATE" /></translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792959175193046959">Ändra standardplats för nedladdningar när som helst</translation>
 <translation id="1795251344124198516">Ytterligare villkor för Chrome och Chrome OS</translation>
@@ -138,7 +136,6 @@
 <translation id="1829244130665387512">Hitta på sida</translation>
 <translation id="1832459821645506983">Ja</translation>
 <translation id="1843805151597803366">Låt Google Sök använda den aktuella sidan så att du får bättre översättningar</translation>
-<translation id="1856325424225101786">Vill du återställa begränsat läge?</translation>
 <translation id="1868024384445905608">Nu laddas filer ned snabbare i Chrome</translation>
 <translation id="1877026089748256423">Den här versionen av Chrome är inaktuell</translation>
 <translation id="1883903952484604915">Mina filer</translation>
@@ -199,7 +196,6 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2154484045852737596">Redigera kortet</translation>
 <translation id="2154710561487035718">Kopiera webbadress</translation>
-<translation id="2156074688469523661">Återstående webbplatser (<ph name="NUMBER_OF_SITES" />)</translation>
 <translation id="2157851137955077194">Om du vill dela något från telefonen till en annan enhet aktiverar du synkronisering i Chrome-inställningarna på båda enheterna</translation>
 <translation id="2158408438301413340">Chrome kunde inte kontrollera alla lösenord</translation>
 <translation id="2169830938017475061">Nu</translation>
@@ -283,7 +279,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2604446170045642109">Du kan stänga av mörkt tema för webbplatser i inställningarna.</translation>
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Lösenordet har kopierats</translation>
-<translation id="2631006050119455616">Sparat</translation>
 <translation id="2634905176438867146">Läs mer om hur du ställer in Chrome som standardwebbläsare</translation>
 <translation id="2645657967708199252">Nedladdningen kan gå långsammare på grund av <ph name="CONNECTION_TYPE" />-anslutningen</translation>
 <translation id="2647434099613338025">Lägg till språk</translation>
@@ -300,7 +295,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2718352093833049315">Endast på wifi</translation>
 <translation id="2718846868787000099">Webbplatserna du besöker kan se dina inställningar, så att innehållet visas på önskat språk</translation>
 <translation id="2723001399770238859">ljud</translation>
-<translation id="2728754400939377704">Sortera efter webbplats</translation>
 <translation id="2732063072010454421">Få en bättre upplevelse vid sökning med rösten</translation>
 <translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Tryck på ett ord om du vill söka direkt eller visa relaterade åtgärder</translation>
@@ -379,7 +373,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3123734510202723619">Meddelanden</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
-<translation id="3157842584138209013">Under Fler alternativ kan du se hur mycket data du har sparat</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -415,7 +408,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
-<translation id="3341058695485821946">Se hur mycket data du har sparat</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
 <translation id="3359667936385849800">Använd den nuvarande DNS-leverantören</translation>
 <translation id="3367813778245106622">Logga in igen om du vill påbörja synkroniseringen</translation>
@@ -466,7 +458,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3632295766818638029">Visa lösenord</translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
-<translation id="3658159451045945436">Om du återställer begränsat läge raderas databesparingshistoriken, inklusive listan med webbplatser som du har besökt.</translation>
 <translation id="3677911431265050325">Begär mobilversion</translation>
 <translation id="3687645719033307815">Du tittar på en förhandsgranskning av den här sidan</translation>
 <translation id="3690369331356918524">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
@@ -547,7 +538,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4170011742729630528">Tjänsten är inte tillgänglig, försök igen senare.</translation>
-<translation id="4179980317383591987"><ph name="AMOUNT" /> har använts</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4196597275619698563">Skapa kort</translation>
@@ -579,7 +569,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="4404568932422911380">Inga bokmärken</translation>
 <translation id="4405224443901389797">Flytta till …</translation>
 <translation id="4409271659088619928">Du använder <ph name="DSE" /> som sökmotor. Läs den sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
-<translation id="4411535500181276704">Begränsat läge</translation>
 <translation id="4415276339145661267">Hantera Google-kontot</translation>
 <translation id="4425140285732600465">Bevakar pris. Få aviseringar när priset sjunker på en webbplats.</translation>
 <translation id="4450672886426705087">Sökresultat från Google.</translation>
@@ -679,7 +668,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4909709702739934280">Webbläsaren hanteras av administratören</translation>
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4912413785358399818">Flytta flik</translation>
-<translation id="4913161338056004800">Återställ statistik</translation>
 <translation id="4913169188695071480">Sluta uppdatera</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# sida}other{# sidor}}</translation>
 <translation id="4925120120285606924">Skärmbild <ph name="CURRENT_DATE_ISO" /></translation>
@@ -847,7 +835,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Aktivera</translation>
 <translation id="5862731021271217234">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
-<translation id="5864174910718532887">Mer information: Sorterad efter webbplatsnamn</translation>
 <translation id="5864419784173784555">Väntar på nästa nedladdning …</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
@@ -857,8 +844,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5906513782029855931">Om Google-assistenten känner till webbplatsers webbadress kan du få hjälp med olika uppgifter. Du kan inaktivera Google Assistent i Chrome-inställningarna.</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5919204609460789179">Uppdatera <ph name="PRODUCT_NAME" /> för att starta synkronisering</translation>
-<translation id="5937580074298050696"><ph name="AMOUNT" /> har sparats</translation>
-<translation id="5939518447894949180">Återställ</translation>
 <translation id="5942872142862698679">Du söker med Google</translation>
 <translation id="5945035219773565305">Nuvarande rekommendation: <ph name="RECOMMENDATION" /></translation>
 <translation id="5951119116059277034">Visar aktiv sida</translation>
@@ -892,7 +877,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>
 <translation id="6095578583683628124">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
-<translation id="6111020039983847643">Använd data</translation>
 <translation id="6112702117600201073">Uppdaterar sidan</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
@@ -904,7 +888,6 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="614940544461990577">Testa att</translation>
 <translation id="6150320133806434356">Bokmärket har sparats</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>
-<translation id="6159335304067198720">Sparat utrymme: <ph name="PERCENT" /></translation>
 <translation id="6159729262978459665">Historiken rensas från alla synkroniserade enheter.</translation>
 <translation id="6162892189396105610">Sidor som du kanske vill besöka läses in i förväg i Chrome.</translation>
 <translation id="6186394685773237175">Inga utsatta lösenord hittades</translation>
@@ -939,7 +922,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6345878117466430440">Markera som läst</translation>
 <translation id="6363990818884053551">Verifiera din identitet för att starta synkroniseringen</translation>
 <translation id="6364438453358674297">Vill du ta bort förslaget från historiken?</translation>
-<translation id="6378173571450987352">Mer information: Sorterad efter dataförbrukning</translation>
 <translation id="6379829913050047669"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6380100320871303656">Chrome läser oftare in sidor som du kanske vill besöka i förväg. Den här inställningen kan leda till ökad dataanvändning.</translation>
 <translation id="6395288395575013217">LÄNK</translation>
@@ -1003,7 +985,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6637100877383020115">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
 <translation id="6640207029842583248">Blockera alltid</translation>
 <translation id="6643016212128521049">Rensa</translation>
-<translation id="6643649862576733715">Sortera efter databesparing</translation>
 <translation id="6645629752388991326">Styr vilka enheter som får logga in med den här enheten som säkerhetsnyckel.</translation>
 <translation id="6648459603387803038">Administratören kan ändra webbläsarinställningarna på distans. Aktivitet på den här enheten kan hanteras även utanför Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
@@ -1114,10 +1095,8 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7291910923717764901">Bildbeskrivningar för den här sidan har lagts till</translation>
 <translation id="7293429513719260019">Välj språk</translation>
 <translation id="729975465115245577">Det finns ingen app som kan spara lösenordsfilen på enheten.</translation>
-<translation id="7302081693174882195">Mer information: Sorterad efter databesparing</translation>
 <translation id="7304873321153398381">Offline. Chrome kan inte kontrollera dina lösenord.</translation>
 <translation id="7313188324932846546">Tryck för att konfigurera synkronisering</translation>
-<translation id="7328017930301109123">I begränsat läge läses sidorna in snabbare och dataförbrukningen minskar med upp till 60 procent.</translation>
 <translation id="7332075081379534664">Inloggningen lyckades</translation>
 <translation id="7333031090786104871">Processen pågår fortfarande för den förra webbplatsen</translation>
 <translation id="7339898014177206373">Nytt fönster</translation>
@@ -1135,12 +1114,10 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7400418766976504921">Webbadress</translation>
 <translation id="7403691278183511381">Första körningen av Chrome</translation>
 <translation id="741204030948306876">Ja</translation>
-<translation id="7413229368719586778">Startdatum <ph name="DATE" /></translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
 <translation id="7431991332293347422">Styr hur webbhistoriken får användas för att anpassa Sök med mera</translation>
 <translation id="7435356471928173109">Inaktiverat av administratören</translation>
 <translation id="7437998757836447326">Logga ut från Chrome</translation>
-<translation id="7438641746574390233">När begränsat läge är aktiverat används Googles servrar så att sidinläsningen ska gå snabbare i Chrome. Mycket långsamma sidor skrivs om i begränsat läge så att bara det viktigaste innehållet visas. Inkognitoflikar påverkas inte av begränsat läge.</translation>
 <translation id="7443901082822119557">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="7444811645081526538">Fler kategorier</translation>
 <translation id="7453467225369441013">Du loggas ut från de flesta webbplatser. Du loggas inte ut från Google-kontot.</translation>
@@ -1158,7 +1135,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7485033510383818941">Dra ned sidan för att uppdatera innehållet i flödet</translation>
 <translation id="749294055653435199">Google Lens är inte tillgängligt på den här enheten</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (uppdaterades <ph name="TIME_SINCE_UPDATE" />)</translation>
-<translation id="7494974237137038751">Sparad data</translation>
 <translation id="7498271377022651285">Vänta …</translation>
 <translation id="750228856503700085">Inga uppdateringar är tillgängliga</translation>
 <translation id="7507207699631365376">Läs leverantörens <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" /></translation>
@@ -1214,7 +1190,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7808889146555843082">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas. Skydda kontot genom att ändra lösenordet eller ta bort ditt konto på <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Öppna med …</translation>
 <translation id="7815484226266492798">Lång skärmbild</translation>
-<translation id="7821588508402923572">Här visas hur mycket data du har sparat</translation>
 <translation id="78270725016672455">Datorn vill registrera den här enheten för att logga in på en webbplats</translation>
 <translation id="7844171778363018843">Du har inte valt någon data att synkronisera</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>
@@ -1314,7 +1289,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8310344678080805313">Standardflikar</translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
-<translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="8352996530981010042">Det gick inte att ladda ned reaktionerna. Försök igen.</translation>
 <translation id="8354977102499939946">Gör en röstsökning snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
