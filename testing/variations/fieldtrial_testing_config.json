@@ -2465,32 +2465,6 @@
             ]
         }
     ],
-    "DesktopPwaInstallInProductHelp": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:desktop_pwa_install_iph_triggered;comparator:any;window:90;storage:365",
-                        "event_used": "name:desktop_pwa_installed;comparator:any;window:90;storage:365",
-                        "session_rate": "==0",
-                        "x_site_engagement_threshold": "10"
-                    },
-                    "enable_features": [
-                        "IPH_DesktopPwaInstall"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopReadingListAddFromDialog": [
         {
             "platforms": [
