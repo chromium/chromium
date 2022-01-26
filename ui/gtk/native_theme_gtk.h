@@ -42,6 +42,7 @@ class NativeThemeGtk : public ui::NativeThemeBase {
                            const gfx::Rect& rect,
                            ColorScheme color_scheme) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                           const ui::ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,

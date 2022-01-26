@@ -14,10 +14,6 @@
   OP(kColorId_MenuBackgroundColor),                                            \
   OP(kColorId_MenuIconColor),                                                  \
   OP(kColorId_MenuSeparatorColor),                                             \
-  OP(kColorId_OverlayScrollbarThumbFill),                                      \
-  OP(kColorId_OverlayScrollbarThumbHoveredFill),                               \
-  OP(kColorId_OverlayScrollbarThumbHoveredStroke),                             \
-  OP(kColorId_OverlayScrollbarThumbStroke),                                    \
   OP(kColorId_ProminentButtonColor),                                           \
   OP(kColorId_TextOnProminentButtonColor),                                     \
   OP(kColorId_ThrobberSpinningColor),                                          \

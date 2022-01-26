@@ -104,12 +104,32 @@ void AddUiColorMixer(ColorProvider* provider,
       SetAlpha(kColorNotificationInputForeground, gfx::kGoogleGreyAlpha700);
   mixer[kColorOverlayScrollbarFill] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha700);
+  mixer[kColorOverlayScrollbarFillLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha700);
   mixer[kColorOverlayScrollbarFillHovered] =
       SetAlpha(kColorEndpointForeground, gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredDark] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorWHITE), gfx::kGoogleGreyAlpha800);
+  mixer[kColorOverlayScrollbarFillHoveredLight] = SetAlpha(
+      GetColorWithMaxContrast(SK_ColorBLACK), gfx::kGoogleGreyAlpha800);
   mixer[kColorOverlayScrollbarStroke] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillDark),
+               gfx::kGoogleGreyAlpha400);
+  mixer[kColorOverlayScrollbarStrokeLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillLight),
+               gfx::kGoogleGreyAlpha400);
   mixer[kColorOverlayScrollbarStrokeHovered] =
       SetAlpha(kColorEndpointBackground, gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredDark] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredDark),
+               gfx::kGoogleGreyAlpha500);
+  mixer[kColorOverlayScrollbarStrokeHoveredLight] =
+      SetAlpha(GetColorWithMaxContrast(kColorOverlayScrollbarFillHoveredLight),
+               gfx::kGoogleGreyAlpha500);
   mixer[kColorProgressBar] = {kColorAccent};
   mixer[kColorPwaSecurityChipForeground] = {kColorSecondaryForeground};
   mixer[kColorPwaSecurityChipForegroundDangerous] = {kColorAlertHighSeverity};

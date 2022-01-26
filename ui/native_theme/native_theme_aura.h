@@ -56,6 +56,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                            const gfx::Rect& rect,
                            ColorScheme color_scheme) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                           const ColorProvider* color_provider,
                            Part part,
                            State state,
                            const gfx::Rect& rect,

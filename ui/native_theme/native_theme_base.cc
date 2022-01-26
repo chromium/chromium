@@ -314,7 +314,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
-      PaintScrollbarThumb(canvas, part, state, rect,
+      PaintScrollbarThumb(canvas, color_provider, part, state, rect,
                           extra.scrollbar_thumb.scrollbar_theme, color_scheme);
       break;
     case kScrollbarHorizontalTrack:
@@ -544,6 +544,7 @@ void NativeThemeBase::PaintScrollbarTrack(
 }
 
 void NativeThemeBase::PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                                          const ColorProvider* color_provider,
                                           Part part,
                                           State state,
                                           const gfx::Rect& rect,

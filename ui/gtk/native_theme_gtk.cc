@@ -291,6 +291,7 @@ void NativeThemeGtk::PaintScrollbarTrack(
 
 void NativeThemeGtk::PaintScrollbarThumb(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     Part part,
     State state,
     const gfx::Rect& rect,

@@ -112,6 +112,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
   // Draw the scrollbar thumb over the track.
   virtual void PaintScrollbarThumb(
       cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
       Part part,
       State state,
       const gfx::Rect& rect,

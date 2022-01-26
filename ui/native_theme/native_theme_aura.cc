@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -227,6 +228,7 @@ void NativeThemeAura::PaintScrollbarTrack(
 }
 
 void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                                          const ColorProvider* color_provider,
                                           Part part,
                                           State state,
                                           const gfx::Rect& rect,
@@ -246,20 +248,35 @@ void NativeThemeAura::PaintScrollbarThumb(cc::PaintCanvas* canvas,
       return;
 
     const bool hovered = state != kNormal;
-    if (color_scheme != ColorScheme::kPlatformHighContrast) {
-      // A light system theme uses a dark overlay scrollbar, and vice versa.
-      color_scheme = (theme == ScrollbarOverlayColorThemeLight)
-                         ? ColorScheme::kDark
-                         : ColorScheme::kLight;
-    }
-    thumb_color =
-        GetSystemColor(hovered ? kColorId_OverlayScrollbarThumbHoveredFill
-                               : kColorId_OverlayScrollbarThumbFill,
-                       color_scheme);
-    SkColor stroke_color =
-        GetSystemColor(hovered ? kColorId_OverlayScrollbarThumbHoveredStroke
-                               : kColorId_OverlayScrollbarThumbStroke,
-                       color_scheme);
+
+    static constexpr auto kFillIdMap =
+        base::MakeFixedFlatMap<ScrollbarOverlayColorTheme, std::array<int, 2>>({
+            {ScrollbarOverlayColorTheme::kDefault,
+             {kColorOverlayScrollbarFill, kColorOverlayScrollbarFillHovered}},
+            {ScrollbarOverlayColorTheme::kLight,
+             {kColorOverlayScrollbarFillLight,
+              kColorOverlayScrollbarFillHoveredLight}},
+            {ScrollbarOverlayColorTheme::kDark,
+             {kColorOverlayScrollbarFillDark,
+              kColorOverlayScrollbarFillHoveredDark}},
+        });
+    static constexpr auto kStrokeIdMap =
+        base::MakeFixedFlatMap<ScrollbarOverlayColorTheme, std::array<int, 2>>({
+            {ScrollbarOverlayColorTheme::kDefault,
+             {kColorOverlayScrollbarStroke,
+              kColorOverlayScrollbarStrokeHovered}},
+            {ScrollbarOverlayColorTheme::kLight,
+             {kColorOverlayScrollbarStrokeLight,
+              kColorOverlayScrollbarStrokeHoveredLight}},
+            {ScrollbarOverlayColorTheme::kDark,
+             {kColorOverlayScrollbarStrokeDark,
+              kColorOverlayScrollbarStrokeHoveredDark}},
+        });
+
+    DCHECK(color_provider);
+    thumb_color = color_provider->GetColor(kFillIdMap.at(theme)[hovered]);
+    const SkColor stroke_color =
+        color_provider->GetColor(kStrokeIdMap.at(theme)[hovered]);
 
     // In overlay mode, draw a stroke (border).
     constexpr int kStrokeWidth = kOverlayScrollbarStrokeWidth;

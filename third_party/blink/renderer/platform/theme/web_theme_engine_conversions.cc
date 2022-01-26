@@ -57,11 +57,11 @@ ui::NativeTheme::ScrollbarOverlayColorTheme
 NativeThemeScrollbarOverlayColorTheme(WebScrollbarOverlayColorTheme theme) {
   switch (theme) {
     case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeLight:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeLight;
+      return ui::NativeTheme::ScrollbarOverlayColorTheme::kLight;
     case WebScrollbarOverlayColorTheme::kWebScrollbarOverlayColorThemeDark:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
+      return ui::NativeTheme::ScrollbarOverlayColorTheme::kDark;
     default:
-      return ui::NativeTheme::ScrollbarOverlayColorThemeDark;
+      return ui::NativeTheme::ScrollbarOverlayColorTheme::kDefault;
   }
 }
 

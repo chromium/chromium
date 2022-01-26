@@ -247,9 +247,10 @@ class NATIVE_THEME_EXPORT NativeTheme {
     int classic_state;  // Used on Windows when uxtheme is not available.
   };
 
-  enum ScrollbarOverlayColorTheme {
-    ScrollbarOverlayColorThemeDark,
-    ScrollbarOverlayColorThemeLight
+  enum class ScrollbarOverlayColorTheme {
+    kDefault = 0,
+    kLight = 1,
+    kDark = 2,
   };
 
   struct ScrollbarThumbExtraParams {

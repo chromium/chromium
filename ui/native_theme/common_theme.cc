@@ -98,28 +98,6 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return base_theme->GetUnprocessedSystemColor(
           NativeTheme::kColorId_DefaultIconColor, color_scheme);
 
-    // Scrollbar
-    case NativeTheme::kColorId_OverlayScrollbarThumbFill:
-    case NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill: {
-      const SkColor bg = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_WindowBackground, color_scheme);
-      const SkColor fill = color_utils::GetColorWithMaxContrast(bg);
-      const bool hovered =
-          color_id == NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill;
-      return SkColorSetA(
-          fill, hovered ? gfx::kGoogleGreyAlpha800 : gfx::kGoogleGreyAlpha700);
-    }
-    case NativeTheme::kColorId_OverlayScrollbarThumbStroke:
-    case NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke: {
-      const SkColor bg = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_WindowBackground, color_scheme);
-      const SkColor stroke = color_utils::GetEndpointColorWithMinContrast(bg);
-      const bool hovered =
-          color_id == NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke;
-      return SkColorSetA(stroke, hovered ? gfx::kGoogleGreyAlpha500
-                                         : gfx::kGoogleGreyAlpha400);
-    }
-
     // Throbber
     case NativeTheme::kColorId_ThrobberWaitingColor: {
       const SkColor bg = base_theme->GetUnprocessedSystemColor(
