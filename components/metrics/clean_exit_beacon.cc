@@ -211,19 +211,10 @@ version_info::Channel GetChannel(version_info::Channel channel) {
   return channel;
 }
 
-// Sets up the Extended Variations Safe Mode experiment, which is enabled on
-// only some channels. If assigned to an experiment group, returns the name of
-// the group name, e.g. "Control"; otherwise, returns the empty string.
+// Sets up the Extended Variations Safe Mode experiment, whose groups have
+// channel-specific weights. Returns the name of the client's experiment group
+// name, e.g. "Control".
 std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
-#if !BUILDFLAG(IS_IOS)
-  if (channel != version_info::Channel::UNKNOWN &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV &&
-      channel != version_info::Channel::BETA) {
-    return std::string();
-  }
-#endif  // !BUILDFLAG(IS_IOS)
-
   int default_group;
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
