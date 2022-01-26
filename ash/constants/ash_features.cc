@@ -285,7 +285,7 @@ const base::Feature kClipboardHistoryNudgeSessionReset{
 // If enabled, the clipboard history shortcut will appear in screenshot
 // notifications.
 const base::Feature kClipboardHistoryScreenshotNudge{
-    "ClipboardHistoryScreenshotNudge", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClipboardHistoryScreenshotNudge", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables compositing-based throttling to throttle appropriate frame sinks that
 // do not need to be refreshed at high fps.
