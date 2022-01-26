@@ -166,7 +166,15 @@ public class LightweightReactionsMediator {
             SceneCoordinator sceneCoordinator, LightweightReactionsProgressDialog progressDialog,
             Callback<Uri> doneCallback) {
         mGifGenerationCancelled = false;
-        progressDialog.setCancelProgressListener(view -> mGifGenerationCancelled = true);
+        final long generationStartTime = System.currentTimeMillis();
+        progressDialog.setCancelProgressListener(view -> {
+            mGifGenerationCancelled = true;
+            int frameCount = sceneCoordinator.getFrameCount();
+            assert frameCount != 0;
+            int completion = (int) (100.0 * mFramesGenerated / sceneCoordinator.getFrameCount());
+            LightweightReactionsMetrics.recordGifGenerationCancelled(
+                    System.currentTimeMillis() - generationStartTime, completion);
+        });
         FileOutputStreamWriter gifWriter = (fos, gifCallback) -> {
             AnimatedGifEncoder encoder = new AnimatedGifEncoder();
             encoder.setFrameRate(GIF_FPS);

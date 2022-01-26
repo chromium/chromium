@@ -125,7 +125,41 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-creation@google.com</owner>
   <summary>
     Records the step of the Lightweight Reaction usage funnel that the user
-    reaches.
+    reaches. Recorded each time the user progresses to a new step in the funnel,
+    meaning records in later steps are also included in all previous steps.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled" units="Boolean"
+    expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records whether the GIF generation operation was cancelled. Recorded as True
+    when the GIF generation is cancelled by the user, or as False when the
+    generation completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled.Duration"
+    units="ms" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the duration between the start of GIF generation and the moment the
+    user cancelled the generation. Recorded when the user taps Cancel during GIF
+    generation.
+  </summary>
+</histogram>
+
+<histogram name="LightweightReactions.GifGenerationCancelled.Progress"
+    units="%" expires_after="2022-07-31">
+  <owner>gujen@google.com</owner>
+  <owner>chrome-creation@google.com</owner>
+  <summary>
+    Records the GIF generation progress % at the time the generation was
+    cancelled by the user. Recorded when the user taps Cancel during GIF
+    generation.
   </summary>
 </histogram>
 
