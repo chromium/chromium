@@ -61,6 +61,15 @@ AX_EXPORT absl::optional<id> PerformAXSelector(const id node,
                                                const std::string& selector);
 
 //
+// Performs the given selector on the given node with exactly one string
+// argument and returns the result. If the node does not conform to the
+// NSAccessibility protocol or the selector is not found, then returns nullopt.
+AX_EXPORT absl::optional<id> PerformAXSelector(
+    const id node,
+    const std::string& selector_string,
+    const std::string& argument_string);
+
+//
 // Sets attribute value on a given node (either AXUIElement or
 // BrowserAccessibilityCocoa).
 AX_EXPORT void SetAXAttributeValueOf(const id node,

@@ -644,4 +644,22 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Accessibility_API) {
+  TestScript(R"~~(data:text/html,
+                    <button id='b'></button>)~~",
+             {"b.accessibilityRole"},
+             R"~~(b.accessibilityRole='AXButton'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Accessibility_API_With_Argument) {
+  TestScript(R"~~(data:text/html,
+                    <button id='b'></button>)~~",
+             {"b.accessibilityAttributeValue(AXRole)"},
+             R"~~(b.accessibilityAttributeValue(AXRole)='AXButton'
+)~~");
+}
+
 }  // namespace content

@@ -235,6 +235,21 @@ absl::optional<id> PerformAXSelector(const id node,
   return absl::nullopt;
 }
 
+absl::optional<id> PerformAXSelector(const id node,
+                                     const std::string& selector_string,
+                                     const std::string& argument_string) {
+  if (![node conformsToProtocol:@protocol(NSAccessibility)])
+    return absl::nullopt;
+
+  SEL selector =
+      NSSelectorFromString(base::SysUTF8ToNSString(selector_string + ":"));
+  NSString* argument = base::SysUTF8ToNSString(argument_string);
+
+  if ([node respondsToSelector:selector])
+    return [node performSelector:selector withObject:argument];
+  return absl::nullopt;
+}
+
 void SetAXAttributeValueOf(const id node, NSString* attribute, id value) {
   if (IsNSAccessibilityElement(node)) {
     [node accessibilitySetValue:value forAttribute:attribute];

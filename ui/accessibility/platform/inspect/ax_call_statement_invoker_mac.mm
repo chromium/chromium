@@ -185,7 +185,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     return AXOptionalNSObject::Error();
   }
 
-  // Attributes.
+  // Get or set attribute value if the attribute is supported.
   for (NSString* attribute : AXAttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
       // Setter
@@ -223,10 +223,20 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
   // NSAccessibility attributes listed in default filters as a side effect.
   if (base::StartsWith(property_node.name_or_value, "accessibility") ||
       base::StartsWith(property_node.name_or_value, "isAccessibility")) {
-    absl::optional<id> optional_id =
-        PerformAXSelector(target, property_node.name_or_value);
-    if (optional_id)
-      return AXOptionalNSObject(*optional_id);
+    if (property_node.arguments.size() == 1) {
+      auto optional_id =
+          PerformAXSelector(target, property_node.name_or_value,
+                            property_node.arguments[0].name_or_value);
+      if (optional_id) {
+        return AXOptionalNSObject(*optional_id);
+      }
+    }
+    if (property_node.arguments.empty()) {
+      auto optional_id = PerformAXSelector(target, property_node.name_or_value);
+      if (optional_id) {
+        return AXOptionalNSObject(*optional_id);
+      }
+    }
   }
 
   // Unmatched attribute.
