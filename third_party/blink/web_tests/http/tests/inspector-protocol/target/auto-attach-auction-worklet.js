@@ -2,34 +2,33 @@
   testRunner.log('Tests auto-attach to FLEDGE worklets.');
   const bp = testRunner.browserP();
 
-  urlForSession =
-      []
+  const urlForSession = new Map();
 
-      function handleUrn(input) {
-        if (typeof input === 'string' && input.startsWith('urn:uuid:'))
-          return 'urn:uuid:(randomized)';
-        return input;
-      }
+  function handleUrn(input) {
+    if (typeof input === 'string' && input.startsWith('urn:uuid:'))
+      return 'urn:uuid:(randomized)';
+    return input;
+  }
 
-      function normalizeTitle(input) {
-        // There is some flakiness with titles of about:blank frame targets
-        // sometimes being '' and sometimes 'about:blank'.
-        if (typeof input == 'string' && input === 'about:blank')
-          return '';
-        return input;
-      }
+  function normalizeTitle(input) {
+    // There is some flakiness with titles of about:blank frame targets
+    // sometimes being '' and sometimes 'about:blank'.
+    if (input === 'about:blank')
+      return '';
+    return input;
+  }
 
-      bp.Target.onAttachedToTarget(event => {
-        const params = event.params;
-        testRunner.log(`Attached to ${params.targetInfo.type} target: ${
-            params.targetInfo.url}
-        (title: ${normalizeTitle(params.targetInfo.title)})
-        (waiting: ${params.waitingForDebugger})`);
-        urlForSession[params.sessionId] = params.targetInfo.url;
-      });
+  bp.Target.onAttachedToTarget(event => {
+    const params = event.params;
+    testRunner.log(
+        `Attached to ${params.targetInfo.type} target: ${params.targetInfo.url}
+    (title: ${normalizeTitle(params.targetInfo.title)})
+    (waiting: ${params.waitingForDebugger})`);
+    urlForSession.set(params.sessionId, params.targetInfo.url);
+  });
 
   bp.Target.onDetachedFromTarget(event => {
-    testRunner.log('Dettached: ' + urlForSession[event.params.sessionId]);
+    testRunner.log('Dettached: ' + urlForSession.get(event.params.sessionId));
   });
 
   const base = 'https://a.test:8443/inspector-protocol/resources/'

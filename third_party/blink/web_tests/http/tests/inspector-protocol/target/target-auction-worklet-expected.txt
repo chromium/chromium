@@ -1,0 +1,5 @@
+Basic functionality of debugging FLEDGE worklets.
+Attached to target https://a.test:8443/inspector-protocol/resources/fledge_join.html
+Auction winner:undefined
+DONE
+

@@ -988,6 +988,7 @@
     "prefix": "fledge",
     "bases": [
       "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js",
+      "http/tests/inspector-protocol/target/target-auction-worklet.js",
       "http/tests/inspector-protocol/storage/interest-groups.js"
     ],
     "args": [
