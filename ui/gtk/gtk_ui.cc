@@ -52,6 +52,7 @@
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_platform.h"
+#include "ui/gtk/gtk_ui_platform_stub.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
 #include "ui/gtk/native_theme_gtk.h"
@@ -303,6 +304,8 @@ views::LinuxUI::WindowFrameAction GetDefaultMiddleClickAction() {
 
 std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
   switch (backend) {
+    case ui::LinuxUiBackend::kStub:
+      return std::make_unique<GtkUiPlatformStub>();
 #if defined(USE_X11)
     case ui::LinuxUiBackend::kX11:
       return std::make_unique<GtkUiPlatformX11>();

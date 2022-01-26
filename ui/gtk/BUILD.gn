@@ -82,6 +82,8 @@ component("gtk") {
     "gtk_ui.h",
     "gtk_ui_factory.cc",
     "gtk_ui_platform.h",
+    "gtk_ui_platform_stub.cc",
+    "gtk_ui_platform_stub.h",
     "gtk_util.cc",
     "gtk_util.h",
     "input_method_context_impl_gtk.cc",

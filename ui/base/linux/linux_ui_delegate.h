@@ -15,6 +15,7 @@
 namespace ui {
 
 enum class LinuxUiBackend {
+  kStub,
   kX11,
   kWayland,
 };
