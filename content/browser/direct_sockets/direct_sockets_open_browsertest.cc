@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
+#include "services/network/test/test_udp_socket.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -292,7 +293,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   std::unique_ptr<network::mojom::UDPSocket> udp_socket_;
 };
 
-class MockUDPSocket : public network::mojom::UDPSocket {
+class MockUDPSocket : public network::TestUDPSocket {
  public:
   typedef net::IPAddress IPAddress;
   typedef net::IPEndPoint IPEndPoint;
@@ -310,12 +311,6 @@ class MockUDPSocket : public network::mojom::UDPSocket {
   ~MockUDPSocket() override = default;
 
   // network::mojom::UDPSocket:
-  void Bind(const IPEndPoint& local_addr,
-            network::mojom::UDPSocketOptionsPtr options,
-            BindCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
   void Connect(const IPEndPoint& remote_addr,
                network::mojom::UDPSocketOptionsPtr socket_options,
                ConnectCallback callback) override {
@@ -334,54 +329,6 @@ class MockUDPSocket : public network::mojom::UDPSocket {
         FROM_HERE, base::BindOnce(std::move(callback), result,
                                   /*local_addr_out=*/absl::nullopt));
   }
-
-  void SetBroadcast(bool broadcast, SetBroadcastCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void SetSendBufferSize(int32_t send_buffer_size,
-                         SetSendBufferSizeCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void SetReceiveBufferSize(int32_t receive_buffer_size,
-                            SetSendBufferSizeCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void JoinGroup(const IPAddress& group_address,
-                 JoinGroupCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void LeaveGroup(const IPAddress& group_address,
-                  LeaveGroupCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void ReceiveMore(uint32_t num_additional_datagrams) override {
-    NOTIMPLEMENTED();
-  }
-
-  void ReceiveMoreWithBufferSize(uint32_t num_additional_datagrams,
-                                 uint32_t buffer_size) override {
-    NOTIMPLEMENTED();
-  }
-
-  void SendTo(const IPEndPoint& dest_addr,
-              base::span<const uint8_t> data,
-              const MutableNetworkTrafficAnnotationTag& traffic_annotation,
-              SendToCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void Send(base::span<const uint8_t> data,
-            const MutableNetworkTrafficAnnotationTag& traffic_annotation,
-            SendCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
-  void Close() override { NOTIMPLEMENTED(); }
 
   const raw_ptr<MockNetworkContext> network_context_;
   mojo::Receiver<network::mojom::UDPSocket> receiver_{this};
