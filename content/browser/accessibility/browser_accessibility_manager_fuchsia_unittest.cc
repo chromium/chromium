@@ -77,6 +77,8 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     root_node_id_ = root_node_id;
   }
 
+  inspect::Node GetInspectNode() override { return inspect::Node(); }
+
   float GetDeviceScaleFactor() override { return device_scale_factor_; }
 
   void SetDeviceScaleFactor(float device_scale_factor) {

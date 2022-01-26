@@ -4,6 +4,8 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 
+#include <lib/sys/inspect/cpp/component.h>
+
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
@@ -29,6 +31,20 @@ BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
     BrowserAccessibilityDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   Initialize(initial_tree);
+
+  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
+      GetAccessibilityBridge();
+  if (accessibility_bridge) {
+    inspect_node_ = accessibility_bridge->GetInspectNode();
+    tree_dump_node_ = inspect_node_.CreateLazyNode("tree-data", [this]() {
+      inspect::Inspector inspector;
+
+      inspector.GetRoot().CreateString(ax_tree_id().ToString(),
+                                       ax_tree()->ToString(), &inspector);
+
+      return fit::make_ok_promise(inspector);
+    });
+  }
 }
 
 BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =

@@ -7,6 +7,7 @@
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
+#include <lib/inspect/cpp/vmo/types.h>
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -51,7 +52,8 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
       fuchsia::ui::views::ViewRef view_ref,
       base::RepeatingCallback<float()> get_pixel_scale,
       base::RepeatingCallback<void(bool)> on_semantics_enabled,
-      base::RepeatingCallback<bool()> on_connection_closed);
+      base::RepeatingCallback<bool()> on_connection_closed,
+      inspect::Node inspect_node);
   ~AccessibilityBridgeFuchsiaImpl() override;
 
   // AccessibilityBridgeFuchsia overrides.
@@ -61,6 +63,7 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
                                     absl::optional<uint32_t> result) override;
   float GetDeviceScaleFactor() override;
   void SetRootID(uint32_t root_node_id) override;
+  inspect::Node GetInspectNode() override;
 
   // SemanticProvider::Delegate overrides.
   bool OnSemanticsManagerConnectionClosed() override;
@@ -109,6 +112,16 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
 
   // Callback invoked whenever the semantics manager connection is closed.
   base::RepeatingCallback<bool()> on_connection_closed_;
+
+  // The inspect output will have a node for each AXTree in this accessibility
+  // bridge's window. Inspect node names are static, but AXTreeIDs can change.
+  // It could be misleading for users to see an old AXTreeID in the inspect
+  // output, so instead, we'll name each node "AXTree_#". The
+  // next_inspect_tree_number_ member is used to generate these names.
+  int next_inspect_tree_number_ = 1;
+
+  // Inspect node for the accessibility bridge.
+  inspect::Node inspect_node_;
 };
 
 }  // namespace ui

@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 
+#include "base/strings/stringprintf.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 #include "ui/accessibility/platform/fuchsia/ax_platform_node_fuchsia.h"
@@ -52,10 +53,12 @@ AccessibilityBridgeFuchsiaImpl::AccessibilityBridgeFuchsiaImpl(
     fuchsia::ui::views::ViewRef view_ref,
     base::RepeatingCallback<float()> get_pixel_scale,
     base::RepeatingCallback<void(bool)> on_semantics_enabled,
-    base::RepeatingCallback<bool()> on_connection_closed)
+    base::RepeatingCallback<bool()> on_connection_closed,
+    inspect::Node inspect_node)
     : root_window_(window),
       on_semantics_enabled_(std::move(on_semantics_enabled)),
-      on_connection_closed_(std::move(on_connection_closed)) {
+      on_connection_closed_(std::move(on_connection_closed)),
+      inspect_node_(std::move(inspect_node)) {
   semantic_provider_ = std::make_unique<ui::AXFuchsiaSemanticProviderImpl>(
       std::move(view_ref), std::move(get_pixel_scale), this);
 
@@ -241,6 +244,11 @@ bool AccessibilityBridgeFuchsiaImpl::OnSemanticsManagerConnectionClosed() {
 void AccessibilityBridgeFuchsiaImpl::set_semantic_provider_for_test(
     std::unique_ptr<AXFuchsiaSemanticProvider> semantic_provider) {
   semantic_provider_ = std::move(semantic_provider);
+}
+
+inspect::Node AccessibilityBridgeFuchsiaImpl::GetInspectNode() {
+  return inspect_node_.CreateChild(
+      base::StringPrintf("AXTree-%d", next_inspect_tree_number_++));
 }
 
 }  // namespace ui

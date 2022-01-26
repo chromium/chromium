@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_H_
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
+#include <lib/inspect/cpp/vmo/types.h>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
@@ -44,6 +45,9 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
 
   // Specifies the unique ID of the root platform node.
   virtual void SetRootID(uint32_t root_node_id) = 0;
+
+  // Returns an inspect::Node for the caller to own.
+  virtual inspect::Node GetInspectNode() = 0;
 };
 
 }  // namespace ui

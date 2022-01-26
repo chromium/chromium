@@ -107,6 +107,7 @@ source_set("platform") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/inspect",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
       "//ui/aura",
     ]
