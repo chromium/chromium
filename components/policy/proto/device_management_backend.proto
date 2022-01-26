@@ -1459,15 +1459,16 @@ message DeviceStatusReportRequest {
   repeated NetworkState network_states = 11;
 
   // Samples of CPU utilization (0-100), sampled once every 120 seconds.
-  // To deprecate: Use CpuUtilizationInfo instead.
-  repeated int32 cpu_utilization_pct_samples = 12;
+  // Deprecated: Use CpuUtilizationInfo instead.
+  repeated int32 cpu_utilization_pct_samples = 12 [deprecated = true];
 
   // Total RAM on the device.
   // To deprecate: Use SystemFreeRamInfo instead.
   optional int64 system_ram_total = 14;
 
   // Samples of free RAM [in bytes] (unreliable due to GC).
-  repeated int64 system_ram_free_samples = 15;
+  // Deprecated: Use SystemRamFreeInfo instead.
+  repeated int64 system_ram_free_samples = 15 [deprecated = true];
 
   // Samples of CPU temperatures in Celsius, plus associated labels
   // identifying which CPU produced the temperature measurement.

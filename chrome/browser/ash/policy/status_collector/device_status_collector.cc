@@ -2519,9 +2519,6 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
 
 bool DeviceStatusCollector::GetMemoryInfo(
     em::DeviceStatusReportRequest* status) {
-  // TODO(b/193808197): remove this and below references after the field
-  // 'system_ram_free_samples' is deprecated.
-  status->clear_system_ram_free_samples();
   status->clear_system_ram_free_infos();
   status->set_system_ram_total(base::SysInfo::AmountOfPhysicalMemory());
 
@@ -2530,16 +2527,12 @@ bool DeviceStatusCollector::GetMemoryInfo(
         status->add_system_ram_free_infos();
     system_ram_free_info->set_size_in_bytes(usage.bytes_of_ram_free);
     system_ram_free_info->set_timestamp(usage.timestamp.ToJavaTime());
-    status->add_system_ram_free_samples(usage.bytes_of_ram_free);
   }
 
   return true;
 }
 
 bool DeviceStatusCollector::GetCPUInfo(em::DeviceStatusReportRequest* status) {
-  // TODO(b/193808197): remove this and below references after the field
-  // 'cpu_utilization_pct_samples' is deprecated.
-  status->clear_cpu_utilization_pct_samples();
   status->clear_cpu_utilization_infos();
 
   for (const CpuUsage& usage : cpu_usage_) {
@@ -2547,7 +2540,6 @@ bool DeviceStatusCollector::GetCPUInfo(em::DeviceStatusReportRequest* status) {
         status->add_cpu_utilization_infos();
     cpu_utilization_info->set_cpu_utilization_pct(usage.cpu_usage_percent);
     cpu_utilization_info->set_timestamp(usage.timestamp.ToJavaTime());
-    status->add_cpu_utilization_pct_samples(usage.cpu_usage_percent);
   }
 
   return true;

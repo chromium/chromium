@@ -1956,26 +1956,6 @@ TEST_F(DeviceStatusCollectorTest, TestVolumeInfo) {
   }
 }
 
-TEST_F(DeviceStatusCollectorTest, TestAvailableMemory) {
-  // Refresh our samples. Sample more than kMaxHardwareSamples times to
-  // make sure that the code correctly caps the number of cached samples.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ash::kReportDeviceMemoryInfo, true);
-  for (int i = 0; i < static_cast<int>(
-                          DeviceStatusCollector::kMaxResourceUsageSamples + 1);
-       ++i) {
-    status_collector_->RefreshSampleResourceUsage();
-    base::RunLoop().RunUntilIdle();
-  }
-  GetStatus();
-  EXPECT_EQ(static_cast<int>(DeviceStatusCollector::kMaxResourceUsageSamples),
-            device_status_.system_ram_free_samples().size());
-  EXPECT_TRUE(device_status_.has_system_ram_total());
-  // No good way to inject specific test values for available system RAM, so
-  // just make sure it's > 0.
-  EXPECT_GT(device_status_.system_ram_total(), 0);
-}
-
 TEST_F(DeviceStatusCollectorTest, TestSystemFreeRamInfo) {
   const int sample_count =
       static_cast<const int>(DeviceStatusCollector::kMaxResourceUsageSamples);
@@ -2014,54 +1994,6 @@ TEST_F(DeviceStatusCollectorTest, TestSystemFreeRamInfo) {
     EXPECT_LE(device_status_.system_ram_free_infos(i).timestamp(),
               timestamp_upperbounds[i]);
   }
-}
-
-TEST_F(DeviceStatusCollectorTest, TestCPUSamples) {
-  // Mock 100% CPU usage.
-  std::string full_cpu_usage("cpu  500 0 500 0 0 0 0");
-  auto options = CreateEmptyDeviceStatusCollectorOptions();
-  options->cpu_fetcher =
-      base::BindRepeating(&GetFakeCPUStatistics, full_cpu_usage);
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ash::kReportDeviceCpuInfo, true);
-  RestartStatusCollector(std::move(options));
-
-  // Force finishing tasks posted by ctor of DeviceStatusCollector.
-  content::RunAllTasksUntilIdle();
-  GetStatus();
-  ASSERT_EQ(1, device_status_.cpu_utilization_pct_samples().size());
-  EXPECT_EQ(100, device_status_.cpu_utilization_pct_samples(0));
-
-  // Now sample CPU usage again (active usage counters will not increase
-  // so should show 0% cpu usage).
-  status_collector_->RefreshSampleResourceUsage();
-  base::RunLoop().RunUntilIdle();
-  GetStatus();
-  ASSERT_EQ(2, device_status_.cpu_utilization_pct_samples().size());
-  EXPECT_EQ(0, device_status_.cpu_utilization_pct_samples(1));
-
-  // Now store a bunch of 0% cpu usage and make sure we cap the max number of
-  // samples.
-  for (int i = 0;
-       i < static_cast<int>(DeviceStatusCollector::kMaxResourceUsageSamples);
-       ++i) {
-    status_collector_->RefreshSampleResourceUsage();
-    base::RunLoop().RunUntilIdle();
-  }
-  GetStatus();
-
-  // Should not be more than kMaxResourceUsageSamples, and they should all show
-  // the CPU is idle.
-  EXPECT_EQ(static_cast<int>(DeviceStatusCollector::kMaxResourceUsageSamples),
-            device_status_.cpu_utilization_pct_samples().size());
-  for (const auto utilization : device_status_.cpu_utilization_pct_samples())
-    EXPECT_EQ(0, utilization);
-
-  // Turning off hardware reporting should not report CPU utilization.
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ash::kReportDeviceCpuInfo, false);
-  GetStatus();
-  EXPECT_EQ(0, device_status_.cpu_utilization_pct_samples().size());
 }
 
 TEST_F(DeviceStatusCollectorTest, TestCPUInfos) {
