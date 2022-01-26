@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CORB_CORB_API_H_
 
 #include <memory>
-#include <set>
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
@@ -27,20 +26,12 @@ namespace corb {
 COMPONENT_EXPORT(NETWORK_CPP)
 void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response);
 
-// Per-URLLoaderFactory state (used by ORB for marking specific URLs as media
-// and allowing them in subsequent range requests;  constructed and passed both
-// for CORB and ORB for consistency and ease of implementation).
-using PerFactoryState = std::set<GURL>;
-
 // ResponseAnalyzer is a pure, virtual interface that can be implemented by
 // either CORB or ORB.
 class COMPONENT_EXPORT(NETWORK_CPP) ResponseAnalyzer {
  public:
   // Creates a ResponseAnalyzer.
-  //
-  // The caller needs to guarantee that `state` lives as long as the
-  // ResponseAnalyzer (or longer).
-  static std::unique_ptr<ResponseAnalyzer> Create(PerFactoryState& state);
+  static std::unique_ptr<ResponseAnalyzer> Create();
 
   // Decision for what to do with the HTTP response being analyzed.
   enum class Decision {

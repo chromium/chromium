@@ -47,8 +47,6 @@ extern const base::FeatureParam<std::string>
     kDnsOverHttpsUpgradeDisabledProvidersParam;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kDisableKeepaliveFetch;
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kOpaqueResponseBlockingV01;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kTrustTokens;
