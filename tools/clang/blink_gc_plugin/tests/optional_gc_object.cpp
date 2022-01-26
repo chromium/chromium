@@ -15,11 +15,10 @@ class WithOpt : public GarbageCollected<WithOpt> {
 };
 
 void DisallowedUseOfUniquePtr() {
-  absl::optional<Base> optional_base;  // Must be okay.
-  (void)optional_base;
+  [[maybe_unused]] absl::optional<Base> optional_base;  // Must be okay.
 
-  absl::optional<Derived> optional_derived;  // Must also be okay.
-  (void)optional_derived;
+  [[maybe_unused]] absl::optional<Derived>
+      optional_derived;  // Must also be okay.
 
   new absl::optional<Base>;  // New expression with gced optionals are not
                              // allowed.
