@@ -174,7 +174,4 @@ TEST(GlobalKeyboardShortcuts, ExtraZoomInOutShortcutsExist) {
   const int cmdMinusFromKeypad =
       CommandForKeys(kVK_ANSI_KeypadMinus, CommandKeyState::kDown);
   EXPECT_EQ(cmdMinusFromKeypad, zoomOut);
-
-  const int cmdEquals = CommandForKeys(kVK_ANSI_Equal, CommandKeyState::kDown);
-  EXPECT_EQ(cmdEquals, zoomIn);
 }
