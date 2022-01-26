@@ -401,9 +401,8 @@ void MockRTCPeerConnectionHandlerPlatform::
                                                const char* trace_event_name) {}
 
 void MockRTCPeerConnectionHandlerPlatform::
-    RunSynchronousRepeatingClosureOnSignalingThread(
-        const base::RepeatingClosure& closure,
-        const char* trace_event_name) {}
+    RunSynchronousOnceClosureOnSignalingThread(base::OnceClosure closure,
+                                               const char* trace_event_name) {}
 
 void MockRTCPeerConnectionHandlerPlatform::TrackIceConnectionStateChange(
     RTCPeerConnectionHandler::IceConnectionStateVersion version,

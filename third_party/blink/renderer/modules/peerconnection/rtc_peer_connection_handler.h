@@ -244,8 +244,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual void RunSynchronousOnceClosureOnSignalingThread(
       CrossThreadOnceClosure closure,
       const char* trace_event_name);
-  virtual void RunSynchronousRepeatingClosureOnSignalingThread(
-      const base::RepeatingClosure& closure,
+  virtual void RunSynchronousOnceClosureOnSignalingThread(
+      base::OnceClosure closure,
       const char* trace_event_name);
 
   virtual void TrackIceConnectionStateChange(

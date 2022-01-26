@@ -131,9 +131,9 @@ void RunClosureWithTrace(CrossThreadOnceClosure closure,
   std::move(closure).Run();
 }
 
-void RunSynchronousOnceClosure(CrossThreadOnceClosure closure,
-                               const char* trace_event_name,
-                               base::WaitableEvent* event) {
+void RunSynchronousCrossThreadOnceClosure(CrossThreadOnceClosure closure,
+                                          const char* trace_event_name,
+                                          base::WaitableEvent* event) {
   {
     TRACE_EVENT0("webrtc", trace_event_name);
     std::move(closure).Run();
@@ -141,12 +141,12 @@ void RunSynchronousOnceClosure(CrossThreadOnceClosure closure,
   event->Signal();
 }
 
-void RunSynchronousRepeatingClosure(const base::RepeatingClosure& closure,
-                                    const char* trace_event_name,
-                                    base::WaitableEvent* event) {
+void RunSynchronousOnceClosure(base::OnceClosure closure,
+                               const char* trace_event_name,
+                               base::WaitableEvent* event) {
   {
     TRACE_EVENT0("webrtc", trace_event_name);
-    closure.Run();
+    std::move(closure).Run();
   }
   event->Signal();
 }
@@ -1264,8 +1264,8 @@ RTCPeerConnectionHandler::CreateOfferInternal(
 
   blink::TransceiverStateSurfacer transceiver_state_surfacer(
       task_runner_, signaling_thread());
-  RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(
+  RunSynchronousOnceClosureOnSignalingThread(
+      base::BindOnce(
           &RTCPeerConnectionHandler::CreateOfferOnSignalingThread,
           base::Unretained(this), base::Unretained(description_request.get()),
           std::move(options), base::Unretained(&transceiver_state_surfacer)),
@@ -1743,8 +1743,8 @@ RTCPeerConnectionHandler::AddTransceiverWithTrack(
       task_runner_, signaling_thread());
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       error_or_transceiver;
-  RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(
+  RunSynchronousOnceClosureOnSignalingThread(
+      base::BindOnce(
           &RTCPeerConnectionHandler::AddTransceiverWithTrackOnSignalingThread,
           base::Unretained(this),
           base::RetainedRef(track_ref->webrtc_track().get()), std::cref(init),
@@ -1805,13 +1805,13 @@ RTCPeerConnectionHandler::AddTransceiverWithKind(
       task_runner_, signaling_thread());
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       error_or_transceiver;
-  RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(&RTCPeerConnectionHandler::
-                              AddTransceiverWithMediaTypeOnSignalingThread,
-                          base::Unretained(this), std::cref(media_type),
-                          std::cref(init),
-                          base::Unretained(&transceiver_state_surfacer),
-                          base::Unretained(&error_or_transceiver)),
+  RunSynchronousOnceClosureOnSignalingThread(
+      base::BindOnce(&RTCPeerConnectionHandler::
+                         AddTransceiverWithMediaTypeOnSignalingThread,
+                     base::Unretained(this), std::cref(media_type),
+                     std::cref(init),
+                     base::Unretained(&transceiver_state_surfacer),
+                     base::Unretained(&error_or_transceiver)),
       "AddTransceiverWithMediaTypeOnSignalingThread");
   if (!error_or_transceiver.ok()) {
     // Don't leave the surfacer in a pending state.
@@ -1870,13 +1870,13 @@ RTCPeerConnectionHandler::AddTrack(
       task_runner_, signaling_thread());
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>
       error_or_sender;
-  RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(&RTCPeerConnectionHandler::AddTrackOnSignalingThread,
-                          base::Unretained(this),
-                          base::RetainedRef(track_ref->webrtc_track().get()),
-                          std::move(stream_ids),
-                          base::Unretained(&transceiver_state_surfacer),
-                          base::Unretained(&error_or_sender)),
+  RunSynchronousOnceClosureOnSignalingThread(
+      base::BindOnce(&RTCPeerConnectionHandler::AddTrackOnSignalingThread,
+                     base::Unretained(this),
+                     base::RetainedRef(track_ref->webrtc_track().get()),
+                     std::move(stream_ids),
+                     base::Unretained(&transceiver_state_surfacer),
+                     base::Unretained(&error_or_sender)),
       "AddTrackOnSignalingThread");
   DCHECK(transceiver_state_surfacer.is_initialized());
   if (!error_or_sender.ok()) {
@@ -2034,8 +2034,8 @@ RTCPeerConnectionHandler::RemoveTrackUnifiedPlan(
       task_runner_, signaling_thread());
   absl::optional<webrtc::RTCError> result;
   // TODO(hta): Figure out syntax for using an OnceClosure here.
-  RunSynchronousRepeatingClosureOnSignalingThread(
-      base::BindRepeating(
+  RunSynchronousOnceClosureOnSignalingThread(
+      base::BindOnce(
           &RTCPeerConnectionHandler::RemoveTrackUnifiedPlanOnSignalingThread,
           base::Unretained(this), base::RetainedRef(webrtc_sender),
           base::Unretained(&transceiver_state_surfacer),
@@ -2248,28 +2248,30 @@ void RTCPeerConnectionHandler::RunSynchronousOnceClosureOnSignalingThread(
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
     PostCrossThreadTask(
         *thread.get(), FROM_HERE,
-        CrossThreadBindOnce(&RunSynchronousOnceClosure, std::move(closure),
+        CrossThreadBindOnce(&RunSynchronousCrossThreadOnceClosure,
+                            std::move(closure),
                             CrossThreadUnretained(trace_event_name),
                             CrossThreadUnretained(&event)));
     event.Wait();
   }
 }
 
-void RTCPeerConnectionHandler::RunSynchronousRepeatingClosureOnSignalingThread(
-    const base::RepeatingClosure& closure,
+void RTCPeerConnectionHandler::RunSynchronousOnceClosureOnSignalingThread(
+    base::OnceClosure closure,
     const char* trace_event_name) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   scoped_refptr<base::SingleThreadTaskRunner> thread(signaling_thread());
   if (!thread.get() || thread->BelongsToCurrentThread()) {
     TRACE_EVENT0("webrtc", trace_event_name);
-    closure.Run();
+    std::move(closure).Run();
   } else {
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
-    thread->PostTask(FROM_HERE,
-                     base::BindOnce(&RunSynchronousRepeatingClosure, closure,
-                                    base::Unretained(trace_event_name),
-                                    base::Unretained(&event)));
+    thread->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunSynchronousOnceClosure, std::move(closure),
+                       base::Unretained(trace_event_name),
+                       base::Unretained(&event)));
     event.Wait();
   }
 }
