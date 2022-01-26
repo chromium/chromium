@@ -272,28 +272,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
   if ([self isFeedHeaderVisible]) {
-    self.feedHeaderViewController = [[FeedHeaderViewController alloc]
-        initWithSelectedFeed:self.selectedFeed];
-    self.feedHeaderViewController.feedControlDelegate = self;
-
-    [self updateFeedHeaderLabelText:self.feedHeaderViewController];
-
-    // Requests a Discover feed here if the correct flags and prefs are enabled.
-    if ([self shouldFeedBeVisible]) {
-      if (IsWebChannelsEnabled()) {
-        // TODO(crbug.com/1277504): Use unique property for Following feed.
-        switch (self.selectedFeed) {
-          case FeedType::kDiscoverFeed:
-            self.discoverFeedViewController = [self discoverFeed];
-            break;
-          case FeedType::kFollowingFeed:
-            self.discoverFeedViewController = [self followingFeed];
-            break;
-        }
-      } else {
-        self.discoverFeedViewController = [self discoverFeed];
-      }
-    }
+    [self configureFeedAndHeader];
   }
 
   [self configureNTPViewController];
@@ -390,11 +369,12 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 // Configures |self.ntpViewController| and sets it up as the main ViewController
 // managed by this Coordinator.
 - (void)configureNTPViewController {
+  DCHECK(self.ntpViewController);
+
   self.ntpViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
   self.ntpViewController.panGestureHandler = self.panGestureHandler;
-  self.ntpViewController.feedVisible =
-      [self shouldFeedBeVisible] && self.discoverFeedViewController;
+  self.ntpViewController.feedVisible = [self isFeedVisible];
 
   self.discoverFeedWrapperViewController =
       [[DiscoverFeedWrapperViewController alloc]
@@ -409,15 +389,11 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
       self.discoverFeedWrapperViewController;
   self.ntpViewController.overscrollDelegate = self;
   self.ntpViewController.ntpContentDelegate = self;
-  self.ntpViewController.feedMenuHandler = self;
   self.ntpViewController.identityDiscButton =
       [self.contentSuggestionsCoordinator.headerController identityDiscButton];
 
   self.ntpViewController.headerController =
       self.contentSuggestionsCoordinator.headerController;
-
-  self.ntpViewController.feedHeaderViewController =
-      self.feedHeaderViewController;
 
   [self configureMainViewControllerUsing:self.ntpViewController];
   self.ntpViewController.feedMetricsRecorder = self.feedMetricsRecorder;
@@ -608,18 +584,45 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 #pragma mark - NewTabPageCommands
 
 - (void)updateNTPForFeed {
+  DCHECK(self.ntpViewController);
+
   static bool update_ntp_for_feed_fix =
       base::FeatureList::IsEnabled(kUpdateNTPForFeedFix);
   if (update_ntp_for_feed_fix && !self.started) {
     return;
   }
 
-  [self stop];
-  [self start];
-  [self updateDiscoverFeedLayout];
+  [self.ntpViewController resetViewHierarchy];
 
-  [self.containerViewController.view setNeedsLayout];
-  [self.containerViewController.view layoutIfNeeded];
+  if (self.discoverFeedViewController) {
+    ios::GetChromeBrowserProvider()
+        .GetDiscoverFeedProvider()
+        ->RemoveFeedViewController(self.discoverFeedViewController);
+  }
+
+  self.ntpViewController.discoverFeedWrapperViewController = nil;
+  self.discoverFeedWrapperViewController = nil;
+  self.discoverFeedViewController = nil;
+
+  // Fetches feed header and conditionally fetches feed. Feed can only be
+  // visible if feed header is visible.
+  if ([self isFeedHeaderVisible]) {
+    [self configureFeedAndHeader];
+  } else {
+    self.ntpViewController.feedHeaderViewController = nil;
+    self.feedHeaderViewController = nil;
+  }
+
+  self.ntpViewController.feedVisible = [self isFeedVisible];
+
+  self.discoverFeedWrapperViewController =
+      [[DiscoverFeedWrapperViewController alloc]
+          initWithDiscoverFeedViewController:self.discoverFeedViewController];
+
+  self.ntpViewController.discoverFeedWrapperViewController =
+      self.discoverFeedWrapperViewController;
+
+  [self.ntpViewController layoutContentInParentCollectionView];
 }
 
 - (void)updateDiscoverFeedLayout {
@@ -793,6 +796,33 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 
 #pragma mark - Private
 
+// Creates and configures the feed and feed header based on user prefs.
+- (void)configureFeedAndHeader {
+  DCHECK([self isFeedHeaderVisible]);
+
+  self.ntpViewController.feedHeaderViewController =
+      self.feedHeaderViewController;
+
+  [self updateFeedHeaderLabelText:self.feedHeaderViewController];
+
+  // Requests a Discover feed here if the correct flags and prefs are enabled.
+  if ([self shouldFeedBeFetched]) {
+    if (IsWebChannelsEnabled()) {
+      // TODO(crbug.com/1277504): Use unique property for Following feed.
+      switch (self.selectedFeed) {
+        case FeedType::kDiscoverFeed:
+          self.discoverFeedViewController = [self discoverFeed];
+          break;
+        case FeedType::kFollowingFeed:
+          self.discoverFeedViewController = [self followingFeed];
+          break;
+      }
+    } else {
+      self.discoverFeedViewController = [self discoverFeed];
+    }
+  }
+}
+
 // Feed header is always visible unless it is disabled from the Chrome settings
 // menu, or by an enterprise policy.
 - (BOOL)isFeedHeaderVisible {
@@ -801,8 +831,13 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 }
 
 // Determines whether the feed should be fetched based on the user prefs.
-- (BOOL)shouldFeedBeVisible {
+- (BOOL)shouldFeedBeFetched {
   return [self isFeedHeaderVisible] && [self.feedExpandedPref value];
+}
+
+// Returns |YES| if the feed is currently visible on the NTP.
+- (BOOL)isFeedVisible {
+  return [self shouldFeedBeFetched] && self.discoverFeedViewController;
 }
 
 // Creates, configures and returns a Discover feed view controller.
@@ -921,13 +956,28 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
           ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
           : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
   feedHeaderTitleText =
-      [self shouldFeedBeVisible]
+      [self shouldFeedBeFetched]
           ? feedHeaderTitleText
           : [NSString
                 stringWithFormat:@"%@ – %@", feedHeaderTitleText,
                                  l10n_util::GetNSString(
                                      IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
   [feedHeader setTitleText:feedHeaderTitleText];
+}
+
+#pragma mark - Getters
+
+- (FeedHeaderViewController*)feedHeaderViewController {
+  if (!_feedHeaderViewController) {
+    _feedHeaderViewController = [[FeedHeaderViewController alloc]
+        initWithSelectedFeed:self.selectedFeed];
+    _feedHeaderViewController.feedControlDelegate = self;
+    [_feedHeaderViewController.menuButton
+               addTarget:self
+                  action:@selector(openFeedMenu)
+        forControlEvents:UIControlEventTouchUpInside];
+  }
+  return _feedHeaderViewController;
 }
 
 @end

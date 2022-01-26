@@ -72,6 +72,10 @@ const CGFloat kMenuButtonSize = 28;
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _selectedFeed = selectedFeed;
+
+    // The menu button is created early so that it can be assigned a tap action
+    // before the view loads.
+    _menuButton = [[UIButton alloc] init];
   }
   return self;
 }
@@ -87,7 +91,7 @@ const CGFloat kMenuButtonSize = 28;
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.menuButton = [self createMenuButton];
+  [self configureMenuButton:self.menuButton];
 
   if (IsWebChannelsEnabled()) {
     self.segmentedControl = [self createSegmentedControl];
@@ -115,23 +119,8 @@ const CGFloat kMenuButtonSize = 28;
 
 #pragma mark - Private
 
-// Configures and returns the feed header's title label.
-- (UILabel*)createTitleLabel {
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
-                                      weight:UIFontWeightMedium];
-  titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.accessibilityIdentifier =
-      ntp_home::DiscoverHeaderTitleAccessibilityID();
-  titleLabel.text = self.titleText;
-  return titleLabel;
-}
-
-// Configures and returns the feed header's menu button.
-- (UIButton*)createMenuButton {
-  UIButton* menuButton = [[UIButton alloc] init];
+// Configures the feed header's menu button.
+- (void)configureMenuButton:(UIButton*)menuButton {
   menuButton.translatesAutoresizingMaskIntoConstraints = NO;
   menuButton.accessibilityIdentifier = kNTPFeedHeaderButtonIdentifier;
   menuButton.accessibilityLabel =
@@ -153,7 +142,20 @@ const CGFloat kMenuButtonSize = 28;
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides,
         kHeaderMenuButtonInsetTopAndBottom, kHeaderMenuButtonInsetSides);
   }
-  return menuButton;
+}
+
+// Configures and returns the feed header's title label.
+- (UILabel*)createTitleLabel {
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  titleLabel.font = [UIFont systemFontOfSize:kDiscoverFeedTitleFontSize
+                                      weight:UIFontWeightMedium];
+  titleLabel.textColor = [UIColor colorNamed:kGrey700Color];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+  titleLabel.accessibilityIdentifier =
+      ntp_home::DiscoverHeaderTitleAccessibilityID();
+  titleLabel.text = self.titleText;
+  return titleLabel;
 }
 
 // Configures and returns the segmented control for toggling between feeds.

@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
-#import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
@@ -111,39 +110,6 @@
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
 
-  UIView* discoverFeedView = self.discoverFeedWrapperViewController.view;
-
-  self.collectionView.accessibilityIdentifier = kNTPCollectionViewIdentifier;
-
-  [self.discoverFeedWrapperViewController willMoveToParentViewController:self];
-  [self addChildViewController:self.discoverFeedWrapperViewController];
-  [self.view addSubview:discoverFeedView];
-  [self.discoverFeedWrapperViewController didMoveToParentViewController:self];
-
-  discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
-  AddSameConstraints(discoverFeedView, self.view);
-
-  UIViewController* parentViewController =
-      self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
-                         : self.discoverFeedWrapperViewController;
-
-  if (self.contentSuggestionsViewController.parentViewController) {
-    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
-    [self.contentSuggestionsViewController.view removeFromSuperview];
-    [self.contentSuggestionsViewController removeFromParentViewController];
-    [self.feedMetricsRecorder
-        recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
-                                     kContentSuggestionsReset];
-  }
-
-  [self.contentSuggestionsViewController
-      willMoveToParentViewController:parentViewController];
-  [parentViewController
-      addChildViewController:self.contentSuggestionsViewController];
-  [self.collectionView addSubview:self.contentSuggestionsViewController.view];
-  [self.contentSuggestionsViewController
-      didMoveToParentViewController:parentViewController];
-
   // TODO(crbug.com/1170995): The contentCollectionView width might be narrower
   // than the ContentSuggestions view. This causes elements to be hidden. As a
   // temporary workaround set clipsToBounds to NO to display these elements, and
@@ -162,27 +128,59 @@
       NO;
   self.contentSuggestionsViewController.collectionView.scrollEnabled = NO;
 
-  [self configureOverscrollActionsController];
-
   self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
 
-  _contentSuggestionsLayout = static_cast<ContentSuggestionsLayout*>(
+  self.contentSuggestionsLayout = static_cast<ContentSuggestionsLayout*>(
       self.contentSuggestionsViewController.collectionView
           .collectionViewLayout);
-  _contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
-  _contentSuggestionsLayout.omniboxPositioner = self;
-  _contentSuggestionsLayout.parentCollectionView = self.collectionView;
-
-  // If the feed is not visible, we control the delegate ourself (since it is
-  // otherwise controlled by the DiscoverProvider).
-  if (!self.isFeedVisible) {
-    self.discoverFeedWrapperViewController.contentCollectionView.delegate =
-        self;
-  }
+  self.contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
+  self.contentSuggestionsLayout.omniboxPositioner = self;
 
   [self registerNotifications];
 
-  // Sets up the feed header if it is visible.
+  [self layoutContentInParentCollectionView];
+}
+
+- (void)layoutContentInParentCollectionView {
+  DCHECK(self.discoverFeedWrapperViewController);
+  DCHECK(self.contentSuggestionsViewController);
+
+  // Ensure the view is loaded so we can set the accessibility identifier.
+  [self.discoverFeedWrapperViewController loadViewIfNeeded];
+  self.collectionView.accessibilityIdentifier = kNTPCollectionViewIdentifier;
+
+  // Configures the Discover feed and wrapper in the view hierarchy.
+  UIView* discoverFeedView = self.discoverFeedWrapperViewController.view;
+  [self.discoverFeedWrapperViewController willMoveToParentViewController:self];
+  [self addChildViewController:self.discoverFeedWrapperViewController];
+  [self.view addSubview:discoverFeedView];
+  [self.discoverFeedWrapperViewController didMoveToParentViewController:self];
+  discoverFeedView.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(discoverFeedView, self.view);
+
+  // Configures the content suggestions in the view hierarchy.
+  // TODO(crbug.com/1262536): Remove this when issue is fixed.
+  if (self.contentSuggestionsViewController.parentViewController) {
+    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
+    [self.contentSuggestionsViewController.view removeFromSuperview];
+    [self.contentSuggestionsViewController removeFromParentViewController];
+    [self.feedMetricsRecorder
+        recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                     kContentSuggestionsReset];
+  }
+  UIViewController* parentViewController =
+      self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
+                         : self.discoverFeedWrapperViewController;
+  [self.contentSuggestionsViewController
+      willMoveToParentViewController:parentViewController];
+  [parentViewController
+      addChildViewController:self.contentSuggestionsViewController];
+  [self.collectionView addSubview:self.contentSuggestionsViewController.view];
+  [self.contentSuggestionsViewController
+      didMoveToParentViewController:parentViewController];
+  self.contentSuggestionsLayout.parentCollectionView = self.collectionView;
+
+  // Configures the feed header in the view hierarchy if it is visible.
   if (self.feedHeaderViewController) {
     [self.feedHeaderViewController
         willMoveToParentViewController:parentViewController];
@@ -190,10 +188,25 @@
     [self.collectionView addSubview:self.feedHeaderViewController.view];
     [self.feedHeaderViewController
         didMoveToParentViewController:parentViewController];
-    [self.feedHeaderViewController.menuButton
-               addTarget:self.feedMenuHandler
-                  action:@selector(openFeedMenu)
-        forControlEvents:UIControlEventTouchUpInside];
+  }
+
+  [self.overscrollActionsController invalidate];
+  [self configureOverscrollActionsController];
+
+  if (self.viewDidAppear) {
+    [self applyCollectionViewConstraints];
+  }
+
+  // If the feed is not visible, we control the delegate ourself (since it is
+  // otherwise controlled by the DiscoverProvider). The view is also layed out
+  // so that we can correctly calculate the minimum height.
+  if (!self.isFeedVisible) {
+    self.discoverFeedWrapperViewController.contentCollectionView.delegate =
+        self;
+
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+    [self setMinimumHeight];
   }
 }
 
@@ -396,6 +409,14 @@
 
 - (CGFloat)heightAboveFeed {
   return [self adjustedContentSuggestionsHeight] + [self feedHeaderHeight];
+}
+
+- (void)resetViewHierarchy {
+  [self removeFromViewHierarchy:self.discoverFeedWrapperViewController];
+  [self removeFromViewHierarchy:self.contentSuggestionsViewController];
+  if (self.feedHeaderViewController) {
+    [self removeFromViewHierarchy:self.feedHeaderViewController];
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -643,6 +664,9 @@
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:self.headerController.view.bottomAnchor],
+    [self.collectionView.topAnchor
+        constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                    .bottomAnchor],
   ];
 
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
@@ -893,6 +917,13 @@
   CGFloat pinnedOffsetY = [self.headerSynchronizer pinnedOffsetY];
   self.scrolledToMinimumHeight =
       self.collectionView.contentOffset.y >= pinnedOffsetY;
+}
+
+// Removes |viewController| and its corresponding view from the view hierarchy.
+- (void)removeFromViewHierarchy:(UIViewController*)viewController {
+  [viewController willMoveToParentViewController:nil];
+  [viewController.view removeFromSuperview];
+  [viewController removeFromParentViewController];
 }
 
 #pragma mark - Getters

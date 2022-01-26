@@ -38,7 +38,6 @@
     CGFloat additionalHeight =
         toolbarHeight + self.collectionView.contentInset.bottom;
     minimumHeight -= additionalHeight;
-    ntpHeight += additionalHeight;
   }
 
   return minimumHeight;
