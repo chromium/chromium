@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -20,9 +21,8 @@ const char kGetObservedDeviceUrl[] =
     "https://nearbydevices-pa.googleapis.com/v1/device/"
     "%d?key=%s&mode=MODE_RELEASE&alt=proto";
 
-// TODO(crbug/1226117): Update annotation with policy details when available.
 const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("fast_pair", R"(
+    net::DefineNetworkTrafficAnnotation("fast_pair_device_metadata_fetcher", R"(
         semantics {
           sender: "Fast Pair repository access"
           description:
@@ -35,9 +35,15 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
         policy {
           cookies_allowed: NO
-          setting: "There is a toggle in OS Settings under Bluetooth."
-          policy_exception_justification:
-            "Not yet created, feature disabled by flag"
+          setting:
+            "You can enable or disable this feature by toggling on/off the "
+            "Fast Pair toggle in chrome://os-settings under 'Bluetooth'. The "
+            "feature is enabled by default. "
+          chrome_policy {
+            FastPairEnabled {
+                FastPairEnabled: true
+            }
+          }
         })");
 
 }  // namespace
