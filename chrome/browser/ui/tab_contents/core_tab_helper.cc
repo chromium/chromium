@@ -315,8 +315,7 @@ void CoreTabHelper::DidStartLoading() {
 }
 
 void CoreTabHelper::OnVisibilityChanged(content::Visibility visibility) {
-  // TODO(jochen): Consider handling OCCLUDED tabs the same way as HIDDEN tabs.
-  if (visibility != content::Visibility::HIDDEN) {
+  if (visibility == content::Visibility::VISIBLE) {
     web_cache::WebCacheManager::GetInstance()->ObserveActivity(
         web_contents()->GetMainFrame()->GetProcess()->GetID());
   }
