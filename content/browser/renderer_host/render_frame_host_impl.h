@@ -1578,6 +1578,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   BackForwardCacheDisablingFeatures GetBackForwardCacheDisablingFeatures()
       const;
 
+  using BackForwardCacheDisablingFeaturesCallback =
+      base::RepeatingCallback<void(BackForwardCacheDisablingFeatures)>;
+  void SetBackForwardCacheDisablingFeaturesCallbackForTesting(
+      BackForwardCacheDisablingFeaturesCallback callback) {
+    back_forward_cache_disabling_features_callback_for_testing_ = callback;
+  }
+
   // Returns a PrefetchedSignedExchangeCache which is attached to |this|.
   scoped_refptr<PrefetchedSignedExchangeCache>
   EnsurePrefetchedSignedExchangeCache();
@@ -4110,6 +4117,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Used when testing to retrieve that last created Web Bluetooth service.
   raw_ptr<WebBluetoothServiceImpl> last_web_bluetooth_service_for_testing_ =
       nullptr;
+
+  BackForwardCacheDisablingFeaturesCallback
+      back_forward_cache_disabling_features_callback_for_testing_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

@@ -3940,6 +3940,11 @@ void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
       BackForwardCacheDisablingFeatures::FromEnumBitmask(features_mask);
 
   MaybeEvictFromBackForwardCache();
+
+  if (back_forward_cache_disabling_features_callback_for_testing_) {
+    back_forward_cache_disabling_features_callback_for_testing_.Run(
+        renderer_reported_bfcache_disabling_features_);
+  }
 }
 
 using BackForwardCacheDisablingFeatureHandle =
