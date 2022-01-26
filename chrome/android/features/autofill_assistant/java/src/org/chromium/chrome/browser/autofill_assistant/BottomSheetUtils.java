@@ -55,7 +55,10 @@ public class BottomSheetUtils {
                 public void onSheetContentChanged(BottomSheetContent newContent) {
                     if (newContent == content) {
                         controller.removeObserver(this);
-                        restoreStateInternal(controller, content, targetState);
+                        // Delay setting the state. BottomSheet will ask for PEEK state, which
+                        // overrides our |targetState| if set too early.
+                        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                                () -> restoreStateInternal(controller, content, targetState));
                     }
                 }
             });
