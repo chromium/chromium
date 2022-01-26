@@ -44,6 +44,9 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Failure Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Timeout ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/oklch-008.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-composite-1c.html [ Crash Failure ]
 crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]

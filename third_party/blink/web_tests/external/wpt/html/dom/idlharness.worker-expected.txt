@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 816 tests; 808 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 822 tests; 813 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -254,6 +254,12 @@ PASS HTMLTemplateElement interface: existence and properties of interface object
 PASS HTMLSlotElement interface: existence and properties of interface object
 PASS HTMLCanvasElement interface: existence and properties of interface object
 PASS CanvasRenderingContext2D interface: existence and properties of interface object
+PASS CanvasFilter interface: existence and properties of interface object
+FAIL CanvasFilter interface object length assert_equals: wrong value for CanvasFilter.length expected 0 but got 1
+PASS CanvasFilter interface object name
+PASS CanvasFilter interface: existence and properties of interface prototype object
+PASS CanvasFilter interface: existence and properties of interface prototype object's "constructor" property
+PASS CanvasFilter interface: existence and properties of interface prototype object's @@unscopables property
 PASS CanvasGradient interface: existence and properties of interface object
 PASS CanvasGradient interface object length
 PASS CanvasGradient interface object name

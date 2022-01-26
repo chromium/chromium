@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: window.getPseudoElements is not a function"
+PASS idl_test validation
+PASS Partial interface Element: original interface defined
+PASS Partial interface Element: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+FAIL CSSPseudoElement interface: existence and properties of interface object assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface object length assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface object name assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: attribute type assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: attribute element assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement must be primary interface of beforeElements.item(0) assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
+FAIL Stringification of beforeElements.item(0) assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
+FAIL CSSPseudoElement interface: beforeElements.item(0) must inherit property "type" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
+FAIL CSSPseudoElement interface: beforeElements.item(0) must inherit property "element" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: beforeElements is not defined"
+FAIL Element interface: operation pseudo(CSSOMString) assert_own_property: interface prototype object missing non-static operation expected property "pseudo" missing
+Harness: the test ran to completion.
+

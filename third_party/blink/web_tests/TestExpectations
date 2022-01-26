@@ -3177,6 +3177,27 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
+crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg-basic.html [ Failure ]
+crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Failure ]
+crbug.com/626703 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure ]
+crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/data-urls/processing.any.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Timeout ]
+crbug.com/626703 [ Mac10.12 ] virtual/document-transition/wpt_internal/document-transition/transition-waits-for-animations.html [ Crash ]
+crbug.com/626703 [ Mac10.14 ] virtual/document-transition/wpt_internal/document-transition/transition-waits-for-animations.html [ Crash ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-003.https.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint-function-this-value.https.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-008.https.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/cache-storage.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/indexeddb.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] virtual/prerender/external/wpt/speculation-rules/prerender/media-autoplay.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip Timeout ]
+crbug.com/626703 [ Mac10.15 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip Timeout ]
+crbug.com/626703 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/wasm/jsapi/constructor/instantiate-bad-imports.any.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/wasm/jsapi/constructor/instantiate-bad-imports.any.worker.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Timeout ]
@@ -6841,7 +6862,7 @@ crbug.com/1093027 http/tests/credentialmanager/credentialscontainer-create-with-
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Failure Pass ]
 # pause-on-elements-panel.js is marked as Slow, so it's required to also be Skipped due to it Timing out.
-crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Timeout Skip Failure Pass ]
+crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Pass Timeout ]
 crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Failure Pass ]
 crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
@@ -7274,7 +7295,7 @@ crbug.com/1249043 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/rep
 crbug.com/1249043 [ Linux ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
 crbug.com/1249043 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
 crbug.com/1249043 [ Mac10.13 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
-crbug.com/1249043 [ Mac10.14 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass Timeout Skip ]
+crbug.com/1249043 [ Mac10.14 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass Skip Timeout ]
 crbug.com/1249043 [ Mac11 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
 crbug.com/1249043 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
 crbug.com/1249043 [ Win ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
@@ -7312,7 +7333,9 @@ crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure
 crbug.com/1267734 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
 
 # This test is flaky on all platforms
-crbug.com/1191846 virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
+crbug.com/1191846 [ Fuchsia ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
+crbug.com/1191846 [ Mac ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
+crbug.com/1191846 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
 
 # Sheriff 2021-11-10
 crbug.com/1268963 [ Linux ] external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
@@ -7536,9 +7559,9 @@ crbug.com/1288136 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 
 # Sheriff 2022-01-18
 crbug.com/1287067 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/embedder-require-corp.https.html [ Failure Pass ]
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Skip Pass Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Skip Pass Timeout ]
-crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Skip Pass Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/redirect-loop-base-https-other-https.html [ Pass Skip Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/window/thorough/cors-preflight2-base-https-other-https.html [ Pass Skip Timeout ]
+crbug.com/1288264 [ Win ] http/tests/fetch/serviceworker/thorough/nocors-base-https-other-https.html [ Pass Skip Timeout ]
 crbug.com/1288264 [ Win ] http/tests/security/aboutBlank/xss-DENIED-navigate-opener-document-write.html [ Pass Timeout ]
 crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Pass ]
@@ -7548,10 +7571,10 @@ crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/externa
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-no-subdomain-child2-no-subdomain2.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
-crbug.com/1227911 [ Win Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Release Win ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-no-child1-no-subdomain-child2-yes-subdomain.sub.https.html [ Failure Pass ]
-crbug.com/1227911 [ Win Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Release Win ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Linux Release ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 crbug.com/1227911 [ Mac10.14 ] virtual/not-site-per-process/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain.sub.https.html [ Failure Pass ]
 

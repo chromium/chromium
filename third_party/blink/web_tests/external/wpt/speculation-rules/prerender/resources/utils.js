@@ -143,3 +143,112 @@ function createFrame(url) {
       document.body.appendChild(frame);
     });
 }
+
+class PrerenderChannel extends EventTarget {
+  broadcastChannel = null;
+
+  constructor(uid, name) {
+    super();
+    this.broadcastChannel = new BroadcastChannel(`${uid}-${name}`);
+    this.broadcastChannel.addEventListener('message', e => {
+      this.dispatchEvent(new CustomEvent('message', {detail: e.data}));
+    });
+  }
+
+  postMessage(message) {
+    this.broadcastChannel.postMessage(message);
+  }
+
+  close() {
+    this.broadcastChannel.close();
+  }
+};
+
+async function create_prerendered_page(t) {
+  const uuid = token();
+  new PrerenderChannel(uuid, 'log').addEventListener('message', message => {
+    // Calling it with ['log'] to avoid lint issue. This log should be used for debugging
+    // the prerendered context, not testing.
+    if(window.console)
+      console['log']('[From Prerendered]', ...message.detail);
+  });
+
+  const execChannel = new PrerenderChannel(uuid, 'exec');
+  const initChannel = new PrerenderChannel(uuid, 'initiator');
+  const exec = (func, args = []) => {
+      const receiver = token();
+      execChannel.postMessage({receiver, fn: func.toString(), args});
+      return new Promise((resolve, reject) => {
+        const channel = new PrerenderChannel(uuid, receiver);
+        channel.addEventListener('message', ({detail}) => {
+          channel.close();
+          if (detail.error)
+            reject(detail.error)
+          else
+            resolve(detail.result);
+        });
+      })
+    };
+
+  window.open(`/speculation-rules/prerender/resources/eval-init.html?uuid=${uuid}`, '_blank', 'noopener');
+  t.add_cleanup(() => initChannel.postMessage('close'));
+  t.add_cleanup(() => exec(() => window.close()));
+  await new Promise(resolve => {
+    const channel = new PrerenderChannel(uuid, 'ready');
+    channel.addEventListener('message', () => {
+      channel.close();
+      resolve();
+    });
+  });
+
+  async function activate() {
+    const prerendering = exec(() => new Promise(resolve =>
+      document.addEventListener('prerenderingchange', () => {
+        resolve(document.prerendering);
+      })));
+
+    initChannel.postMessage('activate');
+    if (await prerendering)
+      throw new Error('Should not be prerendering at this point')
+  }
+
+  return {
+    exec,
+    activate
+  };
+}
+
+
+function test_prerender_restricted(fn, expected, label) {
+  promise_test(async t => {
+    const {exec} = await create_prerendered_page(t);
+    let result = null;
+    try {
+      await exec(fn);
+      result = "OK";
+    } catch (e) {
+      result = e.name;
+    }
+
+    assert_equals(result, expected);
+  }, label);
+}
+
+function test_prerender_defer(fn, label) {
+  promise_test(async t => {
+    const {exec, activate} = await create_prerendered_page(t);
+    let activated = false;
+    const deferred = exec(fn);
+
+    const post = new Promise(resolve =>
+      deferred.then(result => {
+        assert_true(activated, "Deferred operation should occur only after activation");
+        resolve(result);
+      }));
+
+    await new Promise(resolve => t.step_timeout(resolve, 100));
+    await activate();
+    activated = true;
+    await post;
+  }, label);
+}

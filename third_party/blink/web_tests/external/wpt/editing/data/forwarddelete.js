@@ -1,3 +1,5 @@
+class MyCustomElement extends HTMLElement {};
+customElements.define("custom-element", MyCustomElement);
 // For documentation of the format, see README in this directory.
 var browserTests = [
 ["foo[]",
@@ -2625,6 +2627,30 @@ var browserTests = [
 ["<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>",
     [["forwarddelete",""]],
     "<p contenteditable=\"false\"><unknown-element contenteditable=\"\"></unknown-element></p>",
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>[ab</p><p>c]d</p></custom-element></div>",
+    [["forwarddelete",""]],
+    ["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>d</p></custom-element></div>",
+     "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>d<br></p></custom-element></div>"],
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>a[b</p><p>cd]</p></custom-element></div>",
+    [["forwarddelete",""]],
+    ["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>a</p></custom-element></div>",
+     "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p>a<br></p></custom-element></div>"],
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>[ab</b></p><p><i>c]d</i></p></custom-element></div>",
+    [["forwarddelete",""]],
+    ["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><i>d</i></p></custom-element></div>",
+     "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><i>d</i><br></p></custom-element></div>"],
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a[b</b></p><p><i>cd]</i></p></custom-element></div>",
+    [["forwarddelete",""]],
+    ["<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a</b></p></custom-element></div>",
+     "<div contenteditable=\"false\"><custom-element contenteditable=\"\"><p><b>a</b><br></p></custom-element></div>"],
     [true],
     {"forwarddelete":[false,false,"",false,false,""]}],
 ]

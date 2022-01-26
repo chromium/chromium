@@ -8,20 +8,18 @@ interface mixin NavigatorFonts {
   [SameObject] readonly attribute FontManager fonts;
 };
 Navigator includes NavigatorFonts;
-WorkerNavigator includes NavigatorFonts;
 
 [SecureContext,
- Exposed=(Window,Worker)]
+ Exposed=Window]
 interface FontManager {
   Promise<sequence<FontMetadata>> query(optional QueryOptions options = {});
 };
 
 dictionary QueryOptions {
-  boolean persistentAccess = false;
   sequence<DOMString> select = [];
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=Window]
 interface FontMetadata {
   Promise<Blob> blob();
 

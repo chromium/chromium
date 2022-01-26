@@ -74,8 +74,8 @@ interface ReadableStreamDefaultReader {
 ReadableStreamDefaultReader includes ReadableStreamGenericReader;
 
 dictionary ReadableStreamDefaultReadResult {
- any value;
- boolean done;
+  any value;
+  boolean done;
 };
 
 [Exposed=(Window,Worker,Worklet)]
@@ -88,8 +88,8 @@ interface ReadableStreamBYOBReader {
 ReadableStreamBYOBReader includes ReadableStreamGenericReader;
 
 dictionary ReadableStreamBYOBReadResult {
- ArrayBufferView value;
- boolean done;
+  ArrayBufferView value;
+  boolean done;
 };
 
 [Exposed=(Window,Worker,Worklet)]

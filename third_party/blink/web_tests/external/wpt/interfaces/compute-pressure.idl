@@ -4,7 +4,7 @@
 // Source: Compute Pressure API (https://wicg.github.io/compute-pressure/)
 
 callback ComputePressureUpdateCallback = undefined (
-  ComputePressureObserverUpdate update,
+  ComputePressureEntry update,
   ComputePressureObserver observer
 );
 
@@ -18,7 +18,7 @@ interface ComputePressureObserver {
   undefined unobserve();
 };
 
-dictionary ComputePressureObserverUpdate {
+dictionary ComputePressureEntry {
   double cpuSpeed;
   double cpuUtilization;
   ComputePressureObserverOptions options;

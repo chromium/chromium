@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS e.style['width'] = "1vw" should set the property value
+PASS e.style['width'] = "1vh" should set the property value
+FAIL e.style['width'] = "1vi" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1vb" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['width'] = "1vmin" should set the property value
+PASS e.style['width'] = "1vmax" should set the property value
+FAIL e.style['width'] = "1svw" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1svh" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1svi" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1svb" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1svmin" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1svmax" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvw" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvh" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvi" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvb" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvmin" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1lvmax" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvw" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvh" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvi" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvb" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvmin" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['width'] = "1dvmax" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+
