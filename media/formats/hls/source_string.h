@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_HLS_PARSE_CONTEXT_H_
-#define MEDIA_FORMATS_HLS_PARSE_CONTEXT_H_
+#ifndef MEDIA_FORMATS_HLS_SOURCE_STRING_H_
+#define MEDIA_FORMATS_HLS_SOURCE_STRING_H_
 
 #include <cstdint>
 #include "base/strings/string_piece.h"
@@ -88,10 +88,7 @@ struct MEDIA_EXPORT SourceLineIterator {
   base::StringPiece source_;
 };
 
-// TODO(https://crbug.com/1266991): Add `MediaPlaylistParseContext`,
-// `MultivariantPlaylistParseContext`, and `VariableDictionary` structures.
-
 }  // namespace hls
 }  // namespace media
 
-#endif  // MEDIA_FORMATS_HLS_PARSE_CONTEXT_H_
+#endif  // MEDIA_FORMATS_HLS_SOURCE_STRING_H_

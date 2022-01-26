@@ -7,8 +7,8 @@
 
 #include <cstddef>
 #include "media/base/media_export.h"
-#include "media/formats/hls/parse_context.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/source_string.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {

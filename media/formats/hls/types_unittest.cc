@@ -4,7 +4,7 @@
 
 #include "media/formats/hls/types.h"
 #include "base/location.h"
-#include "media/formats/hls/parse_context.h"
+#include "media/formats/hls/source_string.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

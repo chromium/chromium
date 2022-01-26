@@ -7,8 +7,8 @@
 
 #include <cstdint>
 #include "base/containers/span.h"
-#include "media/formats/hls/parse_context.h"
 #include "media/formats/hls/parse_status.h"
+#include "media/formats/hls/source_string.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/hls/parse_context.h"
+#include "media/formats/hls/source_string.h"
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
