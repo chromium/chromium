@@ -2683,22 +2683,6 @@
             ]
         }
     ],
-    "DisableGles2ForOopR": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "UseGles2ForOopR"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableHttpDiskCache": [
         {
             "platforms": [
