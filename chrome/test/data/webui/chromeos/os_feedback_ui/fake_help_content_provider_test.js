@@ -20,6 +20,10 @@ export function fakeHelpContentProviderTestSuite() {
     provider = null;
   });
 
+  /**
+   * Test that the fake help content provider returns the non-empty list which
+   * was set explicitly.
+   */
   test('getHelpContents', () => {
     provider.setFakeHelpContents(fakeHelpContentList);
     return provider.getHelpContents('wifi not working', 5)
@@ -28,6 +32,10 @@ export function fakeHelpContentProviderTestSuite() {
         });
   });
 
+  /**
+   * Test that the fake help content provider returns the empty list which was
+   * set explicitly.
+   */
   test('getHelpContentsEmpty', () => {
     /** @type {!HelpContentList} */
     const expectedList = [];

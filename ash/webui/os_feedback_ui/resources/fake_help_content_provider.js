@@ -22,10 +22,10 @@ export class FakeHelpContentProvider {
 
   /**
    * @param {string} query
-   * @param {number} max_results
+   * @param {number} maxResults
    * @return {!Promise<!HelpContentList>}
    */
-  getHelpContents(query, max_results) {
+  getHelpContents(query, maxResults) {
     return this.methods_.resolveMethod('getHelpContents');
   }
 

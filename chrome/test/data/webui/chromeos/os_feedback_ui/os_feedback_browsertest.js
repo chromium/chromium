@@ -43,6 +43,7 @@ const debug_suites_list = [
   'confirmationPageTest',
   'fakeHelpContentProviderTest',
   'fakeMojoProviderTest',
+  'helpContentTest',
   'searchPageTest',
 ];
 
