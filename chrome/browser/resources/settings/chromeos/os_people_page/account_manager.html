@@ -77,12 +77,19 @@
     width: 100%;
   }
 
-  .account-list-header-description > .secondary {
-    flex-grow: 1;
+  .account-list-header-description.with-padding {
+    padding-top: 16px;
   }
 
-  .account-list-header-description > .secondary {
+  .account-list-header-description > .secondary,
+  .account-list-header-description > h2 {
+    flex-grow: 1;
     padding-inline-end: 40px;
+  }
+
+  .account-list-header-description > h2 {
+    padding-bottom: 16px;
+    padding-top: 16px;
   }
 
   .secondary-accounts-disabled-tooltip {
@@ -253,11 +260,15 @@
 <!-- Secondary Accounts list header -->
 <div class="secondary-accounts-box settings-box first">
   <div id="account-list-header" class="start">
-    <h2>
+    <h2 hidden$="[[isArcAccountRestrictionsEnabled_]]">
       [[getAccountListHeader_(isChildUser_)]]
     </h2>
-    <div class="account-list-header-description">
-      <span class="secondary">
+    <div class$="[[
+        getAccountListHeaderClass_(isArcAccountRestrictionsEnabled_)]]">
+      <h2 hidden$="[[!isArcAccountRestrictionsEnabled_]]">
+        [[getAccountListHeader_(isChildUser_)]]
+      </h2>
+      <span class="secondary" hidden$="[[isArcAccountRestrictionsEnabled_]]">
         [[getAccountListDescription_(isChildUser_)]]
       </span>
       <template is="dom-if" if="[[
@@ -279,6 +290,9 @@
             isSecondaryGoogleAccountSigninAllowed_)]]
       </cr-button>
     </div>
+    <span class="secondary" hidden$="[[!isArcAccountRestrictionsEnabled_]]">
+      [[getAccountListDescription_(isChildUser_)]]
+    </span>
   </div>
 </div>
 <!-- Secondary Accounts list -->
@@ -311,10 +325,9 @@
       </div>
       <!-- Display ARC status -->
       <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
-        <span class="arc-availability secondary"
-            hidden$="[[item.isAvailableInArc]]">
-          <!-- TODO(crbug.com/1260909): Use real strings -->
-          Not shared with Android apps
+        <span class="arc-availability secondary" id="arc-status-[[index]]"
+            aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
+          $i18n{accountNotUsedInArcLabel}
         </span>
       </template>
       <template is="dom-if"
@@ -330,6 +343,7 @@
           title="[[getMoreActionsTitle_(item)]]"
           aria-label="[[getMoreActionsTitle_(item)]]"
           aria-describedby$="fullName-[[index]]
+                              arc-status-[[index]]
                               edu-account-label-[[index]]"
           on-click="onAccountActionsMenuButtonTap_"
           deep-link-focus-id$="[[Setting.kRemoveAccount]]">

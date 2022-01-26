@@ -206,6 +206,16 @@ Polymer({
   },
 
   /**
+   * @return {string} class name for account list header class.
+   * @private
+   */
+  getAccountListHeaderClass_() {
+    return this.isArcAccountRestrictionsEnabled_ ?
+        'account-list-header-description with-padding' :
+        'account-list-header-description';
+  },
+
+  /**
    * @param {string} iconUrl
    * @return {string} A CSS image-set for multiple scale factors.
    * @private
@@ -430,10 +440,9 @@ Polymer({
     if (!this.actionMenuAccount_) {
       return '';
     }
-    // TODO(crbug.com/1260909): Use real strings.
     return this.actionMenuAccount_.isAvailableInArc ?
-        'Don\'t share with Android apps' :
-        'Share with Android apps';
+        this.i18n('accountStopUsingInArcButtonLabel') :
+        this.i18n('accountUseInArcButtonLabel');
   },
 
   /**

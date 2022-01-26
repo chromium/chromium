@@ -202,7 +202,6 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_REAUTHENTICATION_TOOLTIP},
       {"accountManagerMoreActionsTooltip",
        IDS_SETTINGS_ACCOUNT_MANAGER_MORE_ACTIONS_TOOLTIP},
-      {"accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION},
       {"addAccountLabel", IDS_SETTINGS_ACCOUNT_MANAGER_ADD_ACCOUNT_LABEL_V2},
       {"accountListHeader", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_HEADER_V2},
       {"accountListHeaderChild",
@@ -219,8 +218,25 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE},
       {"removeLacrosAccountDialogCancel",
        IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL},
+      {"accountNotUsedInArcLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL},
+      {"accountUseInArcButtonLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL},
+      {"accountStopUsingInArcButtonLabel",
+       IDS_SETTINGS_ACCOUNT_MANAGER_STOP_USING_IN_ARC_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    html_source->AddString("accountListDescription",
+                           l10n_util::GetStringFUTF16(
+                               IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2,
+                               ui::GetChromeOSDeviceName()));
+  } else {
+    html_source->AddLocalizedString(
+        "accountListDescription",
+        IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
+  }
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   DCHECK(user);
