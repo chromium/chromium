@@ -15,6 +15,7 @@
 #include "absl/container/btree_test.h"
 
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -1344,38 +1345,34 @@ TEST(Btree, InitializerListInsert) {
   EXPECT_EQ(++it, range.second);
 }
 
-template <typename Compare, typename K>
-void AssertKeyCompareToAdapted() {
-  using Adapted = typename key_compare_to_adapter<Compare>::type;
-  static_assert(!std::is_same<Adapted, Compare>::value,
-                "key_compare_to_adapter should have adapted this comparator.");
+template <typename Compare, typename Key>
+void AssertKeyCompareStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<absl::weak_ordering,
-                   absl::result_of_t<Adapted(const K &, const K &)>>::value,
-      "Adapted comparator should be a key-compare-to comparator.");
+      std::is_same<Adapted, StringBtreeDefaultLess>::value ||
+          std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter should have string-adapted this comparator.");
 }
-template <typename Compare, typename K>
-void AssertKeyCompareToNotAdapted() {
-  using Unadapted = typename key_compare_to_adapter<Compare>::type;
+template <typename Compare, typename Key>
+void AssertKeyCompareNotStringAdapted() {
+  using Adapted = typename key_compare_adapter<Compare, Key>::type;
   static_assert(
-      std::is_same<Unadapted, Compare>::value,
-      "key_compare_to_adapter shouldn't have adapted this comparator.");
-  static_assert(
-      std::is_same<bool,
-                   absl::result_of_t<Unadapted(const K &, const K &)>>::value,
-      "Un-adapted comparator should return bool.");
+      !std::is_same<Adapted, StringBtreeDefaultLess>::value &&
+          !std::is_same<Adapted, StringBtreeDefaultGreater>::value,
+      "key_compare_adapter shouldn't have string-adapted this comparator.");
 }
 
-TEST(Btree, KeyCompareToAdapter) {
-  AssertKeyCompareToAdapted<std::less<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::greater<std::string>, std::string>();
-  AssertKeyCompareToAdapted<std::less<absl::string_view>, absl::string_view>();
-  AssertKeyCompareToAdapted<std::greater<absl::string_view>,
-                            absl::string_view>();
-  AssertKeyCompareToAdapted<std::less<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToAdapted<std::greater<absl::Cord>, absl::Cord>();
-  AssertKeyCompareToNotAdapted<std::less<int>, int>();
-  AssertKeyCompareToNotAdapted<std::greater<int>, int>();
+TEST(Btree, KeyCompareAdapter) {
+  AssertKeyCompareStringAdapted<std::less<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::greater<std::string>, std::string>();
+  AssertKeyCompareStringAdapted<std::less<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::greater<absl::string_view>,
+                                absl::string_view>();
+  AssertKeyCompareStringAdapted<std::less<absl::Cord>, absl::Cord>();
+  AssertKeyCompareStringAdapted<std::greater<absl::Cord>, absl::Cord>();
+  AssertKeyCompareNotStringAdapted<std::less<int>, int>();
+  AssertKeyCompareNotStringAdapted<std::greater<int>, int>();
 }
 
 TEST(Btree, RValueInsert) {
@@ -1425,11 +1422,19 @@ TEST(Btree, RValueInsert) {
   EXPECT_EQ(tracker.swaps(), 0);
 }
 
-// A btree set with a specific number of values per node.
+template <typename Cmp>
+struct CheckedCompareOptedOutCmp : Cmp, BtreeTestOnlyCheckedCompareOptOutBase {
+  using Cmp::Cmp;
+  CheckedCompareOptedOutCmp() {}
+  CheckedCompareOptedOutCmp(Cmp cmp) : Cmp(std::move(cmp)) {}  // NOLINT
+};
+
+// A btree set with a specific number of values per node. Opt out of
+// checked_compare so that we can expect exact numbers of comparisons.
 template <typename Key, int TargetValuesPerNode, typename Cmp = std::less<Key>>
 class SizedBtreeSet
     : public btree_set_container<btree<
-          set_params<Key, Cmp, std::allocator<Key>,
+          set_params<Key, CheckedCompareOptedOutCmp<Cmp>, std::allocator<Key>,
                      BtreeNodePeer::GetTargetNodeSize<Key>(TargetValuesPerNode),
                      /*Multi=*/false>>> {
   using Base = typename SizedBtreeSet::btree_set_container;
@@ -2297,7 +2302,9 @@ TEST(Btree, TryEmplaceWithHintWorks) {
   };
   using Cmp = decltype(cmp);
 
-  absl::btree_map<int, int, Cmp> m(cmp);
+  // Use a map that is opted out of key_compare being adapted so we can expect
+  // strict comparison call limits.
+  absl::btree_map<int, int, CheckedCompareOptedOutCmp<Cmp>> m(cmp);
   for (int i = 0; i < 128; ++i) {
     m.emplace(i, i);
   }
@@ -2966,6 +2973,58 @@ TEST(Btree,
 TEST(Btree, ConstructImplicitlyWithUnadaptedComparator) {
   absl::btree_set<MultiKey, MultiKeyComp> set = {{}, MultiKeyComp{}};
 }
+
+#ifndef NDEBUG
+TEST(Btree, InvalidComparatorsCaught) {
+  {
+    struct ZeroAlwaysLessCmp {
+      bool operator()(int lhs, int rhs) const {
+        if (lhs == 0) return true;
+        return lhs < rhs;
+      }
+    };
+    absl::btree_set<int, ZeroAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct ThreeWayAlwaysLessCmp {
+      absl::weak_ordering operator()(int, int) const {
+        return absl::weak_ordering::less;
+      }
+    };
+    absl::btree_set<int, ThreeWayAlwaysLessCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}), "is_self_equivalent");
+  }
+  {
+    struct SumGreaterZeroCmp {
+      bool operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return false;
+        return lhs + rhs > 0;
+      }
+    };
+    absl::btree_set<int, SumGreaterZeroCmp> set;
+    // Note: '!' only needs to be escaped when it's the first character.
+    EXPECT_DEATH(set.insert({0, 1, 2}),
+                 R"regex(\!lhs_comp_rhs \|\| !comp\(\)\(rhs, lhs\))regex");
+  }
+  {
+    struct ThreeWaySumGreaterZeroCmp {
+      absl::weak_ordering operator()(int lhs, int rhs) const {
+        // First, do equivalence correctly - so we can test later condition.
+        if (lhs == rhs) return absl::weak_ordering::equivalent;
+
+        if (lhs + rhs > 0) return absl::weak_ordering::less;
+        if (lhs + rhs == 0) return absl::weak_ordering::equivalent;
+        return absl::weak_ordering::greater;
+      }
+    };
+    absl::btree_set<int, ThreeWaySumGreaterZeroCmp> set;
+    EXPECT_DEATH(set.insert({0, 1, 2}),
+                 R"regex(lhs_comp_rhs < 0 -> rhs_comp_lhs > 0)regex");
+  }
+}
+#endif
 
 }  // namespace
 }  // namespace container_internal

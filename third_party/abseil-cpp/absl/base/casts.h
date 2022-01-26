@@ -44,8 +44,12 @@ struct is_bitcastable
           bool,
           sizeof(Dest) == sizeof(Source) &&
               type_traits_internal::is_trivially_copyable<Source>::value &&
-              type_traits_internal::is_trivially_copyable<Dest>::value &&
-              std::is_default_constructible<Dest>::value> {};
+              type_traits_internal::is_trivially_copyable<Dest>::value
+#if !ABSL_HAVE_BUILTIN(__builtin_bit_cast)
+              && std::is_default_constructible<Dest>::value
+#endif
+          > {
+};
 
 }  // namespace internal_casts
 
@@ -147,20 +151,26 @@ constexpr To implicit_cast(typename absl::internal::identity_t<To> to) {
 // introducing this undefined behavior (since the original value is never
 // accessed in the wrong way).
 //
-// NOTE: The requirements here are stricter than the bit_cast of standard
-// proposal P0476 due to the need for workarounds and lack of intrinsics.
+// NOTE: The requirements here are more strict than the bit_cast of standard
+// proposal P0476 when __builtin_bit_cast is not available.
 // Specifically, this implementation also requires `Dest` to be
 // default-constructible.
 template <
     typename Dest, typename Source,
     typename std::enable_if<internal_casts::is_bitcastable<Dest, Source>::value,
                             int>::type = 0>
+#if ABSL_HAVE_BUILTIN(__builtin_bit_cast)
+inline constexpr Dest bit_cast(const Source& source) {
+  return __builtin_bit_cast(Dest, source);
+}
+#else
 inline Dest bit_cast(const Source& source) {
   Dest dest;
   memcpy(static_cast<void*>(std::addressof(dest)),
          static_cast<const void*>(std::addressof(source)), sizeof(dest));
   return dest;
 }
+#endif
 
 // NOTE: This overload is only picked if the requirements of bit_cast are
 // not met. It is therefore UB, but is provided temporarily as previous

@@ -67,7 +67,7 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
 
   // Puts the object into a clean state, fills in the logically `const` members,
   // blocking for any readers that are currently sampling the object.
-  void PrepareForSampling(size_t inline_element_size_value)
+  void PrepareForSampling(int64_t stride, size_t inline_element_size_value)
       ABSL_EXCLUSIVE_LOCKS_REQUIRED(init_mu);
 
   // These fields are mutated by the various Record* APIs and need to be
@@ -145,7 +145,15 @@ inline void RecordEraseSlow(HashtablezInfo* info) {
       std::memory_order_relaxed);
 }
 
-HashtablezInfo* SampleSlow(int64_t* next_sample, size_t inline_element_size);
+struct SamplingState {
+  int64_t next_sample;
+  // When we make a sampling decision, we record that distance so we can weight
+  // each sample.
+  int64_t sample_stride;
+};
+
+HashtablezInfo* SampleSlow(SamplingState& next_sample,
+                           size_t inline_element_size);
 void UnsampleSlow(HashtablezInfo* info);
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -235,7 +243,7 @@ class HashtablezInfoHandle {
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-extern ABSL_PER_THREAD_TLS_KEYWORD int64_t global_next_sample;
+extern ABSL_PER_THREAD_TLS_KEYWORD SamplingState global_next_sample;
 #endif  // defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 
 // Returns an RAII sampling handle that manages registration and unregistation
@@ -243,11 +251,11 @@ extern ABSL_PER_THREAD_TLS_KEYWORD int64_t global_next_sample;
 inline HashtablezInfoHandle Sample(
     size_t inline_element_size ABSL_ATTRIBUTE_UNUSED) {
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
-  if (ABSL_PREDICT_TRUE(--global_next_sample > 0)) {
+  if (ABSL_PREDICT_TRUE(--global_next_sample.next_sample > 0)) {
     return HashtablezInfoHandle(nullptr);
   }
   return HashtablezInfoHandle(
-      SampleSlow(&global_next_sample, inline_element_size));
+      SampleSlow(global_next_sample, inline_element_size));
 #else
   return HashtablezInfoHandle(nullptr);
 #endif  // !ABSL_PER_THREAD_TLS

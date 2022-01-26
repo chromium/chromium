@@ -136,9 +136,9 @@
 // for further information.
 // The MinGW compiler doesn't complain about the weak attribute until the link
 // step, presumably because Windows doesn't use ELF binaries.
-#if (ABSL_HAVE_ATTRIBUTE(weak) ||                                        \
-     (defined(__GNUC__) && !defined(__clang__))) &&                      \
-    (!defined(_WIN32) || (defined(__clang__) && __clang_major__ < 9)) && \
+#if (ABSL_HAVE_ATTRIBUTE(weak) ||                                         \
+     (defined(__GNUC__) && !defined(__clang__))) &&                       \
+    (!defined(_WIN32) || (defined(__clang__) && __clang_major__ >= 9)) && \
     !defined(__MINGW32__)
 #undef ABSL_ATTRIBUTE_WEAK
 #define ABSL_ATTRIBUTE_WEAK __attribute__((weak))
@@ -312,7 +312,6 @@
   __attribute__((section(#name))) __attribute__((noinline))
 #endif
 
-
 // ABSL_ATTRIBUTE_SECTION_VARIABLE
 //
 // Tells the compiler/linker to put a given variable into a section and define
@@ -339,8 +338,8 @@
 // a no-op on ELF but not on Mach-O.
 //
 #ifndef ABSL_DECLARE_ATTRIBUTE_SECTION_VARS
-#define ABSL_DECLARE_ATTRIBUTE_SECTION_VARS(name) \
-  extern char __start_##name[] ABSL_ATTRIBUTE_WEAK;    \
+#define ABSL_DECLARE_ATTRIBUTE_SECTION_VARS(name)   \
+  extern char __start_##name[] ABSL_ATTRIBUTE_WEAK; \
   extern char __stop_##name[] ABSL_ATTRIBUTE_WEAK
 #endif
 #ifndef ABSL_DEFINE_ATTRIBUTE_SECTION_VARS
@@ -503,7 +502,7 @@
 #define ABSL_XRAY_NEVER_INSTRUMENT [[clang::xray_never_instrument]]
 #if ABSL_HAVE_CPP_ATTRIBUTE(clang::xray_log_args)
 #define ABSL_XRAY_LOG_ARGS(N) \
-    [[clang::xray_always_instrument, clang::xray_log_args(N)]]
+  [[clang::xray_always_instrument, clang::xray_log_args(N)]]
 #else
 #define ABSL_XRAY_LOG_ARGS(N) [[clang::xray_always_instrument]]
 #endif
