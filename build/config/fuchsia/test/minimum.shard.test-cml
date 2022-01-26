@@ -18,13 +18,13 @@
   ],
   use: [
     {
-      storage: "cache",
-      path: "/cache",
-    },
-    {
-      storage: "config-data",
+      directory: "config-data",
       rights: [ "r*" ],
       path: "/config/data",
+    },
+    {
+      storage: "cache",
+      path: "/cache",
     },
     {
       storage: "custom_artifacts",

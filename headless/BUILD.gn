@@ -783,6 +783,10 @@ test("headless_unittests") {
   }
 
   configs += [ ":headless_defines_config" ]
+
+  if (is_fuchsia) {
+    use_cfv2 = true
+  }
 }
 
 if (is_mac) {

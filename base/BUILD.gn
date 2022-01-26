@@ -3756,8 +3756,9 @@ test("base_unittests") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
 
+    use_cfv2 = true
     additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/test_logger_capabilities.test-cmx" ]
+        [ "//build/config/fuchsia/test/logger.shard.test-cml" ]
   }
 
   if (!is_fuchsia && !is_ios) {
