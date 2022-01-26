@@ -33,7 +33,7 @@ import sys
 import time
 import shutil
 
-from typing import Dict, Callable, Iterator, List, Tuple
+from typing import Dict, Callable, Iterator, List, Tuple, Optional
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
@@ -246,7 +246,7 @@ def _emulator():
         device.WaitUntilFullyBooted(decrypt=True)
         # TODO(wnwen): Remove once split apks are used instead of side-loading.
         device.adb.Shell('settings put global hidden_api_policy_p_apps 0')
-        yield
+        yield device
     finally:
         device.adb.Emu('kill')
         _poll_for_emulators(lambda emulators: len(emulators) == 0,
@@ -282,17 +282,19 @@ def _run_install(out_dir: str, target: str) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
     script_path = os.path.join(out_dir, 'bin', target)
     # Disable first run to get a more accurate timing of startup.
-    return _run_and_time_cmd([
+    cmd = [
         script_path, 'run', '--args=--disable-fre', '--exit-on-match',
         '^Successfully loaded native library$'
-    ])
+    ]
+    if logging.getLogger().isEnabledFor(logging.DEBUG):
+        cmd += ['-vv']
+    return _run_and_time_cmd(cmd)
 
 
-def _remove_deleted_files():
+def _remove_deleted_files(emulator: device_utils.DeviceUtils):
     # This is necessary to terminate all non-chrome processes still holding
     # file descriptors open for deleted chrome apk files. Otherwise the
     # emulator will run out of space.
-    emulator = _detect_emulators()[0]
     find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  */ /g"'
     # Example output:
     # COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
@@ -334,24 +336,27 @@ def _remove_deleted_files():
 
 
 def _run_and_maybe_install(out_dir: str, target: str,
-                           use_emulator: bool) -> float:
+                           emulator: Optional[device_utils.DeviceUtils]
+                           ) -> float:
     total_time = _run_autoninja(out_dir, target)
-    if use_emulator:
+    if emulator:
         total_time += _run_install(out_dir, target)
-        _remove_deleted_files()
+        _remove_deleted_files(emulator)
     return total_time
 
 
-def _maybe_uninstall(out_dir: str, target: str, use_emulator: bool):
-    if use_emulator:
+def _maybe_uninstall(out_dir: str, target: str,
+                     emulator: Optional[device_utils.DeviceUtils]):
+    if emulator:
         _run_and_time_cmd([os.path.join(out_dir, 'bin', target), 'uninstall'])
 
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
                                to_string: str, change_file: str,
-                               use_emulator: bool) -> Iterator[float]:
+                               emulator: Optional[device_utils.DeviceUtils]
+                               ) -> Iterator[float]:
     # This ensures that the only change is the one that this script makes.
-    prep_time = _run_and_maybe_install(out_dir, target, use_emulator)
+    prep_time = _run_and_maybe_install(out_dir, target, emulator)
     logging.info(f'Took {prep_time:.1f}s to prep this test')
     change_file_path = os.path.join(_SRC_ROOT, change_file)
     with _backup_file(change_file_path):
@@ -362,25 +367,25 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
             assert content != new_content, (
                 f'Need to update {from_string} in {change_file}')
             f.write(new_content)
-        yield _run_and_maybe_install(out_dir, target, use_emulator)
+        yield _run_and_maybe_install(out_dir, target, emulator)
     # Since we are restoring the original file, this is the same incremental
     # change, just reversed, so do a second run to save on prep time. This
     # ensures a minimum of two runs.
     pathlib.Path(change_file_path).touch()
-    second_run_time = _run_and_maybe_install(out_dir, target, use_emulator)
+    second_run_time = _run_and_maybe_install(out_dir, target, emulator)
     # Ensure that we clean-up before the last yield so that the emulator does
     # not run out of space for the next benchmark.
-    _maybe_uninstall(out_dir, target, use_emulator)
+    _maybe_uninstall(out_dir, target, emulator)
     yield second_run_time
 
 
-def _run_benchmark(*, kind: str, use_emulator: bool,
+def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
                    **kwargs: Dict) -> Iterator[float]:
     if kind == 'incremental_build':
-        assert not use_emulator, f'Install not supported for {kwargs}.'
-        return _run_incremental_benchmark(use_emulator=False, **kwargs)
+        assert not emulator, f'Install not supported for {kwargs}.'
+        return _run_incremental_benchmark(emulator=None, **kwargs)
     elif kind == 'incremental_build_and_install':
-        return _run_incremental_benchmark(use_emulator=use_emulator, **kwargs)
+        return _run_incremental_benchmark(emulator=emulator, **kwargs)
     else:
         raise NotImplementedError(f'Benchmark type {kind} is not defined.')
 
@@ -417,7 +422,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
     args_gn_path = os.path.join(out_dir, 'args.gn')
     emulator_ctx = _emulator() if use_emulator else contextlib.nullcontext()
     server_ctx = _server() if not no_server else contextlib.nullcontext()
-    with _backup_file(args_gn_path), emulator_ctx, server_ctx:
+    with _backup_file(args_gn_path), server_ctx, emulator_ctx as emulator:
         with open(args_gn_path, 'w') as f:
             # Use newlines instead of spaces since autoninja.py uses regex to
             # determine whether use_goma is turned on or off.
@@ -430,7 +435,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                 logging.info(f'Run number: {run_num + 1}')
                 for elapsed in _run_benchmark(out_dir=out_dir,
                                               target=target,
-                                              use_emulator=use_emulator,
+                                              emulator=emulator,
                                               **benchmark.info):
                     logging.info(f'Time: {elapsed:.1f}s')
                     time_taken.append(elapsed)
