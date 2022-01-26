@@ -7,6 +7,7 @@
 
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/test/power_monitor_test.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,8 +35,10 @@ constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(240);
 constexpr auto kExtraGPUJobTimeForTesting = base::Milliseconds(1000);
 
 // For slow machines like Win 7 and Mac 10.xx.
-constexpr auto kGpuWatchdogTimeoutForTestingSlow = base::Milliseconds(500);
-constexpr auto kExtraGPUJobTimeForTestingSlow = base::Milliseconds(2000);
+[[maybe_unused]] constexpr auto kGpuWatchdogTimeoutForTestingSlow =
+    base::Milliseconds(500);
+[[maybe_unused]] constexpr auto kExtraGPUJobTimeForTestingSlow =
+    base::Milliseconds(2000);
 
 // On Windows, the gpu watchdog check if the main thread has used the full
 // thread time. We want to detect the case in which the main thread is swapped
@@ -118,10 +121,18 @@ void GpuWatchdogTest::SetUp() {
     timeout_ = kGpuWatchdogTimeoutForTestingSlow;
     extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
   }
-#else
-  // Use a longer timeout for now. Will try to reduce it later.
-  timeout_ = kGpuWatchdogTimeoutForTestingSlow;
-  extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
+#elif BUILDFLAG(IS_ANDROID)
+  int32_t major_version = 0;
+  int32_t minor_version = 0;
+  int32_t bugfix_version = 0;
+  base::SysInfo::OperatingSystemVersionNumbers(&major_version, &minor_version,
+                                               &bugfix_version);
+
+  // For Android version < Android Pie (Version 9)
+  if (major_version < 9) {
+    timeout_ = kGpuWatchdogTimeoutForTestingSlow;
+    extra_gpu_job_time_ = kExtraGPUJobTimeForTestingSlow;
+  }
 #endif
 
   watchdog_thread_ = gpu::GpuWatchdogThread::Create(
