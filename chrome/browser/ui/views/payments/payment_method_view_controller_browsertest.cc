@@ -71,7 +71,25 @@ class PaymentMethodViewControllerTest : public PaymentRequestBrowserTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, OneCardSelected) {
+class PaymentMethodViewControllerBasicCardTest
+    : public PaymentMethodViewControllerTest {
+ public:
+  PaymentMethodViewControllerBasicCardTest(
+      const PaymentMethodViewControllerBasicCardTest&) = delete;
+  PaymentMethodViewControllerBasicCardTest& operator=(
+      const PaymentMethodViewControllerBasicCardTest&) = delete;
+
+ protected:
+  PaymentMethodViewControllerBasicCardTest() {
+    feature_list_.InitAndEnableFeature(features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerBasicCardTest,
+                       OneCardSelected) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
   AddAutofillProfile(billing_profile);
@@ -97,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, OneCardSelected) {
   EXPECT_TRUE(checkmark_view->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
+IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerBasicCardTest,
                        OneCardSelectedOutOfMany) {
   NavigateTo("/payment_request_no_shipping_test.html");
   autofill::AutofillProfile billing_profile(autofill::test::GetFullProfile());
@@ -160,7 +178,8 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
             request->state()->selected_app());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest, EditButtonOpensEditor) {
+IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerBasicCardTest,
+                       EditButtonOpensEditor) {
   NavigateTo("/payment_request_no_shipping_test.html");
   AddCreditCard(autofill::test::GetCreditCard());
 
@@ -199,6 +218,77 @@ IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerTest,
   views::View* add_card_button = dialog_view()->GetViewByID(
       static_cast<int>(DialogViewID::PAYMENT_METHOD_ADD_CARD_BUTTON));
   EXPECT_EQ(nullptr, add_card_button);
+}
+
+class PaymentMethodViewControllerPaymentHandlerTest
+    : public PaymentMethodViewControllerTest {
+ public:
+  PaymentMethodViewControllerPaymentHandlerTest(
+      const PaymentMethodViewControllerPaymentHandlerTest&) = delete;
+  PaymentMethodViewControllerPaymentHandlerTest& operator=(
+      const PaymentMethodViewControllerPaymentHandlerTest&) = delete;
+
+ protected:
+  PaymentMethodViewControllerPaymentHandlerTest() {
+    feature_list_.InitAndDisableFeature(features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentMethodViewControllerPaymentHandlerTest,
+                       OneAppSelectedOutOfMany) {
+  std::string payment_method_a;
+  InstallPaymentApp("a.com", "/nickpay.com/app.js", &payment_method_a);
+  std::string payment_method_b;
+  InstallPaymentApp("b.com", "/nickpay.com/app.js", &payment_method_b);
+
+  NavigateTo("/payment_request_no_shipping_test.html");
+
+  InvokePaymentRequestUIWithJs(content::JsReplace(
+      "buyWithMethods([{supportedMethods:$1},{supportedMethods:$2}])",
+      payment_method_a, payment_method_b));
+  OpenPaymentMethodScreen();
+
+  PaymentRequest* request = GetPaymentRequests().front();
+  EXPECT_EQ(2U, request->state()->available_apps().size());
+  EXPECT_EQ(request->state()->available_apps().front().get(),
+            request->state()->selected_app());
+
+  views::View* list_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
+  EXPECT_TRUE(list_view);
+  EXPECT_EQ(2u, list_view->children().size());
+
+  EXPECT_EQ(request->state()->available_apps().front().get(),
+            request->state()->selected_app());
+  views::View* checkmark_view = list_view->children()[0]->GetViewByID(
+      static_cast<int>(DialogViewID::CHECKMARK_VIEW));
+  EXPECT_TRUE(checkmark_view->GetVisible());
+
+  views::View* checkmark_view2 = list_view->children()[1]->GetViewByID(
+      static_cast<int>(DialogViewID::CHECKMARK_VIEW));
+  EXPECT_FALSE(checkmark_view2->GetVisible());
+
+  ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
+  // Simulate selecting the second app.
+  ClickOnDialogViewAndWait(list_view->children()[1]);
+
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
+
+  OpenPaymentMethodScreen();
+  list_view = dialog_view()->GetViewByID(
+      static_cast<int>(DialogViewID::PAYMENT_METHOD_SHEET_LIST_VIEW));
+
+  ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
+  // Clicking on the second app again should not modify any state, and should
+  // return to the main payment sheet.
+  ClickOnDialogViewAndWait(list_view->children()[1]);
+
+  EXPECT_EQ(request->state()->available_apps().back().get(),
+            request->state()->selected_app());
 }
 
 }  // namespace payments
