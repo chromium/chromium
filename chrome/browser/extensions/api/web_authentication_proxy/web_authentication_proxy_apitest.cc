@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +21,10 @@ namespace {
 //  `MAKE_CREDENTIAL_RESPONSE_JSON` in the JS tests.
 constexpr char kTestCredentialId[] = "dGVzdA";
 
+// Domain to serve files from because WebAuthn won't let us scope credentials to
+// localhost. Must be from `net::EmbeddedTestServer::CERT_TEST_NAMES`.
+constexpr char kTestDomain[] = "a.test";
+
 MATCHER_P(IsDomError, name, "") {
   return arg.error.find(name) != std::string::npos;
 }
@@ -30,6 +35,8 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpOnMainThread();
     extension_dir_ =
         test_data_dir_.AppendASCII("web_authentication_proxy/main");
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_test_server_.ServeFilesFromDirectory(extension_dir_);
     ASSERT_TRUE(https_test_server_.Start());
   }
@@ -38,7 +45,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
 
   bool NavigateAndCallIsUVPAA() {
     if (!ui_test_utils::NavigateToURL(
-            browser(), https_test_server_.GetURL("/page.html"))) {
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
     return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -49,13 +56,13 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
 
   content::EvalJsResult NavigateAndCallMakeCredential() {
     if (!ui_test_utils::NavigateToURL(
-            browser(), https_test_server_.GetURL("/page.html"))) {
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
     constexpr char kMakeCredentialJs[] =
         R"((async () => {
               let credential = await navigator.credentials.create({publicKey: {
-                rp: {'name': 'A'},
+                rp: {'id': 'a.test', 'name': 'A'},
                 challenge: new ArrayBuffer(),
                 user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
                 pubKeyCredParams: [],
@@ -68,7 +75,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
 
   bool NavigateAndCallMakeCredentialThenCancel() {
     if (!ui_test_utils::NavigateToURL(
-            browser(), https_test_server_.GetURL("/page.html"))) {
+            browser(), https_test_server_.GetURL(kTestDomain, "/page.html"))) {
       ADD_FAILURE() << "Failed to navigate to test URL";
       return false;
     }
@@ -76,7 +83,7 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
         R"((async () => {
               let abort = new AbortController();
               let createPromise = navigator.credentials.create({publicKey: {
-                rp: {'name': 'A'},
+                rp: {'id': 'a.test', 'name': 'A'},
                 challenge: new ArrayBuffer(),
                 user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
                 pubKeyCredParams: [],

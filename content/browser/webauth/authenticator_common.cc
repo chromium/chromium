@@ -665,15 +665,6 @@ void AuthenticatorCommon::MakeCredential(
     return;
   }
 
-  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
-  if (proxy) {
-    request_proxy_make_credential_id_ = proxy->SignalCreateRequest(
-        options,
-        base::BindOnce(&AuthenticatorCommon::OnMakeCredentialProxyResponse,
-                       weak_factory_.GetWeakPtr()));
-    return;
-  }
-
   absl::optional<std::string> rp_id =
       GetWebAuthenticationDelegate()->MaybeGetRelyingPartyIdOverride(
           options->relying_party.id, caller_origin);
@@ -694,6 +685,17 @@ void AuthenticatorCommon::MakeCredential(
   relying_party_id_ = *rp_id;
   options->relying_party.id = std::move(*rp_id);
   request_delegate_->SetRelyingPartyId(relying_party_id_);
+
+  // If there is an active webAuthenticationProxy extension, let it handle the
+  // request.
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
+  if (proxy) {
+    request_proxy_make_credential_id_ = proxy->SignalCreateRequest(
+        options,
+        base::BindOnce(&AuthenticatorCommon::OnMakeCredentialProxyResponse,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
 
   device::fido_filter::MaybeInitialize();
   switch (device::fido_filter::Evaluate(

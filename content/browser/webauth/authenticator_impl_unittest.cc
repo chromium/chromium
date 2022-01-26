@@ -8306,6 +8306,35 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
   EXPECT_EQ(request_proxy().call_counts().cancel_request, 0u);
 }
 
+// Verify requests with an attached proxy run RP ID checks.
+TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
+  request_proxy().config().make_credential_status =
+      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_response =
+      MakeCredentialAuthenticatorResponse::New();
+  request_proxy().config().make_credential_response->info =
+      CommonCredentialInfo::New();
+
+  for (const OriginClaimedAuthorityPair& test_case :
+       kInvalidRelyingPartyTestCases) {
+    SCOPED_TRACE(std::string(test_case.claimed_authority) + " " +
+                 std::string(test_case.origin));
+
+    NavigateAndCommit(GURL(test_case.origin));
+    ASSERT_TRUE(test_client_.GetWebAuthenticationDelegate()
+                    ->MaybeGetRequestProxy(main_rfh()->GetBrowserContext())
+                    ->IsActive());
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->relying_party.id = test_case.claimed_authority;
+
+    EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+              test_case.expected_status);
+    EXPECT_EQ(request_proxy().call_counts().signal_create_request, 0u);
+  }
+}
+
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
   request_proxy().config().resolve_callbacks = false;
   request_proxy().config().make_credential_status =
