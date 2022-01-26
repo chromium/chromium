@@ -313,12 +313,6 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     keys_to_indices_.insert(entries_[current_index_]->key(), current_index_);
   }
 
-  auto* init = AppHistoryCurrentChangeEventInit::Create();
-  init->setNavigationType(DetermineNavigationType(type));
-  init->setFrom(old_current);
-  DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
-      event_type_names::kCurrentchange, init));
-
   // It's important to do this before firing dispose events, since dispose
   // events could start another navigation or otherwise mess with
   // ongoing_navigation_.
@@ -326,6 +320,12 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
     ongoing_navigation_->NotifyAboutTheCommittedToEntry(
         entries_[current_index_]);
   }
+
+  auto* init = AppHistoryCurrentChangeEventInit::Create();
+  init->setNavigationType(DetermineNavigationType(type));
+  init->setFrom(old_current);
+  DispatchEvent(*AppHistoryCurrentChangeEvent::Create(
+      event_type_names::kCurrentchange, init));
 
   for (const auto& disposed_entry : disposed_entries) {
     disposed_entry->DispatchEvent(*Event::Create(event_type_names::kDispose));
@@ -699,8 +699,23 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     NavigateReaction::ReactType react_type =
         promise_list.IsEmpty() ? NavigateReaction::ReactType::kImmediate
                                : NavigateReaction::ReactType::kTransitionWhile;
+
+    // There is a subtle timing difference between the fast-path for zero
+    // promises and the path for 1+ promises, in both spec and implementation.
+    // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
+    // this does not matter. However for us there are so many events and promise
+    // handlers firing around the same time (navigatesuccess, committed promise,
+    // finished promise, ...) that the difference is pretty easily observable by
+    // web developers and web platform tests. So, let's make sure we always go
+    // down the 1+ promises path.
+    const HeapVector<ScriptPromise>& tweaked_promise_list =
+        promise_list.IsEmpty()
+            ? HeapVector<ScriptPromise>(
+                  {ScriptPromise::CastUndefined(script_state)})
+            : promise_list;
+
     NavigateReaction::React(
-        script_state, ScriptPromise::All(script_state, promise_list),
+        script_state, ScriptPromise::All(script_state, tweaked_promise_list),
         ongoing_navigation_, transition_, navigate_event->signal(), react_type);
   } else if (ongoing_navigation_) {
     // The spec assumes it's ok to leave a promise permanently unresolved, but

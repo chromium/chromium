@@ -60,11 +60,6 @@ class AppHistoryApiNavigation final
   Member<ScriptPromiseResolver> committed_resolver_;
   Member<ScriptPromiseResolver> finished_resolver_;
   Member<AppHistoryResult> result_;
-
-  // In same-document traversal cases ResolveFinishedPromise() can be called
-  // before NotifyAboutTheCommittedToEntry(). This tracks that, to let us ensure
-  // NotifyAboutTheCommittedToEntry() can also resolve the finished promise.
-  bool did_finish_before_commit_ = false;
 };
 
 }  // namespace blink

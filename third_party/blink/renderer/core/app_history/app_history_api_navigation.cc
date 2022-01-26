@@ -34,6 +34,20 @@ AppHistoryApiNavigation::AppHistoryApiNavigation(
       result_(AppHistoryResult::Create()) {
   result_->setCommitted(committed_resolver_->Promise());
   result_->setFinished(finished_resolver_->Promise());
+
+  // The web developer doesn't necessarily care about finished promise
+  // rejections:
+  // * They could be listening to other transition-failure signals, like the
+  // navigateerror event, or appHistory.transition.finished.
+  // * They could be doing synchronous navigations within the same task, in
+  // which case the second will always abort the first (causing a rejected
+  // finished promise), but they might not care
+  // * If the committed promise rejects, finished will also reject in the same
+  // way, so any commit failures will already be signaled and saying that you
+  // also have to handle the finished promise is frustrating.
+  //
+  // As such, we mark it as handled to avoid unhandled rejection events.
+  finished_resolver_->Promise().MarkAsHandled();
 }
 
 void AppHistoryApiNavigation::NotifyAboutTheCommittedToEntry(
@@ -42,20 +56,11 @@ void AppHistoryApiNavigation::NotifyAboutTheCommittedToEntry(
   committed_to_entry_ = entry;
 
   committed_resolver_->Resolve(committed_to_entry_);
-
-  if (did_finish_before_commit_) {
-    ResolveFinishedPromise();
-  }
 }
 
 void AppHistoryApiNavigation::ResolveFinishedPromise() {
   if (!app_history_)
     return;
-
-  if (!committed_to_entry_) {
-    did_finish_before_commit_ = true;
-    return;
-  }
 
   finished_resolver_->Resolve(committed_to_entry_);
 

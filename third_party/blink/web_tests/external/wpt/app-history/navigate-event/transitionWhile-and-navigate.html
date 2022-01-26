@@ -16,12 +16,12 @@ promise_test(async t => {
       assert_equals(appHistory.entries().length, 2);
       appHistory.navigate("#2");
     }
-  }
+  };
   let back_result = appHistory.back();
-  await promise_rejects_dom(t, "AbortError", back_result.committed);
-  await promise_rejects_dom(t, "AbortError", back_result.finished);
+  await back_result.committed;
   assert_equals(location.hash, "#2");
+  await promise_rejects_dom(t, "AbortError", back_result.finished);
   assert_equals(appHistory.current.index, 1);
   assert_equals(appHistory.entries().length, 2);
-}, "Using transitionWhile then navigate() in the ensuing currentchange should abort the transitionWhile");
+}, "Using transitionWhile() then navigate() in the ensuing currentchange should abort the finished promise (but not the committed promise)");
 </script>
