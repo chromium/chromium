@@ -1,0 +1,17 @@
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+CONSOLE WARNING: The page that installed the payment handler does not contain a web app manifest link: <link rel="manifest" href="some-file-name-here">. This manifest defines the payment handler's name and icon. User may not recognize this payment handler in UI, because it will be labeled only by its origin.
+This is a testharness.js-based test.
+FAIL PaymentInstruments set/get methods test with basic-card assert_unreached: unexpected rejection: assert_object_equals: value is undefined, expected object Reached unreachable code
+PASS PaymentInstruments set/get methods test with url method
+PASS PaymentInstruments.get() should throw NotFoundError if no stored key
+PASS PaymentInstruments delete method test
+PASS PaymentInstruments |has| method test
+PASS PaymentInstruments |keys| method test
+PASS PaymentInstruments |clear| method test
+PASS Throw NotAllowedError if permission is not granted
+Harness: the test ran to completion.
+

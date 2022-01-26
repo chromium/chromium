@@ -614,6 +614,11 @@
     "args": ["--disable-blink-features=PaymentRequestTotalOptional"]
   },
   {
+    "prefix": "basic-card-disabled",
+    "bases": ["payments/payment-request-interface.html", "http/tests/payments/payment-instruments.html"],
+    "args": ["--disable-blink-features=PaymentRequestBasicCard"]
+  },
+  {
     "prefix": "json-modules",
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
     "args": ["--enable-features=JSONModules", "--js-flags=--harmony-import-assertions"]
