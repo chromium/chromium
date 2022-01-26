@@ -54,6 +54,7 @@
 #include "net/base/filename_util.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/page_transition_types.h"
 
 using base::android::ConvertUTF8ToJavaString;
@@ -244,6 +245,23 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
   if (tab_index == -1)
     return;
 
+  // Closing an empty page on external app download leaves a bad user experience
+  // as user don't know whether a download is kicked off, or if Chrome just
+  // ignores the URL. Show the download page instead.
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kDownloadHomeForExternalApp) &&
+      !base::FeatureList::IsEnabled(chrome::android::kChromeNewDownloadTab) &&
+      tab_model->GetTabAt(tab_index)->GetLaunchType() ==
+          static_cast<int>(TabModel::TabLaunchType::FROM_EXTERNAL_APP)) {
+    DownloadManagerService::GetInstance()->OpenDownloadsPage(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+        DownloadOpenSource::kExternalApp);
+    // For tablet, download home is opened in the current tab, so don't close
+    // it.
+    if (ui::GetDeviceFormFactor() !=
+        ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET)
+      return;
+  }
   tab_model->CloseTabAt(tab_index);
 }
 

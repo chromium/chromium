@@ -84,6 +84,7 @@ extern const base::Feature kDisableCompositedProgressBar;
 extern const base::Feature kDontPrefetchLibraries;
 extern const base::Feature kDownloadAutoResumptionThrottling;
 extern const base::Feature kDownloadFileProvider;
+extern const base::Feature kDownloadHomeForExternalApp;
 extern const base::Feature kDownloadNotificationBadge;
 extern const base::Feature kDownloadProgressInfoBar;
 extern const base::Feature kDownloadProgressMessage;

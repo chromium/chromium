@@ -919,8 +919,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else {
             // TODO(shaktisahu): Make a best guess for which profile, maybe from the last updated
             // item.
-            DownloadManagerService.openDownloadsPage(getContext(), getOTRProfileIDForTrackedItems(),
-                    DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
+            DownloadManagerService.openDownloadsPage(
+                    getOTRProfileIDForTrackedItems(), DownloadOpenSource.DOWNLOAD_PROGRESS_MESSAGE);
             recordLinkClicked(false /*openItem*/);
         }
     }

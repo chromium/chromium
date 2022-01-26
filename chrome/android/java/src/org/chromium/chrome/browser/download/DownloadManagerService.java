@@ -860,7 +860,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                         && DownloadUtils.fireOpenIntentForDownload(context, intent);
 
                 if (!didLaunchIntent) {
-                    openDownloadsPage(context, otrProfileID, source);
+                    openDownloadsPage(otrProfileID, source);
                     return;
                 }
 
@@ -905,15 +905,16 @@ public class DownloadManagerService implements DownloadController.Observer,
      * in incognito profile. If null, download page will be opened in normal profile.
      * @param source The source where the user action coming from.
      */
+    @CalledByNative
     public static void openDownloadsPage(
-            Context context, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
+            OTRProfileID otrProfileID, @DownloadOpenSource int source) {
         if (DownloadUtils.showDownloadManager(null, null, otrProfileID, source)) return;
 
         // Open the Android Download Manager.
         Intent pageView = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
         pageView.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
-            context.startActivity(pageView);
+            ContextUtils.getApplicationContext().startActivity(pageView);
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Cannot find Downloads app", e);
         }
@@ -1500,15 +1501,14 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     // Deprecated after new download backend.
     @CalledByNative
-    private void openDownloadItem(
-            DownloadItem downloadItem, @DownloadOpenSource int source, Context context) {
+    private void openDownloadItem(DownloadItem downloadItem, @DownloadOpenSource int source) {
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
-        boolean canOpen =
-                DownloadUtils.openFile(downloadInfo.getFilePath(), downloadInfo.getMimeType(),
-                        downloadInfo.getDownloadGuid(), downloadInfo.getOTRProfileId(),
-                        downloadInfo.getOriginalUrl(), downloadInfo.getReferrer(), source, context);
+        boolean canOpen = DownloadUtils.openFile(downloadInfo.getFilePath(),
+                downloadInfo.getMimeType(), downloadInfo.getDownloadGuid(),
+                downloadInfo.getOTRProfileId(), downloadInfo.getOriginalUrl(),
+                downloadInfo.getReferrer(), source, ContextUtils.getApplicationContext());
         if (!canOpen) {
-            openDownloadsPage(context, downloadInfo.getOTRProfileId(), source);
+            openDownloadsPage(downloadInfo.getOTRProfileId(), source);
         }
     }
 
@@ -1519,11 +1519,11 @@ public class DownloadManagerService implements DownloadController.Observer,
      * @param source The source where the user opened this download.
      */
     // Deprecated after new download backend.
-    public void openDownload(ContentId id, OTRProfileID otrProfileID,
-            @DownloadOpenSource int source, Context context) {
+    public void openDownload(
+            ContentId id, OTRProfileID otrProfileID, @DownloadOpenSource int source) {
         DownloadManagerServiceJni.get().openDownload(getNativeDownloadManagerService(),
                 DownloadManagerService.this, id.id,
-                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), source, context);
+                IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID), source);
     }
 
     /**
@@ -1739,7 +1739,7 @@ public class DownloadManagerService implements DownloadController.Observer,
         int getAutoResumptionLimit();
         long init(DownloadManagerService caller, boolean isProfileAdded);
         void openDownload(long nativeDownloadManagerService, DownloadManagerService caller,
-                String downloadGuid, ProfileKey profileKey, int source, Context context);
+                String downloadGuid, ProfileKey profileKey, int source);
         void resumeDownload(long nativeDownloadManagerService, DownloadManagerService caller,
                 String downloadGuid, ProfileKey profileKey, boolean hasUserGesture);
         void retryDownload(long nativeDownloadManagerService, DownloadManagerService caller,
