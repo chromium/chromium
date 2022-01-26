@@ -1589,8 +1589,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
           storage_partition_impl_->GetGeneratedCodeCacheContext()),
       channel_connected_(false),
       sent_render_process_ready_(false),
-      instance_weak_factory_(absl::in_place, this),
-      shutdown_exit_code_(-1) {
+      shutdown_exit_code_(-1),
+      instance_weak_factory_(absl::in_place, this) {
   CHECK(!browser_context->ShutdownStarted());
   TRACE_EVENT("shutdown", "RenderProcessHostImpl",
               ChromeTrackEvent::kRenderProcessHost, *this);
@@ -2083,7 +2083,8 @@ void RenderProcessHostImpl::CreateLockManager(
   storage_partition_impl_->GetQuotaManager()->proxy()->GetOrCreateBucket(
       storage_key, storage::kDefaultBucketName, GetUIThreadTaskRunner({}),
       base::BindOnce(&RenderProcessHostImpl::CreateLockManagerWithBucketInfo,
-                     weak_factory_.GetWeakPtr(), std::move(receiver)));
+                     instance_weak_factory_->GetWeakPtr(),
+                     std::move(receiver)));
 }
 
 void RenderProcessHostImpl::CreateLockManagerWithBucketInfo(
@@ -3992,6 +3993,7 @@ void RenderProcessHostImpl::Cleanup() {
   // reused in between now and when the Delete task runs.
   UnregisterHost(GetID());
   browser_context_ = nullptr;
+  storage_partition_impl_ = nullptr;
 }
 
 void RenderProcessHostImpl::PopulateTerminationInfoRendererFields(
