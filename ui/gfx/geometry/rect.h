@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/point.h"
@@ -40,12 +41,12 @@ class GEOMETRY_EXPORT Rect {
   constexpr Rect(int width, int height) : size_(width, height) {}
   constexpr Rect(int x, int y, int width, int height)
       : origin_(x, y),
-        size_(GetClampedValue(x, width), GetClampedValue(y, height)) {}
+        size_(ClampWidthOrHeight(x, width), ClampWidthOrHeight(y, height)) {}
   constexpr explicit Rect(const Size& size) : size_(size) {}
   constexpr Rect(const Point& origin, const Size& size)
       : origin_(origin),
-        size_(GetClampedValue(origin.x(), size.width()),
-              GetClampedValue(origin.y(), size.height())) {}
+        size_(ClampWidthOrHeight(origin.x(), size.width()),
+              ClampWidthOrHeight(origin.y(), size.height())) {}
 
 #if BUILDFLAG(IS_WIN)
   explicit Rect(const RECT& r);
@@ -65,22 +66,22 @@ class GEOMETRY_EXPORT Rect {
   // Sets the X position while preserving the width.
   void set_x(int x) {
     origin_.set_x(x);
-    size_.set_width(GetClampedValue(x, width()));
+    size_.set_width(ClampWidthOrHeight(x, width()));
   }
 
   constexpr int y() const { return origin_.y(); }
   // Sets the Y position while preserving the height.
   void set_y(int y) {
     origin_.set_y(y);
-    size_.set_height(GetClampedValue(y, height()));
+    size_.set_height(ClampWidthOrHeight(y, height()));
   }
 
   constexpr int width() const { return size_.width(); }
-  void set_width(int width) { size_.set_width(GetClampedValue(x(), width)); }
+  void set_width(int width) { size_.set_width(ClampWidthOrHeight(x(), width)); }
 
   constexpr int height() const { return size_.height(); }
   void set_height(int height) {
-    size_.set_height(GetClampedValue(y(), height));
+    size_.set_height(ClampWidthOrHeight(y(), height));
   }
 
   constexpr const Point& origin() const { return origin_; }
@@ -267,27 +268,11 @@ class GEOMETRY_EXPORT Rect {
   bool ApproximatelyEqual(const Rect& rect, int tolerance) const;
 
  private:
-  // Returns true iff a+b would overflow max int.
-  static constexpr bool AddWouldOverflow(int a, int b) {
-    // In this function, GCC tries to make optimizations that would only work if
-    // max - a wouldn't overflow but it isn't smart enough to notice that a > 0.
-    // So cast everything to unsigned to avoid this.  As it is guaranteed that
-    // max - a and b are both already positive, the cast is a noop.
-    //
-    // This is intended to be: a > 0 && max - a < b
-    return a > 0 && b > 0 &&
-           static_cast<unsigned>(std::numeric_limits<int>::max() - a) <
-               static_cast<unsigned>(b);
-  }
-
-  // Clamp the size to avoid integer overflow in bottom() and right().
-  // This returns the width given an origin and a width.
-  // TODO(enne): this should probably use base::ClampAdd, but that
-  // function is not a constexpr.
-  static constexpr int GetClampedValue(int origin, int size) {
-    return AddWouldOverflow(origin, size)
-               ? std::numeric_limits<int>::max() - origin
-               : size;
+  // Clamp the width/height to avoid integer overflow in bottom() and right().
+  // This returns the clamped width/height given an |x_or_y| and a
+  // |width_or_height|.
+  static constexpr int ClampWidthOrHeight(int x_or_y, int width_or_height) {
+    return base::ClampAdd(x_or_y, width_or_height) - x_or_y;
   }
 
   void AdjustForSaturatedRight(int right);

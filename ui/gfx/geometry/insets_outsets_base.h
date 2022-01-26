@@ -24,8 +24,8 @@ class InsetsOutsetsBase {
   constexpr explicit InsetsOutsetsBase(int all)
       : top_(all),
         left_(all),
-        bottom_(GetClampedValue(all, all)),
-        right_(GetClampedValue(all, all)) {}
+        bottom_(ClampBottomOrRight(all, all)),
+        right_(ClampBottomOrRight(all, all)) {}
 
   constexpr int top() const { return top_; }
   constexpr int left() const { return left_; }
@@ -57,32 +57,32 @@ class InsetsOutsetsBase {
   //   Insets d = Insets(1).set_top(5);               // 5, 1, 1, 1
   constexpr T& set_top(int top) {
     top_ = top;
-    bottom_ = GetClampedValue(top_, bottom_);
+    bottom_ = ClampBottomOrRight(top_, bottom_);
     return *static_cast<T*>(this);
   }
   constexpr T& set_left(int left) {
     left_ = left;
-    right_ = GetClampedValue(left_, right_);
+    right_ = ClampBottomOrRight(left_, right_);
     return *static_cast<T*>(this);
   }
   constexpr T& set_bottom(int bottom) {
-    bottom_ = GetClampedValue(top_, bottom);
+    bottom_ = ClampBottomOrRight(top_, bottom);
     return *static_cast<T*>(this);
   }
   constexpr T& set_right(int right) {
-    right_ = GetClampedValue(left_, right);
+    right_ = ClampBottomOrRight(left_, right);
     return *static_cast<T*>(this);
   }
   // These are preferred to the above setters when setting a pair of edges
   // because these have less clamping and better performance.
   constexpr T& set_left_right(int left, int right) {
     left_ = left;
-    right_ = GetClampedValue(left_, right);
+    right_ = ClampBottomOrRight(left_, right);
     return *static_cast<T*>(this);
   }
   constexpr T& set_top_bottom(int top, int bottom) {
     top_ = top;
-    bottom_ = GetClampedValue(top_, bottom);
+    bottom_ = ClampBottomOrRight(top_, bottom);
     return *static_cast<T*>(this);
   }
 
@@ -105,15 +105,15 @@ class InsetsOutsetsBase {
   void operator+=(const T& other) {
     top_ = base::ClampAdd(top_, other.top_);
     left_ = base::ClampAdd(left_, other.left_);
-    bottom_ = GetClampedValue(top_, base::ClampAdd(bottom_, other.bottom_));
-    right_ = GetClampedValue(left_, base::ClampAdd(right_, other.right_));
+    bottom_ = ClampBottomOrRight(top_, base::ClampAdd(bottom_, other.bottom_));
+    right_ = ClampBottomOrRight(left_, base::ClampAdd(right_, other.right_));
   }
 
   void operator-=(const T& other) {
     top_ = base::ClampSub(top_, other.top_);
     left_ = base::ClampSub(left_, other.left_);
-    bottom_ = GetClampedValue(top_, base::ClampSub(bottom_, other.bottom_));
-    right_ = GetClampedValue(left_, base::ClampSub(right_, other.right_));
+    bottom_ = ClampBottomOrRight(top_, base::ClampSub(bottom_, other.bottom_));
+    right_ = ClampBottomOrRight(left_, base::ClampSub(right_, other.right_));
   }
 
   T operator-() const {
@@ -130,39 +130,12 @@ class InsetsOutsetsBase {
   }
 
  private:
-  // Returns true iff a+b would overflow max int.
-  static constexpr bool AddWouldOverflow(int a, int b) {
-    // In this function, GCC tries to make optimizations that would only work if
-    // max - a wouldn't overflow but it isn't smart enough to notice that a > 0.
-    // So cast everything to unsigned to avoid this.  As it is guaranteed that
-    // max - a and b are both already positive, the cast is a noop.
-    //
-    // This is intended to be: a > 0 && max - a < b
-    return a > 0 && b > 0 &&
-           static_cast<unsigned>(std::numeric_limits<int>::max() - a) <
-               static_cast<unsigned>(b);
-  }
-
-  // Returns true iff a+b would underflow min int.
-  static constexpr bool AddWouldUnderflow(int a, int b) {
-    return a < 0 && b < 0 && std::numeric_limits<int>::min() - a > b;
-  }
-
-  // Clamp the right/bottom to avoid integer over/underflow in width() and
-  // height(). This returns the right/bottom given a top_or_left and a
-  // bottom_or_right.
-  // TODO(enne): this should probably use base::ClampAdd, but that
-  // function is not a constexpr.
-  static constexpr int GetClampedValue(int top_or_left, int bottom_or_right) {
-    if (AddWouldOverflow(top_or_left, bottom_or_right)) {
-      return std::numeric_limits<int>::max() - top_or_left;
-    } else if (AddWouldUnderflow(top_or_left, bottom_or_right)) {
-      // If |top_or_left| and |bottom_or_right| are both negative,
-      // adds |top_or_left| to prevent underflow by subtracting it.
-      return std::numeric_limits<int>::min() - top_or_left;
-    } else {
-      return bottom_or_right;
-    }
+  // Clamp the bottom/right to avoid integer over/underflow in width() and
+  // height(). This returns the clamped bottom/right given a |top_or_left| and
+  // a |bottom_or_right|.
+  static constexpr int ClampBottomOrRight(int top_or_left,
+                                          int bottom_or_right) {
+    return base::ClampAdd(top_or_left, bottom_or_right) - top_or_left;
   }
 
   int top_ = 0;
