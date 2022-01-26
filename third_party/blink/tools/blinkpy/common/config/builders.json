@@ -143,6 +143,7 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "has_webdriver_tests": true,
+        "step_name": "blink_web_tests (with patch)",
         "is_try_builder": true,
         "is_cq_builder":true
     },
