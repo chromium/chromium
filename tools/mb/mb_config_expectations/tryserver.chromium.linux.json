@@ -943,7 +943,7 @@
       "is_component_build": false,
       "is_debug": false,
       "is_lsan": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "target_os": "chromeos",
       "use_goma": true
     }

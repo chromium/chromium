@@ -1058,7 +1058,7 @@
       'linux_chromium_asan_rel_ng-orchestrator': 'asan_lsan_release_trybot',
       'linux_chromium_asan_rel_ng_rts': 'asan_lsan_release_trybot',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
-      'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_trybot',
+      'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
@@ -1742,10 +1742,6 @@
 
     'asan_lsan_chromeos_release_bot_dcheck_always_on': [
       'asan', 'lsan', 'chromeos', 'release_trybot_minimal_symbols',
-    ],
-
-    'asan_lsan_chromeos_release_trybot': [
-      'asan', 'lsan', 'chromeos', 'release_trybot',
     ],
 
     'asan_lsan_debug_bot_reclient': [
