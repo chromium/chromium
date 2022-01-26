@@ -27,8 +27,8 @@
             android:id="@+id/fake_search_box"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
             android:orientation="vertical"
             app:layout_scrollFlags="scroll">
             <include layout="@layout/fake_search_box_layout"/>

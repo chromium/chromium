@@ -352,6 +352,16 @@ class TasksView extends CoordinatorLayoutForPointer {
     }
 
     /**
+     * Set the top margin for the fake search box.
+     * @param topMargin The top margin to set.
+     */
+    void setFakeSearchBoxTopMargin(int topMargin) {
+        MarginLayoutParams params =
+                (MarginLayoutParams) findViewById(R.id.fake_search_box).getLayoutParams();
+        params.topMargin = topMargin;
+    }
+
+    /**
      * Reset the scrolling position by expanding the {@link #mHeaderView}.
      */
     void resetScrollPosition() {

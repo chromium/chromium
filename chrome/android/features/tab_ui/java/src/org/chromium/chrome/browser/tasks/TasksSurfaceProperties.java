@@ -77,6 +77,8 @@ public class TasksSurfaceProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TAB_SWITCHER_TITLE_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey FAKE_SEARCH_BOX_TOP_MARGIN =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel
             .WritableObjectPropertyKey RESET_TASK_SURFACE_HEADER_SCROLL_POSITION =
             new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
@@ -91,5 +93,6 @@ public class TasksSurfaceProperties {
             FAKE_SEARCH_BOX_TEXT_WATCHER, LENS_BUTTON_CLICK_LISTENER, MORE_TABS_CLICK_LISTENER,
             MV_TILES_VISIBLE, QUERY_TILES_VISIBLE, VOICE_SEARCH_BUTTON_CLICK_LISTENER,
             TASKS_SURFACE_BODY_TOP_MARGIN, MV_TILES_CONTAINER_TOP_MARGIN,
-            TAB_SWITCHER_TITLE_TOP_MARGIN, RESET_TASK_SURFACE_HEADER_SCROLL_POSITION};
+            TAB_SWITCHER_TITLE_TOP_MARGIN, FAKE_SEARCH_BOX_TOP_MARGIN,
+            RESET_TASK_SURFACE_HEADER_SCROLL_POSITION};
 }

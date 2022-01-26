@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_MANAGER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_LEARN_MORE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
@@ -294,6 +295,20 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
         assertEquals(0, params.topMargin);
 
         mTasksViewPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN, 16);
+
+        assertEquals(16, params.topMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetFakeSearchBoxTopMargin() {
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.fake_search_box)
+                        .getLayoutParams();
+        assertEquals(0, params.topMargin);
+
+        mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_TOP_MARGIN, 16);
 
         assertEquals(16, params.topMargin);
     }

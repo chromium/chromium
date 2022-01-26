@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks;
 
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TEXT_WATCHER;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.FAKE_SEARCH_BOX_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_MANAGER;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED;
@@ -103,6 +104,8 @@ class TasksViewBinder {
             view.setMVTilesContainerTopMargin(model.get(MV_TILES_CONTAINER_TOP_MARGIN));
         } else if (propertyKey == TAB_SWITCHER_TITLE_TOP_MARGIN) {
             view.setTabSwitcherTitleTopMargin(model.get(TAB_SWITCHER_TITLE_TOP_MARGIN));
+        } else if (propertyKey == FAKE_SEARCH_BOX_TOP_MARGIN) {
+            view.setFakeSearchBoxTopMargin(model.get(FAKE_SEARCH_BOX_TOP_MARGIN));
         } else if (propertyKey == RESET_TASK_SURFACE_HEADER_SCROLL_POSITION) {
             view.resetScrollPosition();
         }
