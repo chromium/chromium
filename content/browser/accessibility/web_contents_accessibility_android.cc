@@ -363,14 +363,6 @@ bool WebContentsAccessibilityAndroid::ShouldExposePasswordText() {
   return Java_WebContentsAccessibilityImpl_shouldExposePasswordText(env, obj);
 }
 
-void WebContentsAccessibilityAndroid::HandlePageLoaded(int32_t unique_id) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
-    return;
-  Java_WebContentsAccessibilityImpl_handlePageLoaded(env, obj, unique_id);
-}
-
 void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

@@ -1531,13 +1531,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handlePageLoaded(int id) {
-        if (!mShouldFocusOnPageLoad) return;
-        if (mUserHasTouchExplored) return;
-        moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
-    }
-
-    @CalledByNative
     private void handleFocusChanged(int id) {
         // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and
         // we should avoid moving accessibility focus when the page loads, but more

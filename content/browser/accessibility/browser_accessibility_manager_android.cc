@@ -260,14 +260,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       wcax->AnnounceLiveRegionText(text);
       break;
     }
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      if (node->manager() == GetRootManager()) {
-        auto* android_focused =
-            static_cast<BrowserAccessibilityAndroid*>(GetFocus());
-        if (android_focused)
-          wcax->HandlePageLoaded(android_focused->unique_id());
-      }
-      break;
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
       DCHECK(android_node->GetData().IsRangeValueSupported());
       if (android_node->IsSlider())
@@ -330,6 +322,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
     case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
+    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
     case ui::AXEventGenerator::Event::LOAD_START:
     case ui::AXEventGenerator::Event::MENU_POPUP_END:
     case ui::AXEventGenerator::Event::MENU_POPUP_START:
