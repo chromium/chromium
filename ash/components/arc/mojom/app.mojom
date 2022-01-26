@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 50
+// Next MinVersion: 51
 
 module arc.mojom;
 
@@ -27,6 +27,7 @@ struct AppInfo {
   [MinVersion=7] bool notifications_enabled;
   [MinVersion=35] bool suspended;
   [MinVersion=47] ArcResizeLockState resize_lock_state;
+  [MinVersion=50] WindowLayout? initial_layout;
 };
 
 // Describes the data required to install a web app.
@@ -48,6 +49,22 @@ struct WebAppInfo {
 
   // SHA256 fingerprint of the APK the web app belongs to.
   [MinVersion=45] string? certificate_sha256_fingerprint;
+};
+
+// ARC app window type.
+[Extensible]
+enum WindowSizeType {
+  [Default] kUnknown = 0, // System default size app.
+  kPhoneSize,             // Phone size app.
+  kTabletSize,            // Tablet size app.
+  kMaximize,              // Maximize app.
+};
+
+// ARC app window layout.
+struct WindowLayout {
+  WindowSizeType type;
+  bool resizable;// Resizability may affect launch state.
+  Rect? bounds;  // Window bounds value.
 };
 
 // Describes ARC package.
