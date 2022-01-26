@@ -152,6 +152,12 @@ Place platform-specific #includes in their own section below the "normal"
 
 ## Types
 
+  * Refer to the [Mojo style
+    guide](https://chromium.googlesource.com/chromium/src/+/main/docs/security/mojo.md)
+    when working with types that will be passed across network or process
+    boundaries. For example, explicitly-sized integral types must be used for
+    safety, since the sending and receiving ends may not have been compiled
+    with the same sizes for things like `int` and `size_t`.
   * Use `size_t` for object and allocation sizes, object counts, array and
     pointer offsets, vector indices, and so on. This prevents casts when
     dealing with STL APIs, and if followed consistently across the codebase,
@@ -161,7 +167,11 @@ Place platform-specific #includes in their own section below the "normal"
     these cases, continue to use `size_t` in public-facing function
     declarations, and continue to use unsigned types internally (e.g.
     `uint32_t`).
-  * Follow [Google C++ casting
+  * Follow the [integer semantics
+    guide](https://chromium.googlesource.com/chromium/src/+/main/docs/security/integer-semantics.md)
+    for all arithmetic conversions and calculations used in memory management
+    or passed across network or process boundaries. In other circumstances,
+    follow [Google C++ casting
     conventions](https://google.github.io/styleguide/cppguide.html#Casting)
     to convert arithmetic types when you know the conversion is safe. Use
     `checked_cast<T>` (from `base/numerics/safe_conversions.h`) when you need to
@@ -169,11 +179,6 @@ Place platform-specific #includes in their own section below the "normal"
     `saturated_cast<T>` if you instead wish to clamp out-of-range values.
     `CheckedNumeric` is an ergonomic way to perform safe arithmetic and casting
     in many cases.
-  * When passing values across network or process boundaries, use
-    explicitly-sized types for safety, since the sending and receiving ends may
-    not have been compiled with the same sizes for things like `int` and
-    `size_t`. However, to the greatest degree possible, avoid letting these
-    sized types bleed through the APIs of the layers in question.
   * The Google Style Guide [bans
     UTF-16](https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters).
     For various reasons, Chromium uses UTF-16 extensively. Use `std::u16string`
