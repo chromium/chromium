@@ -6,6 +6,7 @@
 
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -223,6 +224,11 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(bool do_raster) {
 
   if (!LayerTreeHost()->IsVisible())
     return;
+
+  if (base::FeatureList::IsEnabled(blink::features::kNoForcedFrameUpdates) &&
+      LayerTreeHost()->MainFrameUpdatesAreDeferred()) {
+    return;
+  }
 
   if (in_synchronous_composite_) {
     // Web tests can use a nested message loop to pump frames while inside a

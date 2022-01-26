@@ -1075,5 +1075,10 @@
     "prefix": "dark-system-color-picker-appearance",
     "bases": ["fast/forms/color-scheme/color/color-picker-appearance.html"],
     "args": ["--blink-settings=preferredColorScheme=0", "--enable-features=SystemColorChooser"]
+  },
+  {
+    "prefix": "no-forced-frame-updates",
+    "bases": ["external/wpt/html/dom/render-blocking-mechanism"],
+    "args": ["--enable-features=NoForcedFrameUpdates"]
   }
 ]

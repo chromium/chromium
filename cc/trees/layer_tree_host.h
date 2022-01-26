@@ -295,6 +295,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // StopDeferringCommits is called.
   std::unique_ptr<ScopedDeferMainFrameUpdate> DeferMainFrameUpdate();
 
+  // Returns whether main frame updates are deferred. See conditions above.
+  bool MainFrameUpdatesAreDeferred() const;
+
   // Notification that the proxy started or stopped deferring main frame updates
   void OnDeferMainFrameUpdatesChanged(bool);
 

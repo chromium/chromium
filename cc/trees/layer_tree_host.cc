@@ -449,9 +449,12 @@ void LayerTreeHost::WaitForCommitCompletion() const {
 
 void LayerTreeHost::UpdateDeferMainFrameUpdateInternal() {
   DCHECK(IsMainThread());
-  proxy_->SetDeferMainFrameUpdate(
-      defer_main_frame_update_count_ > 0 ||
-      !pending_commit_state()->local_surface_id_from_parent.is_valid());
+  proxy_->SetDeferMainFrameUpdate(MainFrameUpdatesAreDeferred());
+}
+
+bool LayerTreeHost::MainFrameUpdatesAreDeferred() const {
+  return defer_main_frame_update_count_ > 0 ||
+         !pending_commit_state()->local_surface_id_from_parent.is_valid();
 }
 
 bool LayerTreeHost::IsUsingLayerLists() const {
