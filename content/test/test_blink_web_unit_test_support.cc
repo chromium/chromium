@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/null_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -141,8 +142,8 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     main_thread_scheduler_ =
         blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
             base::MessagePump::Create(base::MessagePumpType::DEFAULT));
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
-        "BlinkTestSupport");
+    base::test::TaskEnvironment::CreateThreadPool();
+    base::ThreadPoolInstance::Get()->StartWithDefaultParams();
   }
 
   // Initialize mojo firstly to enable Blink initialization to use it.

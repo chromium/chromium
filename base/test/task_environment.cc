@@ -784,8 +784,13 @@ TaskEnvironment::ParallelExecutionFence::ParallelExecutionFence(
                    << debug::StackTrace();
     }
   } else if (ThreadPoolInstance::Get()) {
-    LOG(WARNING) << "ParallelExecutionFence is ineffective when "
-                    "ThreadPoolInstance is not managed by a TaskEnvironment.";
+    LOG(WARNING)
+        << "ParallelExecutionFence is ineffective when ThreadPoolInstance is "
+           "not managed by a TaskEnvironment.\n"
+           "Test fixtures should use a TaskEnvironment member or statically "
+           "invoke TaskEnvironment::CreateThreadPool() + "
+           "ThreadPoolInstance::Get()->StartWithDefaultParams() when the "
+           "former is not possible.";
   }
 }
 
