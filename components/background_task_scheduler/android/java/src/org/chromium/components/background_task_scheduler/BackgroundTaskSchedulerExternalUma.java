@@ -136,8 +136,6 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_QUERY_TILE;
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEEDV2_REFRESH;
-            case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
-                return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
             case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
             case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:

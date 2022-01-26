@@ -98,7 +98,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.INSTANCE_SWITCHER);
                 add(ChromeFeatureList.INTEREST_FEED_V2);
                 add(ChromeFeatureList.NEW_WINDOW_APP_MENU);
-                add(ChromeFeatureList.OFFLINE_MEASUREMENTS_BACKGROUND_TASK);
                 add(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
                 add(ChromeFeatureList.PAINT_PREVIEW_DEMO);
                 add(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);

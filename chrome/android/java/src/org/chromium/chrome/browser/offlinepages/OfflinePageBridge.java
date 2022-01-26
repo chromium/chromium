@@ -16,7 +16,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.Tab;
@@ -658,16 +657,6 @@ public class OfflinePageBridge {
             loadUrlParams.setVerbatimHeaders(extraHeaderKey + ":" + extraHeaderValue);
         }
         return loadUrlParams;
-    }
-
-    @CalledByNative
-    private static byte[] getSystemStateListFromOfflineMeasurementsAsBytes() {
-        return OfflineMeasurementsBackgroundTask.getPersistedSystemStateListAsBytes();
-    }
-
-    @CalledByNative
-    private static void reportOfflineMeasurementMetricsToUmaAndClear() {
-        OfflineMeasurementsBackgroundTask.reportMetricsToUmaAndClear();
     }
 
     @NativeMethods

@@ -583,18 +583,13 @@ public final class ChromePreferenceKeys {
             "Chrome.OfflineIndicatorV2.NumTimesBackgrounded";
 
     /**
-     * The measurement interval (in minutes) used to schedule the currently running
-     * OfflineMeasureBackgroundTask. This value is zero if the OfflineMeasureBackgroundTask is not
-     * currently running.
+     * Keys used to store data for the OfflineMeasurementsBackgroundTask. The background task has
+     * been removed, and these keys are just used to clear any persisted data.
      */
     public static final String OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES =
             "Chrome.OfflineMeasurements.CurrentTaskMeasurementIntervalInMinutes";
-
-    /** Time of the last OfflineMeasurementsBackgroundTask check. */
     public static final String OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS =
             "Chrome.OfflineMeasurements.LastCheckMillis";
-
-    /** Parameters that control the HTTP probe of the Offline Measurements Background task */
     public static final String OFFLINE_MEASUREMENTS_USER_AGENT_STRING =
             "Chrome.OfflineMeasurements.UserAgentString";
     public static final String OFFLINE_MEASUREMENTS_HTTP_PROBE_URL =

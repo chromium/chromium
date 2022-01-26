@@ -58,7 +58,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/page_load_metrics/observers/android_page_load_metrics_observer.h"
-#include "chrome/browser/page_load_metrics/observers/offline_measurements_page_load_metrics_observer.h"
 #else
 #include "chrome/browser/page_load_metrics/observers/session_restore_page_load_metrics_observer.h"
 #endif
@@ -188,14 +187,6 @@ void PageLoadMetricsEmbedder::RegisterEmbedderObservers(
           tracker->GetWebContents());
   if (translate_observer)
     tracker->AddObserver(std::move(translate_observer));
-
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<OfflineMeasurementsPageLoadMetricsObserver>
-      offline_measurements_observer =
-          OfflineMeasurementsPageLoadMetricsObserver::CreateIfNeeded();
-  if (offline_measurements_observer)
-    tracker->AddObserver(std::move(offline_measurements_observer));
-#endif
 }
 
 bool PageLoadMetricsEmbedder::IsNewTabPageUrl(const GURL& url) {

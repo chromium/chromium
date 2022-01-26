@@ -12026,6 +12026,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="OfflineMeasurements">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <summary>
     Data collected by the OfflineMeasurementsBackgroundTask. At a regular

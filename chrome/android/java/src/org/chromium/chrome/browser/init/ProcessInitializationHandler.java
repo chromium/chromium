@@ -423,7 +423,7 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 () -> TosDialogBehaviorSharedPrefInvalidator.refreshSharedPreferenceIfTosSkipped());
         deferredStartupHandler.addDeferredTask(
-                () -> OfflineMeasurementsBackgroundTask.maybeScheduleTask());
+                () -> OfflineMeasurementsBackgroundTask.clearPersistedDataFromPrefs());
         deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNTP());
         deferredStartupHandler.addDeferredTask(
                 ()

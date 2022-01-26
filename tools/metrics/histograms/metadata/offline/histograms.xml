@@ -24,6 +24,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.HttpProbeResult"
     enum="OfflineMeasurementsHttpProbeResult" expires_after="2022-06-19">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -38,6 +41,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.IsAirplaneModeEnabled"
     enum="BooleanEnabled" expires_after="2022-06-19">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -54,6 +60,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
     expires_after="2022-06-19">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -71,6 +80,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
     expires_after="2022-04-17">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -82,6 +94,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
     expires_after="2022-06-19">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -93,6 +108,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Offline.Measurements.UserState"
     enum="OfflineMeasurementsUserState" expires_after="2022-06-19">
+  <obsolete>
+    Removed M100. No longer used.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

@@ -245,7 +245,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLensCameraAssistedSearch,
     &kNewWindowAppMenu,
     &kOfflineIndicatorV2,
-    &kOfflineMeasurementsBackgroundTask,
     &kPageAnnotationsService,
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
@@ -681,9 +680,6 @@ const base::Feature kInstanceSwitcher{"InstanceSwitcher",
 
 const base::Feature kOfflineIndicatorV2{"OfflineIndicatorV2",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kOfflineMeasurementsBackgroundTask{
-    "OfflineMeasurementsBackgroundTask", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kPageAnnotationsService{"PageAnnotationsService",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
