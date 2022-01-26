@@ -917,7 +917,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
     registry->AddInterface(
         base::BindRepeating(
             &InterfaceGetter<CallbackType>::GetInterfaceOnUIThread,
-            instance_weak_factory_->GetWeakPtr(), std::move(callback)),
+            instance_weak_factory_.GetWeakPtr(), std::move(callback)),
         GetUIThreadTaskRunner({}));
   }
 
@@ -1183,12 +1183,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   friend class IOThreadHostImpl;
   absl::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
-  // A WeakPtrFactory which is reset every time Cleanup() runs. Used to vend
-  // WeakPtrs which are invalidated any time the RenderProcessHost is recycled.
-  absl::optional<base::WeakPtrFactory<RenderProcessHostImpl>>
-      instance_weak_factory_;
-
-  base::WeakPtrFactory<RenderProcessHostImpl> weak_factory_{this};
+  // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() run.
+  // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost
+  // is recycled.
+  base::WeakPtrFactory<RenderProcessHostImpl> instance_weak_factory_{this};
 };
 
 }  // namespace content
