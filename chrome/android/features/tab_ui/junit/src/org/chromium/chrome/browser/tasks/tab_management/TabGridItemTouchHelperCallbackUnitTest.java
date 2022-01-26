@@ -882,7 +882,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                                    .with(TabProperties.TAB_ID, id)
                                    .with(CARD_TYPE, TAB)
                                    .build();
-        doReturn(position).when(viewHolder).getAdapterPosition();
         return viewHolder;
     }
 
