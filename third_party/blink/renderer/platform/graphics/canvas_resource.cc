@@ -357,6 +357,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       is_overlay_candidate_(shared_image_usage_flags &
                             gpu::SHARED_IMAGE_USAGE_SCANOUT),
 #endif
+      supports_display_compositing_(shared_image_usage_flags &
+                                    gpu::SHARED_IMAGE_USAGE_DISPLAY),
       texture_target_(is_overlay_candidate_
                           ? gpu::GetBufferTextureTarget(
                                 gfx::BufferUsage::SCANOUT,
@@ -643,9 +645,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
     owning_thread_data().mailbox_sync_mode = kUnverifiedSyncToken;
   }
   image = AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      mailbox(), GetSyncToken(), texture_id_for_image, image_info, texture_target_,
-      is_origin_top_left_, context_provider_wrapper_, owning_thread_ref_,
-      owning_thread_task_runner_, std::move(release_callback));
+      mailbox(), GetSyncToken(), texture_id_for_image, image_info,
+      texture_target_, is_origin_top_left_, context_provider_wrapper_,
+      owning_thread_ref_, owning_thread_task_runner_,
+      std::move(release_callback), supports_display_compositing_);
 
   DCHECK(image);
   return image;

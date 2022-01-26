@@ -418,6 +418,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
   const bool is_origin_top_left_;
   const bool is_accelerated_;
   const bool is_overlay_candidate_;
+  const bool supports_display_compositing_;
   const GLenum texture_target_;
   const bool use_oop_rasterization_;
 

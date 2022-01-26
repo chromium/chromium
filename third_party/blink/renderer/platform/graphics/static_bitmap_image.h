@@ -56,6 +56,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   virtual bool IsValid() const { return true; }
   virtual void Transfer() {}
   virtual bool IsOriginTopLeft() const { return true; }
+  virtual bool SupportsDisplayCompositing() const { return true; }
 
   // Creates a non-gpu copy of the image, or returns this if image is already
   // non-gpu.

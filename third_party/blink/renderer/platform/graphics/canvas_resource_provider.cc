@@ -1007,14 +1007,16 @@ CanvasResourceProvider::CreateSharedImageProvider(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-CanvasResourceProvider::CreateWebGPUImageProvider(const SkImageInfo& info,
-                                                  bool is_origin_top_left) {
+CanvasResourceProvider::CreateWebGPUImageProvider(
+    const SkImageInfo& info,
+    bool is_origin_top_left,
+    uint32_t shared_image_usage_flags) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
       info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
-      gpu::SHARED_IMAGE_USAGE_WEBGPU);
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_WEBGPU);
 }
 
 std::unique_ptr<CanvasResourceProvider>

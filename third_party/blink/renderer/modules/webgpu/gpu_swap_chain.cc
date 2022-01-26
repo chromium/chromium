@@ -159,9 +159,14 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::SnapshotInternal(
                                       viz::ResourceFormatToClosestSkColorType(
                                           /*gpu_compositing=*/true, Format()),
                                       kPremul_SkAlphaType);
+  // We tag the SharedImage inside the WebGPUImageProvider with display usage
+  // since there are uncommon paths which may use this snapshot for compositing.
+  // These paths are usually related to either printing or either video and
+  // usually related to OffscreenCanvas; in cases where the image created from
+  // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
       info,
-      /*is_origin_top_left=*/true);
+      /*is_origin_top_left=*/true, gpu::SHARED_IMAGE_USAGE_DISPLAY);
   if (!resource_provider)
     return nullptr;
 

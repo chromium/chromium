@@ -64,7 +64,11 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback);
+      viz::ReleaseCallback release_callback,
+      // TODO(crbug/1289449) Remove ths default value and extend this validation
+      // to all type of AcceleratedStaticBitmapImage created from
+      // CreateFromCanvasMailbox.
+      bool supports_display_compositing_ = true);
 
   bool CurrentFrameKnownToBeOpaque() override;
   bool IsTextureBacked() const override { return true; }
@@ -113,6 +117,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // sync token before accessing this mailbox.
   gpu::MailboxHolder GetMailboxHolder() const final;
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
+  bool SupportsDisplayCompositing() const final {
+    return supports_display_compositing_;
+  }
 
   SkColorType GetSkColorType() const override {
     return sk_image_info_.colorType();
@@ -136,6 +143,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const SkImageInfo& sk_image_info,
       GLenum texture_target,
       bool is_origin_top_left,
+      bool supports_display_compositing,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -151,6 +159,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   const SkImageInfo sk_image_info_;
   const GLenum texture_target_;
   const bool is_origin_top_left_;
+  const bool supports_display_compositing_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;
