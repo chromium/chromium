@@ -445,9 +445,33 @@ class TestPrintViewManager : public PrintViewManager {
     return print_view_manager->PrintNow(rfh_to_use);
   }
 
+  void WaitUntilPreviewIsShownOrCancelled() {
+    base::RunLoop run_loop;
+    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+    run_loop.Run();
+  }
+
   PrintSettings* snooped_settings() { return snooped_settings_.get(); }
 
+  static TestPrintViewManager* CreateForWebContents(
+      content::WebContents* web_contents) {
+    auto manager = std::make_unique<TestPrintViewManager>(web_contents);
+    auto* manager_ptr = manager.get();
+    web_contents->SetUserData(PrintViewManager::UserDataKey(),
+                              std::move(manager));
+    return manager_ptr;
+  }
+
+ protected:
+  base::RunLoop* run_loop_ = nullptr;
+
  private:
+  void PrintPreviewAllowedForTesting() override {
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
   // printing::mojom::PrintManagerHost:
   void UpdatePrintSettings(int32_t cookie,
                            base::Value job_settings,
@@ -511,12 +535,6 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
     PrintViewManager::SetReceiverImplForTesting(nullptr);
   }
 
-  void WaitUntilPreviewIsShownOrCancelled() {
-    base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
-    run_loop.Run();
-  }
-
   PrintAllowance GetPrintAllowance() const { return allowance_; }
 
  private:
@@ -546,7 +564,6 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
 
   RestrictionLevel restriction_level_ = RestrictionLevel::kNotSet;
   PrintAllowance allowance_ = PrintAllowance::kUnknown;
-  base::RunLoop* run_loop_ = nullptr;
 };
 
 class PrintBrowserTest : public InProcessBrowserTest {
@@ -946,6 +963,33 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetched) {
   double old_height = content::EvalJs(contents, kExpression).ExtractDouble();
 
   PrintAndWaitUntilPreviewIsReady();
+
+  // The non-printed document should have loaded the image, which will have
+  // a different height.
+  double new_height = content::EvalJs(contents, kExpression).ExtractDouble();
+  EXPECT_NE(old_height, new_height);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL(
+      "/printing/lazy-loaded-image-offscreen.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  const char kExpression[] = "target.offsetHeight";
+
+  double old_height = content::EvalJs(contents, kExpression).ExtractDouble();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  TestPrintViewManager* print_view_manager =
+      TestPrintViewManager::CreateForWebContents(web_contents);
+
+  content::ExecuteScriptAsync(web_contents->GetMainFrame(), "window.print();");
+  print_view_manager->WaitUntilPreviewIsShownOrCancelled();
 
   // The non-printed document should have loaded the image, which will have
   // a different height.

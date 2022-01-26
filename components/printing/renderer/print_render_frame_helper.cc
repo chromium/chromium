@@ -2501,20 +2501,14 @@ void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
 void PrintRenderFrameHelper::WaitForLoad(PrintPreviewRequestType type) {
   static constexpr base::TimeDelta kLoadEventTimeout = base::Seconds(2);
 
-  if (type == PRINT_PREVIEW_SCRIPTED) {
-    on_stop_loading_closure_ =
-        base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
-                       weak_ptr_factory_.GetWeakPtr());
-  } else {
-    on_stop_loading_closure_ =
-        base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
-                       weak_ptr_factory_.GetWeakPtr(), type, true);
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
-                       weak_ptr_factory_.GetWeakPtr()),
-        kLoadEventTimeout);
-  }
+  on_stop_loading_closure_ =
+      base::BindOnce(&PrintRenderFrameHelper::RequestPrintPreview,
+                     weak_ptr_factory_.GetWeakPtr(), type, true);
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PrintRenderFrameHelper::DidFinishLoadForPrinting,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kLoadEventTimeout);
 }
 
 void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
@@ -2526,8 +2520,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
   if (!weak_this)
     return;
 
-  // TODO(chrishtr): make async work for scripted print.
-  if (type != PRINT_PREVIEW_SCRIPTED && !already_notified_frame) {
+  if (!already_notified_frame) {
     is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
   }
 
@@ -2562,12 +2555,12 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
         //   are fully loaded, which occurs when DidStopLoading() is called.
         //   Defer showing the preview until then.
         WaitForLoad(type);
-      } else {
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
-                           weak_ptr_factory_.GetWeakPtr()));
+        return;
       }
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&PrintRenderFrameHelper::ShowScriptedPrintPreview,
+                         weak_ptr_factory_.GetWeakPtr()));
       base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
       closures_for_mojo_responses_->SetScriptedPrintPreviewQuitClosure(
           loop.QuitClosure());
