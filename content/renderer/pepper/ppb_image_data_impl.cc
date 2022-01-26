@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "content/common/pepper_file_util.h"
-#include "content/renderer/render_thread_impl.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"

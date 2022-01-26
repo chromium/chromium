@@ -20,7 +20,6 @@
 #include "content/renderer/agent_scheduling_group.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
