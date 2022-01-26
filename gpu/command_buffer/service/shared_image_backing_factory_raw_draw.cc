@@ -377,7 +377,7 @@ SharedImageBackingFactoryRawDraw::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     bool is_thread_safe) {
-  DCHECK(!is_thread_safe);
+  DCHECK(is_thread_safe);
   auto texture = std::make_unique<RawDrawBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage);
   return texture;
