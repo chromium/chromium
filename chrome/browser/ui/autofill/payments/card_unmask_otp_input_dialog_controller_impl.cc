@@ -11,9 +11,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -40,7 +37,7 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
   otp_length_ = otp_length;
   delegate_ = delegate;
   dialog_view_ =
-      CardUnmaskOtpInputDialogView::CreateAndShow(this, web_contents());
+      CardUnmaskOtpInputDialogView::CreateAndShow(this, &GetWebContents());
 
   DCHECK(dialog_view_);
   AutofillMetrics::LogOtpInputDialogShown();
@@ -182,8 +179,7 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<CardUnmaskOtpInputDialogControllerImpl>(
+    : content::WebContentsUserData<CardUnmaskOtpInputDialogControllerImpl>(
           *web_contents) {}
 
 void CardUnmaskOtpInputDialogControllerImpl::ShowInvalidState(
