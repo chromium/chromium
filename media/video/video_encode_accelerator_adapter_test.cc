@@ -458,6 +458,40 @@ TEST_P(VideoEncodeAcceleratorAdapterTest, RunWithAllPossibleInputConversions) {
   EXPECT_EQ(outputs_count, frames_to_encode);
 }
 
+TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  auto pixel_format = PIXEL_FORMAT_I420;
+  std::vector<base::TimeDelta> output_timestamps;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription>) {
+        output_timestamps.push_back(output.timestamp);
+      });
+
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        size_t size = keyframe ? 1 : 0;  // Drop non-key frame
+        return BitstreamBufferMetadata(size, keyframe, frame->timestamp());
+      }));
+  adapter()->Initialize(profile_, options, std::move(output_cb),
+                        ValidatingStatusCB());
+
+  auto frame1 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
+  auto frame2 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(2));
+  auto frame3 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(3));
+  adapter()->Encode(frame1, true, ValidatingStatusCB());
+  adapter()->Encode(frame2, false, ValidatingStatusCB());
+  adapter()->Encode(frame3, true, ValidatingStatusCB());
+  RunUntilIdle();
+  ASSERT_EQ(output_timestamps.size(), 2u);
+  EXPECT_EQ(output_timestamps[0], base::Milliseconds(1));
+  EXPECT_EQ(output_timestamps[1], base::Milliseconds(3));
+}
+
 INSTANTIATE_TEST_SUITE_P(VideoEncodeAcceleratorAdapterTest,
                          VideoEncodeAcceleratorAdapterTest,
                          ::testing::Values(PIXEL_FORMAT_I420,
