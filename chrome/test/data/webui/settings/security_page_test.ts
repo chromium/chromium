@@ -7,6 +7,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserProxyImpl, Router, routes, SafeBrowsingInteractions, SecureDnsMode} from 'chrome://settings/settings.js';
+// <if expr="is_win">
+import {buildRouter} from 'chrome://settings/settings.js';
+import {SettingsRoutes} from 'chrome://settings/settings_routes.js';
+// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
@@ -14,6 +18,25 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
 
 // clang-format on
+
+function pagePrefs() {
+  return {
+    profile: {password_manager_leak_detection: {value: false}},
+    safebrowsing: {
+      scout_reporting_enabled: {value: true},
+    },
+    generated: {
+      safe_browsing: {
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: SafeBrowsingSetting.STANDARD,
+      },
+      password_leak_detection: {value: false},
+    },
+    dns_over_https:
+        {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
+    https_only_mode_enabled: {value: false},
+  };
+}
 
 suite('CrSettingsSecurityPageTest', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
@@ -23,6 +46,7 @@ suite('CrSettingsSecurityPageTest', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: true,
+      enableSecurityKeysPhonesSubpage: false,
       showHttpsOnlyModeSetting: true,
     });
   });
@@ -34,22 +58,7 @@ suite('CrSettingsSecurityPageTest', function() {
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-security-page');
-    page.prefs = {
-      profile: {password_manager_leak_detection: {value: false}},
-      safebrowsing: {
-        scout_reporting_enabled: {value: true},
-      },
-      generated: {
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-        password_leak_detection: {value: false},
-      },
-      dns_over_https:
-          {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-      https_only_mode_enabled: {value: false},
-    };
+    page.prefs = pagePrefs();
     document.body.appendChild(page);
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
@@ -90,6 +99,10 @@ suite('CrSettingsSecurityPageTest', function() {
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
+  });
+
+  test('ManageSecurityKeysPhonesSubpageHidden', function() {
+    assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
   });
 
   test('PasswordsLeakDetectionSubLabel', function() {
@@ -575,6 +588,7 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
+      enableSecurityKeysPhonesSubpage: false,
       showHttpsOnlyModeSetting: false,
     });
   });
@@ -582,21 +596,7 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
   setup(function() {
     document.body.innerHTML = '';
     page = document.createElement('settings-security-page');
-    page.prefs = {
-      profile: {password_manager_leak_detection: {value: true}},
-      safebrowsing: {
-        scout_reporting_enabled: {value: true},
-      },
-      generated: {
-        safe_browsing: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: SafeBrowsingSetting.STANDARD,
-        },
-        password_leak_detection: {value: true, userControlDisabled: false},
-      },
-      dns_over_https:
-          {mode: {value: SecureDnsMode.AUTOMATIC}, templates: {value: ''}},
-    };
+    page.prefs = pagePrefs();
     document.body.appendChild(page);
     flush();
   });
@@ -609,7 +609,63 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
   });
 
+  test('ManageSecurityKeysPhonesSubpageHidden', function() {
+    assertFalse(isChildVisible(page, '#security-keys-phones-subpage-trigger'));
+  });
+
   test('HttpsOnlyModeSettingHidden', function() {
     assertFalse(isChildVisible(page, '#httpsOnlyModeToggle'));
   });
+});
+
+suite('CrSettingsSecurityPageTest_SecurityKeysWindowsApi', function() {
+  // On modern versions of Windows the security keys subpage will be disabled
+  // because Windows manages that itself, but a link to the subpage for
+  // managing phones as security keys will be included.
+  let page: SettingsSecurityPageElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSecurityKeysSubpage: false,
+      enableSecurityKeysPhonesSubpage: true,
+    });
+
+    // <if expr="is_win">
+    // Setting `enableSecurityKeysPhonesSubpage` updates the list of routes,
+    // thus the `Router` needs to be rebuilt.
+    Router.resetInstanceForTesting(buildRouter());
+    // The code under test needs to be able to find `SECURITY_KEYS_PHONES`.
+    routes.SECURITY_KEYS_PHONES =
+        (Router.getInstance().getRoutes() as SettingsRoutes)
+            .SECURITY_KEYS_PHONES;
+    // </if>
+  });
+
+  setup(function() {
+    document.body.innerHTML = '';
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  test('ManageSecurityKeysSubpageHidden', function() {
+    assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
+  });
+
+  // The element only exists on Windows.
+  // <if expr="is_win">
+  test('ManageSecurityKeysPhonesSubpageVisibleAndNavigates', function() {
+    const triggerId = '#security-keys-phones-subpage-trigger';
+    assertTrue(isChildVisible(page, triggerId));
+    page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
+    flush();
+    assertEquals(
+        routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
+  });
+  // </if>
 });
