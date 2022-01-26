@@ -1231,6 +1231,26 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
                                                browser_process_->local_state());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (is_initial_profile) {
+    // Init the RLZ library. This just binds the dll and schedules a task on the
+    // file thread to be run sometime later. If this is the first run we record
+    // the installation event.
+    int ping_delay =
+        profile->GetPrefs()->GetInteger(prefs::kRlzPingDelaySeconds);
+    // Negative ping delay means to send ping immediately after a first search
+    // is recorded.
+    rlz::RLZTracker::SetRlzDelegate(
+        std::make_unique<ChromeRLZTrackerDelegate>());
+    rlz::RLZTracker::InitRlzDelayed(
+        first_run::IsChromeFirstRun(), ping_delay < 0,
+        base::Seconds(abs(ping_delay)),
+        ChromeRLZTrackerDelegate::IsGoogleDefaultSearch(profile),
+        ChromeRLZTrackerDelegate::IsGoogleHomepage(profile),
+        ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile));
+  }
+#endif  // BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1624,23 +1644,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         parsed_command_line());
   }
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Init the RLZ library. This just binds the dll and schedules a task on the
-  // file thread to be run sometime later. If this is the first run we record
-  // the installation event.
-  int ping_delay = profile->GetPrefs()->GetInteger(prefs::kRlzPingDelaySeconds);
-  // Negative ping delay means to send ping immediately after a first search is
-  // recorded.
-  rlz::RLZTracker::SetRlzDelegate(
-      base::WrapUnique(new ChromeRLZTrackerDelegate));
-  rlz::RLZTracker::InitRlzDelayed(
-      first_run::IsChromeFirstRun(), ping_delay < 0,
-      base::Seconds(abs(ping_delay)),
-      ChromeRLZTrackerDelegate::IsGoogleDefaultSearch(profile),
-      ChromeRLZTrackerDelegate::IsGoogleHomepage(profile),
-      ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile));
-#endif  // BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Configure modules that need access to resources.
   net::NetModule::SetResourceProvider(ChromeNetResourceProvider);
