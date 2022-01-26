@@ -96,17 +96,6 @@ void DropIfAllowed(const ui::OSExchangeData* drag_data,
   }
 }
 
-aura::Window* GetTarget(const ui::LocatedEvent& event) {
-  gfx::Point location_in_screen = event.location();
-  ::wm::ConvertPointToScreen(static_cast<aura::Window*>(event.target()),
-                             &location_in_screen);
-  aura::Window* root_window_at_point =
-      window_util::GetRootWindowAt(location_in_screen);
-  gfx::Point location_in_root = location_in_screen;
-  ::wm::ConvertPointFromScreen(root_window_at_point, &location_in_root);
-  return root_window_at_point->GetEventHandlerForPoint(location_in_root);
-}
-
 std::unique_ptr<ui::LocatedEvent> ConvertEvent(aura::Window* target,
                                                const ui::LocatedEvent& event) {
   gfx::Point target_location = event.location();
@@ -347,7 +336,8 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
     event->StopPropagation();
     return;
   }
-  aura::Window* translated_target = GetTarget(*event);
+  aura::Window* translated_target =
+      window_util::GetEventHandlerForEvent(*event);
   if (!translated_target) {
     // ET_MOUSE_CAPTURE_CHANGED event does not have a location that can
     // be used to locate a translated target.
@@ -429,7 +419,8 @@ void DragDropController::OnGestureEvent(ui::GestureEvent* event) {
     translated_target = capture_delegate_->GetTarget(touch_offset_event);
   } else {
     ui::Event::DispatcherApi(&touch_offset_event).set_target(event->target());
-    translated_target = GetTarget(touch_offset_event);
+    translated_target =
+        window_util::GetEventHandlerForEvent(touch_offset_event);
   }
 
   if (!translated_target) {

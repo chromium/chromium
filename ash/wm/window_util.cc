@@ -45,6 +45,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -443,6 +444,16 @@ bool ShouldShowForCurrentUser(aura::Window* window) {
     return true;
 
   return account_id == multi_user_window_manager->CurrentAccountId();
+}
+
+aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event) {
+  gfx::Point location_in_screen = event.location();
+  ::wm::ConvertPointToScreen(static_cast<aura::Window*>(event.target()),
+                             &location_in_screen);
+  aura::Window* root_window_at_point = GetRootWindowAt(location_in_screen);
+  gfx::Point location_in_root = location_in_screen;
+  ::wm::ConvertPointFromScreen(root_window_at_point, &location_in_root);
+  return root_window_at_point->GetEventHandlerForPoint(location_in_root);
 }
 
 }  // namespace window_util

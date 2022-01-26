@@ -23,6 +23,10 @@ class Rect;
 class RectF;
 }  // namespace gfx
 
+namespace ui {
+class LocatedEvent;
+}  // namespace ui
+
 namespace ash {
 
 namespace window_util {
@@ -143,6 +147,8 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
 // If multi profile is on, check if |window| should be shown for the current
 // user.
 bool ShouldShowForCurrentUser(aura::Window* window);
+
+ASH_EXPORT aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event);
 
 }  // namespace window_util
 }  // namespace ash
