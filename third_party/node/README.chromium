@@ -127,6 +127,21 @@ Local Modifications:
 (none)
 
 
+Name: Type Definition for OffscreenCanvas
+Short Name: @types/offscreencanvas
+URL: https://www.npmjs.com/package/@types/offscreencanvas
+Version: 2019.6.4
+License: MIT
+Security Critical: No. The types are only used when type checking in Chrome OS.
+
+Description:
+This package contains type definitions for offscreencanvas-browser
+(https://html.spec.whatwg.org/multipage/canvas.html#the-offscreencanvas-interface).
+
+Local Modifications:
+(none)
+
+
 Name: ESLint JSDoc Plugin
 Short Name: eslint-plugin-jsdoc
 URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
