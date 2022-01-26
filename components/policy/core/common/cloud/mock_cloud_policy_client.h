@@ -113,6 +113,16 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(enterprise_management::ChromeProfileReportRequest*,
                     StatusCallback&));
 
+  void UploadEuiccInfo(
+      std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
+      StatusCallback callback) override {
+    UploadEuiccInfoProxy(request.get(), callback);
+  }
+  // Use Proxy function because unique_ptr can't be used in mock function.
+  MOCK_METHOD2(UploadEuiccInfoProxy,
+               void(enterprise_management::UploadEuiccInfoRequest*,
+                    StatusCallback&));
+
   void UploadSecurityEventReport(content::BrowserContext* context,
                                  bool include_device_info,
                                  base::Value value,
