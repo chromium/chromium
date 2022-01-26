@@ -36,10 +36,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ import java.util.Collections;
 public class CustomTabIntentDataProviderTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
 
@@ -217,6 +222,70 @@ public class CustomTabIntentDataProviderTest {
 
         assertTrue(dataProvider.getCustomButtonsOnToolbar().isEmpty());
         assertFalse(dataProvider.shouldShowShareMenuItem());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+    public void isAllowedThirdParty_noDefaultPolicy() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+                "com.dc.joker|com.marvel.thanos");
+        // If no default-policy is present, it defaults to use-denylist.
+        assertFalse("Entry in denylist should be rejected",
+                provider.isAllowedThirdParty("com.dc.joker"));
+        assertFalse("Entry in denylist should be rejected",
+                provider.isAllowedThirdParty("com.marvel.thanos"));
+        assertTrue("Entry NOT in denylist should be accepted",
+                provider.isAllowedThirdParty("com.dc.batman"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:"
+                    + "default_policy/use-denylist"
+                    + "/denylist_entries/com.dc.joker|com.marvel.thanos"})
+    public void
+    isAllowedThirdParty_denylist() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-denylist");
+        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+                "com.dc.joker|com.marvel.thanos");
+        assertFalse("Entry in denylist should be rejected",
+                provider.isAllowedThirdParty("com.dc.joker"));
+        assertFalse("Entry in denylist should be rejected",
+                provider.isAllowedThirdParty("com.marvel.thanos"));
+        assertTrue("Entry NOT in denylist should be accepted",
+                provider.isAllowedThirdParty("com.dc.batman"));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:"
+                    + "default_policy/use-allowlist"
+                    + "/allowlist_entries/com.pixar.woody|com.disney.ariel"})
+    public void
+    isAllowedThirdParty_allowlist() {
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
+        CustomTabIntentDataProvider provider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY.setForTesting("use-allowlist");
+        CustomTabIntentDataProvider.ALLOWLIST_ENTRIES.setForTesting(
+                "com.pixar.woody|com.disney.ariel");
+        assertTrue("Entry in allowlist should be accepted",
+                provider.isAllowedThirdParty("com.pixar.woody"));
+        assertTrue("Entry in allowlist should be accepted",
+                provider.isAllowedThirdParty("com.disney.ariel"));
+        assertFalse("Entry NOT in allowlist should be rejected",
+                provider.isAllowedThirdParty("com.pixar.syndrome"));
     }
 
     private Bundle createActionButtonInToolbarBundle() {

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.version_info.VersionInfo;
@@ -167,6 +168,22 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
+
+    private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
+    private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
+    private static final String DEFAULT_POLICY_USE_ALLOWLIST = "use-allowlist";
+    private static final String ALLOWLIST_ENTRIES_PARAM_NAME = "allowlist_entries";
+    private static final String DENYLIST_ENTRIES_PARAM_NAME = "denylist_entries";
+
+    public static final StringCachedFieldTrialParameter THIRD_PARTIES_DEFAULT_POLICY =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    DEFAULT_POLICY_PARAM_NAME, DEFAULT_POLICY_USE_DENYLIST);
+    public static final StringCachedFieldTrialParameter DENYLIST_ENTRIES =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    DENYLIST_ENTRIES_PARAM_NAME, "");
+    public static final StringCachedFieldTrialParameter ALLOWLIST_ENTRIES =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    ALLOWLIST_ENTRIES_PARAM_NAME, "");
 
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
@@ -801,15 +818,36 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Px int getInitialActivityHeight() {
-        boolean enabledForAll =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
         boolean enabledDueToFirstParty = mIsTrustedIntent
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
-
-        if (enabledForAll || enabledDueToFirstParty) {
+        boolean enabledDueToThirdParty =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)
+                && isAllowedThirdParty(getClientPackageName());
+        if (enabledDueToThirdParty || enabledDueToFirstParty) {
             return mInitialActivityHeight;
-        } else {
-            return 0;
         }
+        return 0;
+    }
+
+    boolean isAllowedThirdParty(String packageName) {
+        if (packageName == null) return false;
+        String defaultPolicy = THIRD_PARTIES_DEFAULT_POLICY.getValue();
+        if (defaultPolicy.equals(DEFAULT_POLICY_USE_ALLOWLIST)) {
+            String allowList = ALLOWLIST_ENTRIES.getValue();
+            if (TextUtils.isEmpty(allowList)) return false;
+            for (String p : allowList.split("\\|")) {
+                if (packageName.equals(p)) return true;
+            }
+            return false;
+        } else if (defaultPolicy.equals(DEFAULT_POLICY_USE_DENYLIST)) {
+            String denyList = DENYLIST_ENTRIES.getValue();
+            if (TextUtils.isEmpty(denyList)) return true;
+            for (String p : denyList.split("\\|")) {
+                if (packageName.equals(p)) return false;
+            }
+            return true;
+        }
+        assert false : "We can't get here since the default policy is use denylist.";
+        return false;
     }
 }

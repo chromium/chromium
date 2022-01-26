@@ -402,6 +402,18 @@ const FeatureEntry::FeatureVariation kElasticOverscrollVariations[] = {
     {"Transform stretch", kElasticOverscrollTransformType,
      base::size(kElasticOverscrollTransformType), nullptr}};
 
+const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseAllowlist[] = {
+    {"default_policy", "use-allowlist"}};
+const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseDenylist[] = {
+    {"default_policy", "use-denylist"}};
+
+const FeatureEntry::FeatureVariation
+    kCCTResizableThirdPartiesDefaultPolicyVariations[] = {
+        {"Use Allowlist", kCCTResizablePolicyParamUseAllowlist,
+         base::size(kCCTResizablePolicyParamUseAllowlist), nullptr},
+        {"Use Denylist", kCCTResizablePolicyParamUseDenylist,
+         base::size(kCCTResizablePolicyParamUseDenylist), nullptr}};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -5367,7 +5379,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-resizable-for-third-parties",
      flag_descriptions::kCCTResizableForThirdPartiesName,
      flag_descriptions::kCCTResizableForThirdPartiesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTResizableForThirdParties)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kCCTResizableForThirdParties,
+         kCCTResizableThirdPartiesDefaultPolicyVariations,
+         "CCTResizableThirdPartiesDefaultPolicy")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
