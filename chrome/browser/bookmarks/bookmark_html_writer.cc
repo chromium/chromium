@@ -185,7 +185,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     DCHECK(roots);
 
     base::Value* root_folder_value =
-        roots->FindDictKey(BookmarkCodec::kRootFolderNameKey);
+        roots->FindDictKey(BookmarkCodec::kBookmarkBarFolderNameKey);
     base::Value* other_folder_value =
         roots->FindDictKey(BookmarkCodec::kOtherBookmarkFolderNameKey);
     base::Value* mobile_folder_value =

@@ -125,7 +125,7 @@ class BookmarkCodecTest : public testing::Test {
     ASSERT_TRUE(roots);
 
     base::Value* bb_value =
-        roots->FindDictKey(BookmarkCodec::kRootFolderNameKey);
+        roots->FindDictKey(BookmarkCodec::kBookmarkBarFolderNameKey);
     ASSERT_TRUE(bb_value);
 
     base::Value* bb_children_value =

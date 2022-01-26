@@ -89,7 +89,7 @@ class BookmarkCodec {
 
   // Names of the various keys written to the Value.
   static const char kRootsKey[];
-  static const char kRootFolderNameKey[];
+  static const char kBookmarkBarFolderNameKey[];
   static const char kOtherBookmarkFolderNameKey[];
   static const char kMobileBookmarkFolderNameKey[];
   static const char kVersionKey[];
