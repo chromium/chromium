@@ -58,13 +58,10 @@ arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
   return package;
 }
 
-arc::mojom::AppInfo CreateArcAppInfo(const std::string& package_name) {
-  arc::mojom::AppInfo app;
-  app.package_name = package_name;
-  app.name = package_name;
-  app.activity = base::StrCat({package_name, ".", "activity"});
-  app.sticky = true;
-  return app;
+arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name) {
+  return arc::mojom::AppInfo::New(package_name, package_name,
+                                  base::StrCat({package_name, ".", "activity"}),
+                                  true /* sticky */);
 }
 
 }  // namespace
@@ -162,8 +159,10 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     arc_app_instance_->SendPackageAdded(
         CreateArcAppPackage(package_name)->Clone());
 
-    const arc::mojom::AppInfo app = CreateArcAppInfo(package_name);
-    arc_app_instance_->SendPackageAppListRefreshed(package_name, {app});
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(CreateArcAppInfo(package_name));
+
+    arc_app_instance_->SendPackageAppListRefreshed(package_name, apps);
 
     base::RunLoop().RunUntilIdle();
   }

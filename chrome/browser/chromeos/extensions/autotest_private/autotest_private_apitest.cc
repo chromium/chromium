@@ -138,15 +138,14 @@ IN_PROC_BROWSER_TEST_F(AutotestPrivateApiTest, AutotestPrivateArcEnabled) {
   prefs->app_connection_holder()->SetInstance(app_instance.get());
   arc::WaitForInstanceReady(prefs->app_connection_holder());
 
-  arc::mojom::AppInfo app;
-  app.name = "Fake App";
-  app.package_name = "fake.package";
-  app.activity = "fake.package.activity";
-  app_instance->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+  std::vector<arc::mojom::AppInfoPtr> fake_apps;
+  fake_apps.emplace_back(arc::mojom::AppInfo::New("Fake App", "fake.package",
+                                                  "fake.package.activity"));
+  app_instance->SendRefreshAppList(fake_apps);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
   packages.emplace_back(arc::mojom::ArcPackageInfo::New(
-      app.package_name, 10 /* package_version */,
+      fake_apps[0]->package_name, 10 /* package_version */,
       100 /* last_backup_android_id */,
       base::Time::Now()
           .ToDeltaSinceWindowsEpoch()

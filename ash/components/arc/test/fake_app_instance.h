@@ -187,10 +187,10 @@ class FakeAppInstance : public mojom::AppInstance {
                      IsInstallableCallback callback) override;
 
   // Methods to reply messages.
-  void SendRefreshAppList(const std::vector<mojom::AppInfo>& apps);
+  void SendRefreshAppList(const std::vector<mojom::AppInfoPtr>& apps);
   void SendAppAdded(const mojom::AppInfo& app);
   void SendPackageAppListRefreshed(const std::string& package_name,
-                                   const std::vector<mojom::AppInfo>& apps);
+                                   const std::vector<mojom::AppInfoPtr>& apps);
   void SendTaskCreated(int32_t taskId,
                        const mojom::AppInfo& app,
                        const std::string& intent);

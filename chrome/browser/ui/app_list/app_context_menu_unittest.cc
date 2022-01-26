@@ -384,8 +384,8 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
 
-  const arc::mojom::AppInfo& app_info = arc_test.fake_apps()[1];
-  const std::string app_id = ArcAppTest::GetAppId(app_info);
+  const auto& app_info = arc_test.fake_apps()[1];
+  const std::string app_id = ArcAppTest::GetAppId(*app_info);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
 
   arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
@@ -417,10 +417,10 @@ TEST_F(AppContextMenuTest, ArcMenu) {
   const std::vector<std::unique_ptr<arc::FakeAppInstance::Request>>&
       launch_requests = arc_test.app_instance()->launch_requests();
   ASSERT_EQ(1u, launch_requests.size());
-  EXPECT_TRUE(launch_requests[0]->IsForApp(app_info));
+  EXPECT_TRUE(launch_requests[0]->IsForApp(*app_info));
 
   controller()->SetAppOpen(app_id, true);
-  arc_test.app_instance()->SendTaskCreated(1, app_info, std::string());
+  arc_test.app_instance()->SendTaskCreated(1, *app_info, std::string());
 
   // It is not expected that menu model is unchanged on GetContextMenuModel.
   // ARC app menu requires model to be recalculated.
@@ -483,7 +483,7 @@ TEST_F(AppContextMenuTest, ArcMenu) {
 
   // Uninstall all apps.
   arc_test.app_instance()->SendRefreshAppList(
-      std::vector<arc::mojom::AppInfo>());
+      std::vector<arc::mojom::AppInfoPtr>());
   app_service_test().FlushMojoCalls();
   controller()->SetAppOpen(app_id, false);
 
@@ -566,8 +566,8 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
 
   {
     // Verify menu of store
-    const arc::mojom::AppInfo& store_info = arc_test.fake_apps()[0];
-    const std::string store_id = ArcAppTest::GetAppId(store_info);
+    const auto& store_info = arc_test.fake_apps()[0];
+    const std::string store_id = ArcAppTest::GetAppId(*store_info);
     controller()->SetAppPinnable(store_id,
                                  AppListControllerDelegate::PIN_EDITABLE);
     std::unique_ptr<AppServiceAppItem> item =
@@ -603,13 +603,12 @@ TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
 
-  arc::mojom::AppInfo app = arc_test.fake_apps()[0];
-  app.suspended = true;
-
-  arc_test.app_instance()->SendRefreshAppList({app});
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(arc_test.fake_apps()[0]->Clone())->suspended = true;
+  arc_test.app_instance()->SendRefreshAppList(apps);
   app_service_test().FlushMojoCalls();
 
-  const std::string app_id = ArcAppTest::GetAppId(app);
+  const std::string app_id = ArcAppTest::GetAppId(*apps[0]);
   controller()->SetAppPinnable(app_id, AppListControllerDelegate::PIN_EDITABLE);
   std::unique_ptr<AppServiceAppItem> item = GetAppListItem(profile(), app_id);
   std::unique_ptr<ui::MenuModel> menu = GetContextMenuModel(item.get());

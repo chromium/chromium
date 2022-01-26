@@ -20,8 +20,8 @@ namespace app_time {
 arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
     const std::string& package_name);
 
-arc::mojom::AppInfo CreateArcAppInfo(const std::string& package_name,
-                                     const std::string& name);
+arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name,
+                                        const std::string& name);
 
 scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& extension_id,

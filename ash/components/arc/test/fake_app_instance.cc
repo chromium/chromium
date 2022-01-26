@@ -115,19 +115,19 @@ void FakeAppInstance::GetAppIcon(const std::string& package_name,
 }
 
 void FakeAppInstance::SendRefreshAppList(
-    const std::vector<mojom::AppInfo>& apps) {
+    const std::vector<mojom::AppInfoPtr>& apps) {
   std::vector<mojom::AppInfoPtr> v;
   for (const auto& app : apps)
-    v.emplace_back(app.Clone());
+    v.emplace_back(app->Clone());
   app_host_->OnAppListRefreshed(std::move(v));
 }
 
 void FakeAppInstance::SendPackageAppListRefreshed(
     const std::string& package_name,
-    const std::vector<mojom::AppInfo>& apps) {
+    const std::vector<mojom::AppInfoPtr>& apps) {
   std::vector<mojom::AppInfoPtr> v;
   for (const auto& app : apps)
-    v.emplace_back(app.Clone());
+    v.emplace_back(app->Clone());
   app_host_->OnPackageAppListRefreshed(package_name, std::move(v));
 }
 

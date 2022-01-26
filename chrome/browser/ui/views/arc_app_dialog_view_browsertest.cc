@@ -67,12 +67,12 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
     WaitForInstanceReady(arc_app_list_pref_->app_connection_holder());
 
     // In this setup, we have one app and one shortcut which share one package.
-    mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<mojom::AppInfo>(1, app));
+    std::vector<mojom::AppInfoPtr> one_app;
+    one_app.emplace_back(mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                             "fake.app.0.activity",
+                                             false /* sticky */));
+
+    app_instance_->SendRefreshAppList(one_app);
 
     mojom::ShortcutInfo shortcut;
     shortcut.name = "Fake Shortcut 0";
@@ -126,12 +126,11 @@ class ArcAppPermissionDialogViewBrowserTest
   ~ArcAppPermissionDialogViewBrowserTest() override = default;
 
   void InstallExtraPackage(int id) {
-    mojom::AppInfo app;
-    app.name = base::StringPrintf("Fake App %d", id);
-    app.package_name = base::StringPrintf("fake.package.%d", id);
-    app.activity = base::StringPrintf("fake.app.%d.activity", id);
-    app.sticky = false;
-    instance()->SendAppAdded(app);
+    mojom::AppInfoPtr app = mojom::AppInfo::New(
+        base::StringPrintf("Fake App %d", id),
+        base::StringPrintf("fake.package.%d", id),
+        base::StringPrintf("fake.app.%d.activity", id), false);
+    instance()->SendAppAdded(*app);
 
     instance()->SendPackageAdded(arc::mojom::ArcPackageInfo::New(
         base::StringPrintf("fake.package.%d", id) /* package_name */,

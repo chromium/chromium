@@ -317,8 +317,9 @@ class AppSearchProviderTest : public AppListTestBase {
 
 TEST_F(AppSearchProviderTest, Basic) {
   arc_test().SetUp(profile());
-  std::vector<arc::mojom::AppInfo> arc_apps(arc_test().fake_apps().begin(),
-                                            arc_test().fake_apps().begin() + 2);
+  std::vector<arc::mojom::AppInfoPtr> arc_apps;
+  for (int i = 0; i < 2; i++)
+    arc_apps.emplace_back(arc_test().fake_apps()[i]->Clone());
   arc_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
@@ -387,7 +388,7 @@ TEST_F(AppSearchProviderTest, UninstallExtension) {
 
 TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   arc_test().SetUp(profile());
-  std::vector<arc::mojom::AppInfo> arc_apps;
+  std::vector<arc::mojom::AppInfoPtr> arc_apps;
   arc_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.
@@ -398,7 +399,7 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
   EXPECT_TRUE(results().empty());
   EXPECT_EQ("", RunQuery("fapp0"));
 
-  arc_apps.push_back(arc_test().fake_apps()[0]);
+  arc_apps.emplace_back(arc_test().fake_apps()[0]->Clone());
   arc_test().app_instance()->SendRefreshAppList(arc_apps);
 
   // Allow async callbacks to run.

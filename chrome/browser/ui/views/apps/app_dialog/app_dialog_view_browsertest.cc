@@ -84,12 +84,11 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    arc::mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(arc::mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                               "fake.app.0.activity",
+                                               false /* sticky */));
+    app_instance_->SendRefreshAppList(apps);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u, arc_app_list_pref_->GetAppIds().size());
@@ -100,13 +99,13 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     ASSERT_TRUE(app_service_proxy_);
 
     base::RunLoop run_loop;
-    app_id_ = arc_app_list_pref_->GetAppId(app.package_name, app.activity);
+    app_id_ =
+        arc_app_list_pref_->GetAppId(apps[0]->package_name, apps[0]->activity);
     if (name == "block") {
-      app.suspended = true;
+      apps[0]->suspended = true;
       app_service_proxy_->SetDialogCreatedCallbackForTesting(
           run_loop.QuitClosure());
-      app_instance_->SendRefreshAppList(
-          std::vector<arc::mojom::AppInfo>(1, app));
+      app_instance_->SendRefreshAppList(apps);
       app_service_proxy_->FlushMojoCallsForTesting();
       app_service_proxy_->Launch(
           app_id_, ui::EventFlags::EF_NONE,

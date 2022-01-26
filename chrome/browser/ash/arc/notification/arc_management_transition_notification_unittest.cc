@@ -108,7 +108,7 @@ TEST_P(ArcManagementTransitionNotificationTest, BaseFlow) {
   arc_app_test()->app_instance()->SendRefreshAppList(
       arc_app_test()->fake_apps());
   const std::string app_id =
-      ArcAppTest::GetAppId(arc_app_test()->fake_apps()[0]);
+      ArcAppTest::GetAppId(*arc_app_test()->fake_apps()[0]);
 
   profile()->GetPrefs()->SetInteger(prefs::kArcManagementTransition,
                                     static_cast<int>(arc_transition()));

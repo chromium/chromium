@@ -27,13 +27,13 @@ arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
   return package;
 }
 
-arc::mojom::AppInfo CreateArcAppInfo(const std::string& package_name,
-                                     const std::string& name) {
-  arc::mojom::AppInfo app;
-  app.package_name = package_name;
-  app.name = name;
-  app.activity = base::StrCat({name, "Activity"});
-  app.sticky = true;
+arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name,
+                                        const std::string& name) {
+  auto app = arc::mojom::AppInfo::New();
+  app->package_name = package_name;
+  app->name = name;
+  app->activity = base::StrCat({name, "Activity"});
+  app->sticky = true;
   return app;
 }
 

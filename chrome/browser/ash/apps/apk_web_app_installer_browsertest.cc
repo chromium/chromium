@@ -583,12 +583,10 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
       ArcAppListPrefs::GetAppId(kPackageName, kAppActivity);
 
   /// Create an app and add to the package.
-  arc::mojom::AppInfo app;
-  app.name = kAppTitle;
-  app.package_name = kPackageName;
-  app.activity = kAppActivity;
-  app.sticky = true;
-  app_instance_->SendPackageAppListRefreshed(kPackageName, {app});
+  std::vector<arc::mojom::AppInfoPtr> apps;
+  apps.emplace_back(arc::mojom::AppInfo::New(kAppTitle, kPackageName,
+                                             kAppActivity, true /* sticky */));
+  app_instance_->SendPackageAppListRefreshed(kPackageName, apps);
 
   EXPECT_TRUE(installed_web_app_ids_.empty());
   EXPECT_TRUE(uninstalled_web_app_ids_.empty());

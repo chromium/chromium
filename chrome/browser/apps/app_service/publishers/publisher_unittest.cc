@@ -71,7 +71,7 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void AddArcPackage(ArcAppTest& arc_test,
-                   std::vector<arc::mojom::AppInfo>& fake_apps) {
+                   const std::vector<arc::mojom::AppInfoPtr>& fake_apps) {
   for (const auto& fake_app : fake_apps) {
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions;
@@ -82,7 +82,7 @@ void AddArcPackage(ArcAppTest& arc_test,
                         arc::mojom::PermissionState::New(/*granted=*/true,
                                                          /*managed=*/false));
     arc::mojom::ArcPackageInfoPtr package = arc::mojom::ArcPackageInfo::New(
-        fake_app.package_name, /*package_version=*/1,
+        fake_app->package_name, /*package_version=*/1,
         /*last_backup_android_id=*/1,
         /*last_backup_time=*/1, /*sync=*/true, /*system=*/false,
         /*vpn_provider=*/false, /*web_app_info=*/nullptr, absl::nullopt,
@@ -277,9 +277,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
   arc_test.SetUp(profile());
 
   // Install fake apps.
-  std::vector<arc::mojom::AppInfo> fake_apps = arc_test.fake_apps();
-  arc_test.app_instance()->SendRefreshAppList(fake_apps);
-  AddArcPackage(arc_test, fake_apps);
+  arc_test.app_instance()->SendRefreshAppList(arc_test.fake_apps());
+  AddArcPackage(arc_test, arc_test.fake_apps());
 
   // Verify ARC apps are added to AppRegistryCache.
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());

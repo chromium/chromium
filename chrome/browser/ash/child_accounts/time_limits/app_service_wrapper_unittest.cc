@@ -140,10 +140,9 @@ class AppServiceWrapperTest : public ::testing::Test {
     if (app_id.app_type() == apps::mojom::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
       arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
-
-      const arc::mojom::AppInfo app = CreateArcAppInfo(package_name, app_name);
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name,
-                                                            {app});
+      std::vector<arc::mojom::AppInfoPtr> apps;
+      apps.emplace_back(CreateArcAppInfo(package_name, app_name));
+      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -212,10 +211,10 @@ class AppServiceWrapperTest : public ::testing::Test {
                            bool disabled) {
     if (app_id.app_type() == apps::mojom::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
-      arc::mojom::AppInfo app = CreateArcAppInfo(package_name, app_name);
-      app.suspended = disabled;
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name,
-                                                            {app});
+      std::vector<arc::mojom::AppInfoPtr> apps;
+      apps.emplace_back(CreateArcAppInfo(package_name, app_name))->suspended =
+          disabled;
+      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
       task_environment_.RunUntilIdle();
       return;
     }

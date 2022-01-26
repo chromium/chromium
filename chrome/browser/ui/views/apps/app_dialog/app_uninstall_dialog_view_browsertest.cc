@@ -130,17 +130,17 @@ class ArcAppsUninstallDialogViewBrowserTest
   }
 
   void CreateApp() {
-    arc::mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(arc::mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                               "fake.app.0.activity",
+                                               false /* sticky */));
+    app_instance_->SendRefreshAppList(apps);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u, arc_app_list_pref_->GetAppIds().size());
-    app_id_ = arc_app_list_pref_->GetAppId(app.package_name, app.activity);
-    app_name_ = app.name;
+    app_id_ =
+        arc_app_list_pref_->GetAppId(apps[0]->package_name, apps[0]->activity);
+    app_name_ = apps[0]->name;
   }
 
  private:

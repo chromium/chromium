@@ -116,9 +116,9 @@ class ArcAppsPublisherTest : public testing::Test {
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0].package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0].package_name,
-                                                 fake_apps[0].activity);
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
@@ -143,9 +143,9 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromAppService) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0].package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0].package_name,
-                                                 fake_apps[0].activity);
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
@@ -167,9 +167,9 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksDefaultBrowserBehavior) {
 
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0].package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0].package_name,
-                                                 fake_apps[0].activity);
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
@@ -196,9 +196,9 @@ TEST_F(ArcAppsPublisherTest,
   constexpr char kTestAuthority[] = "www.example.com";
   constexpr char kTestAuthority2[] = "www.newexample.com";
   const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0].package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0].package_name,
-                                                 fake_apps[0].activity);
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
@@ -242,9 +242,9 @@ TEST_F(ArcAppsPublisherTest,
 
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0].package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0].package_name,
-                                                 fake_apps[0].activity);
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just

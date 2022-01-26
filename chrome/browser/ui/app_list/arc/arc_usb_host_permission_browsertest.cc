@@ -88,12 +88,11 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   void AddArcApp(const std::string& app_name,
                  const std::string& package_name,
                  const std::string& activity) {
-    arc::mojom::AppInfo app_info;
-    app_info.name = app_name;
-    app_info.package_name = package_name;
-    app_info.activity = activity;
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(
+        arc::mojom::AppInfo::New(app_name, package_name, activity));
 
-    app_instance_->SendPackageAppListRefreshed(package_name, {app_info});
+    app_instance_->SendPackageAppListRefreshed(package_name, apps);
   }
 
   void AddArcPackage(const std::string& package_name) {

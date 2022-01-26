@@ -61,6 +61,15 @@ std::vector<arc::mojom::ArcPackageInfoPtr> ArcAppTest::ClonePackages(
   return result;
 }
 
+// static
+std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
+    const std::vector<arc::mojom::AppInfoPtr>& apps) {
+  std::vector<arc::mojom::AppInfoPtr> result;
+  for (const auto& app : apps)
+    result.emplace_back(app->Clone());
+  return result;
+}
+
 ArcAppTest::ArcAppTest() {
   user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
       std::make_unique<ash::FakeChromeUserManager>());
@@ -153,31 +162,18 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
   arc::mojom::AppInfo app;
   // Make sure we have enough data for test.
   for (int i = 0; i < 3; ++i) {
-    app.name = base::StringPrintf("Fake App %d", i);
-    app.package_name = base::StringPrintf("fake.app.%d", i);
-    app.activity = base::StringPrintf("fake.app.%d.activity", i);
-    app.sticky = false;
-    fake_apps_.push_back(app);
+    fake_apps_.emplace_back(arc::mojom::AppInfo::New(
+        base::StringPrintf("Fake App %d", i),
+        base::StringPrintf("fake.app.%d", i),
+        base::StringPrintf("fake.app.%d.activity", i), false /* sticky */));
   }
-  fake_apps_[0].sticky = true;
+  fake_apps_[0]->sticky = true;
 
-  app.name = "TestApp1";
-  app.package_name = "test.app1";
-  app.activity = "test.app1.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
-
-  app.name = "TestApp2";
-  app.package_name = "test.app2";
-  app.activity = "test.app2.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
-
-  app.name = "TestApp3";
-  app.package_name = "test.app3";
-  app.activity = "test.app3.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
+  for (int i = 1; i <= 3; ++i) {
+    fake_default_apps_.emplace_back(arc::mojom::AppInfo::New(
+        base::StringPrintf("TestApp%d", i), base::StringPrintf("test.app%d", i),
+        base::StringPrintf("test.app%d.activity", i), true /* sticky */));
+  }
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions1;

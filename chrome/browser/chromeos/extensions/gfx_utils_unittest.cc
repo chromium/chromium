@@ -67,20 +67,15 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
     arc_test_.app_instance()->SendPackageUninstalled(package_name);
   }
 
-  arc::mojom::AppInfo CreateArcApp(const std::string& name,
-                                   const std::string& package,
-                                   const std::string& activity) {
-    arc::mojom::AppInfo info;
-    info.name = name;
-    info.package_name = package;
-    info.activity = activity;
-    info.sticky = false;
-    info.notifications_enabled = false;
-    return info;
+  arc::mojom::AppInfoPtr CreateArcApp(const std::string& name,
+                                      const std::string& package,
+                                      const std::string& activity) {
+    return arc::mojom::AppInfo::New(name, package, activity, false /* sticky */,
+                                    false /* notifications_enabled */);
   }
 
-  void AddArcApp(const arc::mojom::AppInfo& app) {
-    arc_test_.app_instance()->SendAppAdded(app);
+  void AddArcApp(arc::mojom::AppInfoPtr app) {
+    arc_test_.app_instance()->SendAppAdded(*app);
   }
 
   scoped_refptr<const Extension> CreateExtension(const std::string& id) {

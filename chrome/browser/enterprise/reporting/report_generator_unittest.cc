@@ -118,16 +118,16 @@ void AddExtensionToProfile(TestingProfile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-arc::mojom::AppInfo CreateArcApp(const std::string& app_name,
-                                 const std::string& package_name,
-                                 const std::string& activity_name) {
-  arc::mojom::AppInfo app;
-  app.name = app_name;
-  app.package_name = package_name;
-  app.activity = activity_name;
-  app.suspended = false;
-  app.sticky = true;
-  app.notifications_enabled = true;
+arc::mojom::AppInfoPtr CreateArcApp(const std::string& app_name,
+                                    const std::string& package_name,
+                                    const std::string& activity_name) {
+  auto app = arc::mojom::AppInfo::New();
+  app->name = app_name;
+  app->package_name = package_name;
+  app->activity = activity_name;
+  app->suspended = false;
+  app->sticky = true;
+  app->notifications_enabled = true;
   return app;
 }
 
@@ -145,8 +145,9 @@ void AddArcPackageAndApp(ArcAppTest* arc_app_test,
   arc::mojom::ArcPackageInfoPtr package = CreateArcPackage(package_name);
   arc_app_test->app_instance()->SendPackageAdded(std::move(package));
 
-  arc::mojom::AppInfo app = CreateArcApp(app_name, package_name, activity_name);
-  arc_app_test->app_instance()->SendAppAdded(app);
+  arc::mojom::AppInfoPtr app =
+      CreateArcApp(app_name, package_name, activity_name);
+  arc_app_test->app_instance()->SendAppAdded(*app);
 }
 
 #endif

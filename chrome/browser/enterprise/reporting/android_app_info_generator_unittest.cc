@@ -27,14 +27,14 @@ constexpr char kPackageName[] = "package_name";
 constexpr char kActivityName[] = "activity_name";
 constexpr int kPackageVersion = 9;
 
-am::AppInfo CreateArcApp(bool suspended) {
-  am::AppInfo app;
-  app.name = kAppName;
-  app.package_name = kPackageName;
-  app.activity = kActivityName;
-  app.suspended = suspended;
-  app.sticky = true;
-  app.notifications_enabled = true;
+am::AppInfoPtr CreateArcApp(bool suspended) {
+  auto app = am::AppInfo::New();
+  app->name = kAppName;
+  app->package_name = kPackageName;
+  app->activity = kActivityName;
+  app->suspended = suspended;
+  app->sticky = true;
+  app->notifications_enabled = true;
   return app;
 }
 
@@ -76,8 +76,10 @@ class AndroidAppInfoGeneratorTest : public ::testing::Test {
     testing::Test::TearDown();
   }
 
-  void AddArcApp(am::AppInfo arc_app) {
-    arc_app_test()->app_instance()->SendRefreshAppList({arc_app});
+  void AddArcApp(am::AppInfoPtr arc_app_ptr) {
+    auto apps = std::vector<am::AppInfoPtr>();
+    apps.emplace_back(std::move(arc_app_ptr));
+    arc_app_test()->app_instance()->SendRefreshAppList(apps);
   }
 
   void AddArcPackage(am::ArcPackageInfoPtr arc_package_ptr) {
