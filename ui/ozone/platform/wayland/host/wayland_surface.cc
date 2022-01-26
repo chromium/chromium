@@ -498,9 +498,9 @@ void WaylandSurface::ApplyPendingState() {
   if (!SurfaceSubmissionInPixelCoordinates())
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
 
-  gfx::Rect viewport_src_dip;
+  gfx::RectF viewport_src_dip;
   if (pending_state_.crop.IsEmpty()) {
-    viewport_src_dip = gfx::Rect(bounds);
+    viewport_src_dip = gfx::RectF(gfx::SizeF(bounds));
     // Unset crop (wp_viewport.set_source).
     if (viewport()) {
       wp_viewport_set_source(viewport(), wl_fixed_from_int(-1),
@@ -508,30 +508,36 @@ void WaylandSurface::ApplyPendingState() {
                              wl_fixed_from_int(-1));
     }
   } else {
-    viewport_src_dip = gfx::ToEnclosedRect(
-        gfx::ScaleRect(pending_state_.crop, bounds.width(), bounds.height()));
+    viewport_src_dip =
+        gfx::ScaleRect(pending_state_.crop, bounds.width(), bounds.height());
     // Apply crop (wp_viewport.set_source).
     DCHECK(viewport());
+    if (wl_fixed_from_double(viewport_src_dip.width()) == 0 ||
+        wl_fixed_from_double(viewport_src_dip.height()) == 0) {
+      LOG(ERROR) << "Sending viewport src with width/height zero will result "
+                    "in wayland disconnection";
+    }
     if (viewport()) {
       wp_viewport_set_source(viewport(),
-                             wl_fixed_from_int(viewport_src_dip.x()),
-                             wl_fixed_from_int(viewport_src_dip.y()),
-                             wl_fixed_from_int(viewport_src_dip.width()),
-                             wl_fixed_from_int(viewport_src_dip.height()));
+                             wl_fixed_from_double(viewport_src_dip.x()),
+                             wl_fixed_from_double(viewport_src_dip.y()),
+                             wl_fixed_from_double(viewport_src_dip.width()),
+                             wl_fixed_from_double(viewport_src_dip.height()));
     }
   }
 
-  gfx::Size viewport_dst_dip =
+  gfx::SizeF viewport_dst_dip =
       pending_state_.viewport_px.IsEmpty()
           ? viewport_src_dip.size()
-          : gfx::ScaleToCeiledSize(pending_state_.viewport_px,
-                                   1.f / pending_state_.buffer_scale);
+          : gfx::ScaleSize(gfx::SizeF(pending_state_.viewport_px),
+                           1.f / pending_state_.buffer_scale);
   if (viewport_dst_dip != viewport_src_dip.size()) {
     // Apply viewport scale (wp_viewport.set_destination).
     DCHECK(viewport());
     if (viewport()) {
-      wp_viewport_set_destination(viewport(), viewport_dst_dip.width(),
-                                  viewport_dst_dip.height());
+      wp_viewport_set_destination(viewport(),
+                                  base::ClampCeil(viewport_dst_dip.width()),
+                                  base::ClampCeil(viewport_dst_dip.height()));
     }
   } else if (viewport()) {
     // Unset viewport scale (wp_viewport.set_destination).
@@ -572,15 +578,13 @@ void WaylandSurface::ApplyPendingState() {
     // Apply buffer_scale (wl_surface.set_buffer_scale).
     damage = gfx::ScaleToEnclosingRect(damage, 1.f / applying_surface_scale);
     // Adjust coordinates to |viewport_src| (wp_viewport.set_source).
-    damage = wl::TranslateBoundsToParentCoordinates(damage, viewport_src_dip);
+    damage = wl::TranslateBoundsToParentCoordinates(
+        damage, gfx::ToEnclosingRect(viewport_src_dip));
     // Apply viewport scale (wp_viewport.set_destination).
     if (viewport_dst_dip != viewport_src_dip.size()) {
       damage = gfx::ScaleToEnclosingRect(
-          damage,
-          static_cast<float>(viewport_dst_dip.width()) /
-              viewport_src_dip.width(),
-          static_cast<float>(viewport_dst_dip.height()) /
-              viewport_src_dip.height());
+          damage, viewport_dst_dip.width() / viewport_src_dip.width(),
+          viewport_dst_dip.height() / viewport_src_dip.height());
     }
 
     wl_surface_damage(surface_.get(), damage.x(), damage.y(), damage.width(),

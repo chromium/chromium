@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_candidates.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -38,10 +39,30 @@ bool WaylandOverlayManager::CanHandleCandidate(
   if (candidate.buffer_size.IsEmpty())
     return false;
 
+  // Setting the OverlayCandidate::|uv_rect| will eventually result in setting
+  // the |crop_rect_| in wayland. If this results in an empty pixel scale the
+  // wayland connection will be terminated. See: wayland_surface.cc
+  // 'ApplyPendingState'
+  // Because of the device scale factor (kMaxDeviceScaleFactor) we check against
+  // a rect who's size is empty when converted to fixed point number.
+  // TODO(https://crbug.com/1218678) : Move and generalize this fix in wayland
+  // host.
+  auto viewport_src =
+      gfx::ScaleRect(candidate.crop_rect, candidate.buffer_size.width(),
+                     candidate.buffer_size.height());
+
+  constexpr int kAssumedMaxDeviceScaleFactor = 8;
+  if (wl_fixed_from_double(viewport_src.width() /
+                           kAssumedMaxDeviceScaleFactor) == 0 ||
+      wl_fixed_from_double(viewport_src.height() /
+                           kAssumedMaxDeviceScaleFactor) == 0)
+    return false;
+
   if (candidate.transform == gfx::OVERLAY_TRANSFORM_INVALID)
     return false;
 
   // Reject candidates that don't fall on a pixel boundary.
+  // Still required until https://crbug.com/1227813 lands.
   if (!gfx::IsNearestRectWithinDistance(candidate.display_rect, 0.01f))
     return false;
 

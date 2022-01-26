@@ -118,7 +118,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
 
   std::vector<QuadList::Iterator> candidate_quads;
-
+  int num_quads_skipped = 0;
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     auto& transform = it->shared_quad_state->quad_to_target_transform;
@@ -134,42 +134,23 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
         is_delegated_context);
     if (candidate_status == OverlayCandidate::CandidateStatus::kSuccess) {
-      // Setting the |uv_rect| will eventually result in setting the
-      // |crop_rect_| in wayland. If this results in an empty pixel scale the
-      // wayland connection will be terminated. See: wayland_surface.cc
-      // 'UpdateBufferDamageRegion'
-      auto viewport_src = gfx::ToEnclosedRect(gfx::ScaleRect(
-          candidate.uv_rect, candidate.resource_size_in_pixels.width(),
-          candidate.resource_size_in_pixels.height()));
-
       if (it->material == DrawQuad::Material::kSolidColor) {
         DBG_DRAW_RECT("delegated.overlay.color", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
-        continue;
-      }
-
-      if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
+      } else if (it->material == DrawQuad::Material::kAggregatedRenderPass) {
         DBG_DRAW_RECT("delegated.overlay.aggregated", candidate.display_rect);
-        candidates->push_back(candidate);
-        candidate_quads.push_back(it);
-        continue;
+      } else {
+        DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
       }
 
-      // Because of the device scale factor (2) we check against a rounded empty
-      // rect.
-      // TODO(https://crbug.com/1218678) : Move and generalize this fix in
-      // wayland host.
-      if (viewport_src.width() <= 2 || viewport_src.height() <= 2) {
-        DBG_DRAW_RECT("delegated.overlay.subpixelskip", candidate.display_rect);
-        continue;
-      }
-
-      DBG_DRAW_RECT("delegated.overlay.candidate", candidate.display_rect);
       candidates->push_back(candidate);
       candidate_quads.push_back(it);
     } else {
-      DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+      if (candidate_status == OverlayCandidate::CandidateStatus::kFailVisible) {
+        // This quad can be intentionally skipped.
+        num_quads_skipped++;
+      } else {
+        DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
+      }
 
       if (candidate_status ==
           OverlayCandidate::CandidateStatus::kFailNotAxisAligned) {
@@ -181,7 +162,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     }
   }
 
-  if (candidates->empty() || candidates->size() != quad_list->size()) {
+  if (candidates->empty() ||
+      (candidates->size() + num_quads_skipped) != quad_list->size()) {
     candidates->clear();
     return false;
   }
@@ -198,6 +180,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     if (!each.overlay_handled) {
       candidates->clear();
       delegated_status_ = DelegationStatus::kCompositedCheckOverlayFail;
+      DBG_DRAW_RECT("delegated.handled.failed", each.display_rect);
       return false;
     }
   }
