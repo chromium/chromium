@@ -22,6 +22,7 @@
 #include "components/optimization_guide/content/mojom/page_text_service.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -495,6 +496,7 @@ class PageContentAnnotationsServiceBatchVisitTest
           {
               {"write_to_history_service", "false"},
               {"annotate_visit_batch_size", "2"},
+              {"annotate_title_instead_of_page_content", "true"},
           }}},
         /*disabled_features=*/{});
   }
@@ -504,13 +506,16 @@ class PageContentAnnotationsServiceBatchVisitTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(1289353): Newly added test is flaky.
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       DISABLED_ModelExecutesWithFullBatch) {
+                       ModelExecutesWithFullBatch) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "PageContentAnnotations.AnnotateVisit.AnnotationRequested", 1);
 
   GURL url2(embedded_test_server()->GetURL("b.com", "/hello.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
@@ -536,9 +541,35 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
   EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
 }
 
-// TODO(https://crbug.com/1289586): Flakes on multiple platforms.
-IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
-                       DISABLED_QueueFullAndVisitBatchActive) {
+class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
+    : public PageContentAnnotationsServiceBatchVisitTest {
+ public:
+  PageContentAnnotationsServiceBatchVisitNoAnnotateTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationHints, {}},
+         {features::kPageContentAnnotations,
+          {
+              {"write_to_history_service", "false"},
+              {"annotate_visit_batch_size", "2"},
+              {"annotate_title_instead_of_page_content", "true"},
+          }}},
+        /*disabled_features=*/{});
+  }
+  ~PageContentAnnotationsServiceBatchVisitNoAnnotateTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    // Note: the code after the early return this disables is well tested in
+    // other places.
+    cmd->AppendSwitch(
+        optimization_guide::switches::kStopHistoryVisitBatchAnnotateForTesting);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
+                       QueueFullAndVisitBatchActive) {
   base::HistogramTester histogram_tester;
   HistoryVisit history_visit(base::Time::Now(),
                              GURL("https://probablynotarealurl.com/"), 0);
