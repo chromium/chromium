@@ -663,6 +663,24 @@
             ]
         }
     ],
+    "AutoDisableAccessibility": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutoDisableAccessibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAcrossIframes": [
         {
             "platforms": [
