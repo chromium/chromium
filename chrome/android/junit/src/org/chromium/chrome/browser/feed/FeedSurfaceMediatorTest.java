@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.feed.sections.OnSectionHeaderSelectedListener
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
+import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -112,6 +113,8 @@ public class FeedSurfaceMediatorTest {
     private FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
     @Mock
     private View mView;
+    @Mock
+    private FeedOptionsCoordinator mOptionsCoordinator;
 
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
@@ -463,7 +466,7 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mForYouStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.supportsOptions()).thenReturn(true);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -491,6 +494,7 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
+        when(mForYouStream.supportsOptions()).thenReturn(false);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -513,13 +517,12 @@ public class FeedSurfaceMediatorTest {
         PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
         forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
-        model.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, mView);
 
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mForYouStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.supportsOptions()).thenReturn(true);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -531,7 +534,7 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(ViewVisibility.INVISIBLE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
-        assertEquals(null, model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
+        verify(mOptionsCoordinator, times(1)).ensureGone();
     }
 
     @Test
@@ -540,12 +543,12 @@ public class FeedSurfaceMediatorTest {
         PropertyModel forYou = SectionHeaderProperties.createSectionHeader("For you");
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(forYou);
         forYou.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, ViewVisibility.GONE);
-        model.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, mView);
 
         model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
+        when(mForYouStream.supportsOptions()).thenReturn(false);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -557,7 +560,7 @@ public class FeedSurfaceMediatorTest {
 
         assertEquals(ViewVisibility.GONE,
                 forYou.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
-        assertEquals(null, model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
+        verify(mOptionsCoordinator, times(1)).ensureGone();
     }
 
     @Test
@@ -569,7 +572,7 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
-        when(mForYouStream.getOptionsView()).thenReturn(mView);
+        when(mForYouStream.supportsOptions()).thenReturn(true);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -577,11 +580,9 @@ public class FeedSurfaceMediatorTest {
 
         OnSectionHeaderSelectedListener listener =
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
-        listener.onSectionHeaderReselected(0);
-        assertEquals(mView, model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
 
         listener.onSectionHeaderReselected(0);
-        assertEquals(null, model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
+        verify(mOptionsCoordinator, times(1)).toggleVisibility();
     }
 
     @Test
@@ -594,6 +595,7 @@ public class FeedSurfaceMediatorTest {
                 .add(SectionHeaderProperties.createSectionHeader("Following"));
         mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOLLOWING, model);
 
+        when(mForYouStream.supportsOptions()).thenReturn(false);
         mFeedSurfaceMediator.setStreamForTesting(
                 FeedSurfaceCoordinator.StreamTabId.FOLLOWING, mForYouStream);
         mFeedSurfaceMediator.setStreamForTesting(
@@ -603,7 +605,7 @@ public class FeedSurfaceMediatorTest {
                 mFeedSurfaceMediator.getOrCreateSectionHeaderListenerForTesting();
         listener.onSectionHeaderReselected(0);
 
-        assertEquals(null, model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
+        verify(mOptionsCoordinator, never()).toggleVisibility();
     }
 
     private FeedSurfaceMediator createMediator() {
@@ -614,6 +616,6 @@ public class FeedSurfaceMediatorTest {
     private FeedSurfaceMediator createMediator(
             @FeedSurfaceCoordinator.StreamTabId int tabId, PropertyModel sectionHeaderModel) {
         return new FeedSurfaceMediator(mFeedSurfaceCoordinator, mActivity, null, sectionHeaderModel,
-                tabId, /*actionDelegate=*/null);
+                tabId, /*actionDelegate=*/null, mOptionsCoordinator);
     }
 }

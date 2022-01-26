@@ -8,14 +8,12 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,10 +31,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feed.sections.SectionType;
-import org.chromium.chrome.browser.feed.sort_ui.SortChipProperties;
-import org.chromium.chrome.browser.feed.sort_ui.SortView;
-import org.chromium.chrome.browser.feed.sort_ui.SortViewBinder;
-import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -65,9 +59,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
-import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.modelutil.ListModelChangeProcessor;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -444,9 +435,6 @@ public class FeedStream implements Stream {
     private String mBottomSheetOriginatingSliceId;
     private View mLastFocusedView;
 
-    // Sort options drawer.
-    private View mSortView;
-
     /**
      * Creates a new Feed Stream.
      * @param activity {@link Activity} that this is bound to.
@@ -513,42 +501,12 @@ public class FeedStream implements Stream {
         // Sort options only available for web feed right now.
         if (!isInterestFeed) {
             mUnreadContentObserver = new UnreadContentObserver(/*isWebFeed=*/true);
-
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT)) {
-                @ContentOrder
-                int currentSort = FeedServiceBridge.getContentOrderForWebFeed();
-
-                mSortView =
-                        LayoutInflater.from(activity).inflate(R.layout.feed_options_panel, null);
-                SortView chipView = mSortView.findViewById(R.id.button_bar);
-                ListModel<PropertyModel> sortModel = new ListModel<>();
-                ListModelChangeProcessor<ListModel<PropertyModel>, SortView, Void> processor =
-                        new ListModelChangeProcessor<>(sortModel, chipView, new SortViewBinder());
-                sortModel.addObserver(processor);
-
-                sortModel.add(
-                        createSortModel(ContentOrder.REVERSE_CHRON, R.string.latest, currentSort));
-
-                sortModel.add(createSortModel(
-                        ContentOrder.GROUPED, R.string.feed_sort_publisher, currentSort));
-            }
         }
     }
 
-    private PropertyModel createSortModel(
-            @ContentOrder int order, @StringRes int stringResource, @ContentOrder int currentSort) {
-        return new PropertyModel.Builder(SortChipProperties.ALL_KEYS)
-                .with(SortChipProperties.NAME_KEY,
-                        mActivity.getResources().getString(stringResource))
-                .with(SortChipProperties.ON_SELECT_CALLBACK_KEY,
-                        () -> FeedServiceBridge.setContentOrderForWebFeed(order))
-                .with(SortChipProperties.IS_INITIALLY_SELECTED_KEY, currentSort == order)
-                .build();
-    }
-
     @Override
-    public View getOptionsView() {
-        return mSortView;
+    public boolean supportsOptions() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED_SORT) && !mIsInterestFeed;
     }
 
     @Override

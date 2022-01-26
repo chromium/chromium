@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
+import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -312,9 +313,13 @@ public class FeedSurfaceCoordinator
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
                 .addObserver(mSectionHeaderListModelChangeProcessor);
 
+        FeedOptionsCoordinator optionsCoordinator = new FeedOptionsCoordinator(mActivity);
+        mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
+                optionsCoordinator.getView());
+
         // Mediator should be created before any Stream changes.
         mMediator = new FeedSurfaceMediator(this, mActivity, snapScrollHelper, mSectionHeaderModel,
-                getTabIdFromLaunchOrigin(launchOrigin), actionDelegate);
+                getTabIdFromLaunchOrigin(launchOrigin), actionDelegate, optionsCoordinator);
 
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
@@ -636,7 +641,7 @@ public class FeedSurfaceCoordinator
             // Feed header view in multi does not need padding added.
             int lateralPaddingsPx = getLateralPaddingsPx();
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
-                    && header == mSectionHeaderView) {
+                    && (header == mSectionHeaderView)) {
                 lateralPaddingsPx = 0;
             }
 

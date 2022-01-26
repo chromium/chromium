@@ -12,8 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChipView;
 
 /** View binder to bind a model to a {@link ChipView}. */
-class ChipViewBinder {
-    static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
+public class ChipViewBinder {
+    public static void bind(PropertyModel model, ChipView chip, PropertyKey key) {
         if (ChipProperties.CLICK_HANDLER == key) {
             chip.setOnClickListener((v) -> model.get(ChipProperties.CLICK_HANDLER).onResult(model));
 

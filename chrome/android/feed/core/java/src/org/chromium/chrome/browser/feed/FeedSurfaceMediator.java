@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderProperties;
 import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.feed.sections.ViewVisibility;
+import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
@@ -91,7 +92,7 @@ public class FeedSurfaceMediator
             FeedFeatures.setLastSeenFeedTabId(index);
 
             Stream newStream = mTabToStreamMap.get(index);
-            if (newStream.getOptionsView() != null) {
+            if (newStream.supportsOptions()) {
                 headerList.get(index).set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.VISIBLE);
             }
@@ -106,22 +107,19 @@ public class FeedSurfaceMediator
             PropertyListModel<PropertyModel, PropertyKey> headerList =
                     mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
             PropertyModel headerModel = headerList.get(index);
-            if (mTabToStreamMap.get(index).getOptionsView() != null) {
+            if (mTabToStreamMap.get(index).supportsOptions()) {
                 headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.INVISIBLE);
             }
-            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, null);
+            mOptionsCoordinator.ensureGone();
         }
 
         @Override
         public void onSectionHeaderReselected(int index) {
             Stream stream = mTabToStreamMap.get(index);
-            if (stream.getOptionsView() == null) return;
+            if (!stream.supportsOptions()) return;
             // Reselected toggles the visibility of the options view.
-            View currentView =
-                    mSectionHeaderModel.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY);
-            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
-                    currentView == null ? stream.getOptionsView() : null);
+            mOptionsCoordinator.toggleVisibility();
         }
     }
 
@@ -185,6 +183,7 @@ public class FeedSurfaceMediator
     private final SigninManager mSigninManager;
     private final PropertyModel mSectionHeaderModel;
     private final FeedActionDelegate mActionDelegate;
+    private final FeedOptionsCoordinator mOptionsCoordinator;
 
     private @Nullable RecyclerView.OnScrollListener mStreamScrollListener;
     private final ObserverList<ScrollListener> mScrollListeners = new ObserverList<>();
@@ -222,17 +221,19 @@ public class FeedSurfaceMediator
      * @param snapScrollHelper The {@link SnapScrollHelper} that handles snap scrolling.
      * @param headerModel The {@link PropertyModel} that contains this mediator should work with.
      * @param openingTabId The {@link FeedSurfaceCoordinator.StreamTabId} the feed should open to.
+     * @param optionsCoordinator The {@link FeedOptionsCoordinator} for the feed.
      */
     FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
             @Nullable SnapScrollHelper snapScrollHelper, PropertyModel headerModel,
-            @FeedSurfaceCoordinator.StreamTabId int openingTabId,
-            FeedActionDelegate actionDelegate) {
+            @FeedSurfaceCoordinator.StreamTabId int openingTabId, FeedActionDelegate actionDelegate,
+            FeedOptionsCoordinator optionsCoordinator) {
         mCoordinator = coordinator;
         mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         mActionDelegate = actionDelegate;
+        mOptionsCoordinator = optionsCoordinator;
 
         if (sTestPrefChangeRegistar != null) {
             mPrefChangeRegistrar = sTestPrefChangeRegistar;
@@ -447,10 +448,10 @@ public class FeedSurfaceMediator
 
         PropertyModel headerModel = SectionHeaderProperties.createSectionHeader(headerText);
         ViewVisibility indicatorVisibility;
-        if (stream.getOptionsView() == null) {
-            indicatorVisibility = ViewVisibility.GONE;
-        } else {
+        if (stream.supportsOptions()) {
             indicatorVisibility = ViewVisibility.INVISIBLE;
+        } else {
+            indicatorVisibility = ViewVisibility.GONE;
         }
         headerModel.set(
                 SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, indicatorVisibility);
@@ -701,7 +702,7 @@ public class FeedSurfaceMediator
 
         // Make sure to collapse option panel if not shown.
         if (!suggestionsVisible) {
-            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, null);
+            mOptionsCoordinator.ensureGone();
         }
 
         // Set enabled last because it makes the animation smoother.
@@ -741,14 +742,14 @@ public class FeedSurfaceMediator
 
         // If feed turned on, we bind the last stream that was visible. Else unbind it.
         if (suggestionsVisible) {
-            if (currentStream.getOptionsView() != null) {
+            if (currentStream.supportsOptions()) {
                 currentStreamHeaderModel.set(
                         SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.VISIBLE);
             }
             rebindStream();
         } else {
-            if (currentStream.getOptionsView() != null) {
+            if (currentStream.supportsOptions()) {
                 currentStreamHeaderModel.set(
                         SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
                         ViewVisibility.INVISIBLE);
@@ -869,7 +870,7 @@ public class FeedSurfaceMediator
     }
 
     /**
-     * @return Whether the touch events are enabled on the {@link FeedNewTabPage}.
+     * @return Whether the touch events are enabled.
      * TODO(huayinz): Move this method to a Model once a Model is introduced.
      */
     boolean getTouchEnabled() {

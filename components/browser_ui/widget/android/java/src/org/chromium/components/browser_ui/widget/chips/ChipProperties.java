@@ -54,6 +54,6 @@ public class ChipProperties {
     /** The max width a chip's text should have in PX. Use {@link #SHOW_WHOLE_TEXT} for no limit. */
     public static final WritableIntPropertyKey TEXT_MAX_WIDTH_PX = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CLICK_HANDLER, CONTENT_DESCRIPTION,
-            ENABLED, ICON, ID, SELECTED, TEXT, TEXT_MAX_WIDTH_PX};
+    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CLICK_HANDLER,
+            CONTENT_DESCRIPTION, ENABLED, ICON, ID, SELECTED, TEXT, TEXT_MAX_WIDTH_PX};
 }
