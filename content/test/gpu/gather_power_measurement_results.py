@@ -163,7 +163,9 @@ def ProcessStepStdout(stdout_url, entry):
       test_name = tokens[1]
       if tokens[2] != 'passed':
         logging.warning('Wrong format for test passed line: %s', line)
+      # pylint: disable=unsupported-assignment-operation
       my_results['name'] = test_name
+      # pylint: enable=unsupported-assignment-operation
       entry['tests'].append(my_results)
     elif line.startswith('Chrome Env: '):
       chrome_env = ast.literal_eval(line[len('Chrome Env: '):])

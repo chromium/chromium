@@ -60,7 +60,7 @@ extension_harness_additional_script = r"""
 
 if sys.version_info[0] == 3:
   # cmp no longer exists in Python 3
-  def cmp(a, b):  # pylint: disable=redefined-builtin
+  def cmp(a, b):
     return int(a > b) - int(a < b)
 
 
