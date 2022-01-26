@@ -1,0 +1,26 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// WebRTC structures which are shared over IPC between chromoting processes.
+
+// A subset of the desktop capture options used by CRD.
+struct DesktopCaptureOptions {
+  bool use_update_notifications;
+  bool detect_updated_region;
+
+  [EnableIf=is_win]
+  bool allow_directx_capturer;
+};
+
+struct DesktopSize {
+  int32 width;
+  int32 height;
+};
+
+struct DesktopVector {
+  int32 x;
+  int32 y;
+};

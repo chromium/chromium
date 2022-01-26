@@ -14,14 +14,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/fake_desktop_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,22 +115,39 @@ void DesktopSessionAgentTest::Shutdown() {
 TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
   std::unique_ptr<FakeDelegate> delegate(new FakeDelegate(task_runner_));
   std::unique_ptr<IPC::ChannelProxy> proxy;
-  FakeListener listener(base::BindRepeating(
-      [](DesktopSessionAgentTest* test, std::unique_ptr<FakeDelegate>* delegate,
-         std::unique_ptr<IPC::ChannelProxy>* proxy) {
-        test->Shutdown();
-        delegate->reset();
-        proxy->reset();
-      },
-      base::Unretained(this), base::Unretained(&delegate),
-      base::Unretained(&proxy)));
+  bool session_started = false;
+  FakeListener listener(base::BindLambdaForTesting([&]() {
+    session_started = true;
+    Shutdown();
+    delegate.reset();
+    proxy.reset();
+  }));
   proxy = IPC::ChannelProxy::Create(
-      agent_->Start(delegate->GetWeakPtr()).release(),
+      agent_->Initialize(delegate->GetWeakPtr()).release(),
       IPC::Channel::MODE_CLIENT, &listener, task_runner_,
       base::ThreadTaskRunnerHandle::Get());
-  ASSERT_TRUE(proxy->Send(new ChromotingNetworkDesktopMsg_StartSessionAgent(
-      "jid", ScreenResolution(), DesktopEnvironmentOptions())));
+
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent;
+  proxy->GetRemoteAssociatedInterface(&desktop_session_agent);
+  // Let the IPC machinery finish up the interface request before using it.
+  task_environment_.RunUntilIdle();
+
+  bool remote_received = false;
+  desktop_session_agent->Start(
+      "jid", ScreenResolution(), DesktopEnvironmentOptions(),
+      base::BindLambdaForTesting(
+          [&](mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+                  pending_remote) {
+            // Indicate that we received the desktop_session_control remote.
+            remote_received = true;
+            // Release any references to the other IPC classes.
+            desktop_session_agent.reset();
+          }));
+
   run_loop_.Run();
+
+  ASSERT_TRUE(remote_received);
+  ASSERT_TRUE(session_started);
 }
 
 }  // namespace remoting

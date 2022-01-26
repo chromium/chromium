@@ -235,45 +235,30 @@ DesktopSessionAgent::DesktopSessionAgent(
 
 bool DesktopSessionAgent::OnMessageReceived(const IPC::Message& message) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   bool handled = true;
-  if (started_) {
-    IPC_BEGIN_MESSAGE_MAP(DesktopSessionAgent, message)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_CaptureFrame,
-                          OnCaptureFrame)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SelectSource,
-                          OnSelectSource)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_ExecuteActionRequest,
-                          OnExecuteActionRequestEvent)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_SetScreenResolution,
-                          SetScreenResolution)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFile,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::ReadFile)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFileChunk,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::ReadChunk)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFile,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::WriteFile)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFileChunk,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::WriteChunk)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CloseFile,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::Close)
-      IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CancelFile,
-                          &*session_file_operations_handler_,
-                          SessionFileOperationsHandler::Cancel)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-  } else {
-    IPC_BEGIN_MESSAGE_MAP(DesktopSessionAgent, message)
-      IPC_MESSAGE_HANDLER(ChromotingNetworkDesktopMsg_StartSessionAgent,
-                          OnStartSessionAgent)
-      IPC_MESSAGE_UNHANDLED(handled = false)
-    IPC_END_MESSAGE_MAP()
-  }
+  IPC_BEGIN_MESSAGE_MAP(DesktopSessionAgent, message)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFile,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::ReadFile)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_ReadFileChunk,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::ReadChunk)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFile,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::WriteFile)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_WriteFileChunk,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::WriteChunk)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CloseFile,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::Close)
+    IPC_MESSAGE_FORWARD(ChromotingNetworkDesktopMsg_CancelFile,
+                        &*session_file_operations_handler_,
+                        SessionFileOperationsHandler::Cancel)
+    IPC_MESSAGE_UNHANDLED(handled = false)
+  IPC_END_MESSAGE_MAP()
 
   CHECK(handled) << "Received unexpected IPC type: " << message.type();
   return handled;
@@ -301,16 +286,16 @@ void DesktopSessionAgent::OnAssociatedInterfaceRequest(
     mojo::ScopedInterfaceEndpointHandle handle) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (interface_name == mojom::DesktopSessionControl::Name_) {
-    if (desktop_session_control_.is_bound()) {
+  if (interface_name == mojom::DesktopSessionAgent::Name_) {
+    if (desktop_session_agent_.is_bound()) {
       LOG(ERROR) << "Receiver already bound for associated interface: "
-                 << mojom::DesktopSessionControl::Name_;
+                 << mojom::DesktopSessionAgent::Name_;
       delegate_->CrashNetworkProcess(base::Location::Current());
     }
 
-    mojo::PendingAssociatedReceiver<mojom::DesktopSessionControl>
+    mojo::PendingAssociatedReceiver<mojom::DesktopSessionAgent>
         pending_receiver(std::move(handle));
-    desktop_session_control_.Bind(std::move(pending_receiver));
+    desktop_session_agent_.Bind(std::move(pending_receiver));
   } else {
     LOG(ERROR) << "Unknown associated interface requested: " << interface_name
                << ", crashing the network process";
@@ -370,18 +355,27 @@ void DesktopSessionAgent::OnDesktopDisplayChanged(
       *layout.get()));
 }
 
-void DesktopSessionAgent::OnStartSessionAgent(
+void DesktopSessionAgent::Start(
     const std::string& authenticated_jid,
     const ScreenResolution& resolution,
-    const remoting::DesktopEnvironmentOptions& options) {
+    const remoting::DesktopEnvironmentOptions& options,
+    StartCallback callback) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  DCHECK(!started_);
   DCHECK(!audio_capturer_);
   DCHECK(!desktop_environment_);
   DCHECK(!input_injector_);
   DCHECK(!screen_controls_);
   DCHECK(!video_capturer_);
   DCHECK(!session_file_operations_handler_);
+
+  if (started_) {
+    LOG(ERROR) << __func__ << " called more than once for the current process.";
+    delegate_->CrashNetworkProcess(base::Location::Current());
+    // No need to run the callback since it just calls into the process we are
+    // asking the daemon process to crash.
+    callback.Reset();
+    return;
+  }
 
   started_ = true;
   client_jid_ = authenticated_jid;
@@ -456,6 +450,9 @@ void DesktopSessionAgent::OnStartSessionAgent(
   // Check and report the initial URL forwarder setup state.
   url_forwarder_configurator_->IsUrlForwarderSetUp(base::BindOnce(
       &DesktopSessionAgent::OnCheckUrlForwarderSetUpResult, this));
+
+  std::move(callback).Run(
+      desktop_session_control_.BindNewEndpointAndPassRemote());
 }
 
 void DesktopSessionAgent::OnCaptureResult(
@@ -552,7 +549,7 @@ void DesktopSessionAgent::OnDataResult(std::uint64_t file_id,
       file_id, std::move(result)));
 }
 
-mojo::ScopedMessagePipeHandle DesktopSessionAgent::Start(
+mojo::ScopedMessagePipeHandle DesktopSessionAgent::Initialize(
     const base::WeakPtr<Delegate>& delegate) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(delegate);
@@ -569,7 +566,6 @@ mojo::ScopedMessagePipeHandle DesktopSessionAgent::Start(
 
 void DesktopSessionAgent::Stop() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-
   delegate_.reset();
 
   // Make sure the channel is closed.
@@ -584,6 +580,7 @@ void DesktopSessionAgent::Stop() {
 
     desktop_session_event_handler_.reset();
     desktop_session_control_.reset();
+    desktop_session_agent_.reset();
 
     url_forwarder_configurator_.reset();
 
@@ -613,8 +610,9 @@ void DesktopSessionAgent::Stop() {
   }
 }
 
-void DesktopSessionAgent::OnCaptureFrame() {
+void DesktopSessionAgent::CaptureFrame() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   mouse_cursor_monitor_->Capture();
 
@@ -626,14 +624,17 @@ void DesktopSessionAgent::OnCaptureFrame() {
   video_capturer_->CaptureFrame();
 }
 
-void DesktopSessionAgent::OnSelectSource(int id) {
+void DesktopSessionAgent::SelectSource(int id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
   video_capturer_->SelectSource(id);
 }
 
 void DesktopSessionAgent::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.
@@ -642,6 +643,7 @@ void DesktopSessionAgent::InjectClipboardEvent(
 
 void DesktopSessionAgent::InjectKeyEvent(const protocol::KeyEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   // InputStub implementations must verify events themselves, so we need only
   // basic verification here. This matches HostEventDispatcher.
@@ -655,6 +657,7 @@ void DesktopSessionAgent::InjectKeyEvent(const protocol::KeyEvent& event) {
 
 void DesktopSessionAgent::InjectTextEvent(const protocol::TextEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   // InputStub implementations must verify events themselves, so we need only
   // basic verification here. This matches HostEventDispatcher.
@@ -668,6 +671,7 @@ void DesktopSessionAgent::InjectTextEvent(const protocol::TextEvent& event) {
 
 void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   if (video_capturer_)
     video_capturer_->SetComposeEnabled(event.has_delta_x() ||
@@ -680,14 +684,26 @@ void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
 
 void DesktopSessionAgent::InjectTouchEvent(const protocol::TouchEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   remote_input_filter_->InjectTouchEvent(event);
 }
 
-void DesktopSessionAgent::OnExecuteActionRequestEvent(
-    const protocol::ActionRequest& request) {
+void DesktopSessionAgent::InjectSendAttentionSequence() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
+  protocol::ActionRequest request;
+  request.set_action(protocol::ActionRequest::SEND_ATTENTION_SEQUENCE);
+  action_executor_->ExecuteAction(request);
+}
+
+void DesktopSessionAgent::LockWorkstation() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
+  protocol::ActionRequest request;
+  request.set_action(protocol::ActionRequest::LOCK_WORKSTATION);
   action_executor_->ExecuteAction(request);
 }
 
@@ -702,6 +718,7 @@ void DesktopSessionAgent::OnKeyboardLayoutChange(
 void DesktopSessionAgent::SetScreenResolution(
     const ScreenResolution& resolution) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
 
   if (screen_controls_)
     screen_controls_->SetScreenResolution(resolution);
@@ -737,6 +754,8 @@ void DesktopSessionAgent::StopAudioCapturer() {
 
 void DesktopSessionAgent::SetUpUrlForwarder() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  CHECK(started_);
+
   url_forwarder_configurator_->SetUpUrlForwarder(base::BindRepeating(
       &DesktopSessionAgent::OnUrlForwarderSetUpStateChanged, this));
 }

@@ -204,6 +204,12 @@ class DesktopSessionProxy
   // Returns a shared buffer from the list of known buffers.
   scoped_refptr<IpcSharedBufferCore> GetSharedBufferCore(int id);
 
+  // Called when the desktop agent has started and provides the remote used to
+  // inject input events and control A/V capture.
+  void OnDesktopSessionAgentStarted(
+      mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+          pending_remote);
+
   // Handles AudioPacket notification from the desktop session agent.
   void OnAudioPacket(const std::string& serialized_packet);
 
@@ -294,6 +300,10 @@ class DesktopSessionProxy
   // Caches the last keyboard layout received so it can be provided when Start
   // is called on IpcKeyboardLayoutMonitor.
   absl::optional<protocol::KeyboardLayout> keyboard_layout_;
+
+  // |desktop_session_agent_| is only valid when |desktop_channel_| is
+  // connected.
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> desktop_session_agent_;
 
   // |desktop_session_control_| is only valid when |desktop_channel_| is
   // connected. The desktop process can be detached and reattached several times

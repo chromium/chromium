@@ -150,9 +150,9 @@ bool DesktopProcess::Start(
       new DesktopSessionAgent(audio_task_runner, caller_task_runner_,
                               input_task_runner_, io_task_runner_);
 
-  // Start the agent and create an IPC channel to talk to it.
+  // Initialize the agent and create an IPC channel to talk to it.
   mojo::ScopedMessagePipeHandle desktop_pipe =
-      desktop_agent_->Start(weak_factory_.GetWeakPtr());
+      desktop_agent_->Initialize(weak_factory_.GetWeakPtr());
 
   // Connect to the daemon.
   daemon_channel_ = IPC::ChannelProxy::Create(

@@ -232,7 +232,7 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   void CreateDesktopProcess();
 
   // Destroys the desktop process object created by CreateDesktopProcess().
-  void DestoyDesktopProcess();
+  void DestroyDesktopProcess();
 
   // Creates a new remote URL forwarder configurator for the desktop process.
   void ResetRemoteUrlForwarderConfigurator();
@@ -245,6 +245,10 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // Runs until there are no references to |task_runner_|. Calls after the main
   // loop has been run are no-op.
   void RunMainLoopUntilDone();
+
+  // Some tests require |setup_run_loop_| to be reset so we need a method which
+  // can be bound that will quit the current run loop.
+  void QuitSetupRunLoop();
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -345,8 +349,8 @@ void IpcDesktopEnvironmentTest::SetUp() {
       });
   EXPECT_CALL(desktop_listener_, OnChannelError())
       .Times(AnyNumber())
-      .WillOnce(Invoke(this,
-                       &IpcDesktopEnvironmentTest::DestoyDesktopProcess));
+      .WillOnce(
+          Invoke(this, &IpcDesktopEnvironmentTest::DestroyDesktopProcess));
 
   // Intercept requests to connect and disconnect a terminal.
   EXPECT_CALL(daemon_channel_, ConnectTerminal(_, _, _))
@@ -368,6 +372,12 @@ void IpcDesktopEnvironmentTest::SetUp() {
   EXPECT_CALL(client_session_control_, OnLocalPointerMoved(_, _)).Times(0);
   EXPECT_CALL(client_session_control_, SetDisableInputs(_))
       .Times(0);
+
+  // Most tests will only call this once but reattach will call multiple times.
+  EXPECT_CALL(client_session_events_, OnDesktopAttached(_))
+      .Times(AnyNumber())
+      .WillRepeatedly(InvokeWithoutArgs(
+          this, &IpcDesktopEnvironmentTest::QuitSetupRunLoop));
 
   // Create a desktop environment instance.
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
@@ -428,6 +438,8 @@ DesktopEnvironment* IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(Invoke(
           this, &IpcDesktopEnvironmentTest::CreateVideoCapturer));
+  EXPECT_CALL(*desktop_environment, CreateActionExecutorPtr()).Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, CreateFileOperationsPtr()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitorPtr())
       .Times(AtMost(1))
       .WillOnce(Invoke(
@@ -445,10 +457,6 @@ DesktopEnvironment* IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::move(owned_remote_url_forwarder_configurator_))));
-
-  // Let tests know that the remote desktop environment is created.
-  task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, setup_run_loop_->QuitClosure());
 
   return desktop_environment;
 }
@@ -517,7 +525,7 @@ void IpcDesktopEnvironmentTest::CreateDesktopProcess() {
   EXPECT_TRUE(desktop_process_->Start(std::move(desktop_environment_factory)));
 }
 
-void IpcDesktopEnvironmentTest::DestoyDesktopProcess() {
+void IpcDesktopEnvironmentTest::DestroyDesktopProcess() {
   desktop_channel_.reset();
   if (desktop_process_) {
     desktop_process_->OnChannelError();
@@ -554,6 +562,10 @@ void IpcDesktopEnvironmentTest::RunMainLoopUntilDone() {
   if (should_run_loop) {
     main_run_loop_.Run();
   }
+}
+
+void IpcDesktopEnvironmentTest::QuitSetupRunLoop() {
+  setup_run_loop_->Quit();
 }
 
 // Runs until the desktop is attached and exits immediately after that.
@@ -641,7 +653,7 @@ TEST_F(IpcDesktopEnvironmentTest, Reattach) {
 
   // Create and start a new desktop process object.
   setup_run_loop_ = std::make_unique<base::RunLoop>();
-  DestoyDesktopProcess();
+  DestroyDesktopProcess();
   ResetRemoteUrlForwarderConfigurator();
   CreateDesktopProcess();
   setup_run_loop_->Run();

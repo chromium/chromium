@@ -72,26 +72,6 @@ struct ParamTraits<remoting::ScreenResolution> {
 };
 
 template <>
-struct ParamTraits<remoting::DesktopEnvironmentOptions> {
-  typedef remoting::DesktopEnvironmentOptions param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct ParamTraits<remoting::protocol::ActionRequest> {
-  typedef remoting::protocol::ActionRequest param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* p);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
 struct ParamTraits<remoting::protocol::VideoLayout> {
   typedef remoting::protocol::VideoLayout param_type;
   static void Write(base::Pickle* m, const param_type& p);

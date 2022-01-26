@@ -215,26 +215,6 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_FileDataResult,
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the network to the desktop process.
 
-// Passes the client session data to the desktop session agent and starts it.
-// This must be the first message received from the host.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_StartSessionAgent,
-                    std::string /* authenticated_jid */,
-                    remoting::ScreenResolution /* resolution */,
-                    remoting::DesktopEnvironmentOptions /* options */)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_CaptureFrame)
-
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SelectSource,
-                    int /* desktop_display_id */)
-
-// Changes the screen resolution in the desktop session.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_SetScreenResolution,
-                    remoting::ScreenResolution /* resolution */)
-
-// Carries an action request event from the client to the desktop session agent.
-IPC_MESSAGE_CONTROL(ChromotingNetworkDesktopMsg_ExecuteActionRequest,
-                    remoting::protocol::ActionRequest /* request */)
-
 // Requests that the desktop process create a new file for writing with the
 // provided file name, which will be identified by |file_id|. The desktop
 // process will respond with a FileResult message.

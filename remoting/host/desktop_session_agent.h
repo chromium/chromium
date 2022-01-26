@@ -60,7 +60,6 @@ class ScreenResolution;
 class UrlForwarderConfigurator;
 
 namespace protocol {
-class ActionRequest;
 class InputEventTracker;
 }  // namespace protocol
 
@@ -73,6 +72,7 @@ class DesktopSessionAgent
       public webrtc::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public IpcFileOperations::ResultHandler,
+      public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {
  public:
   class Delegate {
@@ -131,7 +131,18 @@ class DesktopSessionAgent
   void OnDataResult(std::uint64_t file_id,
                     ResultHandler::DataResult result) override;
 
+  // mojom::DesktopSessionAgent implementation.
+  void Start(const std::string& authenticated_jid,
+             const ScreenResolution& resolution,
+             const DesktopEnvironmentOptions& options,
+             StartCallback callback) override;
+
   // mojom::DesktopSessionControl implementation.
+  void CaptureFrame() override;
+  void SelectSource(int id) override;
+  void SetScreenResolution(const ScreenResolution& resolution) override;
+  void LockWorkstation() override;
+  void InjectSendAttentionSequence() override;
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
   void InjectKeyEvent(const protocol::KeyEvent& event) override;
   void InjectMouseEvent(const protocol::MouseEvent& event) override;
@@ -141,7 +152,8 @@ class DesktopSessionAgent
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
-  mojo::ScopedMessagePipeHandle Start(const base::WeakPtr<Delegate>& delegate);
+  mojo::ScopedMessagePipeHandle Initialize(
+      const base::WeakPtr<Delegate>& delegate);
 
   // Stops the agent asynchronously.
   void Stop();
@@ -161,26 +173,8 @@ class DesktopSessionAgent
   void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) override;
 
-  // Handles StartSessionAgent request from the client.
-  void OnStartSessionAgent(const std::string& authenticated_jid,
-                           const ScreenResolution& resolution,
-                           const DesktopEnvironmentOptions& options);
-
-  // Handles CaptureFrame requests from the client.
-  void OnCaptureFrame();
-
-  // Handles desktop display selection requests from the client.
-  void OnSelectSource(int id);
-
-  // Handles event executor requests from the client.
-  void OnExecuteActionRequestEvent(const protocol::ActionRequest& request);
-
   // Handles keyboard layout changes.
   void OnKeyboardLayoutChange(const protocol::KeyboardLayout& layout);
-
-  // Handles ChromotingNetworkDesktopMsg_SetScreenResolution request from
-  // the client.
-  void SetScreenResolution(const ScreenResolution& resolution);
 
   // Sends a message to the network process.
   void SendToNetwork(std::unique_ptr<IPC::Message> message);
@@ -266,6 +260,8 @@ class DesktopSessionAgent
 
   mojo::AssociatedRemote<mojom::DesktopSessionEventHandler>
       desktop_session_event_handler_;
+  mojo::AssociatedReceiver<mojom::DesktopSessionAgent> desktop_session_agent_{
+      this};
   mojo::AssociatedReceiver<mojom::DesktopSessionControl>
       desktop_session_control_{this};
 

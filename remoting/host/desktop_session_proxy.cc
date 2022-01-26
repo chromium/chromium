@@ -267,6 +267,11 @@ void DesktopSessionProxy::OnChannelConnected(int32_t peer_pid) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   VLOG(1) << "IPC: network <- desktop (" << peer_pid << ")";
+
+  desktop_session_agent_->Start(
+      client_session_control_->client_jid(), screen_resolution_, options_,
+      base::BindOnce(&DesktopSessionProxy::OnDesktopSessionAgentStarted,
+                     base::Unretained(this)));
 }
 
 void DesktopSessionProxy::OnChannelError() {
@@ -303,12 +308,7 @@ bool DesktopSessionProxy::AttachToDesktop(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(!desktop_channel_);
 
-  if (client_session_events_) {
-    client_session_events_->OnDesktopAttached(session_id);
-  }
-
-  // Ignore the attach notification if the client session has been disconnected
-  // already.
+  // Ignore the attach event if the client session has already disconnected.
   if (!client_session_control_.get())
     return false;
 
@@ -317,12 +317,12 @@ bool DesktopSessionProxy::AttachToDesktop(
       desktop_pipe, IPC::Channel::MODE_CLIENT, this, io_task_runner_.get(),
       base::ThreadTaskRunnerHandle::Get());
 
-  // Pass ID of the client (which is authenticated at this point) to the desktop
-  // session agent and start the agent.
-  SendToDesktop(new ChromotingNetworkDesktopMsg_StartSessionAgent(
-      client_session_control_->client_jid(), screen_resolution_, options_));
-
-  desktop_channel_->GetRemoteAssociatedInterface(&desktop_session_control_);
+  // Reset the associated remote to allow us to connect to the new desktop
+  // process. This is needed as the desktop may crash and the daemon process
+  // will restart it however the remote will still be bound to the previous
+  // process since DetachFromDesktop() will not be called.
+  desktop_session_agent_.reset();
+  desktop_channel_->GetRemoteAssociatedInterface(&desktop_session_agent_);
 
   desktop_session_id_ = session_id;
 
@@ -333,6 +333,7 @@ void DesktopSessionProxy::DetachFromDesktop() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   desktop_channel_.reset();
+  desktop_session_agent_.reset();
   desktop_session_control_.reset();
   desktop_session_event_handler_.reset();
   desktop_session_id_ = UINT32_MAX;
@@ -355,6 +356,21 @@ void DesktopSessionProxy::DetachFromDesktop() {
   }
 }
 
+void DesktopSessionProxy::OnDesktopSessionAgentStarted(
+    mojo::PendingAssociatedRemote<mojom::DesktopSessionControl>
+        pending_remote) {
+  // Reset the associated remote to allow us to connect to the new desktop
+  // process. This is needed as the desktop may crash and the daemon process
+  // will restart it however the remote will still be bound to the previous
+  // process since DetachFromDesktop() will not be called.
+  desktop_session_control_.reset();
+  desktop_session_control_.Bind(std::move(pending_remote));
+
+  if (client_session_events_) {
+    client_session_events_->OnDesktopAttached(desktop_session_id_);
+  }
+}
+
 void DesktopSessionProxy::SetAudioCapturer(
     const base::WeakPtr<IpcAudioCapturer>& audio_capturer) {
   DCHECK(audio_capture_task_runner_->BelongsToCurrentThread());
@@ -365,9 +381,9 @@ void DesktopSessionProxy::SetAudioCapturer(
 void DesktopSessionProxy::CaptureFrame() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (desktop_channel_) {
+  if (desktop_session_control_) {
     ++pending_capture_frame_requests_;
-    SendToDesktop(new ChromotingNetworkDesktopMsg_CaptureFrame());
+    desktop_session_control_->CaptureFrame();
   } else {
     video_capturer_->OnCaptureResult(
         webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
@@ -376,7 +392,9 @@ void DesktopSessionProxy::CaptureFrame() {
 
 bool DesktopSessionProxy::SelectSource(webrtc::DesktopCapturer::SourceId id) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  SendToDesktop(new ChromotingNetworkDesktopMsg_SelectSource(id));
+  if (desktop_session_control_) {
+    desktop_session_control_->SelectSource(id);
+  }
   return true;
 }
 
@@ -492,15 +510,29 @@ void DesktopSessionProxy::SetScreenResolution(
 
   // Passing an empty |screen_resolution_| value to the desktop process
   // indicates that the original resolution, if one exists, should be restored.
-  SendToDesktop(
-      new ChromotingNetworkDesktopMsg_SetScreenResolution(screen_resolution_));
+  if (desktop_session_control_) {
+    desktop_session_control_->SetScreenResolution(screen_resolution_);
+  }
 }
 
 void DesktopSessionProxy::ExecuteAction(
     const protocol::ActionRequest& request) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  SendToDesktop(new ChromotingNetworkDesktopMsg_ExecuteActionRequest(request));
+  if (!desktop_session_control_) {
+    return;
+  }
+
+  switch (request.action()) {
+    case protocol::ActionRequest::LOCK_WORKSTATION:
+      desktop_session_control_->LockWorkstation();
+      break;
+    case protocol::ActionRequest::SEND_ATTENTION_SEQUENCE:
+      desktop_session_control_->InjectSendAttentionSequence();
+      break;
+    default:
+      LOG(WARNING) << "Unknown action requested: " << request.action();
+  }
 }
 
 void DesktopSessionProxy::ReadFile(std::uint64_t file_id) {
@@ -565,7 +597,7 @@ void DesktopSessionProxy::SetUpUrlForwarder(
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(!set_up_url_forwarder_callback_);
 
-  if (!desktop_session_control_.is_connected()) {
+  if (!desktop_session_control_) {
     LOG(ERROR) << "The UrlForwarderConfigurator remote is not connected. Setup "
                << "request ignored.";
     callback.Run(SetUpUrlForwarderResponse::FAILED);

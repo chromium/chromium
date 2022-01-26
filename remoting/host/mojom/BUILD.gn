@@ -14,6 +14,7 @@ mojom("mojom") {
     "remoting_host.mojom",
     "testing.mojom",
     "webauthn_proxy.mojom",
+    "webrtc_types.mojom",
     "wrapped_primitives.mojom",
   ]
 
@@ -31,6 +32,22 @@ mojom("mojom") {
           cpp = "::remoting::protocol::ClipboardEvent"
         },
         {
+          mojom = "remoting.mojom.DesktopCaptureOptions"
+          cpp = "::webrtc::DesktopCaptureOptions"
+        },
+        {
+          mojom = "remoting.mojom.DesktopEnvironmentOptions"
+          cpp = "::remoting::DesktopEnvironmentOptions"
+        },
+        {
+          mojom = "remoting.mojom.DesktopSize"
+          cpp = "::webrtc::DesktopSize"
+        },
+        {
+          mojom = "remoting.mojom.DesktopVector"
+          cpp = "::webrtc::DesktopVector"
+        },
+        {
           mojom = "remoting.mojom.KeyEvent"
           cpp = "::remoting::protocol::KeyEvent"
         },
@@ -41,6 +58,10 @@ mojom("mojom") {
         {
           mojom = "remoting.mojom.MouseEvent"
           cpp = "::remoting::protocol::MouseEvent"
+        },
+        {
+          mojom = "remoting.mojom.ScreenResolution"
+          cpp = "::remoting::ScreenResolution"
         },
         {
           mojom = "remoting.mojom.TextEvent"
@@ -64,7 +85,9 @@ mojom("mojom") {
       traits_public_deps = [
         "//mojo/public/cpp/base:shared_typemap_traits",
         "//mojo/public/cpp/bindings",
+        "//remoting/host/base",
         "//remoting/proto",
+        "//third_party/webrtc_overrides:webrtc_component",
       ]
     },
   ]

@@ -22,3 +22,7 @@ struct Float {
 struct Int32 {
   int32 value;
 };
+
+struct UInt32 {
+  uint32 value;
+};
