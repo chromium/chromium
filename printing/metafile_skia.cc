@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -329,7 +330,8 @@ bool MetafileSkia::RenderPage(unsigned int page_number,
       return false;
     size_t length = data_->data_stream->getLength();
     std::vector<uint8_t> buffer(length);
-    (void)WriteAssetToBuffer(data_->data_stream.get(), &buffer[0], length);
+    std::ignore =
+        WriteAssetToBuffer(data_->data_stream.get(), &buffer[0], length);
     data_->pdf_cg.InitFromData(buffer);
   }
   return data_->pdf_cg.RenderPage(page_number, context, rect, autorotate,
