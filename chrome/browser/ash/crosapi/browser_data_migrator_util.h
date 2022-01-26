@@ -5,7 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_DATA_MIGRATOR_UTIL_H_
 
+#include <atomic>
 #include <string>
+
+#include "base/files/file_path.h"
+#include "base/synchronization/atomic_flag.h"
+#include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 
 namespace base {
 class FilePath;
@@ -13,6 +18,140 @@ class FilePath;
 
 namespace ash {
 namespace browser_data_migrator_util {
+
+// User data directory name for lacros.
+constexpr char kLacrosDir[] = "lacros";
+
+// Profile data directory name for lacros.
+constexpr char kLacrosProfilePath[] = "Default";
+
+// The name of temporary directory that will store copies of files from the
+// original user data directory. At the end of the migration, it will be moved
+// to the appropriate destination.
+constexpr char kTmpDir[] = "browser_data_migrator";
+
+// The following UMAs are recorded from
+// `DryRunToCollectUMA()`.
+constexpr char kDryRunNoCopyDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunNoCopyDataSizeMB";
+constexpr char kDryRunAshDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunAshDataSizeMB";
+constexpr char kDryRunLacrosDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunLacrosDataSizeMB";
+constexpr char kDryRunCommonDataSize[] =
+    "Ash.BrowserDataMigrator.DryRunCommonDataSizeMB";
+constexpr char kDryRunCopyMigrationTotalCopySize[] =
+    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Copy";
+constexpr char kDryRunMoveMigrationTotalCopySize[] =
+    "Ash.BrowserDataMigrator.DryRunTotalCopySizeMB.Move";
+constexpr char kDryRunMoveMigrationExtraSpaceReserved[] =
+    "Ash.BrowserDataMigrator.DryRunExtraSizeReservedMB.Move";
+constexpr char kDryRunMoveMigrationExtraSpaceRequired[] =
+    "Ash.BrowserDataMigrator.DryRunExtraSizeRequiredMB.Move";
+
+constexpr char kDryRunCopyMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Copy";
+constexpr char kDryRunMoveMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Move";
+constexpr char kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndCopy";
+constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndMove";
+
+// The base names of files/dirs directly under the original profile
+// data directory that can be deleted if needed because they are temporary
+// storages.
+constexpr const char* const kDeletablePaths[] = {
+    kTmpDir,
+    "blob_storage",
+    "Cache",
+    "Code Cache",
+    "crash",
+    "data_reduction_proxy_leveldb",
+    "Download Service",
+    "GCache",
+    "heavy_ad_intervention_opt_out.db",
+    "Network Action Predictor",
+    "Network Persistent State",
+    "optimization_guide_hint_cache_store",
+    "previews_opt_out.db",
+    "Reporting and NEL",
+    "Site Characteristics Database",
+    "TransportSecurity"};
+
+// The base names of files/dirs that should remain in ash data
+// directory.
+constexpr const char* const kRemainInAshDataPaths[] = {
+    "AccountManagerTokens.bin",
+    "Accounts",
+    "app_ranker.pb",
+    "arc.apps",
+    "autobrightness",
+    "BudgetDatabase",
+    "crostini.icons",
+    "Downloads",
+    "extension_install_log",
+    "FullRestoreData",
+    "GCM Store",
+    "google-assistant-library",
+    "GPUCache",
+    "login-times",
+    "logout-times",
+    "MyFiles",
+    "NearbySharePublicCertificateDatabase",
+    "PPDCache",
+    "PreferredApps",
+    "PreferredApps",
+    "PrintJobDatabase",
+    "README",
+    "RLZ Data",
+    "smartcharging",
+    "structured_metrics",
+    "Translate Ranker Model",
+    "Trusted Vault",
+    "WebRTC Logs",
+    "webrtc_event_logs",
+    "zero_state_group_ranker.pb",
+    "zero_state_local_files.pb"};
+
+// The base names of files/dirs that are required for browsing and should be
+// moved to lacros data dir.
+constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
+                                               "Bookmarks",
+                                               "Cookies",
+                                               "databases",
+                                               "DNR Extension Rules",
+                                               "Extension Cookies",
+                                               "Extension Rules",
+                                               "Extension State",
+                                               "Extensions",
+                                               "Favicons",
+                                               "File System",
+                                               "History",
+                                               "IndexedDB",
+                                               "Local App Settings",
+                                               "Local Extension Settings",
+                                               "Managed Extension Settings",
+                                               "QuotaManager",
+                                               "Service Worker",
+                                               "Session Storage",
+                                               "Sessions",
+                                               "Shortcuts",
+                                               "Sync App Settings",
+                                               "Top Sites",
+                                               "Visited Links",
+                                               "Web Applications",
+                                               "Web Data"};
+
+// The base names of files/dirs that are required by both ash and lacros and
+// thus should be copied to lacros while keeping the original files/dirs in ash
+// data dir.
+constexpr const char* const kNeedCopyDataPaths[]{"Affiliation Database",
+                                                 "Login Data",
+                                                 "Platform Notifications",
+                                                 "Policy",
+                                                 "Preferences",
+                                                 "shared_proto_db"};
 
 constexpr char kTotalSize[] = "Ash.UserDataStatsRecorder.DataSize.TotalSize";
 
@@ -27,9 +166,98 @@ constexpr char kUnknownUMAName[] = "Unknown";
 
 constexpr int64_t kBytesInOneMB = 1024 * 1024;
 
+// CancelFlag
+class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {
+ public:
+  CancelFlag();
+  CancelFlag(const CancelFlag&) = delete;
+  CancelFlag& operator=(const CancelFlag&) = delete;
+
+  void Set() { cancelled_ = true; }
+  bool IsSet() const { return cancelled_; }
+
+ private:
+  friend base::RefCountedThreadSafe<CancelFlag>;
+
+  ~CancelFlag();
+  std::atomic_bool cancelled_;
+};
+
+// This is used to describe top level entries inside ash-chrome's profile data
+// directory.
+struct TargetItem {
+  enum class ItemType { kFile, kDirectory };
+  TargetItem(base::FilePath path, int64_t size, ItemType item_type);
+  ~TargetItem() = default;
+  bool operator==(const TargetItem& rhs) const;
+
+  base::FilePath path;
+  // The size of the TargetItem. If TargetItem is a directory, it is the sum
+  // of all files under the directory.
+  int64_t size;
+  bool is_directory;
+};
+
+// `TargetItems` should hold `TargetItem`s of the same `ItemType`.
+struct TargetItems {
+  TargetItems();
+  ~TargetItems();
+  TargetItems(TargetItems&&);
+
+  std::vector<TargetItem> items;
+  // The sum of the sizes of `TargetItem`s in `items`.
+  int64_t total_size;
+};
+
+// Specifies the type of `TargetItem`
+enum class ItemType {
+  kLacros = 0,       // Item that should be moved to lacros profile directory.
+  kRemainInAsh = 1,  // Item that should remain in ash.
+  kNeedCopy = 2,     // Item that should be copied to lacros.
+  kDeletable = 3,    // Item that can be deleted to free up space i.e. cache.
+};
+
+// It enumerates the file/dirs in the given directory and returns items of
+// `type`. E.g. `GetTargetItems(path, ItemType::kLacros)` will get all items
+// that should be moved to lacros.
+TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
+                           const ItemType type);
+
+// Compares space available for `original_profile_dir` against total byte size
+// that needs to be copied.
+bool HasEnoughDiskSpace(const int64_t total_copy_size,
+                        const base::FilePath& original_profile_dir);
+
+// Copies `items` to `to_dir`.
+bool CopyTargetItems(const base::FilePath& to_dir,
+                     const TargetItems& items,
+                     CancelFlag* cancel_flag,
+                     MigrationProgressTracker* progress_tracker);
+
+// Copies `item` to location pointed by `dest`. Returns true on success and
+// false on failure.
+bool CopyTargetItem(const TargetItem& item,
+                    const base::FilePath& dest,
+                    CancelFlag* cancel_flag,
+                    MigrationProgressTracker* progress_tracker);
+
+// Copies the contents of `from_path` to `to_path` recursively. Unlike
+// `base::CopyDirectory()` it skips symlinks.
+bool CopyDirectory(const base::FilePath& from_path,
+                   const base::FilePath& to_path,
+                   CancelFlag* cancel_flag,
+                   MigrationProgressTracker* progress_tracker);
+
+// Records the sizes of `TargetItem`s.
+void RecordTargetItemSizes(const std::vector<TargetItem>& items);
+
 // Records `size` of the file/dir pointed by `path`. If it is a directory, the
 // size is the recursively accumulated sizes of contents inside.
 void RecordUserDataSize(const base::FilePath& path, int64_t size);
+
+// Collects migration specific UMAs without actually running the migration. It
+// does not check if lacros is enabled.
+void DryRunToCollectUMA(const base::FilePath& profile_data_dir);
 
 // Returns UMA name for `path`. Returns `kUnknownUMAName` if `path` is not in
 // `kPathNamePairs`.

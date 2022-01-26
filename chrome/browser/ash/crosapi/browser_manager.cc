@@ -42,6 +42,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -577,7 +578,7 @@ void BrowserManager::InitializeAndStart() {
   // inside the profile data directory.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ash::BrowserDataMigratorImpl::DryRunToCollectUMA,
+      base::BindOnce(&ash::browser_data_migrator_util::DryRunToCollectUMA,
                      ProfileManager::GetPrimaryUserProfile()->GetPath()));
 }
 
