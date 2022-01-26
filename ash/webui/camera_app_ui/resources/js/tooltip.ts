@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from './assert.js';
 import * as dom from './dom.js';
 
 /**
@@ -24,6 +25,8 @@ export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
  * @param rect UI's reference region.
  */
 export function position(rect: DOMRectReadOnly): void {
+  assert(wrapper !== null);
+
   const [edgeMargin, elementMargin] = [5, 8];
   let tooltipTop = rect.top - wrapper.offsetHeight - elementMargin;
   if (tooltipTop < edgeMargin) {
@@ -43,6 +46,8 @@ export function position(rect: DOMRectReadOnly): void {
  * Hides the shown tooltip if any.
  */
 export function hide(): void {
+  assert(wrapper !== null);
+
   if (hovered) {
     hovered = null;
     wrapper.textContent = '';
@@ -55,6 +60,8 @@ export function hide(): void {
  * @param element Hovered element whose tooltip to be shown.
  */
 function show(element: HTMLElement) {
+  assert(wrapper !== null);
+
   hide();
   let message = element.getAttribute('aria-label');
   if (element instanceof HTMLInputElement) {
