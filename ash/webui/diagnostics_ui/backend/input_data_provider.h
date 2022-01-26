@@ -18,14 +18,40 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/aura/window.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 namespace diagnostics {
+
+// Interfaces for watching and dispatching relevant events from evdev to the
+// input_data_provider.
+class InputDataEventWatcher {
+ public:
+  class Dispatcher {
+   public:
+    virtual void SendInputKeyEvent(uint32_t id,
+                                   uint32_t key_code,
+                                   uint32_t scan_code,
+                                   bool down) = 0;
+  };
+
+  class Factory {
+   public:
+    virtual ~Factory() = 0;
+
+    virtual std::unique_ptr<InputDataEventWatcher> MakeWatcher(
+        uint32_t evdev_id,
+        base::WeakPtr<Dispatcher> dispatcher) = 0;
+  };
+
+  virtual ~InputDataEventWatcher() = 0;
+};
 
 // Wrapper for tracking several pieces of information about an evdev-backed
 // device.
@@ -50,7 +76,7 @@ class InputDeviceInformation {
       keyboard_scan_code_map;
 };
 
-// Class for running GetDeviceInfo in its own sequence that can block.
+// Class for running GetDeviceInfo in its own sequence, to allow it to block.
 class InputDeviceInfoHelper {
  public:
   InputDeviceInfoHelper() {}
@@ -62,13 +88,18 @@ class InputDeviceInfoHelper {
 };
 
 // Provides information about input devices connected to the system. Implemented
-// in the browser process and called by the Diagnostics SWA (a renderer
-// process).
+// in the browser process, constructed within the Diagnostics_UI in the browser
+// process, and eventually called by the Diagnostics SWA (a renderer process).
 class InputDataProvider : public mojom::InputDataProvider,
-                          public ui::DeviceEventObserver {
+                          public ui::DeviceEventObserver,
+                          public InputDataEventWatcher::Dispatcher,
+                          public views::WidgetObserver {
  public:
-  InputDataProvider();
-  explicit InputDataProvider(std::unique_ptr<ui::DeviceManager> device_manager);
+  explicit InputDataProvider(aura::Window* window);
+  explicit InputDataProvider(
+      aura::Window* window,
+      std::unique_ptr<ui::DeviceManager> device_manager,
+      std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory);
   InputDataProvider(const InputDataProvider&) = delete;
   InputDataProvider& operator=(const InputDataProvider&) = delete;
   ~InputDataProvider() override;
@@ -78,8 +109,15 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Handler for when remote attached to |receiver_| disconnects.
   void OnBoundInterfaceDisconnect();
   bool ReceiverIsBound();
+
   static mojom::ConnectionType ConnectionTypeFromInputDeviceType(
       ui::InputDeviceType type);
+
+  // InputDataEventWatcher::Dispatcher:
+  void SendInputKeyEvent(uint32_t id,
+                         uint32_t key_code,
+                         uint32_t scan_code,
+                         bool down) override;
 
   // mojom::InputDataProvider:
   void GetConnectedDevices(GetConnectedDevicesCallback callback) override;
@@ -91,33 +129,71 @@ class InputDataProvider : public mojom::InputDataProvider,
       uint32_t id,
       GetKeyboardVisualLayoutCallback callback) override;
 
+  void ObserveKeyEvents(
+      uint32_t id,
+      mojo::PendingRemote<mojom::KeyboardObserver> observer) override;
+
   // ui::DeviceEventObserver:
   void OnDeviceEvent(const ui::DeviceEvent& event) override;
+
+  // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
  protected:
   base::SequenceBound<InputDeviceInfoHelper> info_helper_{
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
 
  private:
-  void Initialize();
+  void Initialize(aura::Window* window);
 
   void ProcessDeviceInfo(std::unique_ptr<InputDeviceInformation> device_info);
 
   void AddTouchDevice(const InputDeviceInformation* device_info);
   void AddKeyboard(const InputDeviceInformation* device_info);
 
+  bool may_send_events_ = false;
+
+  // Review widget state to determine whether it is safe to send events.
+  void UpdateMaySendEvents();
+  // Pass on pause or resume events to observers if that state has changed.
+  void UpdateEventObservers();
+
+  void SendPauseEvents();
+  void SendResumeEvents();
+
   InputDataProviderKeyboard keyboard_helper_;
   InputDataProviderTouch touch_helper_;
 
-  // Map by evdev ids to information blocks
+  // Handle destroyed KeyboardObservers.
+  void OnObservedKeyboardInputDisconnect(uint32_t evdev_id,
+                                         mojo::RemoteSetElementId observer_id);
+  // Manage watchers that read an evdev and process events for observers.
+  void ForwardKeyboardInput(uint32_t id);
+  void UnforwardKeyboardInput(uint32_t id);
+
+  // Map by evdev ids to information blocks.
   base::flat_map<int, mojom::KeyboardInfoPtr> keyboards_;
+  base::flat_map<int, std::unique_ptr<InputDataProviderKeyboard::AuxData>>
+      keyboard_aux_data_;
   base::flat_map<int, mojom::TouchDeviceInfoPtr> touch_devices_;
+
+  // Map by evdev ids to remote observers and event watchers.
+  base::flat_map<int, std::unique_ptr<mojo::RemoteSet<mojom::KeyboardObserver>>>
+      keyboard_observers_;
+  base::flat_map<int, std::unique_ptr<InputDataEventWatcher>>
+      keyboard_watchers_;
+
+  bool logged_not_dispatching_key_events_ = false;
+  views::Widget* widget_ = nullptr;
 
   mojo::RemoteSet<mojom::ConnectedDevicesObserver> connected_devices_observers_;
 
   mojo::Receiver<mojom::InputDataProvider> receiver_{this};
 
   std::unique_ptr<ui::DeviceManager> device_manager_;
+
+  std::unique_ptr<InputDataEventWatcher::Factory> watcher_factory_;
 
   base::WeakPtrFactory<InputDataProvider> weak_factory_{this};
 };

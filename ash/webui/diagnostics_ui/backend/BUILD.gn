@@ -73,6 +73,7 @@ static_library("backend") {
     "//ui/events/ozone/layout",
     "//ui/gfx",
     "//ui/shell_dialogs",
+    "//ui/web_dialogs",
     "//ui/webui",
   ]
 }
@@ -130,6 +131,7 @@ source_set("unit_tests") {
     "//ui/events/ozone/evdev:event_device_info_test_utils",
     "//ui/gfx",
     "//ui/shell_dialogs",
+    "//ui/views:test_support",
     "//ui/webui",
   ]
 }

@@ -4,7 +4,6 @@
 
 #include "ash/webui/diagnostics_ui/backend/input_data_provider_touch.h"
 #include "ash/webui/diagnostics_ui/backend/input_data_provider.h"
-#include "base/logging.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ash {

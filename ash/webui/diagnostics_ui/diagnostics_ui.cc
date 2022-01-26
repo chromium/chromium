@@ -391,7 +391,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
       select_file_policy_creator, holding_space_client, log_directory_path);
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
-      session_log_handler.get());
+      session_log_handler.get(), web_ui);
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source.get());

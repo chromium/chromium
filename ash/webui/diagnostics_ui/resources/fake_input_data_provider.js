@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, GetKeyboardVisualLayoutResponse, InputDataProviderInterface, KeyboardInfo, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+
+import {ConnectedDevicesObserverRemote, ConnectionType, GetConnectedDevicesResponse, GetKeyboardVisualLayoutResponse, InputDataProviderInterface, KeyboardInfo, KeyboardObserverRemote, TouchDeviceInfo, TouchDeviceType} from './diagnostics_types.js';
 
 /**
  * @fileoverview
@@ -18,6 +19,8 @@ export class FakeInputDataProvider {
     this.observers_ = [];
     /** @private {!Array<!KeyboardInfo>} */
     this.keyboards_ = [];
+    /** @private {!Array<!Array<!KeyboardObserverRemote>>} */
+    this.keyboard_observers_ = [];
     /** @private {!Array<!TouchDeviceInfo>} */
     this.touchDevices_ = [];
 
@@ -40,6 +43,7 @@ export class FakeInputDataProvider {
   registerMethods() {
     this.methods_.register('getConnectedDevices');
     this.methods_.register('getKeyboardVisualLayout');
+    this.methods_.register('observeKeyEvents');
   }
 
   /**
@@ -47,6 +51,18 @@ export class FakeInputDataProvider {
    */
   getConnectedDevices() {
     return this.methods_.resolveMethod('getConnectedDevices');
+  }
+
+  /**
+   * Registers an observer for key events on the specific device.
+   * @param {number} id The ID of the keyboard to observe
+   * @param {!KeyboardObserverRemote} remote
+   */
+  observeKeyEvents(id, remote) {
+    if (!this.keyboard_observers_[id]) {
+      return;
+    }
+    this.keyboard_observers_[id].push(remote);
   }
 
   /**
@@ -78,6 +94,7 @@ export class FakeInputDataProvider {
    */
   addFakeConnectedKeyboard(keyboard) {
     this.keyboards_.push(keyboard);
+    this.keyboard_observers_[keyboard.id] = [];
     this.methods_.setResult('getConnectedDevices',
                             {keyboards: [...this.keyboards_],
                              touchDevices: [...this.touchDevices_]});
@@ -94,6 +111,7 @@ export class FakeInputDataProvider {
    */
   removeFakeConnectedKeyboardById(id) {
     this.keyboards_ = this.keyboards_.filter((device) => device.id !== id);
+    delete this.keyboard_observers_[id];
 
     for (const observer of this.observers_) {
       observer.onKeyboardDisconnected(id);
