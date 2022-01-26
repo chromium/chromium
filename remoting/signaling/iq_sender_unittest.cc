@@ -14,10 +14,10 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/signaling/mock_signal_strategy.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using ::testing::_;
 using ::testing::DeleteArg;
@@ -81,7 +81,7 @@ class IqSenderTest : public testing::Test {
 
   bool FormatAndDeliverResponse(const std::string& from,
                                 std::unique_ptr<XmlElement>* response_out) {
-    std::unique_ptr<XmlElement> response(new XmlElement(jingle_xmpp::QN_IQ));
+    std::unique_ptr<XmlElement> response(new XmlElement(kQNameIq));
     response->AddAttr(QName(std::string(), "type"), "result");
     response->AddAttr(QName(std::string(), "id"), kStanzaId);
     response->AddAttr(QName(std::string(), "from"), from);

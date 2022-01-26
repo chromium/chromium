@@ -19,10 +19,10 @@
 #include "remoting/signaling/messaging_client.h"
 #include "remoting/signaling/registration_manager.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 namespace remoting {
 
@@ -60,13 +60,13 @@ std::unique_ptr<jingle_xmpp::XmlElement> CreateXmlStanza(
       "</iq>";
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
       jingle_xmpp::XmlElement::ForStr(kStanzaTemplate));
-  stanza->SetAttr(jingle_xmpp::QN_ID, id);
+  stanza->SetAttr(kQNameId, id);
   if (direction == Direction::OUTGOING) {
-    stanza->SetAttr(jingle_xmpp::QN_FROM, kFakeLocalFtlId);
-    stanza->SetAttr(jingle_xmpp::QN_TO, kFakeRemoteFtlId);
+    stanza->SetAttr(kQNameFrom, kFakeLocalFtlId);
+    stanza->SetAttr(kQNameTo, kFakeRemoteFtlId);
   } else {
-    stanza->SetAttr(jingle_xmpp::QN_FROM, kFakeRemoteFtlId);
-    stanza->SetAttr(jingle_xmpp::QN_TO, kFakeLocalFtlId);
+    stanza->SetAttr(kQNameFrom, kFakeRemoteFtlId);
+    stanza->SetAttr(kQNameTo, kFakeLocalFtlId);
   }
   return stanza;
 }
@@ -435,10 +435,10 @@ TEST_F(FtlSignalStrategyTest, SendStanza_NetworkError) {
 
   ASSERT_EQ(1u, received_messages_.size());
   auto& error_message = received_messages_[0];
-  ASSERT_EQ(jingle_xmpp::STR_ERROR, error_message->Attr(jingle_xmpp::QN_TYPE));
-  ASSERT_EQ(stanza_id, error_message->Attr(jingle_xmpp::QN_ID));
-  ASSERT_EQ(kFakeRemoteFtlId, error_message->Attr(jingle_xmpp::QN_FROM));
-  ASSERT_EQ(kFakeLocalFtlId, error_message->Attr(jingle_xmpp::QN_TO));
+  ASSERT_EQ(kIqTypeError, error_message->Attr(kQNameType));
+  ASSERT_EQ(stanza_id, error_message->Attr(kQNameId));
+  ASSERT_EQ(kFakeRemoteFtlId, error_message->Attr(kQNameFrom));
+  ASSERT_EQ(kFakeLocalFtlId, error_message->Attr(kQNameTo));
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveStanza_Success) {

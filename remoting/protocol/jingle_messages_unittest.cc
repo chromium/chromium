@@ -9,10 +9,10 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "remoting/protocol/content_description.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlAttr;

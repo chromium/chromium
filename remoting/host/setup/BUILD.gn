@@ -108,7 +108,7 @@ source_set("start_host_main") {
     "//remoting/host/setup:start_host_main_headers",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
-    "//third_party/libjingle_xmpp",
+    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 

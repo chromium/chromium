@@ -1,3 +1,0 @@
-include_rules = [
-  "+third_party/webrtc/rtc_base/third_party",
-]

@@ -21,10 +21,10 @@
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/mock_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -159,7 +159,7 @@ TEST_F(XmppRegisterSupportHostRequestTest, Send) {
   // Generate response and verify that callback is called.
   EXPECT_CALL(callback_, Run(kSupportId, base::Seconds(300), ErrorCode::OK));
 
-  std::unique_ptr<XmlElement> response(new XmlElement(jingle_xmpp::QN_IQ));
+  std::unique_ptr<XmlElement> response(new XmlElement(kQNameIq));
   response->AddAttr(QName(std::string(), "from"), kTestBotJid);
   response->AddAttr(QName(std::string(), "type"), "result");
   response->AddAttr(QName(std::string(), "id"), kStanzaId);
