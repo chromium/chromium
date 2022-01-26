@@ -1038,17 +1038,8 @@ const base::Feature kWebAuth{"WebAuthentication",
 // Controls whether CTAP2 devices can communicate via the WebAuthentication API
 // using pairingless BLE protocol.
 // https://w3c.github.io/webauthn
-const base::Feature kWebAuthCable {
-  "WebAuthenticationCable",
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-// If updating this, also update kWebAuthCableServerLink.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kWebAuthCable{"WebAuthenticationCable",
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether WebAuthn conditional UI requests are supported.
 const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",

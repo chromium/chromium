@@ -164,6 +164,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
   const auto winapi =
       AuthenticatorRequestDialogModel::Mechanism::WindowsAPI(true);
+  const auto add = AuthenticatorRequestDialogModel::Mechanism::AddPhone(false);
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kNotStarted;
@@ -203,17 +204,37 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
       // If there are linked phones then AOA doesn't show up, but the phones do,
       // and sorted. The selection sheet should show.
-      {mc, {usb, aoa, cable}, {}, {"a", "b"}, {t(usb), p("a"), p("b")}, mss},
-      {ga, {usb, aoa, cable}, {}, {"a", "b"}, {t(usb), p("a"), p("b")}, mss},
+      {mc,
+       {usb, aoa, cable},
+       {},
+       {"a", "b"},
+       {add, t(usb), p("a"), p("b")},
+       mss},
+      {ga,
+       {usb, aoa, cable},
+       {},
+       {"a", "b"},
+       {add, t(usb), p("a"), p("b")},
+       mss},
 
       // On Windows, if there are linked phones we'll show a selection sheet.
-      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a")}, mss},
+      {mc, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
       // ... unless the `prefer_native_api` flag is set because Chrome
       // remembered that the last successful security key operation was via the
       // Windows API. In that case we'll still jump directly to the native UI.
-      {mc, {cable}, {has_winapi, native}, {"a"}, {winapi, p("a")}, plat_ui},
-      {ga, {cable}, {has_winapi, native}, {"a"}, {winapi, p("a")}, plat_ui},
+      {mc,
+       {cable},
+       {has_winapi, native},
+       {"a"},
+       {winapi, add, p("a")},
+       plat_ui},
+      {ga,
+       {cable},
+       {has_winapi, native},
+       {"a"},
+       {winapi, add, p("a")},
+       plat_ui},
       // Even without `prefer_native_api`, if there aren't any linked phones
       // we'll still jump directly to the native UI, at least until we enable
       // the "Add phone" option.
@@ -377,6 +398,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
   const auto off = BLEPower::OFF;
   const auto normal = Profile::NORMAL;
   const auto otr___ = Profile::INCOGNITO;
+  const auto mss = Step::kMechanismSelection;
   const auto activate = Step::kCableActivate;
   const auto interstitial = Step::kOffTheRecordInterstitial;
   const auto power = Step::kBlePowerOnAutomatic;
@@ -388,14 +410,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     std::vector<Step> steps;
   } kTests[] = {
       //               | Expected UI steps in order.
-      {mc, on_, normal, {activate}},
-      {mc, on_, otr___, {interstitial, activate}},
-      {mc, off, normal, {power, activate}},
-      {mc, off, otr___, {interstitial, power, activate}},
-      {ga, on_, normal, {activate}},
-      {ga, on_, otr___, {activate}},
-      {ga, off, normal, {power, activate}},
-      {ga, off, otr___, {power, activate}},
+      {mc, on_, normal, {mss, activate}},
+      {mc, on_, otr___, {mss, interstitial, activate}},
+      {mc, off, normal, {mss, power, activate}},
+      {mc, off, otr___, {mss, interstitial, power, activate}},
+      {ga, on_, normal, {mss, activate}},
+      {ga, on_, otr___, {mss, activate}},
+      {ga, off, normal, {mss, power, activate}},
+      {ga, off, otr___, {mss, power, activate}},
   };
 
   unsigned test_num = 0;
@@ -423,7 +445,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     model.StartFlow(std::move(transports_info),
                     /*use_location_bar_bubble=*/false,
                     /*prefer_native_api=*/false);
-    ASSERT_EQ(model.mechanisms().size(), 1u);
+    ASSERT_EQ(model.mechanisms().size(), 2u);
 
     for (const auto step : test.steps) {
       ASSERT_EQ(step, model.current_step())
@@ -431,6 +453,18 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
           << " != " << static_cast<int>(model.current_step());
 
       switch (step) {
+        case Step::kMechanismSelection:
+          // Click the first (and only) phone.
+          for (const auto& mechanism : model.mechanisms()) {
+            if (absl::holds_alternative<
+                    AuthenticatorRequestDialogModel::Mechanism::Phone>(
+                    mechanism.type)) {
+              mechanism.callback.Run();
+              break;
+            }
+          }
+          break;
+
         case Step::kBlePowerOnAutomatic:
           model.OnBluetoothPoweredStateChanged(/*powered=*/true);
           break;
