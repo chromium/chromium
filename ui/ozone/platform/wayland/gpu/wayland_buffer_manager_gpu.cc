@@ -111,6 +111,8 @@ void WaylandBufferManagerGpu::Initialize(
   supports_dmabuf_ = supports_dma_buf;
 
   BindHostInterface(std::move(remote_host));
+
+  ProcessPendingTasks();
 }
 
 void WaylandBufferManagerGpu::OnSubmission(gfx::AcceleratedWidget widget,
@@ -207,10 +209,11 @@ void WaylandBufferManagerGpu::CreateDmabufBasedBuffer(
     return;
   }
 
-  DCHECK(remote_host_);
-  remote_host_->CreateDmabufBasedBuffer(
-      mojo::PlatformHandle(std::move(dmabuf_fd)), size, strides, offsets,
+  base::OnceClosure task = base::BindOnce(
+      &WaylandBufferManagerGpu::CreateDmabufBasedBufferTask,
+      base::Unretained(this), std::move(dmabuf_fd), size, strides, offsets,
       modifiers, current_format, planes_count, buffer_id);
+  RunOrQueueTask(std::move(task));
 }
 
 void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
@@ -228,9 +231,10 @@ void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
     return;
   }
 
-  DCHECK(remote_host_);
-  remote_host_->CreateShmBasedBuffer(mojo::PlatformHandle(std::move(shm_fd)),
-                                     length, size, buffer_id);
+  base::OnceClosure task = base::BindOnce(
+      &WaylandBufferManagerGpu::CreateShmBasedBufferTask,
+      base::Unretained(this), std::move(shm_fd), length, size, buffer_id);
+  RunOrQueueTask(std::move(task));
 }
 
 void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor color,
@@ -246,8 +250,10 @@ void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor color,
     return;
   }
 
-  DCHECK(remote_host_);
-  remote_host_->CreateSolidColorBuffer(size, color, buf_id);
+  base::OnceClosure task =
+      base::BindOnce(&WaylandBufferManagerGpu::CreateSolidColorBufferTask,
+                     base::Unretained(this), color, size, buf_id);
+  RunOrQueueTask(std::move(task));
 }
 
 void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
@@ -280,8 +286,10 @@ void WaylandBufferManagerGpu::CommitOverlays(
     return;
   }
 
-  DCHECK(remote_host_);
-  remote_host_->CommitOverlays(widget, std::move(overlays));
+  base::OnceClosure task =
+      base::BindOnce(&WaylandBufferManagerGpu::CommitOverlaysTask,
+                     base::Unretained(this), widget, std::move(overlays));
+  RunOrQueueTask(std::move(task));
 }
 
 void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
@@ -295,8 +303,10 @@ void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
     return;
   }
 
-  DCHECK(remote_host_);
-  remote_host_->DestroyBuffer(widget, buffer_id);
+  base::OnceClosure task =
+      base::BindOnce(&WaylandBufferManagerGpu::DestroyBufferTask,
+                     base::Unretained(this), widget, buffer_id);
+  RunOrQueueTask(std::move(task));
 }
 
 #if defined(WAYLAND_GBM)
@@ -430,6 +440,79 @@ void WaylandBufferManagerGpu::OnHostDisconnected() {
   // When the remote host is disconnected, it also disconnects the associated
   // receiver. Thus, reset that as well.
   associated_receiver_.reset();
+}
+
+void WaylandBufferManagerGpu::RunOrQueueTask(base::OnceClosure task) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  if (remote_host_) {
+    std::move(task).Run();
+    return;
+  }
+  pending_tasks_.emplace_back(std::move(task));
+}
+
+void WaylandBufferManagerGpu::ProcessPendingTasks() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  for (auto& task : pending_tasks_)
+    std::move(task).Run();
+
+  pending_tasks_.clear();
+}
+
+void WaylandBufferManagerGpu::CreateDmabufBasedBufferTask(
+    base::ScopedFD dmabuf_fd,
+    gfx::Size size,
+    const std::vector<uint32_t>& strides,
+    const std::vector<uint32_t>& offsets,
+    const std::vector<uint64_t>& modifiers,
+    uint32_t current_format,
+    uint32_t planes_count,
+    uint32_t buffer_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  remote_host_->CreateDmabufBasedBuffer(
+      mojo::PlatformHandle(std::move(dmabuf_fd)), size, strides, offsets,
+      modifiers, current_format, planes_count, buffer_id);
+}
+
+void WaylandBufferManagerGpu::CreateShmBasedBufferTask(base::ScopedFD shm_fd,
+                                                       size_t length,
+                                                       gfx::Size size,
+                                                       uint32_t buffer_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  remote_host_->CreateShmBasedBuffer(mojo::PlatformHandle(std::move(shm_fd)),
+                                     length, size, buffer_id);
+}
+
+void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor color,
+                                                         const gfx::Size& size,
+                                                         uint32_t buf_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  remote_host_->CreateSolidColorBuffer(size, color, buf_id);
+}
+
+void WaylandBufferManagerGpu::CommitOverlaysTask(
+    gfx::AcceleratedWidget widget,
+    std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  remote_host_->CommitOverlays(widget, std::move(overlays));
+}
+
+void WaylandBufferManagerGpu::DestroyBufferTask(gfx::AcceleratedWidget widget,
+                                                uint32_t buffer_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  DCHECK(remote_host_);
+
+  remote_host_->DestroyBuffer(widget, buffer_id);
 }
 
 }  // namespace ui

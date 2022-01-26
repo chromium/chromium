@@ -2209,6 +2209,38 @@ TEST_P(WaylandBufferManagerTest, FeedbacksAreDiscardedIfClientMisbehaves) {
   DestroyBufferAndSetTerminateExpectation(widget, kBufferId2, false /*fail*/);
 }
 
+TEST_P(WaylandBufferManagerTest, ExecutesTasksAfterInitialization) {
+  // Unbind the pipe.
+  manager_host_->OnChannelDestroyed();
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(buffer_manager_gpu_->remote_host_);
+  EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
+
+  constexpr uint32_t kDmabufBufferId = 1;
+  CreateDmabufBasedBufferAndSetTerminateExpectation(false /*fail*/,
+                                                    kDmabufBufferId);
+  buffer_manager_gpu_->CommitBuffer(window_->GetWidget(), kDmabufBufferId,
+                                    window_->GetBounds(), kDefaultScale,
+                                    window_->GetBounds());
+  DestroyBufferAndSetTerminateExpectation(gfx::kNullAcceleratedWidget,
+                                          kDmabufBufferId, false /*fail*/);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, buffer_manager_gpu_->pending_tasks_.size());
+
+  auto interface_ptr = manager_host_->BindInterface();
+  buffer_manager_gpu_->Initialize(
+      std::move(interface_ptr), {}, false, true, false,
+      /*supports_non_backed_solid_color_buffers*/ false);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(buffer_manager_gpu_->pending_tasks_.empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandBufferManagerTest,
                          Values(wl::ServerConfig{

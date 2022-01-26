@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
@@ -161,6 +162,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                            GbmSurfacelessWaylandCommitOverlaysCallbacksTest);
   FRIEND_TEST_ALL_PREFIXES(WaylandSurfaceFactoryTest,
                            GbmSurfacelessWaylandGroupOnSubmissionCallbacksTest);
+  FRIEND_TEST_ALL_PREFIXES(WaylandBufferManagerTest,
+                           ExecutesTasksAfterInitialization);
 
   void BindHostInterface(
       mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host);
@@ -182,6 +185,34 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       const gfx::PresentationFeedback& feedback);
 
   void OnHostDisconnected();
+
+  // Executes the |task| immediately if the pipe has been bound. Otherwise, the
+  // tasks are stored and executed after the remote pipe becomes bound.
+  void RunOrQueueTask(base::OnceClosure task);
+  // Called when the manager is initialized and the remote host is bound. Runs
+  // pending tasks.
+  void ProcessPendingTasks();
+
+  // Internal methods that do calls to the |remote_host|.
+  void CreateDmabufBasedBufferTask(base::ScopedFD dmabuf_fd,
+                                   gfx::Size size,
+                                   const std::vector<uint32_t>& strides,
+                                   const std::vector<uint32_t>& offsets,
+                                   const std::vector<uint64_t>& modifiers,
+                                   uint32_t current_format,
+                                   uint32_t planes_count,
+                                   uint32_t buffer_id);
+  void CreateShmBasedBufferTask(base::ScopedFD shm_fd,
+                                size_t length,
+                                gfx::Size size,
+                                uint32_t buffer_id);
+  void CreateSolidColorBufferTask(SkColor color,
+                                  const gfx::Size& size,
+                                  uint32_t buf_id);
+  void CommitOverlaysTask(
+      gfx::AcceleratedWidget widget,
+      std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
+  void DestroyBufferTask(gfx::AcceleratedWidget widget, uint32_t buffer_id);
 
 #if defined(WAYLAND_GBM)
   // Finds drm render node, opens it and stores the handle into
@@ -251,6 +282,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   // Keeps track of the next unique buffer ID.
   uint32_t next_buffer_id_ = 0;
+
+  // The tasks that are blocked on a remote_host pipe becoming bound.
+  std::vector<base::OnceClosure> pending_tasks_;
 
   // All calls must happen on the correct sequence. See comments in the
   // constructor for more details.
