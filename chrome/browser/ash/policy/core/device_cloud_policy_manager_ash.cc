@@ -139,6 +139,7 @@ void DeviceCloudPolicyManagerAsh::Shutdown() {
   state_keys_update_subscription_ = {};
   CloudPolicyManager::Shutdown();
   signin_profile_forwarding_schema_registry_.reset();
+  euicc_status_uploader_.reset();
 }
 
 // static
