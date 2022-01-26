@@ -78,6 +78,8 @@ class CORE_EXPORT InspectorDOMAgent final
     virtual void DidModifyDOMAttr(Element*) = 0;
   };
 
+  enum class IncludeWhitespaceEnum : int32_t { NONE = 0, ALL = 2 };
+
   class CORE_EXPORT InspectorSourceLocation final
       : public GarbageCollected<InspectorSourceLocation> {
    public:
@@ -113,7 +115,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void Reset();
 
   // Methods called from the frontend for DOM nodes inspection.
-  protocol::Response enable() override;
+  protocol::Response enable(protocol::Maybe<String> includeWhitespace) override;
   protocol::Response disable() override;
   protocol::Response getDocument(
       protocol::Maybe<int> depth,
@@ -266,6 +268,7 @@ class CORE_EXPORT InspectorDOMAgent final
       Element* container);
 
   bool Enabled() const;
+  IncludeWhitespaceEnum IncludeWhitespace() const;
   void ReleaseDanglingNodes();
 
   // Methods called from the InspectorInstrumentation.
@@ -310,15 +313,19 @@ class CORE_EXPORT InspectorDOMAgent final
   // We represent embedded doms as a part of the same hierarchy. Hence we treat
   // children of frame owners differently.  We also skip whitespace text nodes
   // conditionally. Following methods encapsulate these specifics.
-  static Node* InnerFirstChild(Node*);
-  static Node* InnerNextSibling(Node*);
-  static Node* InnerPreviousSibling(Node*);
-  static unsigned InnerChildNodeCount(Node*);
+  static Node* InnerFirstChild(Node*, IncludeWhitespaceEnum include_whitespace);
+  static Node* InnerNextSibling(Node*,
+                                IncludeWhitespaceEnum include_whitespace);
+  static Node* InnerPreviousSibling(Node*,
+                                    IncludeWhitespaceEnum include_whitespace);
+  static unsigned InnerChildNodeCount(Node*,
+                                      IncludeWhitespaceEnum include_whitespace);
   static Node* InnerParentNode(Node*);
-  static bool IsWhitespace(Node*);
+  static bool ShouldSkipNode(Node*, IncludeWhitespaceEnum include_whitespace);
   static void CollectNodes(Node* root,
                            int depth,
                            bool pierce,
+                           IncludeWhitespaceEnum include_whitespace,
                            base::RepeatingCallback<bool(Node*)>,
                            HeapVector<Member<Node>>* result);
 
@@ -410,6 +417,7 @@ class CORE_EXPORT InspectorDOMAgent final
   Member<DOMEditor> dom_editor_;
   bool suppress_attribute_modified_event_;
   InspectorAgentState::Boolean enabled_;
+  InspectorAgentState::Integer include_whitespace_;
   InspectorAgentState::Boolean capture_node_stack_traces_;
 };
 

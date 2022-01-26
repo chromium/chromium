@@ -257,6 +257,9 @@ InspectorDOMAgent::InspectorDOMAgent(
       last_node_id_(1),
       suppress_attribute_modified_event_(false),
       enabled_(&agent_state_, /*default_value=*/false),
+      include_whitespace_(&agent_state_,
+                          /*default_value=*/static_cast<int32_t>(
+                              InspectorDOMAgent::IncludeWhitespaceEnum::NONE)),
       capture_node_stack_traces_(&agent_state_, /*default_value=*/false) {}
 
 InspectorDOMAgent::~InspectorDOMAgent() = default;
@@ -319,6 +322,12 @@ bool InspectorDOMAgent::Enabled() const {
   return enabled_.Get();
 }
 
+InspectorDOMAgent::IncludeWhitespaceEnum InspectorDOMAgent::IncludeWhitespace()
+    const {
+  return static_cast<InspectorDOMAgent::IncludeWhitespaceEnum>(
+      include_whitespace_.Get());
+}
+
 void InspectorDOMAgent::ReleaseDanglingNodes() {
   dangling_node_to_id_maps_.clear();
 }
@@ -371,10 +380,12 @@ void InspectorDOMAgent::Unbind(Node* node) {
   if (children_requested) {
     // Unbind subtree known to client recursively.
     children_requested_.erase(id);
-    Node* child = InnerFirstChild(node);
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+        IncludeWhitespace();
+    Node* child = InnerFirstChild(node, include_whitespace);
     while (child) {
       Unbind(child);
-      child = InnerNextSibling(child);
+      child = InnerNextSibling(child, include_whitespace);
     }
   }
   cached_child_count_.erase(id);
@@ -489,15 +500,23 @@ void InspectorDOMAgent::EnableAndReset() {
   instrumenting_agents_->AddInspectorDOMAgent(this);
 }
 
-Response InspectorDOMAgent::enable() {
-  if (!enabled_.Get())
+Response InspectorDOMAgent::enable(Maybe<String> includeWhitespace) {
+  if (!enabled_.Get()) {
     EnableAndReset();
+    include_whitespace_.Set(static_cast<int32_t>(
+        includeWhitespace.fromMaybe(
+            protocol::DOM::Enable::IncludeWhitespaceEnum::None) ==
+                protocol::DOM::Enable::IncludeWhitespaceEnum::All
+            ? InspectorDOMAgent::IncludeWhitespaceEnum::ALL
+            : InspectorDOMAgent::IncludeWhitespaceEnum::NONE));
+  }
   return Response::Success();
 }
 
 Response InspectorDOMAgent::disable() {
   if (!enabled_.Get())
     return Response::ServerError("DOM agent hasn't been enabled");
+  include_whitespace_.Clear();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorDOMAgent(this);
   history_.Clear();
@@ -511,7 +530,8 @@ Response InspectorDOMAgent::getDocument(
     Maybe<bool> pierce,
     std::unique_ptr<protocol::DOM::Node>* root) {
   // Backward compatibility. Mark agent as enabled when it requests document.
-  enable();
+  if (!enabled_.Get())
+    enable(Maybe<String>());
 
   if (!document_)
     return Response::ServerError("Document is not available");
@@ -585,7 +605,7 @@ Response InspectorDOMAgent::getNodesForSubtreeByStyle(
   HeapVector<Member<Node>> nodes;
 
   CollectNodes(
-      root_node, INT_MAX, pierce.fromMaybe(false),
+      root_node, INT_MAX, pierce.fromMaybe(false), IncludeWhitespace(),
       WTF::BindRepeating(&NodeHasMatchingStyles, WTF::Unretained(&properties)),
       &nodes);
 
@@ -638,7 +658,10 @@ void InspectorDOMAgent::PushChildNodesToFrontend(int node_id,
 
     depth--;
 
-    for (node = InnerFirstChild(node); node; node = InnerNextSibling(node)) {
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+        IncludeWhitespace();
+    for (node = InnerFirstChild(node, include_whitespace); node;
+         node = InnerNextSibling(node, include_whitespace)) {
       int child_node_id = node_map->at(node);
       DCHECK(child_node_id);
       PushChildNodesToFrontend(child_node_id, depth, pierce);
@@ -1798,7 +1821,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
   }
 
   if (node->IsContainerNode()) {
-    int node_count = InnerChildNodeCount(node);
+    int node_count = InnerChildNodeCount(node, IncludeWhitespace());
     value->setChildNodeCount(node_count);
     if (nodes_map == document_node_to_id_map_)
       cached_child_count_.Set(id, node_count);
@@ -1856,7 +1879,9 @@ InspectorDOMAgent::BuildArrayForContainerChildren(
     return children;
   }
 
-  Node* child = InnerFirstChild(container);
+  InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+      IncludeWhitespace();
+  Node* child = InnerFirstChild(container, include_whitespace);
   depth--;
   if (nodes_map)
     children_requested_.insert(Bind(container, nodes_map));
@@ -1872,7 +1897,7 @@ InspectorDOMAgent::BuildArrayForContainerChildren(
     }
     if (nodes_map)
       children_requested_.insert(Bind(container, nodes_map));
-    child = InnerNextSibling(child);
+    child = InnerNextSibling(child, include_whitespace);
   }
   return children;
 }
@@ -1905,7 +1930,7 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
   auto distributed_nodes =
       std::make_unique<protocol::Array<protocol::DOM::BackendNode>>();
   for (auto& node : slot_element->AssignedNodes()) {
-    if (IsWhitespace(node))
+    if (ShouldSkipNode(node, IncludeWhitespace()))
       continue;
 
     std::unique_ptr<protocol::DOM::BackendNode> backend_node =
@@ -1920,36 +1945,44 @@ InspectorDOMAgent::BuildDistributedNodesForSlot(HTMLSlotElement* slot_element) {
 }
 
 // static
-Node* InspectorDOMAgent::InnerFirstChild(Node* node) {
+Node* InspectorDOMAgent::InnerFirstChild(
+    Node* node,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace) {
   node = node->firstChild();
-  while (IsWhitespace(node))
+  while (ShouldSkipNode(node, include_whitespace))
     node = node->nextSibling();
   return node;
 }
 
 // static
-Node* InspectorDOMAgent::InnerNextSibling(Node* node) {
+Node* InspectorDOMAgent::InnerNextSibling(
+    Node* node,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace) {
   do {
     node = node->nextSibling();
-  } while (IsWhitespace(node));
+  } while (ShouldSkipNode(node, include_whitespace));
   return node;
 }
 
 // static
-Node* InspectorDOMAgent::InnerPreviousSibling(Node* node) {
+Node* InspectorDOMAgent::InnerPreviousSibling(
+    Node* node,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace) {
   do {
     node = node->previousSibling();
-  } while (IsWhitespace(node));
+  } while (ShouldSkipNode(node, include_whitespace));
   return node;
 }
 
 // static
-unsigned InspectorDOMAgent::InnerChildNodeCount(Node* node) {
+unsigned InspectorDOMAgent::InnerChildNodeCount(
+    Node* node,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace) {
   unsigned count = 0;
-  Node* child = InnerFirstChild(node);
+  Node* child = InnerFirstChild(node, include_whitespace);
   while (child) {
     count++;
-    child = InnerNextSibling(child);
+    child = InnerNextSibling(child, include_whitespace);
   }
   return count;
 }
@@ -1963,10 +1996,16 @@ Node* InspectorDOMAgent::InnerParentNode(Node* node) {
 }
 
 // static
-bool InspectorDOMAgent::IsWhitespace(Node* node) {
-  // TODO: pull ignoreWhitespace setting from the frontend and use here.
-  return node && node->getNodeType() == Node::kTextNode &&
-         node->nodeValue().StripWhiteSpace().length() == 0;
+bool InspectorDOMAgent::ShouldSkipNode(
+    Node* node,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace) {
+  if (include_whitespace == InspectorDOMAgent::IncludeWhitespaceEnum::ALL)
+    return false;
+
+  bool is_whitespace = node && node->getNodeType() == Node::kTextNode &&
+                       node->nodeValue().StripWhiteSpace().length() == 0;
+
+  return is_whitespace;
 }
 
 // static
@@ -1974,6 +2013,7 @@ void InspectorDOMAgent::CollectNodes(
     Node* node,
     int depth,
     bool pierce,
+    InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace,
     base::RepeatingCallback<bool(Node*)> filter,
     HeapVector<Member<Node>>* result) {
   if (filter && filter.Run(node))
@@ -1987,18 +2027,18 @@ void InspectorDOMAgent::CollectNodes(
       if (frame_owner->ContentFrame() &&
           frame_owner->ContentFrame()->IsLocalFrame()) {
         if (Document* doc = frame_owner->contentDocument())
-          CollectNodes(doc, depth, pierce, filter, result);
+          CollectNodes(doc, depth, pierce, include_whitespace, filter, result);
       }
     }
 
     ShadowRoot* root = element->GetShadowRoot();
     if (pierce && root)
-      CollectNodes(root, depth, pierce, filter, result);
+      CollectNodes(root, depth, pierce, include_whitespace, filter, result);
   }
 
-  for (Node* child = InnerFirstChild(node); child;
-       child = InnerNextSibling(child)) {
-    CollectNodes(child, depth, pierce, filter, result);
+  for (Node* child = InnerFirstChild(node, include_whitespace); child;
+       child = InnerNextSibling(child, include_whitespace)) {
+    CollectNodes(child, depth, pierce, include_whitespace, filter, result);
   }
 }
 
@@ -2028,7 +2068,8 @@ void InspectorDOMAgent::InvalidateFrameOwnerElement(
 
   std::unique_ptr<protocol::DOM::Node> value =
       BuildObjectForNode(frame_owner, 0, false, document_node_to_id_map_.Get());
-  Node* previous_sibling = InnerPreviousSibling(frame_owner);
+  Node* previous_sibling =
+      InnerPreviousSibling(frame_owner, IncludeWhitespace());
   int prev_id = previous_sibling ? BoundNodeId(previous_sibling) : 0;
   GetFrontend()->childNodeInserted(parent_id, prev_id, std::move(value));
 }
@@ -2061,7 +2102,9 @@ void InspectorDOMAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
 }
 
 void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
-  if (IsWhitespace(node))
+  InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+      IncludeWhitespace();
+  if (ShouldSkipNode(node, include_whitespace))
     return;
 
   // We could be attaching existing subtree. Forget the bindings.
@@ -2083,7 +2126,7 @@ void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
     GetFrontend()->childNodeCountUpdated(parent_id, count);
   } else {
     // Children have been requested -> return value of a new child.
-    Node* prev_sibling = InnerPreviousSibling(node);
+    Node* prev_sibling = InnerPreviousSibling(node, include_whitespace);
     int prev_id = prev_sibling ? BoundNodeId(prev_sibling) : 0;
     std::unique_ptr<protocol::DOM::Node> value =
         BuildObjectForNode(node, 0, false, document_node_to_id_map_.Get());
@@ -2092,7 +2135,7 @@ void InspectorDOMAgent::DidInsertDOMNode(Node* node) {
 }
 
 void InspectorDOMAgent::WillRemoveDOMNode(Node* node) {
-  if (IsWhitespace(node))
+  if (ShouldSkipNode(node, IncludeWhitespace()))
     return;
   DOMNodeRemoved(node);
 }
@@ -2170,7 +2213,7 @@ void InspectorDOMAgent::StyleAttributeInvalidated(
 
 void InspectorDOMAgent::CharacterDataModified(CharacterData* character_data) {
   int id = BoundNodeId(character_data);
-  if (id && IsWhitespace(character_data)) {
+  if (id && ShouldSkipNode(character_data, IncludeWhitespace())) {
     DOMNodeRemoved(character_data);
     return;
   }
@@ -2328,6 +2371,8 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
   if (!path_tokens.size())
     return nullptr;
 
+  InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace =
+      IncludeWhitespace();
   for (wtf_size_t i = 0; i < path_tokens.size() - 1; i += 2) {
     bool success = true;
     String& index_value = path_tokens[i];
@@ -2336,14 +2381,14 @@ Node* InspectorDOMAgent::NodeForPath(const String& path) {
     if (!success) {
       child = ShadowRootForNode(node, index_value);
     } else {
-      if (child_number >= InnerChildNodeCount(node))
+      if (child_number >= InnerChildNodeCount(node, include_whitespace))
         return nullptr;
 
-      child = InnerFirstChild(node);
+      child = InnerFirstChild(node, include_whitespace);
     }
     String child_name = path_tokens[i + 1];
     for (wtf_size_t j = 0; child && j < child_number; ++j)
-      child = InnerNextSibling(child);
+      child = InnerNextSibling(child, include_whitespace);
 
     if (!child || child->nodeName() != child_name)
       return nullptr;

@@ -145,7 +145,7 @@ void InspectorContrast::CollectNodesAndBuildRTreeIfNeeded() {
   }
 
   InspectorDOMAgent::CollectNodes(
-      document_, INT_MAX, true,
+      document_, INT_MAX, true, InspectorDOMAgent::IncludeWhitespaceEnum::NONE,
       WTF::BindRepeating(&NodeIsElementWithLayoutObject), &elements_);
   SortElementsByPaintOrder(elements_, document_);
   rtree_.Build(
