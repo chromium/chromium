@@ -12,13 +12,15 @@
   <div id="content">
     <div id="descriptionPane">
       <p id="descriptionTitle">Description</p>
-      <textarea id="descriptionText" aria-labelledby="descriptionTitle"
-          aria-required="true">
+      <textarea id="descriptionText" aria-labelledby="descriptionTitle" aria-required="true">
       </textarea>
       <p id="descriptionEmptyError" aria-hidden="true" hidden>
         Description is required
       </p>
     </div>
+    <!-- TODO(xiangdongkong): Move help content to inside a untrusted context 
+         before wiring the real mojo api. -->
+    <help-content id="helpContentFrame"></help-content>
   </div>
   <div id="navButtons">
     <cr-button id="btnContinue" class="action-button">Continue</cr-button>

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './help_content.js';
 import './help_resources_icons.js';
 import './os_feedback_shared_css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';

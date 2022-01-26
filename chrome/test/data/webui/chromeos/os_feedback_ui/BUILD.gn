@@ -68,6 +68,7 @@ js_library("search_page_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/os_feedback_ui/resources:help_content",
     "//ash/webui/os_feedback_ui/resources:search_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

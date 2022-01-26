@@ -32,12 +32,17 @@ export function searchPageTestSuite() {
 
   test('SearchPageLoaded', () => {
     return initializePage().then(() => {
-      // Verify the title is in the page
+      // Verify the title is in the page.
       const title = page.shadowRoot.querySelector('#title');
       assertTrue(!!title);
       assertEquals('Send feedback', title.textContent);
 
-      // Verify the continue button is in the page
+      // Verify the help content is in the page.
+      const helpContentFrame =
+          page.shadowRoot.querySelector('#helpContentFrame');
+      assertTrue(!!helpContentFrame);
+
+      // Verify the continue button is in the page.
       const btnContinue = page.shadowRoot.querySelector('#btnContinue');
       assertTrue(!!btnContinue);
     });
