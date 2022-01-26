@@ -3667,28 +3667,6 @@
             ]
         }
     ],
-    "IdentityDiscIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "IdentityDiscIPH",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:iph_identity_disc_triggered;comparator:<1;window:360;storage:360",
-                        "event_used": "name:identity_disc_used;comparator:<1;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_IdentityDisc"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "IgnoreSyncEncryptionKeysLongMissing": [
         {
             "platforms": [
