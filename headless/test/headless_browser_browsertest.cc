@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -693,15 +694,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestAppendCommandLineFlags,
   // Create a new renderer process, and verify that callback was executed.
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
-  HeadlessWebContents* web_contents =
-      browser_context->CreateWebContentsBuilder()
-          .SetInitialURL(GURL("about:blank"))
-          .Build();
+  // Used only for lifetime, thus std::ignore.
+  std::ignore = browser_context->CreateWebContentsBuilder()
+                    .SetInitialURL(GURL("about:blank"))
+                    .Build();
 
   EXPECT_TRUE(callback_was_run_);
-
-  // Used only for lifetime.
-  (void)web_contents;
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ServerWantsClientCertificate) {
