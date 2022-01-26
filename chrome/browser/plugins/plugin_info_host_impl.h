@@ -65,9 +65,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                             const std::string& plugin_identifier,
                             chrome::mojom::PluginStatus* status) const;
     bool FindEnabledPlugin(
-        int render_frame_id,
         const GURL& url,
-        const url::Origin& main_frame_origin,
         const std::string& mime_type,
         chrome::mojom::PluginStatus* status,
         content::WebPluginInfo* plugin,
@@ -103,8 +101,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   void ShutdownOnUIThread();
 
   // chrome::mojom::PluginInfoHost
-  void GetPluginInfo(int32_t render_frame_id,
-                     const GURL& url,
+  void GetPluginInfo(const GURL& url,
                      const url::Origin& origin,
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;

@@ -759,9 +759,8 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
   // a more unified approach to avoid sending the IPC twice.
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
   GetPluginInfoHost()->GetPluginInfo(
-      render_frame->GetRoutingID(), original_url,
-      render_frame->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
-      &plugin_info);
+      original_url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
+      mime_type, &plugin_info);
   // TODO(ekaramad): Not continuing here due to a disallowed status should take
   // us to CreatePlugin. See if more in depths investigation of |status| is
   // necessary here (see https://crbug.com/965747). For now, returning false
@@ -823,9 +822,8 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
 #if BUILDFLAG(ENABLE_PLUGINS)
   chrome::mojom::PluginInfoPtr plugin_info = chrome::mojom::PluginInfo::New();
   GetPluginInfoHost()->GetPluginInfo(
-      render_frame->GetRoutingID(), url,
-      render_frame->GetWebFrame()->Top()->GetSecurityOrigin(), orig_mime_type,
-      &plugin_info);
+      url, render_frame->GetWebFrame()->Top()->GetSecurityOrigin(),
+      orig_mime_type, &plugin_info);
   *plugin = CreatePlugin(render_frame, params, *plugin_info);
 #else  // !BUILDFLAG(ENABLE_PLUGINS)
   PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type, url);

@@ -228,7 +228,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   std::string mime_type(GetPluginParams().mime_type.Utf8());
 
   ChromeContentRendererClient::GetPluginInfoHost()->GetPluginInfo(
-      routing_id(), GURL(GetPluginParams().url),
+      GetPluginParams().url,
       render_frame()->GetWebFrame()->Top()->GetSecurityOrigin(), mime_type,
       &plugin_info);
   if (plugin_info->status == status_)
@@ -238,7 +238,7 @@ void ChromePluginPlaceholder::PluginListChanged() {
   ReplacePlugin(new_plugin);
   if (!new_plugin) {
     PluginUMAReporter::GetInstance()->ReportPluginMissing(
-        GetPluginParams().mime_type.Utf8(), GURL(GetPluginParams().url));
+        GetPluginParams().mime_type.Utf8(), GetPluginParams().url);
   }
 }
 
