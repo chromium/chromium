@@ -12,37 +12,28 @@ import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nBehavior} from './i18n_setup.js';
-import {Doodle, DoodleImageType, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
+import {I18nMixin} from './i18n_setup.js';
+import {IframeElement} from './iframe.js';
+import {Doodle, DoodleImageType, DoodleShareChannel, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
-import {$$} from './utils.js';
+import {$$} from './utils_ts.js';
 import {WindowProxy} from './window_proxy.js';
 
-/** @type {number} */
-const SHARE_BUTTON_SIZE_PX = 26;
+const SHARE_BUTTON_SIZE_PX: number = 26;
 
-/**
- * Shows the Google logo or a doodle if available.
- * @polymer
- * @extends {PolymerElement}
- */
-class LogoElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+// Shows the Google logo or a doodle if available.
+class LogoElement extends I18nMixin
+(PolymerElement) {
   static get is() {
     return 'ntp-logo';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 
   static get properties() {
     return {
       /**
        * If true displays the Google logo single-colored.
-       * @type {boolean}
        */
       singleColored: {
         reflectToAttribute: true,
@@ -52,7 +43,6 @@ class LogoElement extends mixinBehaviors
 
       /**
        * If true displays the dark mode doodle if possible.
-       * @type {boolean}
        */
       dark: {
         observer: 'onDarkChange_',
@@ -62,91 +52,74 @@ class LogoElement extends mixinBehaviors
       /**
        * The NTP's background color. If null or undefined the NTP does not have
        * a single background color, e.g. when a background image is set.
-       * @type {SkColor}
        */
       backgroundColor: Object,
 
-      /** @private */
       loaded_: Boolean,
 
-      /** @private {Doodle} */
       doodle_: Object,
 
-      /** @private {ImageDoodle} */
       imageDoodle_: {
         observer: 'onImageDoodleChange_',
         computed: 'computeImageDoodle_(dark, doodle_)',
         type: Object,
       },
 
-      /** @private */
       showLogo_: {
         computed: 'computeShowLogo_(loaded_, showDoodle_)',
         type: Boolean,
       },
 
-      /** @private */
       showDoodle_: {
         computed: 'computeShowDoodle_(doodle_, imageDoodle_)',
         type: Boolean,
       },
 
-      /** @private */
       doodleBoxed_: {
         reflectToAttribute: true,
         type: Boolean,
         computed: 'computeDoodleBoxed_(backgroundColor, imageDoodle_)',
       },
 
-      /** @private */
       imageUrl_: {
         computed: 'computeImageUrl_(imageDoodle_)',
         type: String,
       },
 
-      /** @private */
       showAnimation_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       animationUrl_: {
         computed: 'computeAnimationUrl_(imageDoodle_)',
         type: String,
       },
 
-      /** @private */
       iframeUrl_: {
         computed: 'computeIframeUrl_(doodle_)',
         type: String,
       },
 
-      /** @private */
       duration_: {
         observer: 'onDurationHeightWidthChange_',
         type: String,
       },
 
-      /** @private */
       height_: {
         observer: 'onDurationHeightWidthChange_',
         type: String,
       },
 
-      /** @private */
       width_: {
         observer: 'onDurationHeightWidthChange_',
         type: String,
       },
 
-      /** @private */
       expanded_: Boolean,
 
-      /** @private */
       showShareDialog_: Boolean,
 
-      /** @private */
       imageDoodleTabIndex_: {
         type: Number,
         computed: 'computeImageDoodleTabIndex_(doodle_, showAnimation_)',
@@ -154,12 +127,39 @@ class LogoElement extends mixinBehaviors
     };
   }
 
+  singleColored: boolean;
+  dark: boolean;
+  backgroundColor: SkColor;
+  private loaded_: boolean;
+  private doodle_: Doodle|null;
+  private imageDoodle_: ImageDoodle|null;
+  private showLogo_: boolean;
+  private showDoodle_: boolean;
+  private doodleBoxed_: boolean;
+  private imageUrl_: string;
+  private showAnimation_: boolean;
+  private animationUrl_: string;
+  private iframeUrl_: string;
+  private duration_: string;
+  private height_: string;
+  private width_: string;
+  private expanded_: boolean;
+  private showShareDialog_: boolean;
+  private imageDoodleTabIndex_: number;
+
+  private eventTracker_: EventTracker = new EventTracker();
+  private pageHandler_: PageHandlerRemote;
+  private imageClickParams_: string|null = null;
+  private interactionLogUrl_: Url|null = null;
+  private shareId_: string|null = null;
+
+  // Suppress TypeScript's error TS2376 to intentionally allow calling
+  // performance.mark() before calling super().
+  // @ts-ignore:next-line
   constructor() {
     performance.mark('logo-creation-start');
     super();
-    /** @private {!EventTracker} */
-    this.eventTracker_ = new EventTracker();
-    /** @private {PageHandlerRemote} */
+
     this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.pageHandler_.getDoodle().then(({doodle}) => {
       this.doodle_ = doodle;
@@ -169,18 +169,11 @@ class LogoElement extends mixinBehaviors
         this.height_ = `${this.doodle_.interactive.height}px`;
       }
     });
-    /** @private {?string} */
-    this.imageClickParams_ = null;
-    /** @private {Url} */
-    this.interactionLogUrl_ = null;
-    /** @private {?string} */
-    this.shareId_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.eventTracker_.add(window, 'message', ({data}) => {
+    this.eventTracker_.add(window, 'message', ({data}: MessageEvent) => {
       if (data['cmd'] === 'resizeDoodle') {
         this.duration_ = assert(data.duration);
         this.height_ = assert(data.height);
@@ -194,24 +187,21 @@ class LogoElement extends mixinBehaviors
     this.sendMode_();
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
   }
 
-  /** @override */
   ready() {
     super.ready();
     performance.measure('logo-creation', 'logo-creation-start');
   }
 
-  /** @private */
-  onImageDoodleChange_() {
+  private onImageDoodleChange_() {
     const shareButton = this.imageDoodle_ && this.imageDoodle_.shareButton;
     if (shareButton) {
-      const height = this.imageDoodle_.height;
-      const width = this.imageDoodle_.width;
+      const height = this.imageDoodle_!.height;
+      const width = this.imageDoodle_!.width;
       this.updateStyles({
         '--ntp-logo-share-button-background-color':
             skColorToRgba(shareButton.backgroundColor),
@@ -249,40 +239,24 @@ class LogoElement extends mixinBehaviors
     this.shareId_ = null;
   }
 
-  /**
-   * @return {ImageDoodle}
-   * @private
-   */
-  computeImageDoodle_() {
+  private computeImageDoodle_(): ImageDoodle|null {
     return this.doodle_ && this.doodle_.image &&
         (this.dark ? this.doodle_.image.dark : this.doodle_.image.light) ||
         null;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowLogo_() {
+  private computeShowLogo_(): boolean {
     return !!this.loaded_ && !this.showDoodle_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowDoodle_() {
+  private computeShowDoodle_(): boolean {
     return !!this.imageDoodle_ ||
         /* We hide interactive doodles when offline. Otherwise, the iframe
            would show an ugly error page. */
         !!this.doodle_ && !!this.doodle_.interactive && window.navigator.onLine;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeDoodleBoxed_() {
+  private computeDoodleBoxed_(): boolean {
     return !this.backgroundColor ||
         !!this.imageDoodle_ &&
         this.imageDoodle_.backgroundColor.value !== this.backgroundColor.value;
@@ -292,10 +266,9 @@ class LogoElement extends mixinBehaviors
    * Called when a simple or animated doodle was clicked. Starts animation if
    * clicking preview image of animated doodle. Otherwise, opens
    * doodle-associated URL in new tab/window.
-   * @private
    */
-  onImageClick_() {
-    if ($$(this, '#imageDoodle').tabIndex < 0) {
+  private onImageClick_() {
+    if ($$<HTMLElement>(this, '#imageDoodle')!.tabIndex < 0) {
       return;
     }
     if (this.isCtaImageShown_()) {
@@ -310,21 +283,20 @@ class LogoElement extends mixinBehaviors
       // future.
       this.logImageRendered_(
           DoodleImageType.kAnimation,
-          /** @type {!Url} */
-          (this.imageDoodle_.animationImpressionLogUrl));
+          this.imageDoodle_!.animationImpressionLogUrl!);
 
-      if (!this.doodle_.image.onClickUrl) {
-        $$(this, '#imageDoodle').blur();
+      if (!this.doodle_!.image!.onClickUrl) {
+        $$<HTMLElement>(this, '#imageDoodle')!.blur();
       }
 
       return;
     }
-    assert(this.doodle_.image.onClickUrl);
+    assert(this.doodle_!.image!.onClickUrl);
     this.pageHandler_.onDoodleImageClicked(
         this.showAnimation_ ? DoodleImageType.kAnimation :
                               DoodleImageType.kStatic,
         null);
-    const onClickUrl = new URL(this.doodle_.image.onClickUrl.url);
+    const onClickUrl = new URL(this.doodle_!.image!.onClickUrl!.url);
     if (this.imageClickParams_) {
       for (const param of new URLSearchParams(this.imageClickParams_)) {
         onClickUrl.searchParams.append(param[0], param[1]);
@@ -333,20 +305,14 @@ class LogoElement extends mixinBehaviors
     WindowProxy.getInstance().open(onClickUrl.toString());
   }
 
-  /** @private */
-  onImageLoad_() {
+  private onImageLoad_() {
     this.logImageRendered_(
         this.isCtaImageShown_() ? DoodleImageType.kCta :
                                   DoodleImageType.kStatic,
-        this.imageDoodle_.imageImpressionLogUrl);
+        this.imageDoodle_!.imageImpressionLogUrl);
   }
 
-  /**
-   * @param {DoodleImageType} type
-   * @param {!Url} logUrl
-   * @private
-   */
-  async logImageRendered_(type, logUrl) {
+  private async logImageRendered_(type: DoodleImageType, logUrl: Url) {
     const {imageClickParams, interactionLogUrl, shareId} =
         await this.pageHandler_.onDoodleImageRendered(
             type, WindowProxy.getInstance().now(), logUrl);
@@ -355,80 +321,54 @@ class LogoElement extends mixinBehaviors
     this.shareId_ = shareId;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onImageKeydown_(e) {
+  private onImageKeydown_(e: KeyboardEvent) {
     if ([' ', 'Enter'].includes(e.key)) {
       this.onImageClick_();
     }
   }
 
-  /**
-   * @param {!CustomEvent} e
-   * @private
-   */
-  onShare_(e) {
+  private onShare_(e: CustomEvent<DoodleShareChannel>) {
     const doodleId =
-        new URL(this.doodle_.image.onClickUrl.url).searchParams.get('ct');
+        new URL(this.doodle_!.image!.onClickUrl!.url).searchParams.get('ct');
     if (!doodleId) {
       return;
     }
     this.pageHandler_.onDoodleShared(e.detail, doodleId, this.shareId_);
   }
 
-  /**
-   * @returns {boolean}
-   * @private
-   */
-  isCtaImageShown_() {
-    return !this.showAnimation_ && !!this.imageDoodle_.animationUrl;
+  private isCtaImageShown_(): boolean {
+    return !this.showAnimation_ && !!this.imageDoodle_!.animationUrl;
   }
 
   /**
    * Sends a postMessage to the interactive doodle whether the  current theme is
    * dark or light. Won't do anything if we don't have an interactive doodle or
    * we haven't been told yet whether the current theme is dark or light.
-   * @private
    */
-  sendMode_() {
-    const iframe = $$(this, '#iframe');
+  private sendMode_() {
+    const iframe = $$<IframeElement>(this, '#iframe');
     if (this.dark === undefined || !iframe) {
       return;
     }
     iframe.postMessage({cmd: 'changeMode', dark: this.dark});
   }
 
-  /** @private */
-  onDarkChange_() {
+  private onDarkChange_() {
     this.sendMode_();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeImageUrl_() {
+  private computeImageUrl_(): string {
     return this.imageDoodle_ ? this.imageDoodle_.imageUrl.url : '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeAnimationUrl_() {
+  private computeAnimationUrl_(): string {
     return this.imageDoodle_ && this.imageDoodle_.animationUrl ?
         `chrome-untrusted://new-tab-page/image?${
             this.imageDoodle_.animationUrl.url}` :
         '';
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeIframeUrl_() {
+  private computeIframeUrl_(): string {
     if (this.doodle_ && this.doodle_.interactive) {
       const url = new URL(this.doodle_.interactive.url.url);
       url.searchParams.append('theme_messages', '0');
@@ -438,22 +378,16 @@ class LogoElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onShareButtonClick_(e) {
+  private onShareButtonClick_(e: Event) {
     e.stopPropagation();
     this.showShareDialog_ = true;
   }
 
-  /** @private */
-  onShareDialogClose_() {
+  private onShareDialogClose_() {
     this.showShareDialog_ = false;
   }
 
-  /** @private */
-  onDurationHeightWidthChange_() {
+  private onDurationHeightWidthChange_() {
     this.updateStyles({
       '--duration': this.duration_,
       '--height': this.height_,
@@ -461,15 +395,15 @@ class LogoElement extends mixinBehaviors
     });
   }
 
-  /**
-   * @private
-   * @return {number}
-   */
-  computeImageDoodleTabIndex_() {
+  private computeImageDoodleTabIndex_(): number {
     return (this.doodle_ && this.doodle_.image &&
             (this.isCtaImageShown_() || this.doodle_.image.onClickUrl)) ?
         0 :
         -1;
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 

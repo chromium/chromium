@@ -49,9 +49,7 @@ js_type_check("closure_compile") {
     ":app",
     ":customize_dialog",
     ":doodle_share_dialog",
-    ":iframe",
     ":lazy_load",
-    ":logo",
     ":new_tab_page",
     ":new_tab_page_proxy",
     ":utils",
@@ -214,29 +212,6 @@ js_library("metrics_utils") {
   externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
 }
 
-js_library("iframe") {
-  deps = [
-    ":utils",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("logo") {
-  deps = [
-    ":doodle_share_dialog",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_webui_js",
-    "//skia/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//url/mojom:url_mojom_gurl_webui_js",
-  ]
-}
-
 js_library("doodle_share_dialog") {
   deps = [
     ":i18n_setup",
@@ -274,10 +249,10 @@ html_to_js("web_components_local") {
     "customize_dialog.js",
     "customize_shortcuts.js",
     "doodle_share_dialog.js",
-    "logo.js",
+    "logo.ts",
     "middle_slot_promo.js",
     "mini_page.js",
-    "iframe.js",
+    "iframe.ts",
     "voice_search_overlay.js",
     "customize_modules.js",
   ]
@@ -310,6 +285,7 @@ preprocess_if_expr("preprocess") {
     "customize_dialog_types.js",
     "new_tab_page.js",
     "utils.js",
+    "utils_ts.ts",
     "metrics_utils.js",
     "i18n_setup.js",
   ]
@@ -328,9 +304,9 @@ preprocess_if_expr("preprocess_gen") {
     "customize_backgrounds.js",
     "customize_modules.js",
     "customize_shortcuts.js",
-    "iframe.js",
+    "iframe.ts",
     "mini_page.js",
-    "logo.js",
+    "logo.ts",
     "doodle_share_dialog.js",
   ]
 }
@@ -512,9 +488,9 @@ ts_library("build_ts") {
                "customize_shortcuts.js",
                "doodle_share_dialog.js",
                "i18n_setup.js",
-               "iframe.js",
+               "iframe.ts",
                "lazy_load.js",
-               "logo.js",
+               "logo.ts",
                "metrics_utils.js",
                "middle_slot_promo.js",
                "mini_page.js",
@@ -545,6 +521,7 @@ ts_library("build_ts") {
                "realbox/realbox.js",
                "realbox/realbox_match.js",
                "utils.js",
+               "utils_ts.ts",
                "voice_search_overlay.js",
                "window_proxy.js",
              ] + mojo_js_files
