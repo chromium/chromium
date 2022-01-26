@@ -25,6 +25,11 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -106,6 +111,11 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
                 &SigninInterceptFirstRunExperienceDialogBrowserTest::
                     OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -152,6 +162,10 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     return tracker->GetTriggerState(
                feature_engagement::kIPHProfileSwitchFeature) ==
            feature_engagement::Tracker::TriggerState::HAS_BEEN_DISPLAYED;
+  }
+
+  void UpdateChromePolicy(const policy::PolicyMap& policy) {
+    policy_provider_.UpdateChromePolicy(policy);
   }
 
   void SignIn(const std::string& email) {
@@ -218,6 +232,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
   base::CallbackListSubscription create_services_subscription_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList feature_list_;
 
   CoreAccountId account_id_;
@@ -228,7 +243,8 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
 IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
                        ShowAndCloseDialog) {
   SignIn(kConsumerEmail);
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   controller()->CloseModalSignin();
   EXPECT_FALSE(controller()->ShowsModalDialog());
@@ -245,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   sync_confirmation_observer.StartWatchingNewWebContents();
   profile_customization_observer.StartWatchingNewWebContents();
 
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   sync_confirmation_observer.Wait();
   EXPECT_EQ(
@@ -276,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   sync_confirmation_observer.StartWatchingNewWebContents();
   profile_customization_observer.StartWatchingNewWebContents();
 
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   sync_confirmation_observer.Wait();
   EXPECT_EQ(
@@ -296,6 +314,34 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
 }
 
+// Tests the case when the account has a profile color policy. Tests that the
+// FRE dialog skips the profile customization step.
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ProfileColorPolicy) {
+  SignIn(kEnterpriseEmail);
+  content::TestNavigationObserver sync_confirmation_observer(
+      kSyncConfirmationUrl);
+  sync_confirmation_observer.StartWatchingNewWebContents();
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kBrowserThemeColor,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"), nullptr);
+  UpdateChromePolicy(policy_map);
+
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  sync_confirmation_observer.Wait();
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kSyncConfirmationUrl);
+
+  SimulateSyncConfirmationUIClosing(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+}
+
 // The user chooses to manage sync settings in the sync confirmation dialog.
 // The profile customization is not shown in this case.
 IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
@@ -305,7 +351,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
       kSyncConfirmationUrl);
   sync_confirmation_observer.StartWatchingNewWebContents();
 
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   sync_confirmation_observer.Wait();
   EXPECT_EQ(
@@ -335,7 +382,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   sync_service()->SetTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
 
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
 
   controller()->CloseModalSignin();
@@ -364,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
   profile_customization_observer.StartWatchingNewWebContents();
 
   // Sync confirmation is skipped.
-  controller()->ShowModalInterceptFirstRunExperienceDialog(account_id());
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ false);
   EXPECT_TRUE(controller()->ShowsModalDialog());
   profile_customization_observer.Wait();
   EXPECT_EQ(
@@ -375,5 +424,47 @@ IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
 
   SimulateProfileCustomizationUIClosing();
   EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+}
+
+// Tests the case when the user went through the forced intercept dialog. The
+// FRE dialog should skip the sync confirmation.
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ForcedIntercept) {
+  SignIn(kEnterpriseEmail);
+  content::TestNavigationObserver profile_customization_observer(
+      kProfileCustomizationUrl);
+  profile_customization_observer.StartWatchingNewWebContents();
+
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ true);
+  EXPECT_TRUE(controller()->ShowsModalDialog());
+  profile_customization_observer.Wait();
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+  EXPECT_EQ(
+      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+      kProfileCustomizationUrl);
+
+  SimulateProfileCustomizationUIClosing();
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
+}
+
+// Tests the case when the user went through the forced intercept dialog and the
+// account has a profile color policy. Tests that the FRE dialog exits
+// immediately and displays the profile switch IPH.
+IN_PROC_BROWSER_TEST_F(SigninInterceptFirstRunExperienceDialogBrowserTest,
+                       ForcedIntercept_ProfileColorPolicy) {
+  SignIn(kEnterpriseEmail);
+  policy::PolicyMap policy_map;
+  policy_map.Set(policy::key::kBrowserThemeColor,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value("#000000"), nullptr);
+  UpdateChromePolicy(policy_map);
+
+  controller()->ShowModalInterceptFirstRunExperienceDialog(
+      account_id(), /* is_forced_intercept = */ true);
+  EXPECT_FALSE(controller()->ShowsModalDialog());
+  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
   EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
 }

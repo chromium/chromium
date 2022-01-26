@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -140,10 +141,14 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
 
 void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
     Browser* browser,
-    const CoreAccountId& account_id) {
+    const CoreAccountId& account_id,
+    DiceWebSigninInterceptor::SigninInterceptionType interception_type) {
   if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
     browser->signin_view_controller()
-        ->ShowModalInterceptFirstRunExperienceDialog(account_id);
+        ->ShowModalInterceptFirstRunExperienceDialog(
+            account_id, interception_type ==
+                            DiceWebSigninInterceptor::SigninInterceptionType::
+                                kEnterpriseForced);
   } else {
     // Don't show the customization bubble if a valid policy theme is set.
     if (ThemeServiceFactory::GetForProfile(browser->profile())

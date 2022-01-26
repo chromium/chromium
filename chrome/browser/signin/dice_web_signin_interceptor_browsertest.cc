@@ -105,9 +105,12 @@ class FakeDiceWebSigninInterceptorDelegate
 
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
-      const CoreAccountId& account_id) override {
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {
     EXPECT_FALSE(fre_browser_)
         << "First run experience must be shown only once.";
+    EXPECT_EQ(interception_type, expected_interception_type_);
     fre_browser_ = browser;
     fre_account_id_ = account_id;
   }
@@ -693,6 +696,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
       account_info.account_id));
 
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise);
+
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
@@ -719,10 +727,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
-  // Interception bubble is destroyed in the source profile, and was not shown
-  // in the new profile.
-  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
-      GetInterceptorDelegate(new_profile);
 
   // First run experience UI was shown exactly once in the new profile.
   EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
@@ -792,6 +796,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
       account_info.account_id));
 
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
@@ -819,10 +828,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   CheckHistograms(
       histogram_tester,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
-  // Interception bubble is destroyed in the source profile, and was not shown
-  // in the new profile.
-  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
-      GetInterceptorDelegate(new_profile);
 
   // First run experience UI was shown exactly once in the new profile.
   EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);
@@ -874,6 +879,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
       account_info.account_id));
 
+  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
+      GetInterceptorDelegate(new_profile);
+  new_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+
   IdentityTestEnvironmentProfileAdaptor adaptor(new_profile);
   adaptor.identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
 
@@ -901,10 +911,6 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   CheckHistograms(
       histogram_tester,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
-  // Interception bubble is destroyed in the source profile, and was not shown
-  // in the new profile.
-  FakeDiceWebSigninInterceptorDelegate* new_interceptor_delegate =
-      GetInterceptorDelegate(new_profile);
 
   // First run experience UI was shown exactly once in the new profile.
   EXPECT_EQ(new_interceptor_delegate->fre_browser(), added_browser);

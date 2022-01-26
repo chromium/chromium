@@ -31,8 +31,13 @@ class SigninInterceptFirstRunExperienceDialog
   explicit SigninInterceptFirstRunExperienceDialog(
       Browser* browser,
       const CoreAccountId& account_id,
+      bool is_forced_intercept,
       base::OnceClosure on_close_callback);
   ~SigninInterceptFirstRunExperienceDialog() override;
+
+  // Shows the dialog. The dialog might decide to close synchronously which
+  // shouldn't happen within a constructor.
+  void Show();
 
   // SigninModalDialog:
   void CloseModalDialog() override;
@@ -73,6 +78,7 @@ class SigninInterceptFirstRunExperienceDialog
 
   const raw_ptr<Browser> browser_;
   const CoreAccountId account_id_;
+  const bool is_forced_intercept_;
 
   Step current_step_ = Step::kStart;
 

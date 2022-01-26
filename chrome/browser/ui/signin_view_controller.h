@@ -129,7 +129,8 @@ class SigninViewController {
   // browser-modal dialog on top of the `browser_`'s window. `account_id`
   // corresponds to the intercepted account.
   void ShowModalInterceptFirstRunExperienceDialog(
-      const CoreAccountId& account_id);
+      const CoreAccountId& account_id,
+      bool is_forced_intercept);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top

@@ -192,11 +192,19 @@ void SigninInterceptFirstRunExperienceDialog::
 SigninInterceptFirstRunExperienceDialog::
     SigninInterceptFirstRunExperienceDialog(Browser* browser,
                                             const CoreAccountId& account_id,
+                                            bool is_forced_intercept,
                                             base::OnceClosure on_close_callback)
     : SigninModalDialog(std::move(on_close_callback)),
       browser_(browser),
-      account_id_(account_id) {
-  DoNextStep(Step::kStart, Step::kTurnOnSync);
+      account_id_(account_id),
+      is_forced_intercept_(is_forced_intercept) {}
+
+void SigninInterceptFirstRunExperienceDialog::Show() {
+  // Don't show the sync promo to the users who went through the forced
+  // interception.
+  Step first_step =
+      is_forced_intercept_ ? Step::kProfileCustomization : Step::kTurnOnSync;
+  DoNextStep(Step::kStart, first_step);
 }
 
 SigninInterceptFirstRunExperienceDialog::

@@ -30,7 +30,9 @@ class DiceWebSigninInterceptorDelegate
       base::OnceCallback<void(SigninInterceptionResult)> callback) override;
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
-      const CoreAccountId& account_id) override;
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override;
 
  private:
   // Implemented in dice_web_signin_interception_bubble_view.cc

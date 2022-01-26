@@ -230,10 +230,16 @@ SigninViewController::ShowReauthPrompt(
 }
 
 void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(
-    const CoreAccountId& account_id) {
+    const CoreAccountId& account_id,
+    bool is_forced_intercept) {
   CloseModalSignin();
-  dialog_ = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
-      browser_, account_id, GetOnModalDialogClosedCallback());
+  auto fre_dialog = std::make_unique<SigninInterceptFirstRunExperienceDialog>(
+      browser_, account_id, is_forced_intercept,
+      GetOnModalDialogClosedCallback());
+  SigninInterceptFirstRunExperienceDialog* raw_dialog = fre_dialog.get();
+  // Casts pointer to a base class.
+  dialog_ = std::move(fre_dialog);
+  raw_dialog->Show();
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE);
 }

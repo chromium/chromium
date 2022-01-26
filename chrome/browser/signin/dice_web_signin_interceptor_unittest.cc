@@ -51,7 +51,9 @@ class MockDiceWebSigninInterceptorDelegate
               (override));
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
-      const CoreAccountId& account_id) override {}
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {}
 };
 
 // Matches BubbleParameters fields excepting the color. This is useful in the

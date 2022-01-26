@@ -192,7 +192,8 @@ class DiceWebSigninInterceptor : public KeyedService,
     // a newly created profile.
     virtual void ShowFirstRunExperienceInNewProfile(
         Browser* browser,
-        const CoreAccountId& account_id) = 0;
+        const CoreAccountId& account_id,
+        SigninInterceptionType interception_type) = 0;
   };
 
   DiceWebSigninInterceptor(Profile* profile,
@@ -230,7 +231,8 @@ class DiceWebSigninInterceptor : public KeyedService,
       content::WebContents* intercepted_contents,
       std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
           bubble_handle,
-      bool is_new_profile);
+      bool is_new_profile,
+      SigninInterceptionType interception_type);
 
   // Returns the outcome of the interception heuristic.
   // If the outcome is kInterceptProfileSwitch, the target profile is returned
@@ -300,6 +302,11 @@ class DiceWebSigninInterceptor : public KeyedService,
       const AccountInfo& intercepted_account_info) const;
   bool ShouldShowMultiUserBubble(
       const AccountInfo& intercepted_account_info) const;
+
+  // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
+  void ShowSigninInterceptionBubble(
+      const Delegate::BubbleParameters& bubble_parameters,
+      base::OnceCallback<void(SigninInterceptionResult)> callback);
 
   void OnInterceptionReadyToBeProcessed(const AccountInfo& info);
 
@@ -378,6 +385,7 @@ class DiceWebSigninInterceptor : public KeyedService,
   CoreAccountId account_id_;
   bool new_account_interception_ = false;
   bool intercepted_account_management_accepted_ = false;
+  absl::optional<SigninInterceptionType> interception_type_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       account_info_update_observation_{this};

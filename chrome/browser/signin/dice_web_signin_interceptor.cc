@@ -320,12 +320,11 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
           GetPrimaryAccountInfo(identity_manager_),
           entry->GetProfileThemeColors().profile_highlight_color,
           /*show_guest_option=*/false};
-      interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
-          web_contents, bubble_parameters,
+      ShowSigninInterceptionBubble(
+          bubble_parameters,
           base::BindOnce(&DiceWebSigninInterceptor::OnProfileSwitchChoice,
                          base::Unretained(this), account_info.email,
                          entry->GetPath()));
-      was_interception_ui_displayed_ = true;
     } else {
       // Interception is aborted.
       DCHECK(!SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome));
@@ -352,11 +351,13 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     CoreAccountId account_id,
     content::WebContents* intercepted_contents,
     std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle> bubble_handle,
-    bool is_new_profile) {
+    bool is_new_profile,
+    SigninInterceptionType interception_type) {
   DCHECK(!session_startup_helper_);
   DCHECK(bubble_handle);
   interception_bubble_handle_ = std::move(bubble_handle);
   account_id_ = account_id;
+  interception_type_ = interception_type;
   session_startup_helper_ =
       std::make_unique<DiceInterceptedSessionStartupHelper>(
           profile_, is_new_profile, account_id, intercepted_contents);
@@ -381,6 +382,7 @@ void DiceWebSigninInterceptor::Reset() {
   account_id_ = CoreAccountId();
   new_account_interception_ = false;
   intercepted_account_management_accepted_ = false;
+  interception_type_ = absl::nullopt;
   dice_signed_in_profile_creator_.reset();
   was_interception_ui_displayed_ = false;
   account_info_fetch_start_time_ = base::TimeTicks();
@@ -471,6 +473,15 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
     }
   }
   return true;
+}
+
+void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
+    const Delegate::BubbleParameters& bubble_parameters,
+    base::OnceCallback<void(SigninInterceptionResult)> callback) {
+  interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
+      web_contents_.get(), bubble_parameters, std::move(callback));
+  was_interception_ui_displayed_ = true;
+  interception_type_ = bubble_parameters.interception_type;
 }
 
 void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
@@ -573,10 +584,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
                          base::Unretained(this), info, profile_color);
       break;
   }
-  interception_bubble_handle_ = delegate_->ShowSigninInterceptionBubble(
-      web_contents_.get(), bubble_parameters, std::move(callback));
-
-  was_interception_ui_displayed_ = true;
+  ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
 }
 
 void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
@@ -705,10 +713,12 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
 
   // Work is done in this profile, the flow continues in the
   // DiceWebSigninInterceptor that is attached to the new profile.
+  // We pass relevant parameters from this instance to the new one.
   DiceWebSigninInterceptorFactory::GetForProfile(new_profile)
       ->CreateBrowserAfterSigninInterception(
           account_id_, web_contents_.get(),
-          std::move(interception_bubble_handle_), is_new_profile);
+          std::move(interception_bubble_handle_), is_new_profile,
+          *interception_type_);
   Reset();
 }
 
@@ -761,7 +771,8 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
 
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
   DCHECK(browser);
-  delegate_->ShowFirstRunExperienceInNewProfile(browser, account_id_);
+  delegate_->ShowFirstRunExperienceInNewProfile(browser, account_id_,
+                                                *interception_type_);
 }
 
 // static
