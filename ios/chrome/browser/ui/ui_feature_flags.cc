@@ -46,9 +46,6 @@ const base::Feature kIOSOmniboxAllowEditsDuringDictation{
 const base::Feature kIOSLocationBarUseNativeContextMenu{
     "IOSLocationBarUseNativeContextMenu", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 

@@ -295,11 +295,6 @@ const char kIOSEnablePasswordManagerBrandingUpdateName[] =
 const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =
     "Updates icons, strings, and views for Google Password Manager.";
 
-const char kIOSPersistCrashRestoreName[] = "Persist Crash Restore Infobar";
-const char kIOSPersistCrashRestoreDescription[] =
-    "When enabled, the Crash Restore Infobar will persist through navigations "
-    "instead of dismissing.";
-
 const char kIOSSharedHighlightingColorChangeName[] =
     "IOS Shared Highlighting color change";
 const char kIOSSharedHighlightingColorChangeDescription[] =

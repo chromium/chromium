@@ -222,11 +222,7 @@ void SessionCrashedInfoBarDelegate::InfoBarDismissed() {
 
 bool SessionCrashedInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
-  if (base::FeatureList::IsEnabled(kIOSPersistCrashRestore)) {
-    return false;
-  } else {
-    return InfoBarDelegate::ShouldExpire(details);
-  }
+  return false;
 }
 
 int SessionCrashedInfoBarDelegate::GetIconId() const {

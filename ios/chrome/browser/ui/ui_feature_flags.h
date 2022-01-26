@@ -55,10 +55,6 @@ extern const base::Feature kIOSNewOmniboxImplementation;
 // Feature flag that fixes omnibox behavior when using iOS native dictation
 extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
 
-// Feature flag that enables persisting the Crash Restore Infobar across
-// navigations.
-extern const base::Feature kIOSPersistCrashRestore;
-
 // Enables the Search History Link in Clear Browsing Data for iOS.
 extern const base::Feature kSearchHistoryLinkIOS;
 
