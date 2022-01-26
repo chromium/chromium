@@ -37,6 +37,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -295,6 +296,7 @@ public class SwitchToTabTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     @EnableFeatures("OmniboxTabSwitchSuggestions")
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
+    @FlakyTest(message = "https://crbug.com/1291136")
     public void testSwitchToTabSuggestionWhenIncognitoTabOnTop() throws InterruptedException {
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
