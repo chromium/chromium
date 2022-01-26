@@ -838,15 +838,23 @@ TEST_P(
 
   ResetTestStorageQueue();
 
-  // Delete all metadata files.
-  base::FileEnumerator dir_enum(
-      options.directory(),
-      /*recursive=*/false, base::FileEnumerator::FILES,
-      base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".2")}));
-  base::FilePath full_name = dir_enum.Next();
-  ASSERT_FALSE(full_name.empty());
-  base::DeleteFile(full_name);
-  ASSERT_TRUE(dir_enum.Next().empty());
+  // Delete the last metadata file.
+  {  // scoping this block so that dir_enum is not used later.
+    const auto last_metadata_file_pattern =
+        base::StrCat({METADATA_NAME, FILE_PATH_LITERAL(".2")});
+    base::FileEnumerator dir_enum(options.directory(),
+                                  /*recursive=*/false,
+                                  base::FileEnumerator::FILES,
+                                  last_metadata_file_pattern);
+    base::FilePath full_name = dir_enum.Next();
+    ASSERT_FALSE(full_name.empty())
+        << "No file matches " << last_metadata_file_pattern;
+    ASSERT_TRUE(dir_enum.Next().empty())
+        << full_name << " is not the last metadata file in "
+        << options.directory();
+    ASSERT_TRUE(base::DeleteFile(full_name))
+        << "Failed to delete " << full_name;
+  }
 
   // Reopen, starting a new generation.
   CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
