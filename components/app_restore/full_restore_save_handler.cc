@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
 #include "components/app_restore/full_restore_info.h"
@@ -94,8 +95,7 @@ void FullRestoreSaveHandler::SetShutDown() {
 }
 
 void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     observed_windows_.AddObservation(window);
 
     if (arc_save_handler_)
@@ -104,8 +104,7 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (app_restore::IsLacrosWindow(window)) {
     observed_windows_.AddObservation(window);
 
     if (lacros_save_handler_)
@@ -168,15 +167,13 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     if (arc_save_handler_)
       arc_save_handler_->OnWindowDestroyed(window);
     return;
   }
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (app_restore::IsLacrosWindow(window)) {
     if (lacros_save_handler_)
       lacros_save_handler_->OnWindowDestroyed(window);
     return;
@@ -307,15 +304,13 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   if (!window_info.window)
     return;
 
-  if (window_info.window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window_info.window)) {
     if (arc_save_handler_)
       arc_save_handler_->ModifyWindowInfo(window_info);
     return;
   }
 
-  if (window_info.window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (app_restore::IsLacrosWindow(window_info.window)) {
     if (lacros_save_handler_)
       lacros_save_handler_->ModifyWindowInfo(window_info);
     return;
@@ -521,12 +516,10 @@ const app_restore::RestoreData* FullRestoreSaveHandler::GetRestoreData(
 
 std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
   DCHECK(window);
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     return arc_save_handler_ ? arc_save_handler_->GetAppId(window)
                              : std::string();
-  } else if (window->GetProperty(aura::client::kAppType) ==
-             static_cast<int>(ash::AppType::LACROS)) {
+  } else if (app_restore::IsLacrosWindow(window)) {
     return lacros_save_handler_ ? lacros_save_handler_->GetAppId(window)
                                 : std::string();
   } else {

@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/desk_template_read_handler.h"
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
@@ -55,8 +56,7 @@ FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   int32_t window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     // If there isn't restore data for ARC apps, we don't need to handle ARC app
     // windows restoration.
     if (!arc_read_handler_)
@@ -71,8 +71,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (app_restore::IsLacrosWindow(window)) {
     // If the Lacros `window` is added to the hidden container, observe `window`
     // to restore and remove it from the hidden container in
     // OnWindowAddedToRootWindow callback.
@@ -95,9 +94,7 @@ void FullRestoreReadHandler::OnWindowAddedToRootWindow(aura::Window* window) {
   // If the Lacros `window` is added to the hidden container, call
   // OnWindowAddedToRootWindow to restore and remove it from the hidden
   // container.
-  if (window->GetProperty(aura::client::kAppType) ==
-          static_cast<int>(ash::AppType::LACROS) &&
-      lacros_read_handler_ &&
+  if (app_restore::IsLacrosWindow(window) && lacros_read_handler_ &&
       window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
     lacros_read_handler_->OnWindowAddedToRootWindow(window);
   }
@@ -107,12 +104,14 @@ void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     if (arc_read_handler_)
       arc_read_handler_->OnWindowDestroyed(window);
     return;
   }
+
+  if (app_restore::IsLacrosWindow(window) && lacros_read_handler_)
+    lacros_read_handler_->OnWindowDestroyed(window);
 
   int32_t restore_window_id =
       window->GetProperty(app_restore::kRestoreWindowIdKey);
@@ -280,8 +279,7 @@ std::unique_ptr<app_restore::WindowInfo> FullRestoreReadHandler::GetWindowInfo(
   const int32_t restore_window_id =
       window->GetProperty(app_restore::kRestoreWindowIdKey);
 
-  if (window->GetProperty(aura::client::kAppType) ==
-      static_cast<int>(ash::AppType::ARC_APP)) {
+  if (app_restore::IsArcWindow(window)) {
     return arc_read_handler_
                ? arc_read_handler_->GetWindowInfo(restore_window_id)
                : nullptr;

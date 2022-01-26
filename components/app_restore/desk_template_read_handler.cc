@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -127,13 +128,8 @@ int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
 void DeskTemplateReadHandler::OnWindowInitialized(aura::Window* window) {
   // If there isn't restore data for ARC apps, we don't need to handle ARC app
   // windows restoration.
-  if (!arc_read_handler_)
+  if (!arc_read_handler_ || !IsArcWindow(window))
     return;
-
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::ARC_APP)) {
-    return;
-  }
 
   const int32_t window_id = window->GetProperty(kRestoreWindowIdKey);
   if (window_id == app_restore::kParentToHiddenContainer ||

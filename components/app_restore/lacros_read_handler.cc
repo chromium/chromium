@@ -29,10 +29,8 @@ void LacrosReadHandler::AddRestoreData(const std::string& app_id,
 void LacrosReadHandler::OnLacrosBrowserWindowAdded(
     aura::Window* const window,
     int32_t restored_browser_session_id) {
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (!IsLacrosWindow(window))
     return;
-  }
 
   auto it = window_to_window_data_.find(window);
   if (it != window_to_window_data_.end() &&

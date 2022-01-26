@@ -24,6 +24,12 @@ constexpr int32_t kArcSessionIdOffsetForRestoredLaunching = 1000000000;
 // restore window id as -1, to add the ARC app window to the hidden container.
 constexpr int32_t kParentToHiddenContainer = -1;
 
+// Returns true if `window` is an ARC window. Otherwise, returns false.
+bool IsArcWindow(aura::Window* window);
+
+// Returns true if `window` is a Lacros window. Otherwise, returns false.
+bool IsLacrosWindow(aura::Window* window);
+
 // Applies properties from `window_info` to the given `property_handler`.
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full

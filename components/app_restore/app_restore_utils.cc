@@ -33,6 +33,16 @@ bool ShouldUseFullRestoreArcData() {
 
 }  // namespace
 
+bool IsArcWindow(aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::ARC_APP);
+}
+
+bool IsLacrosWindow(aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::LACROS);
+}
+
 void ApplyProperties(app_restore::WindowInfo* window_info,
                      ui::PropertyHandler* property_handler) {
   DCHECK(window_info);
@@ -197,10 +207,8 @@ int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
 void OnLacrosWindowAdded(aura::Window* const window,
                          uint32_t browser_session_id,
                          uint32_t restored_browser_session_id) {
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::LACROS)) {
+  if (!IsLacrosWindow(window))
     return;
-  }
 
   full_restore::FullRestoreReadHandler::GetInstance()
       ->OnLacrosBrowserWindowAdded(window, restored_browser_session_id);
