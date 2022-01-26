@@ -104,7 +104,11 @@ void MediaToolbarButtonView::Hide() {
 void MediaToolbarButtonView::Enable() {
   SetEnabled(true);
 
-  if (media::IsLiveCaptionFeatureEnabled()) {
+  // Have to check for browser window because this can be called during setup,
+  // before there is a valid widget to anchor anything to. Previously any
+  // attempt to display an IPH at this point would have simply failed, so this
+  // is not a behavioral change (see crbug.com/1291170).
+  if (browser_->window() && media::IsLiveCaptionFeatureEnabled()) {
     // Live Caption multi language is only enabled when SODA is also enabled.
     if (base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
       browser_->window()->MaybeShowFeaturePromo(
@@ -161,6 +165,12 @@ void MediaToolbarButtonView::ButtonPressed() {
 }
 
 void MediaToolbarButtonView::ClosePromoBubble() {
+  // This can get called during setup before the window is even added to the
+  // browser (and before any bubbles could possibly be shown) so if there is no
+  // window, just bail.
+  if (!browser_->window())
+    return;
+
   browser_->window()->CloseFeaturePromo(
       feature_engagement::kIPHLiveCaptionFeature);
   browser_->window()->CloseFeaturePromo(
