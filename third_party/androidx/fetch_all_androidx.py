@@ -7,14 +7,16 @@
 
 More specifically, to generate build.gradle:
   - It downloads the BUILD_INFO file for the latest androidx snapshot from
-    https://androidx.dev/snapshots/
+    https://androidx.dev/snapshots/builds
   - It replaces {{androidx_repository_url}} with the URL for the latest snapshot
   - For each dependency, it looks up the version in the BUILD_INFO file and
     substitutes the version into {{androidx_dependency_version}}.
 """
 
+import argparse
 import contextlib
 import json
+import logging
 import os
 import re
 import shutil
@@ -117,6 +119,9 @@ def _download_and_parse_build_info():
     with _build_dir() as build_dir:
         androidx_build_info_response = request.urlopen(
             _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL)
+        androidx_build_info_url = androidx_build_info_response.geturl()
+        logging.info('URL for the latest build info: %s',
+                     androidx_build_info_url)
         androidx_build_info_path = os.path.join(build_dir, 'BUILD_INFO')
         with open(androidx_build_info_path, 'w') as f:
             f.write(androidx_build_info_response.read().decode('utf-8'))
@@ -126,7 +131,7 @@ def _download_and_parse_build_info():
             _build_snapshot_repository_url('([0-9]*)').rsplit('/', 1)[0])
 
         version = re.match(resolved_snapshot_repository_url_pattern,
-                           androidx_build_info_response.geturl()).group(1)
+                           androidx_build_info_url).group(1)
 
         with open(androidx_build_info_path, 'r') as f:
             build_info_dict = json.loads(f.read())
@@ -198,6 +203,19 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('-v',
+                        '--verbose',
+                        dest='verbose_count',
+                        default=0,
+                        action='count',
+                        help='Verbose level (multiple times for more)')
+    args = parser.parse_args()
+
+    logging.basicConfig(
+        level=logging.WARNING - 10 * args.verbose_count,
+        format='%(levelname).1s %(relativeCreated)6d %(message)s')
+
     libs_dir = os.path.join(_ANDROIDX_PATH, 'libs')
 
     # Let recipe delete contents of lib directory because it has API to retry
