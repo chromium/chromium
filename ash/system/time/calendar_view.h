@@ -180,6 +180,11 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // Adjusts the Chrome Vox box position for date cells in the scroll view.
   void AdjustDateCellVoxBounds();
 
+  // Handles the position and status of `event_list_` and other views after the
+  // opening event list animation. Such as restoring the position of them,
+  // re-enabling animation and etc.
+  void OnOpenEventListAnimationComplete();
+
   // Unowned.
   UnifiedSystemTrayController* controller_;
 
