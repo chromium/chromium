@@ -272,7 +272,6 @@ export class BookmarksListElement extends PolymerElement {
     if (!event.ctrlKey && !event.metaKey) {
       return;
     }
-
     event.preventDefault();
     const eventTarget = event.composedPath()[0] as HTMLElement;
     const bookmarkData = getBookmarkFromElement(eventTarget);

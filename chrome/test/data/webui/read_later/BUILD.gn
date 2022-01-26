@@ -30,6 +30,7 @@ ts_library("build_ts") {
     "read_later_app_test.ts",
     "side_panel/bookmark_folder_test.ts",
     "side_panel/bookmarks_drag_manager_test.ts",
+    "side_panel/bookmarks_list_interactive_ui_test.ts",
     "side_panel/bookmarks_list_test.ts",
     "side_panel/side_panel_app_test.ts",
     "side_panel/test_bookmarks_api_proxy.ts",

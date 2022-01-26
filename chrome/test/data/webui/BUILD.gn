@@ -55,6 +55,7 @@ if (include_js_tests) {
     sources = [
       "cr_components/cr_components_mojo_interactive_test.js",
       "new_tab_page/new_tab_page_interactive_test.js",
+      "read_later/side_panel/side_panel_interactive_ui_tests.js",
     ]
 
     gen_include_files = [
