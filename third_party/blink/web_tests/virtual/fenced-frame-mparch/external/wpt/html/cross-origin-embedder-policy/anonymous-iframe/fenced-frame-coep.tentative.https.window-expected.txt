@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Check FencedFrame check adherence to COEP within an anonymous frame
+FAIL same-origin => blocked. assert_equals: expected "FencedFrame blocked" but got "FencedFrame loaded"
+FAIL cross-origin => blocked. assert_equals: expected "FencedFrame blocked" but got "FencedFrame loaded"
+FAIL same-origin + coep => blocked. assert_equals: expected "FencedFrame blocked" but got "FencedFrame loaded"
+FAIL cross-origin + coep => blocked. assert_equals: expected "FencedFrame blocked" but got "FencedFrame loaded"
+PASS same-origin + coep + corp => allowed.
+PASS cross-origin + coep + corp => allowed.
+Harness: the test ran to completion.
+
