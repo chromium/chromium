@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -224,7 +225,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 
     case IBD::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE:
-      (void)extensions::ExtensionDevToolsInfoBarDelegate::Create(
+      std::ignore = extensions::ExtensionDevToolsInfoBarDelegate::Create(
           "id", "Extension", base::DoNothing());
       break;
 

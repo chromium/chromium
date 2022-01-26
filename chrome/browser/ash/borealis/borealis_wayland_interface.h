@@ -46,7 +46,7 @@ class BorealisWaylandInterface {
 
   Profile* const profile_;
   // This is owned by Exo, once the server is created.
-  BorealisCapabilities* capabilities_;
+  BorealisCapabilities* capabilities_ = nullptr;
   base::FilePath server_path_;
 
   base::WeakPtrFactory<BorealisWaylandInterface> weak_factory_{this};

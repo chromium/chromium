@@ -68,9 +68,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   gfx::test::RenderTextTestApi render_text_test_api(render_text.get());
   render_text_test_api.SetGlyphWidth(character_width);
 
-  vr::ElisionParameters elision_params = vr::GetElisionParameters(
-      gurl, parsed, render_text.get(), min_path_pixels);
+  vr::GetElisionParameters(gurl, parsed, render_text.get(), min_path_pixels);
 
-  (void)elision_params;
   return 0;
 }

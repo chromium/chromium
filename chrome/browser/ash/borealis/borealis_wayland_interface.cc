@@ -13,9 +13,7 @@
 namespace borealis {
 
 BorealisWaylandInterface::BorealisWaylandInterface(Profile* profile)
-    : profile_(profile), capabilities_(nullptr) {
-  (void)profile_;
-}
+    : profile_(profile) {}
 
 BorealisWaylandInterface::~BorealisWaylandInterface() {
   if (capabilities_ && !server_path_.empty())

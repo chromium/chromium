@@ -17,7 +17,7 @@
 namespace payments {
 namespace {
 
-struct ScopedTestSupport {
+struct [[maybe_unused]] ScopedTestSupport {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoking Play Billing on Chrome OS requires initializing the overlay
   // manager.
@@ -66,7 +66,6 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        IgnoreOtherPaymentAppsInTwaWhenHaveAppStoreBilling) {
   ScopedTestSupport scoped_test_support;
-  (void)scoped_test_support;  // Avoid the "unused variable" warning.
 
   std::string method_name = https_server()->GetURL("a.com", "/").spec();
   method_name = method_name.substr(0, method_name.length() - 1);
@@ -105,7 +104,6 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 // https://play.google.com/billing payment method.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest, PlayBillingPaymentMethod) {
   ScopedTestSupport scoped_test_support;
-  (void)scoped_test_support;  // Avoid the "unused variable" warning.
 
   std::string response = "App store payment method app response for test.";
   test_controller()->SetTwaPackageName("com.example.app");
@@ -131,7 +129,6 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest, PlayBillingPaymentMethod) {
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        ShowPromiseShouldSkipBrowserPaymentSheet) {
   ScopedTestSupport scoped_test_support;
-  (void)scoped_test_support;  // Avoid the "unused variable" warning.
 
   std::string response = "App store payment method app response for test.";
   test_controller()->SetTwaPackageName("com.example.app");
@@ -159,7 +156,6 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                        EmptyShowPromiseShouldSkipBrowserPaymentSheet) {
   ScopedTestSupport scoped_test_support;
-  (void)scoped_test_support;  // Avoid the "unused variable" warning.
 
   std::string response = "App store payment method app response for test.";
   test_controller()->SetTwaPackageName("com.example.app");

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
 
+#include <tuple>
+
 #include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"
@@ -64,7 +66,7 @@ void DeleteTemplateUrlsForTimeRange(TemplateURLService* keywords_model,
   if (!keywords_model->loaded()) {
     // TODO(https://crbug.com/1288724): Ignoring the return value here is
     // probably a bug.
-    (void)keywords_model->RegisterOnLoadedCallback(
+    std::ignore = keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForTimeRange, keywords_model,
                        delete_begin, delete_end));
     keywords_model->Load();
@@ -79,7 +81,7 @@ void DeleteTemplateUrlsForDeletedOrigins(TemplateURLService* keywords_model,
   if (!keywords_model->loaded()) {
     // TODO(https://crbug.com/1288724): Ignoring the return value here is
     // probably a bug.
-    (void)keywords_model->RegisterOnLoadedCallback(
+    std::ignore = keywords_model->RegisterOnLoadedCallback(
         base::BindOnce(&DeleteTemplateUrlsForDeletedOrigins, keywords_model,
                        std::move(deleted_origins)));
     keywords_model->Load();
