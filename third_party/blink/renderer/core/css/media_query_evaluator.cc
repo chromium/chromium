@@ -281,7 +281,7 @@ static bool CompareAspectRatioValue(const MediaQueryExpValue& value,
 static bool NumberValue(const MediaQueryExpValue& value, float& result) {
   if (value.IsNumeric() &&
       value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    result = value.Value();
+    result = ClampTo<float>(value.Value());
     return true;
   }
   return false;
