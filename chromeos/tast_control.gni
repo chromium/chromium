@@ -142,6 +142,14 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Gamepad.vm",
   "arc.IMESwitchShortcut.vm",
   "arc.AppValidity.vm",
+
+  # https://crbug.com/1291184
+  "arc.Boot.vm",
+  "arc.ChromeCrash.vm_logged_in",
+  "arc.StartStop.vm",
+  "security.NetworkListenersARC.vm",
+  "security.SELinuxFilesARC.vm",
+  "security.SELinuxFilesDataDir.vm",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
