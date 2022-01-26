@@ -78,17 +78,18 @@ class CONTENT_EXPORT Calculator {
     kQueueAndExecution,
   };
 
-  // Stages of startup used by this Calculator. Public for testing.
+  // Stages of startup used by this Calculator. Stages are defined in
+  // chronological order, some can be skipped. Public for
+  // testing.
   enum class StartupStage {
-    // Initial value.
-    kMessageLoopJustStarted,
-    // First kMeasurementInterval completed but haven't reached OnFirstIdle()
-    // yet.
+    // Monitoring the first interval.
+    kFirstInterval,
+    // First interval completed but it didn't capture OnFirstIdle().
     kFirstIntervalDoneWithoutFirstIdle,
-    // From OnFirstIdle() to the end of the kMeasurementInterval including it.
-    kPastFirstIdle,
-    // From the first kMeasurementInterval after OnFirstIdle() onward.
-    kRecordingPastFirstIdle,
+    // Monitoring the first interval after OnFirstIdle().
+    kFirstIntervalAfterFirstIdle,
+    // All intervals after kFirstIntervalAfterFirstIdle.
+    kPeriodic
   };
 
  protected:
@@ -179,7 +180,8 @@ class CONTENT_EXPORT Calculator {
   bool is_application_visible_ = false;
 #endif
 
-  StartupStage startup_stage_ = StartupStage::kMessageLoopJustStarted;
+  StartupStage startup_stage_ = StartupStage::kFirstInterval;
+  bool past_first_idle_ = false;
 
   // We expect there to be low contention and this lock to cause minimal
   // overhead. If performance of this lock proves to be a problem, we can move

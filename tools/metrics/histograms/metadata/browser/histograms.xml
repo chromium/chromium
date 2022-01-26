@@ -346,9 +346,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds2"
-    units="janks" expires_after="2022-07-17">
-<!-- JankyIntervalsPerThirtySeconds3 is on probation to replace this -->
-
+    units="janks" expires_after="M98">
+  <obsolete>
+    Replaced by Browser.Responsiveness.JankyIntervalsPerThirtySeconds3
+  </obsolete>
   <owner>erikchen@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -367,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3"
-    units="janks" expires_after="2022-06-05">
+    units="janks" expires_after="2022-09-05">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
 
   <owner>etienneb@chromium.org</owner>
