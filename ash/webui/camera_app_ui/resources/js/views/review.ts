@@ -24,7 +24,7 @@ interface UIArgs {
  * Available option show in this view.
  */
 export class Option<T> {
-  readonly exitValue: T|null|undefined;
+  readonly exitValue?: T;
   readonly hasPopup: boolean|null;
   readonly callback: (() => void)|null;
   /**
@@ -34,7 +34,7 @@ export class Option<T> {
    *     executed when option selected.
    */
   constructor(readonly uiArgs: UIArgs, {exitValue, callback, hasPopup}: {
-    exitValue?: (T|null);
+    exitValue?: T;
     callback?: (() => void);
     hasPopup?: boolean;
   }) {
@@ -57,13 +57,12 @@ export enum ButtonGroupTemplate {
  * Group of review options.
  */
 export class OptionGroup<T> {
-  readonly options: Option<T|null>[];
+  readonly options: Option<T>[];
   readonly template: ButtonGroupTemplate;
 
   /** Constructs Options. */
-  constructor({options, template}: {
-    options: Array<Option<T|null>>; template: ButtonGroupTemplate;
-  }) {
+  constructor({options, template}:
+                  {options: Array<Option<T>>; template: ButtonGroupTemplate;}) {
     this.options = options;
     this.template = template;
   }
@@ -132,8 +131,7 @@ export class Review<T> extends View {
   /**
    * Starts review.
    */
-  async startReview(...optionGroups: Array<OptionGroup<T|null>>):
-      Promise<T|null> {
+  async startReview(...optionGroups: Array<OptionGroup<T>>): Promise<T|null> {
     // Remove all existing button groups and buttons.
     for (const group of this.btnGroups) {
       group.el.remove();

@@ -236,7 +236,7 @@ export class Camera extends View implements CameraViewUI {
 
     // Highlight effect for PTZ button.
     let toastShown = false;
-    const highlight = (enabled) => {
+    const highlight = (enabled: boolean) => {
       if (!enabled) {
         if (toastShown) {
           newFeatureToast.hide();
@@ -272,6 +272,9 @@ export class Camera extends View implements CameraViewUI {
         if (state.get(Mode.VIDEO)) {
           const {width, height, frameRate} =
               this.cameraManager.getPreviewVideo().getVideoSettings();
+          assert(width !== undefined);
+          assert(height !== undefined);
+          assert(frameRate !== undefined);
           options.updateValues(new Resolution(width, height), frameRate);
         }
       },
@@ -414,10 +417,10 @@ export class Camera extends View implements CameraViewUI {
    * Ends the current take (or clears scheduled further takes if any.)
    * @return Promise for the operation.
    */
-  private endTake(): Promise<void> {
+  private async endTake(): Promise<void> {
     timertick.cancel();
     this.cameraManager.stopCapture();
-    return Promise.resolve(this.take);
+    await this.take;
   }
 
   private async checkPhotoResult<T>(pendingPhotoResult: Promise<T>):
@@ -493,6 +496,7 @@ export class Camera extends View implements CameraViewUI {
     try {
       const {timestamp, resolution, blob, metadata, pendingPortrait} =
           await this.checkPhotoResult(pendingPortraitResult);
+      assert(pendingPortrait !== null);
       const portraitBlobAndMetadata =
           await this.checkPhotoResult(pendingPortrait);
 
@@ -595,13 +599,15 @@ export class Camera extends View implements CameraViewUI {
     let result = null;
     try {
       await this.prepareReview(async () => {
-        const doCrop = (blob, corners, rotation) =>
+        const doCrop = (blob: Blob, corners: Point[], rotation: number) =>
             helper.convertToDocument(blob, corners, rotation, MimeType.JPEG);
         let corners =
             refCorners || getDefaultScanCorners(originImage.resolution);
-        let docBlob;
+        // This is definitely assigned in either the async doRecrop or the else
+        // branch doCrop.
+        let docBlob!: Blob;
         let fixType = metrics.DocFixType.NONE;
-        const sendEvent = (docResult) => {
+        const sendEvent = (docResult: metrics.DocResultType) => {
           metrics.sendCaptureEvent({
             facing: this.facing,
             resolution: originImage.resolution,
@@ -733,7 +739,7 @@ export class Camera extends View implements CameraViewUI {
     const blob = await gifSaver.endWrite();
     state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
 
-    const sendEvent = (gifResult) => {
+    const sendEvent = (gifResult: metrics.GifResultType) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
         facing: this.facing,
@@ -744,7 +750,7 @@ export class Camera extends View implements CameraViewUI {
       });
     };
 
-    let result = false;
+    let result: boolean|null = false;
     await this.prepareReview(async () => {
       await this.review.setReviewPhoto(blob);
       const positive = new review.OptionGroup({
@@ -819,7 +825,6 @@ export class Camera extends View implements CameraViewUI {
     }
     return false;
   }
-
 
   /**
    * Updates |this.activeDeviceId|.
