@@ -71,7 +71,7 @@ cd src
 ### Converting an existing Linux checkout
 
 If you have an existing Linux checkout, you can add Android support by
-appending `target_os = ['android']` to your `.gclient` file (in the
+appending `target_os = ['linux', 'android']` to your `.gclient` file (in the
 directory above `src`):
 
 ```shell
