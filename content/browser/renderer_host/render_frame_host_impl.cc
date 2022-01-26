@@ -6694,6 +6694,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       // See regression: https://crbug.com/1181673
       case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
       case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+      case network::mojom::CrossOriginOpenerPolicyValue::
+          kSameOriginAllowPopupsPlusCoep:
         break;
 
       // See https://html.spec.whatwg.org/#browsing-context-names (step 8)

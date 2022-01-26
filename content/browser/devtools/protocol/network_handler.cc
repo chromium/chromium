@@ -2737,6 +2737,10 @@ makeCrossOriginOpenerPolicyValue(
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           SameOriginPlusCoep;
+    case network::mojom::CrossOriginOpenerPolicyValue::
+        kSameOriginAllowPopupsPlusCoep:
+      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
+          SameOriginAllowPopupsPlusCoep;
   }
 }
 protocol::Network::CrossOriginEmbedderPolicyValue

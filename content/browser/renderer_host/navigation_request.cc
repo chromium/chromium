@@ -2843,6 +2843,8 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+    case network::mojom::CrossOriginOpenerPolicyValue::
+        kSameOriginAllowPopupsPlusCoep:
       should_header_value_trigger_isolation = true;
       break;
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
@@ -7313,8 +7315,11 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
 
   // We consider navigations to be cross-origin isolated if the response
   // asserts proper COOP and COEP headers.
-  if (coop_status().current_coop().value !=
-      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) {
+  if ((coop_status().current_coop().value !=
+       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) &&
+      (coop_status().current_coop().value !=
+       network::mojom::CrossOriginOpenerPolicyValue::
+           kSameOriginAllowPopupsPlusCoep)) {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 

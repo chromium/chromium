@@ -54,6 +54,9 @@ std::string ToString(network::mojom::CrossOriginOpenerPolicyValue coop_value) {
       return "same-origin-allow-popups";
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return "same-origin-plus-coep";
+    case network::mojom::CrossOriginOpenerPolicyValue::
+        kSameOriginAllowPopupsPlusCoep:
+      return "same-origin-allow-popups-plus-coep";
   }
 }
 

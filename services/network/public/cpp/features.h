@@ -37,6 +37,8 @@ extern const base::Feature kCrossOriginOpenerPolicy;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCrossOriginOpenerPolicyByDefault;
 COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kCoopSameOriginAllowPopupsPlusCoep;
+COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSplitAuthCacheByNetworkIsolationKey;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kDnsOverHttpsUpgrade;

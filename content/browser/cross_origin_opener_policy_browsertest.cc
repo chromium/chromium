@@ -65,9 +65,18 @@ network::CrossOriginOpenerPolicy CoopSameOriginAllowPopups() {
   return coop;
 }
 
+network::CrossOriginOpenerPolicy CoopSameOriginAllowPopupsPlusCoep() {
+  network::CrossOriginOpenerPolicy coop;
+  coop.value = network::mojom::CrossOriginOpenerPolicyValue::
+      kSameOriginAllowPopupsPlusCoep;
+  coop.soap_by_default_value = network::mojom::CrossOriginOpenerPolicyValue::
+      kSameOriginAllowPopupsPlusCoep;
+  return coop;
+}
+
 // This is the value of COOP when navigating to a page without COOP set:
 //  - value is kUnsafeNone
-//  - soap_by_default_value is kSameOriginPlusCoep
+//  - soap_by_default_value is kSameOriginAllowPopups
 network::CrossOriginOpenerPolicy CoopUnsafeNoneWithSoapByDefault() {
   network::CrossOriginOpenerPolicy coop;
   coop.soap_by_default_value =
@@ -193,6 +202,20 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
         {
             features::kSharedArrayBuffer,
         });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Same as CrossOriginOpenerPolicyBrowserTest, but enable COOP:SOAPPC.
+// See https://crbug.com/1221127.
+class SameOriginAllowPopupsPlusCoepBrowserTest
+    : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  SameOriginAllowPopupsPlusCoepBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {network::features::kCoopSameOriginAllowPopupsPlusCoep}, {});
   }
 
  private:
@@ -3333,6 +3356,9 @@ INSTANTIATE_TEST_SUITE_P(All, NoSharedArrayBufferByDefault, kTestParams);
 INSTANTIATE_TEST_SUITE_P(All,
                          SoapByDefaultVirtualBrowsingContextGroupTest,
                          kTestParams);
+INSTANTIATE_TEST_SUITE_P(All,
+                         SameOriginAllowPopupsPlusCoepBrowserTest,
+                         kTestParams);
 
 IN_PROC_BROWSER_TEST_P(NoSharedArrayBufferByDefault, BaseCase) {
   GURL url = https_server()->GetURL("a.test", "/empty.html");
@@ -4199,6 +4225,22 @@ IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
   EXPECT_NE(group_2, group_3);
   EXPECT_NE(group_3, group_4);
   EXPECT_NE(group_4, group_1);
+}
+
+IN_PROC_BROWSER_TEST_P(SameOriginAllowPopupsPlusCoepBrowserTest,
+                       CoopSameOriginAllowPopupsPlusCoepIsParsed) {
+  GURL starting_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: same-origin-allow-popups"
+      "&cross-origin-embedder-policy: require-corp"));
+  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
+
+  // Verify that COOP:SOAPPC was parsed, and that it correctly enabled cross
+  // origin isolation.
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
+            CoopSameOriginAllowPopupsPlusCoep());
+  EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 }  // namespace content

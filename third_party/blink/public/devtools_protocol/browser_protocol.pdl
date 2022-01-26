@@ -6154,6 +6154,7 @@ domain Network
       SameOriginAllowPopups
       UnsafeNone
       SameOriginPlusCoep
+      SameOriginAllowPopupsPlusCoep
 
   experimental type CrossOriginOpenerPolicyStatus extends object
     properties
