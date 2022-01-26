@@ -89,8 +89,6 @@ String InlineStylePropertyMap::SerializationForShorthand(
     return StylePropertySerializer(*inline_style)
         .SerializeShorthand(property.PropertyID());
   }
-
-  NOTREACHED();
   return "";
 }
 

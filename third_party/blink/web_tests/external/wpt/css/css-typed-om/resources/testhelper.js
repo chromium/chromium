@@ -144,6 +144,17 @@ function createDivWithStyle(test, cssText) {
   return element;
 }
 
+// Creates a new div element without inline style.
+// The created element is deleted during test cleanup.
+function createDivWithoutStyle(test) {
+  let element = document.createElement('div');
+  document.body.appendChild(element);
+  test.add_cleanup(() => {
+    element.remove();
+  });
+  return element;
+}
+
 // Creates a new div element with inline style |cssText| and returns
 // its inline style property map.
 function createInlineStyleMap(test, cssText) {
