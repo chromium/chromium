@@ -58,12 +58,7 @@ void StreamingRuntimeApplication::HandleMessage(
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   LOG(INFO) << "Streaming session started for " << *this << "!";
-  has_started_streaming_ = true;
   SetApplicationStarted();
-
-  if (renderer_connection_) {
-    StartRenderer();
-  }
 }
 
 void StreamingRuntimeApplication::OnError() {
@@ -100,16 +95,14 @@ void StreamingRuntimeApplication::InitializeApplication(
   message_port_service_->ConnectToPort(kCastTransportBindingName,
                                        std::move(client_port));
 
-  // Allow for capturing of the renderer controls mojo pipe.
-  Observe(cast_web_contents);
-
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), network_context_getter_, std::move(server_port), this,
+      task_runner(), network_context_getter_, std::move(server_port),
+      cast_web_contents, this,
       /* supports_audio= */ app_config().app_id() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
-  receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
+  receiver_session_client_->LaunchStreamingReceiverAsync();
 
   std::string streaming_url =
       cast_streaming::GetCastStreamingMediaSourceUrl().spec();
@@ -130,36 +123,6 @@ void StreamingRuntimeApplication::StopApplication() {
 
 bool StreamingRuntimeApplication::IsStreamingApplication() const {
   return true;
-}
-
-void StreamingRuntimeApplication::MainFrameReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  DLOG(INFO)
-      << "Capturing CastStreamingRendererController remote pipe for URL: "
-      << navigation_handle->GetURL() << " in " << *this;
-
-  renderer_connection_.reset();
-  navigation_handle->GetRenderFrameHost()
-      ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&renderer_connection_);
-  DCHECK(renderer_connection_);
-
-  if (has_started_streaming_) {
-    StartRenderer();
-  }
-}
-
-void StreamingRuntimeApplication::StartRenderer() {
-  DCHECK(has_started_streaming_);
-  DCHECK(renderer_connection_);
-  DCHECK(!renderer_controls_.is_bound());
-
-  renderer_connection_->SetPlaybackController(
-      renderer_controls_.BindNewPipeAndPassReceiver());
-  renderer_controls_->StartPlayingFrom(base::Seconds(0));
-  renderer_controls_->SetPlaybackRate(1.0);
-
-  LOG(INFO) << "Starting CastStreamingRenderer playback for " << *this;
 }
 
 }  // namespace chromecast

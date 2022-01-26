@@ -9,10 +9,6 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 #include "chromecast/cast_core/runtime/browser/streaming_receiver_session_client.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
-#include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
-#include "media/mojo/mojom/renderer.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 
@@ -24,8 +20,7 @@ class MessagePortService;
 
 class StreamingRuntimeApplication final
     : public RuntimeApplicationBase,
-      public StreamingReceiverSessionClient::Handler,
-      public CastWebContents::Observer {
+      public StreamingReceiverSessionClient::Handler {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   StreamingRuntimeApplication(
@@ -53,20 +48,6 @@ class StreamingRuntimeApplication final
   void OnResolutionChanged(
       const gfx::Rect& size,
       const ::media::VideoTransformation& transformation) override;
-
-  // CastWebContents::Observer overrides.
-  void MainFrameReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
-  // Helper method to start playback using |renderer_connection_| and
-  // |renderer_controls_|.
-  void StartRenderer();
-
-  bool has_started_streaming_ = false;
-
-  mojo::AssociatedRemote<cast_streaming::mojom::RendererController>
-      renderer_connection_;
-  mojo::Remote<::media::mojom::Renderer> renderer_controls_;
 
   media::VideoPlaneController* video_plane_controller_;
 

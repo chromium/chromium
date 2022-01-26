@@ -125,6 +125,10 @@ declare_args() {
   # True to link in alternate build targets for the Cast Media Runtime.
   enable_cast_media_runtime = false
 
+  # True to use the remoting implementation of cast streaming for the cast web
+  # runtime (as opposed to the mirroring-only implementation).
+  enable_remoting_for_cwr = false
+
   # device specific string to append to User string.
   device_user_agent_suffix = ""
 }

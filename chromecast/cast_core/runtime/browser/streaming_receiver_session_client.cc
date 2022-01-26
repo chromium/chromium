@@ -9,15 +9,11 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/cast_core/runtime/browser/streaming_controller_base.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
-#include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "media/base/video_decoder_config.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/openscreen/src/cast/streaming/constants.h"
 
 namespace chromecast {
@@ -175,22 +171,6 @@ cast_streaming::ReceiverSession::AVConstraints CreateConstraints(
   return constraints;
 }
 
-std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
-    cast_streaming::ReceiverSession::Client* client,
-    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    cast_streaming::ReceiverSession::AVConstraints constraints) {
-  cast_streaming::ReceiverSession::MessagePortProvider message_port_provider =
-      base::BindOnce(
-          [](std::unique_ptr<cast_api_bindings::MessagePort> port) {
-            return port;
-          },
-          std::move(message_port));
-  return cast_streaming::ReceiverSession::Create(
-      std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
-          std::move(constraints)),
-      std::move(message_port_provider), client);
-}
-
 }  // namespace
 
 constexpr base::TimeDelta
@@ -200,13 +180,15 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+    CastWebContents* cast_web_contents,
     Handler* handler,
     bool supports_audio,
     bool supports_video)
     : StreamingReceiverSessionClient(
           std::move(task_runner),
           std::move(network_context_getter),
-          base::BindOnce(&CreateReceiverSession, this, std::move(message_port)),
+          StreamingControllerBase::Create(std::move(message_port),
+                                          cast_web_contents),
           handler,
           supports_audio,
           supports_video) {}
@@ -214,19 +196,18 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
-    ReceiverSessionFactory receiver_session_factory,
+    std::unique_ptr<StreamingController> streaming_controller,
     Handler* handler,
     bool supports_audio,
     bool supports_video)
     : handler_(handler),
       task_runner_(std::move(task_runner)),
-      receiver_session_factory_(std::move(receiver_session_factory)),
+      streaming_controller_(std::move(streaming_controller)),
       supports_audio_(supports_audio),
       supports_video_(supports_video),
       weak_factory_(this) {
   DCHECK(handler_);
   DCHECK(task_runner_);
-  DCHECK(receiver_session_factory_);
   DCHECK(!network_context_getter.is_null());
 
   cast_streaming::SetNetworkContextGetter(std::move(network_context_getter));
@@ -251,78 +232,37 @@ StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
   DLOG(INFO) << "StreamingReceiverSessionClient state when destroyed"
              << "\n\tIs Healthy: " << is_healthy()
              << "\n\tLaunch called: " << is_streaming_launch_pending()
-             << "\n\tAV Settings Received: " << has_received_av_settings()
-             << "\n\tMojo Handle Acquired: "
-             << !!(streaming_state_ & LaunchState::kMojoHandleAcquired);
+             << "\n\tAV Settings Received: " << has_received_av_settings();
 
   cast_streaming::SetNetworkContextGetter({});
 }
 
 StreamingReceiverSessionClient::Handler::~Handler() = default;
 
-void StreamingReceiverSessionClient::LaunchStreamingReceiverAsync(
-    CastWebContents* cast_web_contents) {
+void StreamingReceiverSessionClient::LaunchStreamingReceiverAsync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cast_web_contents);
   DCHECK(!is_streaming_launch_pending());
 
   streaming_state_ |= LaunchState::kLaunchCalled;
-  Observe(cast_web_contents);
-}
-
-void StreamingReceiverSessionClient::MainFrameReadyToCommitNavigation(
-    content::NavigationHandle* navigation_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_streaming_launch_pending());
-  DCHECK(navigation_handle);
-
-  // Check whether the mojo handle has been acquired. The page URL cannot be
-  // checked because the receiver app is expected to be loaded as an embedded
-  // video within the page, not as the page itself.
-  if (streaming_state_ & LaunchState::kMojoHandleAcquired) {
-    DLOG(WARNING) << "Mojo handle already acquired before page load: "
-                  << navigation_handle->GetURL();
-    return;
-  }
-
-  navigation_handle->GetRenderFrameHost()
-      ->GetRemoteAssociatedInterfaces()
-      ->GetInterface(&cast_streaming_receiver_);
-  streaming_state_ |= LaunchState::kMojoHandleAcquired;
-  DLOG(INFO) << "CastStreamingReceiver mojo pipe captured.";
-
-  if (!TryStartStreamingSession()) {
-    DCHECK(!has_received_av_settings());
-    DLOG(INFO) << "AV Settings not yet received. Waiting...";
-  }
-}
-
-bool StreamingReceiverSessionClient::TryStartStreamingSession() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!has_streaming_launched());
-  if (streaming_state_ != LaunchState::kReady) {
-    return false;
-  }
-
-  DCHECK(av_constraints_);
-  DCHECK(receiver_session_factory_);
-  receiver_session_ =
-      std::move(receiver_session_factory_).Run(*av_constraints_);
-  DCHECK(receiver_session_);
-  receiver_session_->SetCastStreamingReceiver(
-      std::move(cast_streaming_receiver_));
-
-  streaming_state_ = LaunchState::kLaunched;
-  handler_->OnStreamingSessionStarted();
-  return true;
+  streaming_controller_->StartPlaybackAsync(
+      base::BindOnce(&StreamingReceiverSessionClient::OnPlaybackStarted,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void StreamingReceiverSessionClient::VerifyAVSettingsReceived() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!has_received_av_settings()) {
-    LOG(ERROR) << "AV Settings never received";
-    TriggerError();
+  if (streaming_state_ & LaunchState::kAVSettingsReceived) {
+    return;
   }
+
+  LOG(ERROR) << "AVSettings not received within the allocated amount of time";
+  TriggerError();
+}
+
+void StreamingReceiverSessionClient::OnPlaybackStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  streaming_state_ |= LaunchState::kLaunched;
+  handler_->OnStreamingSessionStarted();
 }
 
 bool StreamingReceiverSessionClient::OnMessage(
@@ -363,7 +303,11 @@ bool StreamingReceiverSessionClient::OnMessage(
   streaming_state_ |= LaunchState::kAVSettingsReceived;
   if (!has_streaming_launched()) {
     av_constraints_ = std::move(constraints);
-    TryStartStreamingSession();
+
+    streaming_controller_->InitializeReceiverSession(
+        std::make_unique<cast_streaming::ReceiverSession::AVConstraints>(
+            *av_constraints_),
+        this);
     return true;
   }
 

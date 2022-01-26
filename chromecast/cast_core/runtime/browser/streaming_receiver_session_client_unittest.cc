@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromecast/browser/test/mock_cast_web_view.h"
+#include "chromecast/cast_core/runtime/browser/streaming_controller.h"
 #include "chromecast/shared/platform_info_serializer.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
@@ -25,14 +26,16 @@ class NetworkContext;
 namespace chromecast {
 namespace {
 
-class MockReceiverSession : public cast_streaming::ReceiverSession {
+class MockStreamingController : public StreamingController {
  public:
-  ~MockReceiverSession() override = default;
+  ~MockStreamingController() override = default;
 
-  MOCK_METHOD1(SetCastStreamingReceiver,
-               void(mojo::AssociatedRemote<
-                    cast_streaming::mojom::CastStreamingReceiver>));
-  MOCK_METHOD1(SetClient, void(cast_streaming::ReceiverSession::Client*));
+  MOCK_METHOD2(
+      InitializeReceiverSession,
+      void(std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints>,
+           cast_streaming::ReceiverSession::Client*));
+  MOCK_METHOD1(StartPlaybackAsync,
+               void(StreamingController::PlaybackStartedCB));
 };
 
 class MockStreamingReceiverSessionHandler
@@ -57,8 +60,9 @@ class StreamingReceiverSessionClientTest : public testing::Test {
     // static function elsewhere in the codebase's tests.
     cast_streaming::ClearNetworkContextGetter();
 
-    auto receiver_session = std::make_unique<StrictMock<MockReceiverSession>>();
-    receiver_session_ = receiver_session.get();
+    auto streaming_controller =
+        std::make_unique<StrictMock<MockStreamingController>>();
+    streaming_controller_ = streaming_controller.get();
     EXPECT_CALL(handler_, StartAvSettingsQuery(_));
 
     // Note: Can't use make_unique<> because the private ctor is needed.
@@ -66,11 +70,12 @@ class StreamingReceiverSessionClientTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(
             []() -> network::mojom::NetworkContext* { return nullptr; }),
-        base::BindOnce(
-            &StreamingReceiverSessionClientTest::CreateReceiverSession,
-            base::Unretained(this), std::move(receiver_session)),
-        &handler_, true, true);
+        std::move(streaming_controller), &handler_, true, true);
     receiver_session_client_.reset(client);
+
+    ON_CALL(*streaming_controller_, InitializeReceiverSession(_, _))
+        .WillByDefault(Invoke(
+            this, &StreamingReceiverSessionClientTest::CreateReceiverSession));
   }
 
   ~StreamingReceiverSessionClientTest() {
@@ -80,12 +85,6 @@ class StreamingReceiverSessionClientTest : public testing::Test {
   }
 
  protected:
-  void SetMojoHandleAcquired() {
-    receiver_session_client_->streaming_state_ =
-        receiver_session_client_->streaming_state_ |
-        StreamingReceiverSessionClient::LaunchState::kMojoHandleAcquired;
-  }
-
   bool PostMessage(base::StringPiece message) {
     return receiver_session_client_->OnMessage(message, {});
   }
@@ -95,36 +94,28 @@ class StreamingReceiverSessionClientTest : public testing::Test {
   // create the MessagePort pair.
   void ResetMessagePort() { receiver_session_client_->message_port_.reset(); }
 
+  void CreateReceiverSession(
+      std::unique_ptr<cast_streaming::ReceiverSession::AVConstraints>
+          constraints,
+      cast_streaming::ReceiverSession::Client* client) {
+    session_constraints_ = *constraints;
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  MockCastWebView cast_web_view_;
-
   StrictMock<MockStreamingReceiverSessionHandler> handler_;
-  StrictMock<MockReceiverSession>* receiver_session_;
+  StrictMock<MockStreamingController>* streaming_controller_;
   std::unique_ptr<StreamingReceiverSessionClient> receiver_session_client_;
 
   // Set when the session is launched.
   cast_streaming::ReceiverSession::AVConstraints session_constraints_;
-
- private:
-  std::unique_ptr<cast_streaming::ReceiverSession> CreateReceiverSession(
-      std::unique_ptr<cast_streaming::ReceiverSession> ptr,
-      cast_streaming::ReceiverSession::AVConstraints constraints) {
-    session_constraints_ = constraints;
-    return ptr;
-  }
 };
 
 TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageEmpty) {
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
-  SetMojoHandleAcquired();
-
   PlatformInfoSerializer serializer;
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  EXPECT_CALL(*receiver_session_, SetCastStreamingReceiver(_));
-  EXPECT_CALL(handler_, OnStreamingSessionStarted());
+  EXPECT_CALL(*streaming_controller_, InitializeReceiverSession(_, _));
   EXPECT_TRUE(PostMessage(serializer.Serialize()));
   EXPECT_TRUE(receiver_session_client_->has_received_av_settings());
 
@@ -134,15 +125,10 @@ TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageEmpty) {
 }
 
 TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageNoCodecs) {
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
-  SetMojoHandleAcquired();
-
   PlatformInfoSerializer serializer;
   serializer.SetMaxChannels(9);
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  EXPECT_CALL(*receiver_session_, SetCastStreamingReceiver(_));
-  EXPECT_CALL(handler_, OnStreamingSessionStarted());
+  EXPECT_CALL(*streaming_controller_, InitializeReceiverSession(_, _));
   EXPECT_TRUE(PostMessage(serializer.Serialize()));
   EXPECT_TRUE(receiver_session_client_->has_received_av_settings());
 
@@ -153,10 +139,6 @@ TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageNoCodecs) {
 }
 
 TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageWithCodecs) {
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
-  SetMojoHandleAcquired();
-
   PlatformInfoSerializer serializer;
   std::vector<PlatformInfoSerializer::AudioCodecInfo> audio_infos;
   audio_infos.push_back(PlatformInfoSerializer::AudioCodecInfo{
@@ -184,8 +166,7 @@ TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageWithCodecs) {
   serializer.SetSupportedAudioCodecs(std::move(audio_infos));
   serializer.SetSupportedVideoCodecs(std::move(video_infos));
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  EXPECT_CALL(*receiver_session_, SetCastStreamingReceiver(_));
-  EXPECT_CALL(handler_, OnStreamingSessionStarted());
+  EXPECT_CALL(*streaming_controller_, InitializeReceiverSession(_, _));
   EXPECT_TRUE(PostMessage(serializer.Serialize()));
   EXPECT_TRUE(receiver_session_client_->has_received_av_settings());
 
@@ -213,17 +194,19 @@ TEST_F(StreamingReceiverSessionClientTest, OnSingleValidMessageWithCodecs) {
 }
 
 TEST_F(StreamingReceiverSessionClientTest, OnCapabilitiesDecrease) {
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
-  SetMojoHandleAcquired();
-
   PlatformInfoSerializer serializer;
   serializer.SetMaxChannels(9);
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  EXPECT_CALL(*receiver_session_, SetCastStreamingReceiver(_));
-  EXPECT_CALL(handler_, OnStreamingSessionStarted());
+  EXPECT_CALL(*streaming_controller_, InitializeReceiverSession(_, _));
   EXPECT_TRUE(PostMessage(serializer.Serialize()));
   EXPECT_TRUE(receiver_session_client_->has_received_av_settings());
+
+  EXPECT_CALL(*streaming_controller_, StartPlaybackAsync(_))
+      .WillOnce([](StreamingController::PlaybackStartedCB cb) {
+        std::move(cb).Run();
+      });
+  EXPECT_CALL(handler_, OnStreamingSessionStarted());
+  receiver_session_client_->LaunchStreamingReceiverAsync();
 
   serializer.SetMaxChannels(8);
   EXPECT_CALL(handler_, OnError());
@@ -234,8 +217,10 @@ TEST_F(StreamingReceiverSessionClientTest, FailureWhenNoAvSettingsAfterLaunch) {
   EXPECT_FALSE(receiver_session_client_->is_streaming_launch_pending());
   EXPECT_FALSE(receiver_session_client_->has_streaming_launched());
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
+
+  EXPECT_CALL(*streaming_controller_, StartPlaybackAsync(_));
+  receiver_session_client_->LaunchStreamingReceiverAsync();
+
   EXPECT_TRUE(receiver_session_client_->is_streaming_launch_pending());
   EXPECT_FALSE(receiver_session_client_->has_streaming_launched());
   EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
@@ -244,27 +229,6 @@ TEST_F(StreamingReceiverSessionClientTest, FailureWhenNoAvSettingsAfterLaunch) {
   EXPECT_CALL(handler_, OnError());
   task_environment_.FastForwardBy(
       StreamingReceiverSessionClient::kMaxAVSettingsWaitTime);
-}
-
-TEST_F(StreamingReceiverSessionClientTest, LaunchWhenAvSettingsReceived) {
-  EXPECT_CALL(handler_, OnStreamingSessionStarted());
-  EXPECT_FALSE(receiver_session_client_->is_streaming_launch_pending());
-  EXPECT_FALSE(receiver_session_client_->has_streaming_launched());
-  EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  receiver_session_client_->LaunchStreamingReceiverAsync(
-      cast_web_view_.cast_web_contents());
-
-  EXPECT_TRUE(receiver_session_client_->is_streaming_launch_pending());
-  EXPECT_FALSE(receiver_session_client_->has_streaming_launched());
-  EXPECT_FALSE(receiver_session_client_->has_received_av_settings());
-  SetMojoHandleAcquired();
-
-  EXPECT_CALL(*receiver_session_, SetCastStreamingReceiver(_));
-  PlatformInfoSerializer serializer;
-  EXPECT_TRUE(PostMessage(serializer.Serialize()));
-  EXPECT_TRUE(receiver_session_client_->is_streaming_launch_pending());
-  EXPECT_TRUE(receiver_session_client_->has_streaming_launched());
-  EXPECT_TRUE(receiver_session_client_->has_received_av_settings());
 }
 
 }  // namespace chromecast

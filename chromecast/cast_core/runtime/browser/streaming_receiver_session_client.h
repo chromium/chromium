@@ -19,27 +19,26 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 namespace gfx {
 class Rect;
 }  // namespace gfx
 
 namespace media {
+class AudioDecoderConfig;
+class VideoDecoderConfig;
 struct VideoTransformation;
 }  // namespace media
 
 namespace chromecast {
+
+class StreamingController;
 
 // This class wraps all //components/cast_streaming functionality, only
 // expecting the caller to supply a MessagePortFactory. Internally, it
 // manages the lifetimes of cast streaming objects, and informs the caller
 // of important events. Methods in this class may not be called in parallel.
 class StreamingReceiverSessionClient
-    : public CastWebContents::Observer,
-      public cast_api_bindings::MessagePort::Receiver,
+    : public cast_api_bindings::MessagePort::Receiver,
       public cast_streaming::ReceiverSession::Client {
  public:
   class Handler {
@@ -76,6 +75,7 @@ class StreamingReceiverSessionClient
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+      CastWebContents* cast_web_contents,
       Handler* handler,
       bool supports_audio,
       bool supports_video);
@@ -86,14 +86,15 @@ class StreamingReceiverSessionClient
   // be called once. At time of calling, this instance will be set as the
   // observer of |cast_web_contents|, for which streaming will be started
   // following the latter of:
-  // - Navigation to an associated URL by |cast_web_contents|.
+  // - Navigation to an associated URL by |cast_web_contents| as provided in the
+  //   ctor.
   // - Receipt of supported AV Settings.
   // Following this call, the supported AV Settings are expected to remain
   // constant. If valid AV Settings have not been received within
   // |kMaxAVSettingsWaitTime| of this function call, it will be treated as an
   // unrecoverable error, and this instance will be placed in an undefined
   // state.
-  void LaunchStreamingReceiverAsync(CastWebContents* cast_web_contents);
+  void LaunchStreamingReceiverAsync();
 
   bool has_streaming_launched() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -118,20 +119,15 @@ class StreamingReceiverSessionClient
  private:
   friend class StreamingReceiverSessionClientTest;
 
-  using ReceiverSessionFactory =
-      base::OnceCallback<std::unique_ptr<cast_streaming::ReceiverSession>(
-          cast_streaming::ReceiverSession::AVConstraints)>;
-
   enum LaunchState : int32_t {
     kStopped = 0x00,
 
-    // The three conditions which must be met for streaming to run.
+    // The two conditions which must be met for streaming to run.
     kLaunchCalled = 0x01 << 0,
     kAVSettingsReceived = 0x01 << 1,
-    kMojoHandleAcquired = 0x01 << 2,
 
     // Signifies that the above conditions have all been met.
-    kReady = kAVSettingsReceived | kLaunchCalled | kMojoHandleAcquired,
+    kReady = kAVSettingsReceived | kLaunchCalled,
 
     // Signifies that streaming has started.
     kLaunched = 0xFF,
@@ -144,7 +140,7 @@ class StreamingReceiverSessionClient
   StreamingReceiverSessionClient(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
-      ReceiverSessionFactory factory,
+      std::unique_ptr<StreamingController> streaming_controller,
       Handler* handler,
       bool supports_audio,
       bool supports_video);
@@ -169,13 +165,7 @@ class StreamingReceiverSessionClient
     return first = first & second;
   }
 
-  bool TryStartStreamingSession();
-  void VerifyAVSettingsReceived();
   void TriggerError();
-
-  // CastWebContents::Observer overrides.
-  void MainFrameReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   // cast_api_bindings::MessagePort::Receiver overrides.
   bool OnMessage(base::StringPiece message,
@@ -189,6 +179,11 @@ class StreamingReceiverSessionClient
   void OnVideoConfigUpdated(
       const ::media::VideoDecoderConfig& video_config) override;
 
+  void VerifyAVSettingsReceived();
+
+  // Callback passed when calling StreamingController::StartPlayback().
+  void OnPlaybackStarted();
+
   // Handler for callbacks associated with this class. May be empty.
   Handler* const handler_;
 
@@ -201,19 +196,12 @@ class StreamingReceiverSessionClient
   absl::optional<cast_streaming::ReceiverSession::AVConstraints>
       av_constraints_;
 
-  // The AssociatedRemote that must be provided when starting the
-  // |receiver_session_|.
-  mojo::AssociatedRemote<cast_streaming::mojom::CastStreamingReceiver>
-      cast_streaming_receiver_;
-
-  // Responsible for managing the streaming session.
-  std::unique_ptr<cast_streaming::ReceiverSession> receiver_session_;
-
   // MessagePort responsible for receiving AV Settings Bindings Messages.
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
 
-  // Factory method used to create a receiver session.
-  ReceiverSessionFactory receiver_session_factory_;
+  // Responsible for initiating the streaming session and controlling its
+  // playback state.
+  std::unique_ptr<StreamingController> streaming_controller_;
 
   // Current state in initialization of |receiver_session_|.
   LaunchState streaming_state_ = LaunchState::kStopped;

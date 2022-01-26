@@ -148,15 +148,25 @@ cast_source_set("runtime_application") {
 
 cast_source_set("streaming_receiver_session_client") {
   sources = [
+    "streaming_controller.h",
+    "streaming_controller_base.cc",
+    "streaming_controller_base.h",
+    "streaming_controller_mirroring.cc",
+    "streaming_controller_mirroring.h",
     "streaming_receiver_session_client.cc",
     "streaming_receiver_session_client.h",
   ]
+
+  if (!enable_remoting_for_cwr) {
+    sources += [ "streaming_controller_factory_mirroring.cc" ]
+  }
 
   public_deps = [
     "//base",
     "//chromecast/browser:public",
     "//components/cast/message_port",
     "//components/cast_streaming/browser",
+    "//media/mojo/mojom",
   ]
 
   deps = [
@@ -202,7 +212,6 @@ cast_source_set("runtime_application_dispatcher") {
     "//chromecast/common:feature_constants",
     "//components/cast_streaming/public/mojom",
     "//components/url_rewrite/browser",
-    "//media/mojo/mojom",
     "//third_party/cast_core/public/src/proto/common:application_config_proto",
     "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
     "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
