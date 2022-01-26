@@ -7,20 +7,26 @@
 
 #include "base/sequence_checker.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 #include "third_party/blink/renderer/modules/webcodecs/reclaimable_codec.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
+class CodecPressureGauge;
 
 // Keeps track of the number of pressuring codecs in an ExecutionContext, and
 // notifies these codecs when a pressure threshold has been crossed.
 class MODULES_EXPORT CodecPressureManager
     : public GarbageCollected<CodecPressureManager> {
+  USING_PRE_FINALIZER(CodecPressureManager, UnregisterManager);
+
  public:
-  CodecPressureManager();
+  CodecPressureManager(ReclaimableCodec::CodecType,
+                       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Disable copy and assign.
   CodecPressureManager(const CodecPressureManager&) = delete;
@@ -36,10 +42,10 @@ class MODULES_EXPORT CodecPressureManager
   // closed or reclaimed first.
   void OnCodecDisposed(ReclaimableCodec*);
 
-  size_t pressure_for_testing() { return codecs_with_pressure_.size(); }
+  size_t pressure_for_testing() { return local_codec_pressure_; }
 
-  void set_pressure_threshold_for_testing(size_t threshold) {
-    pressure_threshold_ = threshold;
+  size_t is_global_pressure_exceeded_for_testing() {
+    return global_pressure_exceeded_;
   }
 
   void Trace(Visitor*) const;
@@ -49,14 +55,26 @@ class MODULES_EXPORT CodecPressureManager
 
   using CodecSet = HeapHashSet<WeakMember<ReclaimableCodec>>;
 
-  void MaybeSetGlobalPressureFlags(ReclaimableCodec*);
-  void MaybeClearGlobalPressureFlags();
+  // Returns the right CodecPressureGauge based off of |codec_type_|.
+  CodecPressureGauge& GetCodecPressureGauge();
 
+  // Pre-finalizer.
+  void UnregisterManager();
+
+  void OnGlobalPressureThresholdChanged(bool pressure_threshold_exceeded);
+
+  bool manager_registered_ = true;
   bool global_pressure_exceeded_ = false;
 
-  size_t pressure_threshold_;
-
+  // Track |local_codec_pressure_| manually instead of using
+  // |codecs_with_pressure_.size()|, since the GC can silently remove elements
+  // from |codecs_with_pressure_|.
+  size_t local_codec_pressure_ = 0u;
   CodecSet codecs_with_pressure_;
+
+  CodecPressureGauge::PressureCallbackId pressure_callback_id_;
+
+  ReclaimableCodec::CodecType codec_type_;
 };
 
 }  // namespace blink

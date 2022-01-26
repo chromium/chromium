@@ -11,8 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
-#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
+#include "third_party/blink/renderer/modules/webcodecs/codec_pressure_gauge.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -71,30 +70,18 @@ class BaseReclaimableCodecTest
     : public testing::TestWithParam<ReclaimableCodec::CodecType> {
  public:
   FakeReclaimableCodec* CreateCodec(ExecutionContext* context) {
-    if (!is_manager_threshold_set_) {
-      GetManagerFromContext(context)->set_pressure_threshold_for_testing(
-          kTestPressureThreshold);
+    if (!is_gauge_threshold_set_) {
+      CodecPressureGauge::GetInstance(GetParam())
+          .set_pressure_threshold_for_testing(kTestPressureThreshold);
 
-      is_manager_threshold_set_ = true;
+      is_gauge_threshold_set_ = true;
     }
 
     return MakeGarbageCollected<FakeReclaimableCodec>(GetParam(), context);
   }
 
- protected:
-  CodecPressureManager* GetManagerFromContext(ExecutionContext* context) {
-    auto& provider = CodecPressureManagerProvider::From(*context);
-
-    switch (GetParam()) {
-      case ReclaimableCodec::CodecType::kDecoder:
-        return provider.GetDecoderPressureManager();
-      case ReclaimableCodec::CodecType::kEncoder:
-        return provider.GetEncoderPressureManager();
-    }
-  }
-
  private:
-  bool is_manager_threshold_set_ = false;
+  bool is_gauge_threshold_set_ = false;
 };
 
 // Testing w/ flags allowing only reclamation of background codecs.
