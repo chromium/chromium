@@ -4,21 +4,29 @@
 
 #include "pdf/pdfium/pdfium_permissions.h"
 
+#include <stdint.h>
+
+#include "base/numerics/safe_conversions.h"
+
 namespace chrome_pdf {
 
 // static
 PDFiumPermissions PDFiumPermissions::CreateForTesting(
     int permissions_handler_revision,
-    unsigned long permission_bits) {
+    uint32_t permission_bits) {
   return PDFiumPermissions(permissions_handler_revision, permission_bits);
 }
 
+// Note that `FPDF_GetDocPermissions()` returns `unsigned long`, but is
+// specified to return a 32-bit integer. The implementation also uses `uint32_t`
+// internally.
 PDFiumPermissions::PDFiumPermissions(FPDF_DOCUMENT doc)
     : permissions_handler_revision_(FPDF_GetSecurityHandlerRevision(doc)),
-      permission_bits_(FPDF_GetDocPermissions(doc)) {}
+      permission_bits_(
+          base::checked_cast<uint32_t>(FPDF_GetDocPermissions(doc))) {}
 
 PDFiumPermissions::PDFiumPermissions(int permissions_handler_revision,
-                                     unsigned long permission_bits)
+                                     uint32_t permission_bits)
     : permissions_handler_revision_(permissions_handler_revision),
       permission_bits_(permission_bits) {}
 
@@ -37,25 +45,25 @@ bool PDFiumPermissions::HasPermission(DocumentPermission permission) const {
       case DocumentPermission::kCopy:
       case DocumentPermission::kCopyAccessible:
         // Check the same copy bit for all copying permissions.
-        return (permission_bits_ & kPDFPermissionCopyMask) != 0;
+        return HasPermissionBits(kPDFPermissionCopyMask);
       case DocumentPermission::kPrintLowQuality:
       case DocumentPermission::kPrintHighQuality:
         // Check the same printing bit for all printing permissions.
-        return (permission_bits_ & kPDFPermissionPrintMask) != 0;
+        return HasPermissionBits(kPDFPermissionPrintMask);
     }
   } else {
     // Security handler revision 3+ have different rules for interpreting the
     // bits in `permission_bits_`.
     switch (permission) {
       case DocumentPermission::kCopy:
-        return (permission_bits_ & kPDFPermissionCopyMask) != 0;
+        return HasPermissionBits(kPDFPermissionCopyMask);
       case DocumentPermission::kCopyAccessible:
-        return (permission_bits_ & kPDFPermissionCopyAccessibleMask) != 0;
+        return HasPermissionBits(kPDFPermissionCopyAccessibleMask);
       case DocumentPermission::kPrintLowQuality:
-        return (permission_bits_ & kPDFPermissionPrintMask) != 0;
+        return HasPermissionBits(kPDFPermissionPrintMask);
       case DocumentPermission::kPrintHighQuality:
-        return (permission_bits_ & kPDFPermissionPrintMask) != 0 &&
-               (permission_bits_ & kPDFPermissionPrintHighQualityMask) != 0;
+        return HasPermissionBits(kPDFPermissionPrintMask |
+                                 kPDFPermissionPrintHighQualityMask);
     }
   }
 }
