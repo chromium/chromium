@@ -46,6 +46,7 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -222,6 +223,14 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
+            final PageInfoRowView adPersonalizationRow =
+                    new PageInfoRowView(rowWrapper.getContext(), null);
+            adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
+            rowWrapper.addView(adPersonalizationRow);
+            controllers.add(new PageInfoAdPersonalizationController(
+                    mainController, adPersonalizationRow, this));
+        }
         if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
             final Tab tab = TabUtils.fromWebContents(mWebContents);
             final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);

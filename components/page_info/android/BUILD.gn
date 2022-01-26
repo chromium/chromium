@@ -43,6 +43,7 @@ android_resources("java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/xml/page_info_ad_personalization_preference.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
   deps = [
@@ -59,6 +60,8 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/CertificateViewer.java",
     "java/src/org/chromium/components/page_info/ConnectionInfoView.java",
     "java/src/org/chromium/components/page_info/ElidedUrlTextView.java",
+    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationController.java",
+    "java/src/org/chromium/components/page_info/PageInfoAdPersonalizationPreference.java",
     "java/src/org/chromium/components/page_info/PageInfoConnectionController.java",
     "java/src/org/chromium/components/page_info/PageInfoContainer.java",
     "java/src/org/chromium/components/page_info/PageInfoController.java",
@@ -73,6 +76,7 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoPageZoomController.java",
     "java/src/org/chromium/components/page_info/PageInfoPageZoomView.java",
     "java/src/org/chromium/components/page_info/PageInfoPermissionsController.java",
+    "java/src/org/chromium/components/page_info/PageInfoPreferenceSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoRowView.java",
     "java/src/org/chromium/components/page_info/PageInfoSubpageController.java",
     "java/src/org/chromium/components/page_info/PageInfoView.java",

@@ -93842,6 +93842,8 @@ Called by update_scheduler_enums.py.-->
   <int value="27" label="Store info clicked"/>
   <int value="28" label="AboutThisSite section clicked"/>
   <int value="29" label="AboutThisSite source link clicked"/>
+  <int value="30" label="Ad personalization page opened"/>
+  <int value="31" label="Ad personalization settings opened"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

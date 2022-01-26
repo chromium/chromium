@@ -13,7 +13,6 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
@@ -23,6 +22,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetche
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
  * Class for controlling the page info permissions section.
  */
 public class PageInfoPermissionsController
-        implements PageInfoSubpageController, SingleWebsiteSettings.Observer {
+        extends PageInfoPreferenceSubpageController implements SingleWebsiteSettings.Observer {
     /**  Parameters to represent a single permission. */
     public static class PermissionObject {
         public @ContentSettingsType int type;
@@ -43,14 +43,13 @@ public class PageInfoPermissionsController
 
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
-    private final PageInfoControllerDelegate mDelegate;
     private final String mTitle;
     private final String mPageUrl;
     private boolean mHasSoundPermission;
     private boolean mDataIsStale;
     private SingleWebsiteSettings mSubPage;
     @ContentSettingsType
-    private int mHighlightedPermission = ContentSettingsType.DEFAULT;
+    private int mHighlightedPermission;
     @ColorRes
     private int mHighlightColor;
     private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
@@ -59,9 +58,9 @@ public class PageInfoPermissionsController
     public PageInfoPermissionsController(PageInfoMainController mainController,
             PageInfoRowView view, PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
+        super(delegate);
         mMainController = mainController;
         mRowView = view;
-        mDelegate = delegate;
         mPageUrl = mainController.getURL().getSpec();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
@@ -86,34 +85,25 @@ public class PageInfoPermissionsController
     @Override
     public View createViewForSubpage(ViewGroup parent) {
         assert mSubPage == null;
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager.isStateSaved()) return null;
+        if (!canCreateSubpageFragment()) return null;
 
         Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
         fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
 
         mSubPage = (SingleWebsiteSettings) Fragment.instantiate(
                 mRowView.getContext(), SingleWebsiteSettings.class.getName(), fragmentArgs);
-        mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
         mSubPage.setHideNonPermissionPreferences(true);
         mSubPage.setWebsiteSettingsObserver(this);
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             mSubPage.setHighlightedPermission(mHighlightedPermission, mHighlightColor);
         }
-        fragmentManager.beginTransaction().add(mSubPage, null).commitNow();
-        return mSubPage.requireView();
+        return addSubpageFragment(mSubPage);
     }
 
     @Override
     public void onSubpageRemoved() {
-        assert mSubPage != null;
-        FragmentManager fragmentManager = mDelegate.getFragmentManager();
-        SingleWebsiteSettings subPage = mSubPage;
+        removeSubpageFragment();
         mSubPage = null;
-        // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager == null || fragmentManager.isStateSaved()) return;
-        fragmentManager.beginTransaction().remove(subPage).commitNow();
     }
 
     public void setPermissions(List<PermissionObject> permissions) {
@@ -124,7 +114,7 @@ public class PageInfoPermissionsController
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         rowParams.subtitle = getPermissionSummaryString(permissions, resources);
-        rowParams.visible = mDelegate.isSiteSettingsAvailable() && rowParams.subtitle != null;
+        rowParams.visible = getDelegate().isSiteSettingsAvailable() && rowParams.subtitle != null;
         if (mHighlightedPermission != ContentSettingsType.DEFAULT) {
             rowParams.rowTint = mHighlightColor;
         }
@@ -199,8 +189,8 @@ public class PageInfoPermissionsController
     @Override
     public void clearData() {
         // Need to fetch data in order to clear it.
-        WebsitePermissionsFetcher fetcher =
-                new WebsitePermissionsFetcher(mDelegate.getBrowserContext());
+        BrowserContextHandle browserContext = getDelegate().getBrowserContext();
+        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(browserContext);
         String origin = Origin.createOrThrow(mPageUrl).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
 
@@ -208,7 +198,7 @@ public class PageInfoPermissionsController
         fetcher.fetchAllPreferences((Collection<Website> sites) -> {
             Website site = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
                     address, sites);
-            new SiteDataCleaner().resetPermissions(mDelegate.getBrowserContext(), site);
+            new SiteDataCleaner().resetPermissions(browserContext, site);
             mMainController.refreshPermissions();
         });
     }

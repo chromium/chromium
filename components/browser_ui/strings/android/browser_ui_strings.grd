@@ -583,6 +583,12 @@
       <message name="IDS_PAGE_INFO_URL_TRUNCATED" desc="Accessibility announcement when the URL in PageInfo switches from full to truncated display">
         URL truncated
       </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
+          Ad personalization
+      </message>
+      <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
+          Manage interests
+      </message>
 
       <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR_LIMIT=32]">
           Cookies

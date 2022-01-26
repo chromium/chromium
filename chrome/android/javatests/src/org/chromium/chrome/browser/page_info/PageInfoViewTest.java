@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
@@ -77,6 +78,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -757,6 +759,34 @@ public class PageInfoViewTest {
         int callCount = onDidStartNavigationHelper.getCallCount();
         onView(withText("www.example.com")).perform(click());
         onDidStartNavigationHelper.waitForCallback(callCount);
+    }
+
+    /**
+     * Tests PageInfo on a website with ad personalization info.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testAdPersonalizationInfo() throws IOException {
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_AdPersonalization");
+    }
+
+    /**
+     * Tests ad personalization subpage.
+     */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testAdPersonalizationInfoSubPage() throws IOException {
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        onView(withId(PageInfoAdPersonalizationController.ROW_ID)).perform(click());
+        onViewWaiting(allOf(withText("Manage interests"), isDisplayed()));
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_AdPersonalizationSubPage");
     }
 
     // TODO(1071762): Add tests for preview pages, offline pages, offline state and other states.
