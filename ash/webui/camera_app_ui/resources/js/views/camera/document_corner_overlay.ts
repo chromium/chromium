@@ -88,7 +88,10 @@ class Line {
 
   private getTransform(): CSSTransformValue|null {
     const trans = this.el.attributeStyleMap.get('transform');
-    return trans && assertInstanceof(trans, CSSTransformValue);
+    if (trans === undefined) {
+      return null;
+    }
+    return assertInstanceof(trans, CSSTransformValue);
   }
 
   private angle(): number|null {
@@ -222,7 +225,7 @@ export class DocumentCornerOverlay {
           }
           this.maybeUpdatePointOfInterest(corners);
           const rect = this.cornerContainer.getBoundingClientRect();
-          const toOverlaySpace = (pt) =>
+          const toOverlaySpace = (pt: Point) =>
               new Point(rect.width * pt.x, rect.height * pt.y);
           this.onCornerDetected(corners.map(toOverlaySpace));
         });
