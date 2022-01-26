@@ -975,10 +975,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
             profile_metrics::GetBrowserProfileType(otr_profile));
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  base::HistogramTester tester;
   Browser* guest_browser = CreateGuestBrowser();
 
   EXPECT_EQ(profile_metrics::BrowserProfileType::kGuest,
             profile_metrics::GetBrowserProfileType(guest_browser->profile()));
+
+  // Verify that both a parent and a child profile creation are recorded
+  EXPECT_THAT(tester.GetAllSamples("Profile.Guest.TypeCreated"),
+              ::testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 #endif
 }
 

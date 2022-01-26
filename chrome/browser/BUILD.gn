@@ -4101,6 +4101,8 @@ static_library("browser") {
       "profile_resetter/triggered_profile_resetter.h",
       "profile_resetter/triggered_profile_resetter_factory.cc",
       "profile_resetter/triggered_profile_resetter_factory.h",
+      "profiles/guest_profile_creation_logger.cc",
+      "profiles/guest_profile_creation_logger.h",
       "profiles/profile_shortcut_manager.cc",
       "profiles/profile_shortcut_manager.h",
       "profiles/profile_theme_update_service.cc",

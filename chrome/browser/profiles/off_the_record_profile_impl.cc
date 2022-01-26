@@ -83,6 +83,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/scoped_user_pref_update.h"
+#else
+#include "chrome/browser/profiles/guest_profile_creation_logger.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -208,6 +210,12 @@ void OffTheRecordProfileImpl::Init() {
 
   if (IsIncognitoProfile())
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsGuestSession()) {
+    profile::MaybeRecordGuestChildCreation(this);
+  }
+#endif
 }
 
 OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {

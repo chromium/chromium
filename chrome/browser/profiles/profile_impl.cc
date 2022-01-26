@@ -30,6 +30,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -212,6 +213,7 @@
 #include "chrome/browser/android/profile_key_startup_accessor.h"
 #else
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/profiles/guest_profile_creation_logger.h"
 #include "content/public/common/page_zoom.h"
 #endif
 
@@ -759,6 +761,15 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
     return;
   }
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsGuestSession()) {
+    // Note: We need to record the creation of the guest parent before the
+    // `delegate_`'s `OnProfileCreationFinished()` callback executes, as it
+    // might trigger the creation of a child OTR profile.
+    profile::RecordGuestParentCreation(this);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Listen for bookmark model load, to bootstrap the sync service.

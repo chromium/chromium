@@ -43120,6 +43120,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="16" label="Cros-Notificationd"/>
 </enum>
 
+<enum name="GuestProfileCreatedType">
+  <int value="0" label="ParentGuest"/>
+  <int value="1" label="FirstChildGuest"/>
+</enum>
+
 <enum name="GwpAsanCrashAnalysisResult">
   <int value="0" label="The crash is not caused by GWP-ASan"/>
   <int value="1" label="The crash is caused by GWP-ASan"/>
