@@ -8703,8 +8703,10 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
 
   // Disable BackForwardCache if ScreenReader is on.
   // TODO(crbug.com/1271450): Screen readers do not recognize a navigation when
-  // the page is served from bfcache.
-  if (ax_mode.has_mode(ui::AXMode::kScreenReader)) {
+  // the page is served from bfcache. Remove the flag and this section once the
+  // fix is landed.
+  if (ax_mode.has_mode(ui::AXMode::kScreenReader) &&
+      !BackForwardCacheImpl::IsScreenReaderAllowed()) {
     BackForwardCache::DisableForRenderFrameHost(
         this, BackForwardCacheDisable::DisabledReason(
                   BackForwardCacheDisable::DisabledReasonId::kScreenReader));

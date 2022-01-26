@@ -1408,6 +1408,10 @@ bool BackForwardCacheImpl::IsMediaSessionServiceAllowed() {
       features::kBackForwardCacheMediaSessionService);
 }
 
+bool BackForwardCacheImpl::IsScreenReaderAllowed() {
+  return base::FeatureList::IsEnabled(kEnableBackForwardCacheForScreenReader);
+}
+
 bool BackForwardCache::DisabledReason::operator<(
     const DisabledReason& other) const {
   return std::tie(source, id) < std::tie(other.source, other.id);
