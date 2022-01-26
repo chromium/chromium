@@ -85,10 +85,13 @@ class MockConnectClientSocket : public TransportClientSocket {
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    out->clear();
+    *out = connection_attempts_;
   }
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
+  void ClearConnectionAttempts() override { connection_attempts_.clear(); }
+  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
+    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
+                                attempts.end());
+  }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -114,6 +117,7 @@ class MockConnectClientSocket : public TransportClientSocket {
   bool connected_;
   const AddressList addrlist_;
   NetLogWithSource net_log_;
+  ConnectionAttempts connection_attempts_;
 };
 
 class MockFailingClientSocket : public TransportClientSocket {
@@ -133,6 +137,10 @@ class MockFailingClientSocket : public TransportClientSocket {
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override {
+    for (const auto& addr : addrlist_) {
+      connection_attempts_.push_back(
+          ConnectionAttempt(addr, ERR_CONNECTION_FAILED));
+    }
     return ERR_CONNECTION_FAILED;
   }
 
@@ -153,12 +161,13 @@ class MockFailingClientSocket : public TransportClientSocket {
   NextProto GetNegotiatedProtocol() const override { return kProtoUnknown; }
   bool GetSSLInfo(SSLInfo* ssl_info) override { return false; }
   void GetConnectionAttempts(ConnectionAttempts* out) const override {
-    out->clear();
-    for (const auto& addr : addrlist_)
-      out->push_back(ConnectionAttempt(addr, ERR_CONNECTION_FAILED));
+    *out = connection_attempts_;
   }
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
+  void ClearConnectionAttempts() override { connection_attempts_.clear(); }
+  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {
+    connection_attempts_.insert(connection_attempts_.begin(), attempts.begin(),
+                                attempts.end());
+  }
   int64_t GetTotalReceivedBytes() const override {
     NOTIMPLEMENTED();
     return 0;
@@ -184,6 +193,7 @@ class MockFailingClientSocket : public TransportClientSocket {
  private:
   const AddressList addrlist_;
   NetLogWithSource net_log_;
+  ConnectionAttempts connection_attempts_;
 };
 
 class MockTriggerableClientSocket : public TransportClientSocket {
