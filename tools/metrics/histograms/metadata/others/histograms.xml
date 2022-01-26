@@ -11969,7 +11969,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies"
-    units="policy count" expires_after="2020-09-09">
+    units="policy count" expires_after="2022-06-25">
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The number of NEL policies loaded from the store. This is recorded when the
+    NetworkErrorLoggingService requests a load from the backing store, which
+    typically happens upon the first network request after startup.
+  </summary>
+</histogram>
+
+<histogram name="ReportingAndNEL.NumberOfLoadedNELPolicies2"
+    units="policy count" expires_after="2022-06-25">
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
@@ -11980,7 +11991,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpointGroups"
-    units="endpoint group count" expires_after="2020-09-09">
+    units="endpoint group count" expires_after="2022-06-25">
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The number of Reporting endpoint groups loaded from the store. This is
+    recorded when the ReportingCache requests a load from the backing store,
+    which happens upon receipt of the first Report-To header or queued report
+    after startup.
+  </summary>
+</histogram>
+
+<histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpointGroups2"
+    units="endpoint group count" expires_after="2022-06-25">
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
@@ -11992,7 +12015,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpoints"
-    units="endpoint count" expires_after="2020-09-09">
+    units="endpoint count" expires_after="2022-06-25">
+  <owner>yhirano@chromium.org</owner>
+  <owner>src/net/reporting/OWNERS</owner>
+  <summary>
+    The number of Reporting endpoints loaded from the store. This is recorded
+    when the ReportingCache requests a load from the backing store, which
+    happens upon receipt of the first Report-To header or queued report after
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="ReportingAndNEL.NumberOfLoadedReportingEndpoints2"
+    units="endpoint count" expires_after="2022-06-25">
   <owner>yhirano@chromium.org</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>

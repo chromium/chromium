@@ -80,6 +80,12 @@ const char kNumberOfLoadedReportingEndpointsHistogramName[] =
     "ReportingAndNEL.NumberOfLoadedReportingEndpoints";
 const char kNumberOfLoadedReportingEndpointGroupsHistogramName[] =
     "ReportingAndNEL.NumberOfLoadedReportingEndpointGroups";
+const char kNumberOfLoadedNelPolicies2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedNELPolicies2";
+const char kNumberOfLoadedReportingEndpoints2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedReportingEndpoints2";
+const char kNumberOfLoadedReportingEndpointGroups2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedReportingEndpointGroups2";
 }  // namespace
 
 base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
@@ -1526,6 +1532,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedNelPolicies(size_t count) {
   // The NetworkErrorLoggingService stores up to 1000 policies.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedNelPoliciesHistogramName, count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedNelPolicies2HistogramName, count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
@@ -1533,6 +1541,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
   // The ReportingCache stores up to 1000 endpoints.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointsHistogramName,
                             count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedReportingEndpoints2HistogramName,
+                             count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
@@ -1541,6 +1552,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
   // endpoint per group.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointGroupsHistogramName,
                             count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(
+      kNumberOfLoadedReportingEndpointGroups2HistogramName, count);
 }
 
 SQLitePersistentReportingAndNelStore::SQLitePersistentReportingAndNelStore(
