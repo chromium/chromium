@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof} from './assert.js';
 import {
   EmptyThumbnailError,
   LoadError,
@@ -33,7 +34,10 @@ async function elementToJpegBlob(
   }
 
   return new Promise((resolve) => {
-    canvas.toBlob(resolve, 'image/jpeg');
+    canvas.toBlob((blob) => {
+      assert(blob !== null);
+      resolve(blob);
+    }, 'image/jpeg');
   });
 }
 
@@ -56,13 +60,13 @@ async function loadVideoBlob(blob: Blob): Promise<HTMLVideoElement> {
     el.preload = 'auto';
     el.src = URL.createObjectURL(blob);
     if (!(await hasLoaded.wait())) {
-      throw new LoadError(el.error.message);
+      throw new LoadError(el.error?.message);
     }
 
     try {
       await el.play();
     } catch (e) {
-      throw new PlayError(e.message);
+      throw new PlayError(assertInstanceof(e, Error).message);
     }
 
     try {
@@ -71,7 +75,7 @@ async function loadVideoBlob(blob: Blob): Promise<HTMLVideoElement> {
       // forever.
       await gotFrame.timedWait(1000);
     } catch (e) {
-      throw new PlayMalformedError(e.message);
+      throw new PlayMalformedError(assertInstanceof(e, Error).message);
     } finally {
       el.pause();
     }
