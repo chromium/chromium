@@ -21,6 +21,7 @@ struct AXNodeData;
 namespace ash {
 
 namespace {
+class HintView;
 class TopRowView;
 }  // namespace
 
@@ -56,11 +57,13 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   bool IsMacroFailedImageVisibleForTesting();
   SkColor GetLabelBackgroundColorForTesting();
   SkColor GetLabelTextColorForTesting();
+  int GetVisibleHintsCountForTesting();
 
  private:
   friend class DictationBubbleControllerTest;
 
   TopRowView* top_row_view_ = nullptr;
+  HintView* hint_view_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

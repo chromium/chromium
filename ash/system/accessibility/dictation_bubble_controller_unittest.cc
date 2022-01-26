@@ -89,6 +89,10 @@ class DictationBubbleControllerTest : public AshTestBase {
     return GetView()->GetLabelTextColorForTesting();
   }
 
+  int GetVisibleHintsCount() {
+    return GetView()->GetVisibleHintsCountForTesting();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -181,6 +185,17 @@ TEST_F(DictationBubbleControllerTest, DarkMode) {
   // Verify that the text and background colors changed.
   EXPECT_NE(initial_color, GetLabelTextColor());
   EXPECT_NE(SK_ColorWHITE, GetLabelBackgroundColor());
+  HideAndCheckExpectations();
+}
+
+TEST_F(DictationBubbleControllerTest, Hints) {
+  EXPECT_FALSE(GetView());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>());
+  EXPECT_TRUE(GetView());
+  EXPECT_TRUE(IsBubbleVisible());
+
+  EXPECT_EQ(0, GetVisibleHintsCount());
+
   HideAndCheckExpectations();
 }
 

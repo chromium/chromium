@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/dictation_bubble_view.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -177,7 +178,67 @@ class ASH_EXPORT TopRowView : public views::View {
   views::Label* label_ = nullptr;
 };
 
+// View responsible for showing hints for Dictation commands.
+class ASH_EXPORT HintView : public views::View {
+ public:
+  METADATA_HEADER(HintView);
+  HintView() {
+    std::unique_ptr<views::BoxLayout> layout =
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical);
+    SetLayoutManager(std::move(layout));
+    for (size_t i = 0; i < labels_.size(); ++i) {
+      AddChildView(CreateLabelView(
+          &labels_[i], std::u16string(),
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kTextColorPrimary)));
+    }
+  }
+
+  HintView(const HintView&) = delete;
+  HintView& operator=(const HintView&) = delete;
+  ~HintView() override = default;
+
+  // Updates the text content and visibility of all labels in this view.
+  void Update(const std::vector<std::u16string>& hints) {
+    for (size_t i = 0; i < labels_.size(); ++i) {
+      bool has_hint_for_index = i < hints.size();
+      labels_[i]->SetVisible(has_hint_for_index ? true : false);
+      labels_[i]->SetText(has_hint_for_index ? hints[i] : std::u16string());
+    }
+    SizeToPreferredSize();
+  }
+
+  // Updates this view so that it respects the global dark mode setting.
+  void OnColorModeChanged(bool dark_mode_enabled) {
+    AshColorProvider* color_provider = AshColorProvider::Get();
+    if (!color_provider)
+      return;
+
+    SkColor text_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    for (size_t i = 0; i < labels_.size(); ++i) {
+      labels_[i]->SetEnabledColor(text_color);
+    }
+  }
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->role = ax::mojom::Role::kGenericContainer;
+  }
+
+ private:
+  friend DictationBubbleView;
+
+  // Labels containing hints for users of Dictation. A max of five hints can be
+  // shown at any given time.
+  std::vector<views::Label*> labels_{5, nullptr};
+};
+
 BEGIN_METADATA(TopRowView, views::View)
+END_METADATA
+
+BEGIN_METADATA(HintView, views::View)
 END_METADATA
 
 }  // namespace
@@ -192,11 +253,13 @@ DictationBubbleView::~DictationBubbleView() = default;
 void DictationBubbleView::Update(DictationBubbleIconType icon,
                                  const absl::optional<std::u16string>& text) {
   top_row_view_->Update(icon, text);
+  hint_view_->Update(std::vector<std::u16string>());
   SizeToContents();
 }
 
 void DictationBubbleView::OnColorModeChanged(bool dark_mode_enabled) {
   top_row_view_->OnColorModeChanged(dark_mode_enabled);
+  hint_view_->OnColorModeChanged(dark_mode_enabled);
 }
 
 void DictationBubbleView::Init() {
@@ -206,6 +269,7 @@ void DictationBubbleView::Init() {
   UseCompactMargins();
 
   top_row_view_ = AddChildView(std::make_unique<TopRowView>());
+  hint_view_ = AddChildView(std::make_unique<HintView>());
 }
 
 void DictationBubbleView::OnBeforeBubbleWidgetInit(
@@ -247,6 +311,15 @@ SkColor DictationBubbleView::GetLabelBackgroundColorForTesting() {
 
 SkColor DictationBubbleView::GetLabelTextColorForTesting() {
   return top_row_view_->label_->GetEnabledColor();
+}
+
+int DictationBubbleView::GetVisibleHintsCountForTesting() {
+  int count = 0;
+  for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
+    if (hint_view_->labels_[i]->GetVisible())
+      ++count;
+  }
+  return count;
 }
 
 BEGIN_METADATA(DictationBubbleView, views::View)
