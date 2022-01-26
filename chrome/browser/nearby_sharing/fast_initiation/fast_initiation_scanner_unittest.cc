@@ -178,6 +178,17 @@ TEST_F(NearbySharingFastInitiationScannerTest, AddAndRemoveDevices) {
   EXPECT_EQ(1u, devices_not_detected_call_count_);
 }
 
+TEST_F(NearbySharingFastInitiationScannerTest, RemoveUnknownDevice) {
+  scan_session_delegate_->OnSessionStarted(mock_scan_session_,
+                                           /*error_code=*/absl::nullopt);
+
+  // Ensure removing an unknown device is a successful no-op.
+  auto device_a = CreateMockDevice();
+  scan_session_delegate_->OnDeviceLost(mock_scan_session_, device_a.get());
+  EXPECT_EQ(0u, devices_detected_call_count_);
+  EXPECT_EQ(0u, devices_not_detected_call_count_);
+}
+
 TEST_F(NearbySharingFastInitiationScannerTest, FilterPattern) {
   const std::vector<device::BluetoothLowEnergyScanFilter::Pattern>& patterns =
       scan_session_filter_->patterns();
