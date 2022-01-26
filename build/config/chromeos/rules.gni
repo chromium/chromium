@@ -5,6 +5,7 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/python.gni")
 import("//build/util/generate_wrapper.gni")
@@ -273,6 +274,12 @@ template("generate_runner_script") {
             var,
           ]
         }
+      }
+      if (dcheck_always_on) {
+        executable_args += [
+          "--tast-extra-use-flags",
+          "chrome_dcheck",
+        ]
       }
     } else {
       executable_args += [ "host-cmd" ]
