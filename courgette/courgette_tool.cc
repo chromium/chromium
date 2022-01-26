@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/at_exit.h"
@@ -408,7 +409,7 @@ int main(int argc, const char* argv[]) {
     settings.logging_dest = logging::LOG_TO_ALL;
     settings.log_file_path = FILE_PATH_LITERAL("courgette.log");
   }
-  (void)logging::InitLogging(settings);
+  std::ignore = logging::InitLogging(settings);
   logging::SetMinLogLevel(logging::LOG_VERBOSE);
 
   bool cmd_sup = command_line.HasSwitch("supported");
