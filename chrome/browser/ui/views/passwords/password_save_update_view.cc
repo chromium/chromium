@@ -38,6 +38,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
@@ -661,10 +662,16 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
               IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
       promo_spec.SetBubbleArrow(HelpBubbleArrow::kRightCenter);
 
-      failed_reauth_promo_bubble_ = promo_controller->ShowCriticalPromo(
-          promo_spec,
+      auto* const anchor_element =
           views::ElementTrackerViews::GetInstance()->GetElementForView(
-              destination_dropdown_, true));
+              destination_dropdown_, true);
+      // If the destination dropdown isn't currently visible, there will be no
+      // matching element, and we cannot show the bubble (there wouldn't be
+      // anything to anchor it to). This check avoids crbug.com/1291194.
+      if (anchor_element) {
+        failed_reauth_promo_bubble_ =
+            promo_controller->ShowCriticalPromo(promo_spec, anchor_element);
+      }
       break;
     }
   }
