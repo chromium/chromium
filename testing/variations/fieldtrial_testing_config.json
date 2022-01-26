@@ -2303,21 +2303,6 @@
             ]
         }
     ],
-    "CupsIppPrintingBackend": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CupsIppPrintingBackend"
-                    ]
-                }
-            ]
-        }
-    ],
     "DWriteFontProxyOnIO": [
         {
             "platforms": [
