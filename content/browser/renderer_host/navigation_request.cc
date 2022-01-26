@@ -3253,7 +3253,6 @@ void NavigationRequest::OnResponseStarted(
     }
   }
 
-  // This must be set before DetermineCommittedPreviews is called.
   proxy_server_ = response_head_->proxy_server;
 
   // Store the URLLoaderClient endpoints until checks have been processed.
