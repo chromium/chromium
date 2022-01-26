@@ -4,53 +4,46 @@
 
 importScripts('./common.js', './storage.js');
 
-/**
- * Adds filter script and css to all existing tabs.
- *
- * TODO(wnwen): Verify content scripts are not being injected multiple times.
- */
-function injectContentScripts() {
-  chrome.windows.getAll({'populate': true}, function(windows) {
-    for (let i = 0; i < windows.length; i++) {
-      const tabs = windows[i].tabs;
-      for (let j = 0; j < tabs.length; j++) {
-        const url = tabs[j].url;
-        if (isDisallowedUrl(url)) {
+function forEachTab(tabCallback) {
+  chrome.windows.getAll({'populate': true}, windows => {
+    for (const w of windows) {
+      for (const tab of w.tabs) {
+        if (isDisallowedUrl(tab.url)) {
           continue;
         }
-        chrome.scripting.executeScript({
-          target: {tabId: tabs[j].id},
-          files: ['src/common.js', 'src/cvd.js'],
-        });
+        tabCallback(tab);
       }
     }
   });
 }
 
 /**
+ * Adds filter script and css to all existing tabs.
+ *
+ * TODO(wnwen): Verify content scripts are not being injected multiple times.
+ */
+function injectContentScripts() {
+  forEachTab(tab => chrome.scripting.executeScript({
+      target: {tabId: tab.id},
+      files: ['src/common.js', 'src/cvd.js'],
+    }));
+}
+
+/**
  * Updates all existing tabs with config values.
  */
 function updateTabs() {
-  chrome.windows.getAll({'populate': true}, async function(windows) {
-    for (let i = 0; i < windows.length; i++) {
-      const tabs = windows[i].tabs;
-      for (let j = 0; j < tabs.length; j++) {
-        const url = tabs[j].url;
-        if (isDisallowedUrl(url)) {
-          continue;
-        }
-        const msg = {
-          'delta': await getSiteDelta(siteFromUrl(url)),
-          'severity': await getDefaultSeverity(),
-          'type': await getDefaultType(),
-          'simulate': await getDefaultSimulate(),
-          'enable': await getDefaultEnable()
-        };
-        debugPrint('updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
-            siteFromUrl(url));
-        chrome.tabs.sendMessage(tabs[j].id, msg);
-      }
-    }
+  forEachTab(async function(tab) {
+    const msg = {
+      'delta': await getSiteDelta(siteFromUrl(tab.url)),
+      'severity': await getDefaultSeverity(),
+      'type': await getDefaultType(),
+      'simulate': await getDefaultSimulate(),
+      'enable': await getDefaultEnable()
+    };
+    debugPrint('updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
+        siteFromUrl(tab.url));
+    chrome.tabs.sendMessage(tab.id, msg);
   });
 }
 
