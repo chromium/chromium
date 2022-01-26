@@ -116,7 +116,7 @@ void DevicePairingHandler::PairDevice(
   // There should only be one PairDevice request at a time.
   CHECK(current_pairing_device_id_.empty());
 
-  pairing_start_timestamp_ = base::Time();
+  pairing_start_timestamp_ = base::Time::Now();
   pair_device_callback_ = std::move(callback);
 
   delegate_.reset();
@@ -314,9 +314,8 @@ void DevicePairingHandler::FinishCurrentPairingRequest(
       device ? device->GetType()
              : device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
 
-  device::RecordPairingResult(
-      failure_reason, GetBluetoothTransport(transport),
-      base::DefaultClock::GetInstance()->Now() - pairing_start_timestamp_);
+  device::RecordPairingResult(failure_reason, GetBluetoothTransport(transport),
+                              base::Time::Now() - pairing_start_timestamp_);
 
   std::move(pair_device_callback_).Run(GetPairingResult(failure_reason));
 }
