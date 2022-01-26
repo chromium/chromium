@@ -180,9 +180,6 @@ void AutocompleteActionPredictor::CancelPrerender() {
   // If the prefetch has already been abandoned, leave it to its own timeout;
   // this normally gets called immediately after OnOmniboxOpenedUrl.
   if (no_state_prefetch_handle_ && !no_state_prefetch_handle_->IsAbandoned()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "AutocompleteActionPredictor.NoStatePrefetchStatus",
-        PredictionStatus::kCancelled);
     no_state_prefetch_handle_->OnCancel();
     no_state_prefetch_handle_.reset();
   }
@@ -212,7 +209,7 @@ void AutocompleteActionPredictor::StartPrerendering(
       if (prerender_handle_->GetInitialPrerenderingUrl() == url) {
         return;
       }
-      // `url` does not matched with previously prerendered url. Reset the
+      // `url` does not match with previously prerendered url. Reset the
       // handle to trigger cancellation.
       UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
                                 PredictionStatus::kCancelled);
@@ -228,10 +225,19 @@ void AutocompleteActionPredictor::StartPrerendering(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
         web_contents.GetController().GetDefaultSessionStorageNamespace();
-    // Only cancel the old prefetch after starting the new one, so if the URLs
-    // are the same, the underlying prefetcher will be reused.
-    std::unique_ptr<prerender::NoStatePrefetchHandle>
-        old_no_state_prefetch_handle = std::move(no_state_prefetch_handle_);
+    if (no_state_prefetch_handle_) {
+      if (no_state_prefetch_handle_->prerender_url() == url) {
+        // We've already started a prefetch for the target URL. Nothing to do.
+        return;
+      }
+      // `url` does not match with previously prefetched url. Reset the
+      // handle to trigger cancellation.
+      UMA_HISTOGRAM_ENUMERATION(
+          "AutocompleteActionPredictor.NoStatePrefetchStatus",
+          PredictionStatus::kCancelled);
+      no_state_prefetch_handle_->OnCancel();
+      no_state_prefetch_handle_.reset();
+    }
     prerender::NoStatePrefetchManager* no_state_prefetch_manager =
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile_);
@@ -240,8 +246,6 @@ void AutocompleteActionPredictor::StartPrerendering(
           no_state_prefetch_manager->StartPrefetchingFromOmnibox(
               url, session_storage_namespace, size);
     }
-    if (old_no_state_prefetch_handle)
-      old_no_state_prefetch_handle->OnCancel();
   }
 }
 
@@ -310,9 +314,12 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   // Abandon the current prefetch. If it is to be used, it will be used very
   // soon, so use the lower timeout.
   if (no_state_prefetch_handle_) {
-    if (no_state_prefetch_handle_->contents() &&
-        no_state_prefetch_handle_->contents()->prerender_url() == opened_url) {
-      if (no_state_prefetch_handle_->IsFinishedLoading()) {
+    if (no_state_prefetch_handle_->prerender_url() == opened_url) {
+      if (no_state_prefetch_handle_->IsFinishedLoading()
+          // If the handle doesn't have its contents anymore we don't know if it
+          // complete successfully or not, but we know it's no longer active, so
+          // we log this as kHitFinished.
+          || !no_state_prefetch_handle_->contents()) {
         UMA_HISTOGRAM_ENUMERATION(
             "AutocompleteActionPredictor.NoStatePrefetchStatus",
             PredictionStatus::kHitFinished);
