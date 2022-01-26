@@ -65,4 +65,25 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
   return desk_template;
 }
 
+std::string DeskTemplate::ToString() const {
+  std::string result =
+      "Template name: " + base::UTF16ToASCII(template_name_) + "\n";
+  result += "Source: ";
+  switch (source_) {
+    case DeskTemplateSource::kUnknownSource:
+      result += "unknown\n";
+      break;
+    case DeskTemplateSource::kUser:
+      result += "user\n";
+      break;
+    case DeskTemplateSource::kPolicy:
+      result += "policy\n";
+      break;
+  }
+
+  if (desk_restore_data_)
+    result += desk_restore_data_->ToString();
+  return result;
+}
+
 }  // namespace ash

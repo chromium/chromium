@@ -92,6 +92,9 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
 
   // Checks whether `window` is supported in the desks templates feature.
   virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;
+
+  // Called when the feedback button is pressed.
+  virtual void OpenFeedbackDialog(const std::string& extra_diagnostics) = 0;
 };
 
 }  // namespace ash

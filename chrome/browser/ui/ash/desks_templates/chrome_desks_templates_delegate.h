@@ -47,6 +47,7 @@ class ChromeDesksTemplatesDelegate : public ash::DesksTemplatesDelegate {
   void LaunchAppsFromTemplate(std::unique_ptr<ash::DeskTemplate> desk_template,
                               base::TimeDelta delay) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
+  void OpenFeedbackDialog(const std::string& extra_diagnostics) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_CHROME_DESKS_TEMPLATES_DELEGATE_H_

@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
@@ -352,4 +353,16 @@ bool ChromeDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
 
   // Exclude incognito browser window.
   return !IsIncognitoWindow(window);
+}
+
+void ChromeDesksTemplatesDelegate::OpenFeedbackDialog(
+    const std::string& extra_diagnostics) {
+  // Shows a feedback dialog which prompts users to help us identify which
+  // template(s) and app(s) are problematic.
+  chrome::ShowFeedbackPage(
+      /*browser=*/nullptr, chrome::kFeedbackSourceDesksTemplates,
+      /*description_template=*/
+      "#DesksTemplates\n\nProblem Template(s): \nProblem App(s): ",
+      /*description_placeholder_text=*/std::string(),
+      /*category_tag=*/std::string(), extra_diagnostics);
 }

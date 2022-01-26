@@ -80,6 +80,7 @@ enum FeedbackSource {
   kFeedbackSourceWhatsNew,
   kFeedbackSourceConnectivityDiagnostics,
   kFeedbackSourceProjectorApp,
+  kFeedbackSourceDesksTemplates,
 
   // Must be last.
   kFeedbackSourceCount,

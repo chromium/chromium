@@ -37122,6 +37122,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="20" label="What's New"/>
   <int value="21" label="Connectivity Diagnostics"/>
   <int value="22" label="Projector App"/>
+  <int value="23" label="Desks Templates"/>
 </enum>
 
 <enum name="FeedContentOrder">
