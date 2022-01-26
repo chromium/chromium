@@ -7595,3 +7595,5 @@ crbug.com/1290780 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/cs
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Win7 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Crash Failure Pass Timeout Skip ]
+crbug.com/1291246 [ Mac ] virtual/dark-system-color-picker-appearance/fast/forms/color-scheme/color/color-picker-appearance.html [ Failure Pass ]
+crbug.com/1291246 [ Mac ] virtual/system-color-picker-appearance/fast/forms/color-scheme/color/color-picker-appearance.html [ Failure Pass ]
