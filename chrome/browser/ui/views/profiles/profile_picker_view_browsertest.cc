@@ -655,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   StartDiceSignIn();
 
-  // It would be nicer to verify that IsEncryptionKeysApiBoundForTesting()
+  // It would be nicer to verify that HasEncryptionKeysApiForTesting()
   // returns true but this isn't possible because the sigin page returns an
   // error, without setting up a fake HTTP server.
   EXPECT_NE(SyncEncryptionKeysTabHelper::FromWebContents(web_contents()),

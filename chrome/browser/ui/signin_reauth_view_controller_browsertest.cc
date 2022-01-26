@@ -440,7 +440,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   SyncEncryptionKeysTabHelper* encryption_keys_tab_helper =
       SyncEncryptionKeysTabHelper::FromWebContents(target_contents);
   ASSERT_NE(encryption_keys_tab_helper, nullptr);
-  EXPECT_TRUE(encryption_keys_tab_helper->IsEncryptionKeysApiBoundForTesting());
+  EXPECT_TRUE(encryption_keys_tab_helper->HasEncryptionKeysApiForTesting(
+      target_contents->GetMainFrame()));
 
   // The invocation of the API, even with dummy values, should propagate until
   // TrustedVaultClient and its observers.
