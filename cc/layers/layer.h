@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/cc_export.h"
@@ -105,7 +106,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void WaitForProtectedSequenceCompletion() const override;
 
   // A unique and stable id for the Layer. Ids are always positive.
-  int id() const { return inputs_.layer_id; }
+  int id() const { return layer_id_; }
 
   // Returns a pointer to the highest ancestor of this layer, or itself.
   Layer* RootLayer();
@@ -138,7 +139,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   bool HasAncestor(const Layer* ancestor) const;
 
   // The list of children of this layer.
-  const LayerList& children() const { return inputs_.children; }
+  const LayerList& children() const { return inputs_.Read(*this).children; }
 
   // These methods provide information from layer_tree_host_ in a way that is
   // safe to query from either the main or impl thread.
@@ -174,7 +175,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Set and get the background color for the layer. This color is not used by
   // basic Layers, but subclasses may make use of it.
   virtual void SetBackgroundColor(SkColor background_color);
-  SkColor background_color() const { return inputs_.background_color; }
+  SkColor background_color() const {
+    return inputs_.Read(*this).background_color;
+  }
 
   // For layer tree mode only. In layer list mode, client doesn't need to set
   // it. Sets an opaque background color for the layer, to be used in place of
@@ -221,7 +224,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // The root layer in the tree has bounds in viewport space, which includes
   // the device scale factor.
   void SetBounds(const gfx::Size& bounds);
-  const gfx::Size& bounds() const { return inputs_.bounds; }
+  const gfx::Size& bounds() const { return inputs_.Read(*this).bounds; }
 
   // For layer tree mode only.
   // Set or get that this layer clips its subtree to within its bounds. Content
@@ -270,9 +273,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   void SetNeedsDisplay() { SetNeedsDisplayRect(gfx::Rect(bounds())); }
   // Returns the union of previous calls to SetNeedsDisplayRect() and
   // SetNeedsDisplay() that have not been committed to the compositor thread.
-  const gfx::Rect& update_rect() const { return inputs_.update_rect; }
+  const gfx::Rect& update_rect() const { return update_rect_.Read(*this); }
 
-  void ResetUpdateRectForTesting() { inputs_.update_rect = gfx::Rect(); }
+  void ResetUpdateRectForTesting() { update_rect_.Write(*this) = gfx::Rect(); }
 
   // For layer tree mode only.
   // Set or get the rounded corner radii which is applied to the layer and its
@@ -368,7 +371,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // To override a different contents_opaque_for_text, the client should call
   // SetContentsOpaqueForText() after SetContentsOpaque().
   void SetContentsOpaque(bool opaque);
-  bool contents_opaque() const { return inputs_.contents_opaque; }
+  bool contents_opaque() const { return inputs_.Read(*this).contents_opaque; }
 
   // Whether the contents area containing text is known to be opaque.
   // For example, blink will SetContentsOpaque(false) but
@@ -379,7 +382,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // See also the note for SetContentsOpaque().
   void SetContentsOpaqueForText(bool opaque);
   bool contents_opaque_for_text() const {
-    return inputs_.contents_opaque_for_text;
+    return inputs_.Read(*this).contents_opaque_for_text;
   }
 
   // Set or get whether this layer should be a hit test target
@@ -460,30 +463,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   bool GetUserScrollableHorizontal() const;
   bool GetUserScrollableVertical() const;
 
-  // Contains a set of input properties that are infrequently set on layers,
-  // generally speaking in <10% of use cases. When adding new values to this
-  // struct, consider the memory implications versus simply adding to Inputs.
-  struct RareInputs {
-    viz::RegionCaptureBounds capture_bounds;
-    Region non_fast_scrollable_region;
-    Region wheel_event_region;
-  };
-
-  RareInputs& EnsureRareInputs() {
-    if (!inputs_.rare_inputs)
-      inputs_.rare_inputs = std::make_unique<RareInputs>();
-
-    return *inputs_.rare_inputs;
-  }
-
   // Set or get an area of this layer within which initiating a scroll can not
   // be done from the compositor thread. Within this area, if the user attempts
   // to start a scroll, the events must be sent to the main thread and processed
   // there.
   void SetNonFastScrollableRegion(const Region& non_fast_scrollable_region);
   const Region& non_fast_scrollable_region() const {
-    return inputs_.rare_inputs ? inputs_.rare_inputs->non_fast_scrollable_region
-                               : Region::Empty();
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs)
+      return rare_inputs->non_fast_scrollable_region;
+    return Region::Empty();
   }
 
   // Set or get the set of touch actions allowed across each point of this
@@ -493,14 +481,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // a touch event can initiate a scroll or zoom on the compositor thread.
   void SetTouchActionRegion(TouchActionRegion touch_action_region);
   const TouchActionRegion& touch_action_region() const {
-    return inputs_.touch_action_region;
+    return inputs_.Read(*this).touch_action_region;
   }
 
   // Set or get the region that should be used for capture.
   void SetCaptureBounds(viz::RegionCaptureBounds bounds);
   const viz::RegionCaptureBounds& capture_bounds() const {
-    return inputs_.rare_inputs ? inputs_.rare_inputs->capture_bounds
-                               : viz::RegionCaptureBounds::Empty();
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs)
+      return rare_inputs->capture_bounds;
+    return viz::RegionCaptureBounds::Empty();
   }
 
   // Set or get the set of blocking wheel rects of this layer. The
@@ -510,8 +499,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // can start scrolling.
   void SetWheelEventRegion(Region wheel_event_region);
   const Region& wheel_event_region() const {
-    return inputs_.rare_inputs ? inputs_.rare_inputs->wheel_event_region
-                               : Region::Empty();
+    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs)
+      return rare_inputs->wheel_event_region;
+    return Region::Empty();
   }
 
   // For layer tree mode only.
@@ -633,7 +623,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   // Stable identifier for clients. See comment in cc/trees/element_id.h.
   void SetElementId(ElementId id);
-  ElementId element_id() const { return inputs_.element_id; }
+  ElementId element_id() const { return inputs_.Read(*this).element_id; }
 
   // For layer tree mode only.
   // Sets or gets if trilinear filtering should be used to scaling the contents
@@ -872,7 +862,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   const LayerTreeInputs* layer_tree_inputs() const;
 #else
   const LayerTreeInputs* layer_tree_inputs() const {
-    return layer_tree_inputs_.get();
+    return layer_tree_inputs_.Read(*this).get();
   }
 #endif
 
@@ -912,19 +902,32 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   int effect_tree_index(const PropertyTrees&) const;
   int scroll_tree_index(const PropertyTrees&) const;
 
+  // Contains a set of input properties that are infrequently set on layers,
+  // generally speaking in <10% of use cases. When adding new values to this
+  // struct, consider the memory implications versus simply adding to Inputs.
+  struct RareInputs {
+    viz::RegionCaptureBounds capture_bounds;
+    Region non_fast_scrollable_region;
+    Region wheel_event_region;
+  };
+
+  RareInputs& EnsureRareInputs() {
+    auto& rare_inputs = inputs_.Write(*this).rare_inputs;
+    if (!rare_inputs)
+      rare_inputs = std::make_unique<RareInputs>();
+    return *rare_inputs;
+  }
+
   // Encapsulates all data, callbacks or interfaces received from the embedder.
   struct Inputs {
-    explicit Inputs(int layer_id);
+    Inputs();
     ~Inputs();
-
-    int layer_id;
 
     // In layer list mode, only the root layer can have children.
     // TODO(wangxianzhu): Move this field into LayerTreeHost when we remove
     // layer tree mode.
     LayerList children;
 
-    gfx::Rect update_rect;
     gfx::Size bounds;
 
     // Hit testing depends on this bit.
@@ -1017,15 +1020,18 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // updated via SetLayerTreeHost() if a layer moves between trees.
   raw_ptr<LayerTreeHost> layer_tree_host_;
 
-  Inputs inputs_;
-  std::unique_ptr<LayerTreeInputs> layer_tree_inputs_;
+  ProtectedSequenceReadable<Inputs> inputs_;
+  ProtectedSequenceReadable<std::unique_ptr<LayerTreeInputs>>
+      layer_tree_inputs_;
 
-  int num_descendants_that_draw_content_;
-  int transform_tree_index_;
-  int effect_tree_index_;
-  int clip_tree_index_;
-  int scroll_tree_index_;
-  int property_tree_sequence_number_;
+  ProtectedSequenceWritable<gfx::Rect> update_rect_;
+  const int layer_id_;
+  int num_descendants_that_draw_content_ = 0;
+  int transform_tree_index_ = TransformTree::kInvalidNodeId;
+  int effect_tree_index_ = EffectTree::kInvalidNodeId;
+  int clip_tree_index_ = ClipTree::kInvalidNodeId;
+  int scroll_tree_index_ = ScrollTree::kInvalidNodeId;
+  int property_tree_sequence_number_ = -1;
 
   gfx::Vector2dF offset_to_transform_parent_;
 
