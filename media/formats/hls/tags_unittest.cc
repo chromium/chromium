@@ -170,5 +170,61 @@ TEST(HlsFormatParserTest, ParseXGapTagTest) {
   RunEmptyTagTest<XGapTag>();
 }
 
+TEST(HlsFormatParserTest, ParseXDefineTagTest) {
+  RunTagIdenficationTest<XDefineTag>(
+      "#EXT-X-DEFINE:NAME=\"FOO\",VALUE=\"Bar\",\n",
+      "NAME=\"FOO\",VALUE=\"Bar\",");
+
+  // Test some valid inputs
+  auto tag = OkTest<XDefineTag>(R"(NAME="Foo",VALUE="bar",)");
+  EXPECT_EQ(tag.name.name, "Foo");
+  EXPECT_TRUE(tag.value.has_value());
+  EXPECT_EQ(tag.value.value(), "bar");
+
+  tag = OkTest<XDefineTag>(R"(VALUE="90/12#%)(zx./",NAME="Hello12_-")");
+  EXPECT_EQ(tag.name.name, "Hello12_-");
+  EXPECT_TRUE(tag.value.has_value());
+  EXPECT_EQ(tag.value.value(), "90/12#%)(zx./");
+
+  tag = OkTest<XDefineTag>(R"(IMPORT="-F90_Baz")");
+  EXPECT_EQ(tag.name.name, "-F90_Baz");
+  EXPECT_FALSE(tag.value.has_value());
+
+  // IMPORT and VALUE are not currently considered an error
+  tag = OkTest<XDefineTag>(R"(IMPORT="F00_Bar",VALUE="Test")");
+  EXPECT_EQ(tag.name.name, "F00_Bar");
+  EXPECT_FALSE(tag.value.has_value());
+
+  // NAME with empty value is allowed
+  tag = OkTest<XDefineTag>(R"(NAME="HELLO",VALUE="")");
+  EXPECT_EQ(tag.name.name, "HELLO");
+  EXPECT_TRUE(tag.value.has_value());
+  EXPECT_EQ(tag.value.value(), "");
+
+  // Empty content is not allowed
+  ErrorTest<XDefineTag>("", ParseStatusCode::kMalformedTag);
+
+  // NAME and IMPORT are NOT allowed
+  ErrorTest<XDefineTag>(R"(NAME="Foo",IMPORT="Foo")",
+                        ParseStatusCode::kMalformedTag);
+
+  // Name without VALUE is NOT allowed
+  ErrorTest<XDefineTag>(R"(NAME="Foo",)", ParseStatusCode::kMalformedTag);
+
+  // Empty NAME is not allowed
+  ErrorTest<XDefineTag>(R"(NAME="",VALUE="Foo")",
+                        ParseStatusCode::kMalformedTag);
+
+  // Non-valid NAME is not allowed
+  ErrorTest<XDefineTag>(R"(NAME=".FOO",VALUE="Foo")",
+                        ParseStatusCode::kMalformedTag);
+  ErrorTest<XDefineTag>(R"(NAME="F++OO",VALUE="Foo")",
+                        ParseStatusCode::kMalformedTag);
+  ErrorTest<XDefineTag>(R"(NAME=" FOO",VALUE="Foo")",
+                        ParseStatusCode::kMalformedTag);
+  ErrorTest<XDefineTag>(R"(NAME="FOO ",VALUE="Foo")",
+                        ParseStatusCode::kMalformedTag);
+}
+
 }  // namespace hls
 }  // namespace media

@@ -9,6 +9,7 @@
 #include "media/formats/hls/items.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace hls {
@@ -67,6 +68,26 @@ struct XDiscontinuityTag {
 struct XGapTag {
   static constexpr TagKind kKind = TagKind::kXGap;
   static MEDIA_EXPORT ParseStatus::Or<XGapTag> Parse(TagItem);
+};
+
+// Represents the contents of the #EXT-X-DEFINE tag
+struct XDefineTag {
+  static constexpr TagKind kKind = TagKind::kXDefine;
+  static MEDIA_EXPORT ParseStatus::Or<XDefineTag> Parse(TagItem);
+
+  // Constructs an XDefineTag representing a variable definition.
+  static MEDIA_EXPORT XDefineTag CreateDefinition(types::VariableName name,
+                                                  base::StringPiece value);
+
+  // Constructs an XDefineTag representing an imported variable definition.
+  static MEDIA_EXPORT XDefineTag CreateImport(types::VariableName name);
+
+  // The name of the variable being defined.
+  types::VariableName name;
+
+  // The value of the variable. If this is `nullopt`, then the value
+  // is being IMPORT-ed and must be defined in the parent playlist.
+  absl::optional<base::StringPiece> value;
 };
 
 }  // namespace hls

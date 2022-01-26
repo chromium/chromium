@@ -20,6 +20,7 @@ enum class ParseStatusCode : StatusCodeType {
   kInvalidPlaylistVersion,
   kMalformedAttributeList,
   kAttributeListHasDuplicateNames,
+  kMalformedVariableName,
   kPlaylistMissingM3uTag,
   kMediaSegmentMissingInfTag,
 };

@@ -91,13 +91,22 @@ struct MEDIA_EXPORT AttributeMap {
   // Helper for creating backing storage for an AttributeMap on the stack.
   // `keys` must be a set of unique key strings sorted in alphabetical order.
   template <typename... T>
-  static std::array<Item, sizeof...(T)> MakeStorage(T... keys) {
+  static constexpr std::array<Item, sizeof...(T)> MakeStorage(T... keys) {
     return {{{keys, absl::nullopt}...}};
   }
 
  private:
   base::span<Item> items_;
 };
+
+// Represents a string that is guaranteed to be a non-empty, and consisting only
+// of characters in the set {[a-z], [A-Z], [0-9], _, -}.
+struct VariableName {
+  base::StringPiece name;
+};
+
+ParseStatus::Or<VariableName> MEDIA_EXPORT
+ParseVariableName(SourceString source_str);
 
 }  // namespace types
 }  // namespace hls

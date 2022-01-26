@@ -28,7 +28,8 @@ enum class TagKind {
   kXIFramesOnly,
   kXDiscontinuity,
   kXGap,
-  kMaxValue = kXGap,
+  kXDefine,
+  kMaxValue = kXDefine,
 };
 
 // An item which has been determined to of a known or unknown tag type, but not

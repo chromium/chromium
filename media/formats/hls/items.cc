@@ -37,6 +37,7 @@ absl::optional<TagItem> GetTagItem(SourceString line) {
       {"-X-I-FRAMES-ONLY", TagKind::kXIFramesOnly},
       {"-X-DISCONTINUITY", TagKind::kXDiscontinuity},
       {"-X-GAP", TagKind::kXGap},
+      {"-X-DEFINE:", TagKind::kXDefine},
   };
 
   for (const auto& tag : kTagKindPrefixes) {
