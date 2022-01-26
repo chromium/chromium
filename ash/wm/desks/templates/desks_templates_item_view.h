@@ -140,6 +140,8 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
 
   // Owned by the views hierarchy.
   DesksTemplatesNameView* name_view_ = nullptr;
+  // When template is managed by admin, `time_view_` will display management
+  // description instead.
   views::Label* time_view_ = nullptr;
   DesksTemplatesIconContainer* icon_container_view_ = nullptr;
   CloseButton* delete_button_ = nullptr;

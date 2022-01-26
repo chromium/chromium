@@ -98,6 +98,8 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
 
   const std::u16string template_name = desk_template_->template_name();
   auto* color_provider = AshColorProvider::Get();
+  const bool is_admin_managed =
+      desk_template->source() == DeskTemplateSource::kPolicy;
 
   views::BoxLayoutView* card_container;
   views::View* spacer;
@@ -145,12 +147,15 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                                   color_provider->GetContentLayerColor(
                                       AshColorProvider::ContentLayerType::
                                           kIconColorSecondary)))
-                              .SetVisible(desk_template->source() ==
-                                          DeskTemplateSource::kPolicy)),
+                              .SetVisible(is_admin_managed)),
                   views::Builder<views::Label>()
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                      .SetText(GetTimeStr(desk_template_->created_time()))
+                      .SetText(
+                          is_admin_managed
+                              ? l10n_util::GetStringUTF16(
+                                    IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION)
+                              : GetTimeStr(desk_template_->created_time()))
                       .SetPreferredSize(gfx::Size(
                           kTemplateNameAndTimePreferredWidth, kTimeViewHeight)),
                   views::Builder<views::View>().CopyAddressTo(&spacer),
