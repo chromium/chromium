@@ -305,11 +305,9 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
 #if !BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool for_cloud_print) {
+    const std::string& locale) {
 #if BUILDFLAG(IS_MAC)
-  if (!for_cloud_print &&
-      base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
+  if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(
         CreateConnection(print_backend_settings), locale);
   }

@@ -63,8 +63,7 @@ class DummyPrintBackend : public PrintBackend {
 // static
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
     const base::DictionaryValue* print_backend_settings,
-    const std::string& locale,
-    bool /*for_cloud_print*/) {
+    const std::string& locale) {
   return base::MakeRefCounted<DummyPrintBackend>(locale);
 }
 
