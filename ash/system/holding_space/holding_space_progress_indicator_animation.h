@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/ash_export.h"
 #include "base/callback_list.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -18,7 +19,8 @@ class SlideAnimation;
 namespace ash {
 
 // An animation for a `HoldingSpaceProgressIndicator`.
-class HoldingSpaceProgressIndicatorAnimation : public gfx::AnimationDelegate {
+class ASH_EXPORT HoldingSpaceProgressIndicatorAnimation
+    : public gfx::AnimationDelegate {
  public:
   HoldingSpaceProgressIndicatorAnimation(
       const HoldingSpaceProgressIndicatorAnimation&) = delete;

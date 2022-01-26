@@ -2594,6 +2594,7 @@ test("ash_unittests") {
     "system/power/power_prefs_unittest.cc",
     "system/power/power_status_unittest.cc",
     "system/power/video_activity_notifier_unittest.cc",
+    "system/progress_indicator/progress_indicator_animation_registry_unittest.cc",
     "system/rotation/rotation_lock_feature_pod_controller_unittest.cc",
     "system/scheduled_feature/scheduled_feature_unittest.cc",
     "system/screen_layout_observer_unittest.cc",

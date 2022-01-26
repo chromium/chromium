@@ -15,9 +15,6 @@
 
 namespace ash {
 
-class HoldingSpaceProgressIconAnimation;
-class HoldingSpaceProgressRingAnimation;
-
 // A lazily initialized singleton registry for holding space animations.
 //
 // Since registered animations are owned by the singleton, they can be shared
@@ -42,18 +39,6 @@ class ASH_EXPORT HoldingSpaceAnimationRegistry
   // may only exist while `Shell` is alive and will automatically delete itself
   // when `Shell` is being destroyed.
   static HoldingSpaceAnimationRegistry* GetInstance();
-
-  // ProgressIndicatorAnimationRegistry:
-  base::CallbackListSubscription AddProgressIconAnimationChangedCallbackForKey(
-      const void* key,
-      ProgressIconAnimationChangedCallbackList::CallbackType callback) override;
-  base::CallbackListSubscription AddProgressRingAnimationChangedCallbackForKey(
-      const void* key,
-      ProgressRingAnimationChangedCallbackList::CallbackType callback) override;
-  HoldingSpaceProgressIconAnimation* GetProgressIconAnimationForKey(
-      const void* key) override;
-  HoldingSpaceProgressRingAnimation* GetProgressRingAnimationForKey(
-      const void* key) override;
 
  private:
   HoldingSpaceAnimationRegistry();
