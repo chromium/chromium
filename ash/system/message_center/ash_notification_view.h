@@ -173,14 +173,14 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification);
 
   // Update `message_in_expanded_view_` according to the given notification.
-  void UpdateMessageViewInExpandedState(
+  void UpdateMessageLabelInExpandedState(
       const message_center::Notification& notification);
 
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
 
-  // Get the available space for `message_view_in_expanded_state_` width.
-  int GetExpandedMessageViewWidth();
+  // Get the available space for `message_label_in_expanded_state_` width.
+  int GetExpandedMessageLabelWidth();
 
   // Disable the notification of this view. Called after the turn of
   // notifications button is clicked.
@@ -217,7 +217,7 @@ class ASH_EXPORT AshNotificationView
   views::FlexLayoutView* expand_button_container_ = nullptr;
   views::View* control_buttons_container_ = nullptr;
   views::View* left_content_ = nullptr;
-  views::Label* message_view_in_expanded_state_ = nullptr;
+  views::Label* message_label_in_expanded_state_ = nullptr;
   views::ScrollView* grouped_notifications_scroll_view_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;

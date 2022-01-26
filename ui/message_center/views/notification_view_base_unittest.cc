@@ -348,7 +348,7 @@ views::View* NotificationViewBaseTest::GetCloseButton() {
 // * FormatContextMessageTest
 
 TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
-  EXPECT_NE(nullptr, notification_view()->message_view_);
+  EXPECT_NE(nullptr, notification_view()->message_label_);
   EXPECT_NE(nullptr, notification_view()->icon_view_);
   EXPECT_NE(nullptr, notification_view()->image_container_view_);
 
@@ -360,7 +360,7 @@ TEST_F(NotificationViewBaseTest, CreateOrUpdateTest) {
 
   notification_view()->CreateOrUpdateViews(*notification);
 
-  EXPECT_EQ(nullptr, notification_view()->message_view_.get());
+  EXPECT_EQ(nullptr, notification_view()->message_label_.get());
   EXPECT_TRUE(notification_view()->image_container_view_->children().empty());
   EXPECT_EQ(nullptr, notification_view()->icon_view_.get());
 }
@@ -1054,7 +1054,7 @@ TEST_F(NotificationViewBaseTest, TestLongTitleAndMessage) {
   notification_view()->ToggleExpanded();
 
   // Get the height of the message view with a short title.
-  const int message_height = notification_view()->message_view_->height();
+  const int message_height = notification_view()->message_label_->height();
 
   notification->set_title(
       u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
@@ -1063,7 +1063,7 @@ TEST_F(NotificationViewBaseTest, TestLongTitleAndMessage) {
   UpdateNotificationViews(*notification);
 
   // The height of the message view should stay the same with a long title.
-  EXPECT_EQ(message_height, notification_view()->message_view_->height());
+  EXPECT_EQ(message_height, notification_view()->message_label_->height());
 }
 
 TEST_F(NotificationViewBaseTest, AppNameExtension) {

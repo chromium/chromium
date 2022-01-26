@@ -232,7 +232,7 @@ class NotificationViewTest : public views::ViewObserver,
   }
   views::View* left_content() { return notification_view_->left_content(); }
   views::Label* title_view() { return notification_view_->title_view_; }
-  views::Label* message_view() { return notification_view_->message_view(); }
+  views::Label* message_label() { return notification_view_->message_label(); }
   views::View* inline_settings_row() {
     return notification_view_->inline_settings_row();
   }
@@ -289,9 +289,9 @@ class NotificationViewTest : public views::ViewObserver,
 
 TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
   EXPECT_NE(nullptr, title_view());
-  EXPECT_NE(nullptr, message_view());
+  EXPECT_NE(nullptr, message_label());
   EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
 
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_title(std::u16string());
@@ -299,17 +299,17 @@ TEST_F(NotificationViewTest, UpdateViewsOrderingTest) {
   UpdateNotificationViews(*notification);
 
   EXPECT_EQ(nullptr, title_view());
-  EXPECT_NE(nullptr, message_view());
-  EXPECT_EQ(0, left_content()->GetIndexOf(message_view()));
+  EXPECT_NE(nullptr, message_label());
+  EXPECT_EQ(0, left_content()->GetIndexOf(message_label()));
 
   notification->set_title(u"title");
 
   UpdateNotificationViews(*notification);
 
   EXPECT_NE(nullptr, title_view());
-  EXPECT_NE(nullptr, message_view());
+  EXPECT_NE(nullptr, message_label());
   EXPECT_EQ(0, left_content()->GetIndexOf(title_view()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
 }
 
 TEST_F(NotificationViewTest, CreateOrUpdateTitle) {
@@ -607,7 +607,7 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
 
   UpdateNotificationViews(*notification);
   EXPECT_FALSE(notification_view()->expanded_);
-  const int collapsed_height = message_view()->height();
+  const int collapsed_height = message_label()->height();
   const int collapsed_preferred_height =
       notification_view()->GetPreferredSize().height();
   EXPECT_LT(0, collapsed_height);
@@ -615,13 +615,13 @@ TEST_F(NotificationViewTest, ExpandLongMessage) {
 
   notification_view()->ToggleExpanded();
   EXPECT_TRUE(notification_view()->expanded_);
-  EXPECT_LT(collapsed_height, message_view()->height());
+  EXPECT_LT(collapsed_height, message_label()->height());
   EXPECT_LT(collapsed_preferred_height,
             notification_view()->GetPreferredSize().height());
 
   notification_view()->ToggleExpanded();
   EXPECT_FALSE(notification_view()->expanded_);
-  EXPECT_EQ(collapsed_height, message_view()->height());
+  EXPECT_EQ(collapsed_height, message_label()->height());
   EXPECT_EQ(collapsed_preferred_height,
             notification_view()->GetPreferredSize().height());
 }

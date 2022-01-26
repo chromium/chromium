@@ -243,8 +243,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* left_content() { return left_content_; }
   views::View* right_content() { return right_content_; }
 
-  views::Label* message_view() { return message_view_; }
-  const views::Label* message_view() const { return message_view_; }
+  views::Label* message_label() { return message_label_; }
+  const views::Label* message_label() const { return message_label_; }
 
   ProportionalImageView* icon_view() const { return icon_view_; }
 
@@ -326,7 +326,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   friend class NotificationViewBaseTest;
 
-  void CreateOrUpdateMessageView(const Notification& notification);
+  void CreateOrUpdateMessageLabel(const Notification& notification);
   virtual void CreateOrUpdateProgressViews(const Notification& notification);
   void CreateOrUpdateListItemViews(const Notification& notification);
   void CreateOrUpdateIconView(const Notification& notification);
@@ -375,7 +375,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* right_content_ = nullptr;
 
   // Views which are dynamically created inside view hierarchy.
-  raw_ptr<views::Label> message_view_ = nullptr;
+  raw_ptr<views::Label> message_label_ = nullptr;
   raw_ptr<views::Label> status_view_ = nullptr;
   raw_ptr<ProportionalImageView> icon_view_ = nullptr;
   views::View* image_container_view_ = nullptr;

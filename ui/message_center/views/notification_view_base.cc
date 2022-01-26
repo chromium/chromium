@@ -282,7 +282,7 @@ void NotificationViewBase::CreateOrUpdateViews(
 
   CreateOrUpdateHeaderView(notification);
   CreateOrUpdateTitleView(notification);
-  CreateOrUpdateMessageView(notification);
+  CreateOrUpdateMessageLabel(notification);
   CreateOrUpdateCompactTitleMessageView(notification);
   CreateOrUpdateProgressViews(notification);
   CreateOrUpdateListItemViews(notification);
@@ -329,7 +329,7 @@ void NotificationViewBase::Layout() {
 
   // We need to call IsExpandable() at the end of Layout() call, since whether
   // we should show expand button or not depends on the current view layout.
-  // (e.g. Show expand button when |message_view_| exceeds one line.)
+  // (e.g. Show expand button when |message_label_| exceeds one line.)
   SetExpandButtonEnabled(IsExpandable());
   header_row_->Layout();
 
@@ -645,32 +645,32 @@ void NotificationViewBase::CreateOrUpdateProgressStatusView(
   status_view_->SetText(notification.progress_status());
 }
 
-void NotificationViewBase::CreateOrUpdateMessageView(
+void NotificationViewBase::CreateOrUpdateMessageLabel(
     const Notification& notification) {
   if (notification.type() == NOTIFICATION_TYPE_PROGRESS ||
       notification.message().empty()) {
-    // Deletion will also remove |message_view_| from its parent.
-    delete message_view_;
-    message_view_ = nullptr;
+    // Deletion will also remove |message_label_| from its parent.
+    delete message_label_;
+    message_label_ = nullptr;
     return;
   }
 
   const std::u16string& text = gfx::TruncateString(
       notification.message(), kMessageCharacterLimit, gfx::WORD_BREAK);
 
-  if (!message_view_) {
-    auto message_view = std::make_unique<views::Label>(
+  if (!message_label_) {
+    auto message_label = std::make_unique<views::Label>(
         text, views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_SECONDARY);
-    message_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    message_view->SetAllowCharacterBreak(true);
-    message_view_ = AddViewToLeftContent(std::move(message_view));
+    message_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    message_label->SetAllowCharacterBreak(true);
+    message_label_ = AddViewToLeftContent(std::move(message_label));
   } else {
-    message_view_->SetText(text);
-    ReorderViewInLeftContent(message_view_);
+    message_label_->SetText(text);
+    ReorderViewInLeftContent(message_label_);
   }
 
-  message_view_->SetVisible(notification.items().empty());
+  message_label_->SetVisible(notification.items().empty());
 }
 
 void NotificationViewBase::CreateOrUpdateProgressViews(
@@ -689,7 +689,7 @@ void NotificationViewBase::CreateOrUpdateListItemViews(
 
   const std::vector<NotificationItem>& items = notification.items();
 
-  for (size_t i = 0; i < items.size() && i < kMaxLinesForExpandedMessageView;
+  for (size_t i = 0; i < items.size() && i < kMaxLinesForExpandedMessageLabel;
        ++i) {
     std::unique_ptr<views::View> item_view = CreateItemView(items[i]);
     item_views_.push_back(AddViewToLeftContent(std::move(item_view)));
@@ -884,13 +884,13 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
     inline_reply_->SetVisible(false);
   }
 
-  for (size_t i = kMaxLinesForMessageView; i < item_views_.size(); ++i) {
+  for (size_t i = kMaxLinesForMessageLabel; i < item_views_.size(); ++i) {
     item_views_[i]->SetVisible(expanded);
   }
   if (status_view_)
     status_view_->SetVisible(expanded);
 
-  int max_items = expanded ? item_views_.size() : kMaxLinesForMessageView;
+  int max_items = expanded ? item_views_.size() : kMaxLinesForMessageLabel;
   if (!for_ash_notification_ && list_items_count_ > max_items)
     header_row_->SetOverflowIndicator(list_items_count_ - max_items);
   else if (!item_views_.empty())

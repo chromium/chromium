@@ -131,7 +131,7 @@ void ConfigureLabelStyle(
 }
 
 // Create a view that will contain the `content_row`,
-// `message_view_in_expanded_state_`, inline settings and the large image.
+// `message_label_in_expanded_state_`, inline settings and the large image.
 views::Builder<views::View> CreateMainRightViewBuilder() {
   auto layout_manager = std::make_unique<views::FlexLayout>();
   layout_manager
@@ -362,10 +362,10 @@ AshNotificationView::AshNotificationView(
           .AddChild(content_row_builder)
           .AddChild(
               views::Builder<views::Label>()
-                  .CopyAddressTo(&message_view_in_expanded_state_)
+                  .CopyAddressTo(&message_label_in_expanded_state_)
                   .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
                   .SetMultiLine(true)
-                  .SetMaxLines(message_center::kMaxLinesForExpandedMessageView)
+                  .SetMaxLines(message_center::kMaxLinesForExpandedMessageLabel)
                   .SetAllowCharacterBreak(true)
                   .SetBorder(
                       views::CreateEmptyBorder(kMainRightViewChildPadding))
@@ -374,12 +374,12 @@ AshNotificationView::AshNotificationView(
                   // original bug, but it seems there's no obvious solution for
                   // the bug according to https://crbug.com/678337#c7. We will
                   // consider making changes to this code when the bug is fixed.
-                  .SetMaximumWidth(GetExpandedMessageViewWidth()))
+                  .SetMaximumWidth(GetExpandedMessageLabelWidth()))
           .AddChild(CreateInlineSettingsBuilder())
           .AddChild(CreateImageContainerBuilder().SetBorder(
               views::CreateEmptyBorder(kImageContainerPadding)));
 
-  ConfigureLabelStyle(message_view_in_expanded_state_, kMessageLabelSize,
+  ConfigureLabelStyle(message_label_in_expanded_state_, kMessageLabelSize,
                       false);
 
   AddChildView(
@@ -474,7 +474,8 @@ AshNotificationView::AshNotificationView(
 
   // Create layer in some views for animations.
   message_center_utils::InitLayerForAnimations(header_row());
-  message_center_utils::InitLayerForAnimations(message_view_in_expanded_state_);
+  message_center_utils::InitLayerForAnimations(
+      message_label_in_expanded_state_);
   message_center_utils::InitLayerForAnimations(actions_row());
 
   UpdateWithNotification(notification);
@@ -664,15 +665,15 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
                                  (IsExpandable() && !expanded));
   }
 
-  if (message_view()) {
-    // `message_view()` is shown only in collapsed mode.
+  if (message_label()) {
+    // `message_label()` is shown only in collapsed mode.
     if (!expanded) {
-      ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
-      message_center_utils::InitLayerForAnimations(message_view());
+      ConfigureLabelStyle(message_label(), kMessageLabelSize, false);
+      message_center_utils::InitLayerForAnimations(message_label());
     }
-    message_view()->SetVisible(!expanded);
-    message_view_in_expanded_state_->SetVisible(expanded &&
-                                                !is_grouped_parent_view_);
+    message_label()->SetVisible(!expanded);
+    message_label_in_expanded_state_->SetVisible(expanded &&
+                                                 !is_grouped_parent_view_);
   }
 
   // Custom padding for app icon and expand button. These 2 views should always
@@ -722,7 +723,7 @@ void AshNotificationView::UpdateWithNotification(
     grouped_notifications_scroll_view_->SetVisible(is_grouped_parent_view_);
 
   header_row()->SetVisible(!is_grouped_child_view_);
-  UpdateMessageViewInExpandedState(notification);
+  UpdateMessageLabelInExpandedState(notification);
 
   NotificationViewBase::UpdateWithNotification(notification);
 
@@ -1013,18 +1014,18 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
   snooze_button_ = action_buttons_row()->AddChildView(std::move(snooze_button));
 }
 
-void AshNotificationView::UpdateMessageViewInExpandedState(
+void AshNotificationView::UpdateMessageLabelInExpandedState(
     const message_center::Notification& notification) {
   if (notification.type() == message_center::NOTIFICATION_TYPE_PROGRESS ||
       notification.message().empty()) {
-    message_view_in_expanded_state_->SetVisible(false);
+    message_label_in_expanded_state_->SetVisible(false);
     return;
   }
-  message_view_in_expanded_state_->SetText(gfx::TruncateString(
+  message_label_in_expanded_state_->SetText(gfx::TruncateString(
       notification.message(), message_center::kMessageCharacterLimit,
       gfx::WORD_BREAK));
 
-  message_view_in_expanded_state_->SetVisible(true);
+  message_label_in_expanded_state_->SetVisible(true);
 }
 
 void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
@@ -1052,7 +1053,7 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
           top_radius_, bottom_radius_, background_color_)));
 }
 
-int AshNotificationView::GetExpandedMessageViewWidth() {
+int AshNotificationView::GetExpandedMessageLabelWidth() {
   int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
                                            : kNotificationInMessageCenterWidth;
 
@@ -1144,24 +1145,24 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
                                      kHeaderRowFadeInAnimationDurationMs);
   }
 
-  // Fade in `message_view()`. We only do fade in for both message view in
+  // Fade in `message_label()`. We only do fade in for both message view in
   // expanded and collapsed mode if there's a difference between them (a.k.a
-  // when `message_view()` is truncated).
-  if (message_view() && message_view()->GetVisible() &&
-      message_view()->IsDisplayTextTruncated()) {
-    message_center_utils::FadeInView(message_view(),
-                                     kMessageViewFadeInAnimationDelayMs,
-                                     kMessageViewFadeInAnimationDurationMs);
+  // when `message_label()` is truncated).
+  if (message_label() && message_label()->GetVisible() &&
+      message_label()->IsDisplayTextTruncated()) {
+    message_center_utils::FadeInView(message_label(),
+                                     kMessageLabelFadeInAnimationDelayMs,
+                                     kMessageLabelFadeInAnimationDurationMs);
   }
 
-  // Fade in `message_view_in_expanded_state_`.
-  if (message_view_in_expanded_state_ &&
-      message_view_in_expanded_state_->GetVisible() && message_view() &&
-      message_view()->IsDisplayTextTruncated()) {
+  // Fade in `message_label_in_expanded_state_`.
+  if (message_label_in_expanded_state_ &&
+      message_label_in_expanded_state_->GetVisible() && message_label() &&
+      message_label()->IsDisplayTextTruncated()) {
     message_center_utils::FadeInView(
-        message_view_in_expanded_state_,
-        kMessageViewInExpandedStateFadeInAnimationDelayMs,
-        kMessageViewInExpandedStateFadeInAnimationDurationMs);
+        message_label_in_expanded_state_,
+        kMessageLabelInExpandedStateFadeInAnimationDelayMs,
+        kMessageLabelInExpandedStateFadeInAnimationDurationMs);
   }
 
   if (!image_container_view()->children().empty()) {

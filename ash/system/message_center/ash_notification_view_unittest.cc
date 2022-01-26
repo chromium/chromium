@@ -171,9 +171,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::Label* timestamp_in_collapsed_view() {
     return notification_view_->title_row_->timestamp_in_collapsed_view_;
   }
-  views::Label* message_view() { return notification_view_->message_view(); }
-  views::Label* message_view_in_expanded_state() {
-    return notification_view_->message_view_in_expanded_state_;
+  views::Label* message_label() { return notification_view_->message_label(); }
+  views::Label* message_label_in_expanded_state() {
+    return notification_view_->message_label_in_expanded_state_;
   }
   AshNotificationExpandButton* expand_button() {
     return notification_view_->expand_button_;
@@ -201,9 +201,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
 
 TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
   EXPECT_NE(nullptr, title_row());
-  EXPECT_NE(nullptr, message_view());
+  EXPECT_NE(nullptr, message_label());
   EXPECT_EQ(0, left_content()->GetIndexOf(title_row()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
 
   std::unique_ptr<Notification> notification = CreateTestNotification();
   notification->set_title(std::u16string());
@@ -211,17 +211,17 @@ TEST_F(AshNotificationViewTest, UpdateViewsOrderingTest) {
   notification_view()->UpdateWithNotification(*notification);
 
   EXPECT_EQ(nullptr, title_row());
-  EXPECT_NE(nullptr, message_view());
-  EXPECT_EQ(0, left_content()->GetIndexOf(message_view()));
+  EXPECT_NE(nullptr, message_label());
+  EXPECT_EQ(0, left_content()->GetIndexOf(message_label()));
 
   notification->set_title(u"title");
 
   notification_view()->UpdateWithNotification(*notification);
 
   EXPECT_NE(nullptr, title_row());
-  EXPECT_NE(nullptr, message_view());
+  EXPECT_NE(nullptr, message_label());
   EXPECT_EQ(0, left_content()->GetIndexOf(title_row()));
-  EXPECT_EQ(1, left_content()->GetIndexOf(message_view()));
+  EXPECT_EQ(1, left_content()->GetIndexOf(message_label()));
 }
 
 TEST_F(AshNotificationViewTest, CreateOrUpdateTitle) {
@@ -287,16 +287,16 @@ TEST_F(AshNotificationViewTest, ExpandCollapseBehavior) {
   EXPECT_FALSE(header_row()->GetVisible());
   EXPECT_TRUE(timestamp_in_collapsed_view()->GetVisible());
   EXPECT_TRUE(title_row_divider()->GetVisible());
-  EXPECT_TRUE(message_view()->GetVisible());
-  EXPECT_FALSE(message_view_in_expanded_state()->GetVisible());
+  EXPECT_TRUE(message_label()->GetVisible());
+  EXPECT_FALSE(message_label_in_expanded_state()->GetVisible());
 
   // Expected behavior in expanded mode.
   notification_view()->SetExpanded(true);
   EXPECT_TRUE(header_row()->GetVisible());
   EXPECT_FALSE(timestamp_in_collapsed_view()->GetVisible());
   EXPECT_FALSE(title_row_divider()->GetVisible());
-  EXPECT_FALSE(message_view()->GetVisible());
-  EXPECT_TRUE(message_view_in_expanded_state()->GetVisible());
+  EXPECT_FALSE(message_label()->GetVisible());
+  EXPECT_TRUE(message_label_in_expanded_state()->GetVisible());
 }
 
 TEST_F(AshNotificationViewTest, GroupedNotificationStartsCollapsed) {
