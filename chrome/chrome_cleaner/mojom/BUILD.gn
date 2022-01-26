@@ -52,22 +52,6 @@ chrome_cleaner_mojom("footprints_interface") {
   ]
 }
 
-chrome_cleaner_mojom("wstring") {
-  sources = [ "wstring.mojom" ]
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "chrome_cleaner.mojom.WString"
-          cpp = "::std::wstring"
-        },
-      ]
-      traits_headers = [ "typemaps/wstring_mojom_traits.h" ]
-      traits_sources = [ "typemaps/wstring_mojom_traits.cc" ]
-    },
-  ]
-}
-
 chrome_cleaner_mojom("engine_sandbox_interface") {
   sources = [
     "cleaner_engine_requests.mojom",
@@ -78,11 +62,8 @@ chrome_cleaner_mojom("engine_sandbox_interface") {
     "windows_handle.mojom",
     "wstring_embedded_nulls.mojom",
   ]
-  deps = [
-    ":footprints_interface",
-    ":wstring",
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  deps = [ ":footprints_interface" ]
   cpp_typemaps = [
     {
       types = [
@@ -135,10 +116,7 @@ chrome_cleaner_mojom("engine_sandbox_interface") {
 
 chrome_cleaner_mojom("parser_interface") {
   sources = [ "parser_interface.mojom" ]
-  deps = [
-    ":wstring",
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }
 
 chrome_cleaner_mojom("zip_archiver_interface") {

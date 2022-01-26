@@ -37,7 +37,10 @@ mojom_component("base") {
   ]
 
   if (is_win) {
-    sources += [ "logfont_win.mojom" ]
+    sources += [
+      "logfont_win.mojom",
+      "wstring.mojom",
+    ]
   }
   enabled_features = []
   if (is_win) {
@@ -498,6 +501,20 @@ mojom_component("base") {
         ]
         traits_public_deps = [
           "//base",
+          "//mojo/public/cpp/base:typemap_traits",
+        ]
+      },
+      {
+        types = [
+          {
+            mojom = "mojo_base.mojom.WString"
+            cpp = "::std::wstring"
+          },
+        ]
+        traits_headers = [ "//mojo/public/cpp/base/wstring_mojom_traits.h" ]
+        traits_public_deps = [
+          "//base",
+          "//mojo/public/cpp/base",
           "//mojo/public/cpp/base:typemap_traits",
         ]
       },

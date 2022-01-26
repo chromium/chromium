@@ -5,8 +5,8 @@
 module chrome_cleaner.mojom;
 
 import "chrome/chrome_cleaner/mojom/footprints.mojom";
-import "chrome/chrome_cleaner/mojom/wstring.mojom";
 import "chrome/chrome_cleaner/mojom/wstring_embedded_nulls.mojom";
+import "mojo/public/mojom/base/wstring.mojom";
 
 // Passes requests that can mutate the system from the low-privilege sandbox
 // target process to the high-privilege broker process. It is implemented in
@@ -42,10 +42,10 @@ interface CleanerEngineRequests {
     => (bool result);
 
   // Deletes the given service.
-  SandboxDeleteService(WString name) => (bool result);
+  SandboxDeleteService(mojo_base.mojom.WString name) => (bool result);
 
   // Deletes the given task.
-  SandboxDeleteTask(WString name) => (bool result);
+  SandboxDeleteTask(mojo_base.mojom.WString name) => (bool result);
 
   // Terminates the given process.
   // The broker process can't be terminated.

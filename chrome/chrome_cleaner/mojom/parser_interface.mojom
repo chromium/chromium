@@ -4,8 +4,8 @@
 
 module chrome_cleaner.mojom;
 
-import "chrome/chrome_cleaner/mojom/wstring.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/wstring.mojom";
 
 enum LnkParsingResult {
   BAD_FORMAT,
@@ -25,10 +25,10 @@ interface Parser {
   // attempted to be parsed, extracting the executable target path and the
   // command line arguments.
   ParseShortcut(handle<platform> lkn_file_handle)
-   => (LnkParsingResult parsing_result, WString? target_path,
-       WString? working_dir,
-       WString? command_line_arguments,
-       WString? icon_location,
+   => (LnkParsingResult parsing_result, mojo_base.mojom.WString? target_path,
+       mojo_base.mojom.WString? working_dir,
+       mojo_base.mojom.WString? command_line_arguments,
+       mojo_base.mojom.WString? icon_location,
        int32 icon_index);
 
   // JSON parser:

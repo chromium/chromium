@@ -58,6 +58,8 @@ component("typemap_traits") {
     sources += [
       "logfont_win_mojom_traits.cc",
       "logfont_win_mojom_traits.h",
+      "wstring_mojom_traits.cc",
+      "wstring_mojom_traits.h",
     ]
   }
 
