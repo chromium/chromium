@@ -418,7 +418,7 @@ public class TabPersistentStoreTest {
             store.addObserver(mockObserver);
 
             // Should not prefetch with no prior active tab preference stored.
-            Assert.assertNull(store.mPrefetchActiveTabTask);
+            Assert.assertNull(store.getPrefetchTabStateActiveTabTaskForTesting());
 
             // Make sure the metadata file loads properly and in order.
             store.loadState(false /* ignoreIncognitoFiles */);
@@ -763,7 +763,12 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> store.addObserver(mockObserver));
         store.waitForMigrationToFinish();
 
-        Assert.assertNotNull(store.mPrefetchActiveTabTask);
+        if (isCriticalPersistedTabDataEnabled) {
+            Assert.assertNotNull(
+                    store.getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting());
+        } else {
+            Assert.assertNotNull(store.getPrefetchTabStateActiveTabTaskForTesting());
+        }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             store.loadState(false /* ignoreIncognitoFiles */);
@@ -773,8 +778,14 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Confirm that the pre-fetched active tab state was used, must be done here on the
             // UI thread as the message to finish the task is posted here.
-            Assert.assertEquals(
-                    AsyncTask.Status.FINISHED, store.mPrefetchActiveTabTask.getStatus());
+            if (isCriticalPersistedTabDataEnabled) {
+                Assert.assertEquals(AsyncTask.Status.FINISHED,
+                        store.getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting()
+                                .getStatus());
+            } else {
+                Assert.assertEquals(AsyncTask.Status.FINISHED,
+                        store.getPrefetchTabStateActiveTabTaskForTesting().getStatus());
+            }
 
             // Confirm that the correct active tab ID is updated when saving state.
             mPreferences.writeInt(ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, -1);
