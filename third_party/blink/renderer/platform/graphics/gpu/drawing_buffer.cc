@@ -677,8 +677,10 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
     if (!black_bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
       return nullptr;
     black_bitmap.eraseARGB(0, 0, 0, 0);
-    return UnacceleratedStaticBitmapImage::Create(
-        SkImage::MakeFromBitmap(black_bitmap));
+    sk_sp<SkImage> black_image = SkImage::MakeFromBitmap(black_bitmap);
+    if (!black_image)
+      return nullptr;
+    return UnacceleratedStaticBitmapImage::Create(black_image);
   }
 
   DCHECK(release_callback);
