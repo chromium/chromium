@@ -743,18 +743,23 @@ Status StorageQueue::RestoreMetadata(
 }  // namespace reporting
 
 void StorageQueue::DeleteUnusedFiles(
-    const base::flat_set<base::FilePath>& used_files_setused_files_set) {
+    const base::flat_set<base::FilePath>& used_files_set) const {
   // Note, that these files were not reserved against disk allowance and do not
   // need to be discarded.
+  std::vector<base::FilePath> files_to_delete;
   base::FileEnumerator dir_enum(options_.directory(),
                                 /*recursive=*/true,
                                 base::FileEnumerator::FILES);
-  base::FilePath full_name;
-  while (full_name = dir_enum.Next(), !full_name.empty()) {
-    if (used_files_setused_files_set.count(full_name) > 0) {
-      continue;  // File is used, keep it.
+  for (base::FilePath full_name = dir_enum.Next(); !full_name.empty();
+       full_name = dir_enum.Next()) {
+    if (!used_files_set.contains(full_name)) {
+      // File is not being used, delete it.
+      files_to_delete.push_back(std::move(full_name));
     }
-    base::DeleteFile(full_name);
+  }
+  for (const auto& file_to_delete : files_to_delete) {
+    // Ignore result. If it fails, the file will be naturally handled next time.
+    base::DeleteFile(file_to_delete);
   }
 }
 

@@ -279,9 +279,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Adds used metadata file to the set.
   Status RestoreMetadata(base::flat_set<base::FilePath>* used_files_set);
 
-  // Delete all files except those listed in the set.
+  // Delete all files except those listed in |used_file_set|.
   void DeleteUnusedFiles(
-      const base::flat_set<base::FilePath>& used_files_setused_files_set);
+      const base::flat_set<base::FilePath>& used_files_set) const;
 
   // Helper method for Write(): deletes meta files up to, but not including
   // |sequencing_id_to_keep|. Any errors are ignored.
