@@ -73,6 +73,11 @@
 <translation id="1071917609930274619">Tiedon salakoodaus</translation>
 <translation id="1072700771426194907">USB-laite havaittu</translation>
 <translation id="107278043869924952">Käytä PIN-koodia salasanan lisäksi</translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, dataa voidaan tallentaa hänen tililleen. Lue lisää näistä asetuksista ja niiden muuttamisesta osoitteesta families.google.com.<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">Navigoi sivuilla tekstiosoittimen avulla</translation>
 <translation id="1076698951459398590">Ota teema käyttöön</translation>
 <translation id="1076766328672150609">Lapsi voi avata tämän laitteen PIN-koodilla.</translation>
@@ -1350,6 +1355,10 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2328561734797404498">Käynnistä laite uudelleen käyttääksesi <ph name="APP_NAME" />:ää.</translation>
 <translation id="2328636661627946415">Kun olet incognito-tilassa, sivustot voivat käyttää evästeitä vain selaustoimintasi näkemiseen omalla sivustollaan. Evästeet poistetaan incognito-käyttökerran jälkeen.</translation>
 <translation id="2329597144923131178">Kirjaudu ja käytä kirjanm., historiaa, salasan. ja muita asetuksia kaikissa laitteissasi.</translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista, tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa ja virheitä. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi. Voit nähdä dataa, poistaa sitä ja muuttaa tiliasetuksia osoitteessa account.google.com.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Näytä Web Storessa</translation>
 <translation id="2332192922827071008">Siirry valintoihin</translation>
 <translation id="2332515770639153015">Parannettu selaussuoja on päällä</translation>
@@ -2061,6 +2070,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3030967311408872958">Auringonlaskusta sen nousuun</translation>
 <translation id="3031417829280473749">Agentti X</translation>
 <translation id="3031557471081358569">Valitse tuotavat kohteet:</translation>
+<translation id="3032587662022429783">Lue lisää diagnostiikka- ja käyttödatasta.</translation>
 <translation id="3033348223765101500">Hallitse dataasi</translation>
 <translation id="3036327949511794916">Laitteen (<ph name="DEVICE_TYPE" />) palauttamisen määräaika on mennyt umpeen.</translation>
 <translation id="3036546437875325427">Ota Flash käyttöön</translation>
@@ -2610,6 +2620,9 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3629631988386925734">Ota Smart Lock käyttöön kirjoittamalla salasanasi. Seuraavalla kerralla <ph name="DEVICE_TYPE" /> voidaan avata puhelimellasi. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="3630132874740063857">Oma puhelin</translation>
 <translation id="3630995161997703415">Lisää tämä sivusto hyllyysi, niin voit käyttää sitä milloin tahansa.</translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista ja käytetyistä ominaisuuksista sekä tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">Lupapyyntö vanhentunut</translation>
 <translation id="3635199270495525546">Trusted Platform ‑moduuli (TPM) havaittu</translation>
 <translation id="3635353578505343390">Lähetä palautetta Googlelle</translation>
@@ -2630,6 +2643,10 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3651488188562686558">Katkaise Wi-Fi-yhteys</translation>
 <translation id="3652817283076144888">Alustetaan</translation>
 <translation id="3653160965917900914">Verkkotiedostojen jakaminen</translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa lapsesi ChromeOS-laitteen asetuksista. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">Anna sivuston <ph name="HOST" /> käyttää edelleen mikrofoniasi</translation>
 <translation id="3654045516529121250">Lukea esteettömyysasetuksia.</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Sillä on yhden tiedoston pysyvä käyttöoikeus.}other{Sillä on # tiedoston pysyvä käyttöoikeus.}}</translation>
@@ -3122,6 +3139,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4132183752438206707">Etsi sovelluksia Google Play Kaupasta</translation>
 <translation id="4132364317545104286">Nimeä eSIM-profiili uudelleen</translation>
 <translation id="4133076602192971179">Avaa sovellus muuttaaksesi salasanan</translation>
+<translation id="4135746311382563554">Google Chromen ja ChromeOS:n lisäkäyttöehdot</translation>
 <translation id="4136203100490971508">Yövalo sammuu automaattisesti, kun aurinko nousee.</translation>
 <translation id="41365691917097717">Jatkamalla otat ADB-virheenkorjauksen käyttöön Android-sovellusten luomista ja testausta varten. Huomaa, että tämä sallii sellaisten Android-sovellusten asentamisen, joita Google ei ole vahvistanut. Ominaisuuden käytöstä poistaminen edellyttää tehdasasetusten palautusta.</translation>
 <translation id="4138267921960073861">Näytä käyttäjänimet ja kuvat kirjautumisruudulla</translation>
@@ -3822,6 +3840,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4900652253009739885">Ainoaa Valinta-toiminnolle määritettyä kytkintä ei voi poistaa. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="4901309472892185668">Valitse kokeilutila tälle kokeilulle: <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">Palvelimelta ladattu käytäntö on virheellinen: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904511036057277323">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti. Kootusta datasta on hyötyä myös Android-sovelluksille ja Googlen kumppaneille. Jos Verkko- ja sovellustoiminta ‑asetus on päällä lapsen Google-tilillä, Android-dataa voidaan tallentaa hänen tililleen.</translation>
 <translation id="4906490889887219338">Aloita verkkotiedostojen jakaminen tai muuta sitä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Valitse, kun tämä laajennus voi lukea ja muuttaa sivustodataasi</translation>
 <translation id="4907161631261076876">Tätä tiedostoa ei ladata usein ja se saattaa olla haitallinen.</translation>
@@ -3991,6 +4010,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5093569275467863761">Siirtymisvälimuistissa oleva incognito-alakehys: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">Kommunikoida yhteistyötä tekevien natiivisovellusten kanssa</translation>
 <translation id="5097002363526479830">Yhteyden muodostaminen verkkoon "<ph name="NAME" />" epäonnistui: <ph name="DETAILS" /></translation>
+<translation id="5097306410549350357">Lue lisää sijainnin käytöstä</translation>
 <translation id="5097649414558628673">Työkalu: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikkaa automaattisesti, kun kohdistin pysähtyy</translation>
 <translation id="5101839224773798795">Klikkaa automaattisesti, kun osoitin pysähtyy</translation>
@@ -4280,6 +4300,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5407167491482639988">Mahdoton kuulla</translation>
 <translation id="5408750356094797285">Zoomaus: <ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">Google-tililtäsi</translation>
+<translation id="5413640305322530561">Lue lisää diagnostiikka- ja käyttödatasta</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="5414566801737831689">Käyttää selaamiesi sivustojen kuvakkeita</translation>
 <translation id="5417312524372586921">Selainteemat</translation>
@@ -5207,6 +5228,10 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Nimetön ryhmä – 1 välilehti}other{Nimetön ryhmä – # välilehteä}}</translation>
 <translation id="6385149369087767061">Muodosta internetyhteys ja yritä uudelleen</translation>
 <translation id="6385543213911723544">Sivustot voivat lukea ja tallentaa evästetietoja.</translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos ominaisuus laitetaan pois päältä, laite voi edelleen lähettää järjestelmäpäivitysten, tietoturvan ja muiden tärkeiden palvelujen edellyttämiä tietoja.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />Jos laitteen omistaja laittaa Lähetä käyttö- ja diagnostiikkatadaa ‑asetuksen päälle, Googlelle voidaan lähettää myös virheraportteja.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">Varoitus: Yksityiskohtaiset lokit ovat käytössä. Alla olevat lokit voivat sisältää URL-osoitteita tai muita arkaluontoisia tietoja. Tarkista tiedot ja varmista, että haluat lähettää ne.</translation>
 <translation id="6387674443318562538">Pystysuuntainen jako</translation>
 <translation id="6388429472088318283">Hae kieliä</translation>
@@ -5323,6 +5348,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6504601948739128893">Laitteellesi asennettujen fonttien käyttäminen kielletty</translation>
 <translation id="6504611359718185067">Muodosta yhteys internetiin, niin voit lisätä tulostimen.</translation>
 <translation id="6506374932220792071">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-256</translation>
+<translation id="6507936476364432879">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="6508248480704296122">Liittyy kohteeseen <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Sovellus: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Medialisenssi</translation>
@@ -6581,6 +6607,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7807711621188256451">Anna aina sivuston <ph name="HOST" /> käyttää kameraasi</translation>
 <translation id="7810202088502699111">Ponnahdusikkunat estettiin tällä sivulla.</translation>
 <translation id="781167124805380294">Suoratoista <ph name="FILE_NAME" /></translation>
+<translation id="7811886112806886172">Auta parantamaan Chromen ja ChromeOS:n ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti. Kootusta datasta on hyötyä myös Android-sovelluksille ja Googlen kumppaneille. Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi.</translation>
 <translation id="7814277578404816512">Katso uudet ominaisuudet: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7814458197256864873">K&amp;opioi</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
@@ -6633,6 +6660,9 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7847212883280406910">Valitse <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> painamalla Ctrl + Alt + S</translation>
 <translation id="7849264908733290972">Avaa kuva uudessa väl&amp;ilehdessä</translation>
 <translation id="784934925303690534">Aikaväli</translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />Antamalla ChromeOS-laitteiden lähettää raportteja automaattisesti voit auttaa meitä korjaamaan ja kehittämään ChromeOS:n ominaisuuksia. Raportteihin voi sisältyä esimerkiksi tietoja ChromeOS:n kaatumisista, käytetyistä ominaisuuksista ja tyypillisestä muistin käytöstä sekä Android-sovellusten diagnostiikka- ja käyttödataa. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, esim. Android-kehittäjille.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Voit sallia tai estää raporttien lähettämisen milloin tahansa ChromeOS-laitteen asetuksissa. Jos olet verkkotunnuksen järjestelmänvalvoja, voit muuttaa asetusta hallintakonsolissa.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Jos Verkko‑ ja sovellustoiminta ‑asetus on päällä Google-tililläsi, Android-dataa voidaan tallentaa tilillesi. Voit nähdä dataa, poistaa sitä ja muuttaa tiliasetuksia osoitteessa account.google.com.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />Huom.<ph name="END_BOLD" /> Samanlaisella äänellä tai äänitteellä saattaa päästä henkilökohtaisiin tuloksiisi tai Assistantiisi. Jos haluat säästää virtaa, muuta Assistantin asetuksia niin, että "Ok Google" on käytössä vain, kun laite on kytkettynä virtalähteeseen.</translation>
 <translation id="7851457902707056880">Kirjautuminen on sallittu vain omistajatilillä. Käynnistä tietokone uudelleen ja kirjaudu omistajatilillä. Tietokone käynnistetään uudelleen 30 sekunnin kuluttua.</translation>
 <translation id="7851716364080026749">Estä kameran ja mikrofonin käyttö aina</translation>
@@ -7935,6 +7965,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9186963452600581158">Kirjaudu sisään lapsen Google-tilillä</translation>
 <translation id="9187967020623675250">Näppäimet eivät täsmää. <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="9188732951356337132">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos muun verkko- ja sovellustoiminnan asetus on lapsella käytössä, tätä dataa voidaan tallentaa hänen Google-tililleen. <ph name="BEGIN_LINK2" />Lue lisää<ph name="END_LINK2" /></translation>
+<translation id="919686179725692564">Lue lisää sovellusten varmuuskopioinnista</translation>
 <translation id="9198090666959937775">Käytä Android-puhelinta suojausavaimena</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> voi muokata täällä olevia tiedostoja: <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Hae hakukoneella <ph name="SEARCH_ENGINE" /></translation>

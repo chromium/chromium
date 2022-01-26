@@ -73,10 +73,11 @@
 <translation id="1071917609930274619">數據編密</translation>
 <translation id="1072700771426194907">偵測到 USB 裝置</translation>
 <translation id="107278043869924952">使用 PIN 和密碼</translation>
-<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />當貴子女 Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將其資料儲存到他們的 Google 帳戶。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設定為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這類報告可能包括曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 Chrome OS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果您為子女的 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您子女的資料可能會儲存在他們的 Google 帳戶中。您可前往 families.google.com，進一步瞭解這些設定及其調整方式。<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者開啟「傳送使用情況與診斷資料」，系統亦可能會將當機報告上載至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">使用文字游標導覽網頁</translation>
 <translation id="1076698951459398590">啟用主題背景</translation>
 <translation id="1076766328672150609">子女可使用 PIN 來解鎖裝置。</translation>
@@ -1173,6 +1174,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">新增 Wi-Fi…</translation>
 <translation id="2162155940152307086">當您離開同步處理設定頁面後，系統就會啟用同步處理功能</translation>
+<translation id="2162926944953615670">沒有可用的 eSIM 卡設定檔</translation>
 <translation id="2163470535490402084">請連接互聯網，才能登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="2163937499206714165">開啟暗光模式</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 個按鈕裝置</translation>
@@ -1356,10 +1358,10 @@
 <translation id="2328561734797404498">請重新啟動裝置，以便使用 <ph name="APP_NAME" />。</translation>
 <translation id="2328636661627946415">在無痕模式時，網站只能使用 Cookie 查看您在該網站的瀏覽活動。系統就會無痕工作階段結束時刪除 Cookie。</translation>
 <translation id="2329597144923131178">登入後，即可從您使用的任何裝置取得自己的書籤、歷史記錄、密碼和其他設定。</translation>
-<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含所使用的功能、記憶體一般使用量、Android 應用程式診斷與使用資料，以及錯誤。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在 ChromeOS 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Google 帳戶的「網路和應用程式活動」設為開啟時，系統可能會將 Android 資料儲存到你的 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這些報告可能包括您所使用的功能、記憶體一般使用量、Android 應用程式診斷和使用資料，以及錯誤。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您隨時可在 Chrome OS 裝置的設定中啟用或停用傳送報告功能。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者開啟「傳送使用情況與診斷資料」功能，系統亦可能會將當機報告上載至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">前往商店檢視</translation>
 <translation id="2332192922827071008">開啟偏好設定</translation>
 <translation id="2332515770639153015">已啟用「強化安全瀏覽」功能</translation>
@@ -1869,6 +1871,7 @@
 <translation id="2828650939514476812">連線至 Wi-Fi 網絡</translation>
 <translation id="2831430281393059038">支援裝置</translation>
 <translation id="2832124733806557606">子女可使用 PIN 來登入裝置或裝置解鎖。</translation>
+<translation id="2835177225987815960">系統將會重設目前的掃瞄設定，包括任何已指派的按鈕裝置和自動掃瞄速度偏好設定。</translation>
 <translation id="2835547721736623118">語音識別服務</translation>
 <translation id="2836269494620652131">當機</translation>
 <translation id="2836635946302913370">管理員已禁止使用這個使用者名稱登入。</translation>
@@ -2071,7 +2074,7 @@
 <translation id="3030967311408872958">日落至日出</translation>
 <translation id="3031417829280473749">特務 X</translation>
 <translation id="3031557471081358569">選取要匯入的項目：</translation>
-<translation id="3032587662022429783">進一步瞭解診斷與使用資料。</translation>
+<translation id="3032587662022429783">進一步瞭解診斷和使用情況資料。</translation>
 <translation id="3033348223765101500">控制資料</translation>
 <translation id="3036327949511794916">此 <ph name="DEVICE_TYPE" /> 的退貨期限已過。</translation>
 <translation id="3036546437875325427">啟用 Flash</translation>
@@ -2621,9 +2624,9 @@
 <translation id="3629631988386925734">輸入密碼即可啟用 Smart Lock。下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="3630132874740063857">您的手機</translation>
 <translation id="3630995161997703415">將此網站加到捷徑列，即可隨時使用</translation>
-<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在 Chrome 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這些報告可能包括 Chrome OS 當機時間、您所使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">權限要求已過期</translation>
 <translation id="3635199270495525546">偵測到可信任平台模組 (TPM)</translation>
 <translation id="3635353578505343390">傳送意見給 Google</translation>
@@ -2644,9 +2647,10 @@
 <translation id="3651488188562686558">中斷 Wi-Fi 連線</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">網絡檔案共用</translation>
-<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在子女的 ChromeOS 裝置設定中啟用或停用這類報告。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這類報告可能包括曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您隨時可在子女的 Chrome OS 裝置設定中啟用或停用這類報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉此功能，此裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者開啟「傳送使用情況與診斷資料」功能，系統亦可能會將當機報告上載至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3654045516529121250">讀取您的協助工具設定</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{應用程式可永久存取 1 個檔案。}other{應用程式可永久存取 # 個檔案。}}</translation>
@@ -3143,7 +3147,7 @@
 <translation id="4132183752438206707">在「Google Play 商店」中尋找應用程式</translation>
 <translation id="4132364317545104286">重新命名 eSIM 卡設定檔</translation>
 <translation id="4133076602192971179">開啟應用程式以變更密碼</translation>
-<translation id="4135746311382563554">《Google Chrome 和 ChromeOS 附加服務條款》</translation>
+<translation id="4135746311382563554">Google Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="4136203100490971508">「夜燈模式」將會在日出時自動關閉</translation>
 <translation id="41365691917097717">如繼續操作，系統將允許 ADB 偵錯功能建立及測試 Android 應用程式。請注意，此操作允許安裝未經 Google 驗證的 Android 應用程式，並且需要恢復原廠設定才能停用。</translation>
 <translation id="4138267921960073861">在登入螢幕中顯示使用者名稱和相片</translation>
@@ -3847,7 +3851,7 @@
 <translation id="4900652253009739885">這是為「選取」動作指派的唯一按鍵，因此無法移除。按任何鍵即可<ph name="RESPONSE" />。</translation>
 <translation id="4901309472892185668">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。</translation>
 <translation id="49027928311173603">從伺服器下載的政策無效：<ph name="VALIDATION_ERROR" />。</translation>
-<translation id="4904511036057277323">自動將診斷與使用資料傳送給 Google，協助改善 Chrome 和 ChromeOS 的功能與效能。此外，部分匯總資料還能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。當貴子女 Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將其 Android 資料儲存到他們的 Google 帳戶。</translation>
+<translation id="4904511036057277323">將診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 和 Chrome OS 的功能和效能。部分彙整資料亦能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。如果您為子女的 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您子女的 Android 資料可能會儲存在您子女的 Google 帳戶中。</translation>
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>
 <translation id="4907161631261076876">此檔案不常下載，代表此檔案可能不安全。</translation>
@@ -4017,7 +4021,7 @@
 <translation id="5093569275467863761">向前/返回快取中的無痕子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">與合作內置應用程式通訊</translation>
 <translation id="5097002363526479830">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" /></translation>
-<translation id="5097306410549350357">進一步瞭解如何使用位置資訊設定</translation>
+<translation id="5097306410549350357">進一步瞭解如何使用位置設定</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">游標停止時自動點擊</translation>
 <translation id="5101839224773798795">遊標停止時自動點擊</translation>
@@ -4307,7 +4311,7 @@
 <translation id="5407167491482639988">無法辨識</translation>
 <translation id="5408750356094797285">縮放：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">您 Google 帳戶中的密碼</translation>
-<translation id="5413640305322530561">進一步瞭解診斷與使用資料</translation>
+<translation id="5413640305322530561">進一步瞭解診斷和使用情況資料</translation>
 <translation id="5414198321558177633">正在重新整理設定檔清單。這項操作可能需時數分鐘。</translation>
 <translation id="5414566801737831689">讀取您所瀏覽網站的圖示</translation>
 <translation id="5417312524372586921">瀏覽器主題背景</translation>
@@ -5235,9 +5239,10 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名的群組 - 1 個分頁}other{未命名的群組 - # 個分頁}}</translation>
 <translation id="6385149369087767061">請連接互聯網，然後再試一次</translation>
 <translation id="6385543213911723544">網站可儲存及讀取 Cookie 資料</translation>
-<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含曾使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在 Chrome 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />即使關閉這項功能，裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。<ph name="END_PARAGRAPH3" /><ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者將「傳送使用狀況與診斷資料」設為開啟，當機報告可能也會上傳至 Google。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這些報告可能包括您所使用的功能，以及記憶體一般使用量。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您可在 Chrome 裝置設定中，隨時開始或停止允許這些報告。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使關閉此功能，您的裝置仍然可以傳送基本服務 (例如系統更新與安全性) 所需的資料。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果裝置擁有者開啟「傳送使用情況與診斷資料」功能，系統亦可能會將當機報告上載至 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">警告：已啟用詳細記錄功能；以下記錄可能包含網址或其他敏感資料。請審閱並確認您是否同意提交這些資料。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
@@ -5354,7 +5359,7 @@
 <translation id="6504601948739128893">不允許使用裝置上安裝的字型</translation>
 <translation id="6504611359718185067">連接互聯網即可新增打印機</translation>
 <translation id="6506374932220792071">使用 SHA-256 的 X9.62 ECDSA 簽名</translation>
-<translation id="6507936476364432879">自動將診斷與使用資料傳送給 Google，協助改善 Chrome 和 ChromeOS 的功能與效能。</translation>
+<translation id="6507936476364432879">將診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 和 Chrome OS 的功能和效能。</translation>
 <translation id="6508248480704296122">同 <ph name="NAME_PH" /> 相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
@@ -6615,7 +6620,7 @@
 <translation id="7807711621188256451">永遠允許 <ph name="HOST" /> 存取您的相機</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="781167124805380294">投放 <ph name="FILE_NAME" /></translation>
-<translation id="7811886112806886172">自動將診斷與使用資料傳送給 Google，協助改善 Chrome 和 ChromeOS 的功能與效能。此外，部分匯總資料還能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。Google 帳戶的「網路和應用程式活動」設定為開啟時，系統可能會將 Android 資料儲存到你的 Google 帳戶。</translation>
+<translation id="7811886112806886172">將診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 和 Chrome OS 的功能和效能。部分彙整資料亦能協助 Android 應用程式和 Google 合作夥伴改善產品和服務。如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存至您的 Google 帳戶。</translation>
 <translation id="7814277578404816512">查看 <ph name="DEVICE_TYPE" /> 的新功能</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
@@ -6668,9 +6673,9 @@
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">在新分頁中開啟圖片(&amp;I)</translation>
 <translation id="784934925303690534">時間範圍</translation>
-<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允許 ChromeOS 裝置自動傳送報告，協助我們為 ChromeOS 規劃要優先修正及改善的項目。這類報告可能包含 ChromeOS 當機時間、曾使用的功能、記憶體一般使用量，以及 Android 應用程式診斷與使用資料。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善產品和服務。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你隨時可在 ChromeOS 裝置的設定中啟用或停用傳送報告功能。如果你是網域管理員，也可以在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />Google 帳戶的「網路和應用程式活動」設為開啟時，系統可能會將 Android 資料儲存到你的 Google 帳戶。你可以前往 account.google.com 查看、刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允許 Chrome OS 裝置自動傳送報告，可協助我們為 Chrome OS 規劃要優先修正及改善的項目。這類報告可能包括 Chrome OS 當機時間、您所使用的功能、記憶體一般使用量，以及 Android 應用程式診斷和使用資料。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您隨時可在 Chrome OS 裝置的設定中啟用或停用傳送報告功能。如果您是網域管理員，亦可在管理控制台中變更這項設定。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果您為 Google 帳戶開啟「網絡及應用程式活動記錄」設定，您的 Android 資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。為節省電量，您可在「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
 <translation id="7851457902707056880">只有使用擁有者帳戶才能登入。請重新啟動並使用擁有者帳戶登入。電腦會在 30 秒後自動重新啟動。</translation>
 <translation id="7851716364080026749">永遠封鎖存取相機和麥克風</translation>

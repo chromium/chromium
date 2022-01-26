@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Lejo kukit për një sajt specifik.</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="4165986682804962316">Cilësimet e sajtit</translation>
+<translation id="4194328954146351878">Pyet përpara se të lejosh sajtet të shikojnë dhe ndryshojnë informacionin në pajisjet NFC (rekomandohet)</translation>
 <translation id="4200726100658658164">Hap "Cilësimet e vendndodhjes"</translation>
 <translation id="4226663524361240545">Njoftimet mund të bëjnë që pajisja të dridhet</translation>
 <translation id="4259722352634471385">Lundrimi është bllokuar: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Veçoria NFC është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Blloko sajtet që të mos shikojnë dhe ndryshojnë informacionin në pajisjet NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blloko kukit për një sajt specifik.</translation>
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>

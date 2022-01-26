@@ -508,6 +508,7 @@
 <translation id="1521442365706402292">Administrer sertifikater</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="152234381334907219">Aldri lagret</translation>
+<translation id="1523279371236772909">Vist den siste måneden</translation>
 <translation id="1523978563989812243">Motorer for tekst til tale</translation>
 <translation id="1524430321211440688">Tastatur</translation>
 <translation id="1524563461097350801">Nei takk</translation>
@@ -1168,6 +1169,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Legg til Wi-Fi</translation>
 <translation id="2162155940152307086">Synkroniseringen starter når du går ut av synkroniseringsinnstillingene</translation>
+<translation id="2162926944953615670">Ingen tilgjengelige e-SIM-kortprofiler</translation>
 <translation id="2163470535490402084">Koble til Internett for å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">Slå på mørk modus</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 bryter til</translation>
@@ -1245,6 +1247,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2232876851878324699">Filen inneholdt ett sertifikat som ikke ble importert:</translation>
 <translation id="2233502537820838181">Mer informasjon</translation>
 <translation id="223356358902285214">Nett- og appaktivitet</translation>
+<translation id="2234827758954819389">Personvernveiledning</translation>
 <translation id="2234876718134438132">Synkronisering/Google-tjenester</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2238379619048995541">Data om frekvenstilstand</translation>
@@ -1863,6 +1866,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="2828650939514476812">Koble til Wi-Fi-nettverk</translation>
 <translation id="2831430281393059038">Enheten støttes</translation>
 <translation id="2832124733806557606">Barnet ditt kan bruke en PIN-kode for å logge på eller låse opp enheten.</translation>
+<translation id="2835177225987815960">Den nåværende konfigurasjonen din for skanning blir tilbakestilt, inkludert eventuelle brytere som er tilordnet, og hastighetsinnstillinger for automatisk skanning.</translation>
 <translation id="2835547721736623118">Tjeneste for talegjenkjenning</translation>
 <translation id="2836269494620652131">Programstopp</translation>
 <translation id="2836635946302913370">Pålogging med dette brukernavnet er deaktivert av administratoren din.</translation>
@@ -3099,6 +3103,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4095264805865317199">Åpne UI for aktivering med mobiltelefon</translation>
 <translation id="4095507791297118304">Hovedskjerm</translation>
 <translation id="4096508467498758490">Deaktiver utvidelser for utviklermodus</translation>
+<translation id="4096797685681362305">Vist den siste uken</translation>
 <translation id="4097406557126260163">Apper og utvidelser</translation>
 <translation id="409742781329613461">Tips for Chrome</translation>
 <translation id="4097560579602855702">Søk på Google</translation>
@@ -3654,6 +3659,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4699172675775169585">Bufrede bilder og filer</translation>
 <translation id="4699357559218762027">(automatisk oppstart)</translation>
 <translation id="4701025263201366865">Pålogging av forelder</translation>
+<translation id="4701335814944566468">Vist i går</translation>
 <translation id="4708794300267213770">Vis låseskjermen ved oppvåkning etter hvilemodus</translation>
 <translation id="4708849949179781599">Avslutt <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Gjenopprett innstillingene</translation>
@@ -3721,6 +3727,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="479536056609751218">Nettside – bare HTML</translation>
 <translation id="4796142525425001238">Alltid gjenopprett</translation>
 <translation id="4798236378408895261">Legg ved <ph name="BEGIN_LINK" />Bluetooth-logger<ph name="END_LINK" /> (Google-internt)</translation>
+<translation id="479863874072008121">Administrer enheter</translation>
 <translation id="4800839971935185386">Gjennomgå navne- og ikonoppdateringer</translation>
 <translation id="4801448226354548035">Skjul kontoer</translation>
 <translation id="4801512016965057443">Tillat mobildatabruk på andre nettverk</translation>
@@ -6443,6 +6450,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659154729610375585">Vil du avslutte Inkognitomodus likevel?</translation>
 <translation id="7659297516559011665">Passord kun på denne enheten</translation>
+<translation id="7659336857671800422">Gjennomgå personvernveiledningen</translation>
 <translation id="7659584679870740384">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med administratoren for å få tillatelse til å logge på.</translation>
 <translation id="7661259717474717992">La nettsteder lagre og lese data i informasjonskapsler</translation>
 <translation id="7661451191293163002">Kunne ikke anskaffe noe registreringssertifikat.</translation>
@@ -7964,6 +7972,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> får tilgang til å redigere filer i <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Søk med <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">Eventuelle frakoblede data blir slettet.</translation>
+<translation id="9201117361710210082">Vist tidligere</translation>
 <translation id="9201220332032049474">Alternativer for skjermlås</translation>
 <translation id="9201842707396338580">Noe gikk galt. Kontakt eieren eller administratoren av enheten. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;Profilering aktivert</translation>

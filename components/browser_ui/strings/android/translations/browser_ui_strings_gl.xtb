@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Permite cookies para un sitio específico.</translation>
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="4165986682804962316">Configuración do sitio</translation>
+<translation id="4194328954146351878">Pregunta antes de permitir que os sitios consulten e cambien información en dispositivos con NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir Configuración de localización</translation>
 <translation id="4226663524361240545">O dispositivo pode vibrar ao recibir notificacións</translation>
 <translation id="4259722352634471385">A navegación está bloqueada: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Achegar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">A NFC está desactivada para este dispositivo. Actívaa en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Impide que os sitios consulten e cambien información en dispositivos con NFC</translation>
 <translation id="8941729603749328384">www.exemplo.com</translation>
 <translation id="8958424370300090006">Bloquea cookies para un sitio específico.</translation>
 <translation id="8959122750345127698">A navegación é inaccesible: <ph name="URL" /></translation>

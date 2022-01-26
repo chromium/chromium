@@ -1228,6 +1228,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
           <ph name="LIST_ITEM" />Werknemers of skole kan blaai-aktiwiteit naspoor<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Internetdiensverskaffers kan webverkeer monitor<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Geïgnoreer omdat die beleid slegs deur wolkgebruikerbeleid gestel kan word.</translation>
 <translation id="483241715238664915">Skakel waarskuwings aan</translation>
 <translation id="4838327282952368871">Dromerig</translation>
 <translation id="4840250757394056958">Bekyk jou Chrome-geskiedenis</translation>

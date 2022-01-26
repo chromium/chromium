@@ -1468,6 +1468,7 @@
 <translation id="2650049181907741121">当用户合上屏幕时执行的操作</translation>
 <translation id="2658653824183107970">使用旧版 <ph name="CORS" /> 实现方案（而非新版 <ph name="CORS" />）</translation>
 <translation id="2660846099862559570">从不使用代理</translation>
+<translation id="2664391398878045611">“新标签页”页面将不会显示中间槽通知（即使有）</translation>
 <translation id="2664682171745499686">禁止在特定网域中针对相似域名显示警告</translation>
 <translation id="2665422249821137126">在登录屏幕上启用大号光标</translation>
 <translation id="2672012807430078509">控制是否允许将 NTLM 作为 SMB 装载功能的身份验证协议</translation>
@@ -1898,6 +1899,7 @@
 <translation id="3180671894201217988">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
 
       如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。</translation>
+<translation id="3182503302060513467">“新标签页”页面将会显示中间槽通知（若有）</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>
 <translation id="3185009703220253572">从版本 <ph name="SINCE_VERSION" /> 开始</translation>
 <translation id="3185895671618336039">为 <ph name="PRODUCT_NAME" /> 配置浏览数据生命周期设置。此政策让管理员能够（按数据类型）配置浏览器对数据的删除时间点。这对需要处理敏感客户数据的客户非常有用。仅当 <ph name="SYNC_DISABLED_POLICY_NAME" /> 设为 true 时，此政策才会生效。
@@ -2387,6 +2389,13 @@
       如果此设置处于停用状态，用户将不能使用 Smart Lock 登录功能。
 
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
+<translation id="3794413118360704299">此政策让管理员能够为已安装的 Web 应用指定设置。
+
+      使用此政策后，您可将某个 Web 应用 ID 映射到特定设置。如需了解怎样确定某个已安装 Web 应用的 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
+      您可以使用特殊 ID <ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
+
+      <ph name="RUN_ON_OS_LOGIN_FIELD" />字段用于指定相应的 Web 应用能否在操作系统登录期间运行。如果此字段设为<ph name="BLOCKED" />，该 Web 应用将不会在操作系统登录期间运行，而且日后用户将无法启用此设置。如果此字段设为<ph name="RUN_WINDOWED" />，该 Web 应用将会在操作系统登录期间运行，但日后用户将无法停用此设置。如果此字段设为<ph name="ALLOWED" />，用户将能够配置该 Web 应用能否在操作系统登录期间运行。默认配置仅接受<ph name="ALLOWED" />值和<ph name="BLOCKED" />值。
+      </translation>
 <translation id="3796527892245558832">在浏览器启动时显示个人资料选择器</translation>
 <translation id="3798922329287609568">通过设置此政策，您可以限制双面打印模式。
 
@@ -2559,6 +2568,7 @@
 
       如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
+<translation id="3994043824457743421">在“新标签页”页面上显示中间槽通知</translation>
 <translation id="3997519162482760140">可通过 SAML 登录页面访问视频捕获设备的网址</translation>
 <translation id="4004523942550416237">在初始设置期间不显示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 请注意，此政策已在 M87 中弃用，并已从 M89 中移除。请改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 来配置受管理访客会话的隐私权警告。
@@ -5383,6 +5393,12 @@
 <translation id="7434202861148928348">为远程访问客户端配置所需的域名</translation>
 <translation id="7443356543619955157">通过设置此政策，您可以允许向某部 <ph name="PRODUCT_OS_NAME" />设备推送要用于其所有用户的网络配置。网络配置是 JSON 格式的字符串，如 Open Network Configuration 格式所定义。</translation>
 <translation id="7448430478749155471">在登录屏幕上启用“随选朗读”</translation>
+<translation id="7456922722153109956">此政策用于控制是否在“新标签页”页面上显示中间槽通知。
+
+      如果启用此政策，“新标签页”页面将会显示中间槽通知（若有）。
+
+      如果停用此政策，“新标签页”页面将不会显示中间槽通知（即使有）。
+      </translation>
 <translation id="7458437477941640506">如果操作系统版本比目标版本新，则不会回滚到目标版本。相应更新也会被停用。</translation>
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>
 <translation id="7459633275230216698">允许显示文件选择对话框</translation>

@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">কোনো নিৰ্দিষ্ট ছাইটৰ বাবে কুকিসমূহক অনুমতি দিয়ক।</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
+<translation id="4194328954146351878">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ অনুমতি দিয়াৰ পূৰ্বে সোধক (চুপাৰিছ কৰা হয়)</translation>
 <translation id="4200726100658658164">অৱস্থানৰ ছেটিংসমূহ খোলক</translation>
 <translation id="4226663524361240545">জাননীয়ে ডিভাইচটো কম্পন কৰিব পাৰে</translation>
 <translation id="4259722352634471385">নেভিগে’শ্বন অৱৰোধ কৰা আছে: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">জুম ইন কৰক</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">এই ডিভাইচটোৰ বাবে NFC অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
+<translation id="8928445016601307354">ছাইটসমূহক NFC ডিভাইচত তথ্য চোৱা আৰু সলনি কৰাৰ পৰা অৱৰোধ কৰক</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">কোনো বিশেষ ছাইটৰ বাবে কুকিসমূহ অৱৰোধ কৰক।</translation>
 <translation id="8959122750345127698">ইয়ালৈ নেভিগেশ্বন পাব পৰা অৱস্থাত নাই: <ph name="URL" /></translation>

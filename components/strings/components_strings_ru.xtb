@@ -1321,6 +1321,7 @@
 <translation id="5138227688689900538">Свернуть</translation>
 <translation id="5145883236150621069">При проверке политики возвращен код ошибки</translation>
 <translation id="5146995429444047494">Уведомления для сайта <ph name="ORIGIN" /> заблокированы.</translation>
+<translation id="514704532284964975">Сайт <ph name="URL" /> запрашивает разрешение на доступ к информации и ее изменение на устройствах, которые подключаются к телефону через NFC.</translation>
 <translation id="5148809049217731050">Лицевой стороной вверх</translation>
 <translation id="515292512908731282">C4 (конверт)</translation>
 <translation id="5158275234811857234">Обложка</translation>

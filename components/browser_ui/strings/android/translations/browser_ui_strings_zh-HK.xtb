@@ -120,7 +120,7 @@
 <translation id="4008040567710660924">允許特定網站存取 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="4165986682804962316">網站設定</translation>
-<translation id="4194328954146351878">系統必須先詢問你，才能允許網站在 NFC 裝置上查看和變更資訊 (建議設定)</translation>
+<translation id="4194328954146351878">在允許網站查看和變更 NFC 裝置上的資料前先詢問您 (建議)</translation>
 <translation id="4200726100658658164">開啟位置設定</translation>
 <translation id="4226663524361240545">裝置會在收到通知時震動</translation>
 <translation id="4259722352634471385">瀏覽網址被封鎖：<ph name="URL" /></translation>
@@ -321,7 +321,7 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">此裝置的 NFC 已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
-<translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資訊</translation>
+<translation id="8928445016601307354">禁止網站在 NFC 裝置上查看和變更資料</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">禁止特定網站存取 Cookie。</translation>
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>

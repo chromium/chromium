@@ -1174,6 +1174,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Wi-Fi 추가</translation>
 <translation id="2162155940152307086">동기화 설정을 종료하면 동기화가 시작됩니다.</translation>
+<translation id="2162926944953615670">사용 가능한 eSIM 프로필 없음</translation>
 <translation id="2163470535490402084"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요.</translation>
 <translation id="2163937499206714165">어두운 모드 사용 설정</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> 외 1개</translation>
@@ -1869,6 +1870,7 @@
 <translation id="2828650939514476812">Wi-Fi 네트워크에 연결</translation>
 <translation id="2831430281393059038">지원되는 기기입니다.</translation>
 <translation id="2832124733806557606">자녀가 PIN을 사용해 로그인하거나 기기를 잠금 해제할 수 있습니다</translation>
+<translation id="2835177225987815960">할당된 스위치 및 자동 스캔 속도 환경설정을 포함하여 현재의 스캔 설정이 재설정됩니다.</translation>
 <translation id="2835547721736623118">음성 인식 서비스</translation>
 <translation id="2836269494620652131">비정상 종료</translation>
 <translation id="2836635946302913370">해당 사용자 이름 로그인이 관리자에 의해 사용 중지되었습니다.</translation>

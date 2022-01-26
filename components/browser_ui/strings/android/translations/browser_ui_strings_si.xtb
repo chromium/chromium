@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">නිශ්චිත අඩවියක් සඳහා කුකීවලට ඉඩ දෙන්න.</translation>
 <translation id="4046123991198612571">ඊළඟ ඛණ්ඩය</translation>
 <translation id="4165986682804962316">අඩවි සැකසුම්</translation>
+<translation id="4194328954146351878">NFC උපාංගවල තොරතුරු බැලීමට සහ වෙනස් කිරීමට අඩවිවලට ඉඩ දීමට පෙර අසන්න (නිර්දේශිතයි)</translation>
 <translation id="4200726100658658164">ස්ථාන සැකසීම් විවෘත කරන්න</translation>
 <translation id="4226663524361240545">දැනුම්දීම් උපාංගය කම්පනය කළ හැක</translation>
 <translation id="4259722352634471385">සංචාලනය අවහිර කර ඇත: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">විශාලනය කරන්න</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">මෙම උපාංගය සඳහා NFC අක්‍රියයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළින් එය සක්‍රීය කරන්න.</translation>
+<translation id="8928445016601307354">NFC උපාංගවල තොරතුරු බැලීමෙන් සහ වෙනස් කිරීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">නිශ්චිත අඩවියක් සඳහා කුකී අවහිර කරන්න.</translation>
 <translation id="8959122750345127698">සංචාලනය වෙත ළඟා විය නොහැකිය: <ph name="URL" /></translation>

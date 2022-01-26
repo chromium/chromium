@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">วางอีกหน้าบนเครื่องสแกน</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
+<translation id="291142119251986300">คอมโพเนนต์ไม่ตรงตามข้อกำหนด</translation>
+<translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>

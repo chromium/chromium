@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">将另一个页面放置在扫描仪上</translation>
 <translation id="2872961005593481000">关机</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
+<translation id="291142119251986300">不支持的组件</translation>
+<translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>

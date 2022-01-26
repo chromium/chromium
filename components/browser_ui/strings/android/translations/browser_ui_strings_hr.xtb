@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Dopusti kolačiće za određenu web-lokaciju.</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
 <translation id="4165986682804962316">Postavke web-lokacije</translation>
+<translation id="4194328954146351878">Pitaj prije omogućavanja web-lokacijama da vide i mijenjaju podatke na NFC uređajima (preporučeno)</translation>
 <translation id="4200726100658658164">Otvori postavke lokacije</translation>
 <translation id="4226663524361240545">Obavijesti mogu uključiti vibriranje uređaja</translation>
 <translation id="4259722352634471385">Otvaranje je blokirano: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Povećaj</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Onemogući web-lokacijama da vide i mijenjaju podatke na NFC uređajima</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokiraj kolačiće za određenu web-lokaciju.</translation>
 <translation id="8959122750345127698">Otvaranje je nedostupno: <ph name="URL" /></translation>

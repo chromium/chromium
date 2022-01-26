@@ -1229,6 +1229,7 @@
           <ph name="LIST_ITEM" />အလုပ်ရှင် (သို့) ကျောင်းများက ကြည့်ရှုခြင်းများကို ခြေရာခံနိုင်သည်<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />အင်တာနက်ဝန်ဆောင်မှုပေးသူများက ကွန်ရက်ဒေတာစီးဆင်းမှုကို စောင့်ကြည့်နေနိုင်သည်<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">မူဝါဒကို cloud အသုံးပြုသူလိုက်နာရမည့် မူဝါဒဖြင့်သာ သတ်မှတ်နိုင်သောကြောင့် လျစ်လျူရှုထားသည်။</translation>
 <translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
 <translation id="4838327282952368871">အိပ်မက်ဆန်ဆန်</translation>
 <translation id="4840250757394056958">သင့် ‘Chrome မှတ်တမ်း’ ကို ကြည့်ရန်</translation>

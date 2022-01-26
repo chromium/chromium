@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Salli evästeet tietyllä sivustolla.</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="4165986682804962316">Sivustoasetukset</translation>
+<translation id="4194328954146351878">Kysy, saavatko sivustot nähdä ja muuttaa NFC-laitteiden tietoja (suositeltu)</translation>
 <translation id="4200726100658658164">Avaa sijaintiasetukset</translation>
 <translation id="4226663524361240545">Laite voi väristä ilmoitusten yhteydessä.</translation>
 <translation id="4259722352634471385">Kohde on estetty: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Lähennä</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Estä sivustoja näkemästä ja muuttamasta NFC-laitteiden tietoja</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Estä evästeet tietyltä sivustolta.</translation>
 <translation id="8959122750345127698">Kohde ei ole saatavilla: <ph name="URL" /></translation>

@@ -1480,6 +1480,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
+<translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
 <translation id="2664682171745499686">Warnungen zu nachgeahmten URLs auf Domains unterdrücken</translation>
 <translation id="2665422249821137126">Großen Cursor auf der Anmeldeseite aktivieren</translation>
 <translation id="2672012807430078509">Steuerung, durch die NTLM als Authentifizierungsprotokoll für SMB-Bereitstellungen aktiviert wird</translation>
@@ -1911,6 +1912,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3180671894201217988">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.
 
       Ist sie deaktiviert, kann diese Software ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.</translation>
+<translation id="3182503302060513467">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot an, sofern verfügbar</translation>
 <translation id="3184161739683646075">Steuert den DoH-Modus (DNS over HTTPS)</translation>
 <translation id="3185009703220253572">Ab Version <ph name="SINCE_VERSION" /></translation>
 <translation id="3185895671618336039">Konfiguriert die Einstellungen für die Lebensdauer von Browserdaten für <ph name="PRODUCT_NAME" />. Mit dieser Richtlinie können Administratoren (nach Datentyp) festlegen, wann Daten durch den Browser gelöscht werden. Das bietet Vorteile für Kunden, die mit sensiblen Kundendaten arbeiten. Die Richtlinie ist nur wirksam, wenn <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „true“ gesetzt ist.
@@ -2409,6 +2411,13 @@ Ist diese Einstellung aktiviert oder nicht konfiguriert, kann der Nutzer selbst 
 
 Wenn diese Einstellung deaktiviert ist, können Nutzer sich nicht mit Smart Lock anmelden.
 Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können sich nicht mit Smart Lock anmelden, nicht verwaltete Nutzer können sich mit Smart Lock anmelden.</translation>
+<translation id="3794413118360704299">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben.
+
+      Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Unter <ph name="WEB_APP_ID_REFERENCE_URL" /> erfahren Sie, wie Sie die ID einer installierten Web-App bestimmen.
+      Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> können Sie eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
+
+      Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während OS Login verwendet werden kann. Ist es auf <ph name="BLOCKED" /> gesetzt, funktioniert die Web-App während OS Login nicht. Nutzer können dies später nicht aktivieren. Ist es auf <ph name="RUN_WINDOWED" /> gesetzt, funktioniert die Web-App während OS Login. Nutzer können dies später nicht deaktivieren. Wenn das Feld auf <ph name="ALLOWED" /> gesetzt ist, können Nutzer die Web-App so konfigurieren, dass sie während OS Login funktioniert. Die Standardkonfiguration lässt nur die Werte <ph name="ALLOWED" /> und <ph name="BLOCKED" /> zu.
+      </translation>
 <translation id="3796527892245558832">Profil-Picker beim Start verfügbar</translation>
 <translation id="3798922329287609568">Durch diese Richtlinie kann der Duplexdruck eingeschränkt werden.
 
@@ -2581,6 +2590,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist sie auf „False“ gesetzt, schlägt die Funktion „Automatisches Ausfüllen“ keine Kreditkartendaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Kreditkartendaten gespeichert, die Nutzer beim Surfen im Internet eventuell senden.</translation>
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
+<translation id="3994043824457743421">Information im mittleren Slot auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="3997519162482760140">URLs, denen auf SAML-Log-in-Seiten Zugriff auf Videoaufnahmegeräte gestattet wird</translation>
 <translation id="4004523942550416237">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung nicht anzeigen</translation>
 <translation id="4007646377576030214"> Beachten Sie, dass diese Richtlinie ab M87 veraltet ist und in M89 entfernt wird. Verwenden Sie stattdessen <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> zum Konfigurieren der Datenschutzwarnungen verwalteter Gastsitzungen.
@@ -5412,6 +5422,12 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="7434202861148928348">Erforderliche Domainnamen für Remotezugriff-Clients konfigurieren</translation>
 <translation id="7443356543619955157">Wenn die Richtlinie konfiguriert ist, ermöglicht sie, Netzwerkkonfigurationen für alle Nutzer eines <ph name="PRODUCT_OS_NAME" />-Geräts zu übernehmen. Die Netzwerkkonfiguration ist ein String im JSON-Format, der der Definition des ONC-Formats (Open Network Configuration) entspricht.</translation>
 <translation id="7448430478749155471">Hiermit wird die Funktion "Vorlesen" auf dem Anmeldebildschirm aktiviert</translation>
+<translation id="7456922722153109956">Diese Richtlinie legt die Sichtbarkeit der Information im mittleren Slot auf der Seite „Neuer Tab“ fest.
+
+      Ist die Richtlinie aktiviert, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot an, sofern verfügbar.
+
+      Wenn diese Richtlinie deaktiviert ist, zeigt die Seite „Neuer Tab“ die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist.
+      </translation>
 <translation id="7458437477941640506">Führen Sie kein Rollback auf die Zielversion durch, wenn die Version des Betriebssystems neuer als die der Zielversion ist. Aktualisierungen sind ebenfalls deaktiviert.</translation>
 <translation id="7459601923199346224">Diese Richtlinie steuert Nutzer- und Geräterichtlinien zur Zertifikatverwaltung.</translation>
 <translation id="7459633275230216698">Dialogfelder zur Dateiauswahl zulassen</translation>

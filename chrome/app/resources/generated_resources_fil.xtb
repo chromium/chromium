@@ -1175,6 +1175,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Magdagdag ng Wi-Fi...</translation>
 <translation id="2162155940152307086">Magsisimula ang pag-sync sa sandaling umalis ka sa mga setting ng pag-sync</translation>
+<translation id="2162926944953615670">Walang available na profile ng eSIM</translation>
 <translation id="2163470535490402084">Mangyaring kumonekta sa Internet upang mag-sign in sa iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, at 1 pang switch</translation>
@@ -1870,6 +1871,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2828650939514476812">Kumonekta sa Wi-Fi network</translation>
 <translation id="2831430281393059038">Sinusuportahan ang device</translation>
 <translation id="2832124733806557606">Puwedeng gumamit ng PIN ang iyong anak para mag-sign in sa o i-unlock ang device.</translation>
+<translation id="2835177225987815960">Mare-reset ang iyong kasalukuyang setup ng pag-scan, kasama ang anumang nakatalagang switch at kagustuhan sa bilis ng awtomatikong pag-scan.</translation>
 <translation id="2835547721736623118">Serbisyo ng pagkilala sa speech</translation>
 <translation id="2836269494620652131">Nag-crash</translation>
 <translation id="2836635946302913370">Hindi pinagana ng iyong administrator ang pag-sign in gamit ang username na ito.</translation>

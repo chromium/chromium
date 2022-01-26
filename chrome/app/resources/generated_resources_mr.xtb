@@ -1174,6 +1174,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">वाय-फाय जोडा...</translation>
 <translation id="2162155940152307086">तुम्ही सिंक सेटिंग्ज सोडल्यास सिंक सुरू होईल</translation>
+<translation id="2162926944953615670">कोणत्याही उपलब्ध eSIM प्रोफाइल नाहीत</translation>
 <translation id="2163470535490402084">कृपया आपल्‍या <ph name="DEVICE_TYPE" /> मध्‍ये साइन इन करण्‍यासाठी इंटरनेटशी कनेक्ट करा.</translation>
 <translation id="2163937499206714165">गडद मोड सुरू करा</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
@@ -1870,6 +1871,7 @@
 <translation id="2828650939514476812">वाय-फाय नेटवर्कवर कनेक्ट करा</translation>
 <translation id="2831430281393059038">डिव्हाइसला सपोर्ट नाही</translation>
 <translation id="2832124733806557606">या डिव्हाइसवर साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी, तुमचे लहान मूल पिन वापरू शकते.</translation>
+<translation id="2835177225987815960">असाइन केलेले सर्व स्विच आणि ऑटो-स्कॅन वेगाशी संबंधित प्राधान्ये यांसह तुमचे सध्याचे स्कॅनिंग सेटअप रीसेट केले जाईल.</translation>
 <translation id="2835547721736623118">स्पीच रेकग्निशन सेवा</translation>
 <translation id="2836269494620652131">क्रॅश</translation>
 <translation id="2836635946302913370">या वापरकर्तानावासह साइन इन करणे तुमच्या ॲडमिनिस्ट्रेटरद्वारे अक्षम केले गेले आहे.</translation>

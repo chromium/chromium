@@ -1228,6 +1228,7 @@
           <ph name="LIST_ITEM" />роботодавці та заклади освіти можуть відстежувати ваші дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />постачальники послуг Інтернету (ISP) можуть відстежувати веб-трафік.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ігнорується, оскільки це правило можна налаштувати лише через хмарні правила для користувачів.</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4838327282952368871">Мрійливий</translation>
 <translation id="4840250757394056958">Переглянути історію Chrome</translation>

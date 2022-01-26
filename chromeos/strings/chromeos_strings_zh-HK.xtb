@@ -130,8 +130,8 @@
 <translation id="2860473693272905224">將其他頁面放到掃瞄器上</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878387241690264070">已在 <ph name="NUM_SECONDS" /> 秒內放電 <ph name="RATE" />。</translation>
-<translation id="291142119251986300">不相容的元件</translation>
-<translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
+<translation id="291142119251986300">不兼容的組件</translation>
+<translation id="2926057806159140518">輸入使用者名稱和密碼，或掃瞄 QR 碼</translation>
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -172,6 +172,7 @@
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
+<translation id="3603829704940252505">顯示圖片</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站延遲時間過長</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
@@ -423,6 +424,7 @@
 <translation id="6905724422583748843">返番去<ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">掃瞄器的外蓋已開啟。請關上外蓋，然後再試一次。</translation>
 <translation id="6911383237894364323">無法連線至媒體伺服器</translation>
+<translation id="6935486296377631201">螢幕保護程式</translation>
 <translation id="6957231940976260713">服務名稱</translation>
 <translation id="6961170852793647506">如要開始，請將文件放到掃瞄器上</translation>
 <translation id="6965382102122355670">確定</translation>

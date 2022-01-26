@@ -73,6 +73,11 @@
 <translation id="1071917609930274619">数据加密</translation>
 <translation id="1072700771426194907">检测到了 USB 设备</translation>
 <translation id="107278043869924952">使用 PIN 码和密码</translation>
+<translation id="1073264809281558926"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的数据可能会被保存到其 Google 帐号中。访问 families.google.com 可详细了解这些设置以及如何进行调整。<ph name="END_PARAGRAPH4" />
+    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">使用文本光标浏览网页</translation>
 <translation id="1076698951459398590">启用主题背景</translation>
 <translation id="1076766328672150609">您的孩子可以使用 PIN 码解锁此设备。</translation>
@@ -1333,6 +1338,10 @@
 <translation id="2328561734797404498">请重启您的设备，即可使用 <ph name="APP_NAME" />。</translation>
 <translation id="2328636661627946415">当您处于无痕模式时，网站只能使用 Cookie 查看您在相应网站上的浏览活动。无痕式会话结束时，系统会删除 Cookie。</translation>
 <translation id="2329597144923131178">登录后可获取您所有设备上保存的书签、历史记录、密码和其他设置。</translation>
+<translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据、错误，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">在应用店中查看</translation>
 <translation id="2332192922827071008">打开偏好设置</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
@@ -2043,6 +2052,7 @@
 <translation id="3030967311408872958">日落到日出</translation>
 <translation id="3031417829280473749">女特工</translation>
 <translation id="3031557471081358569">选择要导入的内容：</translation>
+<translation id="3032587662022429783">详细了解诊断数据和使用情况数据。</translation>
 <translation id="3033348223765101500">控制您的数据</translation>
 <translation id="3036327949511794916">退还此 <ph name="DEVICE_TYPE" /> 的截止日期已过。</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
@@ -2592,6 +2602,9 @@
 <translation id="3629631988386925734">请输入您的密码，以启用 Smart Lock。下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
 <translation id="3630132874740063857">您的手机</translation>
 <translation id="3630995161997703415">请将此网站添加到您的任务栏中，以便随时使用</translation>
+<translation id="3631680145967006828"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：Chrome 操作系统的崩溃时间、使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3634652306074934350">权限请求已过期</translation>
 <translation id="3635199270495525546">检测到可信平台模块 (TPM)</translation>
 <translation id="3635353578505343390">向 Google 发送反馈</translation>
@@ -2612,6 +2625,10 @@
 <translation id="3651488188562686558">断开 Wi-Fi 连接</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">网络文件共享</translation>
+<translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305">继续允许 <ph name="HOST" /> 使用您的麦克风</translation>
 <translation id="3654045516529121250">读取您的无障碍设置</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{此应用对 1 个文件拥有永久访问权限。}other{此应用对 # 个文件拥有永久访问权限。}}</translation>
@@ -3106,6 +3123,7 @@
 <translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
 <translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
+<translation id="4135746311382563554">Google Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
 <translation id="4138267921960073861">在登录屏幕上显示用户名和照片</translation>
@@ -3805,6 +3823,7 @@
 <translation id="4900652253009739885">这是为“选择”操作分配的唯一开关键，因此无法移除。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="4901309472892185668">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。</translation>
 <translation id="49027928311173603">从服务器下载的策略无效：<ph name="VALIDATION_ERROR" />。</translation>
+<translation id="4904511036057277323">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的 Android 数据可能会被保存到其 Google 帐号中。</translation>
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
 <translation id="4907161631261076876">此文件属于不常下载的内容，可能存在危险。</translation>
@@ -3974,6 +3993,7 @@
 <translation id="5093569275467863761">无痕式往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094721898978802975">与协作的本机应用通信</translation>
 <translation id="5097002363526479830">无法连接到网络“<ph name="NAME" />”：<ph name="DETAILS" /></translation>
+<translation id="5097306410549350357">详细了解如何使用位置信息</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
@@ -4263,6 +4283,7 @@
 <translation id="5407167491482639988">无法听清</translation>
 <translation id="5408750356094797285">缩放比例：<ph name="PERCENT" /></translation>
 <translation id="5409044712155737325">保存在您的 Google 帐号中的密码</translation>
+<translation id="5413640305322530561">详细了解诊断数据和使用情况数据</translation>
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
 <translation id="5414566801737831689">读取您访问过的网站对应的图标</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
@@ -5190,6 +5211,10 @@
 <translation id="63849924261838903">{NUM_TABS,plural, =1{未命名群组 - 1 个标签页}other{未命名群组 - # 个标签页}}</translation>
 <translation id="6385149369087767061">请连接到互联网，然后重试</translation>
 <translation id="6385543213911723544">网站可以保存和读取 Cookie 数据</translation>
+<translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：使用的功能、通常占用的内存量，等等。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" />如果设备所有者开启“发送使用情况数据和诊断数据”，系统还可能会将崩溃报告上传到 Google。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">警告 - 详细记录功能已启用。以下日志中可能会包含网址或其他敏感信息。请检查并确保您同意提交这些信息。</translation>
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜索语言</translation>
@@ -5306,6 +5331,7 @@
 <translation id="6504601948739128893">不得使用您设备上安装的字体</translation>
 <translation id="6504611359718185067">请连接到互联网以添加打印机</translation>
 <translation id="6506374932220792071">采用 SHA-256 算法的 X9.62 ECDSA 签名</translation>
+<translation id="6507936476364432879">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。</translation>
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒体许可</translation>
@@ -6565,6 +6591,7 @@
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="781167124805380294">投射“<ph name="FILE_NAME" />”</translation>
+<translation id="7811886112806886172">自动向 Google 发送诊断数据和使用情况数据，协助改进 Chrome 和 Chrome 操作系统的功能和性能。部分汇总数据还会对 Android 应用和 Google 合作伙伴有所帮助。如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7814277578404816512">了解 <ph name="DEVICE_TYPE" /> 的新变化</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
@@ -6617,6 +6644,9 @@
 <translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7849264908733290972">在新标签页中打开图片(&amp;I)</translation>
 <translation id="784934925303690534">时间范围</translation>
+<translation id="7850717413915978159"><ph name="BEGIN_PARAGRAPH1" />允许 Chrome 操作系统设备自动发送报告，可以帮助我们确定 Chrome 操作系统中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：Chrome 操作系统的崩溃时间、使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 操作系统设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="7851021205959621355"><ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：如果有人在语音上与您相似或拥有您的语音录音，此人可能也能获取您的个人信息相关结果或使用您的 Google 助理。为了省电，您可以在 Google 助理设置中选择让“Ok Google”指令仅在此设备已接通电源时可用。</translation>
 <translation id="7851457902707056880">仅所有者帐号才能登录。请重新启动并使用所有者帐号登录。设备将在30秒后自动重新启动。</translation>
 <translation id="7851716364080026749">始终禁止使用摄像头和麦克风</translation>
@@ -7918,6 +7948,7 @@
 <translation id="9186963452600581158">使用孩子的 Google 帐号登录</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9188732951356337132">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
+<translation id="919686179725692564">详细了解如何备份您的应用</translation>
 <translation id="9198090666959937775">使用您的 Android 手机作为安全密钥</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> 将能够修改“<ph name="FOLDERNAME" />”中的文件</translation>
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>

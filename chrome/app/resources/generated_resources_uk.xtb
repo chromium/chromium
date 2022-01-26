@@ -1177,6 +1177,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Додати Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронізація почнеться, щойно ви вийдете з її налаштувань</translation>
+<translation id="2162926944953615670">Немає профілів eSIM</translation>
 <translation id="2163470535490402084">Щоб увійти в <ph name="DEVICE_TYPE" />, під’єнайтеся до Інтернету.</translation>
 <translation id="2163937499206714165">Увімкнути темний режим</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і ще 1 перемикач</translation>
@@ -1872,6 +1873,7 @@
 <translation id="2828650939514476812">З’єднання з мережею Wi-Fi</translation>
 <translation id="2831430281393059038">Пристрій підтримується</translation>
 <translation id="2832124733806557606">Ваша дитина може входити в обліковий запис або розблоковувати пристрій за допомогою PIN-коду.</translation>
+<translation id="2835177225987815960">Поточні налаштування для сканування, зокрема призначені перемикачі та швидкість автосканування, буде скинуто.</translation>
 <translation id="2835547721736623118">Сервіс розпізнавання мовлення</translation>
 <translation id="2836269494620652131">Аварійне завершення роботи</translation>
 <translation id="2836635946302913370">Вхід із використанням цього імені користувача вимкнено адміністратором.</translation>

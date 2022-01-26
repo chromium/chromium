@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Permita cookies de um site específico.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
+<translation id="4194328954146351878">Perguntar antes de permitir que sites vejam e mudem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir as configurações de localização</translation>
 <translation id="4226663524361240545">É possível que as notificações façam o dispositivo vibrar</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">A NFC está desativada neste dispositivo. Ative-a nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Impedir que sites vejam e mudem informações em dispositivos NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Bloqueie cookies de um site específico.</translation>
 <translation id="8959122750345127698">A Navegação GPS está inacessível: <ph name="URL" /></translation>

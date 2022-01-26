@@ -1220,6 +1220,7 @@
           <ph name="LIST_ITEM" />አሰሪዎች ወይም ትምህርት ቤቶች የአሰሳ እንቅስቃሴን መከታተል ይችላሉ<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />የበይነመረብ አገልግሎት አቅራቢዎች የድር ትራፊክን ሊከታተሉ ይችላሉ<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">መመሪያው ሊዋቀር የሚችለው በደመና ተጠቃሚ መመሪያ ብቻ ስለሆነ ችላ ተብሏል።</translation>
 <translation id="483241715238664915">ማስጠንቀቂያዎችን አብራ</translation>
 <translation id="4838327282952368871">ህልመኛ</translation>
 <translation id="4840250757394056958">የChrome ታሪክዎን ይመልከቱ</translation>

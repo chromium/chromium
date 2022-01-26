@@ -509,6 +509,7 @@
 <translation id="1521442365706402292">مدیریت گواهی‌ها</translation>
 <translation id="1521774566618522728">امروز فعال بود</translation>
 <translation id="152234381334907219">هرگز ذخیره نمی‌شود</translation>
+<translation id="1523279371236772909">در ماه گذشته مشاهده شده</translation>
 <translation id="1523978563989812243">موتورهای نوشتار به گفتار</translation>
 <translation id="1524430321211440688">صفحه‌کلید</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
@@ -1171,6 +1172,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏افزودن Wi-Fi…</translation>
 <translation id="2162155940152307086">از صفحه تنظیمات همگام‌سازی که خارج شوید، همگام‌سازی شروع می‌شود</translation>
+<translation id="2162926944953615670">نمایه‌های سیم‌کارت داخلی دردسترس نیست</translation>
 <translation id="2163470535490402084">لطفاً برای ورود به سیستم در <ph name="DEVICE_TYPE" /> خود، به اینترنت وصل شوید.</translation>
 <translation id="2163937499206714165">روشن کردن حالت تاریک</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" />، و ۱ کلید دیگر</translation>
@@ -1248,6 +1250,7 @@
 <translation id="2232876851878324699">این فایل دارای یک مجوز است، که وارد نشده است:</translation>
 <translation id="2233502537820838181">&amp;اطلاعات بیشتر</translation>
 <translation id="223356358902285214">فعالیت برنامه و وب</translation>
+<translation id="2234827758954819389">راهنمای حریم‌خصوصی</translation>
 <translation id="2234876718134438132">‏همگام‌سازی و سرویس‌های Google</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2238379619048995541">داده‌های حالت فرکانس</translation>
@@ -1866,6 +1869,7 @@
 <translation id="2828650939514476812">‏اتصال به شبکه Wi-Fi</translation>
 <translation id="2831430281393059038">دستگاه پشتیبانی می‌شود</translation>
 <translation id="2832124733806557606">فرزندتان می‌تواند برای ورود به سیستم یا باز کردن قفل دستگاه از پین استفاده کند.</translation>
+<translation id="2835177225987815960">راه‌اندازی اسکن فعلی بازنشانی خواهد شد، ازجمله کلیدهای واگذارشده و اولویت‌های سرعت اسکن خودکار.</translation>
 <translation id="2835547721736623118">سرویس تشخیص گفتار</translation>
 <translation id="2836269494620652131">خرابی</translation>
 <translation id="2836635946302913370">ورود به سیستم با این نام کاربری توسط سرپرست شما غیرفعال شده است.</translation>
@@ -3104,6 +3108,7 @@
 <translation id="4095264805865317199">باز کردن میانای کاربر فعال‌سازی شبکه داده تلفن همراه</translation>
 <translation id="4095507791297118304">نمایشگر اصلی</translation>
 <translation id="4096508467498758490">غیرفعال کردن افزونه‌های حالت برنامه‌نویس</translation>
+<translation id="4096797685681362305">هفته گذشته مشاهده شده</translation>
 <translation id="4097406557126260163">برنامه‌ها و افزونه‌ها</translation>
 <translation id="409742781329613461">‏نکاتی درباره Chrome</translation>
 <translation id="4097560579602855702">‏جستجو در Google</translation>
@@ -3660,6 +3665,7 @@
 <translation id="4699172675775169585">تصاویر و فایل‌های قرار گرفته در حافظه پنهان</translation>
 <translation id="4699357559218762027">(اجرای خودکار)</translation>
 <translation id="4701025263201366865">ورود ولی به سیستم</translation>
+<translation id="4701335814944566468">دیروز مشاهده شده</translation>
 <translation id="4708794300267213770">نمایش صفحه قفل هنگام بیدار شدن از حالت خواب</translation>
 <translation id="4708849949179781599">خروج از <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">بازیابی تنظیمات</translation>
@@ -3727,6 +3733,7 @@
 <translation id="479536056609751218">‏صفحهٔ وب، فقط HTML</translation>
 <translation id="4796142525425001238">همیشه بازیابی شود</translation>
 <translation id="4798236378408895261">‏پیوست <ph name="BEGIN_LINK" />گزارش‌های بلوتوث<ph name="END_LINK" /> (داخلی Google)</translation>
+<translation id="479863874072008121">مدیریت دستگاه‌ها</translation>
 <translation id="4800839971935185386">مرور به‌روزرسانی‌های نام و نماد</translation>
 <translation id="4801448226354548035">پنهان‌سازی حساب‌ها</translation>
 <translation id="4801512016965057443">اجازه دادن فراگردی داده تلفن همراه</translation>
@@ -6450,6 +6457,7 @@
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7659154729610375585">درهرصورت از «حالت ناشناس» خارج می‌شوید؟</translation>
 <translation id="7659297516559011665">فقط گذرواژه‌های ذخیره‌شده در این دستگاه</translation>
+<translation id="7659336857671800422">مشاهده «راهنمای حریم‌خصوصی»</translation>
 <translation id="7659584679870740384">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با سرپرست تماس بگیرید.</translation>
 <translation id="7661259717474717992">اجازه به سایت‌ها برای ذخیره کردن و خواندن داده‌های کوکی</translation>
 <translation id="7661451191293163002">گواهینامه ثبت بدست نیامد.</translation>
@@ -7973,6 +7981,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> خواهد توانست فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
 <translation id="920045321358709304">جستجوی <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">هرنوع داده آفلاینی حذف خواهد شد</translation>
+<translation id="9201117361710210082">قبلاً مشاهده شده</translation>
 <translation id="9201220332032049474">گزینه‌های قفل صفحه</translation>
 <translation id="9201842707396338580">مشکلی پیش آمد. لطفاً با مالک یا سرپرست دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203398526606335860">&amp;نمایه سازی فعال شد</translation>

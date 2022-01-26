@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Onartu webgune zehatz baten cookieak.</translation>
 <translation id="4046123991198612571">Hurrengo pista</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
+<translation id="4194328954146351878">Webguneei NFC darabilten gailuetako informazioa ikusi eta aldatzeko baimena eman aurretik, eskatu onespena (gomendatua)</translation>
 <translation id="4200726100658658164">Ireki kokapen-ezarpenak</translation>
 <translation id="4226663524361240545">Gailua dardararaz dezakete jakinarazpenek</translation>
 <translation id="4259722352634471385"><ph name="URL" /> orrira joateko aukera blokeatuta dago</translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Handitu</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC aukera desaktibatuta dago gailu honetan. Aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Ez utzi webguneei NFC darabilten gailuetako informazioa ikusten eta aldatzen</translation>
 <translation id="8941729603749328384">www.adibidea.com</translation>
 <translation id="8958424370300090006">Blokeatu webgune jakin bateko cookieak.</translation>
 <translation id="8959122750345127698">Ezin da joan <ph name="URL" /> orrira</translation>

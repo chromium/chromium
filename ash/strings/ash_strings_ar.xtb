@@ -82,6 +82,7 @@
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1364382257761975320">‏لفتح قفل جهاز Chromebook، استخدِم بصمة إصبعك.</translation>
+<translation id="1364618750746929654">يتعذَّر تحويل الصوت إلى نص.</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1391102559483454063">مُفعَّلة</translation>
@@ -680,6 +681,7 @@
 <translation id="54609108002486618">تتم إدارته</translation>
 <translation id="5465662442746197494">هل تريد المساعدة؟</translation>
 <translation id="547979256943495781">الرف على يسار الشاشة</translation>
+<translation id="5491186829646618080">تتوفّر تحديثات للبرامج الثابتة</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">‏أزال المشرف جميع الملفات الشخصية لشريحة eSIM. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5523434445161341166">جارٍ اتصال <ph name="FEATURE_NAME" />.</translation>
@@ -1178,6 +1180,7 @@
 <translation id="8876661425082386199">التحقُّق من الاتصال</translation>
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8878886163241303700">توسيع الشاشة</translation>
+<translation id="888982883502837004">تتوفّر تحديثات للبرامج الثابتة على جهازك. انقر للمراجعة والتحديث.</translation>
 <translation id="8896630965521842259">سيتم حذف النموذج <ph name="DESK_TEMPLATE_NAME" /> نهائيًا.</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>

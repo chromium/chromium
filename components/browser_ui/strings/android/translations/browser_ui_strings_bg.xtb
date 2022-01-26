@@ -120,6 +120,7 @@
 <translation id="4008040567710660924">Разрешаване на „бисквитките“ за конкретен сайт.</translation>
 <translation id="4046123991198612571">Следващ запис</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
+<translation id="4194328954146351878">Извеждане на запитване, преди да се разреши на сайтовете да четат и променят информация на устройства с NFC (препоръчително)</translation>
 <translation id="4200726100658658164">Отваряне на настройките за местоположението</translation>
 <translation id="4226663524361240545">Възможно е устройството да вибрира при известия</translation>
 <translation id="4259722352634471385">Навигирането е блокирано: <ph name="URL" /></translation>
@@ -320,6 +321,7 @@
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функцията за NFC е изключена на това устройство. Включете я от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Блокиране на сайтовете, така че да не могат да четат и променят информация на устройства с NFC (препоръчително)</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Блокиране на „бисквитките“ за конкретен сайт.</translation>
 <translation id="8959122750345127698">Навигирането не е възможно: <ph name="URL" /></translation>

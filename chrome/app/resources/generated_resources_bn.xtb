@@ -512,6 +512,7 @@
 <translation id="1521442365706402292">শংসাপত্রগুলি পরিচালনা করুন</translation>
 <translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="152234381334907219">কখনও সংরক্ষিত হয়নি</translation>
+<translation id="1523279371236772909">গত মাসে দেখা হয়েছে</translation>
 <translation id="1523978563989812243">টেক্সট-টু-স্পিচ ইঞ্জিন</translation>
 <translation id="1524430321211440688">কীবোর্ড</translation>
 <translation id="1524563461097350801">না থাক</translation>
@@ -1253,6 +1254,7 @@
 <translation id="2232876851878324699">ফাইলটিতে একটি সার্টিফিকেট রয়েছে, এটি আমদানি করা হয়নি:</translation>
 <translation id="2233502537820838181">&amp;আরো তথ্য</translation>
 <translation id="223356358902285214">ওয়েব ও অ্যাপ অ্যাক্টিভিটি</translation>
+<translation id="2234827758954819389">গোপনীয়তা সংক্রান্ত গাইড</translation>
 <translation id="2234876718134438132">সিঙ্ক এবং Google পরিষেবাগুলি</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
@@ -3108,6 +3110,7 @@
 <translation id="4095264805865317199">সেলুলার চালু করার UI খুলুন</translation>
 <translation id="4095507791297118304">প্রাথমিক প্রদর্শন</translation>
 <translation id="4096508467498758490">ডেভেলপার মোড এক্সটেনশন বন্ধ করুন</translation>
+<translation id="4096797685681362305">গত সপ্তাহে দেখা হয়েছে</translation>
 <translation id="4097406557126260163">অ্যাপ ও এক্সটেনশন</translation>
 <translation id="409742781329613461">Chrome ব্যবহারের জন্য পরামর্শ</translation>
 <translation id="4097560579602855702">Google-এ সার্চ করুন</translation>
@@ -3664,6 +3667,7 @@
 <translation id="4699172675775169585">ক্যাশে করা ছবি এবং ফাইলগুলি</translation>
 <translation id="4699357559218762027">(স্বয়ংক্রিয়ভাবে- লঞ্চ হয়েছে)</translation>
 <translation id="4701025263201366865">অভিভাবকের সাইন-ইন</translation>
+<translation id="4701335814944566468">গতকাল দেখা হয়েছে</translation>
 <translation id="4708794300267213770">নিদ্রা মোড থেকে জাগার সময় লক স্ক্রিন দেখান</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> থেকে প্রস্থান করুন</translation>
 <translation id="4711638718396952945">সেটিংস পুনরুদ্ধার করুন</translation>
@@ -3731,6 +3735,7 @@
 <translation id="479536056609751218">Webpage, HTML Only</translation>
 <translation id="4796142525425001238">সবসময় ফিরিয়ে আনুন</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />ব্লুটুথ লগ<ph name="END_LINK" /> যোগ করুন (Google ইন্টারনাল)</translation>
+<translation id="479863874072008121">ডিভাইস ম্যানেজ করুন</translation>
 <translation id="4800839971935185386">নাম এবং আইকনের আপডেট দেখে নিন</translation>
 <translation id="4801448226354548035">অ্যাকাউন্টগুলি লুকান</translation>
 <translation id="4801512016965057443">মোবাইল ডেটা রোমিংয়ের অনুমতি দিন</translation>
@@ -6455,6 +6460,7 @@
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7659154729610375585">যাই হোক, ছদ্মবেশী মোড ছেড়ে বেরিয়ে আসতে চান?</translation>
 <translation id="7659297516559011665">শুধুমাত্র এই ডিভাইসে সেভ করা পাসওয়ার্ড</translation>
+<translation id="7659336857671800422">গোপনীয়তা সংক্রান্ত গাইডে যান</translation>
 <translation id="7659584679870740384">আপনার কাছে এই ডিভাইস ব্যবহারের অনুমতি নেই৷ অনুগ্রহ করে সাইন-ইন করার অনুমতির জন্য অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন৷</translation>
 <translation id="7661259717474717992">সাইটগুলিকে কুকি ডেটা পড়ার ও সংরক্ষণ করার মঞ্জুরি দিন</translation>
 <translation id="7661451191293163002">একটি নিবন্ধীকরণ সার্টিফিকেট পাওয়া যায়নি।</translation>
@@ -7977,6 +7983,7 @@
 <translation id="9200339982498053969"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> ফোল্ডারের ফাইলগুলি এডিট করতে পারবে</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> এ খুঁজুন</translation>
 <translation id="9201023452444595544">যেকোনও অফলাইন ডেটা মুছে ফেলা যাবে</translation>
+<translation id="9201117361710210082">আগে দেখা হয়েছে</translation>
 <translation id="9201220332032049474">স্ক্রিন লক-এর বিকল্পগুলি</translation>
 <translation id="9201842707396338580">কিছু সমস্যা হয়েছে। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="9203398526606335860">&amp;প্রোফাইলিং সক্ষমিত</translation>

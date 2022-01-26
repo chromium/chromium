@@ -1228,6 +1228,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
           <ph name="LIST_ITEM" />Puwedeng subaybayan ng mga empleyado o paaralan ang aktibidad sa pag-browse<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Puwedeng i-monitor ng mga internet service provider ang trapiko sa web<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Binalewala dahil ang patakaran ay puwede lang itakda ng patakaran ng user ng cloud.</translation>
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4838327282952368871">Dreamy</translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>

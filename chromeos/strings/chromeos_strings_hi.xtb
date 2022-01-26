@@ -130,6 +130,8 @@
 <translation id="2860473693272905224">स्कैनर पर कोई अन्य पेज रखें</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
+<translation id="291142119251986300">गलत कॉम्पोनेंट</translation>
+<translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -170,6 +172,7 @@
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="3583278742022654445">कमज़ोर सिग्नल. वाई-फ़ाई सिग्नल सोर्स के नज़दीक जाकर देखें.</translation>
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
+<translation id="3603829704940252505">अवतार</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3606583719724308068">एचटीटीपीएस वेबसाइटों के लिए, इंतज़ार का समय ज़्यादा है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
@@ -421,6 +424,7 @@
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> पर वापस जाएं</translation>
 <translation id="6910312834584889076">स्कैनर का कवर खुला हुआ है. कवर बंद करें और फिर से कोशिश करें.</translation>
 <translation id="6911383237894364323">मीडिया सर्वर से कनेक्ट नहीं किया जा सका</translation>
+<translation id="6935486296377631201">स्क्रीन सेवर</translation>
 <translation id="6957231940976260713">सेवा का नाम</translation>
 <translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6965382102122355670">ठीक है</translation>

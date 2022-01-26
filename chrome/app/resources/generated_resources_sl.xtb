@@ -1177,6 +1177,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Dodaj Wi-Fi ...</translation>
 <translation id="2162155940152307086">Sinhronizacija se bo začela, ko zaprete nastavitve sinhronizacije</translation>
+<translation id="2162926944953615670">Ni razpoložljivih profilov za e-SIM.</translation>
 <translation id="2163470535490402084">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
 <translation id="2163937499206714165">Vklop temnega načina</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> in še 1 stikalo</translation>
@@ -1872,6 +1873,7 @@ in Ctrl +Alt + tipko za zmanjšanje svetlosti za pomanjšavo.</translation>
 <translation id="2828650939514476812">Povezava z omrežjem Wi-Fi</translation>
 <translation id="2831430281393059038">Naprava je podprta.</translation>
 <translation id="2832124733806557606">Otrok lahko uporabi kodo PIN za prijavo ali odklepanje naprave.</translation>
+<translation id="2835177225987815960">Trenutna nastavitev optičnega branja bo ponastavljena, vključno z vsemi dodeljenimi stikali in nastavitvami hitrosti samodejnega iskanja.</translation>
 <translation id="2835547721736623118">Storitev prepoznavanja govora</translation>
 <translation id="2836269494620652131">Zrušitev</translation>
 <translation id="2836635946302913370">Skrbnik je onemogočil prijavo s tem uporabniškim imenom.</translation>
