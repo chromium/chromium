@@ -48,7 +48,9 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   dict->SetBoolean(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
-          StartupUtils::IsEulaAccepted() || !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+          StartupUtils::IsEulaAccepted() ||
+          features::IsOobeConsolidatedConsentEnabled() ||
+          !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,
