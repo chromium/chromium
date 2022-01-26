@@ -90,10 +90,6 @@ source_set("internal") {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
-  if (is_win) {
-    deps += [ "//components/services/quarantine/public/cpp:features" ]
-  }
-
   if (is_android) {
     sources += [
       "android/download_collection_bridge.cc",

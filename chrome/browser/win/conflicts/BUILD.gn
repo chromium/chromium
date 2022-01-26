@@ -98,7 +98,6 @@ if (is_chrome_branded) {
       "//chrome/browser:browser_process",
       "//chrome/chrome_elf:third_party_shared_defines",
       "//chrome/test:test_support_ui",
-      "//components/services/quarantine/public/cpp:features",
       "//content/test:test_support",
       "//testing/gtest",
     ]

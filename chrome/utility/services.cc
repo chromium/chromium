@@ -34,7 +34,6 @@
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "chrome/services/util_win/util_read_icon.h"
 #include "chrome/services/util_win/util_win_impl.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
 #include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
@@ -155,7 +154,6 @@ auto RunProcessorMetrics(
 
 auto RunQuarantineService(
     mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
-  DCHECK(base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine));
   return std::make_unique<quarantine::QuarantineImpl>(std::move(receiver));
 }
 

@@ -28,7 +28,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "content/public/test/browser_test.h"
 
 // This class allows to wait until the kIncompatibleApplications preference is
@@ -104,10 +103,8 @@ class IncompatibleApplicationsBrowserTest : public InProcessBrowserTest {
     ASSERT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
 
-    scoped_feature_list_.InitWithFeatures(
-        {features::kIncompatibleApplicationsWarning,
-         quarantine::kOutOfProcessQuarantine},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kIncompatibleApplicationsWarning);
 
     ASSERT_NO_FATAL_FAILURE(CreateModuleList());
     ASSERT_NO_FATAL_FAILURE(InstallThirdPartyApplication());

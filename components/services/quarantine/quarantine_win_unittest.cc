@@ -19,7 +19,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
 #include "components/services/quarantine/quarantine.h"
 #include "components/services/quarantine/test_support.h"
 #include "net/base/filename_util.h"

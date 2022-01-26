@@ -5503,7 +5503,6 @@ static_library("browser") {
       "//components/chrome_cleaner/public/constants",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
-      "//components/services/quarantine/public/cpp:features",
       "//google_update",
       "//sandbox/win:sandbox",
       "//services/proxy_resolver_win/public/mojom",

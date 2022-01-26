@@ -25,10 +25,6 @@
 #include "components/services/quarantine/quarantine.h"
 #include "crypto/secure_hash.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
@@ -618,15 +614,12 @@ void BaseFile::OnFileQuarantined(
 void BaseFile::OnQuarantineServiceError(const GURL& source_url,
                                         const GURL& referrer_url) {
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
-    OnFileQuarantined(/*connection_error=*/true,
-                      quarantine::SetInternetZoneIdentifierDirectly(
-                          full_path_, source_url, referrer_url));
-    return;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
+  OnFileQuarantined(/*connection_error=*/true,
+                    quarantine::SetInternetZoneIdentifierDirectly(
+                        full_path_, source_url, referrer_url));
+#else   // !BUILDFLAG(IS_WIN)
   CHECK(false) << "In-process quarantine service should not have failed.";
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 void BaseFile::AnnotateWithSourceInformation(

@@ -125,10 +125,6 @@
 #include "components/offline_pages/core/client_namespace_constants.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
-#endif
-
 using content::BrowserThread;
 using content::DownloadManager;
 using download::DownloadItem;
@@ -1841,15 +1837,12 @@ ChromeDownloadManagerDelegate::GetWeakPtr() {
 void ChromeDownloadManagerDelegate::ConnectToQuarantineService(
     mojo::PendingReceiver<quarantine::mojom::Quarantine> receiver) {
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
-    content::ServiceProcessHost::Launch(
-        std::move(receiver), content::ServiceProcessHost::Options()
-                                 .WithDisplayName("Quarantine Service")
-                                 .Pass());
-    return;
-  }
-#endif
-
+  content::ServiceProcessHost::Launch(std::move(receiver),
+                                      content::ServiceProcessHost::Options()
+                                          .WithDisplayName("Quarantine Service")
+                                          .Pass());
+#else   // !BUILDFLAG(IS_WIN)
   mojo::MakeSelfOwnedReceiver(std::make_unique<quarantine::QuarantineImpl>(),
                               std::move(receiver));
+#endif  // !BUILDFLAG(IS_WIN)
 }
