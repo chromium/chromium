@@ -2199,7 +2199,7 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Importing,
                          nullptr);
   }
-  DVLOG(2) << __func__ << " " << va_surface_id;
+  DVLOG(3) << __func__ << " " << va_surface_id;
   // VASurface shares an ownership of the buffer referred by the passed file
   // descriptor. We can release |pixmap| here.
   return new VASurface(va_surface_id, size, va_format,
@@ -3221,7 +3221,7 @@ void VaapiWrapper::DestroySurface(VASurfaceID va_surface_id) {
         sequence_checker_.CalledOnValidSequence());
   if (va_surface_id == VA_INVALID_SURFACE)
     return;
-  DVLOG(2) << __func__ << " " << va_surface_id;
+  DVLOG(3) << __func__ << " " << va_surface_id;
   base::AutoLockMaybe auto_lock(va_lock_);
   const VAStatus va_res = vaDestroySurfaces(va_display_, &va_surface_id, 1);
   VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroySurfaces);
