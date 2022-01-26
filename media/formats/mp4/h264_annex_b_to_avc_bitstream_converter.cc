@@ -125,10 +125,14 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
         }
         new_active_pps_id = pps->pic_parameter_set_id;
         new_active_sps_id = sps->seq_parameter_set_id;
-        if (new_active_sps_id != active_sps_id_ ||
-            new_active_pps_id != active_pps_id_) {
-          pps_to_include.insert(new_active_pps_id);
-          sps_to_include.insert(new_active_sps_id);
+        pps_to_include.insert(new_active_pps_id);
+        sps_to_include.insert(new_active_sps_id);
+
+        if (new_active_sps_id != active_sps_id_) {
+          if (!config_changed) {
+            DCHECK(nalu.nal_unit_type == H264NALU::kIDRSlice)
+                << "SPS shouldn't change in non-IDR slice";
+          }
           config_changed = true;
         }
       }
