@@ -60,9 +60,10 @@ class MODULES_EXPORT HIDDevice
   String productName() const;
   const HeapVector<Member<HIDCollectionInfo>>& collections() const;
 
-  ScriptPromise open(ScriptState*);
+  ScriptPromise open(ScriptState* script_state,
+                     ExceptionState& exception_state);
   ScriptPromise close(ScriptState*);
-  ScriptPromise forget(ScriptState*);
+  ScriptPromise forget(ScriptState*, ExceptionState& exception_state);
   ScriptPromise sendReport(ScriptState*,
                            uint8_t report_id,
                            const DOMArrayPiece& data);
