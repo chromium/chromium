@@ -9,7 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "media/base/renderer.h"
+#include "media/base/renderer_client.h"
 #include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -17,7 +19,8 @@ namespace cast_streaming {
 
 // For high-level details, see documentation in
 // PlaybackCommandForwardingRendererFactory.h.
-class PlaybackCommandForwardingRenderer : public media::Renderer {
+class PlaybackCommandForwardingRenderer : public media::Renderer,
+                                          public media::RendererClient {
  public:
   // |renderer| is the Renderer to which the Initialize() call should be
   // delegated.
@@ -59,45 +62,50 @@ class PlaybackCommandForwardingRenderer : public media::Renderer {
   base::TimeDelta GetMediaTime() override;
 
  private:
-  // Class responsible for receiving Renderer commands from a remote source and
-  // acting on |real_renderer_| appropriately. This logic has been separated
-  // from the parent class to avoid the complexity associated with having
-  // both media::Renderer and media::mojo::Renderer implemented side-by-side.
-  class PlaybackController : public media::mojom::Renderer {
-   public:
-    PlaybackController(
-        mojo::PendingReceiver<media::mojom::Renderer> pending_rederer_controls,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-        media::Renderer* real_renderer);
-    ~PlaybackController() override;
+  // Private namespace function not defined here because its details are not
+  // important.
+  friend class RendererCommandForwarder;
 
-    // media::mojom::Renderer overrides.
-    void StartPlayingFrom(::base::TimeDelta time) override;
-    void SetPlaybackRate(double playback_rate) override;
+  // media::mojom::Renderer implementation, with methods renamed to avoid
+  // intersection with media::Renderer types.
+  //
+  // Calls are all forwarded to |real_renderer_|;
+  void MojoRendererInitialize(
+      ::mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
+      absl::optional<
+          std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
+          streams,
+      media::mojom::MediaUrlParamsPtr media_url_params,
+      media::mojom::Renderer::InitializeCallback callback);
+  void MojoRendererStartPlayingFrom(::base::TimeDelta time);
+  void MojoRendererSetPlaybackRate(double playback_rate);
+  void MojoRendererFlush(media::mojom::Renderer::FlushCallback callback);
+  void MojoRendererSetVolume(float volume);
+  void MojoRendererSetCdm(
+      const absl::optional<::base::UnguessableToken>& cdm_id,
+      media::mojom::Renderer::SetCdmCallback callback);
 
-    // The following overrides are not currently implemented.
-    //
-    // TODO(b/182429524): Implement these methods.
-    void Initialize(
-        ::mojo::PendingAssociatedRemote<media::mojom::RendererClient> client,
-        absl::optional<
-            std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
-            streams,
-        media::mojom::MediaUrlParamsPtr media_url_params,
-        InitializeCallback callback) override;
-    void Flush(FlushCallback callback) override;
-    void SetVolume(float volume) override;
-    void SetCdm(const absl::optional<::base::UnguessableToken>& cdm_id,
-                SetCdmCallback callback) override;
-
-   private:
-    media::Renderer* const real_renderer_;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-    mojo::Receiver<media::mojom::Renderer> playback_controller_;
-    base::WeakPtrFactory<PlaybackController> weak_factory_;
-  };
+  // media::RendererClient overrides.
+  //
+  // Each of these simply forwards the call to both |remote_renderer_client_|
+  // and |upstream_renderer_client_|.
+  void OnError(media::PipelineStatus status) override;
+  void OnEnded() override;
+  void OnStatisticsUpdate(const media::PipelineStatistics& stats) override;
+  void OnBufferingStateChange(
+      media::BufferingState state,
+      media::BufferingStateChangeReason reason) override;
+  void OnWaiting(media::WaitingReason reason) override;
+  void OnAudioConfigChange(const media::AudioDecoderConfig& config) override;
+  void OnVideoConfigChange(const media::VideoDecoderConfig& config) override;
+  void OnVideoNaturalSizeChange(const gfx::Size& size) override;
+  void OnVideoOpacityChange(bool opaque) override;
+  void OnVideoFrameRateChange(absl::optional<int> fps) override;
 
   void OnRealRendererInitializationComplete(media::PipelineStatus status);
+
+  // Sends an OnTimeUpdate() call to |remote_renderer_client_|.
+  void SendTimestampUpdate();
 
   // Renderer to which playback calls should be forwarded.
   std::unique_ptr<media::Renderer> real_renderer_;
@@ -114,7 +122,15 @@ class PlaybackCommandForwardingRenderer : public media::Renderer {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Created as part of OnRealRendererInitializationComplete().
-  std::unique_ptr<PlaybackController> playback_controller_;
+  std::unique_ptr<media::mojom::Renderer> playback_controller_;
+
+  // Channel to provide data back to the remote caller, set during
+  // MojoRendererInitialize().
+  mojo::AssociatedRemote<media::mojom::RendererClient> remote_renderer_client_;
+
+  RendererClient* upstream_renderer_client_;
+
+  base::RepeatingTimer send_timestamp_update_caller_;
 
   base::WeakPtrFactory<PlaybackCommandForwardingRenderer> weak_factory_;
 };
