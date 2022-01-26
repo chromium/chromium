@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 use std::ptr;
-use std::u32;
 use std::vec;
 
-use system::ffi;
+use crate::system::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be used.
-use system::handle;
-use system::mojo_types::*;
+use crate::system::handle;
+use crate::system::mojo_types::*;
 
 /// Get the time ticks now according to the Mojo IPC. As
 /// can be seen in the documentation for the Mojo C API,
@@ -25,29 +24,21 @@ pub fn get_time_ticks_now() -> MojoTimeTicks {
 /// are triggered, waiting for a maximum global time of 'deadline'.
 /// This function blocks.
 pub fn wait_many(
-    handles: &[&handle::Handle],
+    handles: &[&dyn handle::Handle],
     signals: &[HandleSignals],
     states: &mut [SignalsState],
-    deadline: MojoDeadline,
-) -> (i32, MojoResult) {
+) -> (isize, MojoResult) {
     assert_eq!(handles.len(), signals.len());
     assert!(states.len() == handles.len() || states.len() == 0);
     let num_inputs = handles.len();
     if num_inputs == 0 {
         let result = MojoResult::from_code(unsafe {
-            ffi::MojoWaitMany(
-                ptr::null(),
-                ptr::null(),
-                0,
-                deadline,
-                ptr::null_mut(),
-                ptr::null_mut(),
-            )
+            ffi::MojoWaitMany(ptr::null(), ptr::null(), 0, ptr::null_mut(), ptr::null_mut())
         });
         return (-1, result);
     }
     let states_ptr = if states.len() != 0 { states.as_mut_ptr() } else { ptr::null_mut() };
-    let mut index: u32 = u32::MAX;
+    let mut index: usize = usize::MAX;
     let result = unsafe {
         let mut raw_handles: vec::Vec<MojoHandle> = vec::Vec::with_capacity(num_inputs);
         for handle in handles.iter() {
@@ -56,11 +47,10 @@ pub fn wait_many(
         MojoResult::from_code(ffi::MojoWaitMany(
             raw_handles.as_ptr(),
             signals.as_ptr(),
-            num_inputs as u32,
-            deadline,
-            &mut index as *mut u32,
+            num_inputs,
+            &mut index as *mut usize,
             states_ptr,
         ))
     };
-    (index as i32, result)
+    (index as isize, result)
 }

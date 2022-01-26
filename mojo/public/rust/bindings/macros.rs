@@ -76,11 +76,7 @@ macro_rules! impl_encodable_for_union {
         fn embed_size(
             context: &$crate::bindings::encoding::Context,
         ) -> $crate::bindings::encoding::Bits {
-            if context.is_union() {
-                Self::nested_embed_size()
-            } else {
-                Self::inline_embed_size()
-            }
+            if context.is_union() { Self::nested_embed_size() } else { Self::inline_embed_size() }
         }
         fn encode(
             self,
@@ -151,9 +147,8 @@ macro_rules! impl_encodable_for_interface {
                 let mut state = decoder.get_mut(&context);
                 (state.decode::<i32>(), state.decode::<u32>())
             };
-            let handle =
-                try!(decoder
-                    .claim_handle::<$crate::system::message_pipe::MessageEndpoint>(handle_index));
+            let handle = decoder
+                .claim_handle::<$crate::system::message_pipe::MessageEndpoint>(handle_index)?;
             Ok(Self::with_version(handle, version))
         }
     };

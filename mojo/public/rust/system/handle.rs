@@ -13,9 +13,9 @@
 //! data pipes, and shared buffers. Typed handles wrap untyped handles
 //! but act much the same as untyped handles.
 
-use system::ffi;
+use crate::system::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be used.
-use system::mojo_types::*;
+use crate::system::mojo_types::*;
 
 /// The CastHandle trait defines an interface to convert between
 /// typed and untyped handles. These are only used internally for
@@ -42,20 +42,14 @@ pub trait Handle {
     fn get_native_handle(&self) -> MojoHandle;
 
     /// Waits on the handle wrapped in the current struct until the signals
-    /// declared in 'signals' are triggered, waiting for a maximum time of
-    /// 'deadline'. This method blocks.
+    /// declared in 'signals' are triggered.
     ///
     /// Returns the satisfied and satisfiable signals respectively for this
     /// handle when waiting is done.
-    fn wait(&self, signals: HandleSignals, deadline: MojoDeadline) -> (SignalsState, MojoResult) {
+    fn wait(&self, signals: HandleSignals) -> (SignalsState, MojoResult) {
         let mut state: SignalsState = Default::default();
         let r = unsafe {
-            ffi::MojoWait(
-                self.get_native_handle(),
-                signals,
-                deadline,
-                &mut state as *mut SignalsState,
-            )
+            ffi::MojoWait(self.get_native_handle(), signals, &mut state as *mut SignalsState)
         };
         (state, MojoResult::from_code(r))
     }

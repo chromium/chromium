@@ -50,7 +50,7 @@ impl MojomPointer for StructA {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructAVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -97,7 +97,7 @@ impl MojomPointer for StructB {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructBVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -144,7 +144,7 @@ impl MojomPointer for StructC {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructCVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -191,7 +191,7 @@ impl MojomPointer for StructD {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructDVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -241,7 +241,7 @@ impl MojomPointer for StructE {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructEVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -294,7 +294,7 @@ impl MojomPointer for StructF {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructFVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -347,7 +347,7 @@ impl MojomPointer for StructG {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructGVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -429,7 +429,7 @@ impl MojomPointer for StructH {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructHVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -496,7 +496,7 @@ impl MojomPointer for BasicStruct {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&BasicStructVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -547,7 +547,7 @@ impl MojomPointer for StructWithEnum {
     fn encode_value(self, encoder: &mut Encoder, context: Context) {}
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&StructWithEnumVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -630,7 +630,7 @@ impl MojomUnion for UnionA {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let tag = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             let bytes = state.decode::<u32>();
             if (bytes as usize) != UNION_SIZE {
                 return Err(ValidationError::UnexpectedNullUnion);
@@ -762,7 +762,7 @@ impl MojomUnion for UnionB {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let tag = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             let bytes = state.decode::<u32>();
             if (bytes as usize) != UNION_SIZE {
                 return Err(ValidationError::UnexpectedNullUnion);
@@ -1190,7 +1190,7 @@ impl MojomPointer for BoundsCheckTestInterfaceMethod0Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&BoundsCheckTestInterfaceMethod0RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1251,7 +1251,7 @@ impl MojomPointer for BoundsCheckTestInterfaceMethod0Response {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&BoundsCheckTestInterfaceMethod0ResponseVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1317,7 +1317,7 @@ impl MojomPointer for BoundsCheckTestInterfaceMethod1Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&BoundsCheckTestInterfaceMethod1RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1771,7 +1771,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod3Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod3RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1839,7 +1839,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod4Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod4RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1912,7 +1912,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod5Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod5RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -1985,7 +1985,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod7Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod7RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2056,7 +2056,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod12Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod12RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2117,7 +2117,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod12Response {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod12ResponseVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2183,7 +2183,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod14Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod14RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2249,7 +2249,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod15Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod15RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2315,7 +2315,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod1Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod1RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2383,7 +2383,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod2Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod2RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2454,7 +2454,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod6Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod6RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2520,7 +2520,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod8Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod8RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2586,7 +2586,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod10Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod10RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2652,7 +2652,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod11Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod11RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2718,7 +2718,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod0Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod0RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2784,7 +2784,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod9Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod9RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -2857,7 +2857,7 @@ impl MojomPointer for ConformanceTestInterfaceMethod13Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&ConformanceTestInterfaceMethod13RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -3115,7 +3115,7 @@ impl MojomPointer for IntegrationTestInterfaceMethod0Request {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&IntegrationTestInterfaceMethod0RequestVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),
@@ -3176,7 +3176,7 @@ impl MojomPointer for IntegrationTestInterfaceMethod0Response {
     }
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
         let version = {
-            let mut state = decoder.get_mut(&context);
+            let state = decoder.get_mut(&context);
             match state.decode_struct_header(&IntegrationTestInterfaceMethod0ResponseVersions) {
                 Ok(header) => header.data(),
                 Err(err) => return Err(err),

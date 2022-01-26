@@ -8,19 +8,13 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-#[macro_use]
-extern crate mojo;
-
-#[macro_use]
-mod util;
-
 use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
-use mojo::system::{Handle, MOJO_INDEFINITE};
+use mojo::system::Handle;
 
 use std::thread;
 
-use util::mojom_validation::*;
+use crate::util::mojom_validation::*;
 
 tests! {
     // Tests basic client and server interaction over a thread
@@ -38,7 +32,7 @@ tests! {
                 },
             }).unwrap();
             // Wait for response
-            client.pipe().wait(signals!(Signals::Readable), MOJO_INDEFINITE);
+            client.pipe().wait(signals!(Signals::Readable));
             // Decode response
             let (req_id, options) = client.recv_response().unwrap();
             assert_eq!(req_id, 5);
@@ -49,7 +43,7 @@ tests! {
             }
         });
         // Wait for request
-        server.pipe().wait(signals!(Signals::Readable), MOJO_INDEFINITE);
+        server.pipe().wait(signals!(Signals::Readable));
         // Decode request
         let (req_id, options) = server.recv_response().unwrap();
         assert_eq!(req_id, 5);

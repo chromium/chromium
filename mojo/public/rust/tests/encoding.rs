@@ -8,9 +8,6 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-#[macro_use]
-extern crate mojo;
-
 use mojo::bindings::encoding::Context;
 use mojo::bindings::message::MessageHeader;
 use mojo::bindings::mojom::{MojomInterface, MojomPointer, MojomStruct, MojomUnion};
@@ -20,10 +17,8 @@ use mojo::system::Handle;
 
 use std::collections::HashMap;
 
-#[macro_use]
-mod util;
-
-use util::mojom_validation::*;
+use crate::util;
+use crate::util::mojom_validation::*;
 
 /// This macro is a wrapper for the tests! macro as it takes advantage of the
 /// shared code between tests.

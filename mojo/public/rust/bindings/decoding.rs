@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use bindings::encoding::{
+use crate::bindings::encoding::{
     Bits, Context, DataHeader, DataHeaderValue, MojomNumeric, DATA_HEADER_SIZE,
 };
-use bindings::mojom::{MojomEncodable, MOJOM_NULL_POINTER, UNION_SIZE};
-use bindings::util;
+use crate::bindings::mojom::{MojomEncodable, MOJOM_NULL_POINTER, UNION_SIZE};
+use crate::bindings::util;
 
 use std::mem;
 use std::ptr;
 use std::vec::Vec;
 
-use system;
-use system::{CastHandle, Handle, UntypedHandle};
+use crate::system;
+use crate::system::{CastHandle, Handle, UntypedHandle};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ValidationError {
@@ -151,7 +151,7 @@ impl<'slice> DecodingState<'slice> {
         if ptr == MOJOM_NULL_POINTER {
             self.offset += 8;
         }
-        (ptr == MOJOM_NULL_POINTER)
+        ptr == MOJOM_NULL_POINTER
     }
 
     /// If we encounter a null union, increment past it.
@@ -164,7 +164,7 @@ impl<'slice> DecodingState<'slice> {
         if size == 0 {
             self.offset += UNION_SIZE;
         }
-        (size == 0)
+        size == 0
     }
 
     /// If we encounter a null handle, increment past it.
@@ -177,7 +177,7 @@ impl<'slice> DecodingState<'slice> {
         if index < 0 {
             self.offset += 4;
         }
-        (index < 0)
+        index < 0
     }
 
     /// If we encounter a null interface, increment past it.
@@ -190,7 +190,7 @@ impl<'slice> DecodingState<'slice> {
         if index < 0 {
             self.offset += 8;
         }
-        (index < 0)
+        index < 0
     }
 
     /// Decode a pointer from the buffer as a global offset into the buffer.

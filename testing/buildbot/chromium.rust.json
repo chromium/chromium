@@ -3,6 +3,7 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "android-rust-arm-rel": {
     "additional_compile_targets": [
+      "mojo_rust",
       "rust_build_tests"
     ],
     "gtest_tests": [
@@ -63,6 +64,9 @@
   },
   "linux-rust-x64-rel": {
     "additional_compile_targets": [
+      "mojo_rust",
+      "mojo_rust_extra_tests",
+      "mojo_rust_unittests",
       "rust_build_tests"
     ],
     "gtest_tests": [

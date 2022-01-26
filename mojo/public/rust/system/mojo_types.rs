@@ -14,12 +14,18 @@
 //! a whole because it is intended to be used that way. It contains
 //! all of the basic types needed by all system-level Mojo bindings.
 
+use crate::system::ffi::types::*;
 use std::fmt;
 use std::u64;
-use system::ffi::types::*;
 
 /// A MojoHandle is represented as a plain 32-bit unsigned int.
 pub type MojoHandle = u32;
+
+/// An opaque pointer to a wait set. Since the C bindings no longer have wait sets, our glue code creates a C++ mojo::WaitSet object and returns it as an opaque pointer.
+pub type MojoWaitSetHandle = usize;
+
+/// From //mojo/public/c/system/message_pipe.h. Represents a message object.
+pub type MojoMessageHandle = usize;
 
 /// Represents time ticks as specified by Mojo. A time tick value
 /// is meaningless when not used relative to another time tick.
@@ -35,6 +41,9 @@ pub type InfoFlags = u32;
 pub type MapFlags = u32;
 pub type WriteFlags = u32;
 pub type ReadFlags = u32;
+pub type CreateMessageFlags = u32;
+pub type AppendMessageFlags = u32;
+pub type GetMessageFlags = u32;
 pub type AddFlags = u32;
 
 /// MojoResult represents anything that can happen
@@ -46,24 +55,24 @@ pub type AddFlags = u32;
 #[derive(Copy, Clone, Debug, PartialEq)]
 #[repr(u32)]
 pub enum MojoResult {
-    Okay = 0x0,
-    Cancelled = 0x1,
-    Unknown = 0x2,
-    InvalidArgument = 0x3,
-    DeadlineExceeded = 0x4,
-    NotFound = 0x5,
-    AlreadyExists = 0x6,
-    PermissionDenied = 0x7,
-    ResourceExhausted = 0x8,
-    FailedPrecondition = 0x9,
-    Aborted = 0xa,
-    OutOfRange = 0xb,
-    Unimplemented = 0xc,
-    Internal = 0xd,
-    Unavailable = 0xe,
-    DataLoss = 0xf,
-    Busy = 0x0019,
-    ShouldWait = 0x001e,
+    Okay = 0,
+    Cancelled = 1,
+    Unknown = 2,
+    InvalidArgument = 3,
+    DeadlineExceeded = 4,
+    NotFound = 5,
+    AlreadyExists = 6,
+    PermissionDenied = 7,
+    ResourceExhausted = 8,
+    FailedPrecondition = 9,
+    Aborted = 10,
+    OutOfRange = 11,
+    Unimplemented = 12,
+    Internal = 13,
+    Unavailable = 14,
+    DataLoss = 15,
+    Busy = 16,
+    ShouldWait = 17,
     InvalidResult,
 }
 
@@ -72,24 +81,24 @@ impl MojoResult {
     /// into a MojoResult.
     pub fn from_code(code: MojoResultCode) -> MojoResult {
         match code as u32 {
-            0x0 => MojoResult::Okay,
-            0x1 => MojoResult::Cancelled,
-            0x2 => MojoResult::Unknown,
-            0x3 => MojoResult::InvalidArgument,
-            0x4 => MojoResult::DeadlineExceeded,
-            0x5 => MojoResult::NotFound,
-            0x6 => MojoResult::AlreadyExists,
-            0x7 => MojoResult::PermissionDenied,
-            0x8 => MojoResult::ResourceExhausted,
-            0x9 => MojoResult::FailedPrecondition,
-            0xa => MojoResult::Aborted,
-            0xb => MojoResult::OutOfRange,
-            0xc => MojoResult::Unimplemented,
-            0xd => MojoResult::Internal,
-            0xe => MojoResult::Unavailable,
-            0xf => MojoResult::DataLoss,
-            0x0019 => MojoResult::Busy,
-            0x001e => MojoResult::ShouldWait,
+            0 => MojoResult::Okay,
+            1 => MojoResult::Cancelled,
+            2 => MojoResult::Unknown,
+            3 => MojoResult::InvalidArgument,
+            4 => MojoResult::DeadlineExceeded,
+            5 => MojoResult::NotFound,
+            6 => MojoResult::AlreadyExists,
+            7 => MojoResult::PermissionDenied,
+            8 => MojoResult::ResourceExhausted,
+            9 => MojoResult::FailedPrecondition,
+            10 => MojoResult::Aborted,
+            11 => MojoResult::OutOfRange,
+            12 => MojoResult::Unimplemented,
+            13 => MojoResult::Internal,
+            14 => MojoResult::Unavailable,
+            15 => MojoResult::DataLoss,
+            16 => MojoResult::Busy,
+            17 => MojoResult::ShouldWait,
             _ => MojoResult::InvalidResult,
         }
     }
@@ -158,16 +167,6 @@ impl HandleSignals {
         (self.0 & (Signals::PeerClosed as u32)) != 0
     }
 
-    /// Check if the read threshold flag is set
-    pub fn is_read_threshold(&self) -> bool {
-        (self.0 & (Signals::ReadThreshold as u32)) != 0
-    }
-
-    /// Check if the write threshold flag is set
-    pub fn is_write_threshold(&self) -> bool {
-        (self.0 & (Signals::WriteThreshold as u32)) != 0
-    }
-
     /// Pull the raw MojoHandleSignals out of the data structure
     pub fn get_bits(&self) -> MojoHandleSignals {
         self.0
@@ -181,18 +180,20 @@ impl HandleSignals {
 ///     sizeof(SignalsState) == sizeof(MojoSignalsState) (defined in handle.h)
 /// If this is ever not the case or there is a way in Rust to ensure that,
 /// this data structure must be updated to reflect that.
-#[repr(C)]
+///
+
+// The Mojo API requires this to be 4-byte aligned.
+#[repr(C, align(4))]
 #[derive(Default)]
 pub struct SignalsState {
     satisfied: HandleSignals,
     satisfiable: HandleSignals,
-    _align: [u32; 0], // Hack to align to a 4-byte boundary
 }
 
 impl SignalsState {
     /// Generates a new SignalsState
     pub fn new(satisfied: HandleSignals, satisfiable: HandleSignals) -> SignalsState {
-        SignalsState { satisfied: satisfied, satisfiable: satisfiable, _align: [] }
+        SignalsState { satisfied: satisfied, satisfiable: satisfiable }
     }
     /// Gets a reference to the satisfied signals
     pub fn satisfied(&self) -> &HandleSignals {
@@ -231,11 +232,13 @@ pub enum Signals {
 
     /// Wait for the handle to have at least some
     /// readable data
-    ReadThreshold = 1 << 3,
+    NewDataReadable = 1 << 3,
 
-    /// Wait for the handle to allow for at least
-    /// some data to be writable
-    WriteThreshold = 1 << 4,
+    /// ???
+    PeerRemote = 1 << 4,
+
+    // ???
+    QuotaExceeded = 1 << 5,
 }
 
 /// The result struct used by the wait_set module
@@ -245,13 +248,12 @@ pub enum Signals {
 ///
 /// This struct should never be constructed by anything
 /// but the Mojo system in MojoWaitSetWait.
-#[repr(C)]
+#[repr(C, align(8))]
 pub struct WaitSetResult {
     cookie: u64,
     result: MojoResultCode,
     reserved: u32,
     signals_state: SignalsState,
-    _align: [u64; 0], // Hack to align struct to 8 byte boundary
 }
 
 impl WaitSetResult {

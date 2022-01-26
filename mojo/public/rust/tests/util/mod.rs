@@ -6,46 +6,64 @@
 
 pub mod mojom_validation;
 
+use std::env;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::ptr;
 use std::slice;
+use std::vec::Vec;
 
 /// This macro sets up tests by adding in Mojo embedder
 /// initialization.
 macro_rules! tests {
     ( $( $( #[ $attr:meta ] )* fn $i:ident() $b:block)* ) => {
-        use std::sync::{Once, ONCE_INIT};
-        static START: Once = ONCE_INIT;
         $(
             #[test]
             $(
             #[ $attr ]
             )*
             fn $i() {
-                START.call_once(|| unsafe {
-                    util::InitializeMojoEmbedder();
-                });
+                $crate::util::init();
                 $b
             }
         )*
     }
 }
 
-#[link(name = "stdc++")]
-extern "C" {}
+/// Calls Mojo initialization code on first call. Can be called multiple times.
+/// Has no effect after the first call.
+pub fn init() {
+    // The initialization below must only be done once. For ease of safety, we
+    // want to allow this function to be called multiple times. Wrap the inner
+    // initialization code and only call it the first time.
+    use std::sync::Once;
+    static START: Once = Once::new();
 
-#[link(name = "c")]
+    START.call_once(|| {
+        let mut raw_args: Vec<*const c_char> = Vec::new();
+        for a in env::args() {
+            let cstr = CString::new(a).unwrap();
+            raw_args.push(cstr.into_raw())
+        }
+        let argc = raw_args.len() as u32;
+        let argv = raw_args.leak().as_ptr();
+
+        // `InitializeMojoEmbedder` is safe to call only once. We ensure this
+        // by using `std::sync::Once::call_once` above.
+        unsafe {
+            InitializeMojoEmbedder(argc, argv);
+        }
+    });
+}
+
 extern "C" {
     fn free(ptr: *mut u8);
 }
 
-#[link(name = "rust_embedder")]
 extern "C" {
-    pub fn InitializeMojoEmbedder();
+    pub fn InitializeMojoEmbedder(argc: u32, argv: *const *const c_char);
 }
 
-#[link(name = "validation_parser")]
 extern "C" {
     #[allow(dead_code)]
     fn ParseValidationTest(

@@ -1,0 +1,89 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_source_set.gni")
+import("//build/rust/rust_unit_test.gni")
+
+# Meta target to build everything
+group("rust") {
+  deps = [ ":mojo_rust" ]
+}
+
+# Meta target to build test binaries, if supported.
+group("tests") {
+  testonly = true
+  deps = []
+  if (build_rust_unit_tests) {
+    deps += [ ":mojo_rust_unittests" ]
+  }
+  if (rustc_can_link) {
+    deps += [ ":mojo_rust_extra_tests" ]
+  }
+}
+
+static_library("c_support") {
+  sources = [ "support.cc" ]
+  deps = [
+    "//mojo/public/c/system",
+    "//mojo/public/cpp/system",
+  ]
+}
+
+static_library("c_test_support") {
+  testonly = true
+  sources = [ "test_support.cc" ]
+  deps = [
+    "//base",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
+  ]
+}
+
+rust_source_set("mojo_rust") {
+  crate_root = "lib.rs"
+  unit_test_target =
+      "mojo_rust_unittests"  # avoids conflict with C++ target elsewhere
+  crate_name = "mojo"
+  edition = "2018"
+  sources = [
+    "bindings/decoding.rs",
+    "bindings/encoding.rs",
+    "bindings/macros.rs",
+    "bindings/message.rs",
+    "bindings/mod.rs",
+    "bindings/mojom.rs",
+    "bindings/run_loop.rs",
+    "bindings/util.rs",
+    "lib.rs",
+    "system/core.rs",
+    "system/data_pipe.rs",
+    "system/ffi.rs",
+    "system/handle.rs",
+    "system/message_pipe.rs",
+    "system/mod.rs",
+    "system/mojo_types.rs",
+    "system/shared_buffer.rs",
+    "system/wait_set.rs",
+  ]
+
+  deps = [ ":c_support" ]
+}
+
+if (rustc_can_link) {
+  rust_unit_test("mojo_rust_extra_tests") {
+    testonly = true
+    crate_root = "tests/lib.rs"
+    edition = "2018"
+    sources = [
+      "tests/integration.rs",
+      "tests/lib.rs",
+    ]
+    deps = [
+      ":c_test_support",
+      ":mojo_rust",
+      "//mojo/public/c/system",
+    ]
+  }
+}

@@ -1288,6 +1288,24 @@
     "script": "//testing/scripts/run_isolated_script_test.py",
     "type": "script",
   },
+  "mojo_rust": {
+    "label": "//mojo/public/rust:mojo_rust",
+    # Since we can't build rust tests on Android now, add this for build
+    # coverage.
+    "type": "additional_compile_target",
+  },
+  "mojo_rust_unittests": {
+    "label": "//mojo/public/rust:mojo_rust_unittests",
+    # We don't yet support running Rust test binaries. For now, at least build
+    # the target. TODO(https://crbug.com/1260120): make this a test.
+    "type": "additional_compile_target",
+  },
+  "mojo_rust_extra_tests": {
+    "label": "//mojo/public/rust:mojo_rust",
+    # We don't yet support running Rust test binaries. For now, at least build
+    # the target. TODO(https://crbug.com/1260120): make this a test.
+    "type": "additional_compile_target",
+  },
   "mojo_test_apk": {
     "label": "//mojo/public/java/system:mojo_test_apk",
     "type": "console_test_launcher",

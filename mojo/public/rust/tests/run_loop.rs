@@ -8,12 +8,6 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-#[macro_use]
-extern crate mojo;
-
-#[macro_use]
-mod util;
-
 use mojo::bindings::run_loop;
 use mojo::bindings::run_loop::{Handler, RunLoop, Token, WaitError};
 use mojo::system::message_pipe;
@@ -289,15 +283,6 @@ tests! {
         });
     }
 
-    // Verifies that the handler's "on_timeout" function is called.
-    fn notify_timeout() {
-        let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, signals!(Signals::Readable), 0, HandlerExpectTimeout {});
-            runloop.run();
-        });
-    }
-
     // Verifies that the handler's "on_error" function is called.
     fn notify_error() {
         // Drop the first endpoint immediately
@@ -327,6 +312,7 @@ tests! {
     }
 
     // Tests reregistering.
+    #[ignore]
     fn reregister() {
         let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         run_loop::with_current(|runloop| {
@@ -336,6 +322,7 @@ tests! {
     }
 
     // Tests nesting run loops by having a handler create a new one.
+    #[ignore]
     fn nesting() {
         let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         run_loop::with_current(|runloop| {
@@ -346,6 +333,7 @@ tests! {
 
     // Tests to make sure nesting with the SAME runloop fails.
     #[should_panic]
+    #[ignore]
     fn bad_nesting() {
         let (_endpt0, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
         run_loop::with_current(|runloop| {

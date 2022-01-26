@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use std::mem;
 use std::ptr;
 use std::slice;
 
-use system::ffi;
+use crate::system::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be used.
-use system::handle;
-use system::handle::{CastHandle, Handle};
-use system::mojo_types::*;
+use crate::system::handle;
+use crate::system::handle::{CastHandle, Handle};
+use crate::system::mojo_types::*;
 
 #[repr(u32)]
 /// Create flags for shared buffers
@@ -117,15 +116,11 @@ impl<'a> Drop for MappedBuffer<'a> {
 /// Creates a shared buffer in Mojo and returns a SharedBuffer
 /// structure which represents a handle to the shared buffer.
 pub fn create(flags: CreateFlags, num_bytes: u64) -> Result<SharedBuffer, MojoResult> {
-    let opts = ffi::MojoCreateSharedBufferOptions {
-        struct_size: mem::size_of::<ffi::MojoCreateSharedBufferOptions>() as u32,
-        flags: flags,
-        _align: [],
-    };
+    let opts = ffi::MojoCreateSharedBufferOptions::new(flags);
     let raw_opts = &opts as *const ffi::MojoCreateSharedBufferOptions;
     let mut h: MojoHandle = 0;
     let r = MojoResult::from_code(unsafe {
-        ffi::MojoCreateSharedBuffer(raw_opts, num_bytes, &mut h as *mut MojoHandle)
+        ffi::MojoCreateSharedBuffer(num_bytes, raw_opts, &mut h as *mut MojoHandle)
     });
     if r != MojoResult::Okay {
         Err(r)
@@ -148,11 +143,7 @@ impl SharedBuffer {
     /// buffer handle (though the handle itself may not be represented by
     /// the same number) that maps to the same shared buffer as the original.
     pub fn duplicate(&self, flags: DuplicateFlags) -> Result<SharedBuffer, MojoResult> {
-        let opts = ffi::MojoDuplicateBufferHandleOptions {
-            struct_size: mem::size_of::<ffi::MojoDuplicateBufferHandleOptions>() as u32,
-            flags: flags,
-            _align: [],
-        };
+        let opts = ffi::MojoDuplicateBufferHandleOptions::new(flags);
         let raw_opts = &opts as *const ffi::MojoDuplicateBufferHandleOptions;
         let mut dup_h: MojoHandle = 0;
         let r = MojoResult::from_code(unsafe {
@@ -178,18 +169,19 @@ impl SharedBuffer {
         flags: MapFlags,
     ) -> Result<MappedBuffer<'a>, MojoResult> {
         unsafe {
-            let mut ptr: *mut ffi::c_void = mem::uninitialized();
+            let options = ffi::MojoMapBufferOptions::new(flags);
+            let mut ptr: *mut ffi::c_void = ptr::null_mut();
             let r = MojoResult::from_code(ffi::MojoMapBuffer(
                 self.handle.get_native_handle(),
                 offset,
                 num_bytes,
+                &options as *const _,
                 &mut ptr,
-                flags,
             ));
             if r != MojoResult::Okay {
                 Err(r)
             } else {
-                let mut buf = slice::from_raw_parts_mut(ptr as *mut u8, num_bytes as usize);
+                let buf = slice::from_raw_parts_mut(ptr as *mut u8, num_bytes as usize);
                 Ok(MappedBuffer { buffer: buf })
             }
         }
@@ -198,26 +190,16 @@ impl SharedBuffer {
     /// Retrieves information about a shared buffer the this handle. The return
     /// value is a set of flags (a bit vector in a u32) representing different
     /// aspects of the shared buffer and the size of the shared buffer.
-    pub fn get_info(&self) -> Result<(InfoFlags, u64), MojoResult> {
-        let info_size = mem::size_of::<ffi::MojoBufferInformation>() as u32;
-        let mut info = ffi::MojoBufferInformation {
-            struct_size: info_size,
-            flags: 0,
-            num_bytes: 0,
-            _align: [],
-        };
+    pub fn get_info(&self) -> Result<u64, MojoResult> {
+        let mut info = ffi::MojoSharedBufferInfo::new(0);
         let r = MojoResult::from_code(unsafe {
-            ffi::MojoGetBufferInformation(
+            ffi::MojoGetBufferInfo(
                 self.handle.get_native_handle(),
-                &mut info as *mut ffi::MojoBufferInformation,
-                info_size,
+                ptr::null(),
+                &mut info as *mut _,
             )
         });
-        if r != MojoResult::Okay {
-            Err(r)
-        } else {
-            Ok((info.flags, info.num_bytes))
-        }
+        if r != MojoResult::Okay { Err(r) } else { Ok(info.size) }
     }
 }
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use bindings::decoding::{Decoder, ValidationError};
-use bindings::encoding;
-use bindings::encoding::{Context, DataHeaderValue, Encoder, DATA_HEADER_SIZE};
-use bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
+use crate::bindings::decoding::{Decoder, ValidationError};
+use crate::bindings::encoding;
+use crate::bindings::encoding::{Context, DataHeaderValue, Encoder, DATA_HEADER_SIZE};
+use crate::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 
 /// A flag for the message header indicating that no flag has been set.
 pub const MESSAGE_HEADER_NO_FLAG: u32 = 0;
@@ -61,7 +61,7 @@ impl MojomPointer for MessageHeader {
     }
 
     fn decode_value(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
-        let mut state = decoder.get_mut(&context);
+        let state = decoder.get_mut(&context);
         let version = match state.decode_struct_header(&MESSAGE_HEADER_VERSIONS) {
             Ok(header) => header.data(),
             Err(err) => return Err(err),

@@ -27,10 +27,10 @@ use std::i64;
 use std::u32;
 use std::vec::Vec;
 
-use system;
-use system::core;
-use system::wait_set;
-use system::{Handle, MojoResult, MOJO_INDEFINITE};
+use crate::system;
+use crate::system::core;
+use crate::system::wait_set;
+use crate::system::{Handle, MojoResult, MOJO_INDEFINITE};
 
 /// Define the equivalent of MOJO_INDEFINITE for absolute deadlines
 const MOJO_INDEFINITE_ABSOLUTE: system::MojoTimeTicks = 0;
@@ -44,7 +44,7 @@ const INITIAL_WAIT_SET_NUM_RESULTS: usize = 16;
 /// Maximum size of the result buffer.
 const MAXIMUM_WAIT_SET_NUM_RESULTS: usize = 256;
 
-/// Thread-local data structure for keeping track of handles to wait on.
+// Thread-local data structure for keeping track of handles to wait on.
 thread_local!(static TL_RUN_LOOP: RefCell<RunLoop<'static, 'static>> = RefCell::new(RunLoop::new()));
 
 /// Token representing handle/callback to wait on for this thread only. This
@@ -101,7 +101,7 @@ struct HandlerInfo<'h> {
     /// used in a callback, we must take ownership to avoid mutability
     /// cycles. The easiest way to do this is to take() from the Option then
     /// put it back.
-    handler: Option<Box<Handler + 'h>>,
+    handler: Option<Box<dyn Handler + 'h>>,
 
     /// An absolute deadline in terms of time ticks.
     ///
@@ -113,12 +113,12 @@ struct HandlerInfo<'h> {
 
 impl<'h> HandlerInfo<'h> {
     /// Take the handler out of its Option type.
-    pub fn take(&mut self) -> Option<Box<Handler + 'h>> {
+    pub fn take(&mut self) -> Option<Box<dyn Handler + 'h>> {
         self.handler.take()
     }
 
     /// Put a new handler into the Option type.
-    pub fn give(&mut self, handler: Box<Handler + 'h>) {
+    pub fn give(&mut self, handler: Box<dyn Handler + 'h>) {
         self.handler = Some(handler);
     }
 
@@ -142,7 +142,7 @@ impl<'h> HandlerInfo<'h> {
 /// it.
 struct TaskInfo<'t> {
     /// The task, boxed up.
-    closure: Box<FnMut(&mut RunLoop) + 't>,
+    closure: Box<dyn FnMut(&mut RunLoop) + 't>,
 
     /// An absolute deadline in terms of time ticks.
     ///
@@ -264,23 +264,6 @@ fn absolute_deadline(deadline: system::MojoDeadline) -> system::MojoTimeTicks {
     converted
 }
 
-/// Convert an absolute deadline to a mojo deadline which is relative to some
-/// notion of "now".
-///
-/// If the deadline is earlier than "now", this routine rounds up to "now".
-fn relative_deadline(
-    deadline: system::MojoTimeTicks,
-    now: system::MojoTimeTicks,
-) -> system::MojoDeadline {
-    if deadline == MOJO_INDEFINITE_ABSOLUTE {
-        MOJO_INDEFINITE
-    } else if now >= deadline {
-        0
-    } else {
-        (deadline - now) as system::MojoDeadline
-    }
-}
-
 /// This structure contains all information necessary to wait on handles
 /// asynchronously.
 ///
@@ -341,7 +324,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// Adds a new entry to the runloop queue.
     pub fn register<H>(
         &mut self,
-        handle: &Handle,
+        handle: &dyn Handle,
         signals: system::HandleSignals,
         deadline: system::MojoDeadline,
         handler: H,
@@ -413,7 +396,8 @@ impl<'h, 't> RunLoop<'h, 't> {
         match self.handlers.remove(&token) {
             Some(_) => {
                 let _result = self.handle_set.remove(token.as_cookie());
-                debug_assert_eq!(_result, MojoResult::Okay);
+                // Handles are auto-removed if they are closed. Ignore this error.
+                debug_assert!(_result == MojoResult::Okay || _result == MojoResult::NotFound);
                 true
             }
             None => false,
@@ -471,7 +455,7 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// out of the HashMap, and returns it when manipulation has completed.
     fn get_handler_with<F>(&mut self, token: &Token, invoker: F)
     where
-        F: FnOnce(&mut Self, &mut Box<Handler + 'h>, Token, system::MojoTimeTicks),
+        F: FnOnce(&mut Self, &mut Box<dyn Handler + 'h>, Token, system::MojoTimeTicks),
     {
         // Logic for pulling out the handler as well as its current deadline.
         //
@@ -610,23 +594,27 @@ impl<'h, 't> RunLoop<'h, 't> {
         if self.handlers.is_empty() || self.should_quit {
             return;
         }
+
         let deadline = self.get_next_deadline();
-        let until_deadline = relative_deadline(deadline, core::get_time_ticks_now());
+        // Deadlines no longer supported. TODO(collinbaker): update run_loop
+        // for no deadlines
+        // let until_deadline = relative_deadline(deadline, core::get_time_ticks_now());
         // Perform the wait
-        match self.handle_set.wait_on_set(until_deadline, results_buffer) {
-            Ok(max_results) => {
+        match self.handle_set.wait_on_set(results_buffer) {
+            MojoResult::Okay => {
+                let num_results = results_buffer.len();
                 self.notify_of_results(results_buffer);
+
                 // Clear the buffer since we don't need the results anymore.
                 // Helps prevent a copy if we resize the buffer.
                 results_buffer.clear();
-                // Increase the size of the buffer if there are more results
-                // we could be holding.
+                // If we reached the capcity of `results_buffer` there's a chance there were more handles available. Grow the buffer.
                 let capacity = results_buffer.capacity();
-                if capacity < MAXIMUM_WAIT_SET_NUM_RESULTS && capacity < (max_results) as usize {
+                if capacity < MAXIMUM_WAIT_SET_NUM_RESULTS && capacity == num_results {
                     results_buffer.reserve(capacity);
                 }
             }
-            Err(result) => {
+            result => {
                 assert_eq!(result, MojoResult::DeadlineExceeded);
                 self.notify_of_expired(deadline);
             }

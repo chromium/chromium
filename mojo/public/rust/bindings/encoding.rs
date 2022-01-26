@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use bindings::mojom::MOJOM_NULL_POINTER;
-use bindings::util;
+use crate::bindings::mojom::MOJOM_NULL_POINTER;
+use crate::bindings::util;
 
 use std::mem;
 use std::ops::{Add, AddAssign, Div, Mul, Rem, Sub};
 use std::ptr;
 use std::vec::Vec;
 
-use system::UntypedHandle;
+use crate::system::UntypedHandle;
 
 /// Represents some count of bits.
 ///

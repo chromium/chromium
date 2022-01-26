@@ -14,5 +14,5 @@ pub mod wait_set;
 
 // In order to keep the interface clean, we re-export basic Mojo and handle
 // types and traits here in the system module.
-pub use system::handle::*;
-pub use system::mojo_types::*;
+pub use crate::system::handle::*;
+pub use crate::system::mojo_types::*;

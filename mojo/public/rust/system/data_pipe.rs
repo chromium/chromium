@@ -9,11 +9,11 @@ use std::ptr;
 use std::slice;
 use std::vec;
 
-use system::ffi;
+use crate::system::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be used.
-use system::handle;
-use system::handle::{CastHandle, Handle};
-use system::mojo_types::*;
+use crate::system::handle;
+use crate::system::handle::{CastHandle, Handle};
+use crate::system::mojo_types::*;
 
 #[repr(u32)]
 /// Create flags for data pipes
@@ -74,11 +74,7 @@ where
     /// commit, consumes self, otherwise returns self to try again.
     pub fn commit(self, bytes_read: usize) -> Option<(Self, MojoResult)> {
         let result = unsafe { self.parent.end_read(bytes_read) };
-        if result == MojoResult::Okay {
-            None
-        } else {
-            Some((self, result))
-        }
+        if result == MojoResult::Okay { None } else { Some((self, result)) }
     }
 
     /// Returns the length of the underlying buffer
@@ -128,11 +124,7 @@ where
     /// commit, consumes self, otherwise returns self to try again.
     pub fn commit(self, bytes_written: usize) -> Option<(Self, MojoResult)> {
         let result = unsafe { self.parent.end_write(bytes_written) };
-        if result == MojoResult::Okay {
-            None
-        } else {
-            Some((self, result))
-        }
+        if result == MojoResult::Okay { None } else { Some((self, result)) }
     }
 
     /// Returns the length of the underlying buffer
@@ -184,13 +176,7 @@ pub fn create<T>(
     capacity: u32,
 ) -> Result<(Consumer<T>, Producer<T>), MojoResult> {
     let elem_size = mem::size_of::<T>() as u32;
-    let opts = ffi::MojoCreateDataPipeOptions {
-        struct_size: mem::size_of::<ffi::MojoCreateDataPipeOptions>() as u32,
-        flags: flags,
-        element_num_bytes: elem_size,
-        capacity_num_bytes: capacity * elem_size,
-        _align: [],
-    };
+    let opts = ffi::MojoCreateDataPipeOptions::new(flags, elem_size, capacity * elem_size);
     // TODO(mknyszek): Make sure handles are valid
     let mut chandle: MojoHandle = 0;
     let mut phandle: MojoHandle = 0;
@@ -240,41 +226,40 @@ impl<T> Consumer<T> {
     /// Perform a read operation on the consumer end of the data pipe. As
     /// a result, we get an std::vec::Vec filled with whatever was written.
     pub fn read(&self, flags: ReadFlags) -> Result<vec::Vec<T>, MojoResult> {
+        let mut options = ffi::MojoReadDataOptions::new(Read::Query as ReadFlags);
         let mut num_bytes: u32 = 0;
         let r_prelim = unsafe {
             ffi::MojoReadData(
                 self.handle.get_native_handle(),
+                &options as *const _,
                 ptr::null_mut() as *mut ffi::c_void,
                 &mut num_bytes as *mut u32,
-                1 << 2 as ReadFlags,
             )
         };
         if r_prelim != 0 || num_bytes == 0 {
             return Err(MojoResult::from_code(r_prelim));
         }
+
+        options.flags = flags;
         let elem_size: u32 = mem::size_of::<T>() as u32;
         // TODO(mknyszek): make sure elem_size divides into num_bytes
         let mut buf: vec::Vec<T> = vec::Vec::with_capacity((num_bytes / elem_size) as usize);
         let r = MojoResult::from_code(unsafe {
             ffi::MojoReadData(
                 self.handle.get_native_handle(),
+                &options as *const _,
                 buf.as_mut_ptr() as *const ffi::c_void,
                 &mut num_bytes as *mut u32,
-                flags,
             )
         });
         unsafe { buf.set_len((num_bytes / elem_size) as usize) }
-        if r != MojoResult::Okay {
-            Err(r)
-        } else {
-            Ok(buf)
-        }
+        if r != MojoResult::Okay { Err(r) } else { Ok(buf) }
     }
 
     /// Start two-phase read and return a ReadDataBuffer to perform
     /// read and commit.
-    pub fn begin(&self, flags: ReadFlags) -> Result<ReadDataBuffer<T>, MojoResult> {
-        let wrapped_result = unsafe { self.begin_read(flags) };
+    pub fn begin(&self) -> Result<ReadDataBuffer<T>, MojoResult> {
+        let wrapped_result = unsafe { self.begin_read() };
         match wrapped_result {
             Ok(arr) => Ok(ReadDataBuffer::<T> { buffer: arr, parent: self }),
             Err(r) => Err(r),
@@ -284,14 +269,14 @@ impl<T> Consumer<T> {
     /// A private function that performs the first half of two-phase reading.
     /// Kept private because it is unsafe to use (the array received may not
     /// be valid if end_read is performed).
-    unsafe fn begin_read(&self, flags: ReadFlags) -> Result<&[T], MojoResult> {
+    unsafe fn begin_read(&self) -> Result<&[T], MojoResult> {
         let mut buf_num_bytes: u32 = 0;
-        let mut pbuf: *mut ffi::c_void = mem::uninitialized();
+        let mut pbuf: *mut ffi::c_void = ptr::null_mut();
         let r = MojoResult::from_code(ffi::MojoBeginReadData(
             self.handle.get_native_handle(),
+            ptr::null(),
             &mut pbuf,
             &mut buf_num_bytes as *mut u32,
-            flags,
         ));
         if r != MojoResult::Okay {
             Err(r)
@@ -315,6 +300,7 @@ impl<T> Consumer<T> {
         MojoResult::from_code(ffi::MojoEndReadData(
             self.handle.get_native_handle(),
             (elems_read * elem_size) as u32,
+            ptr::null(),
         ))
     }
 }
@@ -359,19 +345,16 @@ impl<T> Producer<T> {
     /// Returns the number of elements actually written.
     pub fn write(&self, data: &[T], flags: WriteFlags) -> Result<usize, MojoResult> {
         let mut num_bytes = (data.len() * mem::size_of::<T>()) as u32;
+        let options = ffi::MojoWriteDataOptions::new(flags);
         let r = MojoResult::from_code(unsafe {
             ffi::MojoWriteData(
                 self.handle.get_native_handle(),
                 data.as_ptr() as *const ffi::c_void,
                 &mut num_bytes as *mut u32,
-                flags,
+                &options as *const _,
             )
         });
-        if r != MojoResult::Okay {
-            Err(r)
-        } else {
-            Ok(num_bytes as usize)
-        }
+        if r != MojoResult::Okay { Err(r) } else { Ok(num_bytes as usize) }
     }
 
     /// Start two-phase write and return a WriteDataBuffer to perform
@@ -379,8 +362,8 @@ impl<T> Producer<T> {
     ///
     /// Borrows self as mutable so that no other operation may happen on
     /// the producer until the two-phase write is committed.
-    pub fn begin(&self, flags: WriteFlags) -> Result<WriteDataBuffer<T>, MojoResult> {
-        let wrapped_result = unsafe { self.begin_write(flags) };
+    pub fn begin(&self) -> Result<WriteDataBuffer<T>, MojoResult> {
+        let wrapped_result = unsafe { self.begin_write() };
         match wrapped_result {
             Ok(arr) => Ok(WriteDataBuffer::<T> { buffer: arr, parent: self }),
             Err(r) => Err(r),
@@ -390,14 +373,14 @@ impl<T> Producer<T> {
     /// A private function that performs the first half of two-phase writing.
     /// Kept private because it is unsafe to use (the array received may not
     /// be valid if end_write is performed).
-    unsafe fn begin_write(&self, flags: WriteFlags) -> Result<&mut [T], MojoResult> {
+    unsafe fn begin_write(&self) -> Result<&mut [T], MojoResult> {
         let mut buf_num_bytes: u32 = 0;
-        let mut pbuf: *mut ffi::c_void = mem::uninitialized();
+        let mut pbuf: *mut ffi::c_void = ptr::null_mut();
         let r = MojoResult::from_code(ffi::MojoBeginWriteData(
             self.handle.get_native_handle(),
+            ptr::null(),
             &mut pbuf,
             &mut buf_num_bytes as *mut u32,
-            flags,
         ));
         if r != MojoResult::Okay {
             Err(r)
@@ -421,6 +404,7 @@ impl<T> Producer<T> {
         MojoResult::from_code(ffi::MojoEndWriteData(
             self.handle.get_native_handle(),
             (elems_written * elem_size) as u32,
+            ptr::null(),
         ))
     }
 }

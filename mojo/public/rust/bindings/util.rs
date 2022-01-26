@@ -17,7 +17,7 @@ pub fn align_bytes(size: usize, bytes: usize) -> usize {
 /// Converts some number of bits into however many bytes are needed to
 /// represent that bit size.
 pub fn bits_to_bytes(bits: usize) -> usize {
-    ((bits + 7) >> 3)
+    (bits + 7) >> 3
 }
 
 #[cfg(test)]
