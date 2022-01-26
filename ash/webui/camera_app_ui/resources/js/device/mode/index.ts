@@ -4,6 +4,7 @@
 
 import {
   assert,
+  assertExists,
   assertInstanceof,
 } from '../../assert.js';
 import * as dom from '../../dom.js';
@@ -175,7 +176,7 @@ export class Modes {
     // Workaround for b/184089334 on PTZ camera to use preview frame as photo
     // result.
     const checkSupportPTZForPhotoMode =
-        (captureResolution, previewResolution) =>
+        (captureResolution: Resolution, previewResolution: Resolution) =>
             captureResolution.equals(previewResolution);
 
     // clang-format format this wrong if we use async (...) => {...} (missing a
@@ -389,12 +390,12 @@ export class Modes {
    * reflected in the order of the returned array.
    */
   getModeCandidates(): Mode[] {
-    const tried = {};
+    const tried = new Set<Mode>();
     const results: Mode[] = [];
     let mode = this.allModeNames.find((mode) => state.get(mode));
     assert(mode !== undefined);
-    while (!tried[mode]) {
-      tried[mode] = true;
+    while (!tried.has(mode)) {
+      tried.add(mode);
       results.push(mode);
       mode = this.allModes[mode].fallbackMode;
     }
@@ -479,12 +480,12 @@ export class Modes {
   async updateModeSelectionUI(deviceId: string): Promise<void> {
     const supportedModes = await this.getSupportedModes(deviceId);
     const items = dom.getAll('div.mode-item', HTMLDivElement);
-    let first = null;
-    let last = null;
+    let first: HTMLElement|null = null;
+    let last: HTMLElement|null = null;
     items.forEach((el) => {
       const radio = dom.getFrom(el, 'input[type=radio]', HTMLInputElement);
-      const supported =
-          (supportedModes as string[]).includes(radio.dataset['mode']);
+      const supported = (supportedModes as string[])
+                            .includes(assertExists(radio.dataset['mode']));
       el.classList.toggle('hide', !supported);
       if (supported) {
         if (first === null) {
