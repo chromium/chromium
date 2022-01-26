@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
-#define SERVICES_NETWORK_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
+#ifndef CHROME_BROWSER_NET_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
+#define CHROME_BROWSER_NET_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
 
-#include "base/component_export.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 
@@ -13,7 +12,7 @@ namespace network {
 
 // Holds NSS temporary certificates in memory as ScopedCERTCertificates, making
 // them available e.g. for client certificate discovery.
-class COMPONENT_EXPORT(NETWORK_SERVICE) NSSTempCertsCacheChromeOS {
+class NSSTempCertsCacheChromeOS {
  public:
   explicit NSSTempCertsCacheChromeOS(const net::CertificateList& certificates);
 
@@ -38,4 +37,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NSSTempCertsCacheChromeOS {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_
+#endif  // CHROME_BROWSER_NET_NSS_TEMP_CERTS_CACHE_CHROMEOS_H_

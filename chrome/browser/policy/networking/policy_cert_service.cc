@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/net/nss_temp_certs_cache_chromeos.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -25,7 +26,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_util.h"
 #include "net/cert/x509_certificate.h"
-#include "services/network/nss_temp_certs_cache_chromeos.h"
 #include "url/gurl.h"
 
 namespace policy {

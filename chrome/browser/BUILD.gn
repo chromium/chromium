@@ -7196,6 +7196,12 @@ static_library("browser") {
       "net/nss_service_factory.cc",
       "net/nss_service_factory.h",
     ]
+    if (is_chromeos) {
+      sources += [
+        "net/nss_temp_certs_cache_chromeos.cc",
+        "net/nss_temp_certs_cache_chromeos.h",
+      ]
+    }
     if (is_chromeos_ash) {
       sources += [ "net/nss_service_chromeos.cc" ]
     }
