@@ -13,12 +13,13 @@ import {DefaultUserImage, UserInfo} from '../personalization_app.mojom-webui.js'
 
 export enum UserActionName {
   SET_DEFAULT_USER_IMAGES = 'set_default_user_images',
+  SET_PROFILE_IMAGE = 'set_profile_image',
   SET_USER_IMAGE = 'set_user_image',
   SET_USER_INFO = 'set_user_info',
 }
 
-export type UserActions =
-    SetUserImageAction|SetDefaultUserImagesAction|SetUserInfoAction;
+export type UserActions = SetUserImageAction|SetDefaultUserImagesAction|
+    SetUserInfoAction|SetProfileImageAction;
 
 export type SetUserImageAction = Action&{
   name: UserActionName.SET_USER_IMAGE,
@@ -55,5 +56,18 @@ export function setUserInfoAction(user_info: UserInfo): SetUserInfoAction {
   return {
     name: UserActionName.SET_USER_INFO,
     user_info,
+  };
+}
+
+export type SetProfileImageAction = Action&{
+  name: UserActionName.SET_PROFILE_IMAGE,
+  profileImage: Url,
+};
+
+export function setProfileImageAction(profileImage: Url):
+    SetProfileImageAction {
+  return {
+    name: UserActionName.SET_PROFILE_IMAGE,
+    profileImage,
   };
 }

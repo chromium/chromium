@@ -7,6 +7,7 @@
  * that the user can select from.
  */
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isSelectionEvent} from '../../common/utils.js';
@@ -28,15 +29,20 @@ export class AvatarList extends WithPersonalizationStore {
   static get properties() {
     return {
       defaultUserImages_: Array,
+
+      profileImage_: Object,
     };
   }
 
   defaultUserImages_: Array<DefaultUserImage>|null;
+  profileImage_: Url|null;
 
   connectedCallback() {
     super.connectedCallback();
     this.watch<AvatarList['defaultUserImages_']>(
         'defaultUserImages_', state => state.user.defaultUserImages);
+    this.watch<AvatarList['profileImage_']>(
+        'profileImage_', state => state.user.profileImage);
     this.updateFromStore();
     fetchDefaultUserImages(getUserProvider(), this.getStore());
   }

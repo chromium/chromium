@@ -42,9 +42,21 @@ export function infoReducer(
   }
 }
 
+export function profileImageReducer(
+    state: UserState['profileImage'], action: Actions,
+    _: PersonalizationState): UserState['profileImage'] {
+  switch (action.name) {
+    case UserActionName.SET_PROFILE_IMAGE:
+      return action.profileImage;
+    default:
+      return state;
+  }
+}
+
 export const userReducers:
     {[K in keyof UserState]: ReducerFunction<UserState[K]>} = {
       defaultUserImages: defaultUserImagesReducer,
       image: imageReducer,
       info: infoReducer,
+      profileImage: profileImageReducer,
     };

@@ -13,9 +13,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -31,8 +33,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace {
+
+using ash::personalization_app::GetAccountId;
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kFakeTestName[] = "Fake Name";
@@ -51,11 +56,22 @@ void AddAndLoginUser(const AccountId& account_id,
   user_manager->SwitchActiveUser(account_id);
 }
 
+gfx::ImageSkia CreateImage(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+  return image;
+}
+
 class TestUserImageObserver
     : public ash::personalization_app::mojom::UserImageObserver {
  public:
   void OnUserImageChanged(const GURL& image) override {
     current_user_image_ = image;
+  }
+
+  void OnUserProfileImageUpdated(const GURL& profile_image) override {
+    current_profile_image_ = profile_image;
   }
 
   mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
@@ -70,11 +86,18 @@ class TestUserImageObserver
     return current_user_image_;
   }
 
+  const GURL& current_profile_image() {
+    if (user_image_observer_receiver_.is_bound())
+      user_image_observer_receiver_.FlushForTesting();
+    return current_profile_image_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::UserImageObserver>
       user_image_observer_receiver_{this};
 
   GURL current_user_image_;
+  GURL current_profile_image_;
 };
 
 }  // namespace
@@ -104,7 +127,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     web_ui_.set_web_contents(web_contents_.get());
-
+    ash::UserImageManagerImpl::SkipProfileImageDownloadForTesting();
     user_provider_ =
         std::make_unique<PersonalizationAppUserProviderImpl>(&web_ui_);
 
@@ -127,6 +150,12 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     return user_manager::UserManager::Get()->GetActiveUser()->GetImage();
   }
 
+  ash::UserImageManagerImpl* user_image_manager() {
+    return static_cast<ash::UserImageManagerImpl*>(
+        ash::ChromeUserManager::Get()->GetUserImageManager(
+            GetAccountId(profile_)));
+  }
+
   ash::FakeChromeUserManager* GetFakeUserManager() {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
@@ -141,6 +170,12 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     if (user_provider_remote_.is_bound())
       user_provider_remote_.FlushForTesting();
     return test_user_image_observer_.current_user_image();
+  }
+
+  const GURL& current_profile_image() {
+    if (user_provider_remote_.is_bound())
+      user_provider_remote_.FlushForTesting();
+    return test_user_image_observer_.current_profile_image();
   }
 
  private:
@@ -176,12 +211,9 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
   EXPECT_EQ(webui::GetBitmapDataUrl(*user_image().bitmap()),
             current_user_image());
 
-  auto* user_image_manager = GetFakeUserManager()->GetUserImageManager(
-      GetFakeUserManager()->GetActiveUser()->GetAccountId());
-
   // Select a default image.
   int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
-  user_image_manager->SaveUserDefaultImageIndex(image_index);
+  user_image_manager()->SaveUserDefaultImageIndex(image_index);
 
   // Observer received the updated image url. Because it is a default image,
   // receives the chrome://theme url.
@@ -203,4 +235,20 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectDefaultImage) {
   EXPECT_EQ(base::StringPrintf("chrome://theme/IDR_LOGIN_DEFAULT_USER_%d",
                                image_index),
             current_user_image());
+}
+
+TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserProfileImage) {
+  // Observer has not received any images yet because it is not bound.
+  EXPECT_EQ(GURL(), current_profile_image());
+
+  SetUserImageObserver();
+
+  // Select a profile image.
+  const gfx::ImageSkia& profile_image = CreateImage(50, 50);
+  user_image_manager()->SetDownloadedProfileImageForTesting(profile_image);
+  user_image_manager()->SaveUserImageFromProfileImage();
+
+  // Observer received the updated profile image url.
+  EXPECT_EQ(GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())),
+            current_profile_image());
 }

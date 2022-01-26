@@ -4,6 +4,7 @@
 
 import {AvatarList} from 'chrome://personalization/trusted/user/avatar_list_element.js';
 import {UserActionName} from 'chrome://personalization/trusted/user/user_actions.js';
+import {UserImageObserver} from 'chrome://personalization/trusted/user/user_image_observer.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
@@ -20,11 +21,13 @@ export function AvatarListTest() {
     const mocks = baseSetup();
     testUserProvider = mocks.userProvider;
     testPersonalizationStore = mocks.personalizationStore;
+    UserImageObserver.initUserImageObserverIfNeeded();
   });
 
   teardown(async () => {
     await teardownElement(avatarListElement);
     avatarListElement = null;
+    UserImageObserver.shutdown();
   });
 
   test('fetches list of default avatar images and saves to store', async () => {
@@ -57,5 +60,30 @@ export function AvatarListTest() {
     image.click();
     const index = await testUserProvider.whenCalled('selectDefaultImage');
     assertEquals(testUserProvider.defaultUserImages[0]!.index, index);
+  });
+
+  test('fetches profile image and saves to store on load', async () => {
+    testPersonalizationStore.setReducersEnabled(true);
+    avatarListElement = initElement(AvatarList);
+
+    await testUserProvider.whenCalled('setUserImageObserver');
+
+    testPersonalizationStore.expectAction(UserActionName.SET_PROFILE_IMAGE);
+    testUserProvider.userImageObserverRemote!.onUserProfileImageUpdated(
+        testUserProvider.profileImage);
+
+    const action = await testPersonalizationStore.waitForAction(
+        UserActionName.SET_PROFILE_IMAGE);
+
+    assertDeepEquals(
+        {
+          name: UserActionName.SET_PROFILE_IMAGE,
+          profileImage: testUserProvider.profileImage,
+        },
+        action,
+    );
+    assertDeepEquals(
+        testPersonalizationStore.data.user.profileImage,
+        testUserProvider.profileImage);
   });
 }

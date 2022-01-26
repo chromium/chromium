@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
@@ -60,6 +61,8 @@
 namespace {
 
 using ash::WallpaperController;
+using ash::personalization_app::GetAccountId;
+using ash::personalization_app::GetUser;
 
 constexpr int kLocalImageThumbnailSizeDip = 256;
 
@@ -83,18 +86,6 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
   return info.asset_id.has_value()
              ? base::NumberToString(info.asset_id.value())
              : base::UnguessableToken::Create().ToString();
-}
-
-const user_manager::User* GetUser(const Profile* profile) {
-  auto* profile_helper = ash::ProfileHelper::Get();
-  DCHECK(profile_helper);
-  const user_manager::User* user = profile_helper->GetUserByProfile(profile);
-  DCHECK(user);
-  return user;
-}
-
-AccountId GetAccountId(const Profile* profile) {
-  return GetUser(profile)->GetAccountId();
 }
 
 }  // namespace

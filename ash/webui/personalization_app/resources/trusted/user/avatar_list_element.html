@@ -1,6 +1,9 @@
 <style></style>
 <div id="container">
   <p>Avatar list</p>
+  <template is="dom-if" if="[[profileImage_]]">
+    <img src="[[profileImage_.url]]">
+  </template>
   <template is="dom-repeat" items="[[defaultUserImages_]]">
     <img src="[[item.url.url]]" data-id$="[[item.index]]"
         on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">

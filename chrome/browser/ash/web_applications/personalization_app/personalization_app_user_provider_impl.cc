@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_info.h"
 #include "components/user_manager/user_manager.h"
@@ -21,6 +22,9 @@
 #include "url/gurl.h"
 
 namespace {
+
+using ash::personalization_app::GetAccountId;
+using ash::personalization_app::GetUser;
 
 GURL GetUserImageDataUrl(const user_manager::User& user) {
   if (user.GetImage().isNull())
@@ -32,7 +36,12 @@ GURL GetUserImageDataUrl(const user_manager::User& user) {
 
 PersonalizationAppUserProviderImpl::PersonalizationAppUserProviderImpl(
     content::WebUI* web_ui)
-    : profile_(Profile::FromWebUI(web_ui)) {}
+    : profile_(Profile::FromWebUI(web_ui)) {
+  ash::UserImageManager* user_image_manager =
+      ash::ChromeUserManager::Get()->GetUserImageManager(
+          GetAccountId(profile_));
+  user_image_manager->DownloadProfileImage();
+}
 
 PersonalizationAppUserProviderImpl::~PersonalizationAppUserProviderImpl() =
     default;
@@ -56,13 +65,19 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
     user_manager_observer_.Observe(user_manager);
 
   // Call it manually the first time.
-  OnUserImageChanged(*ash::ProfileHelper::Get()->GetUserByProfile(profile_));
+  OnUserImageChanged(*GetUser(profile_));
+
+  ash::UserImageManager* user_image_manager =
+      ash::ChromeUserManager::Get()->GetUserImageManager(
+          GetAccountId(profile_));
+  const gfx::ImageSkia& profile_image =
+      user_image_manager->DownloadedProfileImage();
+  OnUserProfileImageUpdated(*GetUser(profile_), profile_image);
 }
 
 void PersonalizationAppUserProviderImpl::GetUserInfo(
     GetUserInfoCallback callback) {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+  const user_manager::User* user = GetUser(profile_);
   DCHECK(user);
   std::move(callback).Run(ash::personalization_app::UserDisplayInfo(*user));
 }
@@ -81,17 +96,14 @@ void PersonalizationAppUserProviderImpl::SelectDefaultImage(int index) {
   }
 
   auto* user_image_manager = ash::ChromeUserManager::Get()->GetUserImageManager(
-      chromeos::ProfileHelper::Get()
-          ->GetUserByProfile(profile_)
-          ->GetAccountId());
+      GetAccountId(profile_));
 
   user_image_manager->SaveUserDefaultImageIndex(index);
 }
 
 void PersonalizationAppUserProviderImpl::OnUserImageChanged(
     const user_manager::User& user) {
-  const user_manager::User* desired_user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
+  const user_manager::User* desired_user = GetUser(profile_);
   DCHECK(desired_user);
 
   if (user.GetAccountId() != desired_user->GetAccountId())
@@ -106,4 +118,17 @@ void PersonalizationAppUserProviderImpl::OnUserImageChanged(
   }
   // All other cases.
   user_image_observer_remote_->OnUserImageChanged(GetUserImageDataUrl(user));
+}
+
+void PersonalizationAppUserProviderImpl::OnUserProfileImageUpdated(
+    const user_manager::User& user,
+    const gfx::ImageSkia& profile_image) {
+  const user_manager::User* desired_user = GetUser(profile_);
+  DCHECK(desired_user);
+
+  if (user.GetAccountId() != desired_user->GetAccountId())
+    return;
+
+  user_image_observer_remote_->OnUserProfileImageUpdated(
+      GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())));
 }

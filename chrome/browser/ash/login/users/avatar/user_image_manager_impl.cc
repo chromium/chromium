@@ -61,6 +61,8 @@ const int kProfileRefreshIntervalSec = 24 * 3600;
 
 static bool g_ignore_profile_data_download_delay_ = false;
 
+static bool g_skip_profile_download = false;
+
 // Saves `image_bytes` at `image_path`, and delete the old file at
 // `old_image_path` if needed.
 bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
@@ -657,6 +659,8 @@ void UserImageManagerImpl::DeleteUserImage() {
 }
 
 void UserImageManagerImpl::DownloadProfileImage() {
+  if (g_skip_profile_download)
+    return;
   profile_image_requested_ = true;
   DownloadProfileData();
 }
@@ -710,9 +714,19 @@ void UserImageManagerImpl::OnExternalDataFetched(
   }
 }
 
+void UserImageManagerImpl::SetDownloadedProfileImageForTesting(
+    const gfx::ImageSkia& image) {
+  downloaded_profile_image_ = image;
+}
+
 // static
 void UserImageManagerImpl::IgnoreProfileDataDownloadDelayForTesting() {
   g_ignore_profile_data_download_delay_ = true;
+}
+
+// static
+void UserImageManagerImpl::SkipProfileImageDownloadForTesting() {
+  g_skip_profile_download = true;
 }
 
 bool UserImageManagerImpl::NeedsProfilePicture() const {
