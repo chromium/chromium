@@ -16,6 +16,7 @@
 #include "ash/components/arc/mojom/bluetooth.mojom.h"
 #include "ash/components/arc/mojom/boot_phase_monitor.mojom.h"
 #include "ash/components/arc/mojom/camera.mojom.h"
+#include "ash/components/arc/mojom/cast_receiver.mojom.h"
 #include "ash/components/arc/mojom/cert_store.mojom.h"
 #include "ash/components/arc/mojom/clipboard.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
@@ -103,6 +104,9 @@ void FakeArcBridgeHost::OnBootPhaseMonitorInstanceReady(
 
 void FakeArcBridgeHost::OnCameraInstanceReady(
     mojo::PendingRemote<mojom::CameraInstance> camera_remote) {}
+
+void FakeArcBridgeHost::OnCastReceiverInstanceReady(
+    mojo::PendingRemote<mojom::CastReceiverInstance> cast_receiver_remote) {}
 
 void FakeArcBridgeHost::OnCertStoreInstanceReady(
     mojo::PendingRemote<mojom::CertStoreInstance> instance_remote) {}

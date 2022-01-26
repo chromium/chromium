@@ -1,0 +1,29 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+module arc.mojom;
+
+// Next Method ID: 3
+interface CastReceiverInstance {
+  [Extensible]
+  enum Result {
+      SUCCESS = 0,
+      FAILURE = 1,
+      UNKNOWN = 2,              // E.g. the operation was interrupted.
+      CAST_NOT_FOUND = 3,       // Retrying won't help.
+      CAST_UNAVAILABLE = 4,     // Could be disconnected or claimed.
+  };
+
+  // Gets the receiver name.
+  GetName@3() => (Result result, string name);
+
+  // Sets whether the receiver is enabled or not. Enabling the receiver will
+  // start it if needed.
+  SetEnabled@1(bool enabled) => (Result result);
+
+  // Sets the receiver name. If the name is blank, the receiver name will be
+  // set to the device name.
+  SetName@2(string name) => (Result result);
+};
