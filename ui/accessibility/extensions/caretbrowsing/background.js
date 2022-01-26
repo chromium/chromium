@@ -50,12 +50,11 @@ CaretBkgnd.setIcon = function() {
  */
 CaretBkgnd.injectContentScripts = function() {
   chrome.windows.getAll({'populate': true}, function(windows) {
-    for (let i = 0; i < windows.length; i++) {
-      const tabs = windows[i].tabs;
-      for (let j = 0; j < tabs.length; j++) {
+    for (const w of windows) {
+      for (const tab of w.tabs) {
         chrome.scripting.executeScript(
             {
-              target: {tabId: tabs[j].id, allFrames: true},
+              target: {tabId: tab.id, allFrames: true},
               files: CONTENT_SCRIPTS,
             },
             function(result) {
