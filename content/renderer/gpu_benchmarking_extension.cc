@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -556,8 +557,8 @@ void OnSwapCompletedHelper(CallbackAndContext* callback_and_context,
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
   // I am not sure why this hasn't been initialized yet.
-  (void)CoInitializeEx(nullptr,
-                       COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+  std::ignore = CoInitializeEx(
+      nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
   // In non-sandboxed mode, we will need to create and hold on to the
   // factory before entering the sandbox.
   Microsoft::WRL::ComPtr<IXpsOMObjectFactory> factory;

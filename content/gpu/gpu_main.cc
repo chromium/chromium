@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -136,7 +137,7 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
       TRACE_EVENT0("gpu", "Warm up rand");
       // Warm up the random subsystem, which needs to be done pre-sandbox on all
       // platforms.
-      (void)base::RandUint64();
+      std::ignore = base::RandUint64();
     }
 
 #if BUILDFLAG(USE_VAAPI)
