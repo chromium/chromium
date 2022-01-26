@@ -85,7 +85,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    shell_root_surface_.reset();
+    ResetRootSurface();
     tracing_helper_.TearDown();
     arc_test_.TearDown();
     BrowserWithTestWindowTest::TearDown();
@@ -111,6 +111,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     DCHECK(tracing_helper().GetTracingSession()->tracing_active());
     return arc_widget;
   }
+
+  void ResetRootSurface() { shell_root_surface_.reset(); }
 
   ArcAppPerformanceTracingTestHelper& tracing_helper() {
     return tracing_helper_;
@@ -295,6 +297,17 @@ TEST_F(ArcAppPerformanceTracingTest, TimeToFirstFrameRendered) {
   DCHECK(samples.get());
   EXPECT_EQ(0, samples->TotalCount());
 
+  arc_widget->Close();
+}
+
+// This test verifies the case when surface is destroyed before window close.
+TEST_F(ArcAppPerformanceTracingTest, DestroySurface) {
+  views::Widget* const arc_widget = StartArcFocusAppTracing();
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_TRUE(tracing_helper().GetTracingSession()->tracing_active());
+  ResetRootSurface();
+  ASSERT_TRUE(tracing_helper().GetTracingSession());
+  EXPECT_FALSE(tracing_helper().GetTracingSession()->tracing_active());
   arc_widget->Close();
 }
 

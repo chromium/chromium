@@ -29,6 +29,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace exo {
+class ScopedSurface;
+}  // namespace exo
+
 namespace arc {
 
 class ArcAppPerformanceTracingSession;
@@ -182,6 +186,9 @@ class ArcAppPerformanceTracing : public KeyedService,
 
   // Timer for jankiness tracing.
   base::OneShotTimer jankiness_timer_;
+
+  // Used for automatic observer adding/removing.
+  std::unique_ptr<exo::ScopedSurface> scoped_surface_;
 };
 
 }  // namespace arc

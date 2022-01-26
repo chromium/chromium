@@ -268,8 +268,10 @@ void ArcAppPerformanceTracing::OnCommit(exo::Surface* surface) {
 }
 
 void ArcAppPerformanceTracing::OnSurfaceDestroying(exo::Surface* surface) {
-  if (surface)
-    surface->RemoveSurfaceObserver(this);
+  // |scoped_surface_| might be already reset in case window is destroyed
+  // first.
+  DCHECK(!scoped_surface_ || (scoped_surface_->get() == surface));
+  scoped_surface_.reset();
 }
 
 void ArcAppPerformanceTracing::CancelJankinessTracing() {
@@ -442,18 +444,18 @@ void ArcAppPerformanceTracing::AttachActiveWindow(aura::Window* window) {
 
   exo::Surface* const surface = exo::GetShellRootSurface(window);
   DCHECK(surface);
-  surface->AddSurfaceObserver(this);
+  // Use scoped surface observer to be safe on the surface
+  // destruction. |exo::GetShellRootSurface| would fail in case
+  // the surface gets destroyed before widget.
+  scoped_surface_ =
+      std::make_unique<exo::ScopedSurface>(surface, this /* observer */);
 }
 
 void ArcAppPerformanceTracing::DetachActiveWindow() {
   if (!arc_active_window_)
     return;
 
-  exo::Surface* const surface = exo::GetShellRootSurface(arc_active_window_);
-  // Surface might be destroyed.
-  if (surface)
-    surface->RemoveSurfaceObserver(this);
-
+  scoped_surface_.reset();
   arc_active_window_->RemoveObserver(this);
   arc_active_window_ = nullptr;
 }
