@@ -184,6 +184,10 @@ TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
 }
 
 TEST_F(ShortcutTest, CreateShortcutWithOnlySomeProperties) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1291225): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ShortcutProperties target_and_args_properties;
   target_and_args_properties.set_target(link_properties_.target);
   target_and_args_properties.set_arguments(link_properties_.arguments);
