@@ -1857,8 +1857,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Test" label="A client created by cras_test_client."/>
   <suffix name="Unknown" label="Unknown client."/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds"/>
-  <affected-histogram name="Cras.InputStreamRuntime"/>
-  <affected-histogram name="Cras.OutputStreamRuntime"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Input"/>
   <affected-histogram name="Cras.StreamCallbackThreshold.Output"/>
   <affected-histogram name="Cras.StreamEffects.Input"/>
@@ -1871,7 +1869,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamSamplingFormat.Output"/>
   <affected-histogram name="Cras.StreamSamplingRate.Input"/>
   <affected-histogram name="Cras.StreamSamplingRate.Output"/>
-  <affected-histogram name="Cras.StreamTimeoutMilliSeconds"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_DeviceType" separator=".">
@@ -1904,7 +1901,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Unknown" label="Unknown device. It should not be used."/>
   <suffix name="USB" label="USB device."/>
   <affected-histogram name="Cras.DeviceGain"/>
-  <affected-histogram name="Cras.DeviceNoiseCancellationEnabled"/>
   <affected-histogram name="Cras.DeviceNoiseCancellationStatus"/>
   <affected-histogram name="Cras.DeviceVolume"/>
 </histogram_suffixes>
@@ -1927,14 +1923,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.FetchDelayMilliSeconds.Chrome"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.CrOSVM"/>
   <affected-histogram name="Cras.FetchDelayMilliSeconds.LaCrOS"/>
-  <affected-histogram name="Cras.InputStreamRuntime.ARC"/>
-  <affected-histogram name="Cras.InputStreamRuntime.Chrome"/>
-  <affected-histogram name="Cras.InputStreamRuntime.CrOSVM"/>
-  <affected-histogram name="Cras.InputStreamRuntime.LaCrOS"/>
-  <affected-histogram name="Cras.OutputStreamRuntime.ARC"/>
-  <affected-histogram name="Cras.OutputStreamRuntime.Chrome"/>
-  <affected-histogram name="Cras.OutputStreamRuntime.CrOSVM"/>
-  <affected-histogram name="Cras.OutputStreamRuntime.LaCrOS"/>
   <affected-histogram name="Cras.StreamRuntime.Input.ARC"/>
   <affected-histogram name="Cras.StreamRuntime.Input.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Input.CrOSVM"/>
@@ -1943,10 +1931,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Cras.StreamRuntime.Output.Chrome"/>
   <affected-histogram name="Cras.StreamRuntime.Output.CrOSVM"/>
   <affected-histogram name="Cras.StreamRuntime.Output.LaCrOS"/>
-  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.ARC"/>
-  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.Chrome"/>
-  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.CrOSVM"/>
-  <affected-histogram name="Cras.StreamTimeoutMilliSeconds.LaCrOS"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Cras_TimePeriod" separator=".">

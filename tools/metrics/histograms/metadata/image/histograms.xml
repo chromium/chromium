@@ -280,13 +280,7 @@ chromium-metrics-reviews@google.com.
     for the annotation. {ImageAnnotationServiceAnnotationType}
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
-      variants="ImageAnnotationServiceAnnotationType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="ImageAnnotationServiceAnnotationType"/>
 </histogram>
 
 <histogram
@@ -302,13 +296,7 @@ chromium-metrics-reviews@google.com.
     contain any text. {ImageAnnotationServiceAnnotationType}
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
-      variants="ImageAnnotationServiceAnnotationType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="ImageAnnotationServiceAnnotationType"/>
 </histogram>
 
 <histogram
@@ -322,13 +310,7 @@ chromium-metrics-reviews@google.com.
     gRPC status reported. {ImageAnnotationServiceAnnotationType}
   </summary>
   <token key="ImageAnnotationServiceAnnotationType"
-      variants="ImageAnnotationServiceAnnotationType">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+      variants="ImageAnnotationServiceAnnotationType"/>
 </histogram>
 
 <histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
@@ -341,13 +323,7 @@ chromium-metrics-reviews@google.com.
     database for a given cache strategy. Recorded during cache eviction process.
     {ImageFetcherCacheStrategy}
   </summary>
-  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy"/>
 </histogram>
 
 <histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
@@ -359,13 +335,7 @@ chromium-metrics-reviews@google.com.
     The total size of the cache for a given cache strategy. Recorded during
     cache eviction process. {ImageFetcherCacheStrategy}
   </summary>
-  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
-  </token>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy"/>
 </histogram>
 
 <histogram name="ImageFetcher.Events{ImageFetcherClients}"

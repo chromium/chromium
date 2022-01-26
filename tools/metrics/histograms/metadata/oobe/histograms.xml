@@ -199,19 +199,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OOBE.MarketingOptInScreen.GeolocationResolveLength"
-    units="chars" expires_after="2021-08-09">
-  <obsolete>
-    Removed in the M98.
-  </obsolete>
-  <owner>rrsilva@google.com</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Records the length of the country code that was returned when determining
-    the user's geolocation.
-  </summary>
-</histogram>
-
 <histogram name="OOBE.NetworkErrorShown.Enrollment" enum="NetworkErrorType"
     expires_after="M77">
   <owner>achuith@google.com</owner>
@@ -467,18 +454,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time required for ChromeOS to load the First Run WebUI (i.e. out-of-box
     experience). Recorded at most once per Chrome lifetime (if OOBE is shown).
-  </summary>
-</histogram>
-
-<histogram name="OOBE.WebUIToViewsSwitch.Duration" units="ms"
-    expires_after="2021-11-21">
-  <obsolete>
-    Removed in M97.
-  </obsolete>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
-  <summary>
-    Measures time spent by switch between WebUI and Views-based display hosts.
   </summary>
 </histogram>
 
