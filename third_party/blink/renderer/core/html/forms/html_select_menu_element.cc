@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
@@ -271,6 +272,18 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 void HTMLSelectMenuElement::DidMoveToNewDocument(Document& old_document) {
   HTMLFormControlElementWithState::DidMoveToNewDocument(old_document);
   select_mutation_callback_->SetDocument(&GetDocument());
+
+  // Since we're observing the lifecycle updates, ensure that we listen to the
+  // right document's view.
+  if (queued_check_for_missing_parts_) {
+    if (old_document.View())
+      old_document.View()->UnregisterFromLifecycleNotifications(this);
+
+    if (GetDocument().View())
+      GetDocument().View()->RegisterForLifecycleNotifications(this);
+    else
+      queued_check_for_missing_parts_ = false;
+  }
 }
 
 String HTMLSelectMenuElement::value() const {
@@ -335,12 +348,7 @@ void HTMLSelectMenuElement::SetListboxPart(HTMLPopupElement* new_listbox_part) {
   if (new_listbox_part) {
     new_listbox_part->SetOwnerSelectMenuElement(this);
   } else {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "<selectmenu>'s default listbox was removed by an element labeled "
-        "slot=\"listbox\", and a new one was not provided. This <selectmenu> "
-        "will not be fully functional."));
+    QueueCheckForMissingParts();
   }
 
   listbox_part_ = new_listbox_part;
@@ -456,12 +464,7 @@ void HTMLSelectMenuElement::SetButtonPart(Element* new_button_part) {
                                       button_part_listener_,
                                       /*use_capture=*/false);
   } else {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "<selectmenu>'s default button was removed by an element labeled "
-        "slot=\"button\", and a new one was not provided. This <selectmenu> "
-        "will not be fully functional."));
+    QueueCheckForMissingParts();
   }
 
   button_part_ = new_button_part;
@@ -592,6 +595,13 @@ void HTMLSelectMenuElement::EnsureListboxPartIsValid() {
   }
 }
 
+void HTMLSelectMenuElement::QueueCheckForMissingParts() {
+  if (!queued_check_for_missing_parts_ && GetDocument().View()) {
+    queued_check_for_missing_parts_ = true;
+    GetDocument().View()->RegisterForLifecycleNotifications(this);
+  }
+}
+
 void HTMLSelectMenuElement::ResetOptionParts() {
   // Remove part status from all current option parts
   while (!option_parts_.IsEmpty()) {
@@ -692,6 +702,35 @@ void HTMLSelectMenuElement::OptionSelectionStateChanged(
     SetSelectedOption(option);
   } else if (selectedOption() == option) {
     ResetToDefaultSelection();
+  }
+}
+
+void HTMLSelectMenuElement::DidFinishLifecycleUpdate(
+    const LocalFrameView& local_frame_view) {
+  Document* document = local_frame_view.GetFrame().GetDocument();
+  if (document->Lifecycle().GetState() <
+      DocumentLifecycle::kAfterPerformLayout) {
+    return;
+  }
+
+  DCHECK(queued_check_for_missing_parts_);
+  queued_check_for_missing_parts_ = false;
+  document->View()->UnregisterFromLifecycleNotifications(this);
+
+  if (!button_part_) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A <selectmenu>'s default button was removed and a new one was not "
+        "provided. This <selectmenu> will not be fully functional."));
+  }
+
+  if (!listbox_part_) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A <selectmenu>'s default listbox was removed and a new one was not "
+        "provided. This <selectmenu> will not be fully functional."));
   }
 }
 

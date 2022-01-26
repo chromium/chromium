@@ -202,6 +202,14 @@ Node::InsertionNotificationRequest ShadowRoot::InsertedInto(
   return kInsertionDone;
 }
 
+void ShadowRoot::UpdateType(ShadowRootType type) {
+  DCHECK(GetType() == ShadowRootType::kUserAgent);
+  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
+  DCHECK(IsA<HTMLSelectMenuElement>(host()))
+      << "Updating the type is only supported for <selectmenu> elements";
+  type_ = static_cast<unsigned>(type);
+}
+
 void ShadowRoot::RemovedFrom(ContainerNode& insertion_point) {
   if (insertion_point.isConnected()) {
     if (NeedsSlotAssignmentRecalc())
