@@ -83,11 +83,11 @@ class Testprinter(unittest.TestCase):
         self.assertTrue(stream.getvalue())
 
     def assertWritten(self, stream, contents):
-        self.assertEqual(stream.buflist, contents)
+        self.assertEqual(stream.getvalue().splitlines(), contents)
 
     def reset(self, stream):
-        stream.buflist = []
-        stream.buf = ''
+        stream.truncate(0)
+        stream.seek(0)
 
     def get_printer(self, args=None):
         args = args or []
@@ -155,31 +155,30 @@ class Testprinter(unittest.TestCase):
             self.assertWritten(err, result)
 
         # Without times:
-        run_test(1, 1, 0, [], ['The test ran as expected.\n'])
+        run_test(1, 1, 0, [], ['The test ran as expected.'])
         run_test(2, 1, 1, [],
-                 ['\n', "1 test ran as expected, 1 didn't:\n", '    test0\n'])
+                 ['', "1 test ran as expected, 1 didn't:", '    test0'])
         run_test(3, 2, 1, [],
-                 ['\n', "2 tests ran as expected, 1 didn't:\n", '    test0\n'])
-        run_test(3, 2, 0, [],
-                 ['\n', "2 tests ran as expected (1 didn't run).\n"])
+                 ['', "2 tests ran as expected, 1 didn't:", '    test0'])
+        run_test(3, 2, 0, [], ['', "2 tests ran as expected (1 didn't run)."])
 
         # With times:
         fake_shards = [FakeShard('foo', 1), FakeShard('bar', 2)]
         run_test(1, 1, 0, fake_shards,
-                 ['The test ran as expected in 5.00s (2.00s in rwt, 1x).\n'])
+                 ['The test ran as expected in 5.00s (2.00s in rwt, 1x).'])
         run_test(2, 1, 1, fake_shards, [
-            '\n',
-            "1 test ran as expected, 1 didn't in 5.00s (2.00s in rwt, 1x):\n",
-            '    test0\n'
+            '',
+            "1 test ran as expected, 1 didn't in 5.00s (2.00s in rwt, 1x):",
+            '    test0'
         ])
         run_test(3, 2, 1, fake_shards, [
-            '\n',
-            "2 tests ran as expected, 1 didn't in 5.00s (2.00s in rwt, 1x):\n",
-            '    test0\n'
+            '',
+            "2 tests ran as expected, 1 didn't in 5.00s (2.00s in rwt, 1x):",
+            '    test0'
         ])
         run_test(3, 2, 0, fake_shards, [
-            '\n',
-            "2 tests ran as expected (1 didn't run) in 5.00s (2.00s in rwt, 1x).\n"
+            '',
+            "2 tests ran as expected (1 didn't run) in 5.00s (2.00s in rwt, 1x)."
         ])
 
     def test_test_status_line(self):
@@ -243,18 +242,17 @@ class Testprinter(unittest.TestCase):
 
         self.reset(err)
         printer.print_found(100, 100, 10, 1, 1)
-        self.assertWritten(err,
-                           ['Found 100 tests; running 10, skipping 90.\n'])
+        self.assertWritten(err, ['Found 100 tests; running 10, skipping 90.'])
 
         self.reset(err)
         printer.print_found(100, 20, 10, 1, 1)
         self.assertWritten(
-            err, ['Found 20 tests (total 100); running 10, skipping 10.\n'])
+            err, ['Found 20 tests (total 100); running 10, skipping 10.'])
 
         self.reset(err)
         printer.print_found(100, 100, 10, 2, 3)
         self.assertWritten(err, [
-            'Found 100 tests; running 10 (6 times each: --repeat-each=2 --iterations=3), skipping 90.\n'
+            'Found 100 tests; running 10 (6 times each: --repeat-each=2 --iterations=3), skipping 90.'
         ])
 
     def test_debug_rwt_logging_is_throttled(self):
