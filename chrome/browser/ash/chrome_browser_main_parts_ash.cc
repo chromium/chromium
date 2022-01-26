@@ -1178,6 +1178,8 @@ void ChromeBrowserMainPartsAsh::PreBrowserStart() {
 }
 
 void ChromeBrowserMainPartsAsh::PostBrowserStart() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Branded builds are packaged with valid google chrome api keys.
   if (base::FeatureList::IsEnabled(features::kDeviceActiveClient)) {
     device_activity_controller_ =
         std::make_unique<device_activity::DeviceActivityController>();
@@ -1187,6 +1189,7 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
         g_browser_process->system_network_context_manager()
             ->GetSharedURLLoaderFactory());
   }
+#endif
 
   // Construct a delegate to connect the accessibility component extensions and
   // AccessibilityEventRewriter.
