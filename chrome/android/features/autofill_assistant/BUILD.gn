@@ -78,8 +78,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarNativeDelegate.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantCoordinator.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesChrome.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesFactoryChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDialogButton.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPopup.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantKeyboardCoordinator.java",
@@ -87,7 +85,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantOnboardingHelperImpl.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantPeekHeightCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantRootViewContainer.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependenciesChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTagsForTesting.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTextUtils.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantActionHandlerImpl.java",
@@ -192,7 +189,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPopup.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantOnboardingHelperImpl.java",
-    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependenciesChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantClient.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDependencyInjector.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectActionImpl.java",
@@ -233,6 +229,7 @@ generate_jni("jni_headers_public") {
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependencies.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeatures.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependencies.java",
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependenciesChrome.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/Starter.java",
   ]
 }

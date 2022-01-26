@@ -6,7 +6,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantStaticDependenciesChrome_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantStaticDependenciesChrome_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "chrome/browser/browser_process.h"
