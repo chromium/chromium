@@ -28,10 +28,7 @@ NotificationBlockedDialogController::NotificationBlockedDialogController(
     : delegate_(delegate), web_contents_(web_contents) {}
 
 NotificationBlockedDialogController::~NotificationBlockedDialogController() {
-  if (java_object_) {
-    Java_NotificationBlockedDialog_dismissDialog(
-        base::android::AttachCurrentThread(), java_object_);
-  }
+  DismissDialog();
 }
 
 void NotificationBlockedDialogController::ShowDialog(
@@ -73,6 +70,7 @@ void NotificationBlockedDialogController::OnPrimaryButtonClicked(JNIEnv* env) {
 void NotificationBlockedDialogController::OnNegativeButtonClicked(JNIEnv* env) {
   switch (prompt_model_.secondary_button_behavior) {
     case SecondaryButtonBehavior::kShowSettings:
+      delegate_->OnOpenedSettings();
       Java_NotificationBlockedDialog_showSettings(env, GetOrCreateJavaObject());
       return;
     case SecondaryButtonBehavior::kAllowForThisSite:
@@ -86,7 +84,15 @@ void NotificationBlockedDialogController::OnLearnMoreClicked(JNIEnv* env) {
 }
 
 void NotificationBlockedDialogController::OnDialogDismissed(JNIEnv* env) {
+  java_object_.Reset();
   delegate_->OnDialogDismissed();
+}
+
+void NotificationBlockedDialogController::DismissDialog() {
+  if (java_object_) {
+    Java_NotificationBlockedDialog_dismissDialog(
+        base::android::AttachCurrentThread(), java_object_);
+  }
 }
 
 base::android::ScopedJavaGlobalRef<jobject>

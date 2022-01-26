@@ -29,6 +29,7 @@ class NotificationBlockedDialogController {
     virtual void OnContinueBlocking() = 0;
     virtual void OnAllowForThisSite() = 0;
     virtual void OnLearnMoreClicked() = 0;
+    virtual void OnOpenedSettings() = 0;
     virtual void OnDialogDismissed() = 0;
   };
 
@@ -39,6 +40,7 @@ class NotificationBlockedDialogController {
 
   void ShowDialog(
       permissions::PermissionUiSelector::QuietUiReason quiet_ui_reason);
+  void DismissDialog();
 
   void OnPrimaryButtonClicked(JNIEnv* env);
   void OnNegativeButtonClicked(JNIEnv* env);
