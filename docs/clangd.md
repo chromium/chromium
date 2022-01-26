@@ -19,6 +19,7 @@ tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
   lots of CPU and RAM. There's also a
   [remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
   to have an instant project-wide index without consuming local resources
+  (requires clangd 12+ built with remote index support).
 * Use clangd in your favourite editor
 
 ## Getting clangd
