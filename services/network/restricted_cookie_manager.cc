@@ -31,6 +31,7 @@
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/cookie_settings.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -739,6 +740,11 @@ void RestrictedCookieManager::SetCookieFromString(
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(features::kFasterSetCookie)) {
+    std::move(callback).Run();
+    callback = base::DoNothing();
+  }
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =

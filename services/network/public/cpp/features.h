@@ -109,6 +109,9 @@ extern const base::Feature kURLLoaderSyncClient;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kOptimizeUpdateLoadInfo;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kFasterSetCookie;
+
 }  // namespace features
 }  // namespace network
 
