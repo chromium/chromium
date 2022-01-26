@@ -426,9 +426,8 @@ const newTreeElement = (() => {
       link.tabIndex = 0;
     }
     if (diffMode) {
-      if(Object.keys(root.childStats).length === 0) {
-        displayNoSymbolsMessage();
-      }
+      const noSymbols = Object.keys(root.childStats).length === 0;
+      toggleNoSymbolsMessage(noSymbols);
     }
 
     // Double requestAnimationFrame ensures that the code inside executes in a
@@ -480,11 +479,12 @@ const newTreeElement = (() => {
 
   /**
    * Displays an error modal if the .sizediff file is empty.
+   * @param {boolean} show
    */
-  function displayNoSymbolsMessage() {
+  function toggleNoSymbolsMessage(show) {
       const errorModal = document.getElementById('error-modal');
       errorModal.querySelector('div').style.alignItems = 'center';
-      errorModal.style.display = '';
+      errorModal.style.display = show ? '' : 'none';
   }
 
   async function performInitialLoad() {
