@@ -3170,7 +3170,7 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   testing::Sequence s;
 
   SkSamplingOptions sampling0({0, 1.0f / 2});
-  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kNearest);
 
   // Save/scale/image/restore from DrawImageop.
   EXPECT_CALL(canvas, willSave()).InSequence(s);

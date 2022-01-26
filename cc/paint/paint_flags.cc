@@ -161,7 +161,7 @@ SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     case PaintFlags::FilterQuality::kHigh:
       return SkSamplingOptions(SkCubicResampler::CatmullRom());
     case PaintFlags::FilterQuality::kMedium:
-      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest);
     case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
     case PaintFlags::FilterQuality::kNone:
