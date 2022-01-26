@@ -3039,7 +3039,7 @@
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:pulltorefresh_triggered;comparator:==0;window:360;storage:360",
-                        "event_used": "name:pulltorefresh_dummy;comparator:==0;window:360;storage:360",
+                        "event_used": "name:feed_swipe_refresh_shown;comparator:==0;window:7;storage:360",
                         "session_rate": "==0"
                     },
                     "enable_features": [
