@@ -7378,10 +7378,6 @@ crbug.com/1272203 external/wpt/websockets/stream/tentative/backpressure-send.any
 crbug.com/1272801 http/tests/permissions/chromium/test-request-sharedworker.html [ Pass Timeout ]
 
 # Flaky with setTimeout without clamp
-crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-app-history-navigate-same-doc.html [ Failure Pass ]
-crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-app-history-back-forward-same-doc.html [ Failure Pass ]
-crbug.com/1272954 external/wpt/app-history/currentchange-event/currentchange-history-back-same-doc.html [ Failure Pass ]
-crbug.com/1272954 external/wpt/app-history/navigate-event/navigate-history-back-after-fragment.html [ Failure Pass ]
 crbug.com/1272955 http/tests/devtools/extensions/extensions-timeline-api.js [ Failure Pass ]
 
 # Flaky as depends upon order of execution.
