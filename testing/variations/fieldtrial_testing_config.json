@@ -5333,6 +5333,26 @@
             ]
         }
     ],
+    "PrivacyBudgetClockSkewMetrics": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "FetchBehavior": "background-and-on-demand"
+                    },
+                    "enable_features": [
+                        "NetworkTimeServiceQuerying"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyPreservingPrefetchProxy": [
         {
             "platforms": [
