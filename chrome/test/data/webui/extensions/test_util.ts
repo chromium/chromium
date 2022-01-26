@@ -20,7 +20,7 @@ export class ClickMock {
    */
   testClickingCalls(
       element: HTMLElement, callName: string, opt_expectedArgs: any[],
-      opt_returnValue: any) {
+      opt_returnValue?: any) {
     const mock = new MockController();
     const mockMethod = mock.createFunctionMock(this, callName);
     mockMethod.returnValue = opt_returnValue;

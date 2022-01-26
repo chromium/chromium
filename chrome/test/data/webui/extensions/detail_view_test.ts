@@ -4,44 +4,41 @@
 
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
-import {navigation, Page} from 'chrome://extensions/extensions.js';
+import {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement, navigation, Page} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createExtensionInfo, MockItemDelegate} from './test_util.js';
 
-window.extension_detail_view_tests = {};
-extension_detail_view_tests.suiteName = 'ExtensionDetailViewTest';
-/** @enum {string} */
-extension_detail_view_tests.TestNames = {
-  Layout: 'layout',
-  LayoutSource: 'layout of source section',
-  SupervisedUserDisableReasons: 'supervised user disable reasons',
-  ClickableElements: 'clickable elements',
-  Indicator: 'indicator',
-  Warnings: 'warnings',
-  NoSiteAccessWithEnhancedSiteControls:
-      'no site access with enhanced site controls',
+const extension_detail_view_tests = {
+  suiteName: 'ExtensionDetailViewTest',
+  TestNames: {
+    Layout: 'layout',
+    LayoutSource: 'layout of source section',
+    SupervisedUserDisableReasons: 'supervised user disable reasons',
+    ClickableElements: 'clickable elements',
+    Indicator: 'indicator',
+    Warnings: 'warnings',
+    NoSiteAccessWithEnhancedSiteControls:
+        'no site access with enhanced site controls',
+  },
 };
 
+Object.assign(
+    window, {extension_detail_view_tests: extension_detail_view_tests});
+
 suite(extension_detail_view_tests.suiteName, function() {
-  /**
-   * Extension item created before each test.
-   * @type {Item}
-   */
-  let item;
+  /** Extension item created before each test. */
+  let item: ExtensionsDetailViewElement;
 
-  /**
-   * Backing extension data for the item.
-   * @type {chrome.developerPrivate.ExtensionInfo}
-   */
-  let extensionData;
+  /** Backing extension data for the item. */
+  let extensionData: chrome.developerPrivate.ExtensionInfo;
 
-  /** @type {MockItemDelegate} */
-  let mockDelegate;
+  let mockDelegate: MockItemDelegate;
 
   // Initialize an extension item before each test.
   setup(function() {
@@ -65,12 +62,13 @@ suite(extension_detail_view_tests.suiteName, function() {
   test(assert(extension_detail_view_tests.TestNames.Layout), function() {
     flush();
 
-    const testIsVisible = isChildVisible.bind(null, item);
-    expectTrue(testIsVisible('#closeButton'));
-    expectTrue(testIsVisible('#icon'));
-    expectFalse(testIsVisible('#extensions-options'));
-    expectTrue(
-        item.$.description.textContent.indexOf('This is an extension') !== -1);
+    const testIsVisible: (selector: string) => boolean =
+        isChildVisible.bind(null, item);
+    assertTrue(testIsVisible('#closeButton'));
+    assertTrue(testIsVisible('#icon'));
+    assertFalse(testIsVisible('#extensionsOptions'));
+    assertTrue(
+        item.$.description.textContent!.indexOf('This is an extension') !== -1);
 
     // Check the checkboxes visibility and state. They should be visible
     // only if the associated option is enabled, and checked if the
@@ -80,50 +78,51 @@ suite(extension_detail_view_tests.suiteName, function() {
       {key: 'fileAccess', id: '#allow-on-file-urls'},
       {key: 'errorCollection', id: '#collect-errors'},
     ];
-    const isChecked = id => item.shadowRoot.querySelector(id).checked;
+    const isChecked = (id: string) =>
+        item.shadowRoot!.querySelector<CrCheckboxElement>(id)!.checked;
     for (let option of accessOptions) {
-      expectTrue(isChildVisible(item, option.id));
-      expectFalse(isChecked(option.id), option.id);
+      assertTrue(isChildVisible(item, option.id));
+      assertFalse(isChecked(option.id), option.id);
       item.set('data.' + option.key + '.isEnabled', false);
       flush();
-      expectFalse(isChildVisible(item, option.id));
+      assertFalse(isChildVisible(item, option.id));
       item.set('data.' + option.key + '.isEnabled', true);
       item.set('data.' + option.key + '.isActive', true);
       flush();
-      expectTrue(isChildVisible(item, option.id));
-      expectTrue(isChecked(option.id));
+      assertTrue(isChildVisible(item, option.id));
+      assertTrue(isChecked(option.id));
     }
 
-    expectFalse(testIsVisible('#dependent-extensions-list'));
+    assertFalse(testIsVisible('#dependent-extensions-list'));
     item.set(
         'data.dependentExtensions',
         [{id: 'aaa', name: 'Dependent1'}, {id: 'bbb', name: 'Dependent2'}]);
     flush();
-    expectTrue(testIsVisible('#dependent-extensions-list'));
-    expectEquals(
+    assertTrue(testIsVisible('#dependent-extensions-list'));
+    assertEquals(
         2,
-        item.shadowRoot.querySelector('#dependent-extensions-list')
+        item.shadowRoot!.querySelector('#dependent-extensions-list')!
             .querySelectorAll('li')
             .length);
 
-    expectFalse(testIsVisible('#permissions-list'));
-    expectFalse(testIsVisible('#host-access'));
-    expectFalse(testIsVisible('extensions-runtime-host-permissions'));
+    assertFalse(testIsVisible('#permissions-list'));
+    assertFalse(testIsVisible('#host-access'));
+    assertFalse(testIsVisible('extensions-runtime-host-permissions'));
 
-    expectTrue(testIsVisible('#no-permissions'));
+    assertTrue(testIsVisible('#no-permissions'));
     item.set(
         'data.permissions',
         {simplePermissions: ['Permission 1', 'Permission 2']});
     flush();
-    expectTrue(testIsVisible('#permissions-list'));
-    expectEquals(
+    assertTrue(testIsVisible('#permissions-list'));
+    assertEquals(
         2,
-        item.shadowRoot.querySelector('#permissions-list')
+        item.shadowRoot!.querySelector('#permissions-list')!
             .querySelectorAll('li:not([hidden])')
             .length);
-    expectFalse(testIsVisible('#no-permissions'));
-    expectFalse(testIsVisible('#host-access'));
-    expectFalse(testIsVisible('extensions-runtime-host-permissions'));
+    assertFalse(testIsVisible('#no-permissions'));
+    assertFalse(testIsVisible('#host-access'));
+    assertFalse(testIsVisible('extensions-runtime-host-permissions'));
     // Reset state.
     item.set('data.dependentExtensions', []);
     item.set('data.permissions', {simplePermissions: []});
@@ -132,70 +131,69 @@ suite(extension_detail_view_tests.suiteName, function() {
     const optionsUrl =
         'chrome-extension://' + extensionData.id + '/options.html';
     item.set('data.optionsPage', {openInTab: true, url: optionsUrl});
-    expectTrue(testIsVisible('#extensions-options'));
+    assertTrue(testIsVisible('#extensionsOptions'));
 
-    expectFalse(testIsVisible('#extensionsActivityLogLink'));
+    assertFalse(testIsVisible('#extensionsActivityLogLink'));
     item.set('showActivityLog', true);
     flush();
-    expectTrue(testIsVisible('#extensionsActivityLogLink'));
+    assertTrue(testIsVisible('#extensionsActivityLogLink'));
 
     item.set('data.manifestHomePageUrl', 'http://example.com');
     flush();
-    expectTrue(testIsVisible('#extensionWebsite'));
+    assertTrue(testIsVisible('#extensionWebsite'));
     item.set('data.manifestHomePageUrl', '');
     flush();
-    expectFalse(testIsVisible('#extensionWebsite'));
+    assertFalse(testIsVisible('#extensionWebsite'));
 
     item.set('data.webStoreUrl', 'http://example.com');
     flush();
-    expectTrue(testIsVisible('#viewInStore'));
+    assertTrue(testIsVisible('#viewInStore'));
     item.set('data.webStoreUrl', '');
     flush();
-    expectFalse(testIsVisible('#viewInStore'));
+    assertFalse(testIsVisible('#viewInStore'));
 
-    expectFalse(testIsVisible('#id-section'));
-    expectFalse(testIsVisible('#inspectable-views'));
+    assertFalse(testIsVisible('#id-section'));
+    assertFalse(testIsVisible('#inspectable-views'));
 
     item.set('inDevMode', true);
     flush();
-    expectTrue(testIsVisible('#id-section'));
-    expectTrue(testIsVisible('#inspectable-views'));
+    assertTrue(testIsVisible('#id-section'));
+    assertTrue(testIsVisible('#inspectable-views'));
 
     assertTrue(item.data.incognitoAccess.isEnabled);
     item.set('incognitoAvailable', false);
     flush();
-    expectFalse(testIsVisible('#allow-incognito'));
+    assertFalse(testIsVisible('#allow-incognito'));
 
     item.set('incognitoAvailable', true);
     flush();
-    expectTrue(testIsVisible('#allow-incognito'));
+    assertTrue(testIsVisible('#allow-incognito'));
 
     // Ensure that the "Extension options" button is disabled when the item
     // itself is disabled.
-    const extensionOptions =
-        item.shadowRoot.querySelector('#extensions-options');
+    const extensionOptions = item.$.extensionsOptions;
     assertFalse(extensionOptions.disabled);
     item.set('data.state', chrome.developerPrivate.ExtensionState.DISABLED);
     flush();
     assertTrue(extensionOptions.disabled);
 
-    expectFalse(testIsVisible('.warning-icon'));
+    assertFalse(testIsVisible('.warning-icon'));
     item.set('data.runtimeWarnings', ['Dummy warning']);
     flush();
-    expectTrue(testIsVisible('.warning-icon'));
+    assertTrue(testIsVisible('.warning-icon'));
 
-    expectTrue(testIsVisible('#enableToggle'));
-    expectFalse(testIsVisible('#terminated-reload-button'));
+    assertTrue(testIsVisible('#enableToggle'));
+    assertFalse(testIsVisible('#terminated-reload-button'));
     item.set('data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
     flush();
-    expectFalse(testIsVisible('#enableToggle'));
-    expectTrue(testIsVisible('#terminated-reload-button'));
+    assertFalse(testIsVisible('#enableToggle'));
+    assertTrue(testIsVisible('#terminated-reload-button'));
 
     // Ensure that the runtime warning reload button is not visible if there
     // are runtime warnings and the extension is terminated.
     item.set('data.runtimeWarnings', ['Dummy warning']);
     flush();
-    expectFalse(testIsVisible('#warnings-reload-button'));
+    assertFalse(testIsVisible('#warnings-reload-button'));
     item.set('data.runtimeWarnings', []);
 
     // Reset item state back to DISABLED.
@@ -204,9 +202,9 @@ suite(extension_detail_view_tests.suiteName, function() {
 
     // Ensure that without runtimeHostPermissions data, the sections are
     // hidden.
-    expectTrue(testIsVisible('#no-site-access'));
-    expectFalse(testIsVisible('extensions-runtime-host-permissions'));
-    expectFalse(testIsVisible('extensions-host-permissions-toggle-list'));
+    assertTrue(testIsVisible('#no-site-access'));
+    assertFalse(testIsVisible('extensions-runtime-host-permissions'));
+    assertFalse(testIsVisible('extensions-host-permissions-toggle-list'));
 
     // Adding any runtime host permissions should result in the runtime host
     // controls becoming visible.
@@ -220,9 +218,9 @@ suite(extension_detail_view_tests.suiteName, function() {
     };
     item.set('data.permissions', allSitesPermissions);
     flush();
-    expectFalse(testIsVisible('#no-site-access'));
-    expectTrue(testIsVisible('extensions-runtime-host-permissions'));
-    expectFalse(testIsVisible('extensions-host-permissions-toggle-list'));
+    assertFalse(testIsVisible('#no-site-access'));
+    assertTrue(testIsVisible('extensions-runtime-host-permissions'));
+    assertFalse(testIsVisible('extensions-host-permissions-toggle-list'));
 
     const someSitesPermissions = {
       simplePermissions: [],
@@ -237,26 +235,26 @@ suite(extension_detail_view_tests.suiteName, function() {
     };
     item.set('data.permissions', someSitesPermissions);
     flush();
-    expectFalse(testIsVisible('#no-site-access'));
-    expectFalse(testIsVisible('extensions-runtime-host-permissions'));
-    expectTrue(testIsVisible('extensions-host-permissions-toggle-list'));
+    assertFalse(testIsVisible('#no-site-access'));
+    assertFalse(testIsVisible('extensions-runtime-host-permissions'));
+    assertTrue(testIsVisible('extensions-host-permissions-toggle-list'));
   });
 
   test(assert(extension_detail_view_tests.TestNames.LayoutSource), function() {
     item.set('data.location', 'FROM_STORE');
     flush();
-    assertEquals('Chrome Web Store', item.$.source.textContent.trim());
+    assertEquals('Chrome Web Store', item.$.source.textContent!.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
     item.set('data.location', 'THIRD_PARTY');
     flush();
-    assertEquals('Added by a third-party', item.$.source.textContent.trim());
+    assertEquals('Added by a third-party', item.$.source.textContent!.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
     item.set('data.location', 'UNPACKED');
     item.set('data.prettifiedPath', 'foo/bar/baz/');
     flush();
-    assertEquals('Unpacked extension', item.$.source.textContent.trim());
+    assertEquals('Unpacked extension', item.$.source.textContent!.trim());
     // Test whether the load path is displayed for unpacked extensions.
     assertTrue(isChildVisible(item, '#load-path'));
 
@@ -265,7 +263,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     // |locationText| is expected to always be set if location is UNKNOWN.
     item.set('data.locationText', 'Foo');
     flush();
-    assertEquals('Foo', item.$.source.textContent.trim());
+    assertEquals('Foo', item.$.source.textContent!.trim());
     assertFalse(isChildVisible(item, '#load-path'));
   });
 
@@ -274,34 +272,33 @@ suite(extension_detail_view_tests.suiteName, function() {
           extension_detail_view_tests.TestNames.SupervisedUserDisableReasons),
       function() {
         flush();
-        const toggle = item.shadowRoot.querySelector('#enableToggle');
-        const tooltip =
-            item.shadowRoot.querySelector('#parentDisabledPermissionsToolTip');
-        expectTrue(isVisible(toggle));
-        expectFalse(isVisible(tooltip));
+        const toggle = item.$.enableToggle;
+        const tooltip = item.$.parentDisabledPermissionsToolTip;
+        assertTrue(isVisible(toggle));
+        assertFalse(isVisible(tooltip));
 
         // This section tests that the enable toggle is visible but disabled
         // when disableReasons.blockedByPolicy is true. This test prevents a
         // regression to crbug/1003014.
         item.set('data.disableReasons.blockedByPolicy', true);
         flush();
-        expectTrue(isVisible(toggle));
-        expectTrue(toggle.disabled);
+        assertTrue(isVisible(toggle));
+        assertTrue(toggle.disabled);
         item.set('data.disableReasons.blockedByPolicy', false);
         flush();
 
         item.set('data.disableReasons.parentDisabledPermissions', true);
         flush();
-        expectTrue(isVisible(toggle));
-        expectFalse(toggle.disabled);
-        expectTrue(isVisible(tooltip));
+        assertTrue(isVisible(toggle));
+        assertFalse(toggle.disabled);
+        assertTrue(isVisible(tooltip));
         item.set('data.disableReasons.parentDisabledPermissions', false);
         flush();
 
         item.set('data.disableReasons.custodianApprovalRequired', true);
         flush();
-        expectTrue(isVisible(toggle));
-        expectFalse(toggle.disabled);
+        assertTrue(isVisible(toggle));
+        assertFalse(toggle.disabled);
         item.set('data.disableReasons.custodianApprovalRequired', false);
         flush();
       });
@@ -326,8 +323,8 @@ suite(extension_detail_view_tests.suiteName, function() {
         // to redirect the page back to the details view is in manager.js. Since
         // this behavior does not happen in the testing environment, we test the
         // behavior in manager_test.js.
-        item.shadowRoot.querySelector('#extensionsActivityLogLink').click();
-        expectDeepEquals(
+        item.$.extensionsActivityLogLink.click();
+        assertDeepEquals(
             currentPage,
             {page: Page.ACTIVITY_LOG, extensionId: extensionData.id});
 
@@ -337,25 +334,31 @@ suite(extension_detail_view_tests.suiteName, function() {
         currentPage = null;
 
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#allow-incognito').getLabel(),
+            item.shadowRoot!
+                .querySelector<ExtensionsToggleRowElement>(
+                    '#allow-incognito')!.getLabel(),
             'setItemAllowedIncognito', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#allow-on-file-urls').getLabel(),
+            item.shadowRoot!
+                .querySelector<ExtensionsToggleRowElement>(
+                    '#allow-on-file-urls')!.getLabel(),
             'setItemAllowedOnFileUrls', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#collect-errors').getLabel(),
+            item.shadowRoot!
+                .querySelector<ExtensionsToggleRowElement>(
+                    '#collect-errors')!.getLabel(),
             'setItemCollectsErrors', [extensionData.id, true]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#extensions-options'),
-            'showItemOptionsPage', [extensionData]);
+            item.$.extensionsOptions, 'showItemOptionsPage', [extensionData]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#remove-extension'), 'deleteItem',
+            item.shadowRoot!.querySelector('#remove-extension')!, 'deleteItem',
             [extensionData.id]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#load-path > a[is=\'action-link\']'),
+            item.shadowRoot!.querySelector(
+                '#load-path > a[is=\'action-link\']')!,
             'showInFolder', [extensionData.id]);
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#warnings-reload-button'),
+            item.shadowRoot!.querySelector('#warnings-reload-button')!,
             'reloadItem', [extensionData.id], Promise.resolve());
 
         // Terminate the extension so the reload button appears.
@@ -363,23 +366,24 @@ suite(extension_detail_view_tests.suiteName, function() {
             'data.state', chrome.developerPrivate.ExtensionState.TERMINATED);
         flush();
         mockDelegate.testClickingCalls(
-            item.shadowRoot.querySelector('#terminated-reload-button'),
+            item.shadowRoot!.querySelector('#terminated-reload-button')!,
             'reloadItem', [extensionData.id], Promise.resolve());
       });
 
   test(assert(extension_detail_view_tests.TestNames.Indicator), function() {
-    const indicator = item.shadowRoot.querySelector('cr-tooltip-icon');
-    expectTrue(indicator.hidden);
+    const indicator = item.shadowRoot!.querySelector('cr-tooltip-icon')!;
+    assertTrue(indicator.hidden);
     item.set('data.controlledInfo', {text: 'policy'});
     flush();
-    expectFalse(indicator.hidden);
+    assertFalse(indicator.hidden);
   });
 
   test(assert(extension_detail_view_tests.TestNames.Warnings), function() {
-    const testWarningVisible = function(id, expectVisible) {
-      const f = expectVisible ? expectTrue : expectFalse;
+    function testWarningVisible(id: string, expectVisible: boolean): void {
+      const f: (arg: boolean) => void =
+          expectVisible ? assertTrue : assertFalse;
       f(isChildVisible(item, id));
-    };
+    }
 
     testWarningVisible('#runtime-warnings', false);
     testWarningVisible('#corrupted-warning', false);
@@ -403,7 +407,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
     const testIsVisible = isChildVisible.bind(null, item);
-    expectTrue(testIsVisible('#enableToggle'));
+    assertTrue(testIsVisible('#enableToggle'));
 
     item.set('data.disableReasons.suspiciousInstall', true);
     flush();
@@ -493,10 +497,12 @@ suite(extension_detail_view_tests.suiteName, function() {
         item.enableEnhancedSiteControls = true;
         flush();
 
-        expectTrue(testIsVisible('#no-permissions'));
-        expectTrue(item.$['no-permissions'].textContent.includes(
-            loadTimeData.getString('itemPermissionsAndSiteAccessEmpty')));
-        expectFalse(testIsVisible('#no-site-access'));
+        assertTrue(testIsVisible('#no-permissions'));
+        assertTrue(
+            item.shadowRoot!.querySelector<HTMLElement>('#no-permissions')!
+                .textContent!.includes(loadTimeData.getString(
+                    'itemPermissionsAndSiteAccessEmpty')));
+        assertFalse(testIsVisible('#no-site-access'));
 
         item.set(
             'data.permissions',
@@ -505,13 +511,13 @@ suite(extension_detail_view_tests.suiteName, function() {
 
         // The permissions list should contain the above 2 permissions as well
         // as an item for no additional site permissions.
-        expectTrue(testIsVisible('#permissions-list'));
-        expectEquals(
+        assertTrue(testIsVisible('#permissions-list'));
+        assertEquals(
             3,
-            item.shadowRoot.querySelector('#permissions-list')
+            item.shadowRoot!.querySelector('#permissions-list')!
                 .querySelectorAll('li:not([hidden])')
                 .length);
-        expectFalse(testIsVisible('#no-permissions'));
-        expectTrue(testIsVisible('#permissions-list li:last-of-type'));
+        assertFalse(testIsVisible('#no-permissions'));
+        assertTrue(testIsVisible('#permissions-list li:last-of-type'));
       });
 });
