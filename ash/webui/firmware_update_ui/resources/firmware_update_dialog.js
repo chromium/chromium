@@ -298,6 +298,19 @@ export class FirmwareUpdateDialogElement extends
     }
     return initialDialogContent;
   }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isInIndeterminateState_() {
+    if (this.installationProgress) {
+      return inactiveDialogStates.includes(this.installationProgress.state) ||
+          this.isDeviceRestarting_();
+    }
+
+    return false;
+  }
 }
 
 customElements.define(

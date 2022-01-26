@@ -44,10 +44,18 @@
       <label id="progress" class="firmware-dialog-installing-font">
         [[dialogContent.footer]]
       </label>
-      <paper-progress id="updateProgressBar"
-          value="[[computePercentageValue_(installationProgress.percentage)]]"
-          max="100">
-      </paper-progress>
+      <template is="dom-if"
+          if="[[!isInIndeterminateState_(installationProgress.*)]]" restamp>
+        <paper-progress id="updateProgressBar"
+            value="[[computePercentageValue_(installationProgress.percentage)]]"
+            max="100">
+        </paper-progress>
+      </template>
+      <template is="dom-if"
+          if="[[isInIndeterminateState_(installationProgress.*)]]" restamp>
+        <paper-progress id="indeterminateProgressBar" indeterminate>
+        </paper-progress>
+      </template>
     </div>
     <div slot="button-container"
         hidden$="[[!isUpdateDone_(installationProgress.state)]]">

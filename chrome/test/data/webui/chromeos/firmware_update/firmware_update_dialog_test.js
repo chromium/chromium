@@ -101,5 +101,11 @@ export function firmwareUpdateDialogTest() {
         updateDialogElement.shadowRoot.querySelector('#progress')
             .textContent.trim(),
         loadTimeData.getString('restartingFooterText'));
+    // Check that the indeterminate progress is shown.
+    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar'));
+    // No percentage progress bar.
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateProgressBar'));
   });
 }
