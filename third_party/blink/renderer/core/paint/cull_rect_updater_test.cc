@@ -142,6 +142,35 @@ TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
   EXPECT_EQ(gfx::Rect(0, 2800, 200, 4200), GetCullRect("child").Rect());
 }
 
+TEST_F(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
+  GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id="scroller" style="width: 400px; height: 400px; overflow: scroll">
+      <div style="width: 600px; height: 8100px"></div>
+      <div id="child" style="will-change: transform; height: 20px"></div>
+    </div>
+  )HTML");
+
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 4400), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 4400), GetCullRect("child").Rect());
+
+  auto* scroller = GetDocument().getElementById("scroller");
+  scroller->scrollTo(0, 3600);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 8000), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8000), GetCullRect("child").Rect());
+
+  scroller->scrollTo(0, 3800);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+
+  scroller->scrollTo(0, 4000);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(gfx::Rect(0, 0, 600, 8120), GetContentsCullRect("scroller").Rect());
+  EXPECT_EQ(gfx::Rect(-4000, -8100, 8600, 8120), GetCullRect("child").Rect());
+}
+
 TEST_F(CullRectUpdaterTest, SVGForeignObject) {
   GetDocument().GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   SetBodyInnerHTML(R"HTML(

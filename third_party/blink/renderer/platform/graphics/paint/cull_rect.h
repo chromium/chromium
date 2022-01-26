@@ -64,20 +64,8 @@ class PLATFORM_EXPORT CullRect {
  private:
   friend class CullRectTest;
 
-  enum ApplyTransformResult {
-    // The cull rect is transformed into the target transform space (by mapping
-    // the cull rect with the inverse of the transform) without expansion.
-    // In SlimmingPaintV1, the functions always return this value.
-    kNotExpanded,
-    // The cull rect is converted by a scroll translation (in the steps
-    // described in ApplyTransform(), and the result covers the whole scrolling
-    // contents.
-    kExpandedForWholeScrollingContents,
-    // The cull rect is converted by a scroll translation, and the result
-    // doesn't cover the whole scrolling contents.
-    kExpandedForPartialScrollingContents,
-  };
-  ApplyTransformResult ApplyScrollTranslation(
+  // Returns whether the cull rect is expanded.
+  bool ApplyScrollTranslation(
       const TransformPaintPropertyNode& root_transform,
       const TransformPaintPropertyNode& scroll_translation);
 
