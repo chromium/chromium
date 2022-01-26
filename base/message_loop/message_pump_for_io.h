@@ -12,7 +12,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/message_loop/message_pump_win.h"
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_IOS)
+#include "base/message_loop/message_pump_io_ios.h"
+#elif BUILDFLAG(IS_MAC)
 #include "base/message_loop/message_pump_kqueue.h"
 #elif BUILDFLAG(IS_NACL)
 #include "base/message_loop/message_pump_default.h"
@@ -27,7 +29,9 @@ namespace base {
 #if BUILDFLAG(IS_WIN)
 // Windows defines it as-is.
 using MessagePumpForIO = MessagePumpForIO;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_IOS)
+using MessagePumpForIO = MessagePumpIOSForIO;
+#elif BUILDFLAG(IS_MAC)
 using MessagePumpForIO = MessagePumpKqueue;
 #elif BUILDFLAG(IS_NACL)
 using MessagePumpForIO = MessagePumpDefault;

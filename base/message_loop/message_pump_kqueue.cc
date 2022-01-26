@@ -23,12 +23,8 @@ namespace {
 // port sets. MessagePumpKqueue will directly use Mach ports in the kqueue if
 // it is possible.
 bool KqueueNeedsPortSet() {
-#if BUILDFLAG(IS_MAC)
   static const bool kqueue_needs_port_set = mac::IsAtMostOS10_11();
   return kqueue_needs_port_set;
-#else
-  return false;
-#endif
 }
 
 #if DCHECK_IS_ON()
@@ -38,13 +34,8 @@ bool KqueueNeedsPortSet() {
 // Note that updating a kqueue timer from one thread while another thread is
 // waiting in a kevent64 invocation is still (inherently) racy.
 bool KqueueTimersSpuriouslyWakeUp() {
-#if BUILDFLAG(IS_MAC)
   static const bool kqueue_timers_spuriously_wakeup = mac::IsAtMostOS10_13();
   return kqueue_timers_spuriously_wakeup;
-#else
-  // This still happens on iOS15.
-  return true;
-#endif
 }
 #endif
 
