@@ -5,6 +5,7 @@
 
 #include <tuple>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -82,6 +83,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
 // and EncryptionKeyApi is not bound.
 IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                        ShouldNotBindEncryptionKeysApiInPrerendering) {
+  base::HistogramTester histogram_tester;
   const GURL signin_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
@@ -115,6 +117,9 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
       content::ExecJs(prerendered_frame_host, kSetEncryptionKeysScript);
   host_observer.WaitForDestroyed();
   EXPECT_EQ(0u, console_observer.messages().size());
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderCancelledInterface",
+      4 /*PrerenderCancelledInterface::kSyncEncryptionKeysExtension*/, 1);
 
   prerender_helper().NavigatePrimaryPage(prerendering_url);
   // Ensure that loading `prerendering_url` is not activated from prerendering.

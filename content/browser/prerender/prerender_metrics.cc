@@ -22,6 +22,8 @@ PrerenderCancelledInterface GetCancelledInterfaceType(
     return PrerenderCancelledInterface::kGamepadMonitor;
   else if (interface_name == "blink.mojom.NotificationService")
     return PrerenderCancelledInterface::kNotificationService;
+  else if (interface_name == "chrome.mojom.SyncEncryptionKeysExtension")
+    return PrerenderCancelledInterface::kSyncEncryptionKeysExtension;
   return PrerenderCancelledInterface::kUnknown;
 }
 

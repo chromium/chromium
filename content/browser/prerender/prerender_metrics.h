@@ -17,13 +17,15 @@ namespace content {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Note: Please update GetCancelledInterfaceType() in the corresponding .cc file
-// if you add a new item.
+// and the enum of PrerenderCancelledUnknownInterface in
+// tools/metrics/histograms/enums.xml if you add a new item.
 enum class PrerenderCancelledInterface {
   kUnknown = 0,  // For kCancel interfaces added by embedders or tests.
   kGamepadHapticsManager = 1,
   kGamepadMonitor = 2,
   kNotificationService = 3,
-  kMaxValue = kNotificationService
+  kSyncEncryptionKeysExtension = 4,
+  kMaxValue = kSyncEncryptionKeysExtension
 };
 
 // Used by PrerenderNavigationThrottle, to track the cross-origin cancellation
