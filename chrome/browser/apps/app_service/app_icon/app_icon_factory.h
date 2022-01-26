@@ -43,7 +43,8 @@ enum IconEffects : uint32_t {
   // The icon effects are applied in numerical order, low to high. It is always
   // resize-and-then-badge and never badge-and-then-resize, which can matter if
   // the badge has a fixed size.
-  kResizeAndPad = 0x01,  // Resize and Pad per Material Design style.
+  kMdIconStyle = 0x01,   // Icon should have Material Design style. Resize and
+                         // add padding if necessary.
   kChromeBadge = 0x02,   // Another (Android) app has the same name.
   kBlocked = 0x04,       // Disabled apps are grayed out and badged.
   kRoundCorners = 0x08,  // Bookmark apps get round corners.

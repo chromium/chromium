@@ -50,7 +50,7 @@ void UninstallDialog::PrepareToShow(apps::mojom::IconKeyPtr mojom_icon_key,
       // Crostini icons might be a big image, and not fit the size, so add the
       // resize icon effect, to resize the image.
       mojom_icon_key->icon_effects = static_cast<apps::IconEffects>(
-          mojom_icon_key->icon_effects | apps::IconEffects::kResizeAndPad);
+          mojom_icon_key->icon_effects | apps::IconEffects::kMdIconStyle);
       break;
     case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:

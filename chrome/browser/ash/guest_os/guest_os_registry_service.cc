@@ -766,7 +766,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
   // we need to ensure that returned icons are always resized to be
   // size_hint_in_dip big. crbug/1170455 is an example.
   apps::IconEffects icon_effects = static_cast<apps::IconEffects>(
-      icon_key.icon_effects | apps::IconEffects::kResizeAndPad);
+      icon_key.icon_effects | apps::IconEffects::kMdIconStyle);
   auto scale_factor = apps_util::GetPrimaryDisplayUIScaleFactor();
 
   auto load_icon_from_vm_fallback = base::BindOnce(

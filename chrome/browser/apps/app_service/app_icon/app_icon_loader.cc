@@ -192,16 +192,6 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
                                 gfx::ImageSkia mask_image) {
   base::AssertLongCPUWorkAllowed();
 
-  extensions::ChromeAppIcon::ResizeFunction resize_function;
-  if (icon_effects & apps::IconEffects::kResizeAndPad) {
-    // TODO(crbug.com/826982): MD post-processing is not always applied: "See
-    // legacy code:
-    // https://cs.chromium.org/search/?q=ChromeAppIconLoader&type=cs In one
-    // cases MD design is used in another not."
-    resize_function =
-        base::BindRepeating(&app_list::MaybeResizeAndPadIconForMd);
-  }
-
   if ((icon_effects & apps::IconEffects::kCrOsStandardMask) &&
       !mask_image.isNull()) {
     if (icon_effects & apps::IconEffects::kCrOsStandardBackground) {
@@ -214,12 +204,18 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
   }
 
   if (icon_effects & apps::IconEffects::kCrOsStandardIcon) {
+    // We should never reapply the icon shaping logic.
+    DCHECK(!(icon_effects & apps::IconEffects::kCrOsStandardMask));
     iv->uncompressed = apps::CreateStandardIconImage(iv->uncompressed);
   }
 
-  if (!resize_function.is_null()) {
-    resize_function.Run(gfx::Size(size_hint_in_dip, size_hint_in_dip),
-                        &iv->uncompressed);
+  if (icon_effects & apps::IconEffects::kMdIconStyle) {
+    // TODO(crbug.com/826982): MD post-processing is not always applied: "See
+    // legacy code:
+    // https://cs.chromium.org/search/?q=ChromeAppIconLoader&type=cs In one
+    // cases MD design is used in another not."
+    app_list::MaybeResizeAndPadIconForMd(
+        gfx::Size(size_hint_in_dip, size_hint_in_dip), &iv->uncompressed);
   }
 
   if (!iv->uncompressed.isNull()) {
@@ -405,7 +401,7 @@ void AppIconLoader::LoadWebAppIcon(
     case IconType::kUncompressed:
       if (icon_type_ == apps::IconType::kUncompressed) {
         // For uncompressed icon, apply the resize and pad effect.
-        icon_effects_ |= apps::IconEffects::kResizeAndPad;
+        icon_effects_ |= apps::IconEffects::kMdIconStyle;
 
         // For uncompressed icon, clear the standard icon effects: kBackground
         // and kMask.
