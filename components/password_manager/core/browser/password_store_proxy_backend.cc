@@ -26,11 +26,6 @@ namespace password_manager {
 
 namespace {
 
-bool ShouldExecuteReadOperationsOnShadowBackend(bool is_syncing) {
-  return is_syncing && base::FeatureList::IsEnabled(
-                           features::kUnifiedPasswordManagerShadowAndroid);
-}
-
 bool ShouldExecuteModifyOperationsOnShadowBackend(PrefService* prefs,
                                                   bool is_syncing) {
   if (!base::FeatureList::IsEnabled(
@@ -47,6 +42,17 @@ bool ShouldExecuteModifyOperationsOnShadowBackend(PrefService* prefs,
     return false;
   }
   return true;
+}
+
+bool ShouldExecuteReadOperationsOnShadowBackend(PrefService* prefs,
+                                                bool is_syncing) {
+  if (ShouldExecuteModifyOperationsOnShadowBackend(prefs, is_syncing)) {
+    // Read operations are always allowed whenever modifications are allowed.
+    // i.e. necessary migrations have happened and appropriate flags are set.
+    return true;
+  }
+  return is_syncing && base::FeatureList::IsEnabled(
+                           features::kUnifiedPasswordManagerShadowAndroid);
 }
 
 using MethodName = base::StrongAlias<struct MethodNameTag, std::string>;
@@ -316,7 +322,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
           .Then(std::move(callback)));
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
-          is_syncing_passwords_callback_.Run())) {
+          prefs_, is_syncing_passwords_callback_.Run())) {
     shadow_backend_->GetAllLoginsAsync(
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            LoginsResultOrErrorImpl>::RecordShadowResult,
@@ -336,7 +342,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
           .Then(std::move(callback)));
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
-          is_syncing_passwords_callback_.Run())) {
+          prefs_, is_syncing_passwords_callback_.Run())) {
     shadow_backend_->GetAutofillableLoginsAsync(
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            LoginsResultOrErrorImpl>::RecordShadowResult,
@@ -359,7 +365,7 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
       include_psl, forms);
 
   if (ShouldExecuteReadOperationsOnShadowBackend(
-          is_syncing_passwords_callback_.Run())) {
+          prefs_, is_syncing_passwords_callback_.Run())) {
     shadow_backend_->FillMatchingLoginsAsync(
         base::BindOnce(
             &ShadowTrafficMetricsRecorder<LoginsResultImpl>::RecordShadowResult,

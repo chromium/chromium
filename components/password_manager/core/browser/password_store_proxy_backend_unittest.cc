@@ -317,7 +317,14 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
-       NoShadowGetAllLoginsAsyncWhenSyncDisabled) {
+       NoShadowGetAllLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
+
   base::HistogramTester histogram_tester;
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
@@ -346,7 +353,13 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
-       NoShadowGetAutofillableLoginsAsyncWhenSyncDisabled) {
+       NoShadowGetAutofillableLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EXPECT_CALL(is_syncing_passwords_callback_, Run)
       .WillRepeatedly(Return(false));
 
@@ -356,7 +369,13 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
-       NoShadowFillMatchingLoginsAsyncWhenSyncDisabled) {
+       NoShadowFillMatchingLoginsAsyncWithoutSyncOrMigration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 1);
   EXPECT_CALL(is_syncing_passwords_callback_, Run)
       .WillRepeatedly(Return(false));
 
@@ -483,6 +502,45 @@ TEST_F(PasswordStoreProxyBackendTest,
   EXPECT_CALL(shadow_backend(), UpdateLoginAsync).Times(0);
   proxy_backend().UpdateLoginAsync(CreateTestForm(),
                                    /*callback=*/base::DoNothing());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       ShadowGetAllLoginsAsyncWhenSyncDisabledAndInitialMigrationComplete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kUnifiedPasswordManagerMigration,
+                             {{"migration_version", "2"}}}},
+      /*disabled_features=*/{});
+  prefs()->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
+  EXPECT_CALL(is_syncing_passwords_callback_, Run)
+      .WillRepeatedly(Return(false));
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::vector<std::unique_ptr<PasswordForm>> expected_logins =
+      CreateTestLogins();
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+  EXPECT_CALL(main_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  EXPECT_CALL(shadow_backend(), GetAllLoginsAsync)
+      .WillOnce(WithArg<0>(Invoke([](LoginsOrErrorReply reply) -> void {
+        std::move(reply).Run(CreateTestLogins());
+      })));
+  proxy_backend().GetAllLoginsAsync(mock_reply.Get());
+
+  std::string prefix =
+      "PasswordManager.PasswordStoreProxyBackend.GetAllLoginsAsync.";
+
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Abs", 1);
+  histogram_tester.ExpectTotalCount(prefix + "Diff.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "MainMinusShadow.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "ShadowMinusMain.Rel", 1);
+  histogram_tester.ExpectTotalCount(prefix + "InconsistentPasswords.Rel", 1);
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
