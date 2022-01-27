@@ -10,7 +10,11 @@
     --emoji-spacing: 0;
     --emoji-per-row: 0;
     /* Values set in css only. */
+    --emoji-group-heading-padding-bottom: 10px;
+    --emoji-group-heading-padding-top: 16px;
+    --emoji-group-heading-size: 32px;
     --emoji-group-tabs-left: 0;
+    --emoji-hover-background: var(--cros-ripple-color);
     --emoji-picker-bottom-padding: 14px;
     --emoji-picker-last-emoji-left: calc(var(--emoji-picker-side-padding)
             + var(--emoji-size) * (var(--emoji-per-row) - 1)
@@ -343,7 +347,7 @@
     -->
     <div data-group="history">
       <template is="dom-if" if="[[history.emoji.length]]">
-        <emoji-group data="[[history]]" preferred="{}" clearable
+        <emoji-group data="[[history]]" preferred="{}" clearable class="group"
           v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </template>
@@ -351,7 +355,7 @@
     <template is="dom-repeat" items="[[emojiData]]">
       <div data-group$="[[getDataGroupIndex('emoji', index)]]">
         <emoji-group data="[[item]]" preferred="[[preferenceMapping]]"
-          v2-enabled$="[[v2Enabled]]">
+          class="group" v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
     </template>
@@ -359,8 +363,8 @@
     <template is="dom-if" if="[[v2Enabled]]">
       <template is="dom-repeat" items="[[emoticonData]]">
         <div data-group$="[[getDataGroupIndex('emoticon', index)]]">
-          <emoji-group data="[[item]]" class="group">
-          </emoji-group>
+          <emoticon-group data="[[item]]" class="group">
+          </emoticon-group>
         </div>
       </template>
     </template>

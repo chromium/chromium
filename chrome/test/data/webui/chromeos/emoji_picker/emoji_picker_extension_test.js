@@ -6,7 +6,7 @@ import {EmojiPicker} from 'chrome://emoji-picker/emoji_picker.js';
 import {V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {deepQuerySelector, isGroupButtonActive, timeout, waitForCondition} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
@@ -92,5 +92,32 @@ suite('emoji-picker-extension', () => {
         await waitForCondition(
             () => !isGroupButtonActive(firstEmoticonTabInSecondPage) &&
                 isGroupButtonActive(firstEmoticonTabInFirstPage));
+      });
+
+  test('all emoticon groups should be rendered.', () => {
+    assertEquals(
+        emojiPicker.emoticonData.length,
+        emojiPicker.shadowRoot.querySelectorAll('emoticon-group').length);
+  });
+
+  test(
+      'each emoticon group should have the correct heading and correct' +
+          'number of emoticon entries.',
+      async () => {
+        const allEmoticonGroups =
+            emojiPicker.shadowRoot.querySelectorAll('emoticon-group');
+        for (let idx = 0; idx < allEmoticonGroups.length; ++idx) {
+          const group = allEmoticonGroups[idx];
+          const actualFirstGroupName =
+              group.shadowRoot.querySelector('#heading').innerHTML.trim();
+          const expectedFirstGroupName = emojiPicker.emoticonData[idx].group;
+          assertEquals(expectedFirstGroupName, actualFirstGroupName);
+
+          const expectedNumberOfEmoticons =
+              emojiPicker.emoticonData[idx].emoji.length;
+          await waitForCondition(
+              () => expectedNumberOfEmoticons ===
+                  group.shadowRoot.querySelectorAll('.emoticon-button').length);
+        }
       });
 });

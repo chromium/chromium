@@ -6,6 +6,7 @@ import './icons.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';
+import './emoticon_group.js';
 import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
@@ -264,10 +265,7 @@ export class EmojiPicker extends PolymerElement {
             ev => this.set('category', ev.detail.categoryName));
         this.addEventListener(EMOJI_REMAINING_DATA_LOADED, () => {
           this.fetchEmoticonData().then((data) => {
-            // TODO(b/214319678): modify the line below to allow consumption of
-            // the full emoticon data.
-            this.emoticonData =
-                data.map((group) => ({group: group.group, emoji: []}));
+            this.emoticonData = data;
             this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
           });
         });
@@ -378,7 +376,7 @@ export class EmojiPicker extends PolymerElement {
         this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
 
     if (group) {
-      group.querySelector('emoji-group')
+      group.querySelector('.group')
           .shadowRoot.querySelector('#fake-focus-target')
           .focus();
       group.scrollIntoView();
