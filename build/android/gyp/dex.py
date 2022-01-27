@@ -200,6 +200,18 @@ def CreateStderrFilter(show_desugar_default_interface_warnings):
     #   Error message #1 indented here.
     #   Error message #2 indented here.
     output = re.sub(r'^Warning in .*?:\n(?!  )', '', output, flags=re.MULTILINE)
+
+    # Caused by protobuf runtime using -identifiernamestring in a way that
+    # doesn't work with R8. Looks like:
+    # Rule matches ... (very long line) {
+    #   static java.lang.String CONTAINING_TYPE_*;
+    # }
+    output = re.sub(
+        r'Rule matches the static final field `java\.lang\.String '
+        'com\.google\.protobuf.*\{\n.*?\n\}\n?',
+        '',
+        output,
+        flags=re.DOTALL)
     return output
 
   return filter_stderr
