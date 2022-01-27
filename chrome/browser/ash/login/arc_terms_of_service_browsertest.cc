@@ -356,9 +356,7 @@ IN_PROC_BROWSER_TEST_F(ArcTermsOfServiceScreenTest, LearnMoreDialogs) {
       {"learnMoreLinkPai", "arcPaiPopup"}};
 
   for (const auto& pair : learn_more_links) {
-    std::string html_element_id;
-    std::string popup_html_element_id;
-    std::tie(html_element_id, popup_html_element_id) = pair;
+    auto [html_element_id, popup_html_element_id] = pair;
     test::OobeJS().ExpectAttributeEQ(
         "open", {kArcTosID, popup_html_element_id}, false);
     test::OobeJS().ClickOnPath({kArcTosID, html_element_id});

@@ -580,9 +580,7 @@ TEST(SetupUtilTest, StoreDMTokenToRegistrySuccess) {
   ASSERT_EQ(kExpectedSize, token.length());
   EXPECT_TRUE(installer::StoreDMToken(token));
 
-  base::win::RegKey key;
-  std::wstring name;
-  std::tie(key, name) = InstallUtil::GetCloudManagementDmTokenLocation(
+  auto [key, name] = InstallUtil::GetCloudManagementDmTokenLocation(
       InstallUtil::ReadOnly(true), InstallUtil::BrowserLocation(false));
   ASSERT_TRUE(key.Valid());
 
@@ -653,10 +651,7 @@ TEST(SetupUtilTest, RotateDTKeySuccess) {
   ASSERT_TRUE(installer::RotateDeviceTrustKey(std::move(key_rotation_manager),
                                               dmserver_url, token, nonce));
 
-  base::win::RegKey key;
-  std::wstring signingkey_name;
-  std::wstring tustlevel_name;
-  std::tie(key, signingkey_name, tustlevel_name) =
+  auto [key, signingkey_name, tustlevel_name] =
       InstallUtil::GetDeviceTrustSigningKeyLocation(
           InstallUtil::ReadOnly(true));
   ASSERT_TRUE(key.Valid());

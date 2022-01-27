@@ -5,7 +5,6 @@
 #include "chrome/chrome_cleaner/engines/target/libraries.h"
 
 #include <string>
-#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -101,9 +100,7 @@ void ReplaceSampleDll(const std::wstring& sample_dll,
 }
 
 TEST_P(LoadAndValidateLibrariesTest, RunTest) {
-  std::string test_function;
-  int engine;
-  std::tie(test_function, engine) = GetParam();
+  auto [test_function, engine] = GetParam();
 
   ASSERT_TRUE(Engine::Name_IsValid(engine));
   parent_process_->AppendSwitchNative(chrome_cleaner::kEngineSwitch,

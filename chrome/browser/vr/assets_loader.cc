@@ -209,10 +209,7 @@ void AssetsLoader::LoadAssetsTask(
 
   auto sounds_iter = sounds.begin();
   while (status == AssetsLoadStatus::kSuccess && sounds_iter != sounds.end()) {
-    const char* min_version;
-    const base::FilePath::CharType* file_name;
-    std::unique_ptr<std::string>* data;
-    std::tie(min_version, file_name, data) = *sounds_iter;
+    auto [min_version, file_name, data] = *sounds_iter;
     if (component_version >= base::Version(min_version)) {
       status = LoadSound(component_install_dir, file_name, data);
     }

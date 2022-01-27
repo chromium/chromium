@@ -298,10 +298,7 @@ INSTANTIATE_TEST_SUITE_P(
                         DlpRulesManager::Component::kDrive)));
 
 TEST_P(DlpFilesExternalDestinationTest, GetDisallowedTransfers_Component) {
-  std::string mount_name;
-  std::string path;
-  DlpRulesManager::Component expected_component;
-  std::tie(mount_name, path, expected_component) = GetParam();
+  auto [mount_name, path, expected_component] = GetParam();
 
   AddFilesToDlpClient();
 

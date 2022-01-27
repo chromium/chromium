@@ -290,10 +290,7 @@ class SubframeSameFrameDownloadBrowserTest_Sandbox
 // Download that's initiated from / occurs in the same subframe are handled
 // correctly. This test specifically tests sandbox related behaviors.
 IN_PROC_BROWSER_TEST_P(SubframeSameFrameDownloadBrowserTest_Sandbox, Download) {
-  DownloadSource source;
-  SandboxOption sandbox_option;
-  bool is_cross_origin;
-  std::tie(source, sandbox_option, is_cross_origin) = GetParam();
+  auto [source, sandbox_option, is_cross_origin] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
                << "sandbox_option = " << sandbox_option << ", "
@@ -361,13 +358,8 @@ class SubframeSameFrameDownloadBrowserTest_AdFrame
 // Download that's initiated from / occurs in the same subframe are handled
 // correctly. This test specifically tests ad related behaviors.
 IN_PROC_BROWSER_TEST_P(SubframeSameFrameDownloadBrowserTest_AdFrame, Download) {
-  DownloadSource source;
-  bool block_downloads_in_ad_frame_without_user_activation;
-  bool is_ad_frame;
-  bool is_cross_origin;
-  bool initiate_with_gesture;
-  std::tie(source, block_downloads_in_ad_frame_without_user_activation,
-           is_ad_frame, is_cross_origin, initiate_with_gesture) = GetParam();
+  auto [source, block_downloads_in_ad_frame_without_user_activation,
+        is_ad_frame, is_cross_origin, initiate_with_gesture] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
                << "is_ad_frame = " << is_ad_frame << ", "
@@ -427,9 +419,7 @@ class OtherFrameNavigationDownloadBrowserTest_Sandbox
 // only one frame being sandboxed. Also covers the remote frame navigation path.
 IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_Sandbox,
                        Download) {
-  bool is_cross_origin;
-  OtherFrameNavigationType other_frame_navigation_type;
-  std::tie(is_cross_origin, other_frame_navigation_type) = GetParam();
+  auto [is_cross_origin, other_frame_navigation_type] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "is_cross_origin = " << is_cross_origin << ", "
                << "other_frame_navigation_type = "
@@ -498,12 +488,8 @@ class OtherFrameNavigationDownloadBrowserTest_AdFrame
 // only one frame being ad. Also covers the remote frame navigation path.
 IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_AdFrame,
                        Download) {
-  bool block_downloads_in_ad_frame_without_user_activation;
-  bool is_cross_origin;
-  bool initiate_with_gesture;
-  OtherFrameNavigationType other_frame_navigation_type;
-  std::tie(block_downloads_in_ad_frame_without_user_activation, is_cross_origin,
-           initiate_with_gesture, other_frame_navigation_type) = GetParam();
+  auto [block_downloads_in_ad_frame_without_user_activation, is_cross_origin,
+        initiate_with_gesture, other_frame_navigation_type] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "block_downloads_in_ad_frame_without_user_activation = "
                << block_downloads_in_ad_frame_without_user_activation << ", "
@@ -595,9 +581,7 @@ class TopFrameSameFrameDownloadBrowserTest
 // Download that's initiated from / occurs in the same top frame are handled
 // correctly.
 IN_PROC_BROWSER_TEST_P(TopFrameSameFrameDownloadBrowserTest, Download) {
-  DownloadSource source;
-  SandboxOption sandbox_option;
-  std::tie(source, sandbox_option) = GetParam();
+  auto [source, sandbox_option] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
                << "sandbox_option = " << sandbox_option);
@@ -649,9 +633,7 @@ class DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags
 IN_PROC_BROWSER_TEST_P(
     DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
     PendingSandboxPolicyUsedForNavigationInstantiatingFrame) {
-  bool is_cross_origin;
-  bool from_allow_to_disallow;
-  std::tie(is_cross_origin, from_allow_to_disallow) = GetParam();
+  auto [is_cross_origin, from_allow_to_disallow] = GetParam();
 
   size_t number_of_downloads = from_allow_to_disallow ? 0u : 1u;
   SandboxOption initial_sandbox_option =
@@ -694,9 +676,7 @@ IN_PROC_BROWSER_TEST_P(
 // policy for the download intervention.
 IN_PROC_BROWSER_TEST_P(DownloadFramePolicyBrowserTest_UpdateIframeSandboxFlags,
                        EffectiveSandboxPolicyUsedForNavigationInitiatorFrame) {
-  bool is_cross_origin;
-  bool from_allow_to_disallow;
-  std::tie(is_cross_origin, from_allow_to_disallow) = GetParam();
+  auto [is_cross_origin, from_allow_to_disallow] = GetParam();
 
   size_t number_of_downloads = from_allow_to_disallow ? 1u : 0u;
   SandboxOption initial_sandbox_option =

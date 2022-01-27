@@ -596,9 +596,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // Register synthetic Finch trials proposed by PartitionAlloc.
   auto pa_trials = base::allocator::ProposeSyntheticFinchTrials(is_enterprise);
   for (auto& trial : pa_trials) {
-    std::string trial_name;
-    std::string group_name;
-    std::tie(trial_name, group_name) = trial;
+    auto [trial_name, group_name] = trial;
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
                                                               group_name);
   }

@@ -167,9 +167,7 @@ class AvailableOfflineContentTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(AvailableOfflineContentTest, NoContent) {
-  bool list_visible_by_prefs;
-  std::vector<chrome::mojom::AvailableOfflineContentPtr> suggestions;
-  std::tie(list_visible_by_prefs, suggestions) = ListAndWait();
+  auto [list_visible_by_prefs, suggestions] = ListAndWait();
 
   EXPECT_TRUE(suggestions.empty());
   EXPECT_TRUE(list_visible_by_prefs);
@@ -184,9 +182,7 @@ TEST_F(AvailableOfflineContentTest, TooFewInterestingItems) {
                                IncompleteItem(), DangerousItem()});
 
   // Call List().
-  bool list_visible_by_prefs;
-  std::vector<chrome::mojom::AvailableOfflineContentPtr> suggestions;
-  std::tie(list_visible_by_prefs, suggestions) = ListAndWait();
+  auto [list_visible_by_prefs, suggestions] = ListAndWait();
 
   // As interesting items are below the minimum to show, nothing should be
   // reported.
@@ -204,9 +200,7 @@ TEST_F(AvailableOfflineContentTest, FourInterestingItems) {
       {{SuggestedOfflinePageItem().id, TestThumbnail()}});
 
   // Call List().
-  bool list_visible_by_prefs;
-  std::vector<chrome::mojom::AvailableOfflineContentPtr> suggestions;
-  std::tie(list_visible_by_prefs, suggestions) = ListAndWait();
+  auto [list_visible_by_prefs, suggestions] = ListAndWait();
 
   // Check that the right suggestions have been received in order.
   EXPECT_EQ(3ul, suggestions.size());
@@ -250,9 +244,7 @@ TEST_F(AvailableOfflineContentTest, ListVisibilityChanges) {
   profile()->GetPrefs()->SetBoolean(feed::prefs::kArticlesListVisible, false);
 
   // Call List().
-  bool list_visible_by_prefs;
-  std::vector<chrome::mojom::AvailableOfflineContentPtr> suggestions;
-  std::tie(list_visible_by_prefs, suggestions) = ListAndWait();
+  auto [list_visible_by_prefs, suggestions] = ListAndWait();
 
   // Check that suggestions have been received and the list is not visible.
   EXPECT_EQ(3ul, suggestions.size());

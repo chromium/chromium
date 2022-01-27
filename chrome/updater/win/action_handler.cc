@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -57,10 +56,7 @@ void ActionHandler::Handle(const base::FilePath& action,
       base::BindOnce(&ActionHandler::RunCommand, action),
       base::BindOnce(
           [](Callback callback, const Result& result) {
-            bool succeeded = false;
-            int error_code = 0;
-            int extra_code = 0;
-            std::tie(succeeded, error_code, extra_code) = result;
+            auto [succeeded, error_code, extra_code] = result;
             base::SequencedTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE, base::BindOnce(std::move(callback), succeeded,
                                           error_code, extra_code));

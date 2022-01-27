@@ -528,9 +528,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DlpControllerVMsTest, Allow) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  absl::optional<ui::EndpointType> endpoint_type;
-  bool do_notify;
-  std::tie(endpoint_type, do_notify) = GetParam();
+  auto [endpoint_type, do_notify] = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
   ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
 
@@ -637,9 +635,7 @@ TEST_P(DlpControllerVMsTest, Report_DropIfAllowed) {
 
 TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
   ui::DataTransferEndpoint data_src(url::Origin::Create(GURL(kExample1Url)));
-  absl::optional<ui::EndpointType> endpoint_type;
-  bool do_notify;
-  std::tie(endpoint_type, do_notify) = GetParam();
+  auto [endpoint_type, do_notify] = GetParam();
   ASSERT_TRUE(endpoint_type.has_value());
   ui::DataTransferEndpoint data_dst(endpoint_type.value(), do_notify);
 

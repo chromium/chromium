@@ -109,10 +109,7 @@ TEST_F(SanitizedImageSourceTest, MultiRequest) {
 
   // Answer requests and check correctness.
   for (size_t i = 0; i < data.size(); i++) {
-    SkColor color;
-    std::string url;
-    std::string body;
-    std::tie(color, url, body) = data[i];
+    auto [color, url, body] = data[i];
     auto* request = test_url_loader_factory_.GetPendingRequest(i);
     EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
               request->request.credentials_mode);

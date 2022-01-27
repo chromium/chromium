@@ -970,9 +970,7 @@ class AdClickNavigationBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(AdClickNavigationBrowserTest, UseCounter) {
-  NavigationInitiationType type;
-  bool gesture;
-  std::tie(type, gesture) = GetParam();
+  auto [type, gesture] = GetParam();
   auto web_feature_waiter =
       std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
           GetWebContents());
@@ -1050,9 +1048,7 @@ class AdTaggingEventFromSubframeBrowserTest
 // crbug.com/997410. The test is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(AdTaggingEventFromSubframeBrowserTest,
                        DISABLED_WindowOpenFromSubframe) {
-  bool cross_origin;
-  bool from_ad_subframe;
-  std::tie(cross_origin, from_ad_subframe) = GetParam();
+  auto [cross_origin, from_ad_subframe] = GetParam();
   SCOPED_TRACE(::testing::Message()
                << "cross_origin = " << cross_origin << ", "
                << "from_ad_subframe = " << from_ad_subframe);

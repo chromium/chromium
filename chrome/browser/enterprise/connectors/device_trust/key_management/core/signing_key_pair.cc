@@ -20,9 +20,7 @@ std::unique_ptr<SigningKeyPair> SigningKeyPair::Create(
     KeyPersistenceDelegate* persistence_delegate) {
   DCHECK(persistence_delegate);
 
-  KeyTrustLevel trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
-  std::vector<uint8_t> wrapped;
-  std::tie(trust_level, wrapped) = persistence_delegate->LoadKeyPair();
+  auto [trust_level, wrapped] = persistence_delegate->LoadKeyPair();
 
   if (wrapped.empty()) {
     // No persisted key pair with a known trust level found.  This is not an

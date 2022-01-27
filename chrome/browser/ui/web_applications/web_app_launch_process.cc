@@ -78,9 +78,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   display::ScopedDisplayForNewWindows scoped_display(params_.display_id);
 
   const apps::ShareTarget* share_target = MaybeGetShareTarget();
-  GURL launch_url;
-  bool is_file_handling = false;
-  std::tie(launch_url, is_file_handling) = GetLaunchUrl(share_target);
+  auto [launch_url, is_file_handling] = GetLaunchUrl(share_target);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1265381): URL Handlers allows web apps to be opened with
@@ -106,9 +104,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   if (web_contents)
     return web_contents;
 
-  Browser* browser = nullptr;
-  bool is_new_browser;
-  std::tie(browser, is_new_browser) = EnsureBrowser();
+  auto [browser, is_new_browser] = EnsureBrowser();
 
   NavigateResult navigate_result =
       MaybeNavigateBrowser(browser, is_new_browser, launch_url, share_target);

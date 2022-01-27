@@ -342,9 +342,7 @@ TEST_F(SmartChargingManagerTest, GetLastChargeEventsNoLastCharges) {
   AddEvent(CreateEvent(5, 50, 11, UserChargingEvent::Event::SHUTDOWN));
   AddEvent(CreateEvent(6, 60, 11, UserChargingEvent::Event::PERIODIC_LOG));
 
-  PastEvent plugged_in;
-  PastEvent unplugged;
-  std::tie(plugged_in, unplugged) = GetLastChargeEvents();
+  auto [plugged_in, unplugged] = GetLastChargeEvents();
   EXPECT_FALSE(plugged_in.has_time());
   EXPECT_FALSE(unplugged.has_time());
 }
@@ -379,9 +377,7 @@ TEST_F(SmartChargingManagerTest, GetLastChargeEventsComplex) {
   AddEvent(
       CreateEvent(22, 40, 1, UserChargingEvent::Event::CHARGER_PLUGGED_IN));
 
-  PastEvent plugged_in;
-  PastEvent unplugged;
-  std::tie(plugged_in, unplugged) = GetLastChargeEvents();
+  auto [plugged_in, unplugged] = GetLastChargeEvents();
   EXPECT_TRUE(plugged_in.has_time());
   EXPECT_TRUE(unplugged.has_time());
   EXPECT_EQ(plugged_in.time(), 15);
