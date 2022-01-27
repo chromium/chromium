@@ -7,6 +7,17 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 
 import {AuthCompletedCredentials} from '../gaia_auth_host/authenticator.m.js';
 
+/**
+ * Data representing a Gaia account added in-session.
+ * @typedef {{
+ *   id: string,
+ *   email: string,
+ *   fullName: string,
+ *   image: string,
+ * }}
+ */
+export let Account;
+
 /** @interface */
 export class InlineLoginBrowserProxy {
   /** Send 'initialize' message to prepare for starting auth. */
@@ -63,6 +74,13 @@ export class InlineLoginBrowserProxy {
    * @param {boolean} skip Whether the welcome page should be skipped.
    */
   skipWelcomePage(skip) {}
+
+  /**
+   * Send 'getAccountsNotAvailableInArc' message to the handler. The promise
+   * will be resolved with the list of accounts that are not available in ARC.
+   * @return {Promise<Array<Account>>}
+   */
+  getAccountsNotAvailableInArc() {}
 
   /**
    * @return {?string} JSON-encoded dialog arguments.
@@ -122,6 +140,11 @@ export class InlineLoginBrowserProxyImpl {
   /** @override */
   skipWelcomePage(skip) {
     chrome.send('skipWelcomePage', [skip]);
+  }
+
+  /** @override */
+  getAccountsNotAvailableInArc() {
+    return sendWithPromise('getAccountsNotAvailableInArc');
   }
 
   /** @override */

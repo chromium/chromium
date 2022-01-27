@@ -1,4 +1,11 @@
 <style include="shared-css">
+  :host {
+    --account-item-width: 250px;
+    --account-item-padding: 10px;
+    --account-icon-size: 40px;
+    --account-icon-margin: 10px;
+  }
+
   .google-full-logo {
     /* The same size as in webview. */
     width: 74px;
@@ -7,6 +14,63 @@
   .secondary {
     color: var(--cr-secondary-text-color);
   }
+
+  .primary {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  .account-item {
+    align-items: center;
+    border: 1px solid var(--google-grey-300);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    margin: 8px;
+    padding: var(--account-item-padding);
+    width: var(--account-item-width);
+  }
+
+  .account-icon {
+    background: center / cover no-repeat;
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--account-icon-size);
+    margin-inline-end: var(--account-icon-margin);
+    width: var(--account-icon-size);
+  }
+
+  .account-name {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .account-name > span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(var(--account-item-width) - 2*var(--account-item-padding)
+                - var(--account-icon-size) - var(--account-icon-margin));
+  }
+
+  #addAccountButton > .account-icon {
+    background-color: var(--google-grey-200);
+  }
+
+  #addAccountButton > .account-icon > .add-icon {
+    -webkit-mask-image: url(chrome://resources/images/add.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--google-grey-600);
+    height: 80%;
+    margin: 10%;
+    width: 80%;
+  }
+
+  #addAccountButton > .account-name > .primary {
+    margin-bottom: 0;
+  }
 </style>
 
 <div class="main-container">
@@ -14,6 +78,29 @@
     <img class="google-full-logo"
             src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90" alt="">
   </if>
+
   <h1>$i18n{accountManagerDialogArcAccountPickerTitle}</h1>
   <p class="secondary">$i18nRaw{accountManagerDialogArcAccountPickerBody}</p>
+
+  <template is="dom-repeat" id="accountsContainer" items="[[accounts]]">
+    <div class="account-item">
+      <div class="account-icon"
+        style="background-image: [[getIconImageSet_(item.image)]]">
+      </div>
+      <div class="account-name">
+        <span class="primary">[[item.fullName]]</span>
+        <span class="secondary">[[item.email]]</span>
+      </div>
+    </div>
+  </template>
+
+  <div class="account-item" id="addAccountButton" on-click="addAccount_">
+    <div class="account-icon">
+      <div class="add-icon"></div>
+    </div>
+    <div class="account-name">
+      <span class="primary">$i18n{addAccountLabel}</span>
+    </div>
+  </div>
+
 </div>

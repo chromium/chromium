@@ -40,6 +40,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
 namespace chromeos {
 namespace {
@@ -48,6 +52,13 @@ using ::account_manager::AccountManager;
 
 constexpr char kCrosAddAccountFlow[] = "crosAddAccount";
 constexpr char kCrosAddAccountEduFlow[] = "crosAddAccountEdu";
+
+// Keep the values in sync with `Account` struct in
+// chrome/browser/resources/inline_login/inline_login_browser_proxy.js
+constexpr char kAccountKeyId[] = "id";
+constexpr char kAccountKeyEmail[] = "email";
+constexpr char kAccountKeyFullName[] = "fullName";
+constexpr char kAccountKeyImage[] = "image";
 
 std::string AnonymizeAccountEmail(const std::string& email) {
   std::string result;
@@ -83,6 +94,31 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
 
   // Child user is adding/reauthenticating a secondary account.
   return kCrosAddAccountEduFlow;
+}
+
+const SkBitmap& GetDefaultAccountIcon() {
+  gfx::ImageSkia default_icon =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER);
+  return default_icon.GetRepresentation(1.0f).GetBitmap();
+}
+
+base::Value GaiaAccountToValue(const ::account_manager::Account& account,
+                               const AccountInfo& account_info) {
+  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
+  DCHECK(!account_info.IsEmpty());
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kAccountKeyId, base::Value(account.key.id()));
+  dict.SetKey(kAccountKeyEmail, base::Value(account.raw_email));
+  dict.SetKey(kAccountKeyFullName, base::Value(account_info.full_name));
+  dict.SetKey(kAccountKeyImage,
+              base::Value(webui::GetBitmapDataUrl(
+                  account_info.account_image.IsEmpty()
+                      ? GetDefaultAccountIcon()
+                      : account_info.account_image.AsBitmap())));
+
+  return dict;
 }
 
 class EduCoexistenceChildSigninHelper : public SigninHelper {
@@ -192,6 +228,11 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "getAccounts",
       base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAccountsNotAvailableInArc",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc,
+          base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "skipWelcomePage",
       base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
@@ -338,6 +379,49 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
 
   ResolveJavascriptCallback(base::Value(callback_id),
                             std::move(account_emails));
+}
+
+void InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
+  const std::string& callback_id = args[0].GetString();
+  ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+      ->GetAccounts(base::BindOnce(
+          &InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc,
+          weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc(
+    const std::string& callback_id,
+    const std::vector<::account_manager::Account>& accounts) {
+  ash::AccountAppsAvailabilityFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()))
+      ->GetAccountsAvailableInArc(base::BindOnce(
+          &InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc,
+          weak_factory_.GetWeakPtr(), callback_id, accounts));
+}
+
+void InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc(
+    const std::string& callback_id,
+    const std::vector<::account_manager::Account>& accounts,
+    const base::flat_set<account_manager::Account>& arc_accounts) {
+  base::Value result(base::Value::Type::LIST);
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  for (const auto& account : accounts) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia)
+      continue;
+
+    if (!arc_accounts.contains(account)) {
+      AccountInfo maybe_account_info =
+          identity_manager->FindExtendedAccountInfoByGaiaId(account.key.id());
+      if (maybe_account_info.IsEmpty())
+        continue;
+
+      result.Append(GaiaAccountToValue(account, maybe_account_info));
+    }
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
 }
 
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(

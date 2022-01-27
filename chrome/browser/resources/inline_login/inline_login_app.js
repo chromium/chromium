@@ -25,7 +25,7 @@ import {getAccountAdditionOptionsFromJSON} from './inline_login_util.js';
 // </if>
 
 import {AuthCompletedCredentials, Authenticator, AuthParams} from '../gaia_auth_host/authenticator.m.js';
-import {InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
+import {Account, InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
 /**
  * @fileoverview Inline login WebUI in various signin flows for ChromeOS and
@@ -112,6 +112,16 @@ Polymer({
     isAvailableInArc_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Accounts which are not available in ARC and are shown on the ARC picker
+     * screen.
+     * @type {!Array<!Account>}
+     */
+    arcPickerAccounts_: {
+      type: Array,
+      value: [],
     },
     // </if>
 
@@ -271,7 +281,7 @@ Polymer({
     if (data.email) {
       this.isReauthentication_ = true;
     }
-    this.switchView_(this.getDefaultView_());
+    this.switchToDefaultView_();
   },
 
   /**
@@ -293,6 +303,14 @@ Polymer({
    */
   closeDialog_() {
     this.browserProxy_.dialogClose();
+  },
+
+  /**
+   * Navigates to the welcome screen.
+   * @private
+   */
+  goToWelcomeScreen_() {
+    this.switchView_(View.welcome);
   },
 
   /**
@@ -352,6 +370,33 @@ Polymer({
   shouldShowGaiaButtons_() {
     return this.enableGaiaActionButtons_ &&
         this.currentView_ === View.addAccount;
+  },
+
+  /**
+   * Navigates to the default view.
+   * @private
+   */
+  switchToDefaultView_() {
+    const view = this.getDefaultView_();
+
+    // <if expr="chromeos_ash">
+    if (this.isArcAccountRestrictionsEnabled_ &&
+        view === View.arcAccountPicker) {
+      this.browserProxy_.getAccountsNotAvailableInArc().then(result => {
+        // If there are no accounts to show in the picker - go directly to
+        // the welcome screen.
+        if (result.length === 0) {
+          this.switchView_(View.welcome);
+          return;
+        }
+        this.set('arcPickerAccounts_', result);
+        this.switchView_(view);
+      });
+      return;
+    }
+    // </if>
+
+    this.switchView_(view);
   },
 
   /**

@@ -166,6 +166,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX},
     {"accountManagerDialogArcAccountPickerTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_TITLE},
+    {"addAccountLabel", IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL},
     {"accountManagerErrorNoInternetTitle",
      IDS_ACCOUNT_MANAGER_ERROR_NO_INTERNET_TITLE},
     {"accountManagerErrorNoInternetBody",
@@ -201,9 +202,12 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
               chrome::GetOSSettingsUrl(
                   chromeos::settings::mojom::kMyAccountsSubpagePath)
                   .spec())));
-  source->AddBoolean("shouldSkipWelcomePage",
-                     profile->GetPrefs()->GetBoolean(
-                         chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
+  source->AddBoolean(
+      "shouldSkipWelcomePage",
+      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()
+          ? false
+          : profile->GetPrefs()->GetBoolean(
+                chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
   if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     source->AddString(
         "accountManagerDialogWelcomeBody",

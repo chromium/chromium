@@ -58,9 +58,14 @@ constexpr char kPasswordKey[] = "password";
 constexpr char kGaiaIdKey[] = "gaiaId";
 constexpr char kIsAvailableInArcKey[] = "isAvailableInArc";
 constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
+constexpr char kSecondaryAccount2Email[] = "secondary2@example.com";
+constexpr char kSecondaryAccount3Email[] = "secondary3@example.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
+constexpr char kGetAccountsNotAvailableInArcMessage[] =
+    "getAccountsNotAvailableInArc";
+constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kConsentLoggedCallback[] = "consent-logged-callback";
 constexpr char kToSVersion[] = "12345678";
 
@@ -292,6 +297,10 @@ class InlineLoginHandlerChromeOSTest
 
   content::TestWebUI* web_ui() { return &web_ui_; }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
+
  private:
   std::unique_ptr<InlineLoginHandlerChromeOS> handler_;
   std::unique_ptr<EduCoexistenceLoginHandler> edu_handler_;
@@ -380,6 +389,39 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
                     ->IsInitialized());
   }
 
+  void AddAccount(const std::string& email, bool is_available_in_arc) {
+    account_manager::MockAccountManagerFacadeObserver observer;
+    ::GetAccountManagerFacade(profile()->GetPath().value())
+        ->AddObserver(&observer);
+    auto* account_apps_availability =
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile());
+
+    // Wait until account is added.
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer, OnAccountUpserted(AccountEmailEq(email)))
+        .WillOnce([&run_loop, account_apps_availability, is_available_in_arc](
+                      const account_manager::Account& account) {
+          account_apps_availability->SetIsAccountAvailableInArc(
+              account, is_available_in_arc);
+          run_loop.Quit();
+        });
+    identity_test_env()->MakeAccountAvailable(email);
+
+    ::GetAccountManagerFacade(profile()->GetPath().value())
+        ->RemoveObserver(&observer);
+  }
+
+  bool ValuesListContainAccount(const base::span<const base::Value> values,
+                                const std::string& email) {
+    for (const base::Value& value : values) {
+      const std::string* email_val = value.FindStringKey("email");
+      EXPECT_TRUE(email_val != nullptr);
+      if (*email_val == email)
+        return true;
+    }
+    return false;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -455,6 +497,33 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
       ->RemoveObserver(&observer);
   ash::AccountAppsAvailabilityFactory::GetForProfile(profile())->RemoveObserver(
       &apps_availability_observer);
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+                       GetAccountsNotAvailableInArc) {
+  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
+  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
+  AddAccount(kSecondaryAccount3Email, /*is_available_in_arc=*/false);
+
+  // Call "getAccountsNotAvailableInArc".
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage,
+                                  &base::Value::AsListValue(args));
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
+  ASSERT_TRUE(call_data.arg2()->GetBool());
+
+  // Get results from JS callback.
+  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  // Two accounts are not available in ARC.
+  EXPECT_EQ(2, result.size());
+  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
+  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
+  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestWithArcRestrictionsSuite,

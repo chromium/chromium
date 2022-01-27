@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
+import {Account, InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 // <if expr="chromeos">
 import {AccountAdditionOptions} from 'chrome://chrome-signin/inline_login_util.js';
@@ -88,6 +88,7 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       'dialogClose',
       // <if expr="chromeos">
       'skipWelcomePage',
+      'getAccountsNotAvailableInArc',
       'getDialogArguments',
       // </if>
     ]);
@@ -97,6 +98,8 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
      * @private {?AccountAdditionOptions}
      */
     this.dialogArguments_ = null;
+    /** @private */
+    this.accountsNotAvailableInArc_ = [];
     // </if>
   }
 
@@ -106,6 +109,13 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
    */
   setDialogArguments(dialogArguments) {
     this.dialogArguments_ = dialogArguments;
+  }
+
+  /**
+   * @param {!Array<Account>} accountsNotAvailableInArc
+   */
+  setAccountsNotAvailableInArc(accountsNotAvailableInArc) {
+    this.accountsNotAvailableInArc_ = accountsNotAvailableInArc;
   }
   // </if>
 
@@ -159,6 +169,12 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
   /** @override */
   skipWelcomePage(skip) {
     this.methodCalled('skipWelcomePage', skip);
+  }
+
+  /** @override */
+  getAccountsNotAvailableInArc() {
+    this.methodCalled('getAccountsNotAvailableInArc');
+    return Promise.resolve(this.accountsNotAvailableInArc_);
   }
 
   /** @override */

@@ -5537,6 +5537,9 @@
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ARC_ACCOUNT_PICKER_BODY" desc="" translateable="false">
     You can select an existing account to use with Android apps or add a new Google Account. Once you sign in to an Android app, your account can be used with other Android apps. You can change Android apps access in <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings > Accounts<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
+  <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
+    Add Google Account
+  </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_CHECKBOX" desc="Checkbox text for the Welcome screen in Chrome OS 'Add account' dialog. If user checks this checkbox, this screen will not be shown the next time they open the dialog.">
     Don't remind me next time
   </message>
