@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/trusted_projector_ui.h"
+#include "ash/webui/projector_app/trusted_projector_annotator_ui.h"
 
 #include "ash/grit/ash_projector_app_trusted_resources.h"
 #include "ash/grit/ash_projector_app_trusted_resources_map.h"
@@ -22,17 +22,23 @@ namespace ash {
 
 namespace {
 
-content::WebUIDataSource* CreateProjectorHTMLSource() {
+content::WebUIDataSource* CreateProjectorAnnotatorHTMLSource() {
   content::WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIProjectorAppHost);
+      content::WebUIDataSource::Create(kChromeUIProjectorAnnotatorHost);
 
+  // TODO(b/216523790): Split trusted annotator resources into a separate
+  // bundle.
   source->AddResourcePaths(base::make_span(
       kAshProjectorAppTrustedResources, kAshProjectorAppTrustedResourcesSize));
 
-  source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_TRUSTED_APP_EMBEDDER_HTML);
+  source->AddResourcePath(
+      "", IDR_ASH_PROJECTOR_APP_TRUSTED_ANNOTATOR_ANNOTATOR_EMBEDDER_HTML);
 
   std::string csp =
-      std::string("frame-src ") + kChromeUIUntrustedProjectorAppUrl + ";";
+      std::string("frame-src ") + kChromeUIUntrustedAnnotatorUrl + ";";
+  // Allow use of SharedArrayBuffer (required by wasm code in the iframe guest).
+  source->OverrideCrossOriginOpenerPolicy("same-origin");
+  source->OverrideCrossOriginEmbedderPolicy("require-corp");
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, csp);
@@ -42,30 +48,22 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
 }  // namespace
 
-TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
-                                       const GURL& url,
-                                       PrefService* pref_service)
+TrustedProjectorAnnotatorUI::TrustedProjectorAnnotatorUI(
+    content::WebUI* web_ui,
+    const GURL& url,
+    PrefService* pref_service)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
-  content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
-
-  // The selfie cam doesn't have any dependencies on WebUIMessageHandlers;
-  // it also doesn't embed chrome-untrusted:// resources. Therefore, return
-  // early.
-  if (url == GURL(kChromeUITrustedProjectorSelfieCamUrl))
-    return;
+  content::WebUIDataSource::Add(browser_context,
+                                CreateProjectorAnnotatorHTMLSource());
 
   // The Annotator and Projector SWA embed contents in a sandboxed
   // chrome-untrusted:// iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
-
-  // The requested WebUI is hosting the Projector SWA.
-  web_ui->AddMessageHandler(
-      std::make_unique<ProjectorMessageHandler>(pref_service));
 }
 
-TrustedProjectorUI::~TrustedProjectorUI() = default;
+TrustedProjectorAnnotatorUI::~TrustedProjectorAnnotatorUI() = default;
 
-WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(TrustedProjectorAnnotatorUI)
 
 }  // namespace ash

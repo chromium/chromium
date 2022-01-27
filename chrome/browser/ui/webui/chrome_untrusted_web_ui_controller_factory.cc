@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/web_applications/crosh_ui.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
+#include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_annotator_ui_config.h"
 #include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_ui_config.h"
 #include "chrome/browser/ash/web_applications/terminal_ui.h"
 #if !defined(OFFICIAL_BUILD)
@@ -80,6 +81,8 @@ WebUIConfigList CreateConfigs() {
       std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
   if (ash::features::IsProjectorEnabled())
     register_config(std::make_unique<UntrustedProjectorUIConfig>());
+  if (ash::features::IsProjectorAnnotatorEnabled())
+    register_config(std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
   if (ash::features::IsFileManagerSwaEnabled())
     register_config(
         std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());

@@ -22,8 +22,12 @@ static_library("projector_app") {
     "projector_oauth_token_fetcher.h",
     "projector_xhr_sender.cc",
     "projector_xhr_sender.h",
+    "trusted_projector_annotator_ui.cc",
+    "trusted_projector_annotator_ui.h",
     "trusted_projector_ui.cc",
     "trusted_projector_ui.h",
+    "untrusted_projector_annotator_ui.cc",
+    "untrusted_projector_annotator_ui.h",
     "untrusted_projector_ui.cc",
     "untrusted_projector_ui.h",
   ]

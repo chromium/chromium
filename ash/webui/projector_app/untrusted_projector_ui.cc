@@ -16,10 +16,6 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-#include "chromeos/grit/chromeos_media_app_bundle_resources.h"
-#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-
 namespace ash {
 
 namespace {
@@ -37,25 +33,12 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
 
-#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-  // Loads WASM resources shipped to Chromium by chrome://media-app.
-  source->AddResourcePath("annotator/ink_engine_ink.worker.js",
-                          IDR_MEDIA_APP_INK_ENGINE_INK_WORKER_JS);
-  source->AddResourcePath("annotator/ink_engine_ink.wasm",
-                          IDR_MEDIA_APP_INK_ENGINE_INK_WASM);
-  source->AddResourcePath("annotator/ink.js", IDR_MEDIA_APP_INK_JS);
-#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-
   // Provide a list of specific script resources(javascript files and inlined
   // scripts inside html) or their sha-256 hashes to allow to be executed.
   // "wasm-eval" is added to allow wasm.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'wasm-eval' chrome-untrusted://resources;");
-  // Need to explicitly set |worker-src| because CSP falls back to |child-src|
-  // which is none.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src 'self';");
+      "script-src 'self' chrome-untrusted://resources;");
   // Allow styles to include inline styling needed for Polymer elements.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
@@ -72,14 +55,6 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' https://www.googleapis.com "
       "https://drive.google.com;");
-
-  // TODO(b/210064058): COEP is conflicting with loading cross origin resources.
-  // Comment out COEP overrides for now until the issue is resolved. If we
-  // decided to create a separate origin for annotator, we need to also clean up
-  // the ink resources and WASM related policy overrides.
-  // Allow use of SharedArrayBuffer (required by the wasm).
-  // source->OverrideCrossOriginOpenerPolicy("same-origin");
-  // source->OverrideCrossOriginEmbedderPolicy("require-corp");
 
   // TODO(b/197120695): re-enable trusted type after fixing the issue that icon
   // template is setting innerHTML.

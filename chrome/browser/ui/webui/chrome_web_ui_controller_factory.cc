@@ -181,6 +181,7 @@
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
+#include "ash/webui/projector_app/trusted_projector_annotator_ui.h"
 #include "ash/webui/projector_app/trusted_projector_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/scanning/url_constants.h"
@@ -420,6 +421,13 @@ WebUIController* NewWebUI<ash::TrustedProjectorUI>(WebUI* web_ui,
                                                    const GURL& url) {
   return new ash::TrustedProjectorUI(web_ui, url,
                                      Profile::FromWebUI(web_ui)->GetPrefs());
+}
+
+template <>
+WebUIController* NewWebUI<ash::TrustedProjectorAnnotatorUI>(WebUI* web_ui,
+                                                            const GURL& url) {
+  return new ash::TrustedProjectorAnnotatorUI(
+      web_ui, url, Profile::FromWebUI(web_ui)->GetPrefs());
 }
 
 void BindPrintManagement(
@@ -934,6 +942,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       ash::features::IsProjectorEnabled() &&
       IsProjectorAllowedForProfile(profile)) {
     return &NewWebUI<ash::TrustedProjectorUI>;
+  }
+  if (url.host_piece() == ash::kChromeUIProjectorAnnotatorHost &&
+      ash::features::IsProjectorAnnotatorEnabled() &&
+      IsProjectorAllowedForProfile(profile)) {
+    return &NewWebUI<ash::TrustedProjectorAnnotatorUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)
     return &NewWebUI<chromeos::SetTimeUI>;
