@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/containers/flat_map.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -155,6 +156,21 @@ std::unique_ptr<ServiceRequestSender> GetServiceRequestSenderToInject(
 // tests which provide a test TTS controller.
 std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
     JNIEnv* env);
+
+// Creates an AssistantAutofillProfile in Java. This is comparable to
+// PersonalDataManagerAndroid::CreateJavaProfileFromNative.
+base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillProfile(
+    JNIEnv* env,
+    const autofill::AutofillProfile& profile,
+    const std::string& locale);
+
+// Populate the AutofillProfile from the Java AssistantAutofillProfile. This is
+// comparable to PersonalDataManagerAndroid::PopulateNativeProfileFromJava.
+void PopulateAutofillProfileFromJava(
+    const base::android::JavaParamRef<jobject>& jprofile,
+    JNIEnv* env,
+    autofill::AutofillProfile* profile,
+    const std::string& locale);
 
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant

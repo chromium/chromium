@@ -20,6 +20,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoPopup_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantValue_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantDependencyInjector_jni.h"
+#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillProfile_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
@@ -32,6 +33,11 @@
 namespace autofill_assistant {
 namespace ui_controller_android_utils {
 namespace {
+
+using ::base::android::ConvertJavaStringToUTF16;
+using ::base::android::ConvertJavaStringToUTF8;
+using ::base::android::ConvertUTF16ToJavaString;
+using ::base::android::ConvertUTF8ToJavaString;
 
 DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
   switch (icon) {
@@ -67,6 +73,23 @@ DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
       return DrawableIcon::VISIBILITY_ON;
     case DrawableProto::VISIBILITY_OFF:
       return DrawableIcon::VISIBILITY_OFF;
+  }
+}
+
+void MaybeSetInfo(autofill::AutofillProfile* profile,
+                  autofill::ServerFieldType type,
+                  const base::android::JavaRef<jstring>& value,
+                  const std::string& locale) {
+  if (value) {
+    profile->SetInfo(type, ConvertJavaStringToUTF16(value), locale);
+  }
+}
+
+void MaybeSetRawInfo(autofill::AutofillProfile* profile,
+                     autofill::ServerFieldType type,
+                     const base::android::JavaRef<jstring>& value) {
+  if (value) {
+    profile->SetRawInfo(type, ConvertJavaStringToUTF16(value));
   }
 }
 
@@ -577,6 +600,89 @@ std::unique_ptr<AutofillAssistantTtsController> GetTtsControllerToInject(
         reinterpret_cast<void*>(jtest_tts_controller_to_inject)));
   }
   return test_tts_controller;
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillProfile(
+    JNIEnv* env,
+    const autofill::AutofillProfile& profile,
+    const std::string& locale) {
+  return Java_AssistantAutofillProfile_Constructor(
+      env, ConvertUTF8ToJavaString(env, profile.guid()),
+      ConvertUTF8ToJavaString(env, profile.origin()),
+      profile.record_type() == autofill::AutofillProfile::LOCAL_PROFILE,
+      ConvertUTF16ToJavaString(
+          env, profile.GetInfo(autofill::NAME_HONORIFIC_PREFIX, locale)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetInfo(autofill::NAME_FULL, locale)),
+      ConvertUTF16ToJavaString(env, profile.GetRawInfo(autofill::COMPANY_NAME)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_STREET_ADDRESS)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_STATE)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::ADDRESS_HOME_CITY)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_SORTING_CODE)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY)),
+      ConvertUTF16ToJavaString(
+          env, profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER)),
+      ConvertUTF16ToJavaString(env,
+                               profile.GetRawInfo(autofill::EMAIL_ADDRESS)),
+      ConvertUTF8ToJavaString(env, profile.language_code()));
+}
+
+void PopulateAutofillProfileFromJava(
+    const base::android::JavaParamRef<jobject>& jprofile,
+    JNIEnv* env,
+    autofill::AutofillProfile* profile,
+    const std::string& locale) {
+  // Only set the guid if it is an existing profile (Java guid not empty).
+  // Otherwise, keep the generated one.
+  std::string guid = ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getGUID(env, jprofile));
+  if (!guid.empty()) {
+    profile->set_guid(guid);
+  }
+
+  profile->set_origin(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getOrigin(env, jprofile)));
+  MaybeSetInfo(profile, autofill::NAME_FULL,
+               Java_AssistantAutofillProfile_getFullName(env, jprofile),
+               locale);
+  MaybeSetRawInfo(
+      profile, autofill::NAME_HONORIFIC_PREFIX,
+      Java_AssistantAutofillProfile_getHonorificPrefix(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::COMPANY_NAME,
+                  Java_AssistantAutofillProfile_getCompanyName(env, jprofile));
+  MaybeSetRawInfo(
+      profile, autofill::ADDRESS_HOME_STREET_ADDRESS,
+      Java_AssistantAutofillProfile_getStreetAddress(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_STATE,
+                  Java_AssistantAutofillProfile_getRegion(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_CITY,
+                  Java_AssistantAutofillProfile_getLocality(env, jprofile));
+  MaybeSetRawInfo(
+      profile, autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+      Java_AssistantAutofillProfile_getDependentLocality(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_ZIP,
+                  Java_AssistantAutofillProfile_getPostalCode(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::ADDRESS_HOME_SORTING_CODE,
+                  Java_AssistantAutofillProfile_getSortingCode(env, jprofile));
+  MaybeSetInfo(profile, autofill::ADDRESS_HOME_COUNTRY,
+               Java_AssistantAutofillProfile_getCountryCode(env, jprofile),
+               locale);
+  MaybeSetRawInfo(profile, autofill::PHONE_HOME_WHOLE_NUMBER,
+                  Java_AssistantAutofillProfile_getPhoneNumber(env, jprofile));
+  MaybeSetRawInfo(profile, autofill::EMAIL_ADDRESS,
+                  Java_AssistantAutofillProfile_getEmailAddress(env, jprofile));
+  profile->set_language_code(ConvertJavaStringToUTF8(
+      Java_AssistantAutofillProfile_getLanguageCode(env, jprofile)));
+  profile->FinalizeAfterImport();
 }
 
 }  // namespace ui_controller_android_utils

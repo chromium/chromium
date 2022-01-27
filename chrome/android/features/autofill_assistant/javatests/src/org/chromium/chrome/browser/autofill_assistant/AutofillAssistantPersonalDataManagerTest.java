@@ -730,8 +730,10 @@ public class AutofillAssistantPersonalDataManagerTest {
                 org.chromium.chrome.autofill_assistant.R.drawable.visa_card, profileId,
                 /* serverId= */ "");
         mHelper.setCreditCard(card);
-        waitUntilViewMatchesCondition(allOf(withText("Card is expired"),
-                                              isDescendantOfA(withId(R.id.payment_method_summary))),
+        waitUntilViewMatchesCondition(
+                allOf(withText(mTestRule.getActivity().getString(
+                              R.string.autofill_assistant_payment_information_missing)),
+                        isDescendantOfA(withId(R.id.payment_method_summary))),
                 isDisplayed());
         onView(withContentDescription("Continue")).check(matches(not(isEnabled())));
 

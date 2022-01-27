@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantUserDat
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
 import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -97,7 +96,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
      *  should be able to get the currently selected items by asking the model.
      */
     static class MockDelegate implements AssistantCollectUserDataDelegate {
-        AutofillContact mContact;
+        AssistantAutofillProfile mContact;
         AutofillAddress mAddress;
         AutofillPaymentInstrument mPaymentMethod;
         AssistantLoginChoice mLoginChoice;

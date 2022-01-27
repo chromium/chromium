@@ -13,7 +13,9 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
@@ -52,14 +54,28 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
 
     @Override
     protected void createOrEditItem(@Nullable ContactModel oldItem) {
-        if (mEditor != null) {
-            mEditor.edit(oldItem == null ? null : oldItem.mOption, contact -> {
-                assert (contact != null && contact.isComplete());
-                mIgnoreProfileChangeNotifications = true;
-                addOrUpdateItem(new ContactModel(contact), /* select= */ true, /* notify= */ true);
-                mIgnoreProfileChangeNotifications = false;
-            }, cancel -> {});
+        if (mEditor == null) {
+            return;
         }
+
+        AutofillContact oldContact = oldItem == null
+                ? null
+                : AutofillUtilChrome.assistantAutofillProfileToAutofillContact(
+                        oldItem.mOption, mContext, mEditor);
+
+        Callback<AutofillContact> doneCallback = contact -> {
+            assert (contact != null && contact.isComplete() && contact.getProfile() != null);
+            mIgnoreProfileChangeNotifications = true;
+            addOrUpdateItem(
+                    new ContactModel(AutofillUtilChrome.autofillProfileToAssistantAutofillProfile(
+                            contact.getProfile())),
+                    /* select= */ true, /* notify= */ true);
+            mIgnoreProfileChangeNotifications = false;
+        };
+
+        Callback<AutofillContact> cancelCallback = contact -> {};
+
+        mEditor.edit(oldContact, doneCallback, cancelCallback);
     }
 
     @Override
@@ -118,18 +134,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         if (modelA == null || modelB == null) {
             return modelA == modelB;
         }
-        AutofillContact optionA = modelA.mOption;
-        AutofillContact optionB = modelB.mOption;
-        if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
-            return true;
-        }
-        if (optionA.getProfile() == null || optionB.getProfile() == null) {
-            return optionA.getProfile() == optionB.getProfile();
-        }
-        if (TextUtils.equals(optionA.getProfile().getGUID(), optionB.getProfile().getGUID())) {
-            return true;
-        }
-        return optionA.isEqualOrSupersetOf(optionB) && optionB.isEqualOrSupersetOf(optionA);
+        return TextUtils.equals(modelA.mOption.getGUID(), modelB.mOption.getGUID());
     }
 
     /**
@@ -171,13 +176,13 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
         addAutocompleteInformationToEditor(model.mOption);
     }
 
-    private void addAutocompleteInformationToEditor(AutofillContact contact) {
+    private void addAutocompleteInformationToEditor(AssistantAutofillProfile contact) {
         if (mEditor == null || contact == null) {
             return;
         }
-        mEditor.addEmailAddressIfValid(contact.getPayerEmail());
-        mEditor.addPayerNameIfValid(contact.getPayerName());
-        mEditor.addPhoneNumberIfValid(contact.getPayerPhone());
+        mEditor.addEmailAddressIfValid(contact.getEmailAddress());
+        mEditor.addPayerNameIfValid(contact.getFullName());
+        mEditor.addPhoneNumberIfValid(contact.getPhoneNumber());
     }
 
     /**
@@ -185,7 +190,7 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
      */
     private String createContactDescription(
             AssistantCollectUserDataModel.ContactDescriptionOptions options,
-            AutofillContact contact) {
+            AssistantAutofillProfile contact) {
         List<String> descriptionLines = new ArrayList<>();
         for (int i = 0;
                 i < options.mFields.length && descriptionLines.size() < options.mMaxNumberLines;
@@ -193,13 +198,13 @@ public class AssistantContactDetailsSection extends AssistantCollectUserDataSect
             String line = "";
             switch (options.mFields[i]) {
                 case AssistantContactField.NAME_FULL:
-                    line = contact.getPayerName();
+                    line = contact.getFullName();
                     break;
                 case AssistantContactField.EMAIL_ADDRESS:
-                    line = contact.getPayerEmail();
+                    line = contact.getEmailAddress();
                     break;
                 case AssistantContactField.PHONE_HOME_WHOLE_NUMBER:
-                    line = contact.getPayerPhone();
+                    line = contact.getPhoneNumber();
                     break;
                 default:
                     assert false : "profile field not handled";

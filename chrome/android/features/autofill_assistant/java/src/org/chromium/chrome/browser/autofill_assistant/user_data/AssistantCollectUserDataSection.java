@@ -27,8 +27,8 @@ import java.util.List;
 /**
  * This is the generic superclass for all autofill-assistant payment request sections.
  *
- * @param <T> The type of |EditableOption| that a concrete instance of this class is created for,
- * such as |AutofillContact|, |AutofillPaymentMethod|, etc.
+ * @param <T> The type of entry that a concrete instance of this class is created for,
+ *            such as |AssistantAutofillProfile|, |AutofillPaymentMethod|, etc.
  */
 public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
     interface Delegate<T> {
@@ -308,7 +308,7 @@ public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
                         return;
                     }
                     selectItem(item, /*notify=*/true, AssistantUserDataEventType.SELECTION_CHANGED);
-                    if (item.mOption.mOption.isComplete()) {
+                    if (item.mOption.isComplete()) {
                         // Workaround for Android bug: a layout transition may cause the newly
                         // checked radiobutton to not render properly.
                         mSectionExpander.post(() -> mSectionExpander.setExpanded(false));
