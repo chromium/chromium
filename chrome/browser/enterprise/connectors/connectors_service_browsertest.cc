@@ -85,6 +85,22 @@ constexpr char kTestUrl[] = "https://foo.com";
 constexpr char kTestGaiaId[] = "123";
 #endif
 
+std::string ExpectedOsPlatform() {
+#if BUILDFLAG(IS_WIN)
+  return "Windows";
+#elif BUILDFLAG(IS_MAC)
+  return "Mac OS X";
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return "Chrome OS";
+#else
+  return "Chromium OS";
+#endif
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  return "Linux";
+#endif
+}
+
 }  // namespace
 
 // Profile DM token tests
@@ -405,6 +421,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
                 *reporting_metadata.FindStringPath("device.osVersion"));
 
       ASSERT_TRUE(metadata.device().has_os_platform());
+      ASSERT_EQ(metadata.device().os_platform(), ExpectedOsPlatform());
       ASSERT_EQ(metadata.device().os_platform(),
                 *reporting_metadata.FindStringPath("device.osPlatform"));
 
