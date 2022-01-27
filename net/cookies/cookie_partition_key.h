@@ -72,7 +72,7 @@ class NET_EXPORT CookiePartitionKey {
   // which were already created using Deserialize or FromNetworkIsolationKey.
   static CookiePartitionKey FromWire(
       const SchemefulSite& site,
-      absl::optional<base::UnguessableToken> nonce) {
+      absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
     return CookiePartitionKey(site, nonce);
   }
 

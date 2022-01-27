@@ -28,7 +28,10 @@ void CookieAccessDelegate::FirstPartySetifyPartitionKey(
     const CookieAccessDelegate* delegate,
     const CookiePartitionKey& cookie_partition_key,
     base::OnceCallback<void(absl::optional<CookiePartitionKey>)> callback) {
-  if (!delegate) {
+  // FirstPartySetify doesn't need to transform partition keys with a nonce,
+  // since those partitions are only available to a single fenced/anonymous
+  // iframe.
+  if (!delegate || cookie_partition_key.nonce()) {
     std::move(callback).Run(cookie_partition_key);
     return;
   }

@@ -160,6 +160,22 @@ TEST(CookiePartitionKeyCollectionTest, FirstPartySetify) {
                   &delegate)
                   .PartitionKeys(),
               UnorderedElementsAre(kOwnerPartitionKey, kNonMemberPartitionKey));
+
+  // Test that FirstPartySetify does not modify partition keys with nonces.
+  const CookiePartitionKey kNoncedPartitionKey =
+      CookiePartitionKey::FromURLForTesting(kMemberURL,
+                                            base::UnguessableToken::Create());
+  EXPECT_THAT(
+      FirstPartySetifyAndWait(
+          CookiePartitionKeyCollection({kNoncedPartitionKey}), &delegate)
+          .PartitionKeys(),
+      UnorderedElementsAre(kNoncedPartitionKey));
+  EXPECT_THAT(
+      FirstPartySetifyAndWait(CookiePartitionKeyCollection(
+                                  {kNoncedPartitionKey, kMemberPartitionKey}),
+                              &delegate)
+          .PartitionKeys(),
+      UnorderedElementsAre(kNoncedPartitionKey, kOwnerPartitionKey));
 }
 
 TEST(CookiePartitionKeyCollectionTest, Contains) {

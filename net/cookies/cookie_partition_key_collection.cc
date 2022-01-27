@@ -55,7 +55,15 @@ void CookiePartitionKeyCollection::FirstPartySetify(
   std::vector<SchemefulSite> sites;
   sites.reserve(PartitionKeys().size());
   for (const CookiePartitionKey& key : PartitionKeys()) {
+    // Partition keys that have a nonce are not available across top-level sites
+    // in the same First-Party Set.
+    if (key.nonce())
+      continue;
     sites.push_back(key.site());
+  }
+  if (sites.empty()) {
+    std::move(callback).Run(*this);
+    return;
   }
   cookie_access_delegate->FindFirstPartySetOwners(
       sites,
@@ -69,9 +77,10 @@ void CookiePartitionKeyCollection::FirstPartySetify(
               const auto first_party_set_owner_iter =
                   sites_to_owners.find(key.site());
               canonicalized_keys.push_back(
-                  first_party_set_owner_iter != sites_to_owners.end()
+                  !key.nonce() &&
+                          first_party_set_owner_iter != sites_to_owners.end()
                       ? CookiePartitionKey::FromWire(
-                            first_party_set_owner_iter->second, key.nonce())
+                            first_party_set_owner_iter->second)
                       : key);
             }
             std::move(callback).Run(
