@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -19,10 +18,8 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -478,8 +475,7 @@ bool ProfileAttributesEntry::CanBeManaged() const {
     case SigninState::kSignedInWithConsentedPrimaryAccount:
       return true;
     case SigninState::kSignedInWithUnconsentedPrimaryAccount:
-      return base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-             GetBool(kUserAcceptedAccountManagement);
+      return GetBool(kUserAcceptedAccountManagement);
     case SigninState::kNotSignedIn:
       return false;
   }

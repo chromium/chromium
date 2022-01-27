@@ -272,20 +272,20 @@ class DiceWebSigninInterceptor : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldShowMultiUserBubble);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest, PersistentHash);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparation);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationWithoutUPA);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            EnforceManagedAccountAsPrimary);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorForcedSeparationTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ShouldEnforceEnterpriseProfileSeparationReauth);
-  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorEnterpriseBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptorTest,
                            ForcedEnterpriseInterceptionTestAccountLevelPolicy);
   FRIEND_TEST_ALL_PREFIXES(
-      DiceWebSigninInterceptorEnterpriseBrowserTest,
+      DiceWebSigninInterceptorTest,
       ForcedEnterpriseInterceptionTestNoForcedInterception);
 
   // Cancels any current signin interception and resets the interceptor to its

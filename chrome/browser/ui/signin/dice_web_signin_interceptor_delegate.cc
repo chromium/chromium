@@ -9,9 +9,6 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -19,7 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -66,32 +62,11 @@ class ForcedEnterpriseSigninInterceptionHandle
  private:
   void ShowEnterpriseProfileInterceptionDialog(const AccountInfo& account_info,
                                                SkColor profile_color) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-      browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-          account_info, profile_color,
-          base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
-                             OnEnterpriseInterceptionDialogClosed,
-                         base::Unretained(this)));
-      return;
-    }
-#endif
-    DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
-        account_info.email, true,
-        base::BindOnce(
-            [](base::OnceCallback<void(bool)> callback,
-               DiceTurnSyncOnHelper::SigninChoice choice) {
-              std::move(callback).Run(
-                  choice == DiceTurnSyncOnHelper::SigninChoice::
-                                SIGNIN_CHOICE_CONTINUE ||
-                  choice == DiceTurnSyncOnHelper::SigninChoice::
-                                SIGNIN_CHOICE_NEW_PROFILE);
-            },
-            base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
-                               OnEnterpriseInterceptionDialogClosed,
-                           base::Unretained(this))),
-        browser_);
+    browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+        account_info, profile_color,
+        base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
+                           OnEnterpriseInterceptionDialogClosed,
+                       base::Unretained(this)));
   }
 
   void OnEnterpriseInterceptionDialogClosed(bool create_profile) {

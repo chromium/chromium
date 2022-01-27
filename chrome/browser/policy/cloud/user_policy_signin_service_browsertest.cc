@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/common/pref_names.h"
@@ -427,22 +425,6 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest, ConcurrentSignin) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 }
 
-class UserPolicySigninServiceSyncNotRequiredTest
-    : public UserPolicySigninServiceTest {
- public:
-  UserPolicySigninServiceSyncNotRequiredTest() {
-    DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
-    feature_list.InitAndEnableFeature(kAccountPoliciesLoadedWithoutSync);
-  }
-
-  ~UserPolicySigninServiceSyncNotRequiredTest() override {
-    DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list;
-};
-
 // crbug.com/1230268 not working on Lacros.
 // TODO(crbug.com/1254962): flaky on Mac builders
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
@@ -450,8 +432,9 @@ class UserPolicySigninServiceSyncNotRequiredTest
 #else
 #define MAYBE_AcceptManagementDeclineSync AcceptManagementDeclineSync
 #endif
-IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
+IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
                        MAYBE_AcceptManagementDeclineSync) {
+  DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(true);
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
 
   // Signin and show sync confirmation dialog.
@@ -492,4 +475,5 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceSyncNotRequiredTest,
   EXPECT_FALSE(
       chrome::enterprise_util::UserAcceptedAccountManagement(profile()));
   EXPECT_FALSE(chrome::enterprise_util::ProfileCanBeManaged(profile()));
+  DiceTurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
 }

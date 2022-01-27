@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -79,32 +77,25 @@ void OnProfileCheckComplete(const AccountInfo& account_info,
     std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
     return;
   }
-  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    ProfileAttributesEntry* entry =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(browser->profile()->GetPath());
-    browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        account_info, GenerateNewProfileColor(entry).color,
-        base::BindOnce(
-            [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-               Browser* browser, bool prompt_for_new_profile,
-               bool create_profile) {
-              browser->signin_view_controller()->CloseModalSignin();
-              std::move(callback).Run(
-                  create_profile
-                      ? prompt_for_new_profile
-                            ? DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
-                            : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
-                      : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
-            },
-            std::move(callback), browser.get(), prompt_for_new_profile));
-    return;
-  }
-
-  DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
-      account_info.email, /*prompt_for_new_profile=*/prompt_for_new_profile,
-      std::move(callback), browser.get());
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(browser->profile()->GetPath());
+  browser->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
+      account_info, GenerateNewProfileColor(entry).color,
+      base::BindOnce(
+          [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+             Browser* browser, bool prompt_for_new_profile,
+             bool create_profile) {
+            browser->signin_view_controller()->CloseModalSignin();
+            std::move(callback).Run(
+                create_profile
+                    ? prompt_for_new_profile
+                          ? DiceTurnSyncOnHelper::SIGNIN_CHOICE_NEW_PROFILE
+                          : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE
+                    : DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
+          },
+          std::move(callback), browser.get(), prompt_for_new_profile));
 }
 
 }  // namespace

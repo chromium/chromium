@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -317,18 +315,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   EXPECT_TRUE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 }
 
-class DiceWebSigninInterceptorForcedSeparationTest
-    : public DiceWebSigninInterceptorTest {
- public:
-  DiceWebSigninInterceptorForcedSeparationTest()
-      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       ShouldEnforceEnterpriseProfileSeparation) {
+TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -365,7 +352,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        ShouldEnforceEnterpriseProfileSeparationWithoutUPA) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
@@ -385,7 +372,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info_1));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        ShouldEnforceEnterpriseProfileSeparationReauth) {
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
                                    "primary_account_strict");
@@ -411,8 +398,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       primary_account_info));
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       EnforceManagedAccountAsPrimaryReauth) {
+TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryReauth) {
   profile()->GetPrefs()->SetBoolean(
       prefs::kManagedAccountsSigninRestrictionScopeMachine, true);
   profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
@@ -441,8 +427,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
-       EnforceManagedAccountAsPrimaryManaged) {
+TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryManaged) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info, "example.com");
@@ -464,7 +449,7 @@ TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
 
-TEST_F(DiceWebSigninInterceptorForcedSeparationTest,
+TEST_F(DiceWebSigninInterceptorTest,
        EnforceManagedAccountAsPrimaryProfileSwitch) {
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@example.com");

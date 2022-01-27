@@ -16,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -53,8 +52,7 @@ UserPolicySigninService::UserPolicySigninService(
   // should always be created before the oauth token is available.
   DCHECK(!CanApplyPoliciesForSignedInUser(/*check_for_refresh_token=*/true));
   // Some tests don't have a profile manager.
-  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-      g_browser_process->profile_manager()) {
+  if (g_browser_process->profile_manager()) {
     observed_profile_.Observe(
         &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   }
@@ -68,8 +66,7 @@ void UserPolicySigninService::PrepareForUserCloudPolicyManagerShutdown() {
   // in the destructor because we want to shutdown the registration helper
   // before UserCloudPolicyManager shuts down the CloudPolicyClient.
   registration_helper_.reset();
-  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-      g_browser_process->profile_manager()) {
+  if (g_browser_process->profile_manager()) {
     observed_profile_.Reset();
   }
 

@@ -32,7 +32,6 @@
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -48,7 +47,6 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -115,9 +113,6 @@ absl::optional<bool> EnterpriseSeparationMaybeRequired(
     bool is_new_account_interception,
     absl::optional<std::string>
         managed_account_profile_level_signin_restriction) {
-  // No enterprise separation required if the feature is disabled.
-  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
-    return false;
   // No enterprise separation required for consumer accounts.
   if (policy::BrowserPolicyConnector::IsNonEnterpriseUser(email))
     return false;
@@ -140,8 +135,6 @@ absl::optional<bool> EnterpriseSeparationMaybeRequired(
   // If we still do not know if profile separation is required, the account
   // level policies for the intercepted account must be fetched if possible.
   if (is_new_account_interception &&
-      base::FeatureList::IsEnabled(
-          policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher) &&
       !managed_account_profile_level_signin_restriction.has_value() &&
       g_browser_process->system_network_context_manager()) {
     return absl::nullopt;
@@ -504,15 +497,6 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
   bool force_profile_separation =
       ShouldEnforceEnterpriseProfileSeparation(info);
 
-#if DCHECK_IS_ON()
-  if (force_profile_separation) {
-    DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) ||
-           !profile_->GetPrefs()
-                ->GetString(prefs::kManagedAccountsSigninRestriction)
-                .empty());
-  }
-#endif
-
   if (switch_to_entry) {
     // Propose account switching if we skipped in GetHeuristicOutcome because we
     // returned a nullptr to get more information about forced enterprise
@@ -566,6 +550,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
 
   base::OnceCallback<void(SigninInterceptionResult)> callback;
   switch (*interception_type) {
+    case SigninInterceptionType::kProfileSwitch:
     case SigninInterceptionType::kProfileSwitchForced:
       callback = base::BindOnce(
           &DiceWebSigninInterceptor::OnProfileSwitchChoice,
@@ -576,7 +561,6 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
           &DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult,
           base::Unretained(this), info, profile_color);
       break;
-    case SigninInterceptionType::kProfileSwitch:
     case SigninInterceptionType::kEnterprise:
     case SigninInterceptionType::kMultiUser:
       callback =
@@ -706,10 +690,8 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
         base::TimeTicks::Now() - profile_creation_start_time_);
   }
 
-  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    chrome::enterprise_util::SetUserAcceptedAccountManagement(
-        new_profile, intercepted_account_management_accepted_);
-  }
+  chrome::enterprise_util::SetUserAcceptedAccountManagement(
+      new_profile, intercepted_account_management_accepted_);
 
   // Work is done in this profile, the flow continues in the
   // DiceWebSigninInterceptor that is attached to the new profile.
@@ -726,7 +708,6 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
     const AccountInfo& account_info,
     SkColor profile_color,
     SigninInterceptionResult create) {
-  DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync));
   if (create == SigninInterceptionResult::kAccepted) {
     intercepted_account_management_accepted_ = true;
     // In case of a reauth if there was no consent for management, do not create
@@ -809,8 +790,6 @@ void DiceWebSigninInterceptor::
     FetchAccountLevelSigninRestrictionForInterceptedAccount(
         const AccountInfo& account_info,
         base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher));
   if (intercepted_account_level_policy_value_fetch_result_for_testing_
           .has_value()) {
     std::move(callback).Run(

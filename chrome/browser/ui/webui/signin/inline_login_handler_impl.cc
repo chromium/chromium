@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -38,7 +37,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -136,18 +134,6 @@ class ForcedSigninDiceTurnSyncOnHelperDelegate
       const std::string& new_email,
       DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
     NOTREACHED();
-  }
-
-  void ShowEnterpriseAccountConfirmation(
-      const AccountInfo& account_info,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
-    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-      DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
-          account_info, std::move(callback));
-      return;
-    }
-    std::move(callback).Run(
-        DiceTurnSyncOnHelper ::SigninChoice::SIGNIN_CHOICE_CONTINUE);
   }
 };
 

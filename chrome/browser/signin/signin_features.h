@@ -9,8 +9,6 @@
 
 extern const base::Feature kProcessGaiaRemoveLocalAccountHeader;
 
-extern const base::Feature kAccountPoliciesLoadedWithoutSync;
-
 extern const base::Feature kSyncPromoAfterSigninIntercept;
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_

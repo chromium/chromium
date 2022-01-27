@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -347,8 +345,6 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
     const std::string& intercepted_account_level_policy_value) {
-  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
-    return false;
   std::string current_profile_account_restriction =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
 

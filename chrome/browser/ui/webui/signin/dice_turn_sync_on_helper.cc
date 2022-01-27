@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -166,29 +165,6 @@ void DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
     Browser* browser) {
   LoginUIServiceFactory::GetForProfile(browser->profile())
       ->DisplayLoginResult(browser, error);
-}
-
-// static
-void DiceTurnSyncOnHelper::Delegate::
-    ShowEnterpriseAccountConfirmationForBrowser(
-        const std::string& email,
-        bool prompt_for_new_profile,
-        DiceTurnSyncOnHelper::SigninChoiceCallback callback,
-        Browser* browser) {
-  DCHECK(callback);
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL);
-    return;
-  }
-
-  base::RecordAction(
-      base::UserMetricsAction("Signin_Show_EnterpriseAccountPrompt"));
-  TabDialogs::FromWebContents(web_contents)
-      ->ShowProfileSigninConfirmation(
-          browser, email, prompt_for_new_profile,
-          std::make_unique<SigninDialogDelegate>(std::move(callback)));
 }
 
 DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
@@ -389,8 +365,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
   dm_token_ = dm_token;
   client_id_ = client_id;
 
-  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) ||
-      !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
+  if (!chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
     // Allow user to create a new profile before continuing with sign-in.
     delegate_->ShowEnterpriseAccountConfirmation(
         account_info_,
@@ -399,8 +374,7 @@ void DiceTurnSyncOnHelper::OnRegisteredForPolicy(const std::string& dm_token,
     return;
   }
 
-  DCHECK(base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync) &&
-         chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
+  DCHECK(chrome::enterprise_util::UserAcceptedAccountManagement(profile_));
   LoadPolicyWithCachedCredentials();
 }
 
@@ -510,17 +484,15 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
   signin_metrics::LogSigninReason(signin_reason_);
   base::RecordAction(base::UserMetricsAction("Signin_Signin_Succeed"));
 
-  if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    bool user_accepted_management =
-        chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
-    if (!user_accepted_management) {
-      chrome::enterprise_util::SetUserAcceptedAccountManagement(
-          profile_, enterprise_account_confirmed_);
-      user_accepted_management = enterprise_account_confirmed_;
-    }
-    if (user_accepted_management)
-      signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
+  bool user_accepted_management =
+      chrome::enterprise_util::UserAcceptedAccountManagement(profile_);
+  if (!user_accepted_management) {
+    chrome::enterprise_util::SetUserAcceptedAccountManagement(
+        profile_, enterprise_account_confirmed_);
+    user_accepted_management = enterprise_account_confirmed_;
   }
+  if (user_accepted_management)
+    signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
 
   syncer::SyncService* sync_service = GetSyncService();
   if (sync_service) {
@@ -695,10 +667,8 @@ void DiceTurnSyncOnHelper::AttachToProfile() {
     // If the existing flow was using the same account, keep the account.
     if (current_helper->account_info_.account_id == account_info_.account_id)
       current_helper->signin_aborted_mode_ = SigninAbortedMode::KEEP_ACCOUNT;
-    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-          ->ShutdownUserCloudPolicyManager();
-    }
+    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+        ->ShutdownUserCloudPolicyManager();
     current_helper->AbortAndDelete();
   }
   DCHECK(!GetCurrentDiceTurnSyncOnHelper(profile_));
@@ -708,16 +678,10 @@ void DiceTurnSyncOnHelper::AttachToProfile() {
 }
 
 void DiceTurnSyncOnHelper::AbortAndDelete() {
-  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-        ->ShutdownUserCloudPolicyManager();
-  }
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (signin_aborted_mode_ == SigninAbortedMode::REMOVE_ACCOUNT) {
-    if (base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync)) {
-      policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
-          ->ShutdownUserCloudPolicyManager();
-    }
+    policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
+        ->ShutdownUserCloudPolicyManager();
     // Revoke the token, and the AccountReconcilor and/or the Gaia server will
     // take care of invalidating the cookies.
     auto* accounts_mutator = identity_manager_->GetAccountsMutator();

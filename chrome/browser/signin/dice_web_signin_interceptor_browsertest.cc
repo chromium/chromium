@@ -29,7 +29,6 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -195,10 +194,7 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
           : 0;
   int profile_creation_count = reauth ? 0 : 1 - profile_switch_count;
   int fetched_account_count =
-      reauth || outcome == SigninInterceptionHeuristicOutcome::
-                               kInterceptEnterpriseForcedProfileSwitch
-          ? 1
-          : profile_creation_count;
+      std::max(profile_switch_count, profile_creation_count);
 
   histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                       outcome, 1);
@@ -610,10 +606,8 @@ class DiceWebSigninInterceptorEnterpriseBrowserTest
     : public DiceWebSigninInterceptorBrowserTest {
  public:
   DiceWebSigninInterceptorEnterpriseBrowserTest() {
-    enterprise_feature_list_.InitWithFeatures(
-        {kAccountPoliciesLoadedWithoutSync,
-         policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher},
-        {});
+    enterprise_feature_list_.InitAndEnableFeature(
+        policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
   }
 
  private:

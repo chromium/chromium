@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -46,16 +44,7 @@ TEST_F(SigninUtilTest, GetForceSigninPolicy) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-class SigninUtilEnterpriseTest : public BrowserWithTestWindowTest {
- public:
-  SigninUtilEnterpriseTest()
-      : feature_list_(kAccountPoliciesLoadedWithoutSync) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(SigninUtilEnterpriseTest, ProfileSeparationEnforcedByPolicy) {
+TEST_F(SigninUtilTest, ProfileSeparationEnforcedByPolicy) {
   std::unique_ptr<TestingProfile> profile = TestingProfile::Builder().Build();
 
   // No policy set on the active profile.
