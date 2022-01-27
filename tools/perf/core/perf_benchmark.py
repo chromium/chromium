@@ -130,6 +130,8 @@ class PerfBenchmark(benchmark.Benchmark):
       return 'linux'
     if target_os == 'cros':
       return 'chromeos'
+    if target_os == 'lacros':
+      return 'chromeos_lacros'
     return target_os
 
   def _GetVariationsBrowserArgs(self,
