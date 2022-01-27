@@ -199,9 +199,12 @@ export interface VideoTrackSettings {
   frameRate: number;
 }
 
-export function toVideoTrackSettings(mediaTrackSettings: MediaTrackSettings):
+export function getVideoTrackSettings(videoTrack: MediaStreamTrack):
     VideoTrackSettings {
-  const {deviceId, width, height, frameRate} = mediaTrackSettings;
+  // TODO(pihsun): The type from TypeScript lib.dom.d.ts is wrong on Chrome and
+  // the .deviceId should never be undefined. Try to override that when we have
+  // newer TypeScript compiler (>= 4.5) that supports overriding lib.dom.d.ts.
+  const {deviceId, width, height, frameRate} = videoTrack.getSettings();
   return {
     deviceId: assertExists(deviceId),
     width: assertExists(width),
@@ -234,7 +237,7 @@ export class PreviewVideo {
   }
 
   getVideoSettings(): VideoTrackSettings {
-    return toVideoTrackSettings(this.getVideoTrack().getSettings());
+    return getVideoTrackSettings(this.getVideoTrack());
   }
 
   isExpired(): boolean {

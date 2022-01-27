@@ -18,6 +18,8 @@ import {
   AndroidControlAwbMode,
   AndroidControlAwbState,
   AndroidStatisticsFaceDetectMode,
+  CameraMetadata,
+  CameraMetadataEntry,
   CameraMetadataTag,
   StreamType,
 } from '../mojo/type.js';
@@ -31,6 +33,7 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  getVideoTrackSettings,
   PreviewVideo,
   Resolution,
 } from '../type.js';
@@ -73,12 +76,12 @@ export class Preview {
   private watchdog: number|null = null;
 
   /**
-   * Promise for the current applying focus.
+   * Unique marker for the current applying focus.
    */
-  private focus: Promise<void>|null = null;
+  private focusMarker: symbol|null = null;
 
   private facing = Facing.NOT_SET;
-  private deviceId: string|null;
+  private deviceId: string|null = null;
   private vidPid: string|null = null;
   private isSupportPTZInternal = false;
 
@@ -132,7 +135,7 @@ export class Preview {
     return this.facing;
   }
 
-  getDeviceId(): string {
+  getDeviceId(): string|null {
     return this.deviceId;
   }
 
@@ -196,7 +199,7 @@ export class Preview {
       return;
     }
 
-    const {deviceId} = this.getVideoTrack().getSettings();
+    const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
     if (this.deviceDefaultPTZ.has(deviceId)) {
       return;
     }
@@ -239,8 +242,9 @@ export class Preview {
     if (this.streamInternal === null || !this.isSupportPTZInternal) {
       return;
     }
-    const {deviceId} = this.getVideoTrack().getSettings();
+    const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
     const defaultPTZ = this.deviceDefaultPTZ.get(deviceId);
+    assert(defaultPTZ !== undefined);
     await this.getVideoTrack().applyConstraints({advanced: [defaultPTZ]});
   }
 
@@ -274,6 +278,7 @@ export class Preview {
       video.srcObject = stream;
     });
     await video.play();
+    assert(this.video.parentElement !== null);
     this.video.parentElement.replaceChild(tpl, this.video);
     this.video.srcObject = null;
     this.video = video;
@@ -310,23 +315,26 @@ export class Preview {
       // Use a watchdog since the stream.onended event is unreliable in the
       // recent version of Chrome. As of 55, the event is still broken.
       this.watchdog = setInterval(() => {
+        assert(this.streamInternal !== null);
         // Check if video stream is ended (audio stream may still be live).
         if (this.streamInternal.getVideoTracks().length === 0 ||
             this.streamInternal.getVideoTracks()[0].readyState === 'ended') {
-          clearInterval(this.watchdog);
-          this.watchdog = null;
+          if (this.watchdog !== null) {
+            clearInterval(this.watchdog);
+            this.watchdog = null;
+          }
           this.streamInternal = null;
           this.onNewStreamNeeded();
         }
       }, 100);
       await this.updateFacing();
-      this.deviceId = this.getVideoTrack().getSettings().deviceId;
+      this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
       this.updateShowMetadata();
       await this.updatePTZ();
 
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
-        const {deviceId} = this.getVideoTrack().getSettings();
+        const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
         const isSuccess =
             await deviceOperator.setCameraFrameRotationEnabledAtSource(
                 deviceId, false);
@@ -362,12 +370,13 @@ export class Preview {
     this.disableShowMetadata();
     if (this.streamInternal !== null) {
       const track = this.getVideoTrack();
-      const {deviceId} = track.getSettings();
+      const {deviceId} = getVideoTrackSettings(track);
       track.stop();
       const deviceOperator = await DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         deviceOperator.dropConnection(deviceId);
       }
+      assert(this.onPreviewExpired !== null);
       this.onPreviewExpired.signal();
       this.onPreviewExpired = null;
       this.streamInternal = null;
@@ -410,18 +419,19 @@ export class Preview {
       element.style.display = 'none';
     });
 
-    const displayCategory = (selector, enabled) => {
+    const displayCategory = (selector: string, enabled: boolean) => {
       dom.get(selector, HTMLElement).classList.toggle('mode-on', enabled);
     };
 
-    const showValue = (selector, val) => {
+    const showValue = (selector: string, val: string) => {
       const element = dom.get(selector, HTMLElement);
       element.style.display = '';
       element.textContent = val;
     };
 
-    const buildInverseMap =
-        (obj: Record<string, number>, prefix: string): Map<number, string> => {
+    const buildInverseLookupFunction =
+        (obj: Record<string, number>,
+         prefix: string): (key: number) => string => {
           const map = new Map<number, string>();
           for (const [key, val] of Object.entries(obj)) {
             if (!key.startsWith(prefix)) {
@@ -435,20 +445,24 @@ export class Preview {
             }
             map.set(val, key.slice(prefix.length));
           }
-          return map;
+          return (key: number) => {
+            const val = map.get(key);
+            assert(val !== undefined);
+            return val;
+          };
         };
 
-    const afStateName =
-        buildInverseMap(AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
-    const aeStateName =
-        buildInverseMap(AndroidControlAeState, 'ANDROID_CONTROL_AE_STATE_');
-    const awbStateName =
-        buildInverseMap(AndroidControlAwbState, 'ANDROID_CONTROL_AWB_STATE_');
-    const aeAntibandingModeName = buildInverseMap(
+    const afStateNameLookup = buildInverseLookupFunction(
+        AndroidControlAfState, 'ANDROID_CONTROL_AF_STATE_');
+    const aeStateNameLookup = buildInverseLookupFunction(
+        AndroidControlAeState, 'ANDROID_CONTROL_AE_STATE_');
+    const awbStateNameLookup = buildInverseLookupFunction(
+        AndroidControlAwbState, 'ANDROID_CONTROL_AWB_STATE_');
+    const aeAntibandingModeNameLookup = buildInverseLookupFunction(
         AndroidControlAeAntibandingMode,
         'ANDROID_CONTROL_AE_ANTIBANDING_MODE_');
 
-    let sensorSensitivity = null;
+    let sensorSensitivity: number|null = null;
     let sensorSensitivityBoost = 100;
     const getSensitivity = () => {
       if (sensorSensitivity === null) {
@@ -468,7 +482,7 @@ export class Preview {
         showValue('#preview-focus-distance', `${focusDistance} cm`);
       },
       [tag.ANDROID_CONTROL_AF_STATE]: ([value]) => {
-        showValue('#preview-af-state', afStateName.get(value));
+        showValue('#preview-af-state', afStateNameLookup(value));
       },
       [tag.ANDROID_SENSOR_SENSITIVITY]: ([value]) => {
         sensorSensitivity = value;
@@ -490,10 +504,10 @@ export class Preview {
       },
       [tag.ANDROID_CONTROL_AE_ANTIBANDING_MODE]: ([value]) => {
         showValue(
-            '#preview-ae-antibanding-mode', aeAntibandingModeName.get(value));
+            '#preview-ae-antibanding-mode', aeAntibandingModeNameLookup(value));
       },
       [tag.ANDROID_CONTROL_AE_STATE]: ([value]) => {
-        showValue('#preview-ae-state', aeStateName.get(value));
+        showValue('#preview-ae-state', aeStateNameLookup(value));
       },
       [tag.ANDROID_COLOR_CORRECTION_GAINS]: ([valueRed, , , valueBlue]) => {
         const wbGainRed = valueRed.toFixed(2);
@@ -502,7 +516,7 @@ export class Preview {
         showValue('#preview-wb-gain-blue', `${wbGainBlue}x`);
       },
       [tag.ANDROID_CONTROL_AWB_STATE]: ([value]) => {
-        showValue('#preview-awb-state', awbStateName.get(value));
+        showValue('#preview-awb-state', awbStateNameLookup(value));
       },
       [tag.ANDROID_CONTROL_AF_MODE]: ([value]) => {
         displayCategory(
@@ -532,7 +546,7 @@ export class Preview {
     // Here we use the metadata events to calculate a reasonable approximation.
     const updateFps = (() => {
       const FPS_MEASURE_FRAMES = 100;
-      const timestamps = [];
+      const timestamps: number[] = [];
       return () => {
         const now = performance.now();
         timestamps.push(now);
@@ -551,29 +565,32 @@ export class Preview {
       return;
     }
 
-    const deviceId = videoTrack.getSettings().deviceId;
+    const {deviceId} = getVideoTrackSettings(videoTrack);
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
     this.faceOverlay =
         new FaceOverlay(activeArraySize, (360 - cameraFrameRotation) % 360);
 
-    const updateFace = (mode, rects) => {
-      if (mode ===
-          AndroidStatisticsFaceDetectMode
-              .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
-        dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
-        this.faceOverlay.clear();
-        return;
-      }
-      assert(rects.length % 4 === 0);
-      const numFaces = rects.length / 4;
-      const label = numFaces >= 2 ? 'Faces' : 'Face';
-      showValue('#preview-num-faces', `${numFaces} ${label}`);
-      this.faceOverlay.show(rects);
-    };
+    const updateFace =
+        (mode: AndroidStatisticsFaceDetectMode, rects: number[]) => {
+          assert(this.faceOverlay !== null);
+          if (mode ===
+              AndroidStatisticsFaceDetectMode
+                  .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
+            dom.get('#preview-num-faces', HTMLDivElement).style.display =
+                'none';
+            this.faceOverlay.clear();
+            return;
+          }
+          assert(rects.length % 4 === 0);
+          const numFaces = rects.length / 4;
+          const label = numFaces >= 2 ? 'Faces' : 'Face';
+          showValue('#preview-num-faces', `${numFaces} ${label}`);
+          this.faceOverlay.show(rects);
+        };
 
-    const callback = (metadata) => {
+    const callback = (metadata: CameraMetadata) => {
       showValue('#preview-resolution', resolution);
       showValue('#preview-device-name', deviceName);
       const fps = updateFps();
@@ -583,9 +600,9 @@ export class Preview {
 
       let faceMode = AndroidStatisticsFaceDetectMode
                          .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF;
-      let faceRects = [];
+      let faceRects: number[] = [];
 
-      const tryParseFaceEntry = (entry) => {
+      const tryParseFaceEntry = (entry: CameraMetadataEntry) => {
         switch (entry.tag) {
           case tag.ANDROID_STATISTICS_FACE_DETECT_MODE: {
             const data = parseMetadata(entry);
@@ -601,6 +618,7 @@ export class Preview {
         return false;
       };
 
+      assert(metadata.entries !== undefined);
       for (const entry of metadata.entries) {
         if (entry.count === 0) {
           continue;
@@ -683,7 +701,9 @@ export class Preview {
    */
   private onFocusClicked(event: MouseEvent) {
     this.cancelFocus();
-    const focus = (async () => {
+    const marker = Symbol();
+    this.focusMarker = marker;
+    (async () => {
       try {
         // Normalize to square space coordinates by W3C spec.
         const x = event.offsetX / this.video.offsetWidth;
@@ -694,7 +714,7 @@ export class Preview {
         // error and return.
         return;
       }
-      if (focus !== this.focus) {
+      if (marker !== this.focusMarker) {
         return;  // Focus was cancelled.
       }
       const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
@@ -702,16 +722,16 @@ export class Preview {
       clone.style.left = `${event.offsetX + this.video.offsetLeft}px`;
       clone.style.top = `${event.offsetY + this.video.offsetTop}px`;
       clone.hidden = false;
+      assert(aim.parentElement !== null);
       aim.parentElement.replaceChild(clone, aim);
     })();
-    this.focus = focus;
   }
 
   /**
    * Cancels the current applying focus.
    */
   private cancelFocus() {
-    this.focus = null;
+    this.focusMarker = null;
     const aim = dom.get('#preview-focus-aim', HTMLObjectElement);
     aim.hidden = true;
   }

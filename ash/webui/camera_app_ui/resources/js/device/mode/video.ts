@@ -27,10 +27,10 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  getVideoTrackSettings,
   NoChunkError,
   PreviewVideo,
   Resolution,
-  toVideoTrackSettings,
   VideoType,
 } from '../../type.js';
 import {WaitableEvent} from '../../waitable_event.js';
@@ -356,7 +356,7 @@ export class Video extends ModeBase {
         {profile: h264.Profile.HIGH, multiplier: 2};
     const {profile, multiplier} = preference;
     const {width, height, frameRate} =
-        toVideoTrackSettings(this.getVideoTrack().getSettings());
+        getVideoTrackSettings(this.getVideoTrack());
     const resolution = new Resolution(width, height);
     const bitrate = resolution.area * multiplier;
     const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
