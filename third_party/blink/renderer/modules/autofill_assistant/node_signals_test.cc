@@ -90,17 +90,17 @@ TEST_F(NodeSignalsTest, AssignsTagNames) {
 
 TEST_F(NodeSignalsTest, IgnoresNonVisibleElements) {
   SetBodyContent(R"(<input style="display: none;">)");
-  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
-            0u);
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
 
   SetBodyContent(R"(<input style="visibility: hidden;">)");
-  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
-            0u);
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
 
   SetBodyContent(R"(
     <input style="height: 0; line-height: 0; padding: 0; border: none;">)");
-  EXPECT_EQ(GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).size(),
-            0u);
+  EXPECT_TRUE(
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument())).empty());
 
   // An element outside of the visible viewport should still be returned.
   SetBodyContent(
@@ -164,7 +164,7 @@ TEST_F(NodeSignalsTest, CollectInnerText) {
   ASSERT_EQ(results[1].node_features.text.size(), 1u);
   EXPECT_EQ(results[1].node_features.text[0], "value");
 
-  ASSERT_EQ(results[2].node_features.text.size(), 0u);
+  EXPECT_TRUE(results[2].node_features.text.empty());
 
   ASSERT_EQ(results[3].node_features.text.size(), 2u);
   EXPECT_EQ(results[3].node_features.text[0], "A");
@@ -181,7 +181,7 @@ TEST_F(NodeSignalsTest, GetLabelFromParentElement) {
   ASSERT_EQ(results[0].label_features.text.size(), 1u);
   EXPECT_EQ(results[0].label_features.text[0], "Name");
 
-  ASSERT_EQ(results[1].label_features.text.size(), 0u);
+  EXPECT_TRUE(results[1].label_features.text.empty());
 }
 
 TEST_F(NodeSignalsTest, GetLabelByForAttribute) {
@@ -195,7 +195,7 @@ TEST_F(NodeSignalsTest, GetLabelByForAttribute) {
   ASSERT_EQ(results[0].label_features.text.size(), 1u);
   EXPECT_EQ(results[0].label_features.text[0], "Name");
 
-  ASSERT_EQ(results[1].label_features.text.size(), 0u);
+  EXPECT_TRUE(results[1].label_features.text.empty());
 }
 
 TEST_F(NodeSignalsTest, GetLabelByForAttributeWithCollision) {
@@ -228,7 +228,46 @@ TEST_F(NodeSignalsTest, GetLabelByAriaElements) {
 
   ASSERT_EQ(results[0].label_features.text.size(), 2u);
   EXPECT_EQ(results[0].label_features.text[0], "Billing");
-  EXPECT_EQ(results[0].label_features.text[1], "Name");
+  EXPECT_EQ(results[0].label_features.text[1], "Name");  // From Aria
+}
+
+TEST_F(NodeSignalsTest, GetLabelFromGeometry) {
+  // Make sure nested elements don't get added multiple times.
+  // Make sure elements that are not "pure text" get added.
+  SetBodyContent(R"(
+    <div><div>Label <i class="icon"></i></div></div>
+    <div><input></div>)");
+
+  WebVector<AutofillAssistantNodeSignals> results_1 =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results_1.size(), 1u);
+
+  ASSERT_EQ(results_1[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results_1[0].label_features.text[0], "Label");
+
+  // Make sure for nested elements only the "closest" gets added.
+  SetBodyContent(R"(
+    <div>Label <div>Sublabel</div></div>
+    <div><input></div>)");
+
+  WebVector<AutofillAssistantNodeSignals> results_2 =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results_2.size(), 1u);
+
+  ASSERT_EQ(results_2[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results_2[0].label_features.text[0], "Sublabel");
+
+  // Make sure for all inline elements get added.
+  SetBodyContent(R"(
+    <div>Name <i>First</i></div>
+    <div><input></div>)");
+
+  WebVector<AutofillAssistantNodeSignals> results_3 =
+      GetAutofillAssistantNodeSignals(WebDocument(&GetDocument()));
+  ASSERT_EQ(results_3.size(), 1u);
+
+  ASSERT_EQ(results_3[0].label_features.text.size(), 1u);
+  EXPECT_EQ(results_3[0].label_features.text[0], "Name  First");
 }
 
 }  // namespace blink
