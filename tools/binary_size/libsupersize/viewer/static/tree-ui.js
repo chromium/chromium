@@ -416,7 +416,7 @@ const newTreeElement = (() => {
 
   // Process response of an initial load / upload.
   function processLoadTreeResponse(message) {
-    const {diffMode, beforeBlobUrl, loadBlobUrl, isMultiContainer} =
+    const {diffMode, beforeBlobUrl, loadBlobUrl, isMultiContainer, root} =
         message.loadResults;
     console.log(
         '%cPro Tip: %cawait supersize.worker.openNode("$FILE_PATH")',
