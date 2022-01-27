@@ -151,7 +151,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
     Status Open(bool read_only);  // No-op if already opened.
     void Close();                 // No-op if not opened.
 
-    Status Delete();
+    void DeleteWarnIfFailed();
 
     // Attempts to read |size| bytes from position |pos| and returns
     // reference to the data that were actually read (no more than |size|).

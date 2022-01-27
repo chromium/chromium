@@ -15,6 +15,14 @@ static_library("backoff_settings") {
   deps = [ "//net" ]
 }
 
+static_library("file") {
+  sources = [
+    "file.cc",
+    "file.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("shared_vector") {
   sources = [ "shared_vector.h" ]
   deps = [
@@ -73,6 +81,7 @@ source_set("test_callbacks_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "file_unittest.cc",
     "shared_queue_unittest.cc",
     "shared_vector_unittest.cc",
     "status_macros_unittest.cc",
@@ -80,6 +89,7 @@ source_set("unit_tests") {
     "statusor_unittest.cc",
   ]
   deps = [
+    ":file",
     ":shared_queue",
     ":shared_vector",
     ":status",
