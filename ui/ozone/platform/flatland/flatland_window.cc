@@ -170,16 +170,15 @@ void FlatlandWindow::PrepareForShutdown() {
 }
 
 void FlatlandWindow::SetCapture() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  has_capture_ = true;
 }
 
 void FlatlandWindow::ReleaseCapture() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  has_capture_ = false;
 }
 
 bool FlatlandWindow::HasCapture() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return has_capture_;
 }
 
 void FlatlandWindow::ToggleFullscreen() {

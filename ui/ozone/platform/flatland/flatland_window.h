@@ -160,6 +160,10 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
 
   // True if |view_| is currently attached to a scene.
   bool is_view_attached_ = false;
+
+  // True if SetCapture() was called. Currently does not reflect capture state
+  // in Scenic.
+  bool has_capture_ = false;
 };
 
 }  // namespace ui
