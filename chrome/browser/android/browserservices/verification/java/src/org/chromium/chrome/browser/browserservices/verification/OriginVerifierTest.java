@@ -18,12 +18,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
-import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -34,12 +30,9 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for OriginVerifier. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -145,30 +138,6 @@ public class OriginVerifierTest {
                                 CustomTabsService.RELATION_HANDLE_ALL_URLS)));
         Assert.assertEquals(mLastPackageName, PACKAGE_NAME);
         Assert.assertEquals(mLastOrigin, mHttpsOrigin);
-    }
-
-    @Test
-    @SmallTest
-    public void testWipedWithBrowsingData() throws TimeoutException {
-        CallbackHelper callbackHelper = new CallbackHelper();
-
-        String relationship = "relationship1";
-        Set<String> savedLinks = new HashSet<>();
-        savedLinks.add(relationship);
-
-        VerificationResultStore mStore = VerificationResultStore.getInstance();
-
-        mStore.setRelationships(savedLinks);
-
-        Assert.assertTrue(mStore.getRelationships().contains(relationship));
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(callbackHelper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
-        });
-
-        callbackHelper.waitForCallback(0);
-        Assert.assertTrue(mStore.getRelationships().isEmpty());
     }
 
     @Test

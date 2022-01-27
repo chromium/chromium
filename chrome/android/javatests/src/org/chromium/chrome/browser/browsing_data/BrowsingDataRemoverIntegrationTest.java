@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.verification.VerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
@@ -28,6 +29,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration tests for the native BrowsingDataRemover.
@@ -108,5 +111,29 @@ public class BrowsingDataRemoverIntegrationTest {
 
         // All webapps should have been unregistered.
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testClearingTrustedWebActivityVerifications() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+
+        String relationship = "relationship1";
+        Set<String> savedLinks = new HashSet<>();
+        savedLinks.add(relationship);
+
+        VerificationResultStore mStore = VerificationResultStore.getInstanceForTesting();
+
+        mStore.setRelationships(savedLinks);
+
+        Assert.assertTrue(mStore.getRelationships().contains(relationship));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(callbackHelper::notifyCalled,
+                    new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
+        });
+
+        callbackHelper.waitForCallback(0);
+        Assert.assertTrue(mStore.getRelationships().isEmpty());
     }
 }

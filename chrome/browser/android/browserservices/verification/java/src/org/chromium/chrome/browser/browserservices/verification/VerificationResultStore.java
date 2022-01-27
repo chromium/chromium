@@ -80,7 +80,12 @@ public class VerificationResultStore {
     }
 
     @VisibleForTesting
-    Set<String> getRelationships() {
+    public static VerificationResultStore getInstanceForTesting() {
+        return getInstance();
+    }
+
+    @VisibleForTesting
+    public Set<String> getRelationships() {
         // In case we're called on the UI thread and Preferences haven't been read before.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // From the official docs, modifying the result of a SharedPreferences.getStringSet can
@@ -91,7 +96,7 @@ public class VerificationResultStore {
     }
 
     @VisibleForTesting
-    void setRelationships(Set<String> relationships) {
+    public void setRelationships(Set<String> relationships) {
         SharedPreferencesManager.getInstance().writeStringSet(
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS, relationships);
     }

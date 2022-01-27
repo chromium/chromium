@@ -13,7 +13,6 @@ include_rules = [
 specific_include_rules = {
   '.*Test\.java': [
     "+base/test/android",
-    "+chrome/android/java/src/org/chromium/chrome/browser/browsing_data",
     "+chrome/test/android",
     "+content/public/test/android/javatests/src/org/chromium/content_public/browser/test",
   ]
