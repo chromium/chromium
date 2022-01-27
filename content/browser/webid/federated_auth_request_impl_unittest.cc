@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
@@ -28,6 +29,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,6 +43,7 @@ using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using blink::mojom::RevokeStatus;
+using Entry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
@@ -462,7 +465,9 @@ LogoutRequestPtr MakeLogoutRequest(const std::string& endpoint,
 
 class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
  protected:
-  FederatedAuthRequestImplTest() = default;
+  FederatedAuthRequestImplTest() {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+  }
   ~FederatedAuthRequestImplTest() override = default;
 
   FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
@@ -711,6 +716,70 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return mock_dialog_controller_;
   }
 
+  ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
+
+  void ExpectRequestIdTokenStatusUKM(IdTokenStatus status) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    if (entries.empty())
+      FAIL() << "No RequestIdTokenStatus was recorded";
+
+    // There are multiple types of metrics under the same FedCM UKM. We need to
+    // make sure that the metric only includes the expected one.
+    for (const auto* const entry : entries) {
+      const int64_t* metric =
+          ukm_recorder()->GetEntryMetric(entry, "Status_RequestIdToken");
+      if (metric && *metric != static_cast<int>(status))
+        FAIL() << "Unexpected status was recorded";
+    }
+
+    SUCCEED();
+  }
+
+  void ExpectRevokeStatusUKM(RevokeStatusForMetrics status) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    if (entries.empty())
+      FAIL() << "No RevokeStatus was recorded";
+
+    // There are multiple types of metrics under the same FedCM UKM. We need to
+    // make sure that the metric only includes the expected one.
+    for (const auto* const entry : entries) {
+      const int64_t* metric =
+          ukm_recorder()->GetEntryMetric(entry, "Status_Revoke");
+      if (metric && *metric != static_cast<int>(status))
+        FAIL() << "Unexpected status was recorded";
+    }
+
+    SUCCEED();
+  }
+
+  void ExpectTimingUKM(const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
+        SUCCEED();
+        return;
+      }
+    }
+    FAIL() << "Expected UKM was not recorded";
+  }
+
+  void ExpectNoTimingUKM(const std::string& metric_name) {
+    auto entries = ukm_recorder()->GetEntriesByName(Entry::kEntryName);
+
+    ASSERT_FALSE(entries.empty());
+
+    for (const auto* const entry : entries) {
+      if (ukm_recorder()->GetEntryMetric(entry, metric_name))
+        FAIL() << "Unexpected UKM was recorded";
+    }
+    SUCCEED();
+  }
+
  protected:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   // Note: `auth_request_service_` owns itself, and will generally be deleted
@@ -738,6 +807,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   AccountList displayed_accounts_;
 
   GURL provider_;
+
+ private:
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 class BasicFederatedAuthRequestImplTest
@@ -1135,11 +1207,21 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
         EXPECT_EQ(kAccountId, account_id);
         std::move(callback).Run(RevokeResponse::kSuccess);
       }));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   auto status = PerformRevokeRequest(kAccountId);
   EXPECT_EQ(RevokeStatus::kSuccess, status);
+
+  ukm_loop.Run();
+
   histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
   histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
                                      RevokeStatusForMetrics::kSuccess, 1);
+
+  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess);
 }
 
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
@@ -1157,12 +1239,20 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
       HasRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))))
       .WillOnce(Return(false));
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   auto status = PerformRevokeRequest(kAccountId);
   EXPECT_EQ(RevokeStatus::kError, status);
+
+  ukm_loop.Run();
   histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
   histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
                                      RevokeStatusForMetrics::kNoAccountToRevoke,
                                      1);
+
+  ExpectRevokeStatusUKM(RevokeStatusForMetrics::kNoAccountToRevoke);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
@@ -1177,10 +1267,17 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
       &mock_sharing_permission_delegate);
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   auto auth_response = PerformAuthRequest(
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(auth_response.second.value(), kToken);
+
+  ukm_loop.Run();
 
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
@@ -1191,6 +1288,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
   histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
                                      IdTokenStatus::kSuccess, 1);
+
+  ExpectTimingUKM("Timing.ShowAccountsDialog");
+  ExpectTimingUKM("Timing.ContinueOnDialog");
+  ExpectTimingUKM("Timing.IdTokenResponse");
+  ExpectTimingUKM("Timing.TurnaroundTime");
+  ExpectNoTimingUKM("Timing.CancelOnDialog");
+
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kSuccess);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
@@ -1210,10 +1315,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
                   url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
       .WillOnce(Return(true));
 
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   auto auth_response = PerformAuthRequest(
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
+
+  ukm_loop.Run();
 
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
   histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
@@ -1224,6 +1335,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
   histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
                                      IdTokenStatus::kSuccess, 1);
+
+  ExpectTimingUKM("Timing.ShowAccountsDialog");
+  ExpectTimingUKM("Timing.ContinueOnDialog");
+  ExpectTimingUKM("Timing.IdTokenResponse");
+  ExpectTimingUKM("Timing.TurnaroundTime");
+  ExpectNoTimingUKM("Timing.CancelOnDialog");
+
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kSuccess);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
@@ -1270,9 +1389,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
           }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(Entry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
   auto auth_response = PerformAuthRequest(
       test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
       test_case.inputs.prefer_auto_sign_in);
+
+  ukm_loop.Run();
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
@@ -1286,6 +1412,14 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
   histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
                                      IdTokenStatus::kNotSelectAccount, 1);
+
+  ExpectTimingUKM("Timing.ShowAccountsDialog");
+  ExpectTimingUKM("Timing.CancelOnDialog");
+  ExpectNoTimingUKM("Timing.ContinueOnDialog");
+  ExpectNoTimingUKM("Timing.IdTokenResponse");
+  ExpectNoTimingUKM("Timing.TurnaroundTime");
+
+  ExpectRequestIdTokenStatusUKM(IdTokenStatus::kNotSelectAccount);
 }
 
 }  // namespace content

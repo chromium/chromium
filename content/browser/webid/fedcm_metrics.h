@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
 #define CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
 
+#include "services/metrics/public/cpp/ukm_builders.h"
+
 namespace base {
 class TimeDelta;
 }
@@ -58,32 +60,37 @@ enum class FedCmRevokeStatus {
 
 // Records the time from when a call to the API was made to when the accounts
 // dialog is shown.
-void RecordShowAccountsDialogTime(base::TimeDelta duration);
+void RecordShowAccountsDialogTime(base::TimeDelta duration,
+                                  ukm::SourceId source_id);
 
 // Records the time from when the accounts dialog is shown to when the user
 // presses the Continue button.
-void RecordContinueOnDialogTime(base::TimeDelta duration);
+void RecordContinueOnDialogTime(base::TimeDelta duration,
+                                ukm::SourceId source_id);
 
 // Records the time from when the accounts dialog is shown to when the user
 // closes the dialog without selecting any account.
-void RecordCancelOnDialogTime(base::TimeDelta duration);
+void RecordCancelOnDialogTime(base::TimeDelta duration,
+                              ukm::SourceId source_id);
 
 // Records the time from when the user presses the Continue button to when the
 // idtoken response is received. Also records the overall time from when the API
 // is called to when the idtoken response is received.
 void RecordIdTokenResponseAndTurnaroundTime(
     base::TimeDelta id_token_response_time,
-    base::TimeDelta turnaround_time);
+    base::TimeDelta turnaround_time,
+    ukm::SourceId source_id);
 
 // Records the status of the |RequestIdToken| call.
 // TODO(yigu): Call this function from |CompleteRequest| once the mojom side
 // |RequestIdTokenStatus| is cleaned up.
-void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status);
+void RecordRequestIdTokenStatus(FedCmRequestIdTokenStatus status,
+                                ukm::SourceId source_id);
 
 // Records the status of the |Revoke| call.
 // TODO(yigu): Call this function from |CompleteRevokeRequest| once the mojom
 // side |RevokeStatus| is cleaned up.
-void RecordRevokeStatus(FedCmRevokeStatus status);
+void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id);
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FEDCM_METRICS_H_
