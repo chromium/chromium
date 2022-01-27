@@ -142,7 +142,10 @@ public class QueryTileUtilsTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
-            ChromeFeatureList.QUERY_TILES_IN_NTP, ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+            ChromeFeatureList.QUERY_TILES_IN_NTP,
+            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:behavioural_targeting/model_comparison"})
     public void
     testShowQueryTilesSegmentationResultComparison() {
         QueryTileUtils.setSegmentationResultsForTesting(1 /*DONT_SHOW*/);

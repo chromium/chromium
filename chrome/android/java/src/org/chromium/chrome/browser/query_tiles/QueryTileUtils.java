@@ -104,11 +104,16 @@ public class QueryTileUtils {
         }
 
         // Check if segmentation model should be used.
+        // When behavioural targeting key is "model", the segmentation model result will be used.
+        // When behavioural targeting key is "model_comparison", the segmentation model result will
+        // be recorded for comparison in histogram.
         final String behavioralTarget = ChromeFeatureList.getFieldTrialParamByFeature(
                 ChromeFeatureList.QUERY_TILES_SEGMENTATION, BEHAVIOURAL_TARGETING_KEY);
 
         boolean shouldUseModelResult =
                 !TextUtils.isEmpty(behavioralTarget) && TextUtils.equals(behavioralTarget, "model");
+        boolean shouldCompareModelResult = !TextUtils.isEmpty(behavioralTarget)
+                && TextUtils.equals(behavioralTarget, "model_comparison");
 
         long nextDecisionTimestamp = SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
@@ -149,7 +154,9 @@ public class QueryTileUtils {
                     || recentMVClicks <= recentQueryTileClicks);
 
             // Used for measuring consistency of segmentation model result.
-            recordSegmentationResultComparison(getSegmentationResult(), showQueryTiles);
+            if (shouldCompareModelResult) {
+                recordSegmentationResultComparison(getSegmentationResult(), showQueryTiles);
+            }
 
             updateDisplayStatusAndNextDecisionTime(showQueryTiles);
             return showQueryTiles;
@@ -220,6 +227,7 @@ public class QueryTileUtils {
      * @return The segmentation result.
      */
     private static @ShowQueryTilesSegmentationResult int getSegmentationResult() {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_SEGMENTATION);
         @ShowQueryTilesSegmentationResult
         int segmentationResult;
         if (sSegmentationResultsForTesting == -1) {
