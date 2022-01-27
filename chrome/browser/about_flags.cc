@@ -1514,6 +1514,13 @@ const FeatureEntry::FeatureVariation kRealboxMatchOmniboxThemeVariations[] = {
      kRealboxMatchOmniboxThemeVar2, base::size(kRealboxMatchOmniboxThemeVar2),
      nullptr}};
 
+const FeatureEntry::FeatureParam kRealboxMatchSearchboxThemeRoundedCorners[] = {
+    {ntp_features::kRealboxMatchSearchboxThemeParam, "1"}};
+
+const FeatureEntry::FeatureVariation kRealboxMatchSearchboxThemeVariations[] = {
+    {"(Rounded Corners)", kRealboxMatchSearchboxThemeRoundedCorners,
+     base::size(kRealboxMatchSearchboxThemeRoundedCorners), nullptr}};
+
 const FeatureEntry::FeatureParam kNtpSafeBrowsingModuleFastCooldown[] = {
     {ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam, "0.001"},
     {ntp_features::kNtpSafeBrowsingModuleCountMaxParam, "1"}};
@@ -4997,6 +5004,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxMatchOmniboxThemeDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxMatchOmniboxTheme,
                                     kRealboxMatchOmniboxThemeVariations,
+                                    "OmniboxBundledExperimentV1")},
+
+    {"ntp-realbox-match-searchbox-theme",
+     flag_descriptions::kNtpRealboxMatchSearchboxThemeName,
+     flag_descriptions::kNtpRealboxMatchSearchboxThemeDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxMatchSearchboxTheme,
+                                    kRealboxMatchSearchboxThemeVariations,
                                     "OmniboxBundledExperimentV1")},
 
     {"ntp-realbox-pedals", flag_descriptions::kNtpRealboxPedalsName,

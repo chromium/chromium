@@ -3682,6 +3682,12 @@ const char kNtpRealboxMatchOmniboxThemeName[] =
 const char kNtpRealboxMatchOmniboxThemeDescription[] =
     "NTP Realbox matches the Omnibox theme when enabled.";
 
+const char kNtpRealboxMatchSearchboxThemeName[] =
+    "NTP Realbox Matches Searchbox Theme";
+const char kNtpRealboxMatchSearchboxThemeDescription[] =
+    "NTP Realbox matches the Searchbox theme when enabled. Specifically a "
+    "border, drop shadow on hover.";
+
 const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";

@@ -26,6 +26,7 @@ extern const base::Feature kIframeOneGoogleBar;
 extern const base::Feature kNtpRepeatableQueries;
 extern const base::Feature kOneGoogleBarModalOverlays;
 extern const base::Feature kRealboxMatchOmniboxTheme;
+extern const base::Feature kRealboxMatchSearchboxTheme;
 extern const base::Feature kRealboxUseGoogleGIcon;
 extern const base::Feature kNtpOneGoogleBar;
 extern const base::Feature kNtpLogo;
@@ -92,6 +93,8 @@ extern const char kNtpSafeBrowsingModuleCountMaxParam[];
 extern const char kNtpSafeBrowsingModuleCooldownPeriodDaysParam[];
 // Parameter determining the variation of the omnibox theme matching.
 extern const char kRealboxMatchOmniboxThemeVariantParam[];
+// Parameter determining the variations of searchbox theme matching.
+extern const char kRealboxMatchSearchboxThemeParam[];
 
 // Returns the timeout after which the load of a module should be aborted.
 base::TimeDelta GetModulesLoadTimeout();
