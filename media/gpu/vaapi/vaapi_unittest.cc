@@ -489,6 +489,18 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
                                                  VAProfileVP9Profile2);
   EXPECT_TRUE(scalability_modes_vp9_profile2.empty());
 
+  const auto scalability_modes_vp8 = VaapiWrapper::GetSupportedScalabilityModes(
+      VP8PROFILE_ANY, VAProfileVP8Version0_3);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
+    EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
+  } else {
+    EXPECT_TRUE(scalability_modes_vp8.empty());
+  }
+#else
+  EXPECT_TRUE(scalability_modes_vp8.empty());
+#endif
+
   const auto scalability_modes_h264_baseline =
       VaapiWrapper::GetSupportedScalabilityModes(
           H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
