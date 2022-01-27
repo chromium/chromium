@@ -23,6 +23,7 @@ class FieldTrialObserver;
 class StandaloneBrowserTestController;
 
 namespace crosapi {
+class SearchControllerLacros;
 class TaskManagerLacros;
 class WebPageInfoProviderLacros;
 }  // namespace crosapi
@@ -52,6 +53,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles browser action requests from ash-chrome.
   std::unique_ptr<BrowserServiceLacros> browser_service_;
+
+  // Handles search queries from ash-chrome.
+  std::unique_ptr<crosapi::SearchControllerLacros> search_controller_;
 
   // Handles task manager crosapi from ash for sending lacros tasks to ash.
   std::unique_ptr<crosapi::TaskManagerLacros> task_manager_provider_;

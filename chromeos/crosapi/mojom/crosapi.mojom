@@ -32,6 +32,7 @@ import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
+import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
@@ -93,8 +94,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 62
-// Next method id: 66
+// Next version: 63
+// Next method id: 67
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -384,6 +385,11 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=36] BindResourceManager@41(
       pending_receiver<ResourceManager> receiver);
+
+  // Binds the search controller which send queries from ash to lacros.
+  // Added in M99.
+  [MinVersion=62] BindSearchControllerRegistry@66(
+      pending_receiver<SearchControllerRegistry> receiver);
 
   // Binds the System Display interface for querying display info.
   // Added in M92.

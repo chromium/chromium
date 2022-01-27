@@ -133,6 +133,8 @@ source_set("crosapi") {
     "resource_manager_ash.h",
     "screen_manager_ash.cc",
     "screen_manager_ash.h",
+    "search_provider_ash.cc",
+    "search_provider_ash.h",
     "select_file_ash.cc",
     "select_file_ash.h",
     "structured_metrics_service_ash.cc",
