@@ -60,7 +60,6 @@ const WaylandRemoteShellEventMapping wayland_remote_shell_event_mapping_v2 = {
     1,
     1,
     1,
-    1,
 };
 
 const struct zcr_remote_surface_v2_interface remote_surface_implementation_v2 =

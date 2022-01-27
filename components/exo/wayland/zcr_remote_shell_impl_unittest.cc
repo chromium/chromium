@@ -175,7 +175,6 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*default_device_scale_factor_since_version=*/0,
       /*change_zoom_level_since_version=*/0,
       /*send_workspace_info_since_version=*/0,
-      /*send_bounds_changed_since_version=*/0,
       /*set_use_default_scale_cancellation_since_version=*/0,
   };
 };

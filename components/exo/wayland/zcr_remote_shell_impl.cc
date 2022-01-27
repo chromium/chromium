@@ -773,33 +773,15 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
     }
   }
 
-  if (wl_resource_get_version(resource) >=
-      event_mapping_.send_bounds_changed_since_version) {
-    if (needs_send_display_metrics_) {
-      // We store only the latest bounds for each |resource|.
-      pending_bounds_changes_.insert_or_assign(
-          std::move(resource),
-          BoundsChangeData(display_id, bounds_in_display, reason));
-      return;
-    }
-    SendBoundsChanged(resource, display_id, bounds_in_display, reason);
-  } else {
-    gfx::Rect bounds_in_screen = gfx::Rect(bounds_in_display);
-    display::Display display;
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id, &display);
-    // The display ID should be valid.
-    DCHECK(display.is_valid());
-    if (display.is_valid())
-      bounds_in_screen.Offset(display.bounds().OffsetFromOrigin());
-    else
-      LOG(ERROR) << "Invalid Display in send_bounds_changed:" << display_id;
-
-    event_mapping_.send_bounds_changed(
-        resource, static_cast<uint32_t>(display_id >> 32),
-        static_cast<uint32_t>(display_id), bounds_in_screen.x(),
-        bounds_in_screen.y(), bounds_in_screen.width(),
-        bounds_in_screen.height(), reason);
+  if (needs_send_display_metrics_) {
+    // We store only the latest bounds for each |resource|.
+    pending_bounds_changes_.insert_or_assign(
+        std::move(resource),
+        BoundsChangeData(display_id, bounds_in_display, reason));
+    return;
   }
+  SendBoundsChanged(resource, display_id, bounds_in_display, reason);
+
   wl_client_flush(wl_resource_get_client(resource));
 }
 
