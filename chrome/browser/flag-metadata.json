@@ -1542,11 +1542,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-canvas-context-lost-in-background",
-    "owners": [ "chrome-canvas@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-cascade-layers",
     "owners": [ "xiaochengh" ],
     "expiry_milestone": 99

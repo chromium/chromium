@@ -218,11 +218,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.accelerated_2d_canvas_enabled;
   }
 
-  static bool canvas_context_lost_in_background_enabled(
-      const blink::web_pref::WebPreferences& r) {
-    return r.canvas_context_lost_in_background_enabled;
-  }
-
   static bool new_canvas_2d_api_enabled(
       const blink::web_pref::WebPreferences& r) {
     return r.new_canvas_2d_api_enabled;
