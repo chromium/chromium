@@ -52113,6 +52113,7 @@ from previous Chrome versions.
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
+  <int value="-1296499702" label="WebViewEmptyComponent:enabled"/>
   <int value="-1295288468" label="MemoriesDebug:enabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
@@ -52455,6 +52456,7 @@ from previous Chrome versions.
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
   <int value="-1056310158" label="disable-memory-pressure-chromeos"/>
+  <int value="-1055902091" label="WebViewEmptyComponent:disabled"/>
   <int value="-1055845287" label="SensorContentSetting:enabled"/>
   <int value="-1055523523" label="ForceMinorVersion100InUserAgent:disabled"/>
   <int value="-1052782474" label="enable-cloud-devices"/>
