@@ -92,6 +92,9 @@ const char kModelValidate[] = "optimization-guide-model-validate";
 const char kStopHistoryVisitBatchAnnotateForTesting[] =
     "stop-history-visit-batch-annotate";
 
+const char kPageContentAnnotationsLoggingEnabled[] =
+    "enable-page-content-annotations-logging";
+
 bool IsHintComponentProcessingDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kHintsProtoOverride);
 }
@@ -216,6 +219,11 @@ bool StopHistoryVisitBatchAnnotateForTesting() {
   if (command_line->HasSwitch(kStopHistoryVisitBatchAnnotateForTesting))
     return true;
   return false;
+}
+
+bool ShouldLogPageContentAnnotationsInput() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kPageContentAnnotationsLoggingEnabled);
 }
 
 }  // namespace switches
