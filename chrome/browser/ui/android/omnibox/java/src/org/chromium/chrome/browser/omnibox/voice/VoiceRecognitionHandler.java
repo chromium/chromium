@@ -841,9 +841,10 @@ public class VoiceRecognitionHandler {
         // Check if the consent prompt needs to be shown.
         if (assistantVoiceSearchService.needsEnabledCheck()) {
             mDelegate.clearOmniboxFocus();
-            AssistantVoiceSearchConsentUi.show(windowAndroid,
+            AssistantVoiceSearchConsentController.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), mLaunchAssistanceSettingsAction,
-                    BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
+                    BottomSheetControllerProvider.from(windowAndroid),
+                    windowAndroid.getModalDialogManager(), (useAssistant) -> {
                         // Notify the service about the consent completion.
                         assistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
 
