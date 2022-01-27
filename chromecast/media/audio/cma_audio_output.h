@@ -33,6 +33,8 @@ class CmaAudioOutput {
                  SampleFormat sample_format,
                  const std::string& device_id,
                  const std::string& application_session_id,
+                 bool use_hw_av_sync,
+                 int audio_track_session_id,
                  chromecast::mojom::MultiroomInfoPtr multiroom_info,
                  CmaBackendFactory* cma_backend_factory,
                  CmaBackend::Decoder::Delegate* delegate);
@@ -57,11 +59,13 @@ class CmaAudioOutput {
   void Initialize(SampleFormat sample_format,
                   const std::string& device_id,
                   const std::string& application_session_id,
+                  int audio_track_session_id,
                   chromecast::mojom::MultiroomInfoPtr multiroom_info,
                   CmaBackendFactory* cma_backend_factory);
 
   const ::media::AudioParameters audio_params_;
   const int sample_size_;
+  const bool use_hw_av_sync_;
   CmaBackend::Decoder::Delegate* const delegate_;
 
   ::media::AudioTimestampHelper timestamp_helper_;

@@ -45,12 +45,6 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   AudioSinkAndroidAudioTrackImpl& operator=(
       const AudioSinkAndroidAudioTrackImpl&) = delete;
 
-  // Gets the Android audio session ids used for media and communication (TTS)
-  // tracks.
-  // Set a return value pointer to null if that id is not needed.
-  // Returns true if the ids populated are valid.
-  static bool GetSessionIds(int* media_id, int* communication_id);
-
   static int64_t GetMinimumBufferedTime(int num_channels,
                                         int samples_per_second);
 
@@ -87,7 +81,9 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   AudioSinkAndroidAudioTrackImpl(AudioSinkAndroid::Delegate* delegate,
                                  int num_channels,
                                  int input_samples_per_second,
+                                 int audio_track_session_id,
                                  bool primary,
+                                 bool use_hw_av_sync,
                                  const std::string& device_id,
                                  AudioContentType content_type);
 
@@ -101,10 +97,11 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   void ScheduleWaitForEosTask();
   void OnPlayoutDone();
 
-  // Reformats audio data from planar float into interleaved float for
-  // AudioTrack. I.e.:
+  // Reformats audio data from planar into interleaved for AudioTrack. I.e.:
   // "LLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRR" -> "LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR".
-  void ReformatData();
+  // If using hardware av sync, also convert audio data from float to int16_t.
+  // Returns the data size after reformatting.
+  int ReformatData();
 
   void TrackRawMonotonicClockDeviation();
 
@@ -121,6 +118,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   const int num_channels_;
   const int input_samples_per_second_;
   const bool primary_;
+  const bool use_hw_av_sync_;
   const std::string device_id_;
   const AudioContentType content_type_;
 
@@ -155,6 +153,7 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   State state_;
 
   scoped_refptr<DecoderBufferBase> pending_data_;
+  int pending_data_bytes_after_reformat_;
   int pending_data_bytes_already_fed_;
 
   MediaPipelineBackendAndroid::RenderingDelay sink_rendering_delay_;

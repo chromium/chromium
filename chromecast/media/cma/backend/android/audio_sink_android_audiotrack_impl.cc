@@ -47,25 +47,6 @@ namespace chromecast {
 namespace media {
 
 // static
-bool AudioSinkAndroidAudioTrackImpl::GetSessionIds(int* media_id,
-                                                   int* communication_id) {
-  bool is_valid = true;
-  if (media_id) {
-    *media_id = Java_AudioSinkAudioTrackImpl_getSessionIdMedia(
-        base::android::AttachCurrentThread());
-    if (*media_id == -1)
-      is_valid = false;
-  }
-  if (communication_id) {
-    *communication_id = Java_AudioSinkAudioTrackImpl_getSessionIdCommunication(
-        base::android::AttachCurrentThread());
-    if (*communication_id == -1)
-      is_valid = false;
-  }
-  return is_valid;
-}
-
-// static
 int64_t AudioSinkAndroidAudioTrackImpl::GetMinimumBufferedTime(
     int num_channels,
     int samples_per_second) {
@@ -77,13 +58,16 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
     AudioSinkAndroid::Delegate* delegate,
     int num_channels,
     int input_samples_per_second,
+    int audio_track_session_id,
     bool primary,
+    bool use_hw_av_sync,
     const std::string& device_id,
     AudioContentType content_type)
     : delegate_(delegate),
       num_channels_(num_channels),
       input_samples_per_second_(input_samples_per_second),
       primary_(primary),
+      use_hw_av_sync_(use_hw_av_sync),
       device_id_(device_id),
       content_type_(content_type),
       stream_volume_multiplier_(1.0f),
@@ -98,7 +82,10 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
   LOG(INFO) << __func__ << "(" << this << "):"
             << " num_channels_=" << num_channels_
             << " input_samples_per_second_=" << input_samples_per_second_
-            << " primary_=" << primary_ << " device_id_=" << device_id_
+            << " audio_track_session_id=" << audio_track_session_id
+            << " primary_=" << primary_
+            << " use_hw_av_sync_=" << use_hw_av_sync_
+            << " device_id_=" << device_id_
             << " content_type_=" << content_type_;
   DCHECK(delegate_);
   DCHECK_GT(num_channels_, 0);
@@ -112,7 +99,7 @@ AudioSinkAndroidAudioTrackImpl::AudioSinkAndroidAudioTrackImpl(
   Java_AudioSinkAudioTrackImpl_init(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
       static_cast<int>(content_type_), num_channels_, input_samples_per_second_,
-      kDirectBufferSize);
+      kDirectBufferSize, audio_track_session_id, use_hw_av_sync_);
   // Should be set now.
   DCHECK(direct_pcm_buffer_address_);
   DCHECK(direct_rendering_delay_address_);
@@ -197,21 +184,21 @@ void AudioSinkAndroidAudioTrackImpl::FeedData() {
     return;
   }
 
-  DVLOG(3) << __func__ << "(" << this << "):"
-           << " [" << pending_data_->data_size() << "]"
-           << " @ts=" << pending_data_->timestamp();
-
   if (pending_data_->data_size() == 0) {
     LOG(INFO) << __func__ << "(" << this << "): empty data buffer!";
     PostPcmCallback(sink_rendering_delay_);
     return;
   }
 
-  ReformatData();
+  pending_data_bytes_after_reformat_ = ReformatData();
+  DVLOG(3) << __func__ << "(" << this << "):"
+           << " [" << pending_data_bytes_after_reformat_ << "]"
+           << " @ts=" << pending_data_->timestamp();
 
   int written = Java_AudioSinkAudioTrackImpl_writePcm(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
-      pending_data_->data_size());
+      pending_data_bytes_after_reformat_,
+      pending_data_->timestamp() * base::Time::kNanosecondsPerMicrosecond);
 
   if (written < 0) {
     LOG(ERROR) << __func__ << "(" << this << "): Cannot write PCM via JNI!";
@@ -219,17 +206,16 @@ void AudioSinkAndroidAudioTrackImpl::FeedData() {
     return;
   }
 
-  if (state_ == kStatePaused &&
-      written < static_cast<int>(pending_data_->data_size())) {
+  if (state_ == kStatePaused && written < pending_data_bytes_after_reformat_) {
     LOG(INFO) << "Audio Server is full while in PAUSED, "
               << "will continue when entering PLAY mode.";
     pending_data_bytes_already_fed_ = written;
     return;
   }
 
-  if (written != static_cast<int>(pending_data_->data_size())) {
+  if (written != pending_data_bytes_after_reformat_) {
     LOG(ERROR) << __func__ << "(" << this << "): Wrote " << written
-               << " instead of " << pending_data_->data_size();
+               << " instead of " << pending_data_bytes_after_reformat_;
     // continue anyway, better to do a best-effort than fail completely
   }
 
@@ -265,7 +251,7 @@ void AudioSinkAndroidAudioTrackImpl::OnPlayoutDone() {
   PostPcmCallback(sink_rendering_delay_);
 }
 
-void AudioSinkAndroidAudioTrackImpl::ReformatData() {
+int AudioSinkAndroidAudioTrackImpl::ReformatData() {
   // Data is in planar float format, i.e., planar audio data for stereo is all
   // left samples first, then all right -> "LLLLLLLLLLLLLLLLRRRRRRRRRRRRRRRR").
   // AudioTrack needs interleaved format -> "LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR").
@@ -279,11 +265,25 @@ void AudioSinkAndroidAudioTrackImpl::ReformatData() {
     src[c] = reinterpret_cast<const float*>(pending_data_->data()) +
              c * num_of_frames;
   }
-  float* dst = reinterpret_cast<float*>(direct_pcm_buffer_address_);
-  for (int f = 0; f < num_of_frames; f++) {
-    for (int c = 0; c < num_channels_; c++) {
-      *dst++ = *src[c]++;
+  if (use_hw_av_sync_) {
+    // Convert audio data from float to int16_t since hardware av sync audio
+    // track requires ENCODING_PCM_16BIT audio format.
+    int16_t* dst = reinterpret_cast<int16_t*>(direct_pcm_buffer_address_);
+    for (int f = 0; f < num_of_frames; f++) {
+      for (int c = 0; c < num_channels_; c++) {
+        *dst++ = *src[c]++;
+      }
     }
+    return static_cast<int>(pending_data_->data_size()) /
+           (sizeof(float) / sizeof(int16_t));
+  } else {
+    float* dst = reinterpret_cast<float*>(direct_pcm_buffer_address_);
+    for (int f = 0; f < num_of_frames; f++) {
+      for (int c = 0; c < num_channels_; c++) {
+        *dst++ = *src[c]++;
+      }
+    }
+    return static_cast<int>(pending_data_->data_size());
   }
 }
 
@@ -308,17 +308,23 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
   DCHECK(pending_data_bytes_already_fed_);
 
   int left_to_send =
-      pending_data_->data_size() - pending_data_bytes_already_fed_;
+      pending_data_bytes_after_reformat_ - pending_data_bytes_already_fed_;
   LOG(INFO) << __func__ << "(" << this << "): send remaining " << left_to_send
-            << "/" << pending_data_->data_size();
+            << "/" << pending_data_bytes_after_reformat_;
 
   memmove(direct_pcm_buffer_address_,
           direct_pcm_buffer_address_ + pending_data_bytes_already_fed_,
           left_to_send);
 
+  int bytes_per_frame =
+      num_channels_ * (use_hw_av_sync_ ? sizeof(int16_t) : sizeof(float));
+  int64_t fed_frames = pending_data_bytes_already_fed_ / bytes_per_frame;
+  int64_t timestamp_ns_new = pending_data_->timestamp() +
+                             fed_frames * base::Time::kNanosecondsPerSecond /
+                                 input_samples_per_second_;
   int written = Java_AudioSinkAudioTrackImpl_writePcm(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
-      left_to_send);
+      left_to_send, timestamp_ns_new);
 
   DCHECK(written == left_to_send);
 

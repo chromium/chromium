@@ -99,6 +99,10 @@ public class CastAudioManager {
         mInternal.unregisterAudioPolicyAsync(audioPolicy);
     }
 
+    public void unregisterAudioPolicy(AudioPolicy audioPolicy) {
+        mInternal.unregisterAudioPolicy(audioPolicy);
+    }
+
     @TargetApi(VERSION_CODES.M)
     public AudioDeviceInfo[] getDevices(int flags) {
         return mInternal.getDevices(flags);
