@@ -16,7 +16,7 @@ export namespace Message {
     | Script.CommandResult
     | Session.CommandResult;
 
-  export type Event = BrowsingContext.Event | Script.Event;
+  export type Event = BrowsingContext.Event | Script.Event | Log.Event;
 
   export type Error = {
     id?: number;
@@ -231,19 +231,8 @@ export namespace CommonDataTypes {
     columnNumber: number;
     exception: CommonDataTypes.RemoteValue;
     lineNumber: number;
-    stackTrace: StackTrace;
+    stackTrace: Script.StackTrace;
     text: string;
-  };
-
-  export type StackTrace = {
-    callFrames: StackFrame[];
-  };
-
-  export type StackFrame = {
-    url: string;
-    functionName: string;
-    lineNumber: number;
-    columnNumber: number;
   };
 }
 
@@ -251,6 +240,7 @@ export namespace Script {
   export type Command = EvaluateCommand | CallFunctionCommand;
   export type CommandResult = EvaluateResult | CallFunctionResult;
   export type Event = PROTO.CalledEvent;
+  export type Realm = string;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -319,6 +309,17 @@ export namespace Script {
       arguments: CommonDataTypes.RemoteValue[];
     };
   }
+
+  export type StackTrace = {
+    callFrames: StackFrame[];
+  };
+
+  export type StackFrame = {
+    columnNumber: number;
+    functionName: string;
+    lineNumber: number;
+    url: string;
+  };
 }
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
@@ -502,4 +503,38 @@ export namespace Session {
   };
 
   export type UnsubscribeResult = { result: {} };
+}
+
+// https://w3c.github.io/webdriver-bidi/#module-log
+export namespace Log {
+  export type LogEntry = GenericLogEntry | ConsoleLogEntry | JavascriptLogEntry;
+  export type Event = LogEntryAddedEvent;
+  export type LogLevel = 'debug' | 'info' | 'warning' | 'error';
+
+  export type BaseLogEntry = {
+    level: LogLevel;
+    text: string | null;
+    timestamp: number;
+    stackTrace?: Script.StackTrace;
+  };
+
+  export type GenericLogEntry = BaseLogEntry & {
+    type: string;
+  };
+
+  export type ConsoleLogEntry = BaseLogEntry & {
+    type: 'console';
+    method: string;
+    realm: Script.Realm;
+    args: CommonDataTypes.RemoteValue[];
+  };
+
+  export type JavascriptLogEntry = BaseLogEntry & {
+    type: 'javascript';
+  };
+
+  export type LogEntryAddedEvent = {
+    method: 'log.entryAdded';
+    params: LogEntry;
+  };
 }

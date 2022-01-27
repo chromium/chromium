@@ -128,3 +128,10 @@ async def execute_command(websocket, command, result_field='result'):
         if 'id' in resp and resp['id'] == command_id:
             assert result_field in resp
             return resp[result_field]
+
+# Wait and return a specific event from Bidi server
+async def wait_for_event(websocket, event_method):
+    while True: 
+        event_response = await read_JSON_message(websocket)
+        if 'method' in event_response and event_response['method'] == event_method:
+            return event_response

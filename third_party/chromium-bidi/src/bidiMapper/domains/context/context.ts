@@ -24,6 +24,8 @@ import {
 } from '../../bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
+import { LogManager } from './logManager';
+import { Serializer } from './serializer';
 import ArgumentValue = Script.ArgumentValue;
 
 export class Context {
@@ -42,7 +44,8 @@ export class Context {
     private _cdpClient: CdpClient,
     private _bidiServer: IBidiServer,
     private _eventManager: IEventManager,
-    private EVALUATOR_SCRIPT: string
+    private EVALUATOR_SCRIPT: string,
+    private _serializer: Serializer
   ) {}
 
   public static async create(
@@ -57,9 +60,18 @@ export class Context {
       cdpClient,
       bidiServer,
       eventManager,
-      EVALUATOR_SCRIPT
+      EVALUATOR_SCRIPT,
+      Serializer.create(cdpClient, EVALUATOR_SCRIPT)
     );
+
     await context._initialize();
+
+    await LogManager.create(
+      contextId,
+      cdpClient,
+      bidiServer,
+      context.getSerializer()
+    );
     return context;
   }
 
@@ -124,19 +136,6 @@ export class Context {
           break;
       }
     });
-  }
-
-  // TODO sadym: Add binding only once.
-  // TODO sadym: `dummyContextObject` needed for the running context.
-  // Use the proper `executionContextId` instead:
-  // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
-  private async _getDummyContextId(): Promise<string> {
-    await this._cdpClient.Runtime.addBinding({ name: this._callbackName });
-
-    const dummyContextObject = await this._cdpClient.Runtime.evaluate({
-      expression: '(()=>{return {}})()',
-    });
-    return dummyContextObject.result.objectId!;
   }
 
   _setSessionId(sessionId: string): void {
@@ -222,30 +221,6 @@ export class Context {
     });
   }
 
-  /**
-   * Serializes a given CDP object into BiDi, keeping references in the
-   * target's `globalThis`.
-   * @param cdpObject CDP remote object to be serialized.
-   */
-  private async _serializeCdpObject(
-    cdpObject: Protocol.Runtime.RemoteObject
-  ): Promise<CommonDataTypes.RemoteValue> {
-    const response = await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: `${this.EVALUATOR_SCRIPT}.serialize`,
-      objectId: await this._getDummyContextId(),
-      arguments: [cdpObject],
-      returnByValue: true,
-    });
-
-    if (response.exceptionDetails)
-      // Serialization failed unexpectidely.
-      throw new Error(
-        'Cannot serialize object: ' + response.exceptionDetails.text
-      );
-
-    return response.result.value;
-  }
-
   private async _serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number
@@ -260,7 +235,7 @@ export class Context {
         columnNumber: frame.columnNumber,
       })
     );
-    const exception = await this._serializeCdpObject(
+    const exception = await this._serializer.serializeCdpObject(
       // Exception should always be there.
       cdpExceptionDetails.exception!
     );
@@ -346,7 +321,7 @@ export class Context {
       arguments: [{ value: _this }, { value: args }], // this, arguments.
       awaitPromise: true,
       returnByValue: true,
-      objectId: await this._getDummyContextId(),
+      objectId: await this._serializer.getDummyContextId(),
     });
   }
 
@@ -401,5 +376,9 @@ export class Context {
 
     return findElementCommandResult.result
       .value as CommonDataTypes.NodeRemoteValue;
+  }
+
+  public getSerializer(): Serializer {
+    return this._serializer;
   }
 }
