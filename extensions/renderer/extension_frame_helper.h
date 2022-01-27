@@ -219,6 +219,8 @@ class ExtensionFrameHelper
   bool has_started_first_navigation_ = false;
 
   bool did_create_script_context_ = false;
+  // Whether we are currently initializing the main world script context.
+  bool is_initializing_main_world_script_context_ = false;
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
 

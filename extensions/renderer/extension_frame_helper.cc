@@ -338,6 +338,8 @@ void ExtensionFrameHelper::ReadyToCommitNavigation(
   if (!delayed_main_world_script_initialization_)
     return;
 
+  base::AutoReset<bool> auto_reset(&is_initializing_main_world_script_context_,
+                                   true);
   delayed_main_world_script_initialization_ = false;
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   v8::Local<v8::Context> context =
@@ -371,6 +373,11 @@ void ExtensionFrameHelper::DidCreateScriptContext(
     v8::Local<v8::Context> context,
     int32_t world_id) {
   if (world_id == blink::kMainDOMWorldId) {
+    // Accessing MainWorldScriptContext() in ReadyToCommitNavigation() may
+    // trigger the script context initializing, so we don't want to initialize a
+    // second time here.
+    if (is_initializing_main_world_script_context_)
+      return;
     if (render_frame()->IsBrowserSideNavigationPending()) {
       // Defer initializing the extensions script context now because it depends
       // on having the URL of the provisional load which isn't available at this

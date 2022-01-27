@@ -183,6 +183,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void DidLoadAllPendingParserBlockingStylesheets() final;
   void CheckIfBlockingStylesheetAdded();
   void DocumentElementAvailable() override;
+  void CommitPreloadedData() override;
 
   // HTMLParserScriptRunnerHost
   void NotifyScriptLoaded() final;
@@ -243,6 +244,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void ScanAndPreload(HTMLPreloadScanner*);
   void FetchQueuedPreloads();
   std::string GetPreloadHistogramSuffix();
+  void FinishAppend();
 
   HTMLToken& Token() { return *token_; }
 

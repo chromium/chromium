@@ -1161,6 +1161,10 @@ const base::Feature kLateFormNewlineNormalization{
 const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables loading the response body earlier in navigation.
+const base::Feature kEarlyBodyLoad{"EarlyBodyLoad",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables fetching the code cache earlier in navigation.
 const base::Feature kEarlyCodeCache{"EarlyCodeCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};

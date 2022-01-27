@@ -1935,7 +1935,9 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
-  if (error.IsCancellation())
+  // If the preload was cancelled due to an HTTP error, we don't want to request
+  // the resource a second time.
+  if (error.IsCancellation() && !error.IsCancelledFromHttpError())
     RemovePreload(resource);
   if (network_utils::IsCertificateTransparencyRequiredError(
           error.ErrorCode())) {
