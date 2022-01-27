@@ -159,8 +159,7 @@ action_foreach("emoji_data_remaining") {
 action_foreach("emoticon_data") {
   script = "tools/emoticon_data.py"
 
-  metadata_json =
-      [ "//third_party/emoji-metadata/src/emoji_14_0_ordering.json" ]
+  metadata_json = [ "./emoticon_test_ordering.json" ]
   keyword_xmls = [
     # later keywords will override earlier keywords for a particular emoji.
     "//third_party/cldr/src/common/annotations/en.xml",
@@ -168,7 +167,7 @@ action_foreach("emoticon_data") {
     "//third_party/cldr/src/common/annotationsDerived/en.xml",
     "//third_party/cldr/src/common/annotationsDerived/en_001.xml",
   ]
-  merged_json = "$target_gen_dir/emoticon_{{source_name_part}}.json"
+  merged_json = "$target_gen_dir/{{source_name_part}}.json"
 
   sources = metadata_json
   inputs = keyword_xmls

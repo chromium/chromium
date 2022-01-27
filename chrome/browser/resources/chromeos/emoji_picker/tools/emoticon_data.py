@@ -90,7 +90,7 @@ class EmojiConverter:
         return [{
             "group":
             group["group"],
-            "items":
+            "emoji":
             list(
                 chain.from_iterable(
                     self.pull_emoticons_from_emoji(emoji)
