@@ -593,7 +593,6 @@ bool Animation::PreCommit(
     int compositor_group,
     const PaintArtifactCompositor* paint_artifact_compositor,
     bool start_on_compositor) {
-
   bool soft_change =
       compositor_state_ &&
       (Paused() || compositor_state_->playback_rate != EffectivePlaybackRate());
@@ -637,6 +636,12 @@ bool Animation::PreCommit(
       RecordCompositorAnimationFailureReasons(failure_reasons);
 
       if (failure_reasons == CompositorAnimations::kNoFailure) {
+        // We could still have a stale compositor keyframe model ID if
+        // a previous cancel failed due to not having a layout object at the
+        // time of the cancel operation. The start and stop of an animation
+        // for a marquee element does not depend on having a layout object.
+        if (HasActiveAnimationsOnCompositor())
+          CancelAnimationOnCompositor();
         CreateCompositorAnimation();
         StartAnimationOnCompositor(paint_artifact_compositor);
         compositor_state_ = std::make_unique<CompositorState>(*this);

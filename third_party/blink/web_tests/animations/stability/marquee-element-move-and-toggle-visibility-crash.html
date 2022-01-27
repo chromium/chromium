@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Moving a marquee element and toggle the visibility state should not
+         crash</title>
+</head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+  <marquee id="target">Don't crash me</marquee>
+  <div id="container" style = "display: none;"></div>
+</body>
+<script>
+  test(function() {
+    const target = document.getElementById('target');
+    const container = document.getElementById('container');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Removing the element pauses the animation in Blink.
+        target.parentElement.removeChild(target);
+        requestAnimationFrame(() => {
+          // Reattaching the element resumes the animation regardless of
+          // visibility.
+          container.appendChild(target);
+          requestAnimationFrame(() => {
+             container.style = "display: block";
+          });
+        });
+      });
+    });
+  }, 'Check that toggling visibility of a moved marquee element does not crash');
+</script>
+</html>
