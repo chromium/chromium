@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -55,6 +56,9 @@ absl::optional<TopicData> FindAnyDuplicatedTopic(
 
 }  // namespace
 
+const base::Feature kRestoreInterestingTopicsFeature{
+    "InvalidatorRestoreInterestingTopics", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // static
 void InvalidatorRegistrarWithMemory::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -87,16 +91,18 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
+  if (!base::FeatureList::IsEnabled(kRestoreInterestingTopicsFeature))
+    return;
   for (auto it : pref_data->DictItems()) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
-      const base::Value* handler = it.second.FindDictKey(kHandler);
-      const base::Value* is_public = it.second.FindDictKey(kIsPublic);
+      const std::string* handler = it.second.FindStringKey(kHandler);
+      const absl::optional<bool> is_public = it.second.FindBoolKey(kIsPublic);
       if (!handler || !is_public) {
         continue;
       }
-      handler_name_to_subscribed_topics_map_[handler->GetString()].insert(
-          TopicData(topic_name, is_public->GetBool()));
+      handler_name_to_subscribed_topics_map_[*handler].insert(
+          TopicData(topic_name, *is_public));
     } else if (it.second.is_string()) {
       handler_name_to_subscribed_topics_map_[it.second.GetString()].insert(
           TopicData(topic_name, false));
