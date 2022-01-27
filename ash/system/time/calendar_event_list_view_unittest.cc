@@ -91,7 +91,9 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
 
   CreateEventListView(date);
 
-  EXPECT_EQ(0u, content_view()->children().size());
+  // No events, so we see the empty list default.
+  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(u"Open in Google calendar", GetSummary(0)->GetText());
 
   SetSelectedDate(date);
 
@@ -110,7 +112,8 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   SetSelectedDate(date + base::Days(2));
 
   // 0 event on 20 Nov 2021.
-  EXPECT_EQ(0u, content_view()->children().size());
+  EXPECT_EQ(1u, content_view()->children().size());
+  EXPECT_EQ(u"Open in Google calendar", GetSummary(0)->GetText());
 
   SetSelectedDate(date + base::Days(3));
 

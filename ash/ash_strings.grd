@@ -3474,6 +3474,10 @@ This file contains the strings for ash.
         S
       </message>
 
+      <message name="IDS_ASH_CALENDAR_NO_EVENTS" desc="Text that appears on the event list when there are no events.">
+        Open in Google calendar
+      </message>
+
       <!-- Power off menu  -->
       <message name="IDS_ASH_POWER_BUTTON_MENU_POWER_OFF_BUTTON" desc="Text shown on power off button in power button menu.">
         Shut down

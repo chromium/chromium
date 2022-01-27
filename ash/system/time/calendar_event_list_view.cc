@@ -4,8 +4,11 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/public/cpp/system_tray_client.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -18,7 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/label.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/vector_icons.h"
@@ -31,6 +34,39 @@ namespace {
 constexpr gfx::Insets kContentInsets{20, 20, 0, 20};
 
 }  // namespace
+
+// A view that's displayed when the user selects a day cell from the calendar
+// month view that has no events.  Clicking on it opens Google calendar.
+class CalendarEmptyEventListView : public views::LabelButton {
+ public:
+  explicit CalendarEmptyEventListView()
+      : views::LabelButton(
+            views::Button::PressedCallback(base::BindRepeating(
+                &CalendarEmptyEventListView::OpenCalendarDefault,
+                base::Unretained(this))),
+            l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS)) {
+    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+  }
+  CalendarEmptyEventListView(const CalendarEmptyEventListView& other) = delete;
+  CalendarEmptyEventListView& operator=(
+      const CalendarEmptyEventListView& other) = delete;
+  ~CalendarEmptyEventListView() override = default;
+
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SetEnabledTextColors(calendar_utils::GetPrimaryTextColor());
+  }
+
+  // Callback that's invoked when the user clicks on "Open in Google calendar"
+  // in an empty event list.
+  void OpenCalendarDefault() {
+    GURL finalized_url;
+    bool opened_pwa = false;
+    Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
+        absl::nullopt, opened_pwa, finalized_url);
+  }
+};
 
 CalendarEventListView::CalendarEventListView(
     CalendarViewController* calendar_view_controller)
@@ -100,19 +136,30 @@ void CalendarEventListView::UpdateListItems() {
   std::list<google_apis::calendar::CalendarEvent> events =
       calendar_view_controller_->SelectedDateEvents();
 
-  // Sorts the event by start time.
-  events.sort([](google_apis::calendar::CalendarEvent& a,
-                 google_apis::calendar::CalendarEvent& b) {
-    return a.start_time().date_time() < b.start_time().date_time();
-  });
+  if (events.size() > 0) {
+    // Sorts the event by start time.
+    events.sort([](google_apis::calendar::CalendarEvent& a,
+                   google_apis::calendar::CalendarEvent& b) {
+      return a.start_time().date_time() < b.start_time().date_time();
+    });
 
-  for (const google_apis::calendar::CalendarEvent& event : events) {
-    auto* event_entry = content_view_->AddChildView(
-        std::make_unique<CalendarEventListItemView>(event));
+    for (const google_apis::calendar::CalendarEvent& event : events) {
+      auto* event_entry = content_view_->AddChildView(
+          std::make_unique<CalendarEventListItemView>(event));
 
-    // Needs to repaint the `content_view_`'s children.
-    event_entry->InvalidateLayout();
+      // Needs to repaint the `content_view_`'s children.
+      event_entry->InvalidateLayout();
+    }
+
+    return;
   }
+
+  // Show "Open in Google calendar"
+  CalendarEmptyEventListView* empty_list_view = content_view_->AddChildView(
+      std::make_unique<CalendarEmptyEventListView>());
+
+  // Needs to repaint the `content_view_`'s children.
+  empty_list_view->InvalidateLayout();
 }
 
 BEGIN_METADATA(CalendarEventListView, views::View);

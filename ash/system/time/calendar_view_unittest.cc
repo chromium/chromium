@@ -5,6 +5,7 @@
 #include "ash/system/time/calendar_view.h"
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -17,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
@@ -629,6 +631,12 @@ TEST_F(CalendarViewTest, ExpandableViewFocusing) {
   // Moves to the event list.
   PressTab();
   EXPECT_EQ(close_button(), focus_manager->GetFocusedView());
+
+  // Goes to empty list view.
+  PressTab();
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
 
   // Goes back to back button.
   PressTab();
