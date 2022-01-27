@@ -2,6 +2,7 @@
 <title>Test COEP properties set for a Fenced Frame Tree</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
 <script src="resources/embedder-policy.js"></script>
@@ -22,5 +23,13 @@ promise_test(async (t) => {
   const result = await nextValueFromServer(uuid);
   assert_unreached("embedded page should not be loaded.");
 }, "Create fencedframe without COEP header");
+
+promise_test(async (t) => {
+  const uuid = token();
+  t.step_timeout(() => t.done(), 3000);
+  const frame = setupTest("cross:coep:require-corp", uuid);
+  const result = await nextValueFromServer(uuid);
+  assert_unreached("violating CORP, embedded page should not be loaded.");
+}, "Create fencedframe with a cross site COEP:require-corp and CORP:same-orign");
 </script>
 </body>
