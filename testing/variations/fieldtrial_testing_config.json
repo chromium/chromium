@@ -208,28 +208,6 @@
             ]
         }
     ],
-    "AndroidInProductHelpDownloadSettings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Tracking",
-                    "params": {
-                        "availability": "any",
-                        "event_settings_accessed": "name:download_settings_access_through_download_home;comparator:==0;window:60;storage:360",
-                        "event_trigger": "name:download_settings_iph_trigger;comparator:any;window:90;storage:360",
-                        "event_used": "name:download_settings_opened;comparator:any;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_DownloadSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidInProductHelpPwaInstall": [
         {
             "platforms": [
