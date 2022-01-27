@@ -991,10 +991,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
   dict->SetBoolKey(
-      "FILES_BANNER_FRAMEWORK",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesBannerFramework));
-
-  dict->SetBoolKey(
       "EXTRACT_ARCHIVE",
       base::FeatureList::IsEnabled(chromeos::features::kFilesExtractArchive));
 

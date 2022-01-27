@@ -4677,11 +4677,6 @@ const char kFilesArchivemount2Description[] =
     "Enable mounting additional archive formats in File Manager. This has no "
     "effect unless #files-archivemount is also enabled.";
 
-const char kFilesBannerFrameworkName[] =
-    "Updated Banner framework in Files app";
-const char kFilesBannerFrameworkDescription[] =
-    "Enable the updated banner framework in Files app";
-
 const char kFilesExtractArchiveName[] = "Extract archive in Files app";
 const char kFilesExtractArchiveDescription[] =
     "Enable the simplified archive extraction feature in Files app";

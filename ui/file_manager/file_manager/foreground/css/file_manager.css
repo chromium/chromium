@@ -1508,42 +1508,6 @@ body.files-ng .downloads-warning[hidden] {
   }
 }
 
-/* Drive space warning banner. */
-body.files-ng .volume-warning {
-  align-items: center;
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: white;
-  display: flex;
-  flex: none;
-  flex-direction: row;
-  font-size: 13px;
-  height: 40px;
-  opacity: 1;
-  overflow: hidden;
-  position: relative;
-  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0s,
-              opacity 150ms ease 50ms;
-  visibility: visible;
-}
-
-body.files-ng .volume-warning[hidden] {
-  border-top-width: 0;
-  display: flex !important;  /* Overrides [hidden] for animation. */
-  height: 0;
-  opacity: 0;
-  visibility: hidden;
-}
-
-body.files-ng .volume-warning .drive-icon {
-  background: white url(../images/files/ui/drive_logo.svg) no-repeat center;
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 12px;
-  margin-inline-start: 8px;
-  width: 20px;
-}
-
 body.files-ng .button-group {
   display: flex;
   flex: 0 0 auto;
@@ -1554,25 +1518,6 @@ body.files-ng .button-group {
 
 body.files-ng .button-group > a {
   text-decoration-line: none;
-}
-
-body.files-ng .volume-warning .banner-button {
-  border: 0;
-  height: 32px;
-  margin-inline-end: 8px;
-  padding-inline-end: 16px;
-  padding-inline-start: 16px;
-}
-
-body.files-ng .volume-warning .info-icon {
-  -webkit-mask-image: url(../images/files/ui/info.svg);
-  background-color: var(--cros-text-color-secondary);
-  background-size: 20px 20px;
-  flex: none;
-  height: 20px;
-  margin-inline-end: 16px;
-  margin-inline-start: 8px;
-  width: 20px;
 }
 
 body.files-ng .banner-close {
@@ -2307,7 +2252,6 @@ div.shade[fadein] {
 }
 
 /* Message panel for unmounted Drive */
-#unmounted-panel,
 #format-panel {
   bottom: 0;
   color: #333;
@@ -2320,8 +2264,6 @@ div.shade[fadein] {
   top: 0;
 }
 
-body[drive='mounting'] .dialog-container #unmounted-panel,
-body[drive='error'] .dialog-container #unmounted-panel,
 body[unformatted] .dialog-container #format-panel {
   display: block;
 }
@@ -2335,7 +2277,6 @@ body[unformatted] .dialog-container .filelist-panel {
   opacity: 0;
 }
 
-#unmounted-panel > *,
 #format-panel > * {
   align-items: center;
   display: none;
@@ -2345,23 +2286,8 @@ body[unformatted] .dialog-container .filelist-panel {
   margin-bottom: 10px;
 }
 
-#unmounted-panel > .loading {
-  position: relative;
-}
-
-#unmounted-panel > .loading > .spinner-box {
-  bottom: 0;
-  position: absolute;
-  right: 100%;
-  top: 0;
-  width: 40px;
-}
-
 body[unformatted] #format-panel > .error,
-body[drive='mounting'] #unmounted-panel > .loading,
-body[drive='error'] #unmounted-panel > .error,
-#format-panel > #format-button,
-#unmounted-panel.retry-enabled > .learn-more {
+#format-panel > #format-button {
   display: flex;
 }
 
@@ -2640,11 +2566,6 @@ body.files-ng #list-container
   display: inline;
   margin-bottom: 5px;
   white-space: pre-wrap;
-}
-
-.drive-welcome-wrapper {
-  /* drive_welcome.css will override it once loaded. */
-  display: none;
 }
 
 list.autocomplete-suggestions {

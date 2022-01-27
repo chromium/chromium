@@ -29,11 +29,6 @@
       <include name="IDR_FILE_MANAGER_ICON_192" file="file_manager/common/images/icon192.png" type="BINDATA" />
       <include name="IDR_FILE_MANAGER_ICON_256" file="file_manager/common/images/icon256.png" type="BINDATA" />
 
-      <!-- Resources used for non-flattened HTML files. -->
-      <include name="IDR_FILE_MANAGER_DRIVE_WELCOME_STYLE" file="file_manager/foreground/css/drive_welcome.css" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_HOLDING_SPACE_WELCOME_STYLE" file="file_manager/foreground/css/holding_space_welcome.css" type="BINDATA" />
-      <include name="IDR_FILE_MANAGER_PHOTOS_WELCOME_STYLE" file="file_manager/foreground/css/photos_welcome.css" type="BINDATA" />
-
       <!-- The AudioPlayer app pages and scripts. -->
       <include name="IDR_AUDIO_PLAYER_MANIFEST" file="audio_player/manifest.json" type="BINDATA" />
       <include name="IDR_AUDIO_PLAYER_BACKGROUND_HTML" file="audio_player/background.html" type="BINDATA" />

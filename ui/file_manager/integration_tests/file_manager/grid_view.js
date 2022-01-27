@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -25,20 +25,8 @@ async function showGridView(rootPath, expectedSet) {
 
   // Open Files app on |rootPath|.
   const appId = await setupAndWaitUntilReady(rootPath);
-  const isBannersFrameworkEnabled =
-      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
-
   // Disable all banners.
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.disableBannersForTesting(appId);
-  }
-
-  // Dismiss the Drive banners so Grid View can display the all entries.
-  if (rootPath === RootPath.DRIVE && !isBannersFrameworkEnabled) {
-    await remoteCall.waitAndClickElement(
-        appId, '.drive-welcome-wrapper .banner-close');
-    await remoteCall.waitAndClickElement(appId, '#offline-learn-more');
-  }
+  await remoteCall.disableBannersForTesting(appId);
 
   // Click the grid view button.
   await remoteCall.waitForElement(appId, '#view-button');

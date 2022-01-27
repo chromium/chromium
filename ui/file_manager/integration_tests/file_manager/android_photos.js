@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, RootPath, sendTestMessage} from '../test_util.js';
+import {addEntries, ENTRIES, RootPath} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall} from './background.js';
@@ -19,9 +19,6 @@ testcase.androidPhotosBanner = async () => {
   // Open Files app.
   const appId = await openNewWindow(RootPath.DOWNLOADS);
 
-  const isBannersFrameworkEnabled =
-      (await sendTestMessage({name: 'isBannersFrameworkEnabled'})) === 'true';
-
   const click = async (query) => {
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [query]),
@@ -37,30 +34,21 @@ testcase.androidPhotosBanner = async () => {
     await remoteCall.waitForElement(appId, `#file-list [file-name="${name}"]`);
   };
 
-  let photosBannerHiddenQuery = '#photos-welcome.photos-welcome-hidden';
-  let photosBannerShownQuery = '#photos-welcome:not(.photos-welcome-hidden)';
-  let photosBannerTextQuery = '.photos-welcome-message';
-  let photosBannerDismissButton = '#photos-welcome-dismiss';
-  if (isBannersFrameworkEnabled) {
-    await remoteCall.isolateBannerForTesting(appId, 'photos-welcome-banner');
-    photosBannerHiddenQuery = '#banners > photos-welcome-banner[hidden]';
-    photosBannerShownQuery = '#banners > photos-welcome-banner:not([hidden])';
-    photosBannerTextQuery = [
-      '#banners > photos-welcome-banner', 'educational-banner',
-      '#educational-text-group'
-    ];
-    photosBannerDismissButton = [
-      '#banners > photos-welcome-banner', 'educational-banner',
-      '#dismiss-button'
-    ];
-  }
+  await remoteCall.isolateBannerForTesting(appId, 'photos-welcome-banner');
+  const photosBannerHiddenQuery = '#banners > photos-welcome-banner[hidden]';
+  const photosBannerShownQuery =
+      '#banners > photos-welcome-banner:not([hidden])';
+  const photosBannerTextQuery = [
+    '#banners > photos-welcome-banner', 'educational-banner',
+    '#educational-text-group'
+  ];
+  const photosBannerDismissButton = [
+    '#banners > photos-welcome-banner', 'educational-banner', '#dismiss-button'
+  ];
 
   // Initial state: In the new framework banner is lazily loaded so will not be
   // attached to the DOM, without the banners framework the root element should
   // exist but the text should not be attached yet.
-  if (!isBannersFrameworkEnabled) {
-    await waitForElement('#photos-welcome[hidden]');
-  }
   await waitForElementLost(photosBannerTextQuery);
 
   // Wait for the DocumentsProvider volume to mount and navigate to Photos.

@@ -611,11 +611,6 @@ const base::Feature kFilesArchivemount{"FilesArchivemount",
 const base::Feature kFilesArchivemount2{"FilesArchivemount2",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable the updated banner framework.
-// https://crbug.com/1228128
-const base::Feature kFilesBannerFramework{"FilesBannerFramework",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable the simple archive extraction.
 // https://crbug.com/953256
 const base::Feature kFilesExtractArchive{"FilesExtractArchive",

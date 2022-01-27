@@ -1777,12 +1777,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(chromeos::features::kFilesTrash);
   }
 
-  if (options.enable_banners_framework) {
-    enabled_features.push_back(chromeos::features::kFilesBannerFramework);
-  } else {
-    disabled_features.push_back(chromeos::features::kFilesBannerFramework);
-  }
-
   if (command_line->HasSwitch(switches::kDevtoolsCodeCoverage) &&
       options.guest_mode != IN_INCOGNITO) {
     devtools_code_coverage_dir_ =

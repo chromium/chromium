@@ -279,7 +279,6 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/ui/action_model_ui.js",
     "file_manager/foreground/js/ui/actions_submenu.js",
     "file_manager/foreground/js/ui/autocomplete_list.js",
-    "file_manager/foreground/js/ui/banners.js",
     "file_manager/foreground/js/ui/combobutton.js",
     "file_manager/foreground/js/ui/commandbutton.js",
     "file_manager/foreground/js/ui/default_task_dialog.js",
@@ -356,7 +355,6 @@ preprocess_if_expr("preprocess_generated") {
     # Files app Elements:
     "file_manager/foreground/elements/files_format_dialog.js",
     "file_manager/foreground/elements/files_icon_button.js",
-    "file_manager/foreground/elements/files_message.js",
     "file_manager/foreground/elements/files_metadata_box.js",
     "file_manager/foreground/elements/files_metadata_entry.js",
     "file_manager/foreground/elements/files_password_dialog.js",

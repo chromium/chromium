@@ -3200,11 +3200,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "files-banner-framework",
-    "owners": [ "benreich", "lucmult" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "files-extract-archive",
     "owners": [ "adanilo", "simmonsjosh@google.com" ],
     "expiry_milestone": 112

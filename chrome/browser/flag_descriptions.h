@@ -2681,9 +2681,6 @@ extern const char kFilesArchivemountDescription[];
 extern const char kFilesArchivemount2Name[];
 extern const char kFilesArchivemount2Description[];
 
-extern const char kFilesBannerFrameworkName[];
-extern const char kFilesBannerFrameworkDescription[];
-
 extern const char kFilesExtractArchiveName[];
 extern const char kFilesExtractArchiveDescription[];
 

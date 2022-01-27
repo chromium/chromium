@@ -1354,14 +1354,6 @@ util.isVideoPlayerJsModulesEnabled = () => {
 };
 
 /**
- * Returns true if FilesBannerFramework flag is enabled.
- * @return {boolean}
- */
-util.isBannerFrameworkEnabled = () => {
-  return loadTimeData.getBoolean('FILES_BANNER_FRAMEWORK');
-};
-
-/**
  * Returns true if FilesExtractArchive flag is enabled.
  * @return {boolean}
  */
