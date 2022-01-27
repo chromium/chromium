@@ -163,7 +163,7 @@ def _bootstrap_properties(ctx):
             if bootstrap_node.props.bootstrap:
                 non_bootstrapped_properties.update({
                     "$bootstrap/exe": {
-                        "exe": builder.exe,
+                        "exe": json.decode(proto.to_jsonpb(builder.exe, use_proto_names = True)),
                     },
                     "led_builder_is_bootstrapped": True,
                 })
