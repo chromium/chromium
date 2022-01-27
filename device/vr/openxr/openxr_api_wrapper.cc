@@ -130,6 +130,10 @@ void OpenXrApiWrapper::Reset() {
   frame_state_ = {};
   local_from_viewer_ = {XR_TYPE_SPACE_LOCATION};
   input_helper_.reset();
+
+  on_session_started_callback_.Reset();
+  on_session_ended_callback_.Reset();
+  visibility_changed_callback_.Reset();
 }
 
 bool OpenXrApiWrapper::Initialize(XrInstance instance) {
@@ -174,6 +178,10 @@ void OpenXrApiWrapper::Uninitialize() {
   // so they don't need to be manually destroyed.
   if (HasSession()) {
     xrDestroySession(session_);
+  }
+
+  if (on_session_ended_callback_) {
+    on_session_ended_callback_.Run();
   }
 
   if (test_hook_)
@@ -377,8 +385,9 @@ XrResult OpenXrApiWrapper::InitSession(
     const std::unordered_set<mojom::XRSessionFeature>& enabled_features,
     const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
     const OpenXrExtensionHelper& extension_helper,
-    const SessionEndedCallback& on_session_ended_callback,
-    const VisibilityChangedCallback& visibility_changed_callback) {
+    SessionStartedCallback on_session_started_callback,
+    SessionEndedCallback on_session_ended_callback,
+    VisibilityChangedCallback visibility_changed_callback) {
   DCHECK(d3d_device.Get());
   DCHECK(IsInitialized());
 
@@ -393,6 +402,7 @@ XrResult OpenXrApiWrapper::InitSession(
                feature == mojom::XRSessionFeature::ANCHORS;
       });
 
+  on_session_started_callback_ = std::move(on_session_started_callback);
   on_session_ended_callback_ = std::move(on_session_ended_callback);
   visibility_changed_callback_ = std::move(visibility_changed_callback);
 
@@ -734,6 +744,7 @@ XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
 
 XrResult OpenXrApiWrapper::BeginSession() {
   DCHECK(HasSession());
+  DCHECK(on_session_started_callback_);
 
   XrSessionBeginInfo session_begin_info = {XR_TYPE_SESSION_BEGIN_INFO};
   session_begin_info.primaryViewConfigurationType = primary_view_config_.Type();
@@ -757,6 +768,8 @@ XrResult OpenXrApiWrapper::BeginSession() {
   XrResult xr_result = xrBeginSession(session_, &session_begin_info);
   if (XR_SUCCEEDED(xr_result))
     session_running_ = true;
+
+  std::move(on_session_started_callback_).Run(xr_result);
 
   return xr_result;
 }
@@ -1236,7 +1249,6 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           session_running_ = false;
           xr_result = xrEndSession(session_);
           Uninitialize();
-          on_session_ended_callback_.Run();
           return xr_result;
         case XR_SESSION_STATE_SYNCHRONIZED:
           visibility_changed_callback_.Run(

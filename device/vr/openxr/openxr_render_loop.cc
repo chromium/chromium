@@ -122,11 +122,13 @@ void OpenXrRenderLoop::StartRuntime(
   // openxr_ so that the local unique_ptr cleans up the object if starting
   // a session fails. openxr_ is set later in this method once we know
   // starting the session succeeds.
-  std::unique_ptr<OpenXrApiWrapper> openxr =
-      OpenXrApiWrapper::Create(instance_);
-  if (!openxr)
+  openxr_ = OpenXrApiWrapper::Create(instance_);
+  if (!openxr_)
     return std::move(start_runtime_callback).Run(false);
 
+  SessionStartedCallback on_session_started_callback = base::BindOnce(
+      &OpenXrRenderLoop::OnOpenXrSessionStarted, weak_ptr_factory_.GetWeakPtr(),
+      std::move(start_runtime_callback));
   SessionEndedCallback on_session_ended_callback = base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
   VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
@@ -134,24 +136,29 @@ void OpenXrRenderLoop::StartRuntime(
 
   texture_helper_.SetUseBGRA(true);
   LUID luid;
-  if (XR_FAILED(openxr->GetLuid(extension_helper_, luid)) ||
+  if (XR_FAILED(openxr_->GetLuid(extension_helper_, luid)) ||
       !texture_helper_.SetAdapterLUID(luid) ||
       !texture_helper_.EnsureInitialized() ||
-      XR_FAILED(openxr->InitSession(
+      XR_FAILED(openxr_->InitSession(
           enabled_features_, texture_helper_.GetDevice(), extension_helper_,
+          std::move(on_session_started_callback),
           std::move(on_session_ended_callback),
           std::move(on_visibility_state_changed)))) {
-    texture_helper_.Reset();
-    return std::move(start_runtime_callback).Run(false);
+    StopRuntime();
+    std::move(start_runtime_callback).Run(false);
+  }
+}
+
+void OpenXrRenderLoop::OnOpenXrSessionStarted(
+    StartRuntimeCallback start_runtime_callback,
+    XrResult result) {
+  if (XR_FAILED(result)) {
+    StopRuntime();
+    std::move(start_runtime_callback).Run(false);
   }
 
-  // Starting session succeeded so we can set the member variable.
-  // Any additional code added below this should never fail.
-  openxr_ = std::move(openxr);
-  texture_helper_.SetDefaultSize(openxr_->GetSwapchainSize());
-
   SendInitialDisplayInfo();
-
+  texture_helper_.SetDefaultSize(openxr_->GetSwapchainSize());
   StartContextProviderIfNeeded(std::move(start_runtime_callback));
 }
 
@@ -518,7 +525,7 @@ void OpenXrRenderLoop::OnContextLostCallback(
 // it will queue a task onto the render loop's task runner to run
 // OnContextProviderCreated, passing it the newly created context provider.
 // StartContextProvider uses BindOnce to passthrough the start_runtime_callback
-// given to it from it's caller OnContextProviderCreated must run the
+// given to it from it's caller. OnContextProviderCreated must run the
 // start_runtime_callback, passing true on successful call to
 // BindToCurrentThread and false if not.
 void OpenXrRenderLoop::OnContextProviderCreated(

@@ -39,6 +39,7 @@ class OpenXRInputHelper;
 class VRTestHook;
 class ServiceTestHook;
 
+using SessionStartedCallback = base::OnceCallback<void(XrResult result)>;
 using SessionEndedCallback = base::RepeatingCallback<void()>;
 using VisibilityChangedCallback =
     base::RepeatingCallback<void(mojom::XRVisibilityState)>;
@@ -63,8 +64,9 @@ class OpenXrApiWrapper {
       const std::unordered_set<mojom::XRSessionFeature>& enabled_features,
       const Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device,
       const OpenXrExtensionHelper& extension_helper,
-      const SessionEndedCallback& on_session_ended_callback,
-      const VisibilityChangedCallback& visibility_changed_callback);
+      SessionStartedCallback on_session_started_callback,
+      SessionEndedCallback on_session_ended_callback,
+      VisibilityChangedCallback visibility_changed_callback);
 
   XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
 
@@ -165,8 +167,9 @@ class OpenXrApiWrapper {
   bool session_running_;
   bool pending_frame_;
 
-  VisibilityChangedCallback visibility_changed_callback_;
+  SessionStartedCallback on_session_started_callback_;
   SessionEndedCallback on_session_ended_callback_;
+  VisibilityChangedCallback visibility_changed_callback_;
 
   // Testing objects
   static VRTestHook* test_hook_;

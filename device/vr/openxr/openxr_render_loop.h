@@ -78,6 +78,8 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   void OnContextLost() override;
 
   void SendInitialDisplayInfo();
+  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
+                              XrResult result);
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,
