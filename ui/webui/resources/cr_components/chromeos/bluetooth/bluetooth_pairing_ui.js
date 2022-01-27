@@ -241,6 +241,14 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.bluetoothDiscoveryDelegateReceiver_) {
+      this.bluetoothDiscoveryDelegateReceiver_.$.close();
+    }
+  }
+
   /** @override */
   onPropertiesUpdated(properties) {
     const wasBluetoothEnabled = this.isBluetoothEnabled_;

@@ -5,6 +5,7 @@
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
 
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 
 namespace chromeos {
@@ -74,6 +75,8 @@ void DiscoverySessionManagerImpl::AttemptDiscovery() {
   if (is_discovery_attempt_in_progress_)
     return;
 
+  BLUETOOTH_LOG(DEBUG) << "Starting discovery session";
+
   is_discovery_attempt_in_progress_ = true;
   bluetooth_adapter_->StartDiscoverySession(
       kDiscoveryClientName,
@@ -108,6 +111,8 @@ void DiscoverySessionManagerImpl::OnDiscoveryError() {
 }
 
 void DiscoverySessionManagerImpl::DestroyDiscoverySession() {
+  BLUETOOTH_LOG(DEBUG) << "Destroying discovery session";
+
   discovery_session_.reset();
   NotifyDiscoveryStoppedAndClearActiveClients();
 }
