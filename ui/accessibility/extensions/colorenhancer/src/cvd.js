@@ -347,7 +347,6 @@ html[cvd="1"] {
   function addElements() {
     let style = document.getElementById(STYLE_ID);
     if (!style) {
-      const baseUrl = window.location.href.replace(window.location.hash, '');
       style = document.createElement('style');
       style.id = STYLE_ID;
       style.setAttribute('type', 'text/css');
