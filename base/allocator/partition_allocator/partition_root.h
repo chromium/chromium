@@ -417,8 +417,9 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   NOINLINE static void Free(void* ptr);
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
-  // Immediately frees the pointer bypassing the quarantine.
-  ALWAYS_INLINE void FreeNoHooksImmediate(uintptr_t address,
+  // Immediately frees the pointer bypassing the quarantine. |slot_start| is the
+  // beginning of the slot that contains |object|.
+  ALWAYS_INLINE void FreeNoHooksImmediate(uintptr_t object,
                                           SlotSpan* slot_span,
                                           uintptr_t slot_start);
 
@@ -1077,7 +1078,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
-    uintptr_t address,
+    uintptr_t object,
     SlotSpan* slot_span,
     uintptr_t slot_start) {
   // The thread cache is added "in the middle" of the main allocator, that is:
@@ -1089,31 +1090,37 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // 2. Deallocation
   //   a. Return to the thread cache if possible. If it succeeds, return.
   //   b. Otherwise, call the "raw" allocator <-- Locking
-  PA_DCHECK(address);
+  PA_DCHECK(object);
   PA_DCHECK(slot_span);
   PA_DCHECK(IsValidSlotSpan(slot_span));
   PA_DCHECK(slot_start);
 
-  // |address| points after the ref-count.
-  //
   // Layout inside the slot:
-  //  <-extras->                  <-extras->
-  //  <-------GetUtilizedSlotSize()-------->
-  //           <-GetUsableSize()-->
-  //  |[refcnt]|...data...|[empty]|[cookie]|[unused]|
-  //           ^
-  //        address
+  //   |[refcnt]|...object...|[empty]|[cookie]|[unused]|
+  //            <--------(a)--------->
+  //   <--(b)--->         +          <--(b)--->
+  //   <-----------------(c)------------------>
+  //     (a) usable_size
+  //     (b) extras
+  //     (c) utilized_slot_size
+  //
+  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is set, the layout is:
+  //   |...object...|[empty]|[cookie]|[unused]|[refcnt]|
+  //   <--------(a)--------->
+  //                        <--(b)--->   +    <--(b)--->
+  //   <-------------(c)------------->   +    <--(c)--->
   //
   // Note: ref-count and cookie can be 0-sized.
   //
-  // For more context, see the other "Layout inside the slot" comment below.
+  // For more context, see the other "Layout inside the slot" comment inside
+  // AllocFlagsNoHooks().
 
 #if DCHECK_IS_ON()
   if (allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
     internal::PartitionCookieCheckValue(
-        reinterpret_cast<unsigned char*>(address) +
+        reinterpret_cast<unsigned char*>(object) +
         slot_span->GetUsableSize(this));
   }
 #endif
@@ -1121,7 +1128,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // TODO(bikineev): Change the condition to LIKELY once PCScan is enabled by
   // default.
   if (UNLIKELY(IsQuarantineEnabled())) {
-    if (LIKELY(internal::IsManagedByNormalBuckets(address))) {
+    if (LIKELY(internal::IsManagedByNormalBuckets(object))) {
       uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the state in the state bitmap as freed.
       internal::StateBitmapFromAddr(unmasked_slot_start)
@@ -1138,7 +1145,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes.
     if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
-      internal::SecureMemset(reinterpret_cast<void*>(address), kQuarantinedByte,
+      internal::SecureMemset(reinterpret_cast<void*>(object), kQuarantinedByte,
                              slot_span->GetUsableSize(this));
 
     if (UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {
@@ -1575,23 +1582,22 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     return nullptr;
 
   // Layout inside the slot:
-  //  |[refcnt]|...data...|[empty]|[cookie]|[unused]|
-  //           <---(a)---->
-  //           <-------(b)-------->
-  //  <--(c)--->                  <--(c)--->
-  //  <--------(d)-------->   +   <--(d)--->
-  //  <----------------(e)----------------->
-  //  <---------------------(f)--------------------->
-  //   (a) requested_size
-  //   (b) usable_size
-  //   (c) extras
-  //   (d) raw_size
-  //   (e) utilized_slot_size
-  //   (f) slot_size
-  //
-  // - Ref-count may or may not exist in the slot, depending on raw_ptr<T>
-  //   implementation.
-  // - Cookie exists only when DCHECK is on.
+  //   |[refcnt]|...object...|[empty]|[cookie]|[unused]|
+  //            <----(a)----->
+  //            <--------(b)--------->
+  //   <--(c)--->         +          <--(c)--->
+  //   <---------(d)--------->   +   <--(d)--->
+  //   <-----------------(e)------------------>
+  //   <----------------------(f)---------------------->
+  //     (a) requested_size
+  //     (b) usable_size
+  //     (c) extras
+  //     (d) raw_size
+  //     (e) utilized_slot_size
+  //     (f) slot_size
+  // Notes:
+  // - Ref-count may or may not exist in the slot, depending on brp_enabled().
+  // - Cookie exists only in the DCHECK_IS_ON() case.
   // - Think of raw_size as the minimum size required internally to satisfy
   //   the allocation request (i.e. requested_size + extras)
   // - Note, at most one "empty" or "unused" space can occur at a time. It
@@ -1605,37 +1611,28 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   //   we have no other choice than putting the cookie at the very end of the
   //   slot, thus creating the "empty" space.
   //
-  // If BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) is true, Layout inside the
-  // slot of small buckets:
-  //  |...data...|[empty]|[cookie]|[refcnt]|
-  //  <---(a)---->
-  //  <-------(b)-------->
-  //                     <-------(c)------->
-  //  <---(d)---->   +   <-------(d)------->
-  //  <----------------(e)----------------->
-  //  <----------------(f)----------------->
-  //
-  // If the slot start address is not SystemPageSize() aligned (this also means,
-  // the slot size is small), [refcnt] of this slot is stored at the end of
-  // the previous slot. So this makes us to obtain refcount address with slot
-  // start address minus sizeof(refcount).
-  // If the slot start address is SystemPageSize() aligned (regarding single
-  // slot span, the slot start address is always SystemPage size-aligned),
-  // [refcnt] is stored in refcount bitmap placed after SuperPage metadata.
-  // However, the space for refcnt is still reserved at the end of slot, even
-  // though redundant. Because, regarding not single slot span, it is a little
-  // difficult to change usable_size if refcnt serves the slot in the next
-  // system page.
-  // TODO(tasak): we don't need to add/subtract sizeof(refcnt) to requested size
-  // in single slot span case.
+  // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is set, the layout is:
+  //   |...object...|[empty]|[cookie]|[unused]|[refcnt]|
+  //   <----(a)----->
+  //   <--------(b)--------->
+  //                        <--(c)--->   +    <--(c)--->
+  //   <----(d)----->   +   <--(d)--->   +    <--(d)--->
+  //   <-------------(e)------------->   +    <--(e)--->
+  //   <----------------------(f)---------------------->
+  // Notes:
+  // If |slot_start| is not SystemPageSize()-aligned (possible only for small
+  // allocations), ref-count of this slot is stored at the end of the previous
+  // slot. Otherwise it is stored in ref-count table placed after the super page
+  // metadata. For simplicity, the space for ref-count is still reserved at the
+  // end of previous slot, even though redundant.
 
   // The value given to the application is just after the ref-count.
-  void* ret = AdjustPointerForExtrasAdd(slot_start);
+  void* object = AdjustPointerForExtrasAdd(slot_start);
 
 #if DCHECK_IS_ON()
   // Add the cookie after the allocation.
   if (allow_cookie) {
-    internal::PartitionCookieWriteValue(static_cast<unsigned char*>(ret) +
+    internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +
                                         usable_size);
   }
 #endif
@@ -1647,10 +1644,10 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   if (LIKELY(!zero_fill)) {
     // memset() can be really expensive.
 #if EXPENSIVE_DCHECKS_ARE_ON()
-    memset(ret, kUninitializedByte, usable_size);
+    memset(object, kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {
-    memset(ret, 0, usable_size);
+    memset(object, 0, usable_size);
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -1666,7 +1663,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // default.
   if (UNLIKELY(is_quarantine_enabled)) {
     if (LIKELY(internal::IsManagedByNormalBuckets(
-            reinterpret_cast<uintptr_t>(ret)))) {
+            reinterpret_cast<uintptr_t>(object)))) {
       uintptr_t unmasked_slot_start =
           memory::UnmaskPtr(reinterpret_cast<uintptr_t>(slot_start));
       // Mark the corresponding bits in the state bitmap as allocated.
@@ -1675,7 +1672,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     }
   }
 
-  return ret;
+  return object;
 }
 
 template <bool thread_safe>
