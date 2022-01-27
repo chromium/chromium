@@ -959,6 +959,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mLocaleManager.stopObservingPhoneChanges();
 
         NavigationPredictorBridge.onPause();
+        StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
 
         super.onPauseWithNative();
     }
