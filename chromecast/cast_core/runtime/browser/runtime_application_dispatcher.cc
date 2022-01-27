@@ -5,6 +5,7 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_dispatcher.h"
 
 #include "base/notreached.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromecast/browser/cast_content_window.h"
@@ -25,112 +26,113 @@ base::TimeDelta kDefaultMetricsReportInterval = base::Seconds(60);
 
 }  // namespace
 
-RuntimeApplicationDispatcher::AsyncMetricsRecord::AsyncMetricsRecord(
-    const cast::metrics::RecordRequest& request,
-    cast::metrics::MetricsRecorderService::Stub* metrics_recorder_stub,
-    grpc::CompletionQueue* cq,
-    base::WeakPtr<RuntimeApplicationDispatcher> runtime_service)
-    : runtime_service_(runtime_service) {
-  response_reader_ =
-      metrics_recorder_stub->PrepareAsyncRecord(&context_, request, cq);
-  response_reader_->StartCall();
-  response_reader_->Finish(&response_, &status_, static_cast<GRPC*>(this));
-}
-
-RuntimeApplicationDispatcher::AsyncMetricsRecord::~AsyncMetricsRecord() =
-    default;
-
-void RuntimeApplicationDispatcher::AsyncMetricsRecord::StepGRPC(
-    grpc::Status status) {
-  if (runtime_service_) {
-    runtime_service_->OnRecordComplete();
-  }
-  delete this;
-}
-
 RuntimeApplicationDispatcher::RuntimeApplicationDispatcher(
     CastWebService* web_service,
     CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
     cast_streaming::NetworkContextGetter network_context_getter,
     media::VideoPlaneController* video_plane_controller,
     RuntimeApplicationWatcher* application_watcher)
-    : GrpcServer(base::SequencedTaskRunnerHandle::Get()),
-      web_service_(web_service),
+    : web_service_(web_service),
       network_context_getter_(std::move(network_context_getter)),
       metrics_recorder_(event_builder_factory),
       video_plane_controller_(video_plane_controller),
-      application_watcher_(application_watcher) {
+      application_watcher_(application_watcher),
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   DCHECK(web_service_);
   DCHECK(video_plane_controller_);
+
+  heartbeat_timer_.SetTaskRunner(task_runner_);
 }
 
 RuntimeApplicationDispatcher::~RuntimeApplicationDispatcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Stop();
 }
 
 bool RuntimeApplicationDispatcher::Start(
     const std::string& runtime_id,
-    const std::string& runtime_service_path) {
-  runtime_id_ = runtime_id;
-  runtime_service_path_ = runtime_service_path;
+    const std::string& runtime_service_endpoint) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!grpc_server_);
 
-  grpc::ServerBuilder builder;
-  builder.AddListeningPort(runtime_service_path_,
-                           grpc::InsecureServerCredentials());
-  builder.RegisterService(&grpc_runtime_service_);
-  SetCompletionQueue(builder.AddCompletionQueue());
-  SetServer(builder.BuildAndStart());
-  if (!grpc_server_) {
-    LOG(ERROR) << "Failed to start server on path: " << runtime_service_path_;
-    return false;
-  }
+  grpc_server_.emplace();
+  grpc_server_
+      ->SetHandler<cast::runtime::RuntimeServiceHandler::LoadApplication>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(
+                  &RuntimeApplicationDispatcher::HandleLoadApplication,
+                  weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::runtime::RuntimeServiceHandler::LaunchApplication>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(
+                  &RuntimeApplicationDispatcher::HandleLaunchApplication,
+                  weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::runtime::RuntimeServiceHandler::StopApplication>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(
+                  &RuntimeApplicationDispatcher::HandleStopApplication,
+                  weak_factory_.GetWeakPtr())));
+  grpc_server_->SetHandler<cast::runtime::RuntimeServiceHandler::Heartbeat>(
+      base::BindPostTask(
+          task_runner_,
+          base::BindRepeating(&RuntimeApplicationDispatcher::HandleHeartbeat,
+                              weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::runtime::RuntimeServiceHandler::StartMetricsRecorder>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(
+                  &RuntimeApplicationDispatcher::HandleStartMetricsRecorder,
+                  weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetHandler<cast::runtime::RuntimeServiceHandler::StopMetricsRecorder>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(
+                  &RuntimeApplicationDispatcher::HandleStopMetricsRecorder,
+                  weak_factory_.GetWeakPtr())));
+  grpc_server_->Start(runtime_service_endpoint);
 
-  StartRuntimeServiceMethods(&grpc_runtime_service_, weak_factory_.GetWeakPtr(),
-                             grpc_cq_, &is_shutdown_);
-  GrpcServer::Start();
-
+  LOG(INFO) << "Runtime service started: runtime_id=" << runtime_id
+            << ", endpoint=" << runtime_service_endpoint;
   return true;
 }
 
 void RuntimeApplicationDispatcher::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetApp();
 
-  if (heartbeat_) {
-    heartbeat_->Finish(grpc::Status::CANCELLED);
-    heartbeat_ = nullptr;
+  if (heartbeat_reactor_) {
+    heartbeat_timer_.Stop();
+    heartbeat_reactor_->Write(grpc::Status::OK);
+    heartbeat_reactor_ = nullptr;
   }
-  if (metrics_recorder_client_) {
-    metrics_recorder_client_->OnCloseSoon(base::DoNothing());
+
+  if (grpc_server_) {
+    grpc_server_->Stop();
+    grpc_server_.reset();
   }
-  GrpcServer::Stop();
+
+  if (metrics_recorder_service_) {
+    metrics_recorder_service_->OnCloseSoon(base::DoNothing());
+    metrics_recorder_service_.reset();
+  }
+
+  LOG(INFO) << "Runtime service stopped";
 }
 
-void RuntimeApplicationDispatcher::Record(
-    const cast::metrics::RecordRequest& request) {
-  if (!metrics_recorder_stub_) {
-    return;
-  }
-  if (!grpc_cq_) {
-    return;
-  }
-  new AsyncMetricsRecord(request, metrics_recorder_stub_.get(), grpc_cq_,
-                         weak_factory_.GetWeakPtr());
-}
-
-void RuntimeApplicationDispatcher::LoadApplication(
-    const cast::runtime::LoadApplicationRequest& request,
-    cast::runtime::LoadApplicationResponse* response,
-    GrpcMethod* callback) {
+void RuntimeApplicationDispatcher::HandleLoadApplication(
+    cast::runtime::LoadApplicationRequest request,
+    cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request.has_application_config()) {
-    std::stringstream err_stream;
-    err_stream
-        << "Invalid LoadApplication call (session id: "
-        << request.cast_session_id() << ", grpc endpoint: "
-        << (request.has_runtime_application_service_info()
-                ? request.runtime_application_service_info().grpc_endpoint()
-                : "NONE")
-        << ")";
-    callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
+    reactor->Write(
+        grpc::Status(grpc::INVALID_ARGUMENT, "Application config is missing"));
     return;
   }
 
@@ -150,29 +152,22 @@ void RuntimeApplicationDispatcher::LoadApplication(
   }
 
   if (!app_->Load(request)) {
-    std::stringstream err_stream;
-    err_stream
-        << "failed to load RuntimeApplication (session id: "
-        << request.cast_session_id()
-        << ", app id: " << app_->app_config().app_id() << ", grpc endpoint: "
-        << (request.has_runtime_application_service_info()
-                ? request.runtime_application_service_info().grpc_endpoint()
-                : "NONE")
-        << ")";
     ResetApp();
-    callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
+    reactor->Write(
+        grpc::Status(grpc::StatusCode::INTERNAL, "Failed to load application"));
     return;
   }
-  cast::runtime::MessagePortInfo info;
-  *response->mutable_message_port_info() = info;
-  DCHECK(response->has_message_port_info());
-  callback->StepGRPC(grpc::Status::OK);
+
+  LOG(INFO) << "Application loaded: " << *app_;
+  cast::runtime::LoadApplicationResponse response;
+  response.mutable_message_port_info();
+  reactor->Write(std::move(response));
 }
 
-void RuntimeApplicationDispatcher::LaunchApplication(
-    const cast::runtime::LaunchApplicationRequest& request,
-    cast::runtime::LaunchApplicationResponse* response,
-    GrpcMethod* callback) {
+void RuntimeApplicationDispatcher::HandleLaunchApplication(
+    cast::runtime::LaunchApplicationRequest request,
+    cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!app_->Launch(request)) {
     std::stringstream err_stream;
     err_stream << "failed to launch RuntimeApplication (session id: "
@@ -184,96 +179,155 @@ void RuntimeApplicationDispatcher::LaunchApplication(
                        : "NONE")
                << ")";
     ResetApp();
-    callback->StepGRPC(grpc::Status(grpc::INTERNAL, err_stream.str()));
+    reactor->Write(grpc::Status(grpc::INTERNAL, err_stream.str()));
     return;
   }
-  callback->StepGRPC(grpc::Status::OK);
+
+  reactor->Write(cast::runtime::LaunchApplicationResponse());
 }
 
-void RuntimeApplicationDispatcher::StopApplication(
-    const cast::runtime::StopApplicationRequest& request,
-    cast::runtime::StopApplicationResponse* response,
-    GrpcMethod* callback) {
-  response->set_app_id(app_->app_config().app_id());
-  response->set_cast_session_id(app_->cast_session_id());
+void RuntimeApplicationDispatcher::HandleStopApplication(
+    cast::runtime::StopApplicationRequest request,
+    cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!app_) {
+    reactor->Write(grpc::Status(grpc::StatusCode::FAILED_PRECONDITION,
+                                "No application is running"));
+    return;
+  }
+
+  // Reset the app only after the response is constructed.
+  cast::runtime::StopApplicationResponse response;
+  response.set_app_id(app_->app_config().app_id());
+  response.set_cast_session_id(app_->cast_session_id());
+
   ResetApp();
-  callback->StepGRPC(grpc::Status::OK);
+  reactor->Write(std::move(response));
 }
 
-void RuntimeApplicationDispatcher::Heartbeat(
-    const cast::runtime::HeartbeatRequest& request,
-    HeartbeatMethod* heartbeat) {
-  if (heartbeat_) {
-    heartbeat->Finish(grpc::Status::CANCELLED);
-    return;
-  }
+void RuntimeApplicationDispatcher::HandleHeartbeat(
+    cast::runtime::HeartbeatRequest request,
+    cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!heartbeat_reactor_);
+
   if (!request.has_heartbeat_period() ||
       request.heartbeat_period().seconds() <= 0) {
-    heartbeat->Finish(grpc::Status::CANCELLED);
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "Incorrect heartbeat period"));
     return;
   }
-  heartbeat_period_ = request.heartbeat_period().seconds();
-  heartbeat_ = heartbeat;
+
+  heartbeat_period_ = base::Seconds(request.heartbeat_period().seconds());
+  heartbeat_reactor_ = reactor;
+  heartbeat_reactor_->SetWritesAvailableCallback(base::BindPostTask(
+      task_runner_,
+      base::BindRepeating(&RuntimeApplicationDispatcher::OnHeartbeatSent,
+                          weak_factory_.GetWeakPtr())));
   DVLOG(2) << "Starting heartbeat ticking with period: " << heartbeat_period_
            << " seconds";
+
   SendHeartbeat();
 }
 
-void RuntimeApplicationDispatcher::StartMetricsRecorder(
-    const cast::runtime::StartMetricsRecorderRequest& request,
-    cast::runtime::StartMetricsRecorderResponse* response,
-    GrpcMethod* callback) {
-  auto metrics_channel = grpc::CreateChannel(
-      request.metrics_recorder_service_info().grpc_endpoint(),
-      grpc::InsecureChannelCredentials());
-  if (!metrics_channel) {
-    DLOG(WARNING) << "Failed to open a channel to MetricsRecorderService.";
-    callback->StepGRPC(
-        grpc::Status(grpc::StatusCode::INTERNAL,
-                     "Failed to open channel to MetricsRecorderService"));
+void RuntimeApplicationDispatcher::HandleStartMetricsRecorder(
+    cast::runtime::StartMetricsRecorderRequest request,
+    cast::runtime::RuntimeServiceHandler::StartMetricsRecorder::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.metrics_recorder_service_info().grpc_endpoint().empty()) {
+    reactor->Write(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                "MetricsRecord service endpoint is missing"));
     return;
   }
 
-  metrics_recorder_stub_ = cast::metrics::MetricsRecorderService::NewStub(
-      std::move(metrics_channel));
-  metrics_recorder_service_ =
-      std::make_unique<CastRuntimeMetricsRecorderService>(
-          &metrics_recorder_, &action_recorder_, this,
-          kDefaultMetricsReportInterval);
-  DVLOG(2) << "MetricsRecorderService started";
-  callback->StepGRPC(grpc::Status::OK);
+  metrics_recorder_stub_.emplace(
+      request.metrics_recorder_service_info().grpc_endpoint());
+  metrics_recorder_service_.emplace(
+      &metrics_recorder_, &action_recorder_,
+      base::BindRepeating(&RuntimeApplicationDispatcher::RecordMetrics,
+                          weak_factory_.GetWeakPtr()),
+      kDefaultMetricsReportInterval);
+  DVLOG(2) << "MetricsRecorderService connected: endpoint="
+           << request.metrics_recorder_service_info().grpc_endpoint();
+  reactor->Write(cast::runtime::StartMetricsRecorderResponse());
 }
 
-void RuntimeApplicationDispatcher::StopMetricsRecorder(
-    const cast::runtime::StopMetricsRecorderRequest& request,
-    cast::runtime::StopMetricsRecorderResponse* response,
-    GrpcMethod* callback) {
-  metrics_recorder_client_->OnCloseSoon(base::BindOnce(
+void RuntimeApplicationDispatcher::HandleStopMetricsRecorder(
+    cast::runtime::StopMetricsRecorderRequest request,
+    cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
+        reactor) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics_recorder_service_->OnCloseSoon(base::BindOnce(
       &RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped,
-      base::Unretained(this), base::Unretained(callback)));
+      weak_factory_.GetWeakPtr(), std::move(reactor)));
 }
 
 void RuntimeApplicationDispatcher::SendHeartbeat() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(heartbeat_reactor_);
   DVLOG(2) << "Sending heartbeat";
-  if (heartbeat_) {
-    heartbeat_->Tick();
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&RuntimeApplicationDispatcher::SendHeartbeat,
-                       weak_factory_.GetWeakPtr()),
-        base::Seconds(heartbeat_period_));
-  }
+  heartbeat_reactor_->Write(cast::runtime::HeartbeatResponse());
 }
 
-void RuntimeApplicationDispatcher::OnRecordComplete() {
-  metrics_recorder_client_->OnRecordComplete();
+void RuntimeApplicationDispatcher::OnHeartbeatSent(
+    cast::utils::GrpcStatusOr<
+        cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor*> reactor_or) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!reactor_or.ok()) {
+    heartbeat_reactor_ = nullptr;
+    LOG(ERROR) << "Failed to send heartbeats: " << reactor_or.ToString();
+    return;
+  }
+
+  heartbeat_reactor_ = std::move(reactor_or).value();
+  heartbeat_timer_.Start(
+      FROM_HERE, heartbeat_period_,
+      base::BindPostTask(
+          task_runner_,
+          base::BindOnce(&RuntimeApplicationDispatcher::SendHeartbeat,
+                         weak_factory_.GetWeakPtr())));
+}
+
+void RuntimeApplicationDispatcher::RecordMetrics(
+    cast::metrics::RecordRequest request,
+    CastRuntimeMetricsRecorderService::RecordCompleteCallback
+        record_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!metrics_recorder_stub_) {
+    std::move(record_complete_callback).Run();
+    return;
+  }
+
+  auto call =
+      metrics_recorder_stub_
+          ->CreateCall<cast::metrics::MetricsRecorderServiceStub::Record>(
+              std::move(request));
+  std::move(call).InvokeAsync(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(&RuntimeApplicationDispatcher::OnMetricsRecordComplete,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(record_complete_callback))));
+}
+
+void RuntimeApplicationDispatcher::OnMetricsRecordComplete(
+    CastRuntimeMetricsRecorderService::RecordCompleteCallback
+        record_complete_callback,
+    cast::utils::GrpcStatusOr<cast::metrics::RecordResponse> response_or) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!response_or.ok()) {
+    LOG(ERROR) << "Failed to record metrics: " << response_or.ToString();
+  }
+
+  std::move(record_complete_callback).Run();
 }
 
 void RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped(
-    GrpcMethod* callback) {
+    cast::runtime::RuntimeServiceHandler::StopMetricsRecorder::Reactor*
+        reactor) {
   DVLOG(2) << "MetricsRecorderService stopped";
   metrics_recorder_service_.reset();
-  callback->StepGRPC(grpc::Status::OK);
+  reactor->Write(cast::runtime::StopMetricsRecorderResponse());
 }
 
 void RuntimeApplicationDispatcher::ResetApp() {

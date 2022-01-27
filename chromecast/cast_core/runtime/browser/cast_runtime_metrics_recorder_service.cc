@@ -8,7 +8,6 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_histogram_flattener.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
-#include "chromecast/cast_core/runtime/browser/metrics_recorder_grpc.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.pb.h"
 
 namespace chromecast {
@@ -21,39 +20,34 @@ constexpr size_t kMaxBatchSize = 50;
 CastRuntimeMetricsRecorderService::CastRuntimeMetricsRecorderService(
     CastRuntimeMetricsRecorder* metrics_recorder,
     CastRuntimeActionRecorder* action_recorder,
-    MetricsRecorderGrpc* metrics_recorder_grpc,
+    RecordMetricsCallback record_metrics_callback,
     base::TimeDelta report_interval)
     : metrics_recorder_(metrics_recorder),
       action_recorder_(action_recorder),
-      metrics_recorder_grpc_(metrics_recorder_grpc) {
+      record_metrics_callback_(record_metrics_callback) {
   report_timer_.Start(
       FROM_HERE, report_interval,
       base::BindRepeating(&CastRuntimeMetricsRecorderService::Report,
-                          base::Unretained(this)));
-  metrics_recorder_grpc_->SetClient(this);
+                          weak_factory_.GetWeakPtr()));
 }
 
 CastRuntimeMetricsRecorderService::~CastRuntimeMetricsRecorderService() {
-  metrics_recorder_grpc_->SetClient(nullptr);
-}
-
-void CastRuntimeMetricsRecorderService::OnRecordComplete() {
-  DCHECK(ack_pending_);
-  ack_pending_ = false;
-  DrainBuffer();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void CastRuntimeMetricsRecorderService::OnCloseSoon(
     base::OnceClosure complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (flush_complete_callback_) {
     return;
   }
-  report_timer_.AbandonAndStop();
+  report_timer_.Stop();
   flush_complete_callback_ = std::move(complete_callback);
   Report();
 }
 
 void CastRuntimeMetricsRecorderService::Report() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<cast::metrics::Event> events = metrics_recorder_->TakeEvents();
   for (auto& histogram : GetHistogramDeltas()) {
     cast::metrics::Event event;
@@ -72,7 +66,15 @@ void CastRuntimeMetricsRecorderService::Report() {
   DrainBuffer();
 }
 
+void CastRuntimeMetricsRecorderService::OnRecordComplete() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(ack_pending_);
+  ack_pending_ = false;
+  DrainBuffer();
+}
+
 void CastRuntimeMetricsRecorderService::DrainBuffer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ack_pending_) {
     return;
   }
@@ -90,9 +92,13 @@ void CastRuntimeMetricsRecorderService::DrainBuffer() {
   *request.mutable_event() = {send_buffer_.begin() + start_index,
                               send_buffer_.end()};
   send_buffer_.resize(start_index);
+
   DVLOG(2) << "Sending metrics";
   ack_pending_ = true;
-  metrics_recorder_grpc_->Record(request);
+  record_metrics_callback_.Run(
+      std::move(request),
+      base::BindOnce(&CastRuntimeMetricsRecorderService::OnRecordComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace chromecast

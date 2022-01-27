@@ -7,32 +7,32 @@ import("//third_party/cast_core/public/src/proto/proto.gni")
 
 cast_source_set("grpc") {
   sources = [
-    "grpc_call.h",
-    "grpc_client_reactor.h",
-    "grpc_server_streaming_call.h",
-    "grpc_stub.h",
-    "grpc_unary_call.h",
     "cancellable_reactor.h",
+    "grpc_call.h",
+    "grpc_call_options.cc",
+    "grpc_call_options.h",
+    "grpc_client_reactor.h",
     "grpc_handler.cc",
     "grpc_handler.h",
     "grpc_server.cc",
     "grpc_server.h",
     "grpc_server_reactor.h",
+    "grpc_server_streaming_call.h",
     "grpc_server_streaming_handler.h",
+    "grpc_status_or.cc",
+    "grpc_status_or.h",
+    "grpc_stub.h",
+    "grpc_unary_call.h",
     "grpc_unary_handler.h",
     "server_reactor_tracker.cc",
     "server_reactor_tracker.h",
     "trackable_reactor.h",
-    "grpc_call_options.cc",
-    "grpc_call_options.h",
-    "grpc_status_or.cc",
-    "grpc_status_or.h",
   ]
 
   public_deps = [
     "//base",
-    "//third_party/grpc:grpc++",
     "//third_party/abseil-cpp:absl",
+    "//third_party/grpc:grpc++",
   ]
 }
 

@@ -5,9 +5,10 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_METRICS_RECORDER_SERVICE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_CAST_RUNTIME_METRICS_RECORDER_SERVICE_H_
 
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromecast/cast_core/runtime/browser/metrics_recorder_grpc.h"
+#include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.pb.h"
 
 namespace chromecast {
 
@@ -18,32 +19,39 @@ class CastRuntimeMetricsRecorder;
 // Core via MetricsRecorderGrpc.  It begins running the timer task on
 // construction.  After OnCloseSoon(), it only attempts one more round of
 // metrics and then stops.
-class CastRuntimeMetricsRecorderService final
-    : public MetricsRecorderGrpc::Client {
+class CastRuntimeMetricsRecorderService {
  public:
+  using RecordCompleteCallback = base::OnceClosure;
+  using RecordMetricsCallback =
+      base::RepeatingCallback<void(cast::metrics::RecordRequest,
+                                   RecordCompleteCallback)>;
+
   // All these pointers must outlive |this|.
   CastRuntimeMetricsRecorderService(
       CastRuntimeMetricsRecorder* metrics_recorder,
       CastRuntimeActionRecorder* action_recorder,
-      MetricsRecorderGrpc* metrics_recorder_grpc,
+      RecordMetricsCallback record_metrics_callback,
       base::TimeDelta report_interval);
-  ~CastRuntimeMetricsRecorderService() override;
+  ~CastRuntimeMetricsRecorderService();
 
-  void OnRecordComplete() override;
-  void OnCloseSoon(base::OnceClosure complete_callback) override;
+  void OnCloseSoon(base::OnceClosure complete_callback);
 
  private:
   void Report();
   void DrainBuffer();
+  void OnRecordComplete();
 
   CastRuntimeMetricsRecorder* const metrics_recorder_;
   CastRuntimeActionRecorder* const action_recorder_;
-  MetricsRecorderGrpc* const metrics_recorder_grpc_;
+  RecordMetricsCallback record_metrics_callback_;
   base::RepeatingTimer report_timer_;
 
   bool ack_pending_{false};
   base::OnceClosure flush_complete_callback_;
   std::vector<cast::metrics::Event> send_buffer_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<CastRuntimeMetricsRecorderService> weak_factory_{this};
 };
 
 }  // namespace chromecast
