@@ -481,12 +481,12 @@ chromium-metrics-reviews@google.com.
     Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
     occurred in the AMP subframe. The gap between two consecutive shifts in a
     window is not bigger than 1000ms and the maximum window size is 5000ms. This
-    metric's integral value is 10x the fractional cumulative layout shift score
-    described in the explainer. If {Bfcache} is triggered, we record the metric
-    when the user navigates away or closes the page after the page was restored
-    from back-forward cache. Otherwise, we record it at the end of the page
-    lifetime, such as when the page is being navigated away from or when a tab
-    is being closed.
+    metric's integral value is 10000x the fractional cumulative layout shift
+    score described in the explainer. If {Bfcache} is triggered, we record the
+    metric when the user navigates away or closes the page after the page was
+    restored from back-forward cache. Otherwise, we record it at the end of the
+    page lifetime, such as when the page is being navigated away from or when a
+    tab is being closed.
 
     Recorded for non same-document AMP navigations in the main frame, at the end
     of the AMP document lifetime, such as when the document is being navigated
@@ -1996,7 +1996,7 @@ chromium-metrics-reviews@google.com.
     Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
     occurred in after back forward cache restore. The gap between two
     consecutive shifts in a window is not bigger than 1000ms and the maximum
-    window size is 5000ms. This metric's integral value is 10x the fractional
+    window size is 5000ms. This metric's integral value is 10000x the fractional
     cumulative layout shift score described in the explainer. If {Bfcache} is
     triggered, we record the metric when the user navigates away or closes the
     page after the page was restored from back-forward cache. Otherwise, we
@@ -2021,12 +2021,12 @@ chromium-metrics-reviews@google.com.
     Measures the maximum cumulative layout shift (bit.ly/cls-explainer) that has
     occurred in a Window. The gap between two consecutive shifts in a window is
     not bigger than 1000ms and the maximum window size is 5000ms. This metric's
-    integral value is 10x the fractional cumulative layout shift score described
-    in the explainer. If {Bfcache} is triggered, we record the metric when the
-    user navigates away or closes the page after the page was restored from
-    back-forward cache. Otherwise, we record it at the end of the page lifetime,
-    such as when the page is being navigated away from or when a tab is being
-    closed.
+    integral value is 10000x the fractional cumulative layout shift score
+    described in the explainer. If {Bfcache} is triggered, we record the metric
+    when the user navigates away or closes the page after the page was restored
+    from back-forward cache. Otherwise, we record it at the end of the page
+    lifetime, such as when the page is being navigated away from or when a tab
+    is being closed.
 
     Replaces
     PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms
