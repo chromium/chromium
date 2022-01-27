@@ -14713,7 +14713,7 @@
     },
     {
       'name': 'DeviceLoginScreenDefaultSpokenFeedbackEnabled',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['amraboelkher@chromium.org', 'emaxx@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:29-'],
