@@ -46,6 +46,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
   AutofillBubbleBase* GetBubble() const override;
   const gfx::Image& GetBubbleTitleIcon() const override;
   std::u16string GetBubbleTitleText() const override;
+  std::u16string GetLearnMoreLinkText() const override;
   std::u16string GetEducationalBodyLabel() const override;
   std::u16string GetVirtualCardNumberFieldLabel() const override;
   std::u16string GetExpirationDateFieldLabel() const override;
@@ -57,6 +58,7 @@ class VirtualCardManualFallbackBubbleControllerImpl
       VirtualCardManualFallbackBubbleField field) const override;
   const CreditCard* GetVirtualCard() const override;
   bool ShouldIconBeVisible() const override;
+  void OnLinkClicked(const GURL& url) override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   void OnFieldClicked(VirtualCardManualFallbackBubbleField field) override;
 

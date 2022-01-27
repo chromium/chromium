@@ -64,6 +64,9 @@ class VirtualCardManualFallbackBubbleViews
   // Update the tooltips and the accessible names of the buttons.
   void UpdateButtonTooltipsAndAccessibleNames();
 
+  // Handles user click on learn more link.
+  void LearnMoreLinkClicked();
+
   raw_ptr<VirtualCardManualFallbackBubbleController> controller_;
 
   PaymentsBubbleClosedReason closed_reason_ =

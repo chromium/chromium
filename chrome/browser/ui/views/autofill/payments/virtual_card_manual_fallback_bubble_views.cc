@@ -9,11 +9,13 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -75,11 +77,28 @@ void VirtualCardManualFallbackBubbleViews::Init() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       vertical_padding));
-  auto* educational_label = AddChildView(std::make_unique<views::Label>(
-      controller_->GetEducationalBodyLabel(),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
-  educational_label->SetMultiLine(true);
-  educational_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  std::u16string explanation = controller_->GetEducationalBodyLabel();
+  if (!explanation.empty()) {
+    auto* const explanation_label =
+        AddChildView(std::make_unique<views::StyledLabel>());
+    explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    explanation_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+    explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    explanation_label->SetText(explanation);
+
+    views::StyledLabel::RangeStyleInfo style_info =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &VirtualCardManualFallbackBubbleViews::LearnMoreLinkClicked,
+            weak_ptr_factory_.GetWeakPtr()));
+
+    uint32_t offset =
+        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    explanation_label->AddStyleRange(
+        gfx::Range(offset,
+                   offset + controller_->GetLearnMoreLinkText().length()),
+        style_info);
+  }
 
   auto* card_information_section =
       AddChildView(std::make_unique<views::View>());
@@ -208,6 +227,13 @@ void VirtualCardManualFallbackBubbleViews::
     pair.second->SetTooltipText(tooltip);
     pair.second->SetAccessibleName(
         base::StrCat({pair.second->GetText(), u" ", tooltip}));
+  }
+}
+
+void VirtualCardManualFallbackBubbleViews::LearnMoreLinkClicked() {
+  if (controller_) {
+    controller_->OnLinkClicked(
+        autofill::payments::GetVirtualCardEnrollmentSupportUrl());
   }
 }
 
