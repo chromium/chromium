@@ -10,7 +10,9 @@
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/check.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,11 +29,13 @@ const char kBluetoothToastIdPrefix[] = "cros_bluetooth_device_toast_id-";
 
 BluetoothDeviceStatusUiHandler::BluetoothDeviceStatusUiHandler() {
   DCHECK(ash::features::IsBluetoothRevampEnabled());
-  GetBluetoothConfigService(
-      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
-  remote_cros_bluetooth_config_->ObserveDeviceStatusChanges(
-      cros_bluetooth_device_status_observer_receiver_
-          .BindNewPipeAndPassRemote());
+
+  // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
+  // to bind to it before it has initialized.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothDeviceStatusUiHandler::BindToCrosBluetoothConfig,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 BluetoothDeviceStatusUiHandler::~BluetoothDeviceStatusUiHandler() = default;
@@ -88,6 +92,14 @@ std::string BluetoothDeviceStatusUiHandler::GetToastId(
         paired_device_properties) {
   return kBluetoothToastIdPrefix +
          base::ToLowerASCII(paired_device_properties->device_properties->id);
+}
+
+void BluetoothDeviceStatusUiHandler::BindToCrosBluetoothConfig() {
+  GetBluetoothConfigService(
+      remote_cros_bluetooth_config_.BindNewPipeAndPassReceiver());
+  remote_cros_bluetooth_config_->ObserveDeviceStatusChanges(
+      cros_bluetooth_device_status_observer_receiver_
+          .BindNewPipeAndPassRemote());
 }
 
 }  // namespace ash
