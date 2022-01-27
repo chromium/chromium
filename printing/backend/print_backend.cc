@@ -115,7 +115,7 @@ PrinterCapsAndDefaults::PrinterCapsAndDefaults(
 
 PrinterCapsAndDefaults::~PrinterCapsAndDefaults() = default;
 
-PrintBackend::PrintBackend(const std::string& locale) : locale_(locale) {}
+PrintBackend::PrintBackend() = default;
 
 PrintBackend::~PrintBackend() = default;
 

@@ -223,18 +223,13 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
  protected:
   friend class base::RefCountedThreadSafe<PrintBackend>;
-  explicit PrintBackend(const std::string& locale);
+  PrintBackend();
   virtual ~PrintBackend();
 
   // Provide the actual backend for CreateInstance().
   static scoped_refptr<PrintBackend> CreateInstanceImpl(
       const base::DictionaryValue* print_backend_settings,
       const std::string& locale);
-
-  const std::string& locale() const { return locale_; }
-
- private:
-  const std::string locale_;
 };
 
 }  // namespace printing

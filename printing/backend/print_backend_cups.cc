@@ -61,7 +61,7 @@ PrintBackendCUPS::PrintBackendCUPS(const GURL& print_server_url,
                                    http_encryption_t encryption,
                                    bool blocking,
                                    const std::string& locale)
-    : PrintBackend(locale),
+    : locale_(locale),
       print_server_url_(print_server_url),
       cups_encryption_(encryption),
       blocking_(blocking) {}
@@ -248,7 +248,7 @@ mojom::ResultCode PrintBackendCUPS::GetPrinterSemanticCapsAndDefaults(
     return result_code;
 
   ScopedDestination dest = GetNamedDest(printer_name);
-  return ParsePpdCapabilities(dest.get(), locale(), info.printer_capabilities,
+  return ParsePpdCapabilities(dest.get(), locale_, info.printer_capabilities,
                               printer_info)
              ? mojom::ResultCode::kSuccess
              : mojom::ResultCode::kFailed;
@@ -309,7 +309,7 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
     return base::MakeRefCounted<PrintBackendCupsIpp>(
-        CreateConnection(print_backend_settings), locale);
+        CreateConnection(print_backend_settings));
   }
 #endif  // BUILDFLAG(IS_MAC)
   std::string print_server_url_str, cups_blocking;

@@ -67,9 +67,10 @@ class PrintBackendCUPS : public PrintBackend {
   // Wrapper around cupsGetNamedDest().
   ScopedDestination GetNamedDest(const std::string& printer_name);
 
-  GURL print_server_url_;
+  const std::string locale_;
+  const GURL print_server_url_;
   http_encryption_t cups_encryption_;
-  bool blocking_;
+  const bool blocking_;
 };
 
 }  // namespace printing
