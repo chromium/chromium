@@ -841,7 +841,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetScreenResolution) {
       webrtc::DesktopVector(96, 96)));
 }
 
-TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {
+TEST_F(IpcDesktopEnvironmentTest, DISABLED_CheckUrlForwarderState) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(true));
   base::MockCallback<UrlForwarderConfigurator::IsUrlForwarderSetUpCallback>
@@ -863,7 +863,7 @@ TEST_F(IpcDesktopEnvironmentTest, CheckUrlForwarderState) {
   RunMainLoopUntilDone();
 }
 
-TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderHappyPath) {
+TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderHappyPath) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
@@ -909,7 +909,7 @@ TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderHappyPath) {
   RunMainLoopUntilDone();
 }
 
-TEST_F(IpcDesktopEnvironmentTest, SetUpUrlForwarderFailed) {
+TEST_F(IpcDesktopEnvironmentTest, DISABLED_SetUpUrlForwarderFailed) {
   EXPECT_CALL(*remote_url_forwarder_configurator_, IsUrlForwarderSetUp(_))
       .WillOnce(RunOnceCallback<0>(false));
   EXPECT_CALL(*remote_url_forwarder_configurator_, SetUpUrlForwarder(_))
