@@ -51,7 +51,7 @@ std::string FormatNetworkHealth(
              << "\n";
       output << "Signal Strength (Samples): [";
       auto& samples = net->signal_strength_stats->samples;
-      for (int i = 0; i < samples.size(); i++) {
+      for (uint16_t i = 0; i < samples.size(); i++) {
         output << base::NumberToString(samples[i]);
         if (i < samples.size() - 1)
           output << ",";
@@ -84,7 +84,7 @@ std::string ProblemsToStr(T problems) {
   }
 
   std::ostringstream output;
-  for (int i = 0; i < problems.size(); i++) {
+  for (uint16_t i = 0; i < problems.size(); i++) {
     output << problems[i];
     if (i != problems.size() - 1)
       output << ", ";
