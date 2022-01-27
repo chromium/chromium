@@ -14,13 +14,13 @@ namespace content {
 class RenderFrameHost;
 class WebUI;
 
-// WebUIController for the chrome://quota-internals-2 page.
-class CONTENT_EXPORT QuotaInternals2UI : public WebUIController {
+// WebUIController for the chrome://quota-internals page.
+class CONTENT_EXPORT QuotaInternalsUI : public WebUIController {
  public:
-  explicit QuotaInternals2UI(WebUI* web_ui);
-  QuotaInternals2UI(const QuotaInternals2UI& other) = delete;
-  QuotaInternals2UI& operator=(const QuotaInternals2UI& other) = delete;
-  ~QuotaInternals2UI() override;
+  explicit QuotaInternalsUI(WebUI* web_ui);
+  QuotaInternalsUI(const QuotaInternalsUI& other) = delete;
+  QuotaInternalsUI& operator=(const QuotaInternalsUI& other) = delete;
+  ~QuotaInternalsUI() override;
 
   // WebUIController overrides:
   void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;

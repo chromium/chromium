@@ -257,7 +257,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://print",
     "chrome://process-internals",
     "chrome://quota-internals",
-    "chrome://quota-internals-2",
     "chrome://reset-password",
     "chrome://safe-browsing",
     "chrome://serviceworker-internals",

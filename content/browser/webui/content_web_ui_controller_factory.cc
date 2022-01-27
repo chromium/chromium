@@ -46,7 +46,7 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
       url.host_piece() == kChromeUIPrerenderInternalsHost ||
       url.host_piece() == kChromeUIProcessInternalsHost ||
       url.host_piece() == kChromeUIAttributionInternalsHost ||
-      url.host_piece() == kChromeUIQuotaInternals2Host ||
+      url.host_piece() == kChromeUIQuotaInternalsHost ||
       url.host_piece() == kChromeUIUkmHost) {
     return const_cast<ContentWebUIControllerFactory*>(this);
   }
@@ -86,8 +86,8 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return std::make_unique<ProcessInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIAttributionInternalsHost)
     return std::make_unique<AttributionInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIQuotaInternals2Host)
-    return std::make_unique<QuotaInternals2UI>(web_ui);
+  if (url.host_piece() == kChromeUIQuotaInternalsHost)
+    return std::make_unique<QuotaInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIMediaInternalsHost) {

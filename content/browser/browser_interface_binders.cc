@@ -298,10 +298,10 @@ void BindQuotaInternalsHandler(
     mojo::PendingReceiver<storage::mojom::QuotaInternalsHandler> receiver) {
   WebUI* web_ui = host->GetWebUI();
 
-  // Performs a safe downcast to the concrete QuotaInternals2UI
+  // Performs a safe downcast to the concrete QuotaInternalsUI
   // subclass.
-  QuotaInternals2UI* quota_internals_ui =
-      web_ui ? web_ui->GetController()->GetAs<QuotaInternals2UI>() : nullptr;
+  QuotaInternalsUI* quota_internals_ui =
+      web_ui ? web_ui->GetController()->GetAs<QuotaInternalsUI>() : nullptr;
 
   // This is expected to be called only for main frames and for the right WebUI
   // pages matching the same WebUI associated to the RenderFrameHost.
@@ -313,7 +313,7 @@ void BindQuotaInternalsHandler(
   }
 
   DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
-            kChromeUIQuotaInternals2Host);
+            kChromeUIQuotaInternalsHost);
   DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
 
   static_cast<StoragePartitionImpl*>(host->GetStoragePartition())

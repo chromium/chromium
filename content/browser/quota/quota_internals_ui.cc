@@ -15,14 +15,14 @@
 
 namespace content {
 
-QuotaInternals2UI::QuotaInternals2UI(WebUI* web_ui) : WebUIController(web_ui) {
+QuotaInternalsUI::QuotaInternalsUI(WebUI* web_ui) : WebUIController(web_ui) {
   WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIQuotaInternals2Host);
+      WebUIDataSource::Create(kChromeUIQuotaInternalsHost);
 
   source->AddResourcePath("quota_internals.mojom-webui.js",
                           IDR_QUOTA_INTERNALS_MOJOM_JS);
   source->AddResourcePath("quota_internals.js", IDR_QUOTA_INTERNALS_JS);
-  source->AddResourcePath("quota-internals-2", IDR_QUOTA_INTERNALS_HTML);
+  source->AddResourcePath("quota-internals", IDR_QUOTA_INTERNALS_HTML);
   source->SetDefaultResource(IDR_QUOTA_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(
@@ -33,11 +33,11 @@ QuotaInternals2UI::QuotaInternals2UI(WebUI* web_ui) : WebUIController(web_ui) {
   WebUIDataSource::Add(web_contents->GetBrowserContext(), source);
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(QuotaInternals2UI)
+WEB_UI_CONTROLLER_TYPE_IMPL(QuotaInternalsUI)
 
-QuotaInternals2UI::~QuotaInternals2UI() = default;
+QuotaInternalsUI::~QuotaInternalsUI() = default;
 
-void QuotaInternals2UI::WebUIRenderFrameCreated(
+void QuotaInternalsUI::WebUIRenderFrameCreated(
     RenderFrameHost* render_frame_host) {
   // Enable the JavaScript Mojo bindings in the renderer process, so the JS
   // code can call the Mojo APIs exposed by this WebUI.

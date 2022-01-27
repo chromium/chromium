@@ -695,7 +695,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::map<blink::StorageKey, QuotaOverride> devtools_overrides_;
   int next_override_handle_id_ = 0;
 
-  // Serve mojo connections for chrome://quota-internals-2 pages.
+  // Serve mojo connections for chrome://quota-internals pages.
   mojo::ReceiverSet<mojom::QuotaInternalsHandler> internals_handlers_receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
