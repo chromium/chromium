@@ -1106,6 +1106,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_compilation_message_type.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_cull_mode.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_cull_mode.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_lost_reason.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_lost_reason.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.cc",
