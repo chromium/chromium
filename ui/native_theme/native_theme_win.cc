@@ -619,27 +619,17 @@ absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
     case kColorId_WindowBackground:
       return system_colors_[SystemThemeColor::kWindow];
 
-    case kColorId_MenuIconColor:
     case kColorId_ThrobberSpinningColor:
-    case kColorId_DefaultIconColor:
       return system_colors_[SystemThemeColor::kWindowText];
 
     case kColorId_ThrobberWaitingColor:
       return system_colors_[SystemThemeColor::kGrayText];
 
-    case kColorId_MenuBackgroundColor:
-      return system_colors_[SystemThemeColor::kButtonFace];
-
-    case kColorId_MenuSeparatorColor:
     case kColorId_FocusedBorderColor:
       return system_colors_[SystemThemeColor::kButtonText];
 
     case kColorId_ProminentButtonColor:
-    case kColorId_FocusedMenuItemBackgroundColor:
       return system_colors_[SystemThemeColor::kHighlight];
-
-    case kColorId_TextOnProminentButtonColor:
-      return system_colors_[SystemThemeColor::kHighlightText];
 
     default:
       return absl::nullopt;

@@ -31,9 +31,6 @@ absl::optional<SkColor> GetHighContrastColor(
     NativeTheme::ColorId color_id,
     NativeTheme::ColorScheme color_scheme) {
   switch (color_id) {
-    case NativeTheme::kColorId_MenuSeparatorColor:
-      return color_scheme == NativeTheme::ColorScheme::kDark ? SK_ColorWHITE
-                                                             : SK_ColorBLACK;
     case NativeTheme::kColorId_FocusedBorderColor:
     case NativeTheme::kColorId_ProminentButtonColor:
       return color_scheme == NativeTheme::ColorScheme::kDark
@@ -47,12 +44,8 @@ absl::optional<SkColor> GetHighContrastColor(
 absl::optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
                                            const NativeTheme* base_theme) {
   switch (color_id) {
-    case NativeTheme::kColorId_DefaultIconColor:
-      return gfx::kGoogleGrey500;
     case NativeTheme::kColorId_FocusedBorderColor:
       return gfx::kGoogleBlue400;
-    case NativeTheme::kColorId_MenuSeparatorColor:
-      return gfx::kGoogleGrey800;
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue300;
     case NativeTheme::kColorId_WindowBackground:
@@ -71,32 +64,8 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
       return gfx::kGoogleBlue500;
 
     // Button
-    case NativeTheme::kColorId_TextOnProminentButtonColor:
-      return color_utils::GetColorWithMaxContrast(
-          base_theme->GetUnprocessedSystemColor(
-              NativeTheme::kColorId_ProminentButtonColor, color_scheme));
     case NativeTheme::kColorId_ProminentButtonColor:
       return gfx::kGoogleBlue600;
-
-    // Icon
-    case NativeTheme::kColorId_DefaultIconColor:
-      return gfx::kGoogleGrey700;
-
-    // Menu
-    case NativeTheme::kColorId_MenuBackgroundColor:
-      return base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_WindowBackground, color_scheme);
-    case NativeTheme::kColorId_MenuSeparatorColor:
-      return gfx::kGoogleGrey300;
-    case NativeTheme::kColorId_FocusedMenuItemBackgroundColor: {
-      const SkColor bg = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_WindowBackground, color_scheme);
-      const SkColor fg = color_utils::GetColorWithMaxContrast(bg);
-      return color_utils::AlphaBlend(fg, bg, gfx::kGoogleGreyAlpha200);
-    }
-    case NativeTheme::kColorId_MenuIconColor:
-      return base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_DefaultIconColor, color_scheme);
 
     // Throbber
     case NativeTheme::kColorId_ThrobberWaitingColor: {

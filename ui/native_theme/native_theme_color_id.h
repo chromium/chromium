@@ -8,14 +8,8 @@
 // Clang format mangles lists like the below badly.
 // clang-format off
 #define NATIVE_THEME_CROSS_PLATFORM_COLOR_IDS                                  \
-  OP(kColorId_DefaultIconColor),                                               \
   OP(kColorId_FocusedBorderColor),                                             \
-  OP(kColorId_FocusedMenuItemBackgroundColor),                                 \
-  OP(kColorId_MenuBackgroundColor),                                            \
-  OP(kColorId_MenuIconColor),                                                  \
-  OP(kColorId_MenuSeparatorColor),                                             \
   OP(kColorId_ProminentButtonColor),                                           \
-  OP(kColorId_TextOnProminentButtonColor),                                     \
   OP(kColorId_ThrobberSpinningColor),                                          \
   OP(kColorId_ThrobberWaitingColor),                                           \
   OP(kColorId_WindowBackground)

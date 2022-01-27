@@ -147,16 +147,6 @@ SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
 SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
                                                  ColorScheme color_scheme,
                                                  bool apply_processing) const {
-  if (GetPreferredContrast() == PreferredContrast::kMore) {
-    switch (color_id) {
-      case kColorId_FocusedMenuItemBackgroundColor:
-        return color_scheme == ColorScheme::kDark ? SK_ColorLTGRAY
-                                                  : SK_ColorDKGRAY;
-      default:
-        break;
-    }
-  }
-
   absl::optional<SkColor> os_color = GetOSColor(color_id, color_scheme);
   if (os_color.has_value())
     return os_color.value();
@@ -176,11 +166,6 @@ absl::optional<SkColor> NativeThemeMac::GetOSColor(
   // Even with --secondary-ui-md, menus use the platform colors and styling, and
   // Mac has a couple of specific color overrides, documented below.
   switch (color_id) {
-    case kColorId_MenuSeparatorColor:
-      return color_scheme == ColorScheme::kDark
-                 ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
-                 : SkColorSetA(SK_ColorBLACK, 0x26);
-
     case kColorId_FocusedBorderColor:
       return SkColorSetA(
           skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),

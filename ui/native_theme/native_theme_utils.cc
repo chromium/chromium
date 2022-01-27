@@ -45,17 +45,9 @@ NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
   using NTCID = NativeTheme::ColorId;
   static constexpr const auto map =
       base::MakeFixedFlatMap<NativeTheme::ColorId, ColorId>({
-        {NTCID::kColorId_DefaultIconColor, kColorIcon},
         {NTCID::kColorId_FocusedBorderColor, kColorFocusableBorderFocused},
-        {NTCID::kColorId_FocusedMenuItemBackgroundColor,
-          kColorMenuItemBackgroundSelected},
-        {NTCID::kColorId_MenuBackgroundColor, kColorMenuBackground},
-        {NTCID::kColorId_MenuIconColor, kColorMenuIcon},
-        {NTCID::kColorId_MenuSeparatorColor, kColorMenuSeparator},
         {NTCID::kColorId_ProminentButtonColor,
           kColorButtonBackgroundProminent},
-        {NTCID::kColorId_TextOnProminentButtonColor,
-          kColorButtonForegroundProminent},
         {NTCID::kColorId_ThrobberSpinningColor, kColorThrobber},
         {NTCID::kColorId_ThrobberWaitingColor, kColorThrobberPreconnect},
         {NTCID::kColorId_WindowBackground, kColorWindowBackground},
