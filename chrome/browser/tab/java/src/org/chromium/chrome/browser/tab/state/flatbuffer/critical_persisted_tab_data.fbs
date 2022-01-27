@@ -5,6 +5,17 @@
 namespace org.chromium.chrome.browser.tab.flatbuffer;
 
 enum LaunchTypeAtCreation:int {
+    // SIZE is typically not used for anything other than bound
+    // checking but is included for completeness. It is added
+    // at the start rather than the end to enable other TabLaunchTypes
+    // to be added. It is not a problem that SIZE is not the same
+    // enum value as TabLaunchType.SIZE because the FlatBuffer persisted
+    // enum is mapped directly onto the TabLaunchType value in
+    // CriticalPersistedTabData. An alternative is to set SIZE to a large
+    // value but this is not possible as the enum values need to be sequential.
+    SIZE = -2,
+    // UNKNOWN indicates the TabLaunchType is null/not known.
+    UNKNOWN = -1,
     FROM_LINK = 0,
     FROM_EXTERNAL_APP = 1,
     FROM_CHROME_UI = 2,
@@ -21,8 +32,9 @@ enum LaunchTypeAtCreation:int {
     FROM_TAB_GROUP_UI = 13,
     FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14,
     FROM_APP_WIDGET = 15,
-    SIZE = 16,
-    UNKNOWN = 17,
+    // Add new values here and don't change existing values
+    // as they are persisted across restarts. Changing existing
+    // values will lead to backwards compatibility issues crbug.com/1286984.
 }
 
 enum UserAgentType:int {

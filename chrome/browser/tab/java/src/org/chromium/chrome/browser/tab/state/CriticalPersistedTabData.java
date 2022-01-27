@@ -282,6 +282,8 @@ public class CriticalPersistedTabData extends PersistedTabData {
                 return TabLaunchType.FROM_APP_WIDGET;
             case LaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
+            case LaunchTypeAtCreation.UNKNOWN:
+                return null;
             default:
                 assert false : "Unexpected deserialization of LaunchAtCreationType: "
                                + flatBufferLaunchType;
