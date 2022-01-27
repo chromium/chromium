@@ -153,8 +153,7 @@ DlpConfidentialContentsCache::Entry::~Entry() = default;
 
 DlpConfidentialContentsCache::DlpConfidentialContentsCache()
     : cache_size_limit_(kDefaultCacheSizeLimit),
-      task_runner_(
-          content::GetUIThreadTaskRunner(content::BrowserTaskTraits())) {}
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 DlpConfidentialContentsCache::~DlpConfidentialContentsCache() = default;
 

@@ -4,6 +4,7 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // Corresponds to DlpRulesManager::Level enum.
@@ -31,10 +32,25 @@ struct DlpRestrictionSet {
   DlpRestrictionLevelAndUrl screen_share@3;
 };
 
+// Captured area.
+[Stable, Extensible]
+struct ScreenShareArea {
+  // All root windows if |window_id| is null.
+  string? window_id;
+};
+
 // Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
 // about changes in restrictions applied to web content in Lacros.
+//
+// Next MinVersion: 2
+// Next ID: 2
 [Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
 interface Dlp {
   // Called when |restrictions| are changed for window with |window_id|.
   DlpRestrictionsUpdated@0(string window_id, DlpRestrictionSet restrictions);
+
+  // Called to evaluate screenshare restriction for a window or full screen.
+  [MinVersion=1] CheckScreenShareRestriction@1(
+      ScreenShareArea area, mojo_base.mojom.String16 application_title) =>
+          (bool proceed);
 };

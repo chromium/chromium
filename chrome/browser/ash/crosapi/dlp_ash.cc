@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
@@ -72,6 +73,30 @@ void DlpAsh::DlpRestrictionsUpdated(const std::string& window_id,
   DCHECK(dlp_content_manager);
   dlp_content_manager->OnWindowRestrictionChanged(
       window, ConvertMojoToDlpContentRestrictionSet(restrictions));
+}
+
+void DlpAsh::CheckScreenShareRestriction(
+    mojom::ScreenShareAreaPtr area,
+    const std::u16string& application_title,
+    CheckScreenShareRestrictionCallback callback) {
+  aura::Window* window = area->window_id.has_value()
+                             ? GetShellSurfaceWindow(area->window_id.value())
+                             : ash::Shell::GetPrimaryRootWindow();
+  const content::DesktopMediaID::Type media_type =
+      area->window_id.has_value() ? content::DesktopMediaID::TYPE_WINDOW
+                                  : content::DesktopMediaID::TYPE_SCREEN;
+  if (!window) {
+    std::move(callback).Run(/*allowed=*/true);
+    return;
+  }
+  const content::DesktopMediaID media_id =
+      content::DesktopMediaID::RegisterNativeWindow(media_type, window);
+
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
+  DCHECK(dlp_content_manager);
+  dlp_content_manager->CheckScreenShareRestriction(media_id, application_title,
+                                                   std::move(callback));
 }
 
 }  // namespace crosapi

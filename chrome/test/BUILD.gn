@@ -4085,6 +4085,9 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
+      "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
+      "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
+      "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",

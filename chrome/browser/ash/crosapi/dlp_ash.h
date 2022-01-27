@@ -26,6 +26,10 @@ class DlpAsh : public mojom::Dlp {
   void DlpRestrictionsUpdated(
       const std::string& window_id,
       mojom::DlpRestrictionSetPtr restrictions) override;
+  void CheckScreenShareRestriction(
+      mojom::ScreenShareAreaPtr area,
+      const std::u16string& application_title,
+      CheckScreenShareRestrictionCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::Dlp> receivers_;

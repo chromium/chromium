@@ -166,7 +166,7 @@ class DlpConfidentialContentsCache {
   const size_t cache_size_limit_;
 
   // Used to evict cache entries after the timeout.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 }  // namespace policy

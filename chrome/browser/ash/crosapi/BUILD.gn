@@ -273,6 +273,7 @@ source_set("unit_tests") {
     "browser_version_service_ash_unittest.cc",
     "chrome_app_window_tracker_ash_unittest.cc",
     "crosapi_util_unittest.cc",
+    "dlp_ash_unittest.cc",
     "download_controller_ash_unittest.cc",
     "fake_migration_progress_tracker.h",
     "field_trial_service_ash_unittest.cc",

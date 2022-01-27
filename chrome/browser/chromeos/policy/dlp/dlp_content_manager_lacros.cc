@@ -57,6 +57,18 @@ crosapi::mojom::DlpRestrictionSetPtr ConvertRestrictionSetToMojo(
   return result;
 }
 
+crosapi::mojom::ScreenShareAreaPtr ConvertToScreenShareArea(
+    const content::DesktopMediaID& media_id) {
+  auto result = crosapi::mojom::ScreenShareArea::New();
+  if (media_id.type == content::DesktopMediaID::Type::TYPE_SCREEN) {
+    return result;
+  }
+  DCHECK_EQ(media_id.type, content::DesktopMediaID::Type::TYPE_WINDOW);
+  aura::Window* window = content::DesktopMediaID::GetNativeWindowById(media_id);
+  result->window_id = lacros_window_utility::GetRootWindowUniqueId(window);
+  return result;
+}
+
 }  // namespace
 
 // static
@@ -74,11 +86,28 @@ void DlpContentManagerLacros::CheckScreenShareRestriction(
         GetScreenShareConfidentialContentsInfoForWebContents(
             media_id.web_contents_id),
         std::move(callback));
-  } else {
-    // No restrictions apply.
-    // TODO(crbug.com/1278814): Pass the check to Ash to process there.
-    std::move(callback).Run(true);
+    return;
   }
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Dlp>()) {
+    LOG(WARNING) << "DLP mojo service not available";
+    std::move(callback).Run(true);
+    return;
+  }
+
+  int dlp_mojo_version =
+      lacros_service->GetInterfaceVersion(crosapi::mojom::Dlp::Uuid_);
+  if (dlp_mojo_version < int{crosapi::mojom::Dlp::MethodMinVersions::
+                                 kCheckScreenShareRestrictionMinVersion}) {
+    LOG(WARNING) << "DLP mojo service version does not support screen share "
+                    "restrictions";
+    std::move(callback).Run(true);
+    return;
+  }
+
+  lacros_service->GetRemote<crosapi::mojom::Dlp>()->CheckScreenShareRestriction(
+      ConvertToScreenShareArea(media_id), application_title,
+      std::move(callback));
 }
 
 DlpContentManagerLacros::DlpContentManagerLacros() = default;
