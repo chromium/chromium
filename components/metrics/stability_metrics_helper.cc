@@ -242,6 +242,11 @@ void StabilityMetricsHelper::LogRendererCrash(bool was_extension_process,
         NOTREACHED();
 #endif
         IncrementPrefValue(prefs::kStabilityExtensionRendererCrashCount);
+#if BUILDFLAG(IS_WIN)
+        // TODO(crbug/1291000): Remove the scheduled Local State write if it
+        // doesn't help to resolve the extension renderer crash discrepancy.
+        local_state_->CommitPendingWrite();
+#endif
         RecordStabilityEvent(StabilityEventType::kExtensionCrash);
 
         base::UmaHistogramSparse("CrashExitCodes.Extension",
