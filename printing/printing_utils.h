@@ -10,8 +10,12 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/strings/string_piece.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gfx/geometry/rect.h"
@@ -41,6 +45,7 @@ std::u16string FormatDocumentTitleWithOwnerAndLength(
     const std::u16string& title,
     size_t length);
 
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the paper size (microns) most common in the locale to the nearest
 // millimeter. Defaults to ISO A4 for an empty or invalid locale.
 COMPONENT_EXPORT(PRINTING_BASE)
@@ -52,6 +57,7 @@ COMPONENT_EXPORT(PRINTING_BASE)
 bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
                              const gfx::Size& rhs,
                              int epsilon);
+#endif
 
 #if BUILDFLAG(IS_WIN)
 // Get page content rect adjusted based on

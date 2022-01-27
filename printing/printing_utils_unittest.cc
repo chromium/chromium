@@ -11,6 +11,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,8 +24,11 @@ namespace printing {
 namespace {
 
 constexpr size_t kTestLength = 8;
+
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr gfx::Size kIsoA4Microns(210000, 297000);
 constexpr gfx::Size kNaLetterMicrons(216000, 279000);
+#endif
 
 std::string Simplify(const std::string& title) {
   return base::UTF16ToUTF8(
@@ -61,6 +65,7 @@ TEST(PrintingUtilsTest, FormatDocumentTitleWithOwner) {
   EXPECT_EQ("ab...j: ", Format("abcdefghij", "0123456789"));
 }
 
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(PrintingUtilsTest, GetDefaultPaperSizeFromLocaleMicrons) {
   // Valid locales
   EXPECT_EQ(kNaLetterMicrons, GetDefaultPaperSizeFromLocaleMicrons("en-US"));
@@ -103,6 +108,7 @@ TEST(PrintingUtilsTest, SizesEqualWithinEpsilon) {
   EXPECT_TRUE(
       SizesEqualWithinEpsilon(kIsoA4Microns, gfx::Size(210500, 296500), 500));
 }
+#endif  // defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
 TEST(PrintingUtilsTest, GetCenteredPageContentRect) {
