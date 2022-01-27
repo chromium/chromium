@@ -37,7 +37,7 @@ class FakePaintedScrollbarLayer : public PaintedScrollbarLayer {
                         const CommitState& commit_state,
                         const ThreadUnsafeCommitState& unsafe_state) override;
 
-  using PaintedScrollbarLayer::IgnoreSetNeedsCommit;
+  using PaintedScrollbarLayer::IgnoreSetNeedsCommitForTest;
 
   size_t push_properties_count() const { return push_properties_count_; }
   void reset_push_properties_count() { push_properties_count_ = 0; }

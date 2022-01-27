@@ -153,11 +153,11 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // parent may be set as the root layer).
   LayerTreeHost* layer_tree_host() {
     DCHECK(!IsAttached() || IsMainThread());
-    return layer_tree_host_;
+    return layer_tree_host_.get();
   }
   const LayerTreeHost* layer_tree_host() const {
     DCHECK(!IsAttached() || IsMainThread());
-    return layer_tree_host_;
+    return layer_tree_host_.get();
   }
 
   // This requests the layer and its subtree be rendered and given to the
@@ -677,7 +677,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // display.
   virtual sk_sp<const SkPicture> GetPicture() const;
 
-  const LayerDebugInfo* debug_info() const { return debug_info_.get(); }
+  const LayerDebugInfo* debug_info() const {
+    return debug_info_.Read(*this).get();
+  }
   LayerDebugInfo& EnsureDebugInfo();
   void ClearDebugInfo();
 
@@ -741,10 +743,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // currently held by the LayerTreeHost. The number is updated when property
   // trees are built from the Layer tree.
   void set_property_tree_sequence_number(int sequence_number) {
-    property_tree_sequence_number_ = sequence_number;
+    property_tree_sequence_number_.Write(*this) = sequence_number;
   }
   int property_tree_sequence_number() const {
-    return property_tree_sequence_number_;
+    return property_tree_sequence_number_.Read(*this);
   }
 
   // Internal to property tree construction. Sets the index for this Layer's
@@ -759,7 +761,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // this is set by property_tree_builder.cc.
   void SetOffsetToTransformParent(gfx::Vector2dF offset);
   gfx::Vector2dF offset_to_transform_parent() const {
-    return offset_to_transform_parent_;
+    return offset_to_transform_parent_.Read(*this);
   }
 
   // Internal to property tree construction. Indicates that a property changed
@@ -866,12 +868,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   bool IsMutationAllowed() const;
 
   void IncreasePaintCount() {
-    if (debug_info_)
-      ++debug_info_->paint_count;
+    if (debug_info_.Read(*this))
+      ++debug_info_.Write(*this)->paint_count;
   }
 
-  base::AutoReset<bool> IgnoreSetNeedsCommit() {
-    return base::AutoReset<bool>(&ignore_set_needs_commit_, true);
+  base::AutoReset<bool> IgnoreSetNeedsCommitForTest() {
+    return base::AutoReset<bool>(
+        &ignore_set_needs_commit_for_test_.Write(*this), true);
   }
 
  private:
@@ -1055,27 +1058,37 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Layer instances have a weak pointer to their LayerTreeHost.
   // This pointer value is nil when a Layer is not in a tree and is
   // updated via SetLayerTreeHost() if a layer moves between trees.
-  raw_ptr<LayerTreeHost> layer_tree_host_;
+  //
+  // Note about const-ness: layer_tree_host_ cannot be
+  // ProtectedSequence(Readable|Writable), because that would create a circular
+  // reference in WaitForProtectedSequenceCompletion(). However, it's definitely
+  // *not* OK to modify layer_tree_host_ while in a protected sequence. To make
+  // it hard to do the wrong thing, layer_tree_host_ is const, and
+  // SetLayerTreeHost() uses a custom protected sequence check, and then uses
+  // const_cast to do the assignment.
+  const raw_ptr<LayerTreeHost> layer_tree_host_;
 
   ProtectedSequenceReadable<Inputs> inputs_;
   ProtectedSequenceReadable<std::unique_ptr<LayerTreeInputs>>
       layer_tree_inputs_;
 
   ProtectedSequenceWritable<gfx::Rect> update_rect_;
-  const int layer_id_;
-  int num_descendants_that_draw_content_ = 0;
-  int transform_tree_index_ = TransformTree::kInvalidNodeId;
-  int effect_tree_index_ = EffectTree::kInvalidNodeId;
-  int clip_tree_index_ = ClipTree::kInvalidNodeId;
-  int scroll_tree_index_ = ScrollTree::kInvalidNodeId;
-  int property_tree_sequence_number_ = -1;
 
-  gfx::Vector2dF offset_to_transform_parent_;
+  const int layer_id_;
+
+  ProtectedSequenceReadable<int> num_descendants_that_draw_content_;
+  ProtectedSequenceReadable<int> transform_tree_index_;
+  ProtectedSequenceReadable<int> effect_tree_index_;
+  ProtectedSequenceReadable<int> clip_tree_index_;
+  ProtectedSequenceReadable<int> scroll_tree_index_;
+  ProtectedSequenceReadable<int> property_tree_sequence_number_;
+
+  ProtectedSequenceReadable<gfx::Vector2dF> offset_to_transform_parent_;
 
   // When true, the layer is about to perform an update. Any commit requests
   // will be handled implicitly after the update completes. Not a bitfield
   // because it's used in base::AutoReset.
-  bool ignore_set_needs_commit_;
+  ProtectedSequenceReadable<bool> ignore_set_needs_commit_for_test_;
 
   enum : uint8_t {
     kDrawsContentFlagMask = 1 << 0,
@@ -1091,7 +1104,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   ProtectedSequenceWritable<bool> subtree_property_changed_;
 
-  std::unique_ptr<LayerDebugInfo> debug_info_;
+  ProtectedSequenceWritable<std::unique_ptr<LayerDebugInfo>> debug_info_;
 
   static constexpr gfx::Transform kIdentityTransform{};
   static constexpr gfx::RoundedCornersF kNoRoundedCornersF{};

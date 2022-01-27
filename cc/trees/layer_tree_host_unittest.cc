@@ -5095,7 +5095,7 @@ class LayerTreeHostTestPropertyChangesDuringUpdateArePushed
         // avoid causing a second commit to be scheduled. If a property change
         // is made during this, however, it needs to be pushed in the upcoming
         // commit.
-        auto ignore = scrollbar_layer_->IgnoreSetNeedsCommit();
+        auto ignore = scrollbar_layer_->IgnoreSetNeedsCommitForTest();
 
         scrollbar_layer_->SetBounds(gfx::Size(30, 30));
 
