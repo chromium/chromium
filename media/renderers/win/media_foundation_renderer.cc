@@ -69,6 +69,25 @@ bool InitializeVideoWindowClass() {
   return true;
 }
 
+const std::string GetErrorReasonString(
+    const MediaFoundationRenderer::ErrorReason& reason) {
+#define STRINGIFY(value)                            \
+  case MediaFoundationRenderer::ErrorReason::value: \
+    return #value
+  switch (reason) {
+    STRINGIFY(kUnknown);
+    STRINGIFY(kCdmProxyReceivedInInvalidState);
+    STRINGIFY(kFailedToSetSourceOnMediaEngine);
+    STRINGIFY(kFailedToSetCurrentTime);
+    STRINGIFY(kFailedToPlay);
+    STRINGIFY(kOnPlaybackError);
+    STRINGIFY(kOnDCompSurfaceReceivedError);
+    STRINGIFY(kOnDCompSurfaceHandleSetError);
+    STRINGIFY(kOnConnectionError);
+  }
+#undef STRINGIFY
+}
+
 }  // namespace
 
 // static
@@ -375,9 +394,8 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
   DVLOG_FUNC(1);
 
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
-    DLOG(ERROR) << "Failed in checking internal state.";
-    ReportErrorReason(ErrorReason::kCdmProxyReceivedInInvalidState);
-    renderer_client_->OnError(PIPELINE_ERROR_INVALID_STATE);
+    OnError(PIPELINE_ERROR_INVALID_STATE,
+            ErrorReason::kCdmProxyReceivedInInvalidState);
     return;
   }
 
@@ -388,9 +406,8 @@ void MediaFoundationRenderer::OnCdmProxyReceived(
 
   HRESULT hr = SetSourceOnMediaEngine();
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set source on media engine: " << PrintHr(hr);
-    ReportErrorReason(ErrorReason::kFailedToSetSourceOnMediaEngine);
-    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetSourceOnMediaEngine, hr);
     return;
   }
 }
@@ -423,17 +440,14 @@ void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   // MF_MEDIA_ENGINE_EVENT_SEEKED event.
   HRESULT hr = mf_media_engine_->SetCurrentTime(current_time);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to SetCurrentTime: " << PrintHr(hr);
-    ReportErrorReason(ErrorReason::kFailedToSetCurrentTime);
-    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER,
+            ErrorReason::kFailedToSetCurrentTime, hr);
     return;
   }
 
   hr = mf_media_engine_->Play();
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to start playback: " << PrintHr(hr);
-    ReportErrorReason(ErrorReason::kFailedToPlay);
-    renderer_client_->OnError(PIPELINE_ERROR_COULD_NOT_RENDER);
+    OnError(PIPELINE_ERROR_COULD_NOT_RENDER, ErrorReason::kFailedToPlay, hr);
     return;
   }
 }
@@ -662,21 +676,16 @@ void MediaFoundationRenderer::OnPlaybackError(PipelineStatus status,
   if (status == PIPELINE_ERROR_HARDWARE_CONTEXT_RESET && cdm_proxy_)
     cdm_proxy_->OnHardwareContextReset();
 
-  MEDIA_LOG(ERROR, media_log_)
-      << "MediaFoundationRenderer OnPlaybackError: " << status << ", "
-      << PrintHr(hr);
-
-  ReportErrorReason(ErrorReason::kOnPlaybackError);
-  renderer_client_->OnError(status);
   StopSendingStatistics();
+  OnError(status, ErrorReason::kOnPlaybackError, hr);
 }
 
 void MediaFoundationRenderer::OnPlaybackEnded() {
   DVLOG_FUNC(2);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  renderer_client_->OnEnded();
   StopSendingStatistics();
+  renderer_client_->OnEnded();
 }
 
 void MediaFoundationRenderer::OnFormatChange() {
@@ -792,6 +801,18 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
   }
 
   renderer_client_->OnVideoNaturalSizeChange(native_video_size_);
+}
+
+void MediaFoundationRenderer::OnError(PipelineStatus status,
+                                      ErrorReason reason,
+                                      absl::optional<HRESULT> hresult) {
+  const std::string error =
+      "MediaFoundationRenderer error: " + GetErrorReasonString(reason) +
+      (hresult.has_value() ? (" (" + PrintHr(hresult.value()) + ")") : "");
+  DLOG(ERROR) << error;
+  MEDIA_LOG(ERROR, media_log_) << error;
+  ReportErrorReason(reason);
+  renderer_client_->OnError(status);
 }
 
 }  // namespace media

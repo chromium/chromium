@@ -122,6 +122,9 @@ class MEDIA_EXPORT MediaFoundationRenderer
   HRESULT PauseInternal();
   HRESULT InitializeTexturePool(const gfx::Size& size);
   void OnVideoNaturalSizeChange();
+  void OnError(PipelineStatus status,
+               ErrorReason reason,
+               absl::optional<HRESULT> hresult = absl::nullopt);
 
   // Renderer methods are running in the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
