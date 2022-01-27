@@ -243,11 +243,8 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
     SkSamplingOptions&) {
   cc::SkottieFrameDataProvider::ImageAsset& image_asset =
       *image_assets_.at(asset_id);
-  absl::optional<cc::SkottieFrameData> frame_data =
-      image_asset.GetFrameData(t, canvas->image_scale());
-  if (frame_data) {
-    all_frame_data.emplace(asset_id, std::move(frame_data.value()));
-  }
+  all_frame_data.emplace(asset_id,
+                         image_asset.GetFrameData(t, canvas->image_scale()));
   // Since this callback is only used for Seek() and not rendering, the output
   // arguments can be ignored and NO_UPDATE can be returned.
   return cc::SkottieWrapper::FrameDataFetchResult::NO_UPDATE;

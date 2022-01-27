@@ -11,7 +11,6 @@
 #include "base/strings/string_piece.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_frame_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -31,19 +30,12 @@ class CC_PAINT_EXPORT SkottieFrameDataProvider {
   class CC_PAINT_EXPORT ImageAsset : public base::RefCounted<ImageAsset> {
    public:
     // Returns the image to use for an asset in a frame of a skottie animation.
-    // If absl::nullopt is returned, the most recently provided image for this
-    // asset is reused when the frame is rendered. Thus, the ImageAsset may
-    // return "null" if: a) The most recent image intentionally should be
-    // reused or b) The provider knows that this particular asset does not
-    // appear at the specified timestamp of the animation.
     //
     // |t|: See skresources::ImageAsset::getFrame(). Same semantics. Specifies
     //      the frame of interest in the animation that's about to be rendered.
     // |scale_factor|: See |image_scale| in gfx::Canvas. Can be used to generate
     //                 a PaintImage from a gfx::ImageSkia instance.
-    virtual absl::optional<SkottieFrameData> GetFrameData(
-        float t,
-        float scale_factor) = 0;
+    virtual SkottieFrameData GetFrameData(float t, float scale_factor) = 0;
 
    protected:
     virtual ~ImageAsset() = default;

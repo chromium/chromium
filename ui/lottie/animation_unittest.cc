@@ -126,16 +126,13 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
     ImageAssetImpl(const ImageAssetImpl& other) = delete;
     ImageAssetImpl& operator=(const ImageAssetImpl& other) = delete;
 
-    absl::optional<cc::SkottieFrameData> GetFrameData(
-        float t,
-        float scale_factor) override {
+    cc::SkottieFrameData GetFrameData(float t, float scale_factor) override {
       last_frame_t_ = t;
       last_frame_scale_factor_ = scale_factor;
       return current_frame_data_;
     }
 
-    void set_current_frame_data(
-        absl::optional<cc::SkottieFrameData> current_frame_data) {
+    void set_current_frame_data(cc::SkottieFrameData current_frame_data) {
       current_frame_data_ = std::move(current_frame_data);
     }
 
@@ -149,7 +146,7 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
 
     ~ImageAssetImpl() override = default;
 
-    absl::optional<cc::SkottieFrameData> current_frame_data_;
+    cc::SkottieFrameData current_frame_data_;
     absl::optional<float> last_frame_t_;
     absl::optional<float> last_frame_scale_factor_;
   };
@@ -991,34 +988,6 @@ TEST_F(AnimationWithImageAssetsTest, PaintsAnimationImagesToCanvas) {
   ASSERT_THAT(op, NotNull());
   EXPECT_THAT(op->images, UnorderedElementsAre(Pair(
                               cc::HashSkottieResourceId("image_1"), frame_1)));
-}
-
-TEST_F(AnimationWithImageAssetsTest, SkipsNullAnimationImages) {
-  AdvanceClock(base::Milliseconds(300));
-
-  animation_->Start(Animation::Style::kLoop);
-
-  asset_0_->set_current_frame_data(CreateHighQualityTestFrameData());
-
-  display_list_->StartPaint();
-  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
-  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
-  display_list_->ReleaseAsRecord();
-
-  AdvanceClock(animation_->GetAnimationDuration() / 4);
-
-  asset_0_->set_current_frame_data(absl::nullopt);
-
-  display_list_->StartPaint();
-  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
-  display_list_->EndPaintOfUnpaired(gfx::Rect(animation_->GetOriginalSize()));
-  sk_sp<cc::PaintRecord> paint_record = display_list_->ReleaseAsRecord();
-  ASSERT_THAT(paint_record, NotNull());
-  ASSERT_THAT(paint_record->size(), Eq(1u));
-  const cc::DrawSkottieOp* op =
-      paint_record->GetOpAtForTesting<cc::DrawSkottieOp>(0);
-  ASSERT_THAT(op, NotNull());
-  EXPECT_THAT(op->images, IsEmpty());
 }
 
 TEST_F(AnimationWithImageAssetsTest, LoadsCorrectFrameTimestamp) {

@@ -49,26 +49,21 @@ cc::SkottieFrameData BuildSkottieFrameData(const gfx::ImageSkia& image,
 class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
  public:
   StaticImageAssetImpl(base::StringPiece asset_id,
-                       const AmbientAnimationStaticResources* static_resources)
-      : asset_id_(asset_id), static_resources_(static_resources) {
-    DCHECK(!ambient::util::IsDynamicLottieAsset(asset_id_));
-    DCHECK(static_resources_);
+                       const AmbientAnimationStaticResources& static_resources)
+      : image_(static_resources.GetStaticImageAsset(asset_id)) {
+    DCHECK(!ambient::util::IsDynamicLottieAsset(asset_id));
+    DCHECK(!image_.isNull())
+        << "Static image asset " << asset_id << " is unknown.";
+    DVLOG(1) << "Loaded static asset " << asset_id;
   }
 
-  absl::optional<cc::SkottieFrameData> GetFrameData(float t, float scale_factor)
-      override {
-    // The static image only needs to be provided one time in the animation's
-    // lifetime. Afterwards, return nullopt to indicate no change to the asset's
-    // contents.
-    if (has_provided_first_frame_)
-      return absl::nullopt;
-
-    has_provided_first_frame_ = true;
-    gfx::ImageSkia image = static_resources_->GetStaticImageAsset(asset_id_);
-    DCHECK(!image.isNull())
-        << "Static image asset " << asset_id_ << " is unknown.";
-    DVLOG(1) << "Returning static asset " << asset_id_;
-    return BuildSkottieFrameData(image, scale_factor);
+  cc::SkottieFrameData GetFrameData(float t, float scale_factor) override {
+    if (!current_frame_data_.image ||
+        current_frame_data_scale_factor_ != scale_factor) {
+      current_frame_data_ = BuildSkottieFrameData(image_, scale_factor);
+      current_frame_data_scale_factor_ = scale_factor;
+    }
+    return current_frame_data_;
   }
 
  private:
@@ -76,9 +71,9 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
   // ref-counted API.
   ~StaticImageAssetImpl() override = default;
 
-  const std::string asset_id_;
-  const AmbientAnimationStaticResources* const static_resources_;
-  bool has_provided_first_frame_ = false;
+  const gfx::ImageSkia image_;
+  cc::SkottieFrameData current_frame_data_;
+  float current_frame_data_scale_factor_ = 0;
 };
 
 }  // namespace
@@ -105,8 +100,7 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     new_image_ = std::move(image);
   }
 
-  absl::optional<cc::SkottieFrameData> GetFrameData(float t, float scale_factor)
-      override {
+  cc::SkottieFrameData GetFrameData(float t, float scale_factor) override {
     DVLOG(4) << "GetFrameData for asset " << asset_id_ << " time " << t;
     bool is_first_rendered_frame =
         last_observed_animation_timestamp_ == kAnimationTimestampInvalid;
@@ -118,18 +112,18 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     last_observed_animation_timestamp_ = t;
     if (!is_first_rendered_frame && !is_starting_new_cycle) {
       DVLOG(4) << "No update required to dynamic asset at this time";
-      return absl::nullopt;
+      return GetCurrentFrameData(scale_factor);
     }
 
     if (new_image_.isNull())
       refresh_image_cb_.Run();
 
     DCHECK(!new_image_.isNull());
-    cc::SkottieFrameData frame_data =
-        BuildSkottieFrameData(new_image_, scale_factor);
+    current_frame_data_ = BuildSkottieFrameData(new_image_, scale_factor);
+    current_frame_data_scale_factor_ = scale_factor;
     new_image_ = gfx::ImageSkia();
     DVLOG(4) << "Returning new image for dynamic asset " << asset_id_;
-    return frame_data;
+    return current_frame_data_;
   }
 
  private:
@@ -139,11 +133,22 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
   // ref-counted API.
   ~DynamicImageAssetImpl() override = default;
 
+  const cc::SkottieFrameData& GetCurrentFrameData(float scale_factor) {
+    DCHECK(current_frame_data_.image);
+    if (current_frame_data_scale_factor_ != scale_factor) {
+      current_frame_data_ = BuildSkottieFrameData(new_image_, scale_factor);
+      current_frame_data_scale_factor_ = scale_factor;
+    }
+    return current_frame_data_;
+  }
+
   const std::string asset_id_;
   const base::RepeatingClosure refresh_image_cb_;
   // Last animation frame timestamp that was observed.
   float last_observed_animation_timestamp_ = kAnimationTimestampInvalid;
   gfx::ImageSkia new_image_;
+  cc::SkottieFrameData current_frame_data_;
+  float current_frame_data_scale_factor_ = 0;
 };
 
 AmbientAnimationPhotoProvider::AmbientAnimationPhotoProvider(
@@ -182,7 +187,7 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
     return dynamic_assets_.back();
   } else {
     return base::MakeRefCounted<StaticImageAssetImpl>(asset_id,
-                                                      static_resources_);
+                                                      *static_resources_);
   }
 }
 

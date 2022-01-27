@@ -26,8 +26,6 @@ namespace ash {
 
 using ::testing::Each;
 using ::testing::ElementsAre;
-using ::testing::IsFalse;
-using ::testing::IsTrue;
 using ::testing::NotNull;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -37,13 +35,10 @@ namespace {
 
 constexpr float kTestScaleFactor = 1;
 
-// Test argument is absl::optional<cc::SkottieFrameData>.
+// Test argument is cc::SkottieFrameData.
 MATCHER_P2(HasImageDimensions, width, height, "") {
-  if (!arg.has_value())
-    return false;
-
-  return arg->image.GetSkImageInfo().width() == width &&
-         arg->image.GetSkImageInfo().height() == height;
+  return arg.image.GetSkImageInfo().width() == width &&
+         arg.image.GetSkImageInfo().height() == height;
 }
 
 }  // namespace
@@ -90,7 +85,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     return all_assets;
   }
 
-  std::vector<absl::optional<cc::SkottieFrameData>> GetFrameDataForAssets(
+  std::vector<cc::SkottieFrameData> GetFrameDataForAssets(
       const std::vector<scoped_refptr<ImageAsset>>& assets,
       float timestamp) {
     // The timestamp for a given frame is not guaranteed to be the same for each
@@ -98,7 +93,7 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
     // correctly.
     static constexpr float kTimestampJitter = 0.01f;
     bool add_jitter = false;
-    std::vector<absl::optional<cc::SkottieFrameData>> all_frame_data;
+    std::vector<cc::SkottieFrameData> all_frame_data;
     for (const scoped_refptr<ImageAsset>& asset : assets) {
       float jitter = add_jitter ? kTimestampJitter : 0.f;
       all_frame_data.push_back(
@@ -123,9 +118,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   std::vector<scoped_refptr<ImageAsset>> all_assets = LoadAllDynamicAssets();
 
   // Cycle 0 Frame 0
-  std::vector<absl::optional<cc::SkottieFrameData>> frame_data =
+  std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 10),
                                                HasImageDimensions(11, 11),
                                                HasImageDimensions(12, 12),
@@ -133,7 +127,10 @@ TEST_F(AmbientAnimationPhotoProviderTest,
 
   // Cycle 0 Frame 1
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/1);
-  EXPECT_THAT(frame_data, Each(IsFalse()));
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 10),
+                                               HasImageDimensions(11, 11),
+                                               HasImageDimensions(12, 12),
+                                               HasImageDimensions(13, 13)));
 
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/20, /*height=*/20));
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/21, /*height=*/21));
@@ -142,7 +139,6 @@ TEST_F(AmbientAnimationPhotoProviderTest,
 
   // Cycle 1 Frame 0
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(20, 20),
                                                HasImageDimensions(21, 21),
                                                HasImageDimensions(22, 22),
@@ -150,7 +146,10 @@ TEST_F(AmbientAnimationPhotoProviderTest,
 
   // Cycle 1 Frame 1
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/1);
-  EXPECT_THAT(frame_data, Each(IsFalse()));
+  EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(20, 20),
+                                               HasImageDimensions(21, 21),
+                                               HasImageDimensions(22, 22),
+                                               HasImageDimensions(23, 23)));
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest,
@@ -175,9 +174,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/21, /*height=*/21));
 
   // Cycle 1 Frame 0
-  std::vector<absl::optional<cc::SkottieFrameData>> frame_data =
+  std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(12, 12),
                                                HasImageDimensions(13, 13),
                                                HasImageDimensions(20, 20),
@@ -193,9 +191,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   std::vector<scoped_refptr<ImageAsset>> all_assets = LoadAllDynamicAssets();
 
   // Cycle 0 Frame 0
-  std::vector<absl::optional<cc::SkottieFrameData>> frame_data =
+  std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   EXPECT_THAT(frame_data, UnorderedElementsAre(HasImageDimensions(10, 10),
                                                HasImageDimensions(10, 10),
                                                HasImageDimensions(11, 11),
@@ -210,9 +207,8 @@ TEST_F(AmbientAnimationPhotoProviderTest,
   std::vector<scoped_refptr<ImageAsset>> all_assets = LoadAllDynamicAssets();
 
   // Cycle 0 Frame 0
-  std::vector<absl::optional<cc::SkottieFrameData>> frame_data =
+  std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   ASSERT_THAT(frame_data, SizeIs(kNumDynamicAssets));
   EXPECT_THAT(frame_data, Each(HasImageDimensions(10, 10)));
 }
@@ -228,19 +224,20 @@ TEST_F(AmbientAnimationPhotoProviderTest, LoadsStaticImageAssets) {
   std::vector<scoped_refptr<ImageAsset>> all_assets = {
       LoadAsset("static-asset-0"), LoadAsset("static-asset-1")};
 
-  std::vector<absl::optional<cc::SkottieFrameData>> frame_data =
+  std::vector<cc::SkottieFrameData> frame_data =
       GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  ASSERT_THAT(frame_data, Each(IsTrue()));
   EXPECT_THAT(frame_data, ElementsAre(HasImageDimensions(10, 10),
                                       HasImageDimensions(11, 11)));
 
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/1);
-  EXPECT_THAT(frame_data, Each(IsFalse()));
+  EXPECT_THAT(frame_data, ElementsAre(HasImageDimensions(10, 10),
+                                      HasImageDimensions(11, 11)));
 
   // Unlike dynamic assets, static assets only get loaded one time in the
   // animation's lifetime.
   frame_data = GetFrameDataForAssets(all_assets, /*timestamp=*/0);
-  EXPECT_THAT(frame_data, Each(IsFalse()));
+  EXPECT_THAT(frame_data, ElementsAre(HasImageDimensions(10, 10),
+                                      HasImageDimensions(11, 11)));
 }
 
 }  // namespace ash
