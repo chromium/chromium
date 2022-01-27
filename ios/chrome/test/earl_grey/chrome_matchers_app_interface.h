@@ -516,6 +516,9 @@
 // Returns a matcher for a history entry with |url| and |title|.
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title;
 
+// Returns a matcher to the add button in the toolbar of the settings view.
++ (id<GREYMatcher>)settingsToolbarAddButton;
+
 #pragma mark - Manual Fallback
 
 // Returns a matcher for the scroll view in keyboard accessory bar.

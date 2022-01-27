@@ -520,6 +520,9 @@ id<GREYMatcher> ContentViewSmallerThanScrollView();
 // Returns a matcher for a history entry with |url| and |title|.
 id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 
+// Returns a matcher to the add button in the toolbar in the settings view.
+id<GREYMatcher> SettingsToolbarAddButton();
+
 #pragma mark - Manual Fallback
 
 // Returns a matcher for the scroll view in keyboard accessory bar.

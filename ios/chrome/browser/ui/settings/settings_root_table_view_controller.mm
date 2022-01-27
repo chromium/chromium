@@ -284,17 +284,20 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                              : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
   [button setEnabled:[self editButtonEnabled]];
+  button.accessibilityIdentifier = kSettingsToolbarEditButtonId;
   return button;
 }
 
 - (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar {
   // Create a custom Done bar button item, as Material Navigation Bar does not
   // handle a system UIBarButtonSystemItemDone item.
-  return [[UIBarButtonItem alloc]
+  UIBarButtonItem* button = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
               style:(toolbar ? UIBarButtonItemStylePlain
                              : UIBarButtonItemStyleDone)target:self
              action:@selector(editButtonPressed)];
+  button.accessibilityIdentifier = kSettingsToolbarEditDoneButtonId;
+  return button;
 }
 
 - (UIBarButtonItem*)createEditModeCancelButton {

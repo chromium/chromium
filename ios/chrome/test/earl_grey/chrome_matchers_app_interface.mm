@@ -1004,6 +1004,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)settingsToolbarAddButton {
+  return grey_accessibilityID(kSettingsToolbarAddButtonId);
+}
+
 #pragma mark - Manual Fallback
 
 + (id<GREYMatcher>)manualFallbackFormSuggestionViewMatcher {

@@ -16,6 +16,7 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -1028,6 +1029,11 @@ NSString* SerializedPref(const PrefService::Preference* pref) {
       {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
        variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
   return std::find(ids.begin(), ids.end(), variationID) != ids.end();
+}
+
++ (BOOL)isAddCredentialsInSettingsEnabled {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kSupportForAddPasswordsInSettings);
 }
 
 + (BOOL)isUKMEnabled {

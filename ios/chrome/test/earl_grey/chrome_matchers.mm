@@ -656,6 +656,10 @@ id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
                    title:base::SysUTF8ToNSString(title)];
 }
 
+id<GREYMatcher> SettingsToolbarAddButton() {
+  return [ChromeMatchersAppInterface settingsToolbarAddButton];
+}
+
 #pragma mark - Manual Fallback
 
 id<GREYMatcher> ManualFallbackFormSuggestionViewMatcher() {

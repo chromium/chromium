@@ -620,6 +620,9 @@ UIWindow* GetAnyKeyWindow();
 // Returns YES if a variation triggering server-side behavior is enabled.
 - (BOOL)isTriggerVariationEnabled:(int)variationID;
 
+// Returns YES if |kSupportForAddPasswordsInSettings| is enabled.
+- (BOOL)isAddCredentialsInSettingsEnabled;
+
 // Returns YES if UKM feature is enabled.
 - (BOOL)isUKMEnabled [[nodiscard]];
 

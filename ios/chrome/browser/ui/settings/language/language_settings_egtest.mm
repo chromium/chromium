@@ -9,6 +9,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_table_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -25,7 +26,6 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::TabGridEditButton;
 using chrome_test_util::TableViewSwitchCell;
@@ -137,6 +137,11 @@ id<GREYMatcher> NavigationBarEditButton() {
       grey_not(TabGridEditButton()), grey_kindOfClass([UIButton class]),
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
       grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the toolbar's edit button.
+id<GREYMatcher> SettingToolbarEditButton() {
+  return grey_accessibilityID(kSettingsToolbarEditButtonId);
 }
 
 }  // namespace
@@ -497,8 +502,13 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGreyUI tapSettingsMenuButton:LanguageSettingsButton()];
 
   // Switch on edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
-      performAction:grey_tap()];
+  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
+    [[EarlGrey selectElementWithMatcher:SettingToolbarEditButton()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+        performAction:grey_tap()];
+  }
 
   // Verify that the Add Language button is disabled.
   [[EarlGrey selectElementWithMatcher:AddLanguageButton()]

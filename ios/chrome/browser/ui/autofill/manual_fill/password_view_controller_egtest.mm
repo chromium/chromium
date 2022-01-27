@@ -163,9 +163,16 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackManagePasswordsMatcher()]
       performAction:grey_tap()];
 
-  // Verify the password settings opened.
-  [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if ([ChromeEarlGrey isAddCredentialsInSettingsEnabled]) {
+    // Verify the password settings opened.
+    // Changed minimum visible percentage to 70% for Passwords table view in
+    // settings because subviews cover > 25% in smaller screens(eg. iPhone 6s).
+    [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
+        assertWithMatcher:grey_minimumVisiblePercent(0.7)];
+  } else {
+    [[EarlGrey selectElementWithMatcher:SettingsPasswordMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
 }
 
 // Tests that returning from "Manage Passwords..." leaves the keyboard and the
