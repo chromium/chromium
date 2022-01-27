@@ -115,6 +115,10 @@ void DocumentTransition::ContextDestroyed() {
     start_promise_resolver_->Detach();
     start_promise_resolver_ = nullptr;
   }
+  if (style_tracker_) {
+    style_tracker_->Abort();
+    style_tracker_ = nullptr;
+  }
   active_shared_elements_.clear();
   signal_ = nullptr;
   StopDeferringCommits();
@@ -441,15 +445,21 @@ void DocumentTransition::RunPostLayoutSteps() {
   if (style_tracker_) {
     style_tracker_->RunPostLayoutSteps();
     // If we don't have active animations, schedule a frame to end the
-    // transition. Note that if `disable_end_transition_` is set, then we don't
-    // need to register for lifecycle notifications since we're not ending this
-    // transition.
+    // transition. Note that if we don't have start_promise_resolver_ we don't
+    // need to finish the animation, since it should already be done. See the
+    // DCHECK below.
     //
     // TODO(vmpstr): Note that RunPostLayoutSteps can happen multiple times
     // during a lifecycle update. These checks don't have to happen here, and
     // could perhaps be moved to DidFinishLifecycleUpdate.
+    //
+    // We can end up here multiple times, but if we are in a started state and
+    // don't have a start promise resolver then the only way we're here is if we
+    // disabled end transition.
+    DCHECK(state_ != State::kStarted || start_promise_resolver_ ||
+           disable_end_transition_);
     if (state_ == State::kStarted && !style_tracker_->HasActiveAnimations() &&
-        !disable_end_transition_) {
+        start_promise_resolver_) {
       DCHECK(document_->View());
       document_->View()->RegisterForLifecycleNotifications(this);
       document_->View()->ScheduleAnimation();

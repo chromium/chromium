@@ -7579,8 +7579,6 @@ crbug.com/1282347 [ Mac ] virtual/clipboard-custom-formats/clipboard/async-clipb
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-in-worker.https.html [ Crash Pass ]
 crbug.com/1290767 external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-pipes-data-in-worker.https.html [ Crash Pass ]
 
-# Sheriff 2022-01-25
-crbug.com/1289992 virtual/document-transition/document-transition/paint-order.html [ Skip ]
 # Temporarily disable tests to land branded types related changes.
 crbug.com/1253323 [ Win ] http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Skip ]
 crbug.com/1253323 http/tests/devtools/persistence/automapping-urlencoded-paths.js [ Skip ]

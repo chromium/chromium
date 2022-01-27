@@ -172,7 +172,6 @@ void DocumentTransitionStyleTracker::StartFinished() {
 }
 
 void DocumentTransitionStyleTracker::Abort() {
-  DCHECK_NE(state_, State::kStarted);
   EndTransition();
 }
 
