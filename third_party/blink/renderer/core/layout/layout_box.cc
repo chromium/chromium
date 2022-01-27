@@ -3732,6 +3732,12 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
       // we get here.
       DCHECK(physical_fragment.IsOnlyForNode());
 
+      // Sometimes we perform simplified layout on a block-flow which is just
+      // growing in block-size. When fragmentation is present we can't hit the
+      // cache for these cases as we may grow past the fragmentation line.
+      if (cache_status != NGLayoutCacheStatus::kHit)
+        return nullptr;
+
       // If the node didn't break into multiple fragments, we might be able to
       // re-use the result. If the fragmentainer block-size has changed, or if
       // the fragment's block-offset within the fragmentainer has changed, we

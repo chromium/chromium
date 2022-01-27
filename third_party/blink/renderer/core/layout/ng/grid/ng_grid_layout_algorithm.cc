@@ -3382,16 +3382,15 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
       // This item may want to expand due to fragmentation. Record how much we
       // should grow the row by (if applicable).
-      // Only do this if this row (currently) ends (but does not start) in this
-      // fragment.
       if (min_block_size_should_encompass_intrinsic_size &&
-          grid_area.offset.block_offset < LayoutUnit() &&
+          item_row_set_index <= expansion_row_set_index &&
           fragmentainer_space != kIndefiniteSize &&
           grid_area.BlockEndOffset() <= fragmentainer_space) {
-        if (expansion_row_set_index == kNotFound)
+        // Check if we've found a different row to expand.
+        if (expansion_row_set_index != item_row_set_index) {
           expansion_row_set_index = item_row_set_index;
-        else
-          DCHECK_EQ(expansion_row_set_index, item_row_set_index);
+          max_row_expansion = LayoutUnit();
+        }
 
         LayoutUnit item_expansion;
         if (result->PhysicalFragment().BreakToken()) {
