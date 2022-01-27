@@ -77,10 +77,8 @@ void QuickPairBrowserDelegateImpl::RequestService(
 }
 
 Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {
-  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
-    NOTREACHED();
+  if (!user_manager::UserManager::Get()->IsUserLoggedIn())
     return nullptr;
-  }
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
