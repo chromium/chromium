@@ -227,16 +227,25 @@ void SellerWorklet::ReportResult(
     double browser_signal_desirability,
     ReportResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  CHECK(IsCodeReady());
 
-  v8_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SellerWorklet::V8State::ReportResult,
-                     base::Unretained(v8_state_.get()),
-                     std::move(auction_ad_config_non_shared_params),
-                     browser_signal_interest_group_owner,
-                     browser_signal_render_url, browser_signal_bid,
-                     browser_signal_desirability, std::move(callback)));
+  report_result_tasks_.emplace_front();
+
+  auto report_result_task = report_result_tasks_.begin();
+
+  report_result_task->auction_ad_config_non_shared_params =
+      std::move(auction_ad_config_non_shared_params);
+  report_result_task->browser_signal_interest_group_owner =
+      browser_signal_interest_group_owner;
+  report_result_task->browser_signal_render_url = browser_signal_render_url;
+  report_result_task->browser_signal_bid = browser_signal_bid;
+  report_result_task->browser_signal_desirability = browser_signal_desirability;
+  report_result_task->callback = std::move(callback);
+
+  // If not yet ready, need to wait for load to complete.
+  if (!IsCodeReady())
+    return;
+
+  RunReportResult(report_result_task);
 }
 
 void SellerWorklet::ConnectDevToolsAgent(
@@ -250,6 +259,9 @@ void SellerWorklet::ConnectDevToolsAgent(
 
 SellerWorklet::ScoreAdTask::ScoreAdTask() = default;
 SellerWorklet::ScoreAdTask::~ScoreAdTask() = default;
+
+SellerWorklet::ReportResultTask::ReportResultTask() = default;
+SellerWorklet::ReportResultTask::~ReportResultTask() = default;
 
 SellerWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
@@ -387,7 +399,7 @@ void SellerWorklet::V8State::ReportResult(
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
     double browser_signal_desirability,
-    ReportResultCallback callback) {
+    ReportResultCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
   v8::Isolate* isolate = v8_helper_->isolate();
@@ -494,19 +506,15 @@ void SellerWorklet::V8State::PostScoreAdCallbackToUserThread(
 }
 
 void SellerWorklet::V8State::PostReportResultCallbackToUserThread(
-    ReportResultCallback callback,
+    ReportResultCallbackInternal callback,
     absl::optional<std::string> signals_for_winner,
     absl::optional<GURL> report_url,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  // `parent` being a weak pointer takes care of the case where the
-  // SellerWorklet proper is destroyed.
   user_thread_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SellerWorklet::DeliverReportResultCallbackOnUserThread,
-                     parent_, std::move(callback),
-                     std::move(signals_for_winner), std::move(report_url),
-                     std::move(errors)));
+      base::BindOnce(std::move(callback), std::move(signals_for_winner),
+                     std::move(report_url), std::move(errors)));
 }
 
 void SellerWorklet::ResumeIfPaused() {
@@ -554,6 +562,11 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   for (auto score_ad_task = score_ad_tasks_.begin();
        score_ad_task != score_ad_tasks_.end(); ++score_ad_task) {
     ScoreAdIfReady(score_ad_task);
+  }
+
+  for (auto report_result_task = report_result_tasks_.begin();
+       report_result_task != report_result_tasks_.end(); ++report_result_task) {
+    RunReportResult(report_result_task);
   }
 }
 
@@ -603,22 +616,39 @@ void SellerWorklet::DeliverScoreAdCallbackOnUserThread(
   if (task->trusted_scoring_signals_error_msg)
     errors.insert(errors.begin(), *task->trusted_scoring_signals_error_msg);
 
-  std::move(task->callback).Run(score, std::move(errors));
+  std::move(task->callback).Run(score, errors);
   score_ad_tasks_.erase(task);
 }
 
+void SellerWorklet::RunReportResult(ReportResultTaskList::iterator task) {
+  DCHECK(IsCodeReady());
+
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SellerWorklet::V8State::ReportResult,
+          base::Unretained(v8_state_.get()),
+          std::move(task->auction_ad_config_non_shared_params),
+          std::move(task->browser_signal_interest_group_owner),
+          std::move(task->browser_signal_render_url), task->browser_signal_bid,
+          task->browser_signal_desirability,
+          base::BindOnce(
+              &SellerWorklet::DeliverReportResultCallbackOnUserThread,
+              weak_ptr_factory_.GetWeakPtr(), task)));
+}
+
 void SellerWorklet::DeliverReportResultCallbackOnUserThread(
-    ReportResultCallback callback,
-    absl::optional<std::string> signals_for_winner,
-    absl::optional<GURL> report_url,
+    ReportResultTaskList::iterator task,
+    const absl::optional<std::string> signals_for_winner,
+    const absl::optional<GURL> report_url,
     std::vector<std::string> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   if (load_script_error_msg_)
     errors.insert(errors.begin(), load_script_error_msg_.value());
 
-  std::move(callback).Run(std::move(signals_for_winner), std::move(report_url),
-                          std::move(errors));
+  std::move(task->callback).Run(signals_for_winner, report_url, errors);
+  report_result_tasks_.erase(task);
 }
 
 bool SellerWorklet::IsCodeReady() const {

@@ -14,11 +14,11 @@ import "url/mojom/url.mojom";
 // Manages the auction workflow for one loaded FLEDGE seller worklet.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 //
-// The SellerWorklet is functionally stateless apart from the requirement,
-// ScoreAd() complete once before any ReportResult() call, so methods are
-// idempotent and can be called multiple times, in any order, for
-// multiple auctions using the same worklet. There is no need to wait
-// for one callback to be invoked before calling another method.
+// The SellerWorklet is functionally stateless, so methods are idempotent
+// and can be called multiple times, in any order, for multiple auctions
+// using the same worklet. There is no need to wait for one callback to be
+// invoked before calling another method. There is no guarantee methods will
+// complete in the order they are invoked.
 interface SellerWorklet {
   // Calls the Javascript scoreAd() function to evaluate a bid. No data is
   // leaked between consecutive invocations of this method, or between

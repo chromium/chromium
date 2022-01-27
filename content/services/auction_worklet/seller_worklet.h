@@ -128,16 +128,41 @@ class SellerWorklet : public mojom::SellerWorklet {
 
   using ScoreAdTaskList = std::list<ScoreAdTask>;
 
+  // Contains all data needed for a ReportResult() call. Destroyed only when its
+  // `callback` is invoked.
+  struct ReportResultTask {
+    ReportResultTask();
+    ~ReportResultTask();
+
+    // These fields all correspond to the arguments of ReportResult(). They're
+    // std::move()ed when calling out to V8State to run Javascript, so are not
+    // safe to access after that happens.
+    blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        auction_ad_config_non_shared_params;
+    url::Origin browser_signal_interest_group_owner;
+    GURL browser_signal_render_url;
+    double browser_signal_bid;
+    double browser_signal_desirability;
+
+    ReportResultCallback callback;
+  };
+
+  using ReportResultTaskList = std::list<ReportResultTask>;
+
   // Portion of SellerWorklet that deals with V8 execution, and therefore lives
   // on the v8 thread --- everything except the constructor must be run there.
   class V8State {
    public:
-    // Matches auction_worklet::mojom::SellerWorklet::ScoreAdCallback,
-    // except the errors vectors are passed by value. Must be invoked on the
-    // user thread. Different signitures also protects against passing the
-    // wrong callback to V8State.
+    // Match corresponding auction_worklet::mojom::SellerWorklet callback types,
+    // except arguments are passed by value. Must be invoked on the user thread.
+    // Different signatures protect against passing the wrong callback to
+    // V8State, and avoids having to make a copy of the errors vector.
     using ScoreAdCallbackInternal =
         base::OnceCallback<void(double score, std::vector<std::string> errors)>;
+    using ReportResultCallbackInternal =
+        base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
+                                absl::optional<GURL> report_url,
+                                std::vector<std::string> errors)>;
 
     V8State(scoped_refptr<AuctionV8Helper> v8_helper,
             scoped_refptr<AuctionV8Helper::DebugId> debug_id,
@@ -164,7 +189,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                       const GURL& browser_signal_render_url,
                       double browser_signal_bid,
                       double browser_signal_desirability,
-                      ReportResultCallback callback);
+                      ReportResultCallbackInternal callback);
 
     void ConnectDevToolsAgent(
         mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent);
@@ -180,7 +205,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                                          std::vector<std::string> errors);
 
     void PostReportResultCallbackToUserThread(
-        ReportResultCallback callback,
+        ReportResultCallbackInternal callback,
         absl::optional<std::string> signals_for_winner,
         absl::optional<GURL> report_url,
         std::vector<std::string> errors);
@@ -227,8 +252,12 @@ class SellerWorklet : public mojom::SellerWorklet {
                                           double score,
                                           std::vector<std::string> errors);
 
+  // Runs the specified queued ReportWinTask. All code must already be loaded by
+  // the time this is invoked.
+  void RunReportResult(ReportResultTaskList::iterator task);
+
   void DeliverReportResultCallbackOnUserThread(
-      ReportResultCallback callback,
+      ReportResultTaskList::iterator task,
       absl::optional<std::string> signals_for_winner,
       absl::optional<GURL> report_url,
       std::vector<std::string> errors);
@@ -256,6 +285,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   // to the v8 thread, so it needs to be an std::lists rather than an
   // std::vector.
   ScoreAdTaskList score_ad_tasks_;
+  ReportResultTaskList report_result_tasks_;
 
   // Deleted once load has completed.
   std::unique_ptr<WorkletLoader> worklet_loader_;

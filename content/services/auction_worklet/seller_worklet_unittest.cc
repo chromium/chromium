@@ -294,6 +294,19 @@ class SellerWorkletTest : public testing::Test {
             std::move(done_closure)));
   }
 
+  void RunReportResultExpectingCallbackNeverInvoked(
+      mojom::SellerWorklet* seller_worklet) {
+    seller_worklet->ReportResult(
+        auction_ad_config_non_shared_params_.Clone(),
+        browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
+        browser_signal_desireability_,
+        base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
+                          const absl::optional<GURL>& report_url,
+                          const std::vector<std::string>& errors) {
+          ADD_FAILURE() << "This should not be invoked";
+        }));
+  }
+
   // Loads and runs a report_result() script, expecting the supplied result.
   // Runs ScoreAd() first, expecting a score of 1, since that's required before
   // calling ReportResult.
@@ -665,8 +678,7 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
 // the worklet script has loaded.
 TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
-  mojo::Remote<mojom::SellerWorklet> seller_worklet =
-      CreateWorklet(/*pause_for_debugger_on_start=*/false);
+  auto seller_worklet = CreateWorklet(/*pause_for_debugger_on_start=*/false);
 
   const size_t kNumWorklets = 10;
   size_t num_completed_worklets = 0;
@@ -724,7 +736,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
 // the worklet script fails to load.
 TEST_F(SellerWorkletTest, ScoreAdParallelLoadFails) {
-  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  auto seller_worklet = CreateWorklet();
 
   for (size_t i = 0; i < 10; ++i) {
     browser_signal_render_url_ = GURL(base::StringPrintf("https://foo/%zu", i));
@@ -875,7 +887,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
 TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
-  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  auto seller_worklet = CreateWorklet();
 
   // Start scoring a bunch of worklets. Don't provide JSON responses, to make
   // sure they all reside in the worklet's task list at once.
@@ -936,7 +948,7 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
 TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
-  mojo::Remote<mojom::SellerWorklet> seller_worklet = CreateWorklet();
+  auto seller_worklet = CreateWorklet();
 
   // Start scoring a bunch of worklets. Don't provide JSON responses, to make
   // sure they all reside in the worklet's task list at once.
@@ -990,6 +1002,73 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
 
   // All ScoreAd() calls should succeed with the expected scores.
   run_loop.Run();
+}
+
+// Test multiple ReportWin() calls on a single worklet, in parallel. Do this
+// twice, once before the worklet has loaded its Javascript, and once after, to
+// make sure both cases work.
+TEST_F(SellerWorkletTest, ReportResultParallel) {
+  auto seller_worklet = CreateWorklet();
+
+  // For the first loop iteration, call ReportResult() repeatedly before
+  // providing the seller script, then provide the seller script. For the second
+  // loop iteration, reuse the seller worklet from the first iteration, so the
+  // Javascript is loaded from the start.
+  for (bool report_result_invoked_before_worklet_script_loaded :
+       {false, true}) {
+    SCOPED_TRACE(report_result_invoked_before_worklet_script_loaded);
+
+    base::RunLoop run_loop;
+    const size_t kNumReportResultCalls = 10;
+    size_t num_report_result_calls = 0;
+    for (size_t i = 0; i < kNumReportResultCalls; ++i) {
+      // Differentiate each call based on the bid.
+      bid_ = i + 1;
+      RunReportResultExpectingResultAsync(
+          seller_worklet.get(),
+          /*expected_signals_for_winner=*/base::NumberToString(bid_),
+          /*expected_report_url=*/
+          GURL("https://" + base::NumberToString(bid_)),
+          /*expected_errors=*/{},
+          base::BindLambdaForTesting([&run_loop, &num_report_result_calls]() {
+            ++num_report_result_calls;
+            if (num_report_result_calls == kNumReportResultCalls)
+              run_loop.Quit();
+          }));
+    }
+
+    // If this is the first loop iteration, wait for all the Mojo calls to
+    // settle, and then provide the Javascript response body.
+    if (report_result_invoked_before_worklet_script_loaded == false) {
+      task_environment_.RunUntilIdle();
+      EXPECT_FALSE(run_loop.AnyQuitCalled());
+      AddJavascriptResponse(
+          &url_loader_factory_, decision_logic_url_,
+          CreateReportToScript(
+              /*raw_return_value=*/"browserSignals.bid",
+              /*extra_code=*/
+              R"(sendReportTo("https://" + browserSignals.bid))"));
+    }
+
+    run_loop.Run();
+    EXPECT_EQ(kNumReportResultCalls, num_report_result_calls);
+  }
+}
+
+// Test multiple ReportResult() calls on a single worklet, in parallel, in the
+// case the worklet script fails to load.
+TEST_F(SellerWorkletTest, ReportResultParallelLoadFails) {
+  auto seller_worklet = CreateWorklet();
+
+  for (size_t i = 0; i < 10; ++i) {
+    RunReportResultExpectingCallbackNeverInvoked(seller_worklet.get());
+  }
+
+  url_loader_factory_.AddResponse(decision_logic_url_.spec(), "Response body",
+                                  net::HTTP_NOT_FOUND);
+
+  EXPECT_EQ("Failed to load https://url.test/ HTTP status = 404 Not Found.",
+            WaitForDisconnect());
 }
 
 // Tests parsing of return values.
