@@ -691,6 +691,7 @@ bool IsSetLike(const ax::mojom::Role role) {
     case ax::mojom::Role::kRadioGroup:
     case ax::mojom::Role::kTabList:
     case ax::mojom::Role::kTree:
+    case ax::mojom::Role::kTreeGrid:
       return true;
     default:
       return false;

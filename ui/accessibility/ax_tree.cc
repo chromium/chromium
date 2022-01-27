@@ -2359,7 +2359,7 @@ void AXTree::ComputeSetSizePosInSetAndCache(const AXNode& node,
   // not necessarily need to be contained in an ordered set.
   if (node.GetRole() != ax::mojom::Role::kComment &&
       node.GetRole() != ax::mojom::Role::kRadioButton &&
-      !node.SetRoleMatchesItemRole(ordered_set) && !IsSetLike(node.GetRole()))
+      !node.SetRoleMatchesItemRole(ordered_set) && !node.IsOrderedSet())
     return;
 
   // Find all items within ordered_set and add to |items_map_to_be_populated|.
@@ -2511,7 +2511,6 @@ absl::optional<int> AXTree::GetPosInSet(const AXNode& node) {
   if (!ordered_set)
     return absl::nullopt;
 
-  // Compute, cache, then return.
   ComputeSetSizePosInSetAndCache(node, ordered_set);
   absl::optional<int> pos_in_set =
       node_set_size_pos_in_set_info_map_[node.id()].pos_in_set;
@@ -2545,11 +2544,12 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
     return absl::nullopt;
   }
 
-  // If |node| is item-like, find its outerlying ordered set. Otherwise,
-  // |node| is the ordered set.
+  // If |node| is an ordered set item-like, find its outerlying ordered set.
+  // Otherwise, |node| is the ordered set.
   const AXNode* ordered_set = &node;
-  if (IsItemLike(node.GetRole()))
+  if (node.IsOrderedSetItem())
     ordered_set = node.GetOrderedSet();
+
   if (!ordered_set)
     return absl::nullopt;
 

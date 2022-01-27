@@ -33,7 +33,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='red'
 ++++++AXGroup AXRoleDescription='group' AXTitle='<newline>'
 ++++++AXRadioButton AXARIAPosInSet=1 AXARIASetSize=1 AXRoleDescription='radio button' AXTitle='blue' AXValue=0
-++AXTable AXRoleDescription='table'
+++AXTable AXARIASetSize=100 AXRoleDescription='table'
 ++++AXRow AXRoleDescription='row'
 ++++++AXCell AXRoleDescription='cell'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='content'

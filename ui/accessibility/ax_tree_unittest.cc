@@ -3468,6 +3468,37 @@ TEST(AXTreeTest, SetSizePosInSetUnassigned) {
   EXPECT_OPTIONAL_EQ(3, item3->GetSetSize());
 }
 
+// Tests that PosInSet and SetSize can be calculated for TreeGrid rows if not
+// assigned.
+TEST(AXTreeTest, SetSizePosInSetInTreeGridUnassigned) {
+  AXTreeUpdate tree_update;
+  tree_update.root_id = 1;
+  tree_update.nodes.resize(4);
+  tree_update.nodes[0].id = 1;
+  tree_update.nodes[0].role = ax::mojom::Role::kTreeGrid;
+  tree_update.nodes[0].child_ids = {2, 3, 4};
+  tree_update.nodes[1].id = 2;
+  tree_update.nodes[1].role = ax::mojom::Role::kRow;
+  tree_update.nodes[1].AddState(ax::mojom::State::kFocusable);
+  tree_update.nodes[2].id = 3;
+  tree_update.nodes[2].role = ax::mojom::Role::kRow;
+  tree_update.nodes[2].AddState(ax::mojom::State::kFocusable);
+  tree_update.nodes[3].id = 4;
+  tree_update.nodes[3].role = ax::mojom::Role::kRow;
+  tree_update.nodes[3].AddState(ax::mojom::State::kFocusable);
+  AXTree tree(tree_update);
+
+  AXNode* item1 = tree.GetFromId(2);
+  EXPECT_OPTIONAL_EQ(1, item1->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item1->GetSetSize());
+  AXNode* item2 = tree.GetFromId(3);
+  EXPECT_OPTIONAL_EQ(2, item2->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item2->GetSetSize());
+  AXNode* item3 = tree.GetFromId(4);
+  EXPECT_OPTIONAL_EQ(3, item3->GetPosInSet());
+  EXPECT_OPTIONAL_EQ(3, item3->GetSetSize());
+}
+
 // Tests PosInSet can be calculated if unassigned, and SetSize can be
 // assigned on the outerlying ordered set.
 TEST(AXTreeTest, SetSizeAssignedOnContainer) {

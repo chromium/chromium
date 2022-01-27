@@ -4470,8 +4470,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestTreegridIsIATable) {
   Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
   std::vector<base::win::ScopedVariant> document_children =
       GetAllAccessibleChildren(document.Get());
-  // There are two treegrids in this test file. Use only the first one.
-  ASSERT_EQ(2u, document_children.size());
+  // There are three treegrids in this test file. Use only the first one.
+  ASSERT_EQ(3u, document_children.size());
 
   Microsoft::WRL::ComPtr<IAccessible2> table;
   ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(

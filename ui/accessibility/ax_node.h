@@ -437,6 +437,12 @@ class AX_EXPORT AXNode final {
   // for ordered sets.
   bool IsIgnoredContainerForOrderedSet() const;
 
+  // Helper functions that returns true when we are on a row/row group inside of
+  // a tree grid. Also works for rows that are part of a row group inside a tree
+  // grid. Returns false otherwise.
+  bool IsRowInTreeGrid(const AXNode* ordered_set) const;
+  bool IsRowGroupInTreeGrid() const;
+
   // Returns the accessible name for this node. This could have originated from
   // e.g. an onscreen label, or an ARIA label.
   const std::string& GetNameUTF8() const;

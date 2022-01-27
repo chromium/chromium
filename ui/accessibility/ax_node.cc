@@ -1405,10 +1405,23 @@ absl::optional<int> AXNode::GetHierarchicalLevel() const {
 }
 
 bool AXNode::IsOrderedSetItem() const {
+  // Tree grid rows should be treated as ordered set items. Since we don't have
+  // a separate row role for tree grid rows, we can't just add the Role::kRow to
+  // IsItemLike. We need to validate that the row is indeed part of a tree grid.
+  if (IsRowInTreeGrid(GetOrderedSet()))
+    return true;
+
   return ui::IsItemLike(GetRole());
 }
 
 bool AXNode::IsOrderedSet() const {
+  // Tree grid rows should be considered like ordered set items and a tree grid
+  // like an ordered set. Continuing that logic, in order to compute the right
+  // PosInSet and SetSize, row groups inside of a tree grid should also be
+  // ordered sets.
+  if (IsRowGroupInTreeGrid())
+    return true;
+
   return ui::IsSetLike(GetRole());
 }
 
@@ -1426,6 +1439,11 @@ absl::optional<int> AXNode::GetSetSize() {
 // Returns false otherwise.
 bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
   ax::mojom::Role item_role = GetRole();
+
+  // Tree grid rows should be treated as ordered set items.
+  if (IsRowInTreeGrid(ordered_set))
+    return true;
+
   // Switch on role of ordered set
   switch (ordered_set->GetRole()) {
     case ax::mojom::Role::kFeed:
@@ -1451,6 +1469,8 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
       return item_role == ax::mojom::Role::kTab;
     case ax::mojom::Role::kTree:
       return item_role == ax::mojom::Role::kTreeItem;
+    case ax::mojom::Role::kTreeGrid:
+      return item_role == ax::mojom::Role::kRow;
     case ax::mojom::Role::kListBox:
       return item_role == ax::mojom::Role::kListBoxOption;
     case ax::mojom::Role::kMenuListPopup:
@@ -1479,6 +1499,35 @@ bool AXNode::IsIgnoredContainerForOrderedSet() const {
          GetRole() == ax::mojom::Role::kListItem ||
          GetRole() == ax::mojom::Role::kGenericContainer ||
          GetRole() == ax::mojom::Role::kUnknown;
+}
+
+bool AXNode::IsRowInTreeGrid(const AXNode* ordered_set) const {
+  // Tree grid rows have the requirement of being focusable, so we use it to
+  // avoid iterating over rows that clearly aren't part of a tree grid.
+  if (GetRole() != ax::mojom::Role::kRow ||
+      !HasState(ax::mojom::State::kFocusable) || !ordered_set) {
+    return false;
+  }
+
+  if (ordered_set->GetRole() == ax::mojom::Role::kTreeGrid)
+    return true;
+
+  return ordered_set->IsRowGroupInTreeGrid();
+}
+
+bool AXNode::IsRowGroupInTreeGrid() const {
+  // To the best of our understanding, row groups can't be nested.
+  //
+  // According to https://www.w3.org/TR/wai-aria-1.1/#rowgroup, a row group is a
+  // "structural equivalent to the thead, tfoot, and tbody elements in an HTML
+  // table". It is specified in the spec of the thead, tfoot and tbody elements
+  // that they need to be children of a table element, meaning that there can
+  // only be one level of such elements. We assume the same for row groups.
+  if (GetRole() != ax::mojom::Role::kRowGroup)
+    return false;
+
+  AXNode* ordered_set = GetOrderedSet();
+  return ordered_set && ordered_set->GetRole() == ax::mojom::Role::kTreeGrid;
 }
 
 int AXNode::UpdateUnignoredCachedValuesRecursive(int startIndex) {
