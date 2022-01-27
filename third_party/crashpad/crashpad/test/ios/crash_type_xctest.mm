@@ -16,6 +16,7 @@
 #include <objc/runtime.h>
 
 #import "Service/Sources/EDOClientService.h"
+#include "build/build_config.h"
 #import "test/ios/host/cptest_shared_object.h"
 #include "util/mach/exception_types.h"
 #include "util/mach/mach_extensions.h"
@@ -33,15 +34,8 @@
 @implementation CPTestTestCase
 
 + (void)setUp {
-  // Swizzle away the handleCrashUnderSymbol callback.  Without this, any time
-  // the host app is intentionally crashed, the test is immediately failed.
-  SEL originalSelector = NSSelectorFromString(@"handleCrashUnderSymbol:");
-  SEL swizzledSelector = @selector(handleCrashUnderSymbol:);
-  Method originalMethod = class_getInstanceMethod(
-      objc_getClass("XCUIApplicationImpl"), originalSelector);
-  Method swizzledMethod =
-      class_getInstanceMethod([self class], swizzledSelector);
-  method_exchangeImplementations(originalMethod, swizzledMethod);
+  [CPTestTestCase swizzleHandleCrashUnderSymbol];
+  [CPTestTestCase swizleMayTerminateOutOfBandWithoutCrashReport];
 
   // Override EDO default error handler.  Without this, the default EDO error
   // handler will throw an error and fail the test.
@@ -50,10 +44,41 @@
   });
 }
 
+// Swizzle away the -[XCUIApplicationImpl handleCrashUnderSymbol:] callback.
+// Without this, any time the host app is intentionally crashed, the test is
+// immediately failed.
++ (void)swizzleHandleCrashUnderSymbol {
+  SEL originalSelector = NSSelectorFromString(@"handleCrashUnderSymbol:");
+  SEL swizzledSelector = @selector(handleCrashUnderSymbol:);
+  Method originalMethod = class_getInstanceMethod(
+      objc_getClass("XCUIApplicationImpl"), originalSelector);
+  Method swizzledMethod =
+      class_getInstanceMethod([self class], swizzledSelector);
+  method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
+// Swizzle away the time consuming 'Checking for crash reports corresponding to'
+// from -[XCUIApplicationProcess swizleMayTerminateOutOfBandWithoutCrashReport]
+// that is unnecessary for these tests.
++ (void)swizleMayTerminateOutOfBandWithoutCrashReport {
+  SEL originalSelector =
+      NSSelectorFromString(@"mayTerminateOutOfBandWithoutCrashReport");
+  SEL swizzledSelector = @selector(mayTerminateOutOfBandWithoutCrashReport);
+  Method originalMethod = class_getInstanceMethod(
+      objc_getClass("XCUIApplicationProcess"), originalSelector);
+  Method swizzledMethod =
+      class_getInstanceMethod([self class], swizzledSelector);
+  method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
 // This gets called after tearDown, so there's no straightforward way to
 // test that this is called. However, not swizzling this out will cause every
 // crashing test to fail.
 - (void)handleCrashUnderSymbol:(id)arg1 {
+}
+
+- (BOOL)mayTerminateOutOfBandWithoutCrashReport {
+  return YES;
 }
 
 - (void)setUp {
@@ -85,19 +110,6 @@
   XCTAssertEqualObjects(result, @"crashpad");
 }
 
-- (void)testSegv {
-  [rootObject_ crashSegv];
-#if defined(NDEBUG)
-#if TARGET_OS_SIMULATOR
-  [self verifyCrashReportException:EXC_BAD_INSTRUCTION];
-#else
-  [self verifyCrashReportException:EXC_BREAKPOINT];
-#endif
-#else
-  [self verifyCrashReportException:EXC_BAD_ACCESS];
-#endif
-}
-
 - (void)testKillAbort {
   [rootObject_ crashKillAbort];
   [self verifyCrashReportException:EXC_SOFT_SIGNAL];
@@ -108,10 +120,12 @@
 
 - (void)testTrap {
   [rootObject_ crashTrap];
-#if TARGET_OS_SIMULATOR
+#if defined(ARCH_CPU_X86_64)
   [self verifyCrashReportException:EXC_BAD_INSTRUCTION];
-#else
+#elif defined(ARCH_CPU_ARM64)
   [self verifyCrashReportException:EXC_BREAKPOINT];
+#else
+#error Port to your CPU architecture
 #endif
 }
 
@@ -125,15 +139,7 @@
 
 - (void)testBadAccess {
   [rootObject_ crashBadAccess];
-#if defined(NDEBUG)
-#if TARGET_OS_SIMULATOR
-  [self verifyCrashReportException:EXC_BAD_INSTRUCTION];
-#else
-  [self verifyCrashReportException:EXC_BREAKPOINT];
-#endif
-#else
   [self verifyCrashReportException:EXC_BAD_ACCESS];
-#endif
 }
 
 - (void)testException {

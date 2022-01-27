@@ -364,6 +364,7 @@ source_set("snapshot_test") {
 
   if (crashpad_is_ios) {
     sources += [
+      "ios/memory_snapshot_ios_intermediate_dump_test.cc",
       "ios/process_snapshot_ios_intermediate_dump_test.cc",
       "mac/cpu_context_mac_test.cc",
     ]

@@ -71,6 +71,13 @@ class CrashHandler : public Thread,
     if (!in_process_handler_.Initialize(
             database, url, annotations, system_data_) ||
         !InstallMachExceptionHandler() ||
+        // xnu turns hardware faults into Mach exceptions, so the only signal
+        // left to register is SIGABRT, which never starts off as a hardware
+        // fault. Installing a handler for other signals would lead to
+        // recording exceptions twice. As a consequence, Crashpad will not
+        // generate intermediate dumps for anything manually calling
+        // raise(SIG*). In practice, this doesn’t actually happen for crash
+        // signals that originate as hardware faults.
         !Signals::InstallHandler(SIGABRT, CatchSignal, 0, &old_action_)) {
       LOG(ERROR) << "Unable to initialize Crashpad.";
       return false;

@@ -241,17 +241,14 @@ GetProcessSnapshotMinidumpFromSinglePending() {
   return [dict passByValue];
 }
 
-- (void)crashBadAccess {
+// Use [[clang::optnone]] here to get consistent exception codes, otherwise the
+// exception can change depending on optimization level.
+- (void)crashBadAccess [[clang::optnone]] {
   strcpy(nullptr, "bla");
 }
 
 - (void)crashKillAbort {
   kill(getpid(), SIGABRT);
-}
-
-- (void)crashSegv {
-  long* zero = nullptr;
-  *zero = 0xc045004d;
 }
 
 - (void)crashTrap {

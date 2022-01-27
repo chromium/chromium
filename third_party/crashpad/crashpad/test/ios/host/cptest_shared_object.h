@@ -58,9 +58,6 @@
 // Triggers a crash with a call to kill(SIGABRT).
 - (void)crashKillAbort;
 
-// Triggers a segfault crash.
-- (void)crashSegv;
-
 // Trigger a crash with a __builtin_trap.
 - (void)crashTrap;
 
