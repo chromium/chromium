@@ -134,7 +134,13 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
+  // The instance which owns the DistantTabs to display.
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
+  // The displayed sessions and tabs. The sessions and tabs are owned by
+  // |_syncedSessions|, but |_displayedTabs| allows for filtering to display
+  // only particular tabs.
+  std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
+
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 // The service that manages the recently closed tabs
@@ -409,7 +415,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   TableViewModel* model = self.tableViewModel;
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
     synced_sessions::DistantSession const* session =
-        _syncedSessions->GetSession(i);
+        _syncedSessions->GetSessionWithTag(_displayedTabs[i].session_tag);
     NSInteger sessionIdentifier = [self sectionIdentifierForSession:session];
     [model addSectionWithIdentifier:sessionIdentifier];
     NSString* sessionCollapsedKey = base::SysUTF8ToNSString(session->tag);
@@ -429,27 +435,49 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 - (void)addItemsForSession:(synced_sessions::DistantSession const*)session {
-  TableViewModel* model = self.tableViewModel;
-  NSInteger numberOfTabs = base::checked_cast<NSInteger>(session->tabs.size());
-  for (int i = 0; i < numberOfTabs; i++) {
-    synced_sessions::DistantTab const* sessionTab = session->tabs[i].get();
-    NSString* title = base::SysUTF16ToNSString(sessionTab->title);
+  const synced_sessions::DistantTabsSet* session_tabs_set =
+      [self distantTabsSetForSessionWithTag:session->tag];
 
-    TableViewURLItem* sessionTabItem =
-        [[TableViewURLItem alloc] initWithType:ItemTypeSessionTabData];
-    sessionTabItem.title = title;
-    sessionTabItem.URL = [[CrURL alloc] initWithGURL:sessionTab->virtual_url];
-    [model addItem:sessionTabItem
-        toSectionWithIdentifier:[self sectionIdentifierForSession:session]];
+  if (!session_tabs_set) {
+    return;
   }
+
+  NSInteger sectionIdentifier = [self sectionIdentifierForSession:session];
+  if (session_tabs_set->filtered_tabs) {
+    // Only add the items from |filtered_tabs|.
+    for (synced_sessions::DistantTab* sessionTab :
+         session_tabs_set->filtered_tabs.value()) {
+      [self addItemForDistantTab:sessionTab
+          toSectionWithIdentifier:sectionIdentifier];
+    }
+  } else {
+    // When |filtered_tabs| is null, all tabs in the session are included
+    // in the set.
+    for (auto&& sessionTab : session->tabs) {
+      [self addItemForDistantTab:sessionTab.get()
+          toSectionWithIdentifier:sectionIdentifier];
+    }
+  }
+}
+
+- (void)addItemForDistantTab:(synced_sessions::DistantTab*)sessionTab
+     toSectionWithIdentifier:(NSInteger)sectionIdentifier {
+  NSString* title = base::SysUTF16ToNSString(sessionTab->title);
+
+  TableViewURLItem* sessionTabItem =
+      [[TableViewURLItem alloc] initWithType:ItemTypeSessionTabData];
+  sessionTabItem.title = title;
+  sessionTabItem.URL = [[CrURL alloc] initWithGURL:sessionTab->virtual_url];
+  [self.tableViewModel addItem:sessionTabItem
+       toSectionWithIdentifier:sectionIdentifier];
 }
 
 // Remove all SessionSections from |self.tableViewModel| and |self.tableView|
 // Needs to be called inside a [UITableView beginUpdates] block on iOS10, or
 // performBatchUpdates on iOS11+.
 - (void)removeSessionSections {
-  // |_syncedSessions| has been updated by now, that means that
-  // |self.tableViewModel| does not reflect |_syncedSessions| data.
+  // |_displayedTabs| has been updated by now, that means that
+  // |self.tableViewModel| does not reflect |_displayedTabs| data.
   NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
   NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
   while ([self.tableViewModel numberOfSections] >
@@ -652,9 +680,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (NSInteger)sectionIdentifierForSession:
     (synced_sessions::DistantSession const*)distantSession {
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
-    synced_sessions::DistantSession const* session =
-        _syncedSessions->GetSession(i);
-    if (session->tag == distantSession->tag)
+    if (_displayedTabs[i].session_tag == distantSession->tag)
       return i + kFirstSessionSectionIdentifier;
   }
   NOTREACHED();
@@ -685,7 +711,9 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   NSInteger section =
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifer];
   DCHECK([self isSessionSectionIdentifier:sectionIdentifer]);
-  return _syncedSessions->GetSession(section - kNumberOfSectionsBeforeSessions);
+  const synced_sessions::DistantTabsSet& tabsSet =
+      _displayedTabs[section - kNumberOfSectionsBeforeSessions];
+  return _syncedSessions->GetSessionWithTag(tabsSet.session_tag);
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
@@ -701,7 +729,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   __weak __typeof(self) weakSelf = self;
   [self.tableView
       performBatchUpdates:^{
-        [weakSelf removeSection:sectionIdentifier];
+        [weakSelf removeSection:sectionIdentifier forSessionWithTag:sessionTag];
       }
       completion:^(BOOL) {
         [weakSelf deleteSession:sessionTag];
@@ -709,11 +737,20 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 // Helper for removeSessionAtTableSectionWithIdentifier
-- (void)removeSection:(NSInteger)sectionIdentifier {
+- (void)removeSection:(NSInteger)sectionIdentifier
+    forSessionWithTag:(std::string)sessionTag {
   NSInteger sectionIndex =
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
   [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
-  _syncedSessions->EraseSession(sectionIndex - kNumberOfSectionsBeforeSessions);
+
+  for (NSUInteger i = 0; i < _displayedTabs.size(); i++) {
+    if (sessionTag == _displayedTabs[i].session_tag) {
+      _displayedTabs.erase(_displayedTabs.begin() + i);
+      break;
+    }
+  }
+  _syncedSessions->EraseSessionWithTag(sessionTag);
+
   [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                 withRowAnimation:UITableViewRowAnimationLeft];
 }
@@ -747,9 +784,22 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     // won't change.
     return;
   }
+
   sync_sessions::SessionSyncService* syncService =
       SessionSyncServiceFactory::GetForBrowserState(self.browserState);
-  _syncedSessions.reset(new synced_sessions::SyncedSessions(syncService));
+  _syncedSessions =
+      std::make_unique<synced_sessions::SyncedSessions>(syncService);
+
+  // Reset |_displayedTabs| to contain all sessions and tabs.
+  _displayedTabs = std::vector<synced_sessions::DistantTabsSet>();
+  for (size_t s = 0; s < _syncedSessions->GetSessionCount(); s++) {
+    const synced_sessions::DistantSession* session =
+        _syncedSessions->GetSession(s);
+
+    synced_sessions::DistantTabsSet distant_tabs;
+    distant_tabs.session_tag = session->tag;
+    _displayedTabs.push_back(distant_tabs);
+  }
 
   if (!self.preventUpdates) {
     // Update the TableView and TableViewModel sections to match the new
@@ -1047,7 +1097,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (NSUInteger)numberOfSessions {
   if (!_syncedSessions)
     return 0;
-  return _syncedSessions->GetSessionCount();
+  return _displayedTabs.size();
 }
 
 // Returns the Session Index for a given Session Tab |indexPath|.
@@ -1060,14 +1110,15 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // Get the index of this sectionIdentifier.
   size_t indexOfSession = [[self allSessionSectionIdentifiers]
       indexOfObject:sectionIdentifierForIndexPath];
-  DCHECK_LT(indexOfSession, _syncedSessions->GetSessionCount());
+  DCHECK_LT(indexOfSession, _displayedTabs.size());
   return indexOfSession;
 }
 
 - (synced_sessions::DistantSession const*)sessionForTabAtIndexPath:
     (NSIndexPath*)indexPath {
-  return _syncedSessions->GetSession(
-      [self indexOfSessionForTabAtIndexPath:indexPath]);
+  const synced_sessions::DistantTabsSet& tabs_set =
+      _displayedTabs[[self indexOfSessionForTabAtIndexPath:indexPath]];
+  return _syncedSessions->GetSessionWithTag(tabs_set.session_tag);
 }
 
 - (synced_sessions::DistantTab const*)distantTabAtIndexPath:
@@ -1077,8 +1128,26 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   size_t indexOfDistantTab = indexPath.row;
   synced_sessions::DistantSession const* session =
       [self sessionForTabAtIndexPath:indexPath];
+  const synced_sessions::DistantTabsSet* tabs_set =
+      [self distantTabsSetForSessionWithTag:session->tag];
+  if (tabs_set->filtered_tabs) {
+    DCHECK_LT(indexOfDistantTab, tabs_set->filtered_tabs->size());
+    return tabs_set->filtered_tabs.value()[indexOfDistantTab];
+  }
+
+  // If filtered_tabs is null, all tabs in |session| should be used.
   DCHECK_LT(indexOfDistantTab, session->tabs.size());
   return session->tabs[indexOfDistantTab].get();
+}
+
+- (const synced_sessions::DistantTabsSet*)distantTabsSetForSessionWithTag:
+    (const std::string&)sessionTag {
+  for (const synced_sessions::DistantTabsSet& tabs_set : _displayedTabs) {
+    if (sessionTag == tabs_set.session_tag) {
+      return &tabs_set;
+    }
+  }
+  return nullptr;
 }
 
 - (NSString*)lastSyncStringForSesssion:

@@ -18,6 +18,7 @@ source_set("recent_tabs") {
   ]
   deps = [
     ":recent_tabs_ui",
+    ":synced_sessions",
     "resources:show_history",
     "//base",
     "//components/sessions",
@@ -67,11 +68,10 @@ source_set("recent_tabs_ui") {
     "recent_tabs_transitioning_delegate.h",
     "recent_tabs_transitioning_delegate.mm",
     "sessions_sync_user_state.h",
-    "synced_sessions.h",
-    "synced_sessions.mm",
   ]
   deps = [
     ":recent_tabs_ui_constants",
+    ":synced_sessions",
     "resources:recent_tabs_other_devices_empty",
     "//base",
     "//components/prefs",
@@ -113,6 +113,15 @@ source_set("recent_tabs_ui") {
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
+}
+
+source_set("synced_sessions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "synced_sessions.h",
+    "synced_sessions.mm",
+  ]
+  deps = [ "//ios/chrome/browser/sync" ]
   public_deps = [ "//components/sync_sessions" ]
 }
 
