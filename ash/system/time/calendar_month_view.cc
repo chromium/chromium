@@ -40,6 +40,9 @@ constexpr float kTodayRoundedRadius = 20.f;
 // present for that day.
 constexpr float kEventsPresentRoundedRadius = 2.f;
 
+// The gap padding between the date and the indicator.
+constexpr int kGapBetweenDateAndIndicator = 1;
+
 // The padding of the focus circle.
 constexpr int kFocusCirclePadding = 4;
 
@@ -229,8 +232,8 @@ gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
   const gfx::Rect content = GetContentsBounds();
   return gfx::Point(
       (content.width() + calendar_utils::kDateHorizontalPadding * 2) / 2,
-      (content.height() + calendar_utils::kDateVerticalPadding * 2) / 2 +
-          calendar_utils::kDateVerticalPadding);
+      content.height() + calendar_utils::kDateVerticalPadding +
+          kGapBetweenDateAndIndicator);
 }
 
 void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
