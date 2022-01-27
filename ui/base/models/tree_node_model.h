@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -16,10 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/tree_model.h"
-
-namespace bookmarks {
-class BookmarkModel;
-}
 
 namespace ui {
 
@@ -161,10 +158,33 @@ class TreeNode : public TreeModelNode {
     return parent_ ? parent_->HasAncestor(ancestor) : false;
   }
 
- private:
-  // TODO(https://crbug.com/956314): Remove this.
-  friend class bookmarks::BookmarkModel;
+  // Reorders children according to a new arbitrary order. |new_order| must
+  // contain one entry per child node, and the value of the entry at position
+  // |i| represents the new position, which must be unique and in the range
+  // between 0 (inclusive) and the number of children (exclusive).
+  void ReorderChildren(const std::vector<size_t>& new_order) {
+    const size_t children_count = children_.size();
+    DCHECK_EQ(children_count, new_order.size());
+    DCHECK_EQ(children_count,
+              std::set(new_order.begin(), new_order.end()).size());
+    TreeNodes new_children(children_count);
+    for (size_t old_index = 0; old_index < children_count; ++old_index) {
+      const size_t new_index = new_order[old_index];
+      DCHECK_LT(new_index, children_count);
+      DCHECK(children_[old_index]);
+      DCHECK(!new_children[new_index]);
+      new_children[new_index] = std::move(children_[old_index]);
+    }
+    children_ = std::move(new_children);
+  }
 
+  // Sorts children according to a comparator.
+  template <typename Compare>
+  void SortChildren(Compare comp) {
+    std::stable_sort(children_.begin(), children_.end(), comp);
+  }
+
+ private:
   // Title displayed in the tree.
   std::u16string title_;
 
