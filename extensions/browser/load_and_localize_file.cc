@@ -11,11 +11,11 @@
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/file_reader.h"
+#include "extensions/browser/l10n_file_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_resource.h"
-#include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/message_bundle.h"
@@ -39,9 +39,9 @@ void MaybeLocalizeInBackground(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::unique_ptr<MessageBundle::SubstitutionMap> localization_messages(
-      file_util::LoadMessageBundleSubstitutionMap(extension_path, extension_id,
-                                                  extension_default_locale,
-                                                  gzip_permission));
+      l10n_file_util::LoadMessageBundleSubstitutionMap(
+          extension_path, extension_id, extension_default_locale,
+          gzip_permission));
 
   std::string error;
   MessageBundle::ReplaceMessagesWithExternalDictionary(*localization_messages,

@@ -38,10 +38,10 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/l10n_file_util.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
-#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
@@ -199,7 +199,7 @@ void LoadUserScripts(
     }
     if (script->css_scripts().size() > 0) {
       std::unique_ptr<SubstitutionMap> localization_messages(
-          file_util::LoadMessageBundleSubstitutionMap(
+          l10n_file_util::LoadMessageBundleSubstitutionMap(
               host_info.file_path, script->host_id().id,
               host_info.default_locale, host_info.gzip_permission));
 
