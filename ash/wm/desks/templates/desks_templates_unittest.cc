@@ -652,9 +652,6 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   // This window should be hidden whenever the desk templates grid is open.
   auto test_window = CreateAppWindow();
 
-  // This action should record deletions and grid shows in a UMA histogram.
-  base::HistogramTester histogram_tester;
-
   OpenOverviewAndShowTemplatesGrid();
 
   // The window is hidden because the desk templates grid is open.
@@ -685,13 +682,6 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
   auto* save_template =
       GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(save_template->IsVisible());
-
-  // Assert that histogram metrics were recorded.
-  // note: deleting a template that doesn't exist counts as a delete according
-  // to the desks model hence expected_deletes being set to two.
-  const int expected_deletes = 2;
-  histogram_tester.ExpectTotalCount(kDeleteTemplateHistogramName,
-                                    expected_deletes);
 }
 
 // Tests that the save desk as template button is aligned with the first
@@ -1728,8 +1718,248 @@ TEST_F(DesksTemplatesTest, TemplateNameChangeAborted) {
   EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
 }
 
+// Tests to verify that clicking the spacebar doesn't cause the name view to
+// lose focus (since it's within a button), and that whitespaces are handled
+// correctly.
+TEST_F(DesksTemplatesTest, TemplateNameTestSpaces) {
+  auto test_window = CreateAppWindow();
+
+  const std::string template_name = "desk name";
+  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Pressing spacebar does not cause `name_view` to lose focus.
+  ClickOnView(name_view);
+  SendKey(ui::VKEY_RIGHT);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_TRUE(name_view->HasFocus());
+  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u" ", name_view->GetText());
+
+  // Extra whitespace should be trimmed.
+  SendKey(ui::VKEY_HOME);
+  SendKey(ui::VKEY_SPACE);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_EQ(u"  " + base::UTF8ToUTF16(template_name) + u" ",
+            name_view->GetText());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+
+  // A string consisting of just spaces is considered an empty string, and the
+  // name change is reverted.
+  EXPECT_FALSE(name_view->HasFocus());
+  ClickOnView(name_view);
+  EXPECT_TRUE(name_view->HasFocus());
+  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  SendKey(ui::VKEY_SPACE);
+  EXPECT_EQ(u" ", name_view->GetText());
+  SendKey(ui::VKEY_RETURN);
+  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
+}
+
+// Tests that there is no crash after we use the keyboard to change the name of
+// a template. Regression test for https://crbug.com/1279649.
+TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
+  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Tab until we focus the name view of the first template item.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(name_view, GetHighlightedView());
+
+  // Rename template "a" to template "d".
+  SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_RETURN);
+  WaitForDesksTemplatesUI();
+
+  // Verify that there is no crash after we tab again.
+  SendKey(ui::VKEY_TAB);
+}
+
+// Tests that there is no crash when leaving the template name view focused with
+// a changed name during shutdown. Regression test for
+// https://crbug.com/1281422.
+TEST_F(DesksTemplatesTest, EditTemplateNameShutdownNoCrash) {
+  // The fade out animation of the desks templates grid must be enabled for this
+  // crash to have happened.
+  animation_scale_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Tab until we focus the name view of the first template item.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(name_view, GetHighlightedView());
+
+  // Rename template "a" to template "ddd".
+  SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_D);
+
+  // Verify that there is no crash while the test tears down.
+}
+
+// Tests that the hovering over the templates name shows the expected cursor.
+TEST_F(DesksTemplatesTest, TemplatesNameHitTest) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+
+  for (bool is_rtl : {true, false}) {
+    SCOPED_TRACE(is_rtl ? "rtl" : "ltr");
+    base::i18n::SetRTLForTesting(is_rtl);
+
+    AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+
+    OpenOverviewAndShowTemplatesGrid();
+    DesksTemplatesNameView* name_view =
+        GetItemViewFromTemplatesGrid(0)->name_view();
+    const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
+    // Hover to a point just inside main edge. This will cover the case where
+    // the hit test logic is inverted.
+    const gfx::Point hover_point =
+        is_rtl ? name_view_bounds.right_center() + gfx::Vector2d(-2, 0)
+               : name_view_bounds.left_center() + gfx::Vector2d(2, 0);
+
+    // Tests that the hover cursor is an IBeam.
+    GetEventGenerator()->MoveMouseTo(hover_point);
+    EXPECT_EQ(ui::mojom::CursorType::kIBeam,
+              cursor_manager->GetCursor().type());
+
+    // Exit overview for the next run.
+    ToggleOverview();
+  }
+}
+
+// Tests that accessibility overrides are set as expected.
+TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
+      GetOverviewSession()->GetOverviewFocusWindow());
+  DCHECK(focus_widget);
+
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
+  DCHECK(desk_widget);
+
+  auto* save_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+
+  // Overview items are in MRU order, so the expected order in the grid list is
+  // the reverse creation order.
+  auto* item_widget = GetOverviewItemForWindow(window.get())->item_widget();
+
+  // Order should be [focus_widget, save_widget, item_widget, desk_widget].
+  CheckA11yOverrides("focus", focus_widget, desk_widget, save_widget);
+  CheckA11yOverrides("save", save_widget, focus_widget, item_widget);
+  CheckA11yOverrides("item", item_widget, save_widget, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget, focus_widget);
+}
+
+TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
+  UpdateDisplay("800x600");
+
+  // Create a window and add four test entries.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid has four items and one feedback button.
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(5ul, grid_views.size());
+
+  // We expect the first three items to be laid out in one row.
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
+  // The fourth item goes in the second row.
+  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[3]->bounds().y());
+}
+
+TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
+  UpdateDisplay("600x800");
+
+  // Create a window and add four test entries.
+  auto test_window = CreateAppWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid has four items and one feedback button.
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(5ul, grid_views.size());
+
+  // We expect the first two items to be laid out in one row.
+  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
+  // And the last two items on the next row.
+  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
+  EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
+}
+
+// Tests that there is no overlap with the shelf on our smallest supported
+// resolution.
+TEST_F(DesksTemplatesTest, ItemsDoNotOverlapShelf) {
+  // The smallest display resolution we support is 1087x675.
+  UpdateDisplay("1000x600");
+
+  // Create 6 entries to max out the grid.
+  for (const std::string& name : {"A", "B", "C", "D", "E", "F"})
+    AddEntry(base::GUID::GenerateRandomV4(), name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid has six items and one feedback button.
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(7ul, grid_views.size());
+
+  const gfx::Rect shelf_bounds =
+      GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();
+
+  // Test that none of the grid items overlap with the shelf.
+  for (views::View* view : grid_views)
+    EXPECT_FALSE(view->GetBoundsInScreen().Intersects(shelf_bounds));
+}
+
 // Tests that showing the overview records to the TemplateGrid histogram.
-TEST_F(DesksTemplatesTest, RecordDesksTemplateGridShows) {
+TEST_F(DesksTemplatesTest, RecordDesksTemplateGridShowMetric) {
   // Make sure that LoadTemplateHistogram is recorded.
   base::HistogramTester histogram_tester;
 
@@ -1878,174 +2108,6 @@ TEST_F(DesksTemplatesTest, UnsupportedAppDialogRecordsMetric) {
                                     kExpectedDialogShows);
 }
 
-// Tests to verify that clicking the spacebar doesn't cause the name view to
-// lose focus (since it's within a button), and that whitespaces are handled
-// correctly.
-TEST_F(DesksTemplatesTest, TemplateNameTestSpaces) {
-  auto test_window = CreateAppWindow();
-
-  const std::string template_name = "desk name";
-  AddEntry(base::GUID::GenerateRandomV4(), template_name, base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
-
-  // Pressing spacebar does not cause `name_view` to lose focus.
-  ClickOnView(name_view);
-  SendKey(ui::VKEY_RIGHT);
-  SendKey(ui::VKEY_SPACE);
-  EXPECT_TRUE(name_view->HasFocus());
-  EXPECT_EQ(base::UTF8ToUTF16(template_name) + u" ", name_view->GetText());
-
-  // Extra whitespace should be trimmed.
-  SendKey(ui::VKEY_HOME);
-  SendKey(ui::VKEY_SPACE);
-  SendKey(ui::VKEY_SPACE);
-  EXPECT_EQ(u"  " + base::UTF8ToUTF16(template_name) + u" ",
-            name_view->GetText());
-  SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
-
-  // A string consisting of just spaces is considered an empty string, and the
-  // name change is reverted.
-  EXPECT_FALSE(name_view->HasFocus());
-  ClickOnView(name_view);
-  EXPECT_TRUE(name_view->HasFocus());
-  SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
-  SendKey(ui::VKEY_SPACE);
-  EXPECT_EQ(u" ", name_view->GetText());
-  SendKey(ui::VKEY_RETURN);
-  EXPECT_EQ(base::UTF8ToUTF16(template_name), name_view->GetText());
-}
-
-// Tests that there is no crash after we use the keyboard to change the name of
-// a template. Regression test for https://crbug.com/1279649.
-TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
-  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
-
-  // Tab until we focus the name view of the first template item.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(name_view, GetHighlightedView());
-
-  // Rename template "a" to template "d".
-  SendKey(ui::VKEY_RETURN);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_RETURN);
-  WaitForDesksTemplatesUI();
-
-  // Verify that there is no crash after we tab again.
-  SendKey(ui::VKEY_TAB);
-}
-
-// Tests that there is no crash when leaving the template name view focused with
-// a changed name during shutdown. Regression test for
-// https://crbug.com/1281422.
-TEST_F(DesksTemplatesTest, EditTemplateNameShutdownNoCrash) {
-  // The fade out animation of the desks templates grid must be enabled for this
-  // crash to have happened.
-  animation_scale_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-  DesksTemplatesNameView* name_view =
-      GetItemViewFromTemplatesGrid(0)->name_view();
-
-  // Tab until we focus the name view of the first template item.
-  SendKey(ui::VKEY_TAB);
-  SendKey(ui::VKEY_TAB);
-  ASSERT_EQ(name_view, GetHighlightedView());
-
-  // Rename template "a" to template "ddd".
-  SendKey(ui::VKEY_RETURN);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_D);
-  SendKey(ui::VKEY_D);
-
-  // Verify that there is no crash while the test tears down.
-}
-
-// Tests that the hovering over the templates name shows the expected cursor.
-TEST_F(DesksTemplatesTest, TemplatesNameHitTest) {
-  auto* cursor_manager = Shell::Get()->cursor_manager();
-
-  for (bool is_rtl : {true, false}) {
-    SCOPED_TRACE(is_rtl ? "rtl" : "ltr");
-    base::i18n::SetRTLForTesting(is_rtl);
-
-    AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
-
-    OpenOverviewAndShowTemplatesGrid();
-    DesksTemplatesNameView* name_view =
-        GetItemViewFromTemplatesGrid(0)->name_view();
-    const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
-    // Hover to a point just inside main edge. This will cover the case where
-    // the hit test logic is inverted.
-    const gfx::Point hover_point =
-        is_rtl ? name_view_bounds.right_center() + gfx::Vector2d(-2, 0)
-               : name_view_bounds.left_center() + gfx::Vector2d(2, 0);
-
-    // Tests that the hover cursor is an IBeam.
-    GetEventGenerator()->MoveMouseTo(hover_point);
-    EXPECT_EQ(ui::mojom::CursorType::kIBeam,
-              cursor_manager->GetCursor().type());
-
-    // Exit overview for the next run.
-    ToggleOverview();
-  }
-}
-
-TEST_F(DesksTemplatesTest, UserTemplateCountRecordsCorrectly) {
-  // Record histogram.
-  base::HistogramTester histogram_tester;
-
-  // Create three new templates through the UI.
-  for (unsigned long num_templates = 0; num_templates < 3; ++num_templates) {
-    // There are no saved template entries and one test window initially.
-    auto test_window = CreateAppWindow();
-
-    // Toggle overview if there isn't currently an overview. This is needed
-    // to save a template via the UI.
-    if (!GetOverviewSession()) {
-      ToggleOverview();
-      WaitForDesksTemplatesUI();
-    }
-
-    // The `save_desk_as_template_widget` is visible when at least one window is
-    // open.
-    views::Widget* save_desk_as_template_widget =
-        GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
-    ASSERT_TRUE(save_desk_as_template_widget);
-    EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
-
-    // Click on `save_desk_as_template_widget` button.
-    ClickOnView(save_desk_as_template_widget->GetContentsView());
-    ASSERT_EQ(num_templates + 1, GetAllEntries().size());
-
-    // Expect that the Desk Templates grid is visible.
-    EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
-  }
-
-  OpenOverviewAndShowTemplatesGrid();
-
-  // Delete one of the templates which will iterate the histogram's second
-  // bucket.
-  DeleteTemplate(GetAllEntries()[0]->uuid(), /*expected_item_count=*/3);
-
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 1);
-}
-
 // Tests that the window and tab counts are properly recorded in their
 // resepctive metrics.
 TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
@@ -2104,122 +2166,51 @@ TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 6, 1);
 }
 
-// Tests that accessibility overrides are set as expected.
-TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
-  auto window = CreateTestWindow(gfx::Rect(100, 100));
+// Tests that the user template count metric is recorded correctly.
+TEST_F(DesksTemplatesTest, UserTemplateCountRecordsMetricCorrectly) {
+  // Record histogram.
+  base::HistogramTester histogram_tester;
 
-  ToggleOverview();
-  WaitForDesksTemplatesUI();
+  // Create three new templates through the UI.
+  for (unsigned long num_templates = 0; num_templates < 3; ++num_templates) {
+    // There are no saved template entries and one test window initially.
+    auto test_window = CreateAppWindow();
 
-  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
-      GetOverviewSession()->GetOverviewFocusWindow());
-  DCHECK(focus_widget);
+    // Toggle overview if there isn't currently an overview. This is needed
+    // to save a template via the UI.
+    if (!GetOverviewSession()) {
+      ToggleOverview();
+      WaitForDesksTemplatesUI();
+    }
 
-  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
-  DCHECK(desk_widget);
+    // The `save_desk_as_template_widget` is visible when at least one window is
+    // open.
+    views::Widget* save_desk_as_template_widget =
+        GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+    ASSERT_TRUE(save_desk_as_template_widget);
+    EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
 
-  auto* save_widget =
-      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+    // Click on `save_desk_as_template_widget` button.
+    ClickOnView(save_desk_as_template_widget->GetContentsView());
+    ASSERT_EQ(num_templates + 1, GetAllEntries().size());
 
-  // Overview items are in MRU order, so the expected order in the grid list is
-  // the reverse creation order.
-  auto* item_widget = GetOverviewItemForWindow(window.get())->item_widget();
-
-  // Order should be [focus_widget, save_widget, item_widget, desk_widget].
-  CheckA11yOverrides("focus", focus_widget, desk_widget, save_widget);
-  CheckA11yOverrides("save", save_widget, focus_widget, item_widget);
-  CheckA11yOverrides("item", item_widget, save_widget, desk_widget);
-  CheckA11yOverrides("desk", desk_widget, item_widget, focus_widget);
-}
-
-TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
-  UpdateDisplay("800x600");
-
-  // Create a window and add four test entries.
-  auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
+    // Expect that the Desk Templates grid is visible.
+    EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+  }
 
   OpenOverviewAndShowTemplatesGrid();
 
-  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-  const auto* templates_grid_view =
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+  // Delete one of the templates which will iterate the histogram's second
+  // bucket.
+  DeleteTemplate(GetAllEntries()[0]->uuid(), /*expected_item_count=*/3);
 
-  // The grid has four items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(5ul, grid_views.size());
-
-  // We expect the first three items to be laid out in one row.
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
-  // The fourth item goes in the second row.
-  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[3]->bounds().y());
-}
-
-TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
-  UpdateDisplay("600x800");
-
-  // Create a window and add four test entries.
-  auto test_window = CreateAppWindow();
-  AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "C_template", base::Time::Now());
-  AddEntry(base::GUID::GenerateRandomV4(), "D_template", base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-
-  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-  const auto* templates_grid_view =
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-
-  // The grid has four items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(5ul, grid_views.size());
-
-  // We expect the first two items to be laid out in one row.
-  EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
-  // And the last two items on the next row.
-  EXPECT_NE(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
-  EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
-}
-
-// Tests that there is no overlap with the shelf on our smallest supported
-// resolution.
-TEST_F(DesksTemplatesTest, ItemsDoNotOverlapShelf) {
-  // The smallest display resolution we support is 1087x675.
-  UpdateDisplay("1000x600");
-
-  // Create 6 entries to max out the grid.
-  for (const std::string& name : {"A", "B", "C", "D", "E", "F"})
-    AddEntry(base::GUID::GenerateRandomV4(), name, base::Time::Now());
-
-  OpenOverviewAndShowTemplatesGrid();
-
-  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
-  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-  const auto* templates_grid_view =
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-
-  // The grid has six items and one feedback button.
-  views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(7ul, grid_views.size());
-
-  const gfx::Rect shelf_bounds =
-      GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();
-
-  // Test that none of the grid items overlap with the shelf.
-  for (views::View* view : grid_views)
-    EXPECT_FALSE(view->GetBoundsInScreen().Intersects(shelf_bounds));
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 1);
 }
 
 // Tests record metrics when current template being replaced.
-TEST_F(DesksTemplatesTest, ReplaceTemplate) {
+TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   base::HistogramTester histogram_tester;
 
   UpdateDisplay("800x600,800x600");
