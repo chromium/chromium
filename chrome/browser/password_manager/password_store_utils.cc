@@ -10,7 +10,6 @@
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -81,7 +80,6 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
             profile_store, account_store, sync_service, identity_manager,
             pref_service, password_reuse_manager,
             IsUnderAdvancedProtection(profile_),
-            ProfileManager::GetPrimaryUserProfile() == profile_,
             base::BindOnce(
                 &StoreMetricReporterHelper::RemoveInstanceFromProfileUserData,
                 weak_ptr_factory_.GetWeakPtr()));
