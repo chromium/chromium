@@ -112,7 +112,7 @@
         aria-label="$i18n{ok}"
         on-tap="onOkButtonClick_"
         hidden$="[[!shouldShowOkButton_(currentView_)]]">
-      $i18n{ok}
+      [[getNextButtonLabel_(isArcAccountRestrictionsEnabled_)]]
     </cr-button>
   </div>
 </if>

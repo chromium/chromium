@@ -13,6 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 
 // <if expr="chromeos">
 import './arc_account_picker_app.js';
@@ -43,7 +44,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [WebUIListenerBehavior, I18nBehavior],
 
   properties: {
     /** Mirroring the enum so that it can be used from HTML bindings. */
@@ -316,6 +317,16 @@ Polymer({
    */
   getBackButtonIcon_() {
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getNextButtonLabel_() {
+    return this.isArcAccountRestrictionsEnabled_ ?
+        this.i18n('nextButtonLabel') :
+        this.i18n('ok');
   },
 
   /**

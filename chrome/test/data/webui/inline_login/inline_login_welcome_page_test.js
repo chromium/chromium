@@ -29,6 +29,7 @@ inline_login_welcome_page_test.TestNames = {
   GoBack: 'GoBack',
   IsAvailableInArc: 'IsAvailableInArc',
   ToggleHidden: 'ToggleHidden',
+  LinkClick: 'LinkClick',
 };
 
 suite(inline_login_welcome_page_test.suiteName, () => {
@@ -179,5 +180,19 @@ suite(inline_login_welcome_page_test.suiteName, () => {
         inlineLoginComponent.$$('welcome-page-app').$$('.arc-toggle-container');
     assertTrue(!!toggle);
     assertTrue(toggle.hidden, 'ARC toggle should be hidden');
+  });
+
+  test(assert(inline_login_welcome_page_test.TestNames.LinkClick), async () => {
+    const dialogArgs = {
+      isAvailableInArc: true,
+      showArcAvailabilityPicker: false
+    };
+    testSetup(dialogArgs);
+
+    inlineLoginComponent.$$('welcome-page-app').$$('#osSettingsLink').click();
+    await testBrowserProxy.whenCalled('dialogClose');
+
+    inlineLoginComponent.$$('welcome-page-app').$$('#appsSettingsLink').click();
+    return testBrowserProxy.whenCalled('dialogClose');
   });
 });

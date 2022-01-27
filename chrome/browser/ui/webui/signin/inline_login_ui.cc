@@ -159,6 +159,7 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"title", IDS_ACCOUNT_MANAGER_DIALOG_TITLE},
     {"ok", IDS_APP_OK},
+    {"nextButtonLabel", IDS_ACCOUNT_MANAGER_DIALOG_NEXT_BUTTON},
     {"accountManagerDialogWelcomeTitle",
      IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_TITLE},
     {"accountManagerDialogWelcomeCheckbox",
@@ -183,13 +184,14 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddBoolean(
       "isArcAccountRestrictionsEnabled",
       ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  // The "Apps Settings" link points to Apps > Manage your apps.
   source->AddString(
       "accountManagerDialogArcToggleLabel",
       l10n_util::GetStringFUTF16(
           IDS_ACCOUNT_MANAGER_DIALOG_ARC_TOGGLE_LABEL,
           base::UTF8ToUTF16(
               chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kGooglePlayStoreSubpagePath)
+                  chromeos::settings::mojom::kAppManagementSubpagePath)
                   .spec())));
   source->AddString(
       "accountManagerDialogArcAccountPickerBody",
@@ -202,22 +204,33 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
   source->AddBoolean("shouldSkipWelcomePage",
                      profile->GetPrefs()->GetBoolean(
                          chromeos::prefs::kShouldSkipInlineLoginWelcomePage));
-  bool is_incognito_enabled =
-      (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-       IncognitoModePrefs::Availability::kDisabled);
-  int message_id =
-      is_incognito_enabled
-          ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
-          : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
-  source->AddString(
-      "accountManagerDialogWelcomeBody",
-      l10n_util::GetStringFUTF16(
-          message_id,
-          base::UTF8ToUTF16(
-              chrome::GetOSSettingsUrl(
-                  chromeos::settings::mojom::kMyAccountsSubpagePath)
-                  .spec()),
-          ui::GetChromeOSDeviceName()));
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    source->AddString(
+        "accountManagerDialogWelcomeBody",
+        l10n_util::GetStringFUTF16(
+            IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2,
+            base::UTF8ToUTF16(
+                chrome::GetOSSettingsUrl(
+                    chromeos::settings::mojom::kMyAccountsSubpagePath)
+                    .spec())));
+  } else {
+    bool is_incognito_enabled =
+        (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+         IncognitoModePrefs::Availability::kDisabled);
+    int message_id =
+        is_incognito_enabled
+            ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY
+            : IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO;
+    source->AddString(
+        "accountManagerDialogWelcomeBody",
+        l10n_util::GetStringFUTF16(
+            message_id,
+            base::UTF8ToUTF16(
+                chrome::GetOSSettingsUrl(
+                    chromeos::settings::mojom::kMyAccountsSubpagePath)
+                    .spec()),
+            ui::GetChromeOSDeviceName()));
+  }
 
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);

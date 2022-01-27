@@ -178,6 +178,12 @@ TEST_F(
       this.runMochaTest(inline_login_welcome_page_test.TestNames.ToggleHidden);
     });
 
+  TEST_F(
+    'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
+    'LinkClick', function() {
+      this.runMochaTest(inline_login_welcome_page_test.TestNames.LinkClick);
+    });
+
 // eslint-disable-next-line no-var
 var InlineLoginArcAccountPickerBrowserTest =
     class extends InlineLoginBrowserTest {
