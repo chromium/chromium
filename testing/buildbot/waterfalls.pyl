@@ -2538,7 +2538,7 @@
     'name': 'chromium.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Comparison Linux': {
+      'Comparison Linux (reclient)': {
         'mixins': [
           'isolate_profile_data',
         ],
@@ -2546,7 +2546,7 @@
           'all'
         ],
       },
-      'Comparison Windows': {
+      'Comparison Windows (reclient)': {
         'mixins': [
           'isolate_profile_data',
         ],

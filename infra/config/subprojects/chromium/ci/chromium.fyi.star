@@ -595,7 +595,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Comparison Linux",
+    name = "Comparison Linux (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "cmp",
@@ -610,7 +610,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Comparison Windows",
+    name = "Comparison Windows (reclient)",
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",

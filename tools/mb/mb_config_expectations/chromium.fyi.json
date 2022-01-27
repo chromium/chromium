@@ -30,7 +30,7 @@
       "use_thin_lto": true
     }
   },
-  "Comparison Linux": {
+  "Comparison Linux (reclient)": {
     "goma": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
@@ -49,7 +49,7 @@
       "use_remoteexec": true
     }
   },
-  "Comparison Windows": {
+  "Comparison Windows (reclient)": {
     "goma": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
