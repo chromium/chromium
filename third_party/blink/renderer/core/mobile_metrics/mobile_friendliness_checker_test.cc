@@ -39,6 +39,10 @@ static constexpr int kDeviceWidth = 480;
 static constexpr int kDeviceHeight = 800;
 static constexpr float kMinimumZoom = 0.25f;
 static constexpr float kMaximumZoom = 5;
+static constexpr char kInlineRedDot[] =
+    "data:image/"
+    "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4/"
+    "/8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
 class MobileFriendlinessCheckerTest : public testing::Test {
   static void EvalMobileFriendliness(LocalFrameView* view,
@@ -798,6 +802,43 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, SingleTapTarget) {
   </body>
 </html>
 )");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
+}
+
+TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsClose) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body>
+    <img onclick="alert('clicked');" src="%s">
+    <img onclick="alert('clicked');" src="%s">
+  </body>
+</html>
+)",
+                         kInlineRedDot, kInlineRedDot));
+  // Two onclick images next to each other are both bad tap targets.
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
+}
+
+TEST_F(ClockFixedMobileFriendlinessCheckerTest, TwoImageTapTargetsFar) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(
+      base::StringPrintf(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body>
+    <img onclick="alert('clicked');" src="%s">
+    <p style="line-height: 100px">some text</p>
+    <img onclick="alert('clicked');" src="%s">
+  </body>
+</html>
+)",
+                         kInlineRedDot, kInlineRedDot));
+  // Two onclick images aren't a problem if there's some distance between them.
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 0);
 }
 

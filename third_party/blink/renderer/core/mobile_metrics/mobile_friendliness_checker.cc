@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -151,7 +152,11 @@ struct EdgeOrCenter {
   }
 };
 
-bool IsTapTargetCandidate(const Node* node) {
+bool IsTapTargetCandidate(Node* node) {
+  if (auto* image = DynamicTo<HTMLImageElement>(node);
+      image && image->WillRespondToMouseClickEvents()) {
+    return true;
+  }
   return IsA<HTMLFormControlElement>(node) ||
          (IsA<HTMLAnchorElement>(node) &&
           !To<HTMLAnchorElement>(node)->Href().IsEmpty());
