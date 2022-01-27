@@ -121,6 +121,17 @@ base::Value GaiaAccountToValue(const ::account_manager::Account& account,
   return dict;
 }
 
+::account_manager::Account ValueToGaiaAccount(const base::Value& value) {
+  DCHECK(value.is_dict());
+  const std::string* id = value.FindStringKey(kAccountKeyId);
+  DCHECK(id);
+  const std::string* email = value.FindStringKey(kAccountKeyEmail);
+  DCHECK(email);
+  return ::account_manager::Account{
+      ::account_manager::AccountKey{*id, account_manager::AccountType::kGaia},
+      *email};
+}
+
 class EduCoexistenceChildSigninHelper : public SigninHelper {
  public:
   EduCoexistenceChildSigninHelper(
@@ -232,6 +243,11 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "getAccountsNotAvailableInArc",
       base::BindRepeating(
           &InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "makeAvailableInArc",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog,
           base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "skipWelcomePage",
@@ -422,6 +438,18 @@ void InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc(
     }
   }
   ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
+}
+
+void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
+  const base::Value& dictionary = args[0];
+  CHECK(dictionary.is_dict());
+  ash::AccountAppsAvailabilityFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()))
+      ->SetIsAccountAvailableInArc(ValueToGaiaAccount(dictionary),
+                                   /*is_available=*/true);
+  close_dialog_closure_.Run();
 }
 
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(

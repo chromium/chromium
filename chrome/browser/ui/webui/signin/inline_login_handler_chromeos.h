@@ -58,6 +58,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
       const std::string& callback_id,
       const std::vector<::account_manager::Account>& accounts,
       const base::flat_set<account_manager::Account>& arc_accounts);
+  void MakeAvailableInArcAndCloseDialog(base::Value::ConstListView args);
   void HandleSkipWelcomePage(const base::ListValue* args);
 
   base::RepeatingClosure close_dialog_closure_;

@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals} from '../chai_assert.js';
 
 import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
@@ -23,6 +23,7 @@ arc_account_picker_page_test.TestNames = {
   ArcPickerHiddenForReauth: 'ArcPickerHiddenForReauth',
   ArcPickerHiddenNoAccounts: 'ArcPickerHiddenNoAccounts',
   AddAccount: 'AddAccount',
+  MakeAvailableInArc: 'MakeAvailableInArc',
 };
 
 /** @return {!Array<Account>} */
@@ -149,4 +150,30 @@ suite(arc_account_picker_page_test.suiteName, () => {
         inlineLoginComponent.View.welcome, getActiveViewId(),
         'Welcome screen should be active after Add account button click');
   });
+
+  test(
+      assert(arc_account_picker_page_test.TestNames.MakeAvailableInArc),
+      async () => {
+        testSetup(
+            {isAvailableInArc: true, showArcAvailabilityPicker: true},
+            getFakeAccountsNotAvailableInArcList());
+        // Send auth extension data without email -> it's account addition flow.
+        webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+        // Wait for getAccountsNotAvailableInArc call which will return > 0
+        // accounts.
+        await testBrowserProxy.whenCalled('getAccountsNotAvailableInArc');
+        flush();
+        assertEquals(
+            inlineLoginComponent.View.arcAccountPicker, getActiveViewId(),
+            'ARC account picker screen should be active');
+
+        const expectedAccount = getFakeAccountsNotAvailableInArcList()[0];
+        arcAccountPickerComponent.shadowRoot
+            .querySelectorAll('.account-item')[0]
+            .click();
+        return testBrowserProxy.whenCalled('makeAvailableInArc')
+            .then(function(account) {
+              assertDeepEquals(expectedAccount, account);
+            });
+      });
 });

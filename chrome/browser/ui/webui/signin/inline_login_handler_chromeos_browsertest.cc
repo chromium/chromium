@@ -63,6 +63,7 @@ constexpr char kSecondaryAccount3Email[] = "secondary3@example.com";
 constexpr char kSecondaryAccountOAuthCode[] = "fake_oauth_code";
 constexpr char kSecondaryAccountRefreshToken[] = "fake_refresh_token";
 constexpr char kCompleteLoginMessage[] = "completeLogin";
+constexpr char kMakeAvailableInArcMessage[] = "makeAvailableInArc";
 constexpr char kGetAccountsNotAvailableInArcMessage[] =
     "getAccountsNotAvailableInArc";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
@@ -413,13 +414,37 @@ class InlineLoginHandlerChromeOSTestWithArcRestrictions
 
   bool ValuesListContainAccount(const base::span<const base::Value> values,
                                 const std::string& email) {
+    return ValuesListGetAccount(values, email).has_value();
+  }
+
+  absl::optional<base::Value> ValuesListGetAccount(
+      const base::span<const base::Value> values,
+      const std::string& email) {
     for (const base::Value& value : values) {
       const std::string* email_val = value.FindStringKey("email");
       EXPECT_TRUE(email_val != nullptr);
       if (*email_val == email)
-        return true;
+        return value.Clone();
     }
-    return false;
+    return absl::nullopt;
+  }
+
+  const base::span<const base::Value> CallGetAccountsNotAvailableInArc() {
+    // Call "getAccountsNotAvailableInArc".
+    base::Value args(base::Value::Type::LIST);
+    args.Append(kHandleFunctionName);
+    web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage,
+                                    &base::Value::AsListValue(args));
+    base::RunLoop().RunUntilIdle();
+
+    const content::TestWebUI::CallData& call_data =
+        *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+    EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
+    EXPECT_TRUE(call_data.arg2()->GetBool());
+
+    // Get results from JS callback.
+    return call_data.arg3()->GetList();
   }
 
  private:
@@ -506,24 +531,39 @@ IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
   AddAccount(kSecondaryAccount3Email, /*is_available_in_arc=*/false);
 
   // Call "getAccountsNotAvailableInArc".
-  base::Value args(base::Value::Type::LIST);
-  args.Append(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsNotAvailableInArcMessage,
-                                  &base::Value::AsListValue(args));
-  base::RunLoop().RunUntilIdle();
-
-  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
-  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
-  EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
-  ASSERT_TRUE(call_data.arg2()->GetBool());
-
-  // Get results from JS callback.
-  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  const base::span<const base::Value> result =
+      CallGetAccountsNotAvailableInArc();
   // Two accounts are not available in ARC.
   EXPECT_EQ(2, result.size());
   EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
   EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount3Email));
+}
+
+IN_PROC_BROWSER_TEST_P(InlineLoginHandlerChromeOSTestWithArcRestrictions,
+                       MakeAvailableInArc) {
+  AddAccount(kSecondaryAccount1Email, /*is_available_in_arc=*/true);
+  AddAccount(kSecondaryAccount2Email, /*is_available_in_arc=*/false);
+
+  // Call "getAccountsNotAvailableInArc".
+  const base::span<const base::Value> result =
+      CallGetAccountsNotAvailableInArc();
+  // One account is not available in ARC.
+  EXPECT_EQ(1, result.size());
+  EXPECT_FALSE(ValuesListContainAccount(result, kSecondaryAccount1Email));
+  EXPECT_TRUE(ValuesListContainAccount(result, kSecondaryAccount2Email));
+
+  // Call "makeAvailableInArc".
+  base::Value args_1(base::Value::Type::LIST);
+  args_1.Append(ValuesListGetAccount(result, kSecondaryAccount2Email).value());
+  web_ui()->HandleReceivedMessage(kMakeAvailableInArcMessage,
+                                  &base::Value::AsListValue(args_1));
+
+  // Call "getAccountsNotAvailableInArc".
+  const base::span<const base::Value> result_1 =
+      CallGetAccountsNotAvailableInArc();
+  // Zero accounts are not available in ARC.
+  EXPECT_EQ(0, result_1.size());
 }
 
 INSTANTIATE_TEST_SUITE_P(InlineLoginHandlerChromeOSTestWithArcRestrictionsSuite,

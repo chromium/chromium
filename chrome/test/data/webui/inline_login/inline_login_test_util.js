@@ -89,6 +89,7 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       // <if expr="chromeos">
       'skipWelcomePage',
       'getAccountsNotAvailableInArc',
+      'makeAvailableInArc',
       'getDialogArguments',
       // </if>
     ]);
@@ -175,6 +176,11 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
   getAccountsNotAvailableInArc() {
     this.methodCalled('getAccountsNotAvailableInArc');
     return Promise.resolve(this.accountsNotAvailableInArc_);
+  }
+
+  /** @override */
+  makeAvailableInArc(account) {
+    this.methodCalled('makeAvailableInArc', account);
   }
 
   /** @override */

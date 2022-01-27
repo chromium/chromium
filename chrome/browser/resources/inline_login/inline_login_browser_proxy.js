@@ -76,6 +76,11 @@ export class InlineLoginBrowserProxy {
   skipWelcomePage(skip) {}
 
   /**
+   * @param {Account} account
+   */
+  makeAvailableInArc(account) {}
+
+  /**
    * Send 'getAccountsNotAvailableInArc' message to the handler. The promise
    * will be resolved with the list of accounts that are not available in ARC.
    * @return {Promise<Array<Account>>}
@@ -145,6 +150,11 @@ export class InlineLoginBrowserProxyImpl {
   /** @override */
   getAccountsNotAvailableInArc() {
     return sendWithPromise('getAccountsNotAvailableInArc');
+  }
+
+  /** @override */
+  makeAvailableInArc(account) {
+    chrome.send('makeAvailableInArc', [account]);
   }
 
   /** @override */

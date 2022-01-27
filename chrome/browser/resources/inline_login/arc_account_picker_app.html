@@ -83,7 +83,7 @@
   <p class="secondary">$i18nRaw{accountManagerDialogArcAccountPickerBody}</p>
 
   <template is="dom-repeat" id="accountsContainer" items="[[accounts]]">
-    <div class="account-item">
+    <div class="account-item" on-click="makeAvailableInArc_">
       <div class="account-icon"
         style="background-image: [[getIconImageSet_(item.image)]]">
       </div>

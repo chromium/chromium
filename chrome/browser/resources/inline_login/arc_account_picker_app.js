@@ -7,6 +7,7 @@ import './account_manager_shared_css.js';
 import {getImage} from '//resources/js/icon.js';
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Account} from './inline_login_browser_proxy.js';
+import {InlineLoginBrowserProxyImpl} from './inline_login_browser_proxy.js';
 
 /** @polymer */
 class ArcAccountPickerAppElement extends PolymerElement {
@@ -55,6 +56,15 @@ class ArcAccountPickerAppElement extends PolymerElement {
    */
   addAccount_() {
     this.dispatchEvent(new CustomEvent('add-account'));
+  }
+
+  /**
+   * @param {!{model: !{item: Account}, target: !Element}} event
+   * @private
+   */
+  makeAvailableInArc_(event) {
+    InlineLoginBrowserProxyImpl.getInstance().makeAvailableInArc(
+        event.model.item);
   }
 }
 
