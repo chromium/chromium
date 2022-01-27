@@ -144,10 +144,8 @@ used when committed.
     renderer to the screen.
 *   [Using the Origin Trials Framework](origin_trials_integration.md) - A
     framework for conditionally enabling experimental APIs for testing.
-*   [`ClientTagBasedModelTypeProcessor` in Unified Sync and Storage](sync/uss/client_tag_based_model_type_processor.md) -
-    Notes on the central data structure used in Chrome Sync.
-*   [Chrome Sync's Model API](sync/model_api.md) - Data models used for syncing
-    information across devices using Chrome Sync.
+*   [Chrome Sync](https://source.chromium.org/chromium/chromium/src/+/main:docs/website/site/developers/design-documents/sync) -
+    Docs for the subsystem that allows one to sync data across devices.
 *   [Ozone Overview](ozone_overview.md) - Ozone is an abstraction layer between
     the window system and low level input and graphics.
 *   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
