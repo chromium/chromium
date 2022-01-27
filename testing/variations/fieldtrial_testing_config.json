@@ -1546,21 +1546,6 @@
             ]
         }
     ],
-    "ChromeOSHeuristicPalm": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableHeuristicPalmDetectionFilter"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSKstaled": [
         {
             "platforms": [
