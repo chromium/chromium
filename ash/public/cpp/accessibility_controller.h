@@ -190,7 +190,8 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void UpdateDictationBubble(
       bool visible,
       DictationBubbleIconType icon,
-      const absl::optional<std::u16string>& text) = 0;
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<std::string>>& hints) = 0;
 
  protected:
   AccessibilityController();

@@ -271,6 +271,12 @@
             "type": "string",
             "description": "The text to be displayed in the bubble UI. If `text` is undefined, the bubble will clear its current text.",
             "optional": true
+          },
+          "hints": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Array of hints to show in the UI.",
+            "optional": true
           }
         }
       }

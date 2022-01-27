@@ -11,6 +11,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/strings/utf_string_conversions.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -200,11 +201,16 @@ class ASH_EXPORT HintView : public views::View {
   ~HintView() override = default;
 
   // Updates the text content and visibility of all labels in this view.
-  void Update(const std::vector<std::u16string>& hints) {
+  void Update(const absl::optional<std::vector<std::string>>& hints) {
+    if (hints.has_value())
+      DCHECK(hints.value().size() <= 5);
+
     for (size_t i = 0; i < labels_.size(); ++i) {
-      bool has_hint_for_index = i < hints.size();
+      bool has_hint_for_index = hints.has_value() && (i < hints.value().size());
       labels_[i]->SetVisible(has_hint_for_index ? true : false);
-      labels_[i]->SetText(has_hint_for_index ? hints[i] : std::u16string());
+      labels_[i]->SetText(has_hint_for_index
+                              ? base::UTF8ToUTF16(hints.value()[i])
+                              : std::u16string());
     }
     SizeToPreferredSize();
   }
@@ -250,10 +256,12 @@ DictationBubbleView::DictationBubbleView() {
 
 DictationBubbleView::~DictationBubbleView() = default;
 
-void DictationBubbleView::Update(DictationBubbleIconType icon,
-                                 const absl::optional<std::u16string>& text) {
+void DictationBubbleView::Update(
+    DictationBubbleIconType icon,
+    const absl::optional<std::u16string>& text,
+    const absl::optional<std::vector<std::string>>& hints) {
   top_row_view_->Update(icon, text);
-  hint_view_->Update(std::vector<std::u16string>());
+  hint_view_->Update(hints);
   SizeToContents();
 }
 
@@ -313,13 +321,14 @@ SkColor DictationBubbleView::GetLabelTextColorForTesting() {
   return top_row_view_->label_->GetEnabledColor();
 }
 
-int DictationBubbleView::GetVisibleHintsCountForTesting() {
-  int count = 0;
+std::vector<std::u16string> DictationBubbleView::GetVisibleHintsForTesting() {
+  std::vector<std::u16string> hints;
   for (size_t i = 0; i < hint_view_->labels_.size(); ++i) {
-    if (hint_view_->labels_[i]->GetVisible())
-      ++count;
+    views::Label* label = hint_view_->labels_[i];
+    if (label->GetVisible())
+      hints.push_back(label->GetText());
   }
-  return count;
+  return hints;
 }
 
 BEGIN_METADATA(DictationBubbleView, views::View)

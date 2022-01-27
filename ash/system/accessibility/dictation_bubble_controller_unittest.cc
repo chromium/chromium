@@ -40,15 +40,17 @@ class DictationBubbleControllerTest : public AshTestBase {
   }
 
   void Show(DictationBubbleIconType icon,
-            const absl::optional<std::u16string>& text) {
+            const absl::optional<std::u16string>& text,
+            const absl::optional<std::vector<std::string>>& hints) {
     GetController()->UpdateBubble(
-        /*visible=*/true, /*icon=*/icon, /*text=*/text);
+        /*visible=*/true, /*icon=*/icon, /*text=*/text, /*hints=*/hints);
   }
 
   void Hide() {
     GetController()->UpdateBubble(/*visible=*/false,
                                   /*icon=*/DictationBubbleIconType::kHidden,
-                                  /*text=*/std::u16string());
+                                  /*text=*/std::u16string(),
+                                  /*hints=*/std::vector<std::string>());
   }
 
   DictationBubbleView* GetView() {
@@ -89,8 +91,8 @@ class DictationBubbleControllerTest : public AshTestBase {
     return GetView()->GetLabelTextColorForTesting();
   }
 
-  int GetVisibleHintsCount() {
-    return GetView()->GetVisibleHintsCountForTesting();
+  std::vector<std::u16string> GetVisibleHints() {
+    return GetView()->GetVisibleHintsForTesting();
   }
 
  private:
@@ -100,7 +102,8 @@ class DictationBubbleControllerTest : public AshTestBase {
 TEST_F(DictationBubbleControllerTest, ShowText) {
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kHidden,
-       absl::optional<std::u16string>(u"Testing"));
+       absl::optional<std::u16string>(u"Testing"),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
   EXPECT_EQ(u"Testing", GetBubbleText());
@@ -113,7 +116,8 @@ TEST_F(DictationBubbleControllerTest, ShowText) {
 
 TEST_F(DictationBubbleControllerTest, ShowStandbyImage) {
   EXPECT_FALSE(GetView());
-  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>(),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
   EXPECT_EQ(std::u16string(), GetBubbleText());
@@ -127,7 +131,8 @@ TEST_F(DictationBubbleControllerTest, ShowStandbyImage) {
 TEST_F(DictationBubbleControllerTest, ShowMacroSuccessImage) {
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kMacroSuccess,
-       absl::optional<std::u16string>(u"Macro successfull"));
+       absl::optional<std::u16string>(u"Macro successfull"),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
   EXPECT_EQ(u"Macro successfull", GetBubbleText());
@@ -141,7 +146,8 @@ TEST_F(DictationBubbleControllerTest, ShowMacroSuccessImage) {
 TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kMacroFail,
-       absl::optional<std::u16string>(u"Macro failed"));
+       absl::optional<std::u16string>(u"Macro failed"),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
   EXPECT_EQ(u"Macro failed", GetBubbleText());
@@ -166,7 +172,8 @@ TEST_F(DictationBubbleControllerTest, DarkMode) {
   // Show bubble UI.
   EXPECT_FALSE(GetView());
   Show(DictationBubbleIconType::kHidden,
-       absl::optional<std::u16string>(u"Testing"));
+       absl::optional<std::u16string>(u"Testing"),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
   EXPECT_EQ(u"Testing", GetBubbleText());
@@ -190,11 +197,12 @@ TEST_F(DictationBubbleControllerTest, DarkMode) {
 
 TEST_F(DictationBubbleControllerTest, Hints) {
   EXPECT_FALSE(GetView());
-  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>());
+  Show(DictationBubbleIconType::kStandby, absl::optional<std::u16string>(),
+       absl::optional<std::vector<std::string>>());
   EXPECT_TRUE(GetView());
   EXPECT_TRUE(IsBubbleVisible());
 
-  EXPECT_EQ(0, GetVisibleHintsCount());
+  EXPECT_TRUE(GetVisibleHints().size() == 0);
 
   HideAndCheckExpectations();
 }

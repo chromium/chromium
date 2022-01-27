@@ -32,13 +32,14 @@ DictationBubbleController::~DictationBubbleController() {
 void DictationBubbleController::UpdateBubble(
     bool visible,
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text) {
+    const absl::optional<std::u16string>& text,
+    const absl::optional<std::vector<std::string>>& hints) {
   if (visible) {
     MaybeInitialize();
-    Update(icon, text);
+    Update(icon, text, hints);
     widget_->Show();
   } else {
-    Update(icon, text);
+    Update(icon, text, hints);
     if (widget_) {
       widget_->Hide();
     }
@@ -85,12 +86,13 @@ void DictationBubbleController::MaybeInitialize() {
 // Chrome tab.
 void DictationBubbleController::Update(
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text) {
+    const absl::optional<std::u16string>& text,
+    const absl::optional<std::vector<std::string>>& hints) {
   DCHECK(dictation_bubble_view_);
   DCHECK(widget_);
 
   // Update `dictation_bubble_view_`.
-  dictation_bubble_view_->Update(icon, text);
+  dictation_bubble_view_->Update(icon, text, hints);
 
   // Update the bounds to fit entirely within the screen.
   gfx::Rect new_bounds = widget_->GetWindowBoundsInScreen();

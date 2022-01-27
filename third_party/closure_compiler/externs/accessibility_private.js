@@ -340,7 +340,8 @@ chrome.accessibilityPrivate.DictationBubbleIconType = {
  * @typedef {{
  *   visible: boolean,
  *   icon: !chrome.accessibilityPrivate.DictationBubbleIconType,
- *   text: (string|undefined)
+ *   text: (string|undefined),
+ *   hints: (!Array<string>|undefined)
  * }}
  */
 chrome.accessibilityPrivate.DictationBubbleProperties;

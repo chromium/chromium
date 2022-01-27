@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_ACCESSIBILITY_DICTATION_BUBBLE_VIEW_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,10 +37,11 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   DictationBubbleView& operator=(const DictationBubbleView&) = delete;
   ~DictationBubbleView() override;
 
-  // Updates the visibility of all child views. Also updates the text content
-  // of `label_` and updates the size of this view.
+  // Updates the visibility of all child views, displays the icon/animation
+  // specified by `icon`, and updates text content and size of this view.
   void Update(DictationBubbleIconType icon,
-              const absl::optional<std::u16string>& text);
+              const absl::optional<std::u16string>& text,
+              const absl::optional<std::vector<std::string>>& hints);
 
   void OnColorModeChanged(bool dark_mode_enabled);
 
@@ -57,7 +59,7 @@ class ASH_EXPORT DictationBubbleView : public views::BubbleDialogDelegateView {
   bool IsMacroFailedImageVisibleForTesting();
   SkColor GetLabelBackgroundColorForTesting();
   SkColor GetLabelTextColorForTesting();
-  int GetVisibleHintsCountForTesting();
+  std::vector<std::u16string> GetVisibleHintsForTesting();
 
  private:
   friend class DictationBubbleControllerTest;

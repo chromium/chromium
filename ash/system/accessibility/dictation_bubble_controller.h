@@ -42,7 +42,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
   // Updates the bubble's visibility and text content.
   void UpdateBubble(bool visible,
                     DictationBubbleIconType icon,
-                    const absl::optional<std::u16string>& text);
+                    const absl::optional<std::u16string>& text,
+                    const absl::optional<std::vector<std::string>>& hints);
 
   // ui::InputMethodObserver:
   void OnFocus() override {}
@@ -64,7 +65,8 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
 
   // Updates the view and widget.
   void Update(DictationBubbleIconType icon,
-              const absl::optional<std::u16string>& text);
+              const absl::optional<std::u16string>& text,
+              const absl::optional<std::vector<std::string>>& hints);
 
   // Owned by views hierarchy.
   DictationBubbleView* dictation_bubble_view_ = nullptr;

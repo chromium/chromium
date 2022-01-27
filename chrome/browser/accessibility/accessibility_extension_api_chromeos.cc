@@ -802,12 +802,21 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
       break;
   }
 
-  // Extract text.
+  // Extract text and hints.
   absl::optional<std::u16string> text;
+  absl::optional<std::vector<std::string>> hints;
   if (properties.text)
     text = base::UTF8ToUTF16(*properties.text);
+  // TODO(crbug.com/1252037): Convert string message IDs into ints. Then plumb
+  // vector<int> through and retrieve localized strings when populating
+  // the DictationBubbleView.
+  if (properties.hints)
+    hints = *properties.hints;
+
+  if (hints.has_value() && hints.value().size() > 5)
+    return RespondNow(Error("Should not provide more than five hints."));
 
   ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
-                                                             icon, text);
+                                                             icon, text, hints);
   return RespondNow(NoArguments());
 }

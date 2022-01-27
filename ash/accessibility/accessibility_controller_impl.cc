@@ -2405,11 +2405,12 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
 void AccessibilityControllerImpl::UpdateDictationBubble(
     bool visible,
     DictationBubbleIconType icon,
-    const absl::optional<std::u16string>& text) {
+    const absl::optional<std::u16string>& text,
+    const absl::optional<std::vector<std::string>>& hints) {
   DCHECK(dictation().enabled());
   DCHECK(dictation_bubble_controller_);
 
-  dictation_bubble_controller_->UpdateBubble(visible, icon, text);
+  dictation_bubble_controller_->UpdateBubble(visible, icon, text, hints);
 }
 
 }  // namespace ash
