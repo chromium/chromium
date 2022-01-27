@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/arc/window_predictor/arc_predictor_app_launch_handler.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
 class Profile;
 
@@ -30,7 +31,7 @@ class WindowPredictor {
 
   // Get predict app window info by app id and existed window info.
   arc::mojom::WindowInfoPtr PredictAppWindowInfo(
-      const std::string& arc_app_id,
+      const ArcAppListPrefs::AppInfo& app_info,
       arc::mojom::WindowInfoPtr window_info);
 
   ArcPredictorAppLaunchHandler* app_launch_handler() {

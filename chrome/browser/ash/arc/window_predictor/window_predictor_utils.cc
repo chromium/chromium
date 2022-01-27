@@ -12,6 +12,7 @@ namespace arc {
 
 bool LaunchArcAppWithGhostWindow(Profile* profile,
                                  const std::string& arc_app_id,
+                                 const ArcAppListPrefs::AppInfo& app_info,
                                  int event_flags,
                                  arc::UserInteractionType user_interaction_type,
                                  arc::mojom::WindowInfoPtr window_info) {
@@ -29,7 +30,7 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
 
   arc::mojom::WindowInfoPtr predict_window_info =
       WindowPredictor::GetInstance()->PredictAppWindowInfo(
-          arc_app_id, std::move(window_info));
+          app_info, std::move(window_info));
   auto* app_launch_handler =
       WindowPredictor::GetInstance()->app_launch_handler();
   DCHECK(app_launch_handler);

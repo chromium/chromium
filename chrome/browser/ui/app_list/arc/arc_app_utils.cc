@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/notification/arc_management_transition_notification.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/policy/handlers/powerwash_requirements_checker.h"
 #include "chrome/browser/browser_process.h"
@@ -53,6 +54,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/app_restore/app_restore_utils.h"
+#include "components/app_restore/features.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -367,6 +369,15 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
         window_info->window_id <=
             app_restore::kArcSessionIdOffsetForRestoredLaunching) {
       arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
+    }
+
+    if (full_restore::features::IsArcWindowPredictorEnabled()) {
+      if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
+                                      user_action, std::move(window_info))) {
+        prefs->SetLastLaunchTime(app_id);
+        return true;
+      }
+      VLOG(2) << "Failed to launch ghost window, fallback to use shelf spinner";
     }
 
     ChromeShelfController* chrome_controller =

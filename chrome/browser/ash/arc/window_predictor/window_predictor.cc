@@ -28,7 +28,7 @@ void WindowPredictor::MaybeCreateAppLaunchHandler(Profile* profile) {
 }
 
 arc::mojom::WindowInfoPtr WindowPredictor::PredictAppWindowInfo(
-    const std::string& arc_app_id,
+    const ArcAppListPrefs::AppInfo& app_info,
     arc::mojom::WindowInfoPtr window_info) {
   // TODO(sstan): Generate window bounds based on display info and the
   // info saved in ArcAppListPrefs.
