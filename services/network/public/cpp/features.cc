@@ -256,6 +256,10 @@ constexpr base::FeatureParam<base::TimeDelta>
 const base::Feature kCorsNonWildcardRequestHeadersSupport{
     "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Combine URLLoaderClient::OnReceiveResponse and OnStartLoadingResponseBody.
+const base::Feature kCombineResponseBody{"CombineResponseBody",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether the sync client optimization is used for communication between the
 // CorsURLLoader and URLLoader.
 const base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",

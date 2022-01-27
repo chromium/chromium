@@ -78,7 +78,8 @@ class TestURLLoaderFactory : public network::mojom::URLLoaderFactory,
   }
 
   void NotifyClientOnReceiveResponse() {
-    client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+    client_remote_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                      mojo::ScopedDataPipeConsumerHandle());
   }
 
   void NotifyClientOnReceiveRedirect() {
@@ -201,8 +202,8 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     on_received_response_called_++;
     if (on_received_response_callback_)
       std::move(on_received_response_callback_).Run();

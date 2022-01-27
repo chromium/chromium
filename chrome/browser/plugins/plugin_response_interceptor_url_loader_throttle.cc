@@ -166,9 +166,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> original_client;
+  mojo::ScopedDataPipeConsumerHandle body;
   delegate_->InterceptResponse(std::move(dummy_new_loader),
                                std::move(new_client_receiver), &original_loader,
-                               &original_client);
+                               &original_client, &body);
 
   // Make a deep copy of URLResponseHead before passing it cross-thread.
   auto deep_copied_response = response_head->Clone();
@@ -186,6 +187,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->url_loader_client = std::move(original_client);
   transferrable_loader->head = std::move(deep_copied_response);
   transferrable_loader->head->intercepted_by_plugin = true;
+  transferrable_loader->body = std::move(body);
 
   bool embedded =
       request_destination_ != network::mojom::RequestDestination::kDocument;

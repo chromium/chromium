@@ -128,7 +128,8 @@ void WorkerMainScriptLoader::OnReceiveEarlyHints(
 }
 
 void WorkerMainScriptLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle handle) {
   // This has already happened in the browser process.
   NOTREACHED();
 }

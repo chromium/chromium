@@ -360,7 +360,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   // network::mojom::URLLoaderClient methods
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -420,6 +421,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   std::unique_ptr<BodyReader> body_reader_;
   std::unique_ptr<ResponseMetadata> response_metadata_;
+  mojo::ScopedDataPipeConsumerHandle body_;
   bool registered_in_global_request_map_;
 
   absl::optional<std::pair<net::RequestPriority, int32_t>> priority_;
@@ -818,6 +820,7 @@ void InterceptionJob::GetResponseBody(
     callback->sendFailure(Response::ServerError(std::move(error_reason)));
     return;
   }
+  bool body_reader_created = !body_reader_;
   if (!body_reader_) {
     body_reader_ = std::make_unique<BodyReader>(base::BindOnce(
         &InterceptionJob::ResponseBodyComplete, base::Unretained(this)));
@@ -825,6 +828,9 @@ void InterceptionJob::GetResponseBody(
     loader_->ResumeReadingBodyFromNet();
   }
   body_reader_->AddCallback(std::move(callback));
+  // Needs to happen after |AddCallback| to avoid a DCHECK.
+  if (body_reader_created && body_)
+    OnStartLoadingResponseBody(std::move(body_));
 }
 
 void InterceptionJob::TakeResponseBodyPipe(
@@ -841,6 +847,8 @@ void InterceptionJob::TakeResponseBodyPipe(
   state_ = State::kResponseTaken;
   pending_response_body_pipe_callback_ = std::move(callback);
   client_receiver_.Resume();
+  if (body_)
+    OnStartLoadingResponseBody(std::move(body_));
   loader_->ResumeReadingBodyFromNet();
 }
 
@@ -994,10 +1002,13 @@ Response InterceptionJob::InnerContinueRequest(
     }
     DCHECK_EQ(State::kResponseReceived, state_);
     DCHECK(!body_reader_);
-    client_->OnReceiveResponse(std::move(response_metadata_->head));
+    client_->OnReceiveResponse(std::move(response_metadata_->head),
+                               mojo::ScopedDataPipeConsumerHandle());
     response_metadata_.reset();
     loader_->ResumeReadingBodyFromNet();
     client_receiver_.Resume();
+    if (body_)
+      OnStartLoadingResponseBody(std::move(body_));
     return Response::Success();
   }
 
@@ -1220,7 +1231,8 @@ void InterceptionJob::ProcessRedirectByClient(const GURL& redirect_url) {
 
 void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
                                    size_t offset) {
-  client_->OnReceiveResponse(std::move(response_metadata_->head));
+  client_->OnReceiveResponse(std::move(response_metadata_->head),
+                             mojo::ScopedDataPipeConsumerHandle());
   if (response_metadata_->cached_metadata.size() != 0)
     client_->OnReceiveCachedMetadata(
         std::move(response_metadata_->cached_metadata));
@@ -1278,6 +1290,7 @@ void InterceptionJob::CancelRequest() {
   if (state_ == State::kNotStarted)
     return;
   client_receiver_.reset();
+  body_.reset();
   loader_.reset();
   if (body_reader_) {
     body_reader_->CancelWithError(
@@ -1468,15 +1481,17 @@ void InterceptionJob::OnReceiveEarlyHints(
 }
 
 void InterceptionJob::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   state_ = State::kResponseReceived;
   DCHECK(!response_metadata_);
   if (!(stage_ & InterceptionStage::RESPONSE)) {
-    client_->OnReceiveResponse(std::move(head));
+    client_->OnReceiveResponse(std::move(head), std::move(body));
     return;
   }
   loader_->PauseReadingBodyFromNet();
   client_receiver_.Pause();
+  body_ = std::move(body);
 
   auto request_info = BuildRequestInfo(head);
   const network::ResourceRequest& request = create_loader_params_->request;

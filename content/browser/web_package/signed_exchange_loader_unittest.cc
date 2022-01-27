@@ -70,8 +70,9 @@ class SignedExchangeLoaderTest : public testing::TestWithParam<bool> {
     // network::mojom::URLLoaderClient overrides:
     MOCK_METHOD1(OnReceiveEarlyHints,
                  void(const network::mojom::EarlyHintsPtr));
-    MOCK_METHOD1(OnReceiveResponse,
-                 void(const network::mojom::URLResponseHeadPtr));
+    MOCK_METHOD2(OnReceiveResponse,
+                 void(const network::mojom::URLResponseHeadPtr,
+                      mojo::ScopedDataPipeConsumerHandle));
     MOCK_METHOD2(OnReceiveRedirect,
                  void(const net::RedirectInfo&,
                       network::mojom::URLResponseHeadPtr));
@@ -239,7 +240,7 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_after_redirect;
   MockURLLoaderClient mock_client_after_redirect(
       client_after_redirect.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(mock_client_after_redirect, OnReceiveResponse(_));
+  EXPECT_CALL(mock_client_after_redirect, OnReceiveResponse(_, _));
 
   if (!base::FeatureList::IsEnabled(
           features::kSignedHTTPExchangePingValidity)) {
@@ -259,7 +260,8 @@ TEST_P(SignedExchangeLoaderTest, Simple) {
     EXPECT_CALL(mock_client_after_redirect, OnStartLoadingResponseBody(_));
     EXPECT_CALL(mock_client_after_redirect, OnComplete(_));
     ping_loader_client()->OnReceiveResponse(
-        network::mojom::URLResponseHead::New());
+        network::mojom::URLResponseHead::New(),
+        mojo::ScopedDataPipeConsumerHandle());
     ping_loader_client()->OnComplete(
         network::URLLoaderCompletionStatus(net::OK));
     run_loop.Run();

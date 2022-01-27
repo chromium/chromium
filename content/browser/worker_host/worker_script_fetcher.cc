@@ -620,9 +620,12 @@ void WorkerScriptFetcher::OnReceiveEarlyHints(
 }
 
 void WorkerScriptFetcher::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   response_head_ = std::move(response_head);
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 void WorkerScriptFetcher::OnStartLoadingResponseBody(

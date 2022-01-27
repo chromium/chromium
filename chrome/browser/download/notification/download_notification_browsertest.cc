@@ -231,7 +231,8 @@ class SlowDownloadInterceptor {
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
     head->headers->GetMimeType(&head->mime_type);
-    params->client->OnReceiveResponse(std::move(head));
+    params->client->OnReceiveResponse(std::move(head),
+                                      mojo::ScopedDataPipeConsumerHandle());
   }
 
   static void SendBody(content::URLLoaderInterceptor::RequestParams* params,

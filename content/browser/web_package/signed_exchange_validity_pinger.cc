@@ -114,7 +114,11 @@ void SignedExchangeValidityPinger::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void SignedExchangeValidityPinger::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {}
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
+}
 
 void SignedExchangeValidityPinger::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,

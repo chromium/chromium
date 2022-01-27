@@ -118,7 +118,8 @@ void SignedExchangeLoader::OnReceiveEarlyHints(
 }
 
 void SignedExchangeLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // Must not be called because this SignedExchangeLoader and the client
   // endpoints were bound after OnReceiveResponse() is called.
   NOTREACHED();
@@ -306,7 +307,8 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   }
   inner_response_head_shown_to_client->was_fetched_via_cache =
       outer_response_head_->was_fetched_via_cache;
-  client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client));
+  client_->OnReceiveResponse(std::move(inner_response_head_shown_to_client),
+                             mojo::ScopedDataPipeConsumerHandle());
 
   // Currently we always assume that we have body.
   // TODO(https://crbug.com/80374): Add error handling and bail out

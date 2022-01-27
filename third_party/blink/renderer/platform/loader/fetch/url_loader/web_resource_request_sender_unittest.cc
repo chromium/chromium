@@ -226,7 +226,8 @@ class WebResourceRequestSenderTest : public testing::Test,
     head->headers = new net::HttpResponseHeaders(raw_headers);
     head->mime_type = kTestPageMimeType;
     head->charset = kTestPageCharset;
-    client->OnReceiveResponse(std::move(head));
+    client->OnReceiveResponse(std::move(head),
+                              mojo::ScopedDataPipeConsumerHandle());
   }
 
   std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
@@ -416,7 +417,8 @@ class TimeConversionTest : public WebResourceRequestSenderTest {
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(loader_and_clients_[0].second));
     loader_and_clients_.clear();
-    client->OnReceiveResponse(std::move(response_head));
+    client->OnReceiveResponse(std::move(response_head),
+                              mojo::ScopedDataPipeConsumerHandle());
   }
 
   const network::mojom::URLResponseHead& response_info() const {
@@ -491,7 +493,8 @@ class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
     // copied.
     response_head->load_timing.request_start_time =
         base::Time() + base::Seconds(99);
-    client->OnReceiveResponse(std::move(response_head));
+    client->OnReceiveResponse(std::move(response_head),
+                              mojo::ScopedDataPipeConsumerHandle());
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;

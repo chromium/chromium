@@ -80,7 +80,8 @@ void DataURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  client_remote->OnReceiveResponse(std::move(response));
+  client_remote->OnReceiveResponse(std::move(response),
+                                   mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;

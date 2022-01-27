@@ -267,7 +267,8 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
 };
 
 TEST_P(WebMojoURLLoaderClientTest, OnReceiveResponse) {
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
 
   EXPECT_FALSE(context_->received_response);
   base::RunLoop().RunUntilIdle();
@@ -275,7 +276,8 @@ TEST_P(WebMojoURLLoaderClientTest, OnReceiveResponse) {
 }
 
 TEST_P(WebMojoURLLoaderClientTest, ResponseBody) {
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
 
   EXPECT_FALSE(context_->received_response);
   base::RunLoop().RunUntilIdle();
@@ -313,7 +315,8 @@ TEST_P(WebMojoURLLoaderClientTest, OnReceiveCachedMetadata) {
   data.push_back('a');
   mojo_base::BigBuffer metadata(data);
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   url_loader_client_->OnReceiveCachedMetadata(std::move(metadata));
 
   EXPECT_FALSE(context_->received_response);
@@ -325,7 +328,8 @@ TEST_P(WebMojoURLLoaderClientTest, OnReceiveCachedMetadata) {
 }
 
 TEST_P(WebMojoURLLoaderClientTest, OnTransferSizeUpdated) {
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnTransferSizeUpdated(4);
 
@@ -339,7 +343,8 @@ TEST_P(WebMojoURLLoaderClientTest, OnTransferSizeUpdated) {
 TEST_P(WebMojoURLLoaderClientTest, OnCompleteWithResponseBody) {
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -375,7 +380,8 @@ TEST_P(WebMojoURLLoaderClientTest, OnCompleteWithResponseBody) {
 TEST_P(WebMojoURLLoaderClientTest, OnCompleteShouldBeTheLastMessage) {
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -403,7 +409,8 @@ TEST_P(WebMojoURLLoaderClientTest, CancelOnReceiveResponse) {
 
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -425,7 +432,8 @@ TEST_P(WebMojoURLLoaderClientTest, CancelOnReceiveResponse) {
 TEST_P(WebMojoURLLoaderClientTest, Defer) {
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -456,7 +464,8 @@ TEST_P(WebMojoURLLoaderClientTest, Defer) {
 TEST_P(WebMojoURLLoaderClientTest, DeferWithResponseBody) {
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -501,7 +510,8 @@ TEST_P(WebMojoURLLoaderClientTest,
   // Call OnReceiveResponse and OnStartLoadingResponseBody while
   // deferred (not for back-forward cache).
   client_->Freeze(WebLoaderFreezeMode::kStrict);
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(MOJO_RESULT_OK,
@@ -567,7 +577,8 @@ TEST_P(WebMojoURLLoaderClientTest,
   // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
   // deferred.
   client_->Freeze(WebLoaderFreezeMode::kBufferIncoming);
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(MOJO_RESULT_OK,
@@ -621,7 +632,8 @@ TEST_P(WebMojoURLLoaderClientTest,
 }
 
 TEST_P(WebMojoURLLoaderClientTest, DeferBodyWithoutOnComplete) {
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   // Call OnStartLoadingResponseBody while deferred.
   client_->Freeze(WebLoaderFreezeMode::kStrict);
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -667,7 +679,8 @@ TEST_P(WebMojoURLLoaderClientTest,
   // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
   // deferred.
   client_->Freeze(WebLoaderFreezeMode::kBufferIncoming);
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   ASSERT_EQ(MOJO_RESULT_OK,
@@ -731,7 +744,8 @@ TEST_P(WebMojoURLLoaderClientTest,
 TEST_P(WebMojoURLLoaderClientTest, DeferWithTransferSizeUpdated) {
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -782,7 +796,8 @@ TEST_P(WebMojoURLLoaderClientTest, SetDeferredDuringFlushingDeferredMessage) {
 
   url_loader_client_->OnReceiveRedirect(redirect_info,
                                         network::mojom::URLResponseHead::New());
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
@@ -845,7 +860,8 @@ TEST_P(WebMojoURLLoaderClientTest,
 
   network::URLLoaderCompletionStatus status;
 
-  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New(),
+                                        mojo::ScopedDataPipeConsumerHandle());
   MojoCreateDataPipeOptions options = DataPipeOptions();
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;

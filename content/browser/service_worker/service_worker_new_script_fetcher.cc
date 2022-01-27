@@ -124,8 +124,11 @@ void ServiceWorkerNewScriptFetcher::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void ServiceWorkerNewScriptFetcher::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle response_body) {
   response_head_ = std::move(response_head);
+  if (response_body)
+    OnStartLoadingResponseBody(std::move(response_body));
 }
 
 void ServiceWorkerNewScriptFetcher::OnStartLoadingResponseBody(

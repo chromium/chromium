@@ -88,7 +88,8 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
     is_resumed_ = true;
     // Resume from OnReceiveResponse() with a customized response header.
     destination_loader_client()->OnReceiveResponse(
-        std::move(updated_response_head_));
+        std::move(updated_response_head_),
+        mojo::ScopedDataPipeConsumerHandle());
   }
 
   void SetPriority(net::RequestPriority priority) override { NOTIMPLEMENTED(); }
@@ -104,7 +105,8 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
           new_client_receiver,
       mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-          original_client_receiver) override {
+          original_client_receiver,
+      mojo::ScopedDataPipeConsumerHandle* body) override {
     is_intercepted_ = true;
 
     destination_loader_remote_.Bind(std::move(new_loader));

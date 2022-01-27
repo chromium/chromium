@@ -316,18 +316,26 @@ void MojoURLLoaderClient::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void MojoURLLoaderClient::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   TRACE_EVENT1("loading", "MojoURLLoaderClient::OnReceiveResponse", "url",
                last_loaded_url_.GetString().Utf8());
 
   has_received_response_head_ = true;
 
+  base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   if (NeedsStoringMessage()) {
     StoreAndDispatch(
         std::make_unique<DeferredOnReceiveResponse>(std::move(response_head)));
   } else {
     resource_request_sender_->OnReceivedResponse(std::move(response_head));
   }
+
+  if (!weak_this)
+    return;
+
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 BackForwardCacheLoaderHelper*

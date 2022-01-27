@@ -25,6 +25,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_info.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -212,7 +213,8 @@ void ServiceWorkerNewScriptLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void ServiceWorkerNewScriptLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK_EQ(LoaderState::kLoadingHeader, network_loader_state_);
   if (!version_->context() || version_->is_redundant()) {
     CommitCompleted(network::URLLoaderCompletionStatus(net::ERR_FAILED),
@@ -272,7 +274,15 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
         network::mojom::kURLLoadOptionSendSSLInfoWithResponse)) {
     response_head->ssl_info.reset();
   }
-  client_->OnReceiveResponse(std::move(response_head));
+
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      body) {
+    OnStartLoadingResponseBodyInternal(std::move(response_head),
+                                       std::move(body));
+  } else {
+    client_->OnReceiveResponse(std::move(response_head),
+                               mojo::ScopedDataPipeConsumerHandle());
+  }
 }
 
 void ServiceWorkerNewScriptLoader::OnReceiveRedirect(
@@ -308,6 +318,13 @@ void ServiceWorkerNewScriptLoader::OnTransferSizeUpdated(
 
 void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle consumer) {
+  OnStartLoadingResponseBodyInternal(network::mojom::URLResponseHeadPtr(),
+                                     std::move(consumer));
+}
+
+void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBodyInternal(
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle consumer) {
   DCHECK_EQ(LoaderState::kWaitingForBody, network_loader_state_);
   // Create a pair of the consumer and producer for responding to the client.
   mojo::ScopedDataPipeConsumerHandle client_consumer;
@@ -319,7 +336,13 @@ void ServiceWorkerNewScriptLoader::OnStartLoadingResponseBody(
   }
 
   // Pass the consumer handle for responding with the response to the client.
-  client_->OnStartLoadingResponseBody(std::move(client_consumer));
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      response_head) {
+    client_->OnReceiveResponse(std::move(response_head),
+                               std::move(client_consumer));
+  } else {
+    client_->OnStartLoadingResponseBody(std::move(client_consumer));
+  }
 
   network_consumer_ = std::move(consumer);
   network_loader_state_ = LoaderState::kLoadingBody;

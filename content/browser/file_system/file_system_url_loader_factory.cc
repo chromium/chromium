@@ -376,7 +376,8 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     head->content_length = data_.size();
     head->headers = CreateHttpResponseHeaders(200);
 
-    client_->OnReceiveResponse(std::move(head));
+    client_->OnReceiveResponse(std::move(head),
+                               mojo::ScopedDataPipeConsumerHandle());
     client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     data_producer_ =
@@ -529,7 +530,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
       if (consumer_handle_.is_valid()) {
         // This was an empty file; make sure to call OnReceiveResponse and
         // OnStartLoadingResponseBody regardless.
-        client_->OnReceiveResponse(std::move(head_));
+        client_->OnReceiveResponse(std::move(head_),
+                                   mojo::ScopedDataPipeConsumerHandle());
         client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
       }
       OnFileWritten(MOJO_RESULT_OK);
@@ -564,7 +566,8 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         head_->did_mime_sniff = true;
       }
 
-      client_->OnReceiveResponse(std::move(head_));
+      client_->OnReceiveResponse(std::move(head_),
+                                 mojo::ScopedDataPipeConsumerHandle());
       client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
     }
     remaining_bytes_ -= result;

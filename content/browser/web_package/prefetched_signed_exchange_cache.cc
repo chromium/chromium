@@ -215,7 +215,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     UpdateRequestResponseStartTime(response_.get());
     response_->encoded_data_length = 0;
     if (is_navigation_request) {
-      client_->OnReceiveResponse(std::move(response_));
+      client_->OnReceiveResponse(std::move(response_),
+                                 mojo::ScopedDataPipeConsumerHandle());
       SendResponseBody();
       return;
     }
@@ -264,7 +265,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
       CrossOriginReadBlockingChecker::Result result) {
     switch (result) {
       case CrossOriginReadBlockingChecker::Result::kAllowed:
-        client_->OnReceiveResponse(std::move(response_));
+        client_->OnReceiveResponse(std::move(response_),
+                                   mojo::ScopedDataPipeConsumerHandle());
         SendResponseBody();
         return;
       case CrossOriginReadBlockingChecker::Result::kNetError:
@@ -279,7 +281,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
 
     // Send sanitized response.
     network::corb::SanitizeBlockedResponseHeaders(*response_);
-    client_->OnReceiveResponse(std::move(response_));
+    client_->OnReceiveResponse(std::move(response_),
+                               mojo::ScopedDataPipeConsumerHandle());
 
     // Send an empty response's body.
     mojo::ScopedDataPipeProducerHandle pipe_producer_handle;

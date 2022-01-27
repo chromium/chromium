@@ -118,7 +118,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
     for (const auto& header : extra_headers)
       response->headers->SetHeader(header.first, header.second);
 
-    client_remote_->OnReceiveResponse(std::move(response));
+    client_remote_->OnReceiveResponse(std::move(response),
+                                      mojo::ScopedDataPipeConsumerHandle());
   }
 
   void NotifyClientOnComplete(int error_code) {

@@ -228,7 +228,8 @@ class ContentURLLoader : public network::mojom::URLLoader {
                                head->mime_type);
     }
 
-    client->OnReceiveResponse(std::move(head));
+    client->OnReceiveResponse(std::move(head),
+                              mojo::ScopedDataPipeConsumerHandle());
     client->OnStartLoadingResponseBody(std::move(consumer_handle));
     client_ = std::move(client);
 

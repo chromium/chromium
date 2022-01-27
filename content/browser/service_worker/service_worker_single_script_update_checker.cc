@@ -198,7 +198,8 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle consumer) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
       "ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse", this,
@@ -245,6 +246,9 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
   network_accessed_ = response_head->network_accessed;
 
   WriteHeaders(std::move(response_head));
+
+  if (consumer)
+    OnStartLoadingResponseBody(std::move(consumer));
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnReceiveRedirect(

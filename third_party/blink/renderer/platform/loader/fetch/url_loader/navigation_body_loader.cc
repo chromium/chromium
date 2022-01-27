@@ -59,7 +59,8 @@ void NavigationBodyLoader::OnReceiveEarlyHints(
 }
 
 void NavigationBodyLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // This has already happened in the browser process.
   NOTREACHED();
 }

@@ -171,9 +171,11 @@ class TestURLLoaderClient : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
   }
 
-  void OnReceiveResponse(
-      network::mojom::URLResponseHeadPtr response_head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr response_head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     observer_->OnReceiveResponse(std::move(response_head));
+    if (body)
+      OnStartLoadingResponseBody(std::move(body));
   }
 
   void OnReceiveRedirect(

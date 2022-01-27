@@ -98,7 +98,8 @@ void DownloadResponseHandler::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void DownloadResponseHandler::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   create_info_ = CreateDownloadCreateInfo(*head);
   cert_status_ = head->cert_status;
 
@@ -124,6 +125,9 @@ void DownloadResponseHandler::OnReceiveResponse(
 
   if (create_info_->result != DOWNLOAD_INTERRUPT_REASON_NONE)
     OnResponseStarted(mojom::DownloadStreamHandlePtr());
+
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 std::unique_ptr<DownloadCreateInfo>

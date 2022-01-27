@@ -2095,7 +2095,8 @@ class MockURLLoader : public network::mojom::URLLoader {
           response_info->headers =
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
-          client_->OnReceiveResponse(std::move(response_info));
+          client_->OnReceiveResponse(std::move(response_info),
+                                     mojo::ScopedDataPipeConsumerHandle());
           break;
         }
         case TestLoaderEvent::kReceived401Response: {
@@ -2104,7 +2105,8 @@ class MockURLLoader : public network::mojom::URLLoader {
           response_info->headers =
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
-          client_->OnReceiveResponse(std::move(response_info));
+          client_->OnReceiveResponse(std::move(response_info),
+                                     mojo::ScopedDataPipeConsumerHandle());
           break;
         }
         case TestLoaderEvent::kReceived501Response: {
@@ -2113,7 +2115,8 @@ class MockURLLoader : public network::mojom::URLLoader {
           response_info->headers =
               base::MakeRefCounted<net::HttpResponseHeaders>(
                   net::HttpUtil::AssembleRawHeaders(headers));
-          client_->OnReceiveResponse(std::move(response_info));
+          client_->OnReceiveResponse(std::move(response_info),
+                                     mojo::ScopedDataPipeConsumerHandle());
           break;
         }
         case TestLoaderEvent::kBodyBufferReceived: {

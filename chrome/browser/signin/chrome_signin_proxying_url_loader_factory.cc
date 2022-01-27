@@ -151,7 +151,8 @@ class ProxyingURLLoaderFactory::InProgressRequest
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     target_client_->OnReceiveEarlyHints(std::move(early_hints));
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
 
@@ -398,12 +399,13 @@ void ProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   // Even though |head| is const we can get a non-const pointer to the headers
   // and modifications we made are passed to the target client.
   ProxyResponseAdapter adapter(this, head->headers.get());
   factory_->delegate_->ProcessResponse(&adapter, GURL() /* redirect_url */);
-  target_client_->OnReceiveResponse(std::move(head));
+  target_client_->OnReceiveResponse(std::move(head), std::move(body));
 }
 
 void ProxyingURLLoaderFactory::InProgressRequest::OnReceiveRedirect(

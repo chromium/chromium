@@ -132,7 +132,8 @@ class WebBundleURLLoaderFactory::EntryLoader final
         return;
       }
     }
-    loader_client_->OnReceiveResponse(std::move(response_head));
+    loader_client_->OnReceiveResponse(std::move(response_head),
+                                      mojo::ScopedDataPipeConsumerHandle());
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;

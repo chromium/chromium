@@ -232,9 +232,10 @@ void WorkerScriptLoader::OnReceiveEarlyHints(
 }
 
 void WorkerScriptLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  client_->OnReceiveResponse(std::move(response_head));
+  client_->OnReceiveResponse(std::move(response_head), std::move(body));
 }
 
 void WorkerScriptLoader::OnReceiveRedirect(
