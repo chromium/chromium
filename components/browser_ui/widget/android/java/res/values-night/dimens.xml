@@ -5,4 +5,7 @@
 
 <resources>
     <dimen name="sheet_background_elev">@dimen/default_elevation_4</dimen>
+
+    <!-- Chips default measures -->
+    <dimen name="chip_background_selected_alpha">@dimen/chip_background_selected_alpha_dark</dimen>
 </resources>

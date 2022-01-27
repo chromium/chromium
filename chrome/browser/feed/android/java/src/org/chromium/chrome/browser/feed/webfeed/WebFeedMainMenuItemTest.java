@@ -41,11 +41,11 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLa
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;

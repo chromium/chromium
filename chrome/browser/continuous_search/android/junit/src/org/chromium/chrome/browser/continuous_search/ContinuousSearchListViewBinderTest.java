@@ -40,12 +40,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 

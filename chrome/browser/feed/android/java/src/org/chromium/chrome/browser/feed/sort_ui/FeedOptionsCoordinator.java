@@ -16,11 +16,11 @@ import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ChipView;
 
 import java.util.ArrayList;
 import java.util.List;

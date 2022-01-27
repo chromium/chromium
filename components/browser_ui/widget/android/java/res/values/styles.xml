@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Card styles -->
     <style name="CardTransparentForDark">
         <item name="android:background">@drawable/incognito_card_bg</item>
@@ -117,4 +117,51 @@
         <item name="android:layout_marginBottom">6dp</item>
     </style>
 
+    <!-- Chips -->
+    <style name="SuggestionChipThemeOverlay">
+        <item name="chipStyle">@style/SuggestionChip</item>
+    </style>
+
+    <style name="Chip">
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="chipColor">@color/chip_background_color</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
+        <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="rippleColor">@color/chip_ripple_color</item>
+        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
+    </style>
+    <style name="SuggestionChip" parent="Chip">
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="cornerRadius">@dimen/chip_corner_radius</item>
+    </style>
+    <style name="InputChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="AssistiveChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
+        <item name="iconWidth">28dp</item>
+        <item name="iconHeight">28dp</item>
+        <item name="useRoundedIcon">true</item>
+        <item name="endIconWidth">18dp</item>
+        <item name="endIconHeight">18dp</item>
+    </style>
+
+    <style name="ChipTextView">
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="MenuChip" parent="Chip" tools:ignore="UnusedResources">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
+        <item name="chipColor">@color/menu_chip_background</item>
+        <item name="solidColorChip">true</item>
+        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
+    </style>
 </resources>

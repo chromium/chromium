@@ -194,7 +194,7 @@ public class RippleBackgroundHelper {
     /**
      * @param color a single color to be set as the background color on the background drawable.
      */
-    void setBackgroundColor(@ColorInt int color) {
+    public void setBackgroundColor(@ColorInt int color) {
         mBackgroundGradient.setColor(color);
     }
 
@@ -203,7 +203,7 @@ public class RippleBackgroundHelper {
      * @param width of the border in pixels.
      * @param color of the border.
      */
-    void setBorder(int width, @ColorInt int color) {
+    public void setBorder(int width, @ColorInt int color) {
         mBackgroundGradient.setStroke(width, color);
     }
 

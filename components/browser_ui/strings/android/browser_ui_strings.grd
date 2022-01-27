@@ -839,6 +839,11 @@
       <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">
         Remind me
       </message>
+
+      <!-- ChipView -->
+      <message name="IDS_CHIP_REMOVE_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for X icon on a chip announcing that clicking on this icon will remove this input chip.">
+        Remove '<ph name="CHIP_LABEL">%1$s<ex>News</ex></ph>'
+      </message>
     </messages>
   </release>
 </grit>

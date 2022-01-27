@@ -84,7 +84,7 @@
                 android:text="@string/tabswitcher_create_group"
                 android:visibility="gone"
                 style="@style/FilledButton"/>
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/page_info_button"
                 android:gravity="center"
                 android:layout_height="wrap_content"

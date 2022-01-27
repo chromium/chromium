@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -36,7 +37,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
 /**

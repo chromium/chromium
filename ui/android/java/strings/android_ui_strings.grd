@@ -182,9 +182,6 @@
       <message name="IDS_LINK_COPIED" desc="Notification telling the user that the url has been copied to clipboard. [CHAR_LIMIT=32]">
         Link copied
       </message>
-      <message name="IDS_CHIP_REMOVE_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for X icon on a chip announcing that clicking on this icon will remove this input chip.">
-        Remove '<ph name="CHIP_LABEL">%1$s<ex>News</ex></ph>'
-      </message>
     </messages>
   </release>
 </grit>

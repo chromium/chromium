@@ -14,11 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchListProperties.ListItemProperties;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
 /**

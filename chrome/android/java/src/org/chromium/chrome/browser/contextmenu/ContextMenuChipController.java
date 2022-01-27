@@ -16,10 +16,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;

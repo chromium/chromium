@@ -26,8 +26,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 
 import java.util.List;
 

@@ -58,54 +58,6 @@
         <item name="rippleColor">@color/filled_button_ripple_color</item>
     </style>
 
-    <!-- Chips -->
-    <style name="SuggestionChipThemeOverlay" tools:ignore="UnusedResources">
-        <item name="chipStyle">@style/SuggestionChip</item>
-    </style>
-
-    <style name="Chip">
-        <item name="android:minHeight">@dimen/min_touch_target_size</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="chipColor">@color/chip_background_color</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
-        <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
-        <item name="rippleColor">@color/chip_ripple_color</item>
-        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
-    </style>
-    <style name="SuggestionChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>
-        <item name="cornerRadius">@dimen/chip_corner_radius</item>
-    </style>
-    <style name="InputChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-    </style>
-    <style name="AssistiveChip" parent="Chip" tools:ignore="UnusedResources">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-    </style>
-    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
-        <item name="iconWidth">28dp</item>
-        <item name="iconHeight">28dp</item>
-        <item name="useRoundedIcon">true</item>
-        <item name="endIconWidth">18dp</item>
-        <item name="endIconHeight">18dp</item>
-    </style>
-
-    <style name="ChipTextView" tools:ignore="UnusedResources">
-        <item name="android:gravity">center</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
-        <item name="android:textAlignment">center</item>
-    </style>
-
-    <style name="MenuChip" parent="Chip">
-        <item name="cornerRadius">@dimen/chip_default_height</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
-        <item name="chipColor">@color/menu_chip_background</item>
-        <item name="solidColorChip">true</item>
-        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
-    </style>
-
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources" />
     <style name="TextAppearance.RobotoMediumStyle">
@@ -333,14 +285,6 @@
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
         <item name="android:textColor">@color/default_text_color_error</item>
         <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-
-    <!-- Chip Text Styles -->
-    <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
-    </style>
-    <style name="TextAppearance.ChipHint" parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">@color/chip_text_color_secondary</item>
     </style>
 
     <!-- Toast UI -->

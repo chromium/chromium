@@ -91,31 +91,6 @@
     <color name="default_scrim_color">@color/black_alpha_65</color>
     <color name="incognito_card_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
 
-    <!-- Chip Colors -->
-    <!-- Same as ?attr/colorOutline. -->
-    <color name="default_chip_outline_color_light">@color/baseline_neutral_variant_200</color>
-    <color name="default_chip_outline_color_dark">@color/baseline_neutral_variant_500</color>
-    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
-    <color name="chip_selected_hover_light">@color/baseline_secondary_300_with_neutral_100_alpha_8</color>
-    <color name="chip_selected_hover_dark">@color/baseline_secondary_100_with_neutral_900_alpha_8</color>
-    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
-    <color name="chip_selected_focused_light">@color/baseline_secondary_300_with_neutral_100_alpha_24</color>
-    <color name="chip_selected_focused_dark">@color/baseline_secondary_100_with_neutral_900_alpha_24</color>
-    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
-    <color name="chip_selected_hover_and_focused_light">@color/baseline_secondary_300_with_neutral_100_alpha_24</color>
-    <color name="chip_selected_hover_and_focused_dark">@color/baseline_secondary_100_with_neutral_900_alpha_24</color>
-    <!-- Same as ?attr/colorSecondaryContainer -->
-    <color name="chip_selected_light">@color/baseline_secondary_100</color>
-    <color name="chip_selected_dark">@color/baseline_secondary_300</color>
-    <color name="menu_chip_background_color_dark">@color/modern_blue_600_alpha_6</color>
-    <color name="menu_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
-    <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
-    <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
-    <color name="menu_footer_chip_background_color_dark">@color/modern_blue_600_alpha_10</color>
-    <color name="menu_footer_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
-    <color name="menu_footer_chip_background_color_disabled_dark">@color/modern_grey_100</color>
-    <color name="menu_footer_chip_background_color_disabled_light">@color/white_alpha_6</color>
-
     <!-- IPH Highlight Colors -->
     <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>
     <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>

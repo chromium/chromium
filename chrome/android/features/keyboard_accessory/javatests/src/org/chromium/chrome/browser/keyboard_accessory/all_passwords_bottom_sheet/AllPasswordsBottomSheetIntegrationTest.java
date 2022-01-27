@@ -28,8 +28,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * Integration tests for the AllPasswordsBottomSheet check that the calls to the

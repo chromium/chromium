@@ -61,13 +61,6 @@
     <color name="default_control_color_normal_baseline">@color/default_control_color_normal_dark</color>
     <color name="default_control_color_active_baseline">@color/default_control_color_active_dark</color>
 
-    <!-- Chip colors -->
-    <color name="default_chip_outline_color">@color/default_chip_outline_color_dark</color>
-    <color name="chip_selected_hover">@color/chip_selected_hover_light</color>
-    <color name="chip_selected_focused">@color/chip_selected_focused_light</color>
-    <color name="chip_selected_hover_and_focused">@color/chip_selected_hover_and_focused_light</color>
-    <color name="chip_selected">@color/chip_selected_dark</color>
-
     <!-- CircularProgressView colors -->
     <color name="circular_progress_outer_circle_progress_color_small">@color/circular_progress_outer_circle_progress_color_small_dark</color>
     <color name="circular_progress_icon_color_small_large">@color/circular_progress_icon_color_small_large_dark</color>
@@ -99,8 +92,6 @@
     <color name="image_loading_color">@color/image_loading_color_light</color>
     <color name="promo_illustration_bg_color">@color/promo_illustration_bg_color_dark</color>
     <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_light</color>
-    <color name="menu_chip_background_color">@color/menu_chip_background_color_light</color>
-    <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_light</color>
     <color name="iph_highlight_blue">@color/iph_highlight_blue_light</color>
     <color name="rating_star_yellow">@color/rating_star_yellow_light</color>
     <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_dark</color>

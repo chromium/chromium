@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feed.R;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * View class representing an expandable/collapsible view holding option chips for the feed.

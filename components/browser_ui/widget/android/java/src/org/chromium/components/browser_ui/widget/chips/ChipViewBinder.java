@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 
 /** View binder to bind a model to a {@link ChipView}. */
 public class ChipViewBinder {

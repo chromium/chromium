@@ -75,21 +75,6 @@
     <color name="default_control_color_normal_baseline" tools:ignore="UnusedResources">@color/default_control_color_normal_light</color>
     <color name="default_control_color_active_baseline" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
 
-    <!-- Chip colors -->
-    <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
-    <color name="chip_text_color_selected">@color/default_text_color_on_accent2_container</color>
-    <color name="default_chip_assistive_text_color_secondary">@color/default_text_color_secondary</color>
-    <color name="chip_bg_color">@color/default_bg_color</color>
-    <color name="chip_background_color_disabled">@android:color/transparent</color>
-    <color name="default_chip_ripple_color">@color/default_bg_color_elev_2_baseline</color>
-    <color name="default_chip_outline_color" tools:ignore="UnusedResources">@color/default_chip_outline_color_light</color>
-    <color name="chip_selected_hover">@color/chip_selected_hover_dark</color>
-    <color name="chip_selected_focused">@color/chip_selected_focused_dark</color>
-    <color name="chip_selected_hover_and_focused">@color/chip_selected_hover_and_focused_dark</color>
-    <color name="chip_focused">@color/default_bg_color_elev_4_baseline</color>
-    <color name="chip_hover_focused">@color/default_bg_color_elev_4_baseline</color>
-    <color name="chip_selected">@color/chip_selected_light</color>
-
     <!-- CircularProgressView colors -->
     <color name="circular_progress_inner_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1_baseline</color>
     <color name="circular_progress_outer_circle_background_color_small" tools:ignore="UnusedResources">@color/default_bg_color_elev_1_baseline</color>
@@ -132,8 +117,6 @@
     <color name="image_loading_color" tools:ignore="UnusedResources">@color/image_loading_color_dark</color>
     <color name="promo_illustration_bg_color" tools:ignore="UnusedResources">@color/promo_illustration_bg_color_light</color>
     <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_dark</color>
-    <color name="menu_chip_background_color">@color/menu_chip_background_color_dark</color>
-    <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_dark</color>
     <color name="iph_highlight_blue">@color/iph_highlight_blue_dark</color>
     <color name="rating_star_yellow">@color/rating_star_yellow_dark</color>
     <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>

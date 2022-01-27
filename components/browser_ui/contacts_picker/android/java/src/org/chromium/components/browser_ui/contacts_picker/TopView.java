@@ -13,8 +13,8 @@ import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.ChipView;
 
 import java.text.NumberFormat;
 

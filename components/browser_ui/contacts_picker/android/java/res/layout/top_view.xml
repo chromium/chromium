@@ -28,35 +28,35 @@
         android:paddingStart="15dp"
         app:horizontalSpacing="8dp">
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/icon_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/names_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/address_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/email_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/tel_filter"
             android:gravity="center"
             android:layout_height="wrap_content"

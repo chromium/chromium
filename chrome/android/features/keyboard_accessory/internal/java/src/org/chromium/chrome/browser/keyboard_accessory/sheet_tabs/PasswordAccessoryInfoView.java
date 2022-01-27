@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * This view represents a section of user credentials in the password tab of the keyboard accessory.

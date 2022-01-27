@@ -41,7 +41,7 @@
             android:ellipsize="end"
             android:singleLine="true" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/follow_chip_view"
             style="@style/MenuFooterChip"
             android:layout_width="wrap_content"
@@ -49,7 +49,7 @@
             android:layout_gravity="end"
             android:visibility="gone" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/following_chip_view"
             style="@style/MenuFooterChipInverse"
             android:layout_width="wrap_content"

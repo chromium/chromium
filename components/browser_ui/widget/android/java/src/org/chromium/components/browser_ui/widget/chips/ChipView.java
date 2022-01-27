@@ -1,7 +1,7 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.ui.widget;
+package org.chromium.components.browser_ui.widget.chips;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -27,7 +27,12 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.ui.R;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.widget.ChromeImageView;
+import org.chromium.ui.widget.LoadingView;
+import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.RippleBackgroundHelper;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * The view responsible for displaying a material chip. The chip has the following components :
