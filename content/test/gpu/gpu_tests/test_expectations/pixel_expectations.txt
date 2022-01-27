@@ -489,6 +489,13 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough skia-renderer-gl andr
 crbug.com/1288586 [ android android-pixel-6 no-passthrough skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 crbug.com/1289884 [ android android-pixel-6 skia-renderer-vulkan android-webview-instrumentation ] * [ Failure ]
 
+crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
+crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
+crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
+crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
+crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
+crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pixel_CanvasLowLatency2DImageData [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
