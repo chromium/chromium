@@ -1,0 +1,7 @@
+{
+  "sandbox": {
+    "services": [
+      "fuchsia.logger.Log"
+    ]
+  }
+}
