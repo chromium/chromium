@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -170,6 +171,21 @@ void PopulateAutofillProfileFromJava(
     const base::android::JavaParamRef<jobject>& jprofile,
     JNIEnv* env,
     autofill::AutofillProfile* profile,
+    const std::string& locale);
+
+// Creates an AssistantAutofillCreditCard in Java. This is comparable to
+// PersonalDataManagerAndroid::CreateJavaCreditCardFromNative.
+base::android::ScopedJavaLocalRef<jobject> CreateAssistantAutofillCreditCard(
+    JNIEnv* env,
+    const autofill::CreditCard& credit_card,
+    const std::string& locale);
+
+// Populate the CreditCard from the Java AssistantAutofillCreditCard. This is
+// comparable to PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava.
+void PopulateAutofillCreditCardFromJava(
+    const base::android::JavaParamRef<jobject>& jcredit_card,
+    JNIEnv* env,
+    autofill::CreditCard* credit_card,
     const std::string& locale);
 
 }  // namespace ui_controller_android_utils

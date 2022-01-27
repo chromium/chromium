@@ -28,7 +28,7 @@ import java.util.List;
  * This is the generic superclass for all autofill-assistant payment request sections.
  *
  * @param <T> The type of entry that a concrete instance of this class is created for,
- *            such as |AssistantAutofillProfile|, |AutofillPaymentMethod|, etc.
+ *            such as {@link AssistantAutofillProfile}, {@link AssistantPaymentInstrument}, etc.
  */
 public abstract class AssistantCollectUserDataSection<T extends OptionModel> {
     interface Delegate<T> {

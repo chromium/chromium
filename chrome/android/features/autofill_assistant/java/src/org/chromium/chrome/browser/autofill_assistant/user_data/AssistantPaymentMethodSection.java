@@ -15,16 +15,16 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -34,6 +34,7 @@ import java.util.List;
 public class AssistantPaymentMethodSection
         extends AssistantCollectUserDataSection<PaymentInstrumentModel> {
     private CardEditor mEditor;
+    private WebContents mWebContents;
     private boolean mIgnorePaymentMethodsChangeNotifications;
 
     AssistantPaymentMethodSection(Context context, ViewGroup parent) {
@@ -53,26 +54,41 @@ public class AssistantPaymentMethodSection
         }
 
         for (PaymentInstrumentModel item : getItems()) {
-            AutofillProfile profile = item.mOption.getBillingProfile();
+            AssistantAutofillProfile profile = item.mOption.getBillingAddress();
             if (profile != null) {
-                addAutocompleteInformationToEditor(
-                        new AutofillAddress(mContext, profile, CompletenessCheckType.IGNORE_PHONE));
+                addAutocompleteInformationToEditor(profile);
             }
         }
     }
 
+    public void setWebContents(WebContents webContents) {
+        mWebContents = webContents;
+    }
+
     @Override
     protected void createOrEditItem(@Nullable PaymentInstrumentModel oldItem) {
-        if (mEditor == null) {
+        if (mEditor == null || mWebContents == null) {
             return;
         }
-        mEditor.edit(oldItem == null ? null : oldItem.mOption, paymentInstrument -> {
-            assert (paymentInstrument != null && paymentInstrument.isComplete());
+
+        AutofillPaymentInstrument oldPaymentInstrument = oldItem == null
+                ? null
+                : AutofillUtilChrome.assistantPaymentInstrumentToAutofillPaymentInstrument(
+                        oldItem.mOption, mWebContents);
+        Callback<AutofillPaymentInstrument> doneCallback = paymentInstrument -> {
+            assert (paymentInstrument != null && paymentInstrument.isComplete()
+                    && paymentInstrument.getCard() != null);
             mIgnorePaymentMethodsChangeNotifications = true;
-            addOrUpdateItem(new PaymentInstrumentModel(paymentInstrument), /* select= */ true,
+            addOrUpdateItem(new PaymentInstrumentModel(
+                                    AutofillUtilChrome
+                                            .autofillPaymentInstrumentToAssistantPaymentInstrument(
+                                                    paymentInstrument)),
+                    /* select= */ true,
                     /* notify= */ true);
             mIgnorePaymentMethodsChangeNotifications = false;
-        }, cancel -> {});
+        };
+        Callback<AutofillPaymentInstrument> cancelCallback = paymentInstrument -> {};
+        mEditor.edit(oldPaymentInstrument, doneCallback, cancelCallback);
     }
 
     @Override
@@ -84,7 +100,7 @@ public class AssistantPaymentMethodSection
         updateView(fullView, model);
 
         TextView cardNameView = fullView.findViewById(R.id.credit_card_name);
-        cardNameView.setText(model.mOption.getCard().getName());
+        cardNameView.setText(model.mOption.getCreditCard().getName());
         hideIfEmpty(cardNameView);
 
         TextView errorView = fullView.findViewById(R.id.incomplete_error);
@@ -110,11 +126,11 @@ public class AssistantPaymentMethodSection
     }
 
     private void updateView(View view, PaymentInstrumentModel model) {
-        AutofillPaymentInstrument method = model.mOption;
+        AssistantPaymentInstrument method = model.mOption;
         ImageView cardIssuerImageView = view.findViewById(R.id.credit_card_issuer_icon);
         try {
-            cardIssuerImageView.setImageDrawable(
-                    view.getContext().getDrawable(method.getCard().getIssuerIconDrawableId()));
+            cardIssuerImageView.setImageDrawable(view.getContext().getDrawable(
+                    method.getCreditCard().getIssuerIconDrawableId()));
         } catch (Resources.NotFoundException e) {
             cardIssuerImageView.setImageDrawable(null);
         }
@@ -122,7 +138,7 @@ public class AssistantPaymentMethodSection
         // By default, the obfuscated number contains the issuer (e.g., 'Visa'). This is needlessly
         // verbose, so we strip it away. See |PersonalDataManagerTest::testAddAndEditCreditCards|
         // for explanation of "\u0020...\u2060".
-        String obfuscatedNumber = method.getCard().getObfuscatedNumber();
+        String obfuscatedNumber = method.getCreditCard().getObfuscatedNumber();
         int beginningOfObfuscatedNumber =
                 Math.max(obfuscatedNumber.indexOf("\u0020\u202A\u2022\u2060"), 0);
         obfuscatedNumber = obfuscatedNumber.substring(beginningOfObfuscatedNumber);
@@ -131,7 +147,7 @@ public class AssistantPaymentMethodSection
         hideIfEmpty(cardNumberView);
 
         TextView cardExpirationView = view.findViewById(R.id.credit_card_expiration);
-        cardExpirationView.setText(method.getCard().getFormattedExpirationDate(view.getContext()));
+        cardExpirationView.setText(method.getCreditCard().getFormattedExpirationDate(mContext));
         hideIfEmpty(cardExpirationView);
     }
 
@@ -156,36 +172,26 @@ public class AssistantPaymentMethodSection
         if (modelA == null || modelB == null) {
             return modelA == modelB;
         }
-        AutofillPaymentInstrument optionA = modelA.mOption;
-        AutofillPaymentInstrument optionB = modelB.mOption;
-        if (TextUtils.equals(optionA.getIdentifier(), optionB.getIdentifier())) {
-            return true;
-        }
-        return areEqualCards(optionA.getCard(), optionB.getCard())
+        return areEqualCards(modelA.mOption.getCreditCard(), modelB.mOption.getCreditCard())
                 && areEqualBillingProfiles(
-                        optionA.getBillingProfile(), optionB.getBillingProfile());
+                        modelA.mOption.getBillingAddress(), modelB.mOption.getBillingAddress());
     }
-    private boolean areEqualCards(CreditCard cardA, CreditCard cardB) {
-        // TODO(crbug.com/806868): Implement better check for the case where PDM is disabled, we
-        //  won't have IDs.
+    private boolean areEqualCards(
+            AssistantAutofillCreditCard cardA, AssistantAutofillCreditCard cardB) {
         return TextUtils.equals(cardA.getGUID(), cardB.getGUID());
     }
-    private boolean areEqualBillingProfiles(
-            @Nullable AutofillProfile profileA, @Nullable AutofillProfile profileB) {
+    private boolean areEqualBillingProfiles(@Nullable AssistantAutofillProfile profileA,
+            @Nullable AssistantAutofillProfile profileB) {
         if (profileA == null || profileB == null) {
             return profileA == profileB;
         }
-        // TODO(crbug.com/806868): Implement better check for the case where PDM is disabled, we
-        //  won't have IDs.
         return TextUtils.equals(profileA.getGUID(), profileB.getGUID());
     }
 
     void onAddressesChanged(List<AssistantAutofillProfile> addresses) {
         // TODO(crbug.com/806868): replace suggested billing addresses (remove if necessary).
         for (AssistantAutofillProfile address : addresses) {
-            addAutocompleteInformationToEditor(
-                    AutofillUtilChrome.assistantAutofillProfileToAutofillAddress(
-                            address, mContext));
+            addAutocompleteInformationToEditor(address);
         }
     }
 
@@ -212,14 +218,16 @@ public class AssistantPaymentMethodSection
         setItems(paymentMethods, selectedMethodIndex);
     }
 
-    private void addAutocompleteInformationToEditor(AutofillAddress address) {
+    private void addAutocompleteInformationToEditor(AssistantAutofillProfile profile) {
         if (mEditor == null) {
             return;
         }
+        // TODO(sandromaggi): Find a way to abstract this, such that we can remove the
+        //  AutofillAddress.
+        AutofillAddress address =
+                AutofillUtilChrome.assistantAutofillProfileToAutofillAddress(profile, mContext);
         if (address.getProfile().getLabel() == null) {
-            address.getProfile().setLabel(
-                    PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
-                            address.getProfile()));
+            address.getProfile().setLabel(AutofillUtilChrome.getBillingAddressLabel(profile));
         }
         mEditor.updateBillingAddressIfComplete(address);
     }

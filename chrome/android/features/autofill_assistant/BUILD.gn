@@ -227,6 +227,7 @@ generate_jni("jni_headers") {
 
 generate_jni("jni_headers_public") {
   sources = [
+    "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAutofillCreditCard.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAutofillProfile.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependencies.java",
     "public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeatures.java",

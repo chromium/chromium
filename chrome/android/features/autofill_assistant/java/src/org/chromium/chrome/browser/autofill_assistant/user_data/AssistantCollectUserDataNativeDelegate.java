@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 
@@ -61,10 +61,10 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
                     paymentInstrumentModel == null ? null
-                                                   : paymentInstrumentModel.mOption.getCard(),
+                                                   : paymentInstrumentModel.mOption.getCreditCard(),
                     paymentInstrumentModel == null
                             ? null
-                            : paymentInstrumentModel.mOption.getBillingProfile(),
+                            : paymentInstrumentModel.mOption.getBillingAddress(),
                     eventType);
         }
     }
@@ -133,8 +133,8 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 @Nullable AssistantAutofillProfile address, int eventType);
         void onCreditCardChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.CreditCard card,
-                @Nullable PersonalDataManager.AutofillProfile billingProfile, int eventType);
+                @Nullable AssistantAutofillCreditCard card,
+                @Nullable AssistantAutofillProfile billingProfile, int eventType);
         void onTermsAndConditionsChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, int state);
         void onTextLinkClicked(long nativeAssistantCollectUserDataDelegate,

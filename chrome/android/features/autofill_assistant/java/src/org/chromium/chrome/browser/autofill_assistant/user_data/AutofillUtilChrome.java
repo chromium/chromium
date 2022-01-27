@@ -6,13 +6,21 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillContact;
+import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.browser.payments.ContactEditor;
+import org.chromium.components.payments.MethodStrings;
+import org.chromium.content_public.browser.WebContents;
 
 /**
  * Utility class for Chrome to handle Autofill / Assistant conversions.
@@ -101,5 +109,74 @@ public class AutofillUtilChrome {
                     .getShippingAddressLabelWithoutCountryForPaymentRequest(
                             assistantAutofillProfileToAutofillProfile(profile));
         }
+    }
+
+    private static CreditCard assistantAutofillCreditCardToAutofillCreditCard(
+            AssistantAutofillCreditCard creditCard) {
+        return new CreditCard(creditCard.getGUID(), creditCard.getOrigin(), creditCard.getIsLocal(),
+                creditCard.getIsCached(), creditCard.getName(), creditCard.getNumber(),
+                creditCard.getObfuscatedNumber(), creditCard.getMonth(), creditCard.getYear(),
+                creditCard.getBasicCardIssuerNetwork(), creditCard.getIssuerIconDrawableId(),
+                creditCard.getBillingAddressId(), creditCard.getServerId(),
+                creditCard.getInstrumentId(), /* cardLabel= */ "", creditCard.getNickname(),
+                creditCard.getCardArtUrl());
+    }
+
+    /**
+     * Transform an {@link AssistantPaymentInstrument} into an {@link AutofillPaymentInstrument}.
+     *
+     * @param paymentInstrument The {@link AssistantPaymentInstrument} to transform.
+     * @param webContents The {@link WebContents} associated with this run.
+     * @return The equivalent {@link AutofillPaymentInstrument}.
+     */
+    public static AutofillPaymentInstrument assistantPaymentInstrumentToAutofillPaymentInstrument(
+            AssistantPaymentInstrument paymentInstrument, WebContents webContents) {
+        @Nullable
+        AssistantAutofillProfile assistantBillingProfile = paymentInstrument.getBillingAddress();
+        return new AutofillPaymentInstrument(webContents,
+                assistantAutofillCreditCardToAutofillCreditCard(paymentInstrument.getCreditCard()),
+                assistantBillingProfile == null
+                        ? null
+                        : assistantAutofillProfileToAutofillProfile(assistantBillingProfile),
+                MethodStrings.BASIC_CARD);
+    }
+
+    private static AssistantAutofillCreditCard autofillCreditCardToAssistantAutofillCreditCard(
+            CreditCard creditCard) {
+        return new AssistantAutofillCreditCard(creditCard.getGUID(), creditCard.getOrigin(),
+                creditCard.getIsLocal(), creditCard.getIsCached(), creditCard.getName(),
+                creditCard.getNumber(), creditCard.getObfuscatedNumber(), creditCard.getMonth(),
+                creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
+                creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
+                creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
+                creditCard.getCardArtUrl());
+    }
+
+    /**
+     * Transform an {@link AutofillPaymentInstrument} into an {@link AssistantPaymentInstrument}.
+     *
+     * @param paymentInstrument The {@link AutofillPaymentInstrument} to transform.
+     * @return The equivalent {@link AssistantPaymentInstrument}.
+     */
+    public static AssistantPaymentInstrument autofillPaymentInstrumentToAssistantPaymentInstrument(
+            AutofillPaymentInstrument paymentInstrument) {
+        @Nullable
+        AutofillProfile autofillBillingProfile = paymentInstrument.getBillingProfile();
+        return new AssistantPaymentInstrument(
+                autofillCreditCardToAssistantAutofillCreditCard(paymentInstrument.getCard()),
+                autofillBillingProfile == null
+                        ? null
+                        : autofillProfileToAssistantAutofillProfile(autofillBillingProfile));
+    }
+
+    /**
+     * Get the label for an {@link AssistantAutofillProfile} used as a billing address.
+     *
+     * @param profile The {@link AssistantAutofillProfile}.
+     * @return The label.
+     */
+    public static String getBillingAddressLabel(AssistantAutofillProfile profile) {
+        return PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
+                assistantAutofillProfileToAutofillProfile(profile));
     }
 }

@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -342,7 +341,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         });
 
         /* Test delegate status. */
-        assertThat(delegate.mPaymentMethod, nullValue());
+        assertThat(delegate.mPaymentInstrument, nullValue());
         assertThat(delegate.mContact, nullValue());
         assertThat(delegate.mShippingAddress, nullValue());
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
@@ -454,9 +453,9 @@ public class AutofillAssistantCollectUserDataUiTest {
         PersonalDataManager.CreditCard creditCard = mHelper.createDummyCreditCard(billingAddressId);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AutofillPaymentInstrument paymentInstrument =
-                    AssistantCollectUserDataModel.createAutofillPaymentInstrument(
-                            mTestRule.getWebContents(), creditCard, billingAddress);
+            AssistantPaymentInstrument paymentInstrument =
+                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
+                            createDummyCreditCard(creditCard), createDummyAddress(billingAddress));
             model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
                     Collections.singletonList(new PaymentInstrumentModel(paymentInstrument)));
             model.set(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT,
@@ -509,9 +508,9 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
             model.set(AssistantCollectUserDataModel.REQUEST_PAYMENT, true);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
-            AutofillPaymentInstrument paymentInstrument =
-                    AssistantCollectUserDataModel.createAutofillPaymentInstrument(
-                            mTestRule.getWebContents(), creditCard, billingAddress);
+            AssistantPaymentInstrument paymentInstrument =
+                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
+                            createDummyCreditCard(creditCard), createDummyAddress(billingAddress));
             model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
                     Collections.singletonList(new PaymentInstrumentModel(paymentInstrument)));
             model.set(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT,
@@ -577,7 +576,6 @@ public class AutofillAssistantCollectUserDataUiTest {
 
         // Request all PR sections.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // WEB_CONTENTS are necessary for the creation of AutofillPaymentInstrument.
             model.set(AssistantCollectUserDataModel.WEB_CONTENTS, mTestRule.getWebContents());
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.REQUEST_NAME, true);
@@ -599,9 +597,9 @@ public class AutofillAssistantCollectUserDataUiTest {
                     Collections.singletonList(new AddressModel(address)));
             model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS,
                     new AddressModel(address));
-            AutofillPaymentInstrument paymentInstrument =
-                    AssistantCollectUserDataModel.createAutofillPaymentInstrument(
-                            mTestRule.getWebContents(), creditCard, profile);
+            AssistantPaymentInstrument paymentInstrument =
+                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
+                            createDummyCreditCard(creditCard), createDummyAddress(profile));
             model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
                     Collections.singletonList(new PaymentInstrumentModel(paymentInstrument)));
             model.set(AssistantCollectUserDataModel.SELECTED_PAYMENT_INSTRUMENT,
@@ -668,7 +666,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         // Check delegate status. The selections set in the model have not been sent to the
         // delegate. |setItems()| has been called first (without selection) and selecting the item
         // does not trigger a notification.
-        assertThat(delegate.mPaymentMethod, is(nullValue()));
+        assertThat(delegate.mPaymentInstrument, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
         assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
@@ -680,9 +678,9 @@ public class AutofillAssistantCollectUserDataUiTest {
                     Collections.singletonList(new ContactModel(contact)));
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
                     Collections.singletonList(new AddressModel(createDummyAddress(profile))));
-            AutofillPaymentInstrument paymentInstrument =
-                    AssistantCollectUserDataModel.createAutofillPaymentInstrument(
-                            mTestRule.getWebContents(), creditCard, profile);
+            AssistantPaymentInstrument paymentInstrument =
+                    AssistantCollectUserDataModel.createAssistantPaymentInstrument(
+                            createDummyCreditCard(creditCard), createDummyAddress(profile));
             model.set(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS,
                     Collections.singletonList(new PaymentInstrumentModel(paymentInstrument)));
             model.set(AssistantCollectUserDataModel.AVAILABLE_LOGINS,
@@ -691,7 +689,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         });
 
         // Check delegate status. Setting items again will not send a notification to the delegate.
-        assertThat(delegate.mPaymentMethod, is(nullValue()));
+        assertThat(delegate.mPaymentInstrument, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
         assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
@@ -1178,5 +1176,16 @@ public class AutofillAssistantCollectUserDataUiTest {
                 profile.getLocality(), profile.getDependentLocality(), profile.getPostalCode(),
                 profile.getSortingCode(), profile.getCountryCode(), profile.getPhoneNumber(),
                 profile.getEmailAddress(), profile.getLanguageCode());
+    }
+
+    private AssistantAutofillCreditCard createDummyCreditCard(
+            PersonalDataManager.CreditCard creditCard) {
+        return new AssistantAutofillCreditCard(creditCard.getGUID(), creditCard.getOrigin(),
+                creditCard.getIsLocal(), creditCard.getIsCached(), creditCard.getName(),
+                creditCard.getNumber(), creditCard.getObfuscatedNumber(), creditCard.getMonth(),
+                creditCard.getYear(), creditCard.getBasicCardIssuerNetwork(),
+                creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
+                creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
+                creditCard.getCardArtUrl());
     }
 }

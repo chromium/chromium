@@ -11,17 +11,16 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillCreditCard;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPopup;
+import org.chromium.chrome.browser.autofill_assistant.AssistantPaymentInstrument;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantPopupListSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantStaticTextSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection.TextInputFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputType;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
-import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -47,7 +46,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
      * Model wrapper for a data item to contain errors.
      *
      * @param <T> The type that an instance of this class is created for, such as
-     *            |AssistantAutofillProfile|, |AutofillPaymentMethod|, etc.
+     *            {@link AssistantAutofillProfile}, {@link AssistantPaymentInstrument}, etc.
      */
     public static class OptionModel<T> {
         public T mOption;
@@ -98,14 +97,14 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         }
     }
 
-    /** Model wrapper for an {@code AutofillPaymentInstrument}. */
-    public static class PaymentInstrumentModel extends OptionModel<AutofillPaymentInstrument> {
+    /** Model wrapper for an {@code AssistantPaymentInstrument}. */
+    public static class PaymentInstrumentModel extends OptionModel<AssistantPaymentInstrument> {
         public PaymentInstrumentModel(
-                AutofillPaymentInstrument paymentInstrument, List<String> errors) {
+                AssistantPaymentInstrument paymentInstrument, List<String> errors) {
             super(paymentInstrument, errors);
         }
 
-        public PaymentInstrumentModel(AutofillPaymentInstrument paymentInstrument) {
+        public PaymentInstrumentModel(AssistantPaymentInstrument paymentInstrument) {
             super(paymentInstrument);
         }
     }
@@ -369,11 +368,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setSelectedPaymentInstrument(WebContents webContents,
-            @Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
-        AutofillPaymentInstrument paymentInstrument =
-                createAutofillPaymentInstrument(webContents, card, billingProfile);
+    private void setSelectedPaymentInstrument(@Nullable AssistantAutofillCreditCard creditCard,
+            @Nullable AssistantAutofillProfile billingProfile, String[] errors) {
+        @Nullable
+        AssistantPaymentInstrument paymentInstrument =
+                createAssistantPaymentInstrument(creditCard, billingProfile);
         set(SELECTED_PAYMENT_INSTRUMENT,
                 paymentInstrument == null
                         ? null
@@ -534,36 +533,27 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     @CalledByNative
     private static void addAutofillPaymentInstrument(
-            List<PaymentInstrumentModel> paymentInstruments, WebContents webContents,
-            @Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingProfile, String[] errors) {
-        AutofillPaymentInstrument paymentInstrument =
-                createAutofillPaymentInstrument(webContents, card, billingProfile);
-        if (paymentInstrument != null) {
-            paymentInstruments.add(
-                    new PaymentInstrumentModel(paymentInstrument, Arrays.asList(errors)));
-        }
-    }
-
-    // TODO(b/144005336): Call from native instead.
-    @VisibleForTesting
-    @Nullable
-    public static AutofillPaymentInstrument createAutofillPaymentInstrument(WebContents webContents,
-            @Nullable PersonalDataManager.CreditCard card,
-            @Nullable PersonalDataManager.AutofillProfile billingProfile) {
-        if (webContents == null) {
-            return null;
-        }
-        if (card == null) {
-            return null;
-        }
-        return new AutofillPaymentInstrument(
-                webContents, card, billingProfile, MethodStrings.BASIC_CARD);
+            List<PaymentInstrumentModel> paymentInstruments, AssistantAutofillCreditCard creditCard,
+            @Nullable AssistantAutofillProfile billingProfile, String[] errors) {
+        paymentInstruments.add(new PaymentInstrumentModel(
+                createAssistantPaymentInstrument(creditCard, billingProfile),
+                Arrays.asList(errors)));
     }
 
     @CalledByNative
     private void setAvailablePaymentInstruments(List<PaymentInstrumentModel> paymentInstruments) {
         set(AVAILABLE_PAYMENT_INSTRUMENTS, paymentInstruments);
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static AssistantPaymentInstrument createAssistantPaymentInstrument(
+            @Nullable AssistantAutofillCreditCard creditCard,
+            @Nullable AssistantAutofillProfile billingProfile) {
+        if (creditCard == null) {
+            return null;
+        }
+        return new AssistantPaymentInstrument(creditCard, billingProfile);
     }
 
     @CalledByNative

@@ -34,7 +34,6 @@
 #include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
@@ -1298,7 +1297,6 @@ void UiControllerAndroid::OnUserDataChanged(
     UserData::FieldChange field_change) {
   DCHECK(execution_delegate_ != nullptr);
   DCHECK(ui_delegate_ != nullptr);
-  DCHECK(client_->GetWebContents() != nullptr);
   const CollectUserDataOptions* collect_user_data_options =
       ui_delegate_->GetCollectUserDataOptions();
   if (collect_user_data_options == nullptr) {
@@ -1310,9 +1308,6 @@ void UiControllerAndroid::OnUserDataChanged(
 
   JNIEnv* env = AttachCurrentThread();
   auto jmodel = GetCollectUserDataModel();
-  auto jcontext =
-      Java_AutofillAssistantUiController_getContext(env, java_object_);
-  auto web_contents = client_->GetWebContents()->GetJavaWebContents();
 
   if (field_change == UserData::FieldChange::ALL ||
       field_change == UserData::FieldChange::TERMS_AND_CONDITIONS) {
@@ -1430,13 +1425,14 @@ void UiControllerAndroid::OnUserDataChanged(
   auto jselected_card =
       selected_card == nullptr
           ? nullptr
-          : autofill::PersonalDataManagerAndroid::
-                CreateJavaCreditCardFromNative(env, *selected_card);
+          : ui_controller_android_utils::CreateAssistantAutofillCreditCard(
+                env, *selected_card, base::android::GetDefaultLocaleString());
   auto jselected_billing_address =
       selected_billing_address == nullptr
           ? nullptr
-          : autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-                env, *selected_billing_address);
+          : ui_controller_android_utils::CreateAssistantAutofillProfile(
+                env, *selected_billing_address,
+                base::android::GetDefaultLocaleString());
   const auto& selected_payment_instrument_errors =
       user_data::GetPaymentInstrumentValidationErrors(
           selected_card, selected_billing_address, *collect_user_data_options);
@@ -1452,26 +1448,29 @@ void UiControllerAndroid::OnUserDataChanged(
             user_data.available_payment_instruments_);
     for (int index : sorted_payment_instrument_indices) {
       const auto& instrument = user_data.available_payment_instruments_[index];
+      if (instrument->card == nullptr) {
+        NOTREACHED();
+        continue;
+      }
       const auto& errors = user_data::GetPaymentInstrumentValidationErrors(
           instrument->card.get(), instrument->billing_address.get(),
           *collect_user_data_options);
       Java_AssistantCollectUserDataModel_addAutofillPaymentInstrument(
-          env, jlist, web_contents,
-          instrument->card == nullptr
-              ? nullptr
-              : autofill::PersonalDataManagerAndroid::
-                    CreateJavaCreditCardFromNative(env, *(instrument->card)),
+          env, jlist,
+          ui_controller_android_utils::CreateAssistantAutofillCreditCard(
+              env, *(instrument->card),
+              base::android::GetDefaultLocaleString()),
           instrument->billing_address == nullptr
               ? nullptr
-              : autofill::PersonalDataManagerAndroid::
-                    CreateJavaProfileFromNative(env,
-                                                *(instrument->billing_address)),
+              : ui_controller_android_utils::CreateAssistantAutofillProfile(
+                    env, *(instrument->billing_address),
+                    base::android::GetDefaultLocaleString()),
           base::android::ToJavaArrayOfStrings(env, errors));
     }
     Java_AssistantCollectUserDataModel_setAvailablePaymentInstruments(
         env, jmodel, jlist);
     Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(
-        env, jmodel, web_contents, jselected_card, jselected_billing_address,
+        env, jmodel, jselected_card, jselected_billing_address,
         base::android::ToJavaArrayOfStrings(
             env, selected_payment_instrument_errors));
   }
@@ -1481,7 +1480,7 @@ void UiControllerAndroid::OnUserDataChanged(
     // The selection is already known in Java, but it has no errors. The PDM
     // off case does not set updated payment instruments.
     Java_AssistantCollectUserDataModel_setSelectedPaymentInstrument(
-        env, jmodel, web_contents, jselected_card, jselected_billing_address,
+        env, jmodel, jselected_card, jselected_billing_address,
         base::android::ToJavaArrayOfStrings(
             env, selected_payment_instrument_errors));
   }

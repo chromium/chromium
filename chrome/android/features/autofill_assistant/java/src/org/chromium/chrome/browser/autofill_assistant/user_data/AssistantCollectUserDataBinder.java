@@ -535,6 +535,7 @@ class AssistantCollectUserDataBinder
             view.mContactDetailsSection.setEditor(null);
             view.mPaymentMethodSection.setEditor(null);
             view.mShippingAddressSection.setEditor(null);
+            view.mPaymentMethodSection.setWebContents(null);
             return true;
         }
 
@@ -576,6 +577,7 @@ class AssistantCollectUserDataBinder
 
         view.mShippingAddressSection.setEditor(addressEditor);
         view.mPaymentMethodSection.setEditor(cardEditor);
+        view.mPaymentMethodSection.setWebContents(webContents);
         return true;
     }
 

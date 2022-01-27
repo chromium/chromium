@@ -13,7 +13,6 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantCollectUserDataNativeDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 
 using base::android::AttachCurrentThread;
@@ -83,14 +82,15 @@ void AssistantCollectUserDataDelegate::OnCreditCardChanged(
   }
 
   auto card = std::make_unique<autofill::CreditCard>();
-  autofill::PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
-      jcard, env, card.get());
+  ui_controller_android_utils::PopulateAutofillCreditCardFromJava(
+      jcard, env, card.get(), base::android::GetDefaultLocaleString());
 
   std::unique_ptr<autofill::AutofillProfile> billing_profile;
   if (jbilling_profile) {
     billing_profile = std::make_unique<autofill::AutofillProfile>();
-    autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-        jbilling_profile, env, billing_profile.get());
+    ui_controller_android_utils::PopulateAutofillProfileFromJava(
+        jbilling_profile, env, billing_profile.get(),
+        base::android::GetDefaultLocaleString());
   }
 
   ui_controller_->OnCreditCardChanged(
