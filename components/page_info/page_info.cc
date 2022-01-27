@@ -1071,9 +1071,8 @@ void PageInfo::PresentAdPersonalizationData() {
   if (!settings)
     return;
 
-  // TODO(olesiamarukhno): Use actual info.
   info.has_joined_user_to_interest_group =
-      site_url_ == GURL("https://example.com");
+      settings->HasJoinedUserToInterestGroup();
   ui_->SetAdPersonalizationInfo(info);
 }
 

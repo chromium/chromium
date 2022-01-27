@@ -424,7 +424,10 @@ void PageSpecificContentSettings::InterestGroupJoined(
     content::RenderFrameHost* rfh,
     const url::Origin api_origin,
     bool blocked_by_policy) {
-  // TODO(crbug.com/1286276): Not implemented yet.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings)
+    settings->OnInterestGroupJoined(api_origin, blocked_by_policy);
 }
 
 // static
@@ -666,6 +669,19 @@ void PageSpecificContentSettings::OnSharedWorkerAccessed(
         worker_url, name, storage_key);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+}
+
+void PageSpecificContentSettings::OnInterestGroupJoined(
+    const url::Origin api_origin,
+    bool blocked_by_policy) {
+  if (blocked_by_policy) {
+    blocked_interest_group_api_.push_back(api_origin);
+    OnContentBlocked(ContentSettingsType::COOKIES);
+  } else {
+    allowed_interest_group_api_.push_back(api_origin);
+    OnContentAllowed(ContentSettingsType::COOKIES);
+  }
+  NotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnWebDatabaseAccessed(
@@ -910,6 +926,10 @@ bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
     ContentSettingsType type) const {
   return content_settings_changed_via_page_info_.find(type) !=
          content_settings_changed_via_page_info_.end();
+}
+
+bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {
+  return !allowed_interest_group_api_.empty();
 }
 
 bool PageSpecificContentSettings::IsPagePrerendering() const {

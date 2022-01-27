@@ -370,6 +370,8 @@ class PageSpecificContentSettings
                               const std::string& name,
                               const blink::StorageKey& storage_key,
                               bool blocked_by_policy);
+  void OnInterestGroupJoined(const url::Origin api_origin,
+                             bool blocked_by_policy);
   void OnWebDatabaseAccessed(const GURL& url, bool blocked_by_policy);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   void OnProtectedMediaIdentifierPermissionSet(const GURL& requesting_frame,
@@ -399,6 +401,10 @@ class PageSpecificContentSettings
   // Returns true if the user changed the given ContentSettingsType via PageInfo
   // since the last navigation.
   bool HasContentSettingChangedViaPageInfo(ContentSettingsType type) const;
+
+  // Returns true if the user was joined to an interest group and if the page
+  // is the joining origin.
+  bool HasJoinedUserToInterestGroup() const;
 
  private:
   friend class content::DocumentUserData<PageSpecificContentSettings>;
@@ -573,6 +579,11 @@ class PageSpecificContentSettings
   // request is requesting certain specific devices.
   std::string media_stream_requested_audio_device_;
   std::string media_stream_requested_video_device_;
+
+  // Contains URLs which attempted to join interest groups. Note: The UI will
+  // only currently show the top frame as having attempted to join.
+  std::vector<url::Origin> allowed_interest_group_api_;
+  std::vector<url::Origin> blocked_interest_group_api_;
 
   // The Geolocation, camera, and/or microphone permission was granted to this
   // origin from a permission prompt that was triggered by the currently active
