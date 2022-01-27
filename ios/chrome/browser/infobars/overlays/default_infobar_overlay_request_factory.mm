@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/add_to_reading_list_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/permissions_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
@@ -134,7 +135,14 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
         default:
           return nullptr;
       }
-
+    case InfobarType::kInfobarTypePermissions:
+      switch (overlay_type) {
+        case InfobarOverlayType::kBanner:
+          return OverlayRequest::CreateWithConfig<
+              PermissionsBannerRequestConfig>(infobar_ios);
+        default:
+          return nullptr;
+      }
     default:
       return nullptr;
   }

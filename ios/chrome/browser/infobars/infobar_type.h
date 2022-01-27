@@ -22,6 +22,8 @@ enum class InfobarType {
   kInfobarTypeSaveAutofillAddressProfile = 5,
   // Message Infobar for Adding to Reading List.
   kInfobarTypeAddToReadingList = 6,
+  // Message Infobar for media permissions.
+  kInfobarTypePermissions = 7,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

@@ -105,6 +105,19 @@ const char kInfobarReadingListModalEventHistogram[] =
 const char kInfobarReadingListBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeReadingList";
 
+// Histogram names for InfobarTypePermissions.
+// Banner.
+const char kInfobarPermissionsBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypePermissions";
+const char kInfobarPermissionsBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypePermissions";
+// Modal.
+const char kInfobarPermissionsModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypePermissions";
+// Badge.
+const char kInfobarPermissionsBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeReadingList";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -157,6 +170,10 @@ const char kInfobarReadingListBadgeTappedHistogram[] =
       base::UmaHistogramEnumeration(kInfobarReadingListBannerEventHistogram,
                                     event);
       break;
+    case InfobarType::kInfobarTypePermissions:
+      base::UmaHistogramEnumeration(kInfobarPermissionsBannerEventHistogram,
+                                    event);
+      break;
   }
 }
 
@@ -189,6 +206,10 @@ const char kInfobarReadingListBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeAddToReadingList:
       base::UmaHistogramEnumeration(
           kInfobarReadingListBannerDismissTypeHistogram, dismissType);
+      break;
+    case InfobarType::kInfobarTypePermissions:
+      base::UmaHistogramEnumeration(
+          kInfobarPermissionsBannerDismissTypeHistogram, dismissType);
       break;
   }
 }
@@ -224,6 +245,10 @@ const char kInfobarReadingListBadgeTappedHistogram[] =
       base::UmaHistogramEnumeration(kInfobarReadingListModalEventHistogram,
                                     event);
       break;
+    case InfobarType::kInfobarTypePermissions:
+      base::UmaHistogramEnumeration(kInfobarPermissionsModalEventHistogram,
+                                    event);
+      break;
   }
 }
 
@@ -252,6 +277,10 @@ const char kInfobarReadingListBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeAddToReadingList:
       base::UmaHistogramEnumeration(kInfobarReadingListBadgeTappedHistogram,
+                                    state);
+      break;
+    case InfobarType::kInfobarTypePermissions:
+      base::UmaHistogramEnumeration(kInfobarPermissionsBadgeTappedHistogram,
                                     state);
       break;
   }
