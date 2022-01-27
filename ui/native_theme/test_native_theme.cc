@@ -64,10 +64,4 @@ void TestNativeTheme::AddColorSchemeNativeThemeObserver(
   AddObserver(color_scheme_observer_.get());
 }
 
-SkColor TestNativeTheme::GetSystemColorDeprecated(ColorId color_id,
-                                                  ColorScheme color_scheme,
-                                                  bool apply_processing) const {
-  return SK_ColorRED;
-}
-
 }  // namespace ui

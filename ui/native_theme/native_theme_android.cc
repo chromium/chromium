@@ -42,14 +42,6 @@ gfx::Size NativeThemeAndroid::GetPartSize(Part part,
   return NativeThemeBase::GetPartSize(part, state, extra);
 }
 
-SkColor NativeThemeAndroid::GetSystemColorDeprecated(
-    ColorId color_id,
-    ColorScheme color_scheme,
-    bool apply_processing) const {
-  NOTIMPLEMENTED();
-  return SK_ColorBLACK;
-}
-
 void NativeThemeAndroid::AdjustCheckboxRadioRectForPadding(SkRect* rect) const {
   // Take 1px for padding around the checkbox/radio button.
   rect->setLTRB(static_cast<int>(rect->x()) + 1,

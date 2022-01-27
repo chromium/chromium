@@ -47,11 +47,6 @@ class TestNativeTheme : public NativeTheme {
   }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
- protected:
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
-
  private:
   bool dark_mode_ = false;
   bool contrast_preference_ = false;

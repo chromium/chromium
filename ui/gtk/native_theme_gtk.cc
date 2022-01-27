@@ -169,8 +169,6 @@ void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                                     GtkParamSpec* param) {
   SetThemeCssOverride(ScopedCssProvider());
-  for (auto& color : color_cache_)
-    color = absl::nullopt;
 
   // Hack to workaround a bug on GNOME standard themes which would
   // cause black patches to be rendered on GtkFileChooser dialogs.
@@ -212,28 +210,6 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
                     : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
   NotifyOnNativeThemeUpdated();
-}
-
-bool NativeThemeGtk::AllowColorPipelineRedirection(
-    ColorScheme color_scheme) const {
-  return true;
-}
-
-SkColor NativeThemeGtk::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  absl::optional<SkColor> color = color_cache_[color_id];
-  if (!color) {
-    if (auto provider_color_id = ui::NativeThemeColorIdToColorId(color_id))
-      color = SkColorFromColorId(provider_color_id.value());
-    if (!color) {
-      color = ui::NativeThemeBase::GetSystemColorDeprecated(
-          color_id, color_scheme, apply_processing);
-    }
-    color_cache_[color_id] = color;
-  }
-  DCHECK(color);
-  return color.value();
 }
 
 void NativeThemeGtk::PaintArrowButton(

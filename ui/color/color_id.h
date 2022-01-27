@@ -45,8 +45,7 @@
   E_CPONLY(kColorBubbleFooterBorder) \
   E_CPONLY(kColorButtonBackground) \
   E_CPONLY(kColorButtonBackgroundPressed) \
-  E(kColorButtonBackgroundProminent, \
-    NativeTheme::kColorId_ProminentButtonColor) \
+  E_CPONLY(kColorButtonBackgroundProminent) \
   E_CPONLY(kColorButtonBackgroundProminentDisabled) \
   E_CPONLY(kColorButtonBackgroundProminentFocused) \
   E_CPONLY(kColorButtonBorder) \
@@ -62,7 +61,7 @@
   E_CPONLY(kColorDropdownBackgroundSelected) \
   E_CPONLY(kColorDropdownForeground) \
   E_CPONLY(kColorDropdownForegroundSelected) \
-  E(kColorFocusableBorderFocused, NativeTheme::kColorId_FocusedBorderColor) \
+  E_CPONLY(kColorFocusableBorderFocused) \
   E_CPONLY(kColorFocusableBorderUnfocused) \
   E_CPONLY(kColorFrameActive) \
   E_CPONLY(kColorFrameInactive) \
@@ -160,8 +159,8 @@
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \
-  E(kColorThrobber, NativeTheme::kColorId_ThrobberSpinningColor) \
-  E(kColorThrobberPreconnect, NativeTheme::kColorId_ThrobberWaitingColor) \
+  E_CPONLY(kColorThrobber) \
+  E_CPONLY(kColorThrobberPreconnect) \
   E_CPONLY(kColorToggleButtonShadow) \
   E_CPONLY(kColorToggleButtonThumbOff) \
   E_CPONLY(kColorToggleButtonThumbOn) \
@@ -175,7 +174,7 @@
   E_CPONLY(kColorTreeNodeForeground) \
   E_CPONLY(kColorTreeNodeForegroundSelectedFocused) \
   E_CPONLY(kColorTreeNodeForegroundSelectedUnfocused) \
-  E(kColorWindowBackground, NativeTheme::kColorId_WindowBackground)
+  E_CPONLY(kColorWindowBackground)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \

@@ -35,15 +35,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   NativeThemeMac(const NativeThemeMac&) = delete;
   NativeThemeMac& operator=(const NativeThemeMac&) = delete;
 
-  // Adjusts an SkColor based on the current system control tint. For example,
-  // if the current tint is "graphite", this function maps the provided value to
-  // an appropriate gray.
-  static SkColor ApplySystemControlTint(SkColor color);
-
   // NativeTheme:
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
   SkColor GetSystemButtonPressedColor(SkColor base_color) const override;
   PreferredContrast CalculatePreferredContrast() const override;
 
@@ -133,12 +125,6 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   void InitializeDarkModeStateAndObserver();
 
   void ConfigureWebInstance() override;
-
-  // Used by the GetSystem to run the switch for MacOS override colors that may
-  // use named NS system colors. This is a separate function from GetSystemColor
-  // to make sure the NSAppearance can be set in a scoped way.
-  absl::optional<SkColor> GetOSColor(ColorId color_id,
-                                     ColorScheme color_scheme) const;
 
   enum ScrollbarPart {
     kThumb,

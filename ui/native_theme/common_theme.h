@@ -22,14 +22,6 @@ class ColorProvider;
 // color is to be used.
 SkColor NATIVE_THEME_EXPORT GetAlertSeverityColor(ColorId color_id, bool dark);
 
-// Returns the color to use on Aura for |color_id|.  For a few colors that are
-// theme-specific, |base_theme| must be non-null; consult the code to see which
-// color IDs fall into this category.
-SkColor NATIVE_THEME_EXPORT GetAuraColor(
-    NativeTheme::ColorId color_id,
-    const NativeTheme* base_theme,
-    NativeTheme::ColorScheme color_scheme = NativeTheme::ColorScheme::kDefault);
-
 void NATIVE_THEME_EXPORT CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
     const ColorProvider* color_provider,

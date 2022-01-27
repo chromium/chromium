@@ -79,13 +79,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
 
   void OnThemeChanged(GtkSettings* settings, GtkParamSpec* param);
 
- protected:
-  // ui::NativeThemeBase:
-  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
-
  private:
   friend class base::NoDestructor<NativeThemeGtk>;
 
@@ -93,8 +86,6 @@ class NativeThemeGtk : public ui::NativeThemeBase {
   ~NativeThemeGtk() override;
 
   void SetThemeCssOverride(ScopedCssProvider provider);
-
-  mutable absl::optional<SkColor> color_cache_[kColorId_NumColors];
 
   ScopedCssProvider theme_css_override_;
 };

@@ -82,10 +82,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // NativeTheme:
   void ConfigureWebInstance() override;
-  bool AllowColorPipelineRedirection(ColorScheme color_scheme) const override;
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
 
   NativeThemeWin(bool configure_web_instance, bool should_only_use_dark_colors);
   ~NativeThemeWin() override;
@@ -200,10 +196,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   void RegisterThemeRegkeyObserver();
   void UpdateDarkModeStatus();
-
-  // Returns the platform provided high contrast color for the given
-  // |color_id|.
-  absl::optional<SkColor> GetPlatformHighContrastColor(ColorId color_id) const;
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;

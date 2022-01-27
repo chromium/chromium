@@ -14,12 +14,10 @@
 #include "base/mac/scoped_block.h"
 #include "base/no_destructor.h"
 #include "cc/paint/paint_shader.h"
-#import "skia/ext/skia_utils_mac.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/mac/scoped_current_nsappearance.h"
-#include "ui/color/mac/system_color_utils.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -137,43 +135,6 @@ bool NativeTheme::SystemDarkModeSupported() {
 NativeThemeMac* NativeThemeMac::instance() {
   static base::NoDestructor<NativeThemeMac> s_native_theme(true, false);
   return s_native_theme.get();
-}
-
-// static
-SkColor NativeThemeMac::ApplySystemControlTint(SkColor color) {
-  return ui::IsSystemGraphiteTinted() ? ui::ColorToGrayscale(color) : color;
-}
-
-SkColor NativeThemeMac::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  absl::optional<SkColor> os_color = GetOSColor(color_id, color_scheme);
-  if (os_color.has_value())
-    return os_color.value();
-
-  SkColor color = NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
-                                                        apply_processing);
-  return apply_processing ? ApplySystemControlTint(color) : color;
-}
-
-absl::optional<SkColor> NativeThemeMac::GetOSColor(
-    ColorId color_id,
-    ColorScheme color_scheme) const {
-  ScopedCurrentNSAppearance scoped_nsappearance(
-      color_scheme == ColorScheme::kDark,
-      GetPreferredContrast() == PreferredContrast::kMore);
-
-  // Even with --secondary-ui-md, menus use the platform colors and styling, and
-  // Mac has a couple of specific color overrides, documented below.
-  switch (color_id) {
-    case kColorId_FocusedBorderColor:
-      return SkColorSetA(
-          skia::NSSystemColorToSkColor([NSColor keyboardFocusIndicatorColor]),
-          0x66);
-
-    default:
-      return absl::nullopt;
-  }
 }
 
 NativeThemeAura::PreferredContrast NativeThemeMac::CalculatePreferredContrast()

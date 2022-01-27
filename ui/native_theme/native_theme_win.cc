@@ -327,23 +327,6 @@ void NativeThemeWin::ConfigureWebInstance() {
   web_instance->set_system_colors(GetSystemColors());
 }
 
-bool NativeThemeWin::AllowColorPipelineRedirection(
-    ColorScheme color_scheme) const {
-  return true;
-}
-
-SkColor NativeThemeWin::GetSystemColorDeprecated(ColorId color_id,
-                                                 ColorScheme color_scheme,
-                                                 bool apply_processing) const {
-  absl::optional<SkColor> color;
-  if (color_scheme == ColorScheme::kPlatformHighContrast &&
-      (color = GetPlatformHighContrastColor(color_id))) {
-    return color.value();
-  }
-  return NativeTheme::GetSystemColorDeprecated(color_id, color_scheme,
-                                               apply_processing);
-}
-
 NativeThemeWin::~NativeThemeWin() {
   // TODO(https://crbug.com/787692): Calling CloseHandles() here breaks
   // certain tests and the reliability bots.
@@ -610,29 +593,6 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
     case kSliderThumb:
     case kMaxPart:
       NOTREACHED();
-  }
-}
-
-absl::optional<SkColor> NativeThemeWin::GetPlatformHighContrastColor(
-    ColorId color_id) const {
-  switch (color_id) {
-    case kColorId_WindowBackground:
-      return system_colors_[SystemThemeColor::kWindow];
-
-    case kColorId_ThrobberSpinningColor:
-      return system_colors_[SystemThemeColor::kWindowText];
-
-    case kColorId_ThrobberWaitingColor:
-      return system_colors_[SystemThemeColor::kGrayText];
-
-    case kColorId_FocusedBorderColor:
-      return system_colors_[SystemThemeColor::kButtonText];
-
-    case kColorId_ProminentButtonColor:
-      return system_colors_[SystemThemeColor::kHighlight];
-
-    default:
-      return absl::nullopt;
   }
 }
 

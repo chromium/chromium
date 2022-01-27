@@ -84,8 +84,3 @@ DEFINE_ENUM_CONVERTERS(
     {ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_FIELD,
      u"TEXT_INPUT_TYPE_DATE_TIME_FIELD"},
     {ui::TextInputType::TEXT_INPUT_TYPE_NULL, u"TEXT_INPUT_TYPE_NULL"})
-
-#define OP(enum_name) \
-  { ui::NativeTheme::enum_name, u## #enum_name }
-DEFINE_ENUM_CONVERTERS(ui::NativeTheme::ColorId, NATIVE_THEME_COLOR_IDS)
-#undef OP
