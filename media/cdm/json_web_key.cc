@@ -187,14 +187,14 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // success.
   KeyIdAndKeyPairs local_keys;
   for (size_t i = 0; i < list_val->GetList().size(); ++i) {
-    base::DictionaryValue* jwk = NULL;
-    if (!list_val->GetDictionary(i, &jwk)) {
+    base::Value& jwk = list_val->GetList()[i];
+    if (!jwk.is_dict()) {
       DVLOG(1) << "Unable to access '" << kKeysTag << "'[" << i
                << "] in JWK Set";
       return false;
     }
     KeyIdAndKeyPair key_pair;
-    if (!ConvertJwkToKeyPair(*jwk, &key_pair)) {
+    if (!ConvertJwkToKeyPair(base::Value::AsDictionaryValue(jwk), &key_pair)) {
       DVLOG(1) << "Error from '" << kKeysTag << "'[" << i << "]";
       return false;
     }
