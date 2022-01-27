@@ -531,7 +531,7 @@ void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
   // which updates `visibility_`, unless the host is hidden. Make sure no update
   // is needed.
   DCHECK(host_->is_hidden() || visibility_ == Visibility::VISIBLE);
-  OnShowWithPageVisibility(PageVisibilityState::kVisible);
+  OnShowWithPageVisibility(page_visibility);
 }
 
 void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
