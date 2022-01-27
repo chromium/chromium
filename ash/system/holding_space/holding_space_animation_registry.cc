@@ -125,7 +125,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       HoldingSpaceProgressRingAnimation::Type type) {
     auto it = registry_->ring_animations_by_key().find(key);
     if (it != registry_->ring_animations_by_key().end() &&
-        it->second.animation->type() != type) {
+        it->second->type() != type) {
       registry_->SetProgressRingAnimationForKey(key, nullptr);
     }
   }
@@ -153,12 +153,8 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
 
     registry_->icon_animations_by_key()
-        .emplace(key,
-                 AnimationWithSubscription<HoldingSpaceProgressIconAnimation>{
-                     .animation =
-                         std::make_unique<HoldingSpaceProgressIconAnimation>(),
-                     .subscription = base::CallbackListSubscription()})
-        .first->second.animation->Start();
+        .emplace(key, std::make_unique<HoldingSpaceProgressIconAnimation>())
+        .first->second->Start();
 
     NotifyIconAnimationChangedForKey(key);
   }
@@ -171,29 +167,22 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       HoldingSpaceProgressRingAnimation::Type type) {
     auto it = registry_->ring_animations_by_key().find(key);
     if (it != registry_->ring_animations_by_key().end() &&
-        it->second.animation->type() == type) {
+        it->second->type() == type) {
       return;
     }
 
     auto animation = HoldingSpaceProgressRingAnimation::CreateOfType(type);
-
-    auto subscription =
-        animation->AddAnimationUpdatedCallback(base::BindRepeating(
-            &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
-            base::Unretained(this), key, animation.get()));
-
-    auto subscribed_animation =
-        AnimationWithSubscription<HoldingSpaceProgressRingAnimation>{
-            .animation = std::move(animation),
-            .subscription = std::move(subscription)};
+    animation->AddUnsafeAnimationUpdatedCallback(base::BindRepeating(
+        &ProgressIndicatorAnimationDelegate::OnRingAnimationUpdatedForKey,
+        base::Unretained(this), key, animation.get()));
 
     if (it == registry_->ring_animations_by_key().end()) {
       registry_->ring_animations_by_key()
-          .emplace(key, std::move(subscribed_animation))
-          .first->second.animation->Start();
+          .emplace(key, std::move(animation))
+          .first->second->Start();
     } else {
-      it->second = std::move(subscribed_animation);
-      it->second.animation->Start();
+      it->second = std::move(animation);
+      it->second->Start();
     }
 
     NotifyRingAnimationChangedForKey(key);
@@ -208,7 +197,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
     auto animation_it = registry_->icon_animations_by_key().find(key);
     it->second.Notify(animation_it != registry_->icon_animations_by_key().end()
-                          ? animation_it->second.animation.get()
+                          ? animation_it->second.get()
                           : nullptr);
   }
 
@@ -221,7 +210,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
     auto animation_it = registry_->ring_animations_by_key().find(key);
     it->second.Notify(animation_it != registry_->ring_animations_by_key().end()
-                          ? animation_it->second.animation.get()
+                          ? animation_it->second.get()
                           : nullptr);
   }
 

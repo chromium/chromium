@@ -34,6 +34,14 @@ class ASH_EXPORT HoldingSpaceProgressIndicatorAnimation
   base::CallbackListSubscription AddAnimationUpdatedCallback(
       base::RepeatingClosureList::CallbackType callback);
 
+  // Adds the specified `callback` to be notified of animation updates.
+  // NOTE: Because no subscription is returned by which to remove `callback`,
+  // this method should only be used where the `callback` is guaranteed to live
+  // at least as long as `this`. When lifetime is in doubt, prefer the use of
+  // `AddAnimationUpdatedCallback()`.
+  void AddUnsafeAnimationUpdatedCallback(
+      base::RepeatingClosureList::CallbackType callback);
+
   // Immediately starts this animation.
   void Start();
 

@@ -24,6 +24,11 @@ HoldingSpaceProgressIndicatorAnimation::AddAnimationUpdatedCallback(
   return animation_updated_callback_list_.Add(std::move(callback));
 }
 
+void HoldingSpaceProgressIndicatorAnimation::AddUnsafeAnimationUpdatedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  animation_updated_callback_list_.AddUnsafe(std::move(callback));
+}
+
 void HoldingSpaceProgressIndicatorAnimation::Start() {
   StartInternal(/*is_cyclic_restart=*/false);
 }

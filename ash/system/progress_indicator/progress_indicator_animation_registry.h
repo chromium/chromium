@@ -95,18 +95,9 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   void EraseAllAnimationsForKeyIf(
       base::RepeatingCallback<bool(const void* key)> predicate);
 
-  // TODO(dmblack): Move to private after completing refactor of
-  // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
-  template <typename AnimationType>
-  struct AnimationWithSubscription {
-    std::unique_ptr<AnimationType> animation;
-    base::CallbackListSubscription subscription;
-  };
-
   // TODO(dmblack): Remove these methods after completing refactor of
   // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
-  std::map<const void*,
-           AnimationWithSubscription<HoldingSpaceProgressIconAnimation>>&
+  std::map<const void*, std::unique_ptr<HoldingSpaceProgressIconAnimation>>&
   icon_animations_by_key() {
     return icon_animations_by_key_;
   }
@@ -114,8 +105,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
   icon_animation_changed_callback_lists_by_key() {
     return icon_animation_changed_callback_lists_by_key_;
   }
-  std::map<const void*,
-           AnimationWithSubscription<HoldingSpaceProgressRingAnimation>>&
+  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>&
   ring_animations_by_key() {
     return ring_animations_by_key_;
   }
@@ -126,8 +116,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
 
  private:
   // Mapping of keys to their associated progress icon animations.
-  std::map<const void*,
-           AnimationWithSubscription<HoldingSpaceProgressIconAnimation>>
+  std::map<const void*, std::unique_ptr<HoldingSpaceProgressIconAnimation>>
       icon_animations_by_key_;
 
   // Mapping of keys to their associated icon animation changed callback lists.
@@ -137,8 +126,7 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
       icon_animation_changed_callback_lists_by_key_;
 
   // Mapping of keys to their associated progress ring animations.
-  std::map<const void*,
-           AnimationWithSubscription<HoldingSpaceProgressRingAnimation>>
+  std::map<const void*, std::unique_ptr<HoldingSpaceProgressRingAnimation>>
       ring_animations_by_key_;
 
   // Mapping of keys to their associated ring animation changed callback lists.

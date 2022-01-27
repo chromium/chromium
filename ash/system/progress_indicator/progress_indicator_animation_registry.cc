@@ -12,10 +12,7 @@ namespace {
 // Type aliases ----------------------------------------------------------------
 
 template <typename AnimationType>
-using KeyedAnimationWithSubscriptionMap =
-    std::map<const void*,
-             ProgressIndicatorAnimationRegistry::AnimationWithSubscription<
-                 AnimationType>>;
+using KeyedAnimationMap = std::map<const void*, std::unique_ptr<AnimationType>>;
 
 template <typename CallbackListType>
 using KeyedAnimationChangedCallbackListMap =
@@ -27,7 +24,7 @@ using KeyedAnimationChangedCallbackListMap =
 // that the associated animation has changed.
 template <typename AnimationType, typename CallbackListType>
 void NotifyAnimationChangedForKey(
-    KeyedAnimationWithSubscriptionMap<AnimationType>* animations_by_key,
+    KeyedAnimationMap<AnimationType>* animations_by_key,
     KeyedAnimationChangedCallbackListMap<CallbackListType>*
         animation_changed_callback_lists_by_key,
     const void* key) {
@@ -36,7 +33,7 @@ void NotifyAnimationChangedForKey(
     return;
   auto animations_it = animations_by_key->find(key);
   callback_lists_it->second.Notify(animations_it != animations_by_key->end()
-                                       ? animations_it->second.animation.get()
+                                       ? animations_it->second.get()
                                        : nullptr);
 }
 
@@ -81,10 +78,10 @@ base::CallbackListSubscription AddAnimationChangedCallbackForKey(
 // * `GetProgressRingAnimationForKey()`
 template <typename AnimationType>
 AnimationType* GetAnimationForKey(
-    KeyedAnimationWithSubscriptionMap<AnimationType>* animations_by_key,
+    KeyedAnimationMap<AnimationType>* animations_by_key,
     const void* key) {
   auto it = animations_by_key->find(key);
-  return it != animations_by_key->end() ? it->second.animation.get() : nullptr;
+  return it != animations_by_key->end() ? it->second.get() : nullptr;
 }
 
 // Implements:
@@ -92,17 +89,14 @@ AnimationType* GetAnimationForKey(
 // * `SetProgressRingAnimationForKey()`
 template <typename AnimationType, typename CallbackListType>
 AnimationType* SetAnimationForKey(
-    KeyedAnimationWithSubscriptionMap<AnimationType>* animations_by_key,
+    KeyedAnimationMap<AnimationType>* animations_by_key,
     KeyedAnimationChangedCallbackListMap<CallbackListType>*
         animation_changed_callback_lists_by_key,
     const void* key,
     std::unique_ptr<AnimationType> animation) {
   AnimationType* animation_ptr = animation.get();
   if (animation) {
-    (*animations_by_key)[key] =
-        ProgressIndicatorAnimationRegistry::AnimationWithSubscription<
-            AnimationType>{.animation = std::move(animation),
-                           .subscription = base::CallbackListSubscription()};
+    (*animations_by_key)[key] = std::move(animation);
     NotifyAnimationChangedForKey(animations_by_key,
                                  animation_changed_callback_lists_by_key, key);
   } else {
