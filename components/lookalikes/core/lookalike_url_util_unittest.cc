@@ -499,3 +499,60 @@ TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
         << "when comparing " << test_case.str1 << " with " << test_case.str2;
   }
 }
+
+TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
+  reputation::SafetyTipsConfig proto;
+  reputation::HeuristicLaunchConfig* config = proto.add_launch_config();
+  config->set_heuristic(
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP);
+
+  // Minimum rollout percentages to enable a heuristic on each site:
+  // example1.com: 79%
+  // example2.com: 16%
+  // example3.com: 36%
+
+  // Slowly ramp up the launch and cover more sites.
+  config->set_launch_percentage(0);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example1.com"));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example2.com"));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example3.com"));
+
+  config->set_launch_percentage(25);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example1.com"));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example2.com"));
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example3.com"));
+
+  config->set_launch_percentage(50);
+  EXPECT_FALSE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example1.com"));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example2.com"));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example3.com"));
+
+  config->set_launch_percentage(100);
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example1.com"));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example2.com"));
+  EXPECT_TRUE(IsHeuristicEnabledForHostname(
+      &proto, reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP,
+      "example3.com"));
+}

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
@@ -1128,4 +1129,24 @@ void ResetTop500DomainsParamsForTesting() {
   Top500DomainsParams* params = GetTopDomainParams();
   *params = {top500_domains::kTop500EditDistanceSkeletons,
              top500_domains::kNumTop500EditDistanceSkeletons};
+}
+
+bool IsHeuristicEnabledForHostname(
+    const reputation::SafetyTipsConfig* config_proto,
+    const reputation::HeuristicLaunchConfig::Heuristic heuristic,
+    const std::string& lookalike_etld_plus_one) {
+  DCHECK(!lookalike_etld_plus_one.empty());
+  const unsigned char* bytes =
+      reinterpret_cast<const unsigned char*>(lookalike_etld_plus_one.c_str());
+  unsigned char data[base::kSHA1Length];
+  base::SHA1HashBytes(bytes, lookalike_etld_plus_one.length(), data);
+
+  float cohort = data[0] / 2.56;
+  for (const reputation::HeuristicLaunchConfig& config :
+       config_proto->launch_config()) {
+    if (heuristic == config.heuristic()) {
+      return config.launch_percentage() > cohort;
+    }
+  }
+  return false;
 }
