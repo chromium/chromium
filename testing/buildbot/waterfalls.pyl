@@ -1155,19 +1155,7 @@
           },
           'os_type': 'android',
       },
-      'android-pie-arm64-wpt-rel-non-cq': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'system_webview_wpt',
-        },
-        'use_swarming': True,
-        'os_type': 'android',
-      },
-      'android-web-platform-pie-x86-fyi-rel': {
+      'android-chrome-pie-x86-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',
           'pie-x86-emulator',
@@ -1177,6 +1165,18 @@
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_public_wpt',
+        },
+        'use_swarming': True,
+        'os_type': 'android',
+      },
+      'android-pie-arm64-wpt-rel-non-cq': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'pie_fleet',
+          'walleye',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'system_webview_wpt',
         },
         'use_swarming': True,
         'os_type': 'android',

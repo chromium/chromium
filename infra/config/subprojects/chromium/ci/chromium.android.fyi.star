@@ -48,7 +48,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-web-platform-pie-x86-fyi-rel",
+    name = "android-chrome-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|web-platform",
         short_name = "P",

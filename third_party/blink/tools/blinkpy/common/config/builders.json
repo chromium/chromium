@@ -185,7 +185,7 @@
         ],
         "is_try_builder": true
     },
-    "android-web-platform-pie-x86-fyi-rel": {
+    "android-chrome-pie-x86-wpt-fyi-rel": {
         "port_name": "android-android-pie",
         "master": "chromium.android.fyi",
         "specifiers": [

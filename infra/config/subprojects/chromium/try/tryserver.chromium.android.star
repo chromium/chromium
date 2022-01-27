@@ -329,7 +329,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-web-platform-pie-x86-fyi-rel",
+    name = "android-chrome-pie-x86-wpt-fyi-rel",
 )
 
 try_.builder(

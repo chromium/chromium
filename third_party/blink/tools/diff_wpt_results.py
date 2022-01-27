@@ -54,7 +54,7 @@ PRODUCTS_TO_STEPNAMES.update({
 PRODUCTS_TO_BUILDER_NAME = {
     'android_weblayer': 'android-weblayer-pie-x86-wpt-fyi-rel',
     'android_webview': 'android-webview-pie-x86-wpt-fyi-rel',
-    'chrome_android': 'android-web-platform-pie-x86-fyi-rel',
+    'chrome_android': 'android-chrome-pie-x86-wpt-fyi-rel',
     'chrome_linux': 'linux-wpt-fyi-rel',
     'content_shell': "Linux Tests"}
 
