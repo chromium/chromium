@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/public/infobar_modal/permissions/permissions_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/reading_list_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_address_profile_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/save_card_infobar_modal_overlay_request_config.h"
@@ -140,6 +141,9 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
         case InfobarOverlayType::kBanner:
           return OverlayRequest::CreateWithConfig<
               PermissionsBannerRequestConfig>(infobar_ios);
+        case InfobarOverlayType::kModal:
+          return OverlayRequest::CreateWithConfig<
+              PermissionsInfobarModalOverlayRequestConfig>(infobar_ios);
         default:
           return nullptr;
       }
