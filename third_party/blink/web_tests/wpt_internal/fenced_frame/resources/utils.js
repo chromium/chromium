@@ -74,9 +74,6 @@ const KEYS = {
 
   "background-fetch"                            : "00000000-0000-0000-0000-00000000002C",
 
-  "window.outersize"                            : "00000000-0000-0000-0000-00000000002D",
-  "window.innersize"                            : "00000000-0000-0000-0000-00000000002E",
-
   "fenced_history_length"                       : "00000000-0000-0000-0000-00000000002F",
   "outer_page_ready_for_next_navigation"        : "00000000-0000-0000-0000-000000000030",
 

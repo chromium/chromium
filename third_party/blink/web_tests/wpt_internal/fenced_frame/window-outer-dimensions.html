@@ -8,16 +8,15 @@
 <body>
   <script>
     async function runTest(dimension, extra_children) {
-      const window_outer_size_key = KEYS["window.outersize"];
-      const window_inner_size_key = KEYS["window.innersize"];
+      const window_outer_size_key = token();
+      const window_inner_size_key = token();
 
       const window_outer_size_from_top_frame = (dimension == "width" ?
         window.outerWidth : window.outerHeight).toString();
 
-      const new_frame = attachFencedFrame(
-        "resources/window-outer-dimensions-inner.html?dimension=" + dimension
-        + "&extra_children=" + extra_children
-      );
+      const frame_url = generateURL('resources/window-outer-dimensions-inner.html',
+        [window_outer_size_key, window_inner_size_key, dimension, extra_children]);
+      const new_frame = attachFencedFrame(frame_url);
 
       // Get the outer and inner width/height from either the top level
       // fencedframe or the nested iframe.
