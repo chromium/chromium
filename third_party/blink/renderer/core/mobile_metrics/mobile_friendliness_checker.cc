@@ -156,10 +156,11 @@ bool IsTapTargetCandidate(Node* node) {
   if (auto* image = DynamicTo<HTMLImageElement>(node);
       image && image->WillRespondToMouseClickEvents()) {
     return true;
+  } else if (auto* anchor = DynamicTo<HTMLAnchorElement>(node);
+             anchor && !anchor->Href().IsEmpty()) {
+    return true;
   }
-  return IsA<HTMLFormControlElement>(node) ||
-         (IsA<HTMLAnchorElement>(node) &&
-          !To<HTMLAnchorElement>(node)->Href().IsEmpty());
+  return IsA<HTMLFormControlElement>(node);
 }
 
 // Skip the whole subtree if the object is invisible. Some elements in subtree
