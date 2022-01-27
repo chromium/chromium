@@ -5886,24 +5886,6 @@
             ]
         }
     ],
-    "TopCat": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "TopCat1_20190902",
-                    "params": {
-                        "use_topcat_ranker": "true"
-                    },
-                    "enable_features": [
-                        "EnableAppRanker"
-                    ]
-                }
-            ]
-        }
-    ],
     "TreatPreconnectAsDefault": [
         {
             "platforms": [
