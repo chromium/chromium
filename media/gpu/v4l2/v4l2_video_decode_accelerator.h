@@ -534,6 +534,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // workaround is necessary for the V4L2VideoDecodeAccelerator.
   std::vector<std::unique_ptr<V4L2StatefulWorkaround>> workarounds_;
 
+  // Color space passed in from Initialize().
+  VideoColorSpace container_color_space_;
+
   //
   // Hardware state and associated queues.  Since decoder_thread_ services
   // the hardware, decoder_thread_ owns these too.

@@ -268,6 +268,8 @@ void V4L2VideoDecodeAccelerator::InitializeTask(const Config& config,
   if (!config_result)
     return;
 
+  container_color_space_ = config.container_color_space;
+
   frame_splitter_ =
       v4l2_vda_helpers::InputBufferFragmentSplitter::CreateFromProfile(
           config.profile);
@@ -2541,9 +2543,10 @@ void V4L2VideoDecodeAccelerator::SendBufferToClient(
   buffers_at_client_.emplace(
       output_record.picture_id,
       std::make_pair(std::move(vda_buffer), std::move(frame)));
-  // TODO(hubbe): Insert correct color space. http://crbug.com/647725
+  // TODO(b/214190092): Get color space from the v4l2 buffer.
   const Picture picture(output_record.picture_id, bitstream_buffer_id,
-                        gfx::Rect(visible_size_), gfx::ColorSpace(), false);
+                        gfx::Rect(visible_size_),
+                        container_color_space_.ToGfxColorSpace(), false);
   pending_picture_ready_.emplace(output_record.cleared, picture);
   SendPictureReady();
   // This picture will be cleared next time we see it.
