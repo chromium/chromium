@@ -3486,6 +3486,11 @@ const char kStrictSiteIsolationDescription[] =
 const char kTabGroupsForTabletsName[] = "Tab groups on tablets";
 const char kTabGroupsForTabletsDescription[] = "Enable tab groups on tablets.";
 
+const char kTabStripImprovementsAndroidName[] =
+    "Tab strip improvements for Android.";
+const char kTabStripImprovementsAndroidDescription[] =
+    "Enables scrollable tab strip with tab group indicators.";
+
 const char kThemeRefactorAndroidName[] = "Theme refactor on Android";
 const char kThemeRefactorAndroidDescription[] =
     "Enables the theme refactoring on Android.";

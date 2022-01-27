@@ -54818,6 +54818,7 @@ from previous Chrome versions.
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>
+  <int value="671800756" label="TabStripImprovements:enabled"/>
   <int value="672067370" label="InstallableAmbientBadgeMessage:enabled"/>
   <int value="673588373" label="OmniboxPedalSuggestions:disabled"/>
   <int value="674627327" label="MagnifierNewFocusFollowing:enabled"/>
@@ -55108,6 +55109,7 @@ from previous Chrome versions.
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
   <int value="879538323"
       label="ForceMajorVersionInMinorPositionInUserAgent:enabled"/>
+  <int value="879651295" label="TabStripImprovements:disabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
   <int value="880510010" label="enable-permissions-bubbles"/>

@@ -5271,6 +5271,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabEngagementReportingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabEngagementReportingAndroid)},
 
+    {"enable-tab-strip-improvements",
+     flag_descriptions::kTabStripImprovementsAndroidName,
+     flag_descriptions::kTabStripImprovementsAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripImprovements)},
+
     {"enable-conditional-tabstrip",
      flag_descriptions::kConditionalTabStripAndroidName,
      flag_descriptions::kConditionalTabStripAndroidDescription, kOsAndroid,

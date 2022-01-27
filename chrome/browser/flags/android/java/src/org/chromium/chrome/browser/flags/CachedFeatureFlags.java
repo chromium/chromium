@@ -103,6 +103,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)
                     .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false)
                     .put(ChromeFeatureList.TAB_GROUPS_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS, false)
                     .build();
 
     /**

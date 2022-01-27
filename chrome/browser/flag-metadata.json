@@ -2750,6 +2750,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "enable-tab-strip-improvements",
+    "owners": [ "skavuluru", "clank-app-team@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 100
