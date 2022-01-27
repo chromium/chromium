@@ -136,7 +136,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) id endTextMarker;
 @property(nonatomic, readonly) NSNumber* expanded;
 @property(nonatomic, readonly) NSNumber* focused;
-@property(nonatomic, readonly) NSNumber* grabbed;
 @property(nonatomic, readonly) id header;
 @property(nonatomic, readonly) NSString* help;
 // isIgnored returns whether or not the accessibility object

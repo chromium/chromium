@@ -810,6 +810,10 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasHtmlAttribute("aria-dropeffect"))
     [axAttributes addObject:NSAccessibilityDropEffectsAttribute];
 
+  // Grabbed
+  if (_node->HasHtmlAttribute("aria-grabbed"))
+    [axAttributes addObject:NSAccessibilityGrabbedAttribute];
+
   if (ui::SupportsRequired(role)) {
     [axAttributes addObject:NSAccessibilityRequiredAttributeChrome];
   }
@@ -1085,6 +1089,16 @@ bool IsAXSetter(SEL selector) {
     return base::SysUTF8ToNSString(dropEffects);
 
   return nil;
+}
+
+- (NSNumber*)AXGrabbed {
+  if (![self instanceActive])
+    return nil;
+  std::string grabbed;
+  if (_node->GetHtmlAttribute("aria-grabbed", &grabbed) && grabbed == "true")
+    return @YES;
+
+  return @NO;
 }
 
 - (NSNumber*)AXHasPopup {

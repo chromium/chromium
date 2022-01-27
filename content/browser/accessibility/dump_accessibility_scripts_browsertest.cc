@@ -221,6 +221,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDropEffects) {
   RunTypedTest<kMacAttributes>("ax-drop-effects.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXGrabbed) {
+  RunTypedTest<kMacAttributes>("ax-grabbed.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
 }

@@ -52,6 +52,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
        NSAccessibilityDetailsElementsAttribute,
        NSAccessibilityDOMClassList,
        NSAccessibilityDropEffectsAttribute,
+       NSAccessibilityGrabbedAttribute,
        NSAccessibilityHasPopupAttribute,
        NSAccessibilityInvalidAttribute,
        NSAccessibilityMathFractionNumeratorAttribute,

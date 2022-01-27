@@ -73,7 +73,6 @@ NSString* const NSAccessibilityEditableAncestorAttribute =
 NSString* const NSAccessibilityElementBusyAttribute = @"AXElementBusy";
 NSString* const NSAccessibilityFocusableAncestorAttribute =
     @"AXFocusableAncestor";
-NSString* const NSAccessibilityGrabbedAttribute = @"AXGrabbed";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
 NSString* const NSAccessibilityIsMultiSelectableAttribute =
@@ -640,7 +639,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityExpandedAttribute, @"expanded"},
       {NSAccessibilityFocusableAncestorAttribute, @"focusableAncestor"},
       {NSAccessibilityFocusedAttribute, @"focused"},
-      {NSAccessibilityGrabbedAttribute, @"grabbed"},
       {NSAccessibilityHeaderAttribute, @"header"},
       {NSAccessibilityHelpAttribute, @"help"},
       {NSAccessibilityHighestEditableAncestorAttribute,
@@ -1002,16 +1000,6 @@ bool content::IsNSRange(id value) {
     return nil;
   BrowserAccessibilityManager* manager = _owner->manager();
   return @(manager->GetFocus() == _owner);
-}
-
-- (NSNumber*)grabbed {
-  if (![self instanceActive])
-    return nil;
-  std::string grabbed;
-  if (_owner->GetHtmlAttribute("aria-grabbed", &grabbed) && grabbed == "true")
-    return @YES;
-
-  return @NO;
 }
 
 - (id)header {
@@ -2960,10 +2948,6 @@ bool content::IsNSRange(id value) {
       // NSAccessibilityValueAutofillTypeAttribute
     ]];
   }
-
-  std::string grabbed;
-  if (_owner->GetHtmlAttribute("aria-grabbed", &grabbed))
-    [ret addObject:NSAccessibilityGrabbedAttribute];
 
   if (_owner->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     [ret addObject:NSAccessibilitySelectedAttribute];
