@@ -106,18 +106,19 @@ static_assert(sizeof(void*) != 8, "");
 // hence enabled by default.
 #define PA_THREAD_CACHE_ENABLE_STATISTICS
 
-// Enable free list hardening as much as possible.
+// Enable free list shadow entry to strengthen hardening as much as possible.
+// The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// Disabled when putting refcount in the previous slot, which is what
-// PUT_REF_COUNT_IN_PREVIOUS_SLOT does. In this case the refcount overlaps with
-// the next pointer shadow for the smallest bucket.
+// Disabled when ref-count is placed in the previous slot, as it will overlap
+// with the shadow for the smallest slots.
 //
-// Only for Little endian CPUs, as the freelist encoding used on big endian
-// platforms complicates things. Note that Chromium is not officially supported
-// on any big endian architecture as well.
+// Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
+// making the shadow entry equal to the original, valid pointer to the next
+// slot. In case Use-after-Free happens, we'd rather not hand out a valid,
+// ready-to-use pointer.
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
     defined(ARCH_CPU_LITTLE_ENDIAN)
-#define PA_HAS_FREELIST_HARDENING
+#define PA_HAS_FREELIST_SHADOW_ENTRY
 #endif
 
 // Specifies whether allocation extras need to be added.

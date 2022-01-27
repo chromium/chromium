@@ -14,6 +14,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
@@ -25,38 +26,15 @@ namespace internal {
 
 namespace {
 
-#if defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
 [[noreturn]] NOINLINE void FreelistCorruptionDetected(size_t extra) {
   // Make it visible in minidumps.
   PA_DEBUG_DATA_ON_STACK("extra", extra);
   IMMEDIATE_CRASH();
 }
-#endif  // defined(PA_HAS_FREELIST_HARDENING) || DCHECK_IS_ON()
 
 }  // namespace
 
 class PartitionFreelistEntry;
-
-#if defined(PA_HAS_FREELIST_HARDENING)
-static_assert(kSmallestBucket >= 2 * sizeof(void*),
-              "Need enough space for two pointers in freelist entries");
-#endif
-
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-constexpr size_t kMinimalBucketSizeWithRefCount =
-    (1 + sizeof(PartitionRefCount) + kSmallestBucket - 1) &
-    ~(kSmallestBucket - 1);
-#if defined(PA_HAS_FREELIST_HARDENING)
-static_assert(
-    kMinimalBucketSizeWithRefCount >=
-        sizeof(PartitionRefCount) + 2 * sizeof(void*),
-    "Need enough space for two pointer and one refcount in freelist entries");
-#else
-static_assert(
-    kMinimalBucketSizeWithRefCount >= sizeof(PartitionRefCount) + sizeof(void*),
-    "Need enough space for one pointer and one refcount in freelist entries");
-#endif
-#endif
 
 class EncodedPartitionFreelistEntryPtr {
  private:
@@ -110,7 +88,7 @@ class PartitionFreelistEntry {
  private:
   explicit constexpr PartitionFreelistEntry(nullptr_t)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(nullptr))
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
 #endif
@@ -118,7 +96,7 @@ class PartitionFreelistEntry {
   }
   explicit PartitionFreelistEntry(PartitionFreelistEntry* next)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(next))
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(encoded_next_.Inverted())
 #endif
@@ -127,7 +105,7 @@ class PartitionFreelistEntry {
   // For testing only.
   PartitionFreelistEntry(void* next, bool make_shadow_match)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(next))
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
         ,
         shadow_(make_shadow_match ? encoded_next_.Inverted() : 12345)
 #endif
@@ -179,20 +157,16 @@ class PartitionFreelistEntry {
   ALWAYS_INLINE PartitionFreelistEntry* GetNext(size_t extra) const;
 
   NOINLINE void CheckFreeList(size_t extra) const {
-#if defined(PA_HAS_FREELIST_HARDENING)
     for (auto* entry = this; entry; entry = entry->GetNext(extra)) {
       // |GetNext()| checks freelist integrity.
     }
-#endif
   }
 
   NOINLINE void CheckFreeListForThreadCache(size_t extra) const {
-#if defined(PA_HAS_FREELIST_HARDENING)
     for (auto* entry = this; entry;
          entry = entry->GetNextForThreadCache(extra)) {
       // |GetNextForThreadCache()| checks freelist integrity.
     }
-#endif
   }
 
   ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
@@ -211,7 +185,7 @@ class PartitionFreelistEntry {
 #endif  // DCHECK_IS_ON()
 
     encoded_next_ = EncodedPartitionFreelistEntryPtr(ptr);
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = encoded_next_.Inverted();
 #endif
   }
@@ -221,7 +195,7 @@ class PartitionFreelistEntry {
   // data.
   ALWAYS_INLINE uintptr_t ClearForAllocation() {
     encoded_next_.Override(0);
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     shadow_ = 0;
 #endif
     uintptr_t slot_start = reinterpret_cast<uintptr_t>(this);
@@ -236,7 +210,7 @@ class PartitionFreelistEntry {
   ALWAYS_INLINE PartitionFreelistEntry* GetNextInternal(
       size_t extra,
       bool for_thread_cache) const;
-#if defined(PA_HAS_FREELIST_HARDENING)
+
   static ALWAYS_INLINE bool IsSane(const PartitionFreelistEntry* here,
                                    const PartitionFreelistEntry* next,
                                    bool for_thread_cache) {
@@ -251,7 +225,11 @@ class PartitionFreelistEntry {
     uintptr_t here_address = reinterpret_cast<uintptr_t>(here);
     uintptr_t next_address = reinterpret_cast<uintptr_t>(next);
 
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
     bool shadow_ptr_ok = here->encoded_next_.Inverted() == here->shadow_;
+#else
+    bool shadow_ptr_ok = true;
+#endif
 
     bool same_superpage = (here_address & kSuperPageBaseMask) ==
                           (next_address & kSuperPageBaseMask);
@@ -266,16 +244,30 @@ class PartitionFreelistEntry {
     else
       return shadow_ptr_ok & same_superpage & not_in_metadata;
   }
-#endif  // defined(PA_HAS_FREELIST_HARDENING)
 
   EncodedPartitionFreelistEntryPtr encoded_next_;
   // This is intended to detect unintentional corruptions of the freelist.
   // These can happen due to a Use-after-Free, or overflow of the previous
   // allocation in the slot span.
-#if defined(PA_HAS_FREELIST_HARDENING)
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
   uintptr_t shadow_;
 #endif
 };
+
+static_assert(kSmallestBucket >= sizeof(PartitionFreelistEntry),
+              "Need enough space for freelist entries in the smallest slot");
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+// The smallest bucket actually used. Note that the smallest request is 1 (if
+// it's 0, it gets patched to 1), and ref-count gets added to it.
+namespace {
+constexpr size_t kSmallestUsedBucket =
+    bits::AlignUp(1 + sizeof(PartitionRefCount), kSmallestBucket);
+}
+static_assert(kSmallestUsedBucket >=
+                  sizeof(PartitionFreelistEntry) + sizeof(PartitionRefCount),
+              "Need enough space for freelist entries and the ref-count in the "
+              "smallest *used* slot");
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
 
 ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
     size_t extra,
@@ -286,12 +278,10 @@ ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNextInternal(
     return nullptr;
 
   auto* ret = encoded_next_.Decode();
-#if defined(PA_HAS_FREELIST_HARDENING)
   // We rely on constant propagation to remove the branches coming from
   // |for_thread_cache|, since the argument is always a compile-time constant.
   if (UNLIKELY(!IsSane(this, ret, for_thread_cache)))
     FreelistCorruptionDetected(extra);
-#endif
 
   // In real-world profiles, the load of |encoded_next_| above is responsible
   // for a large fraction of the allocation cost. However, we cannot anticipate

@@ -2061,7 +2061,7 @@ TEST_F(PartitionAllocTest, MTEProtectsFreedPtr) {
 #endif
 
 // These tests rely on precise layout. They handle cookie, not ref-count.
-#if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
+#if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
 TEST_F(PartitionAllocDeathTest, UseAfterFreeDetection) {
   CPU cpu;
@@ -2141,7 +2141,8 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 }
 #endif  // !DCHECK_IS_ON()
 
-#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
+#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

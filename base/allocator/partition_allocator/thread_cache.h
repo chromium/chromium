@@ -504,7 +504,7 @@ ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
 
 ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
                                             uintptr_t slot_start) {
-#if defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) && \
+#if defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) && \
     defined(PA_HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
   // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
@@ -536,7 +536,17 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
       "The computation below assumes that cache lines are 64 bytes long.");
   int distance_to_next_cacheline_in_16_bytes = 4 - ((address >> 4) & 3);
   int slot_size_remaining_in_16_bytes =
-      std::min(bucket.slot_size / 16, distance_to_next_cacheline_in_16_bytes);
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+      // When BRP is on in the "previous slot" mode, this slot may have a BRP
+      // ref-count of the next, potentially allocated slot. Make sure we don't
+      // overwrite it.
+      (bucket.slot_size - sizeof(PartitionRefCount)) / 16;
+#else
+      bucket.slot_size / 16;
+#endif  // BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+
+  slot_size_remaining_in_16_bytes = std::min(
+      slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
 
   static const uint32_t poison_16_bytes[4] = {0xdeadbeef, 0xdeadbeef,
                                               0xdeadbeef, 0xdeadbeef};
@@ -547,7 +557,7 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
     memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));
     address_aligned += 4;
   }
-#endif  // defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) &&
+#endif  // defined(PA_HAS_FREELIST_SHADOW_ENTRY) && defined(ARCH_CPU_X86_64) &&
         // defined(PA_HAS_64_BITS_POINTERS)
 
   auto* entry = PartitionFreelistEntry::EmplaceAndInitForThreadCache(
