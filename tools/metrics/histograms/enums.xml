@@ -36917,6 +36917,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4147" label="FrameNameContainsNewline"/>
   <int value="4148" label="AbortSignalThrowIfAborted"/>
   <int value="4149" label="ClientHintsUAFull"/>
+  <int value="4150" label="PrivateNetworkAccessWithinWorker"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

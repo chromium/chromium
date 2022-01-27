@@ -190,3 +190,15 @@ platform.
   `kSanitizerAPIFromFragment` tell us what kind of input people are using.
 
 [sanitizer]: https://wicg.github.io/sanitizer-api/
+
+## Private Network Access
+
+[Private Network Access][pna] helps to prevent the user agent from
+inadvertently enabling attacks on devices running on a user's local intranet,
+or services running on the user's machine directly.
+
+* Use of PNA in workers tracked via:
+  - `kPrivateNetworkAccessFetchesWorkerScript`
+  - `kPrivateNetworkAccessWithWorker`
+
+[pna]: https://wicg.github.io/private-network-access/
