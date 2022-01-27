@@ -188,7 +188,7 @@ bool PictureLayer::Update() {
 }
 
 sk_sp<const SkPicture> PictureLayer::GetPicture() const {
-  if (!DrawsContent() || bounds().IsEmpty())
+  if (!draws_content() || bounds().IsEmpty())
     return nullptr;
 
   scoped_refptr<DisplayItemList> display_list =
@@ -204,7 +204,7 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 void PictureLayer::ClearClient() {
   DCHECK(IsMutationAllowed());
   picture_layer_inputs_.client = nullptr;
-  UpdateDrawsContent(HasDrawableContent());
+  SetDrawsContent(HasDrawableContent());
 }
 
 void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {
@@ -235,7 +235,7 @@ void PictureLayer::RunMicroBenchmark(MicroBenchmark* benchmark) {
 
 void PictureLayer::CaptureContent(const gfx::Rect& rect,
                                   std::vector<NodeInfo>* content) const {
-  if (!DrawsContent())
+  if (!draws_content())
     return;
 
   const DisplayItemList* display_item_list = GetDisplayItemList();

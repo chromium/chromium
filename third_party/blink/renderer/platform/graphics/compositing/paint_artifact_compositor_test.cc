@@ -2246,7 +2246,7 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(2u, LayerCount());
   // This is the empty layer forced by |transform|.
   EXPECT_EQ(gfx::Size(33, 44), LayerAt(0)->bounds());
-  EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  EXPECT_FALSE(LayerAt(0)->draws_content());
   // This is the layer containing the paint chunks with |blend_effect1| and
   // |blend_effect2| decomposited.
   EXPECT_EQ(gfx::Size(300, 300), LayerAt(1)->bounds());
@@ -2498,7 +2498,7 @@ TEST_P(PaintArtifactCompositorTest, EffectivelyInvisibleChunk) {
   UpdateWithEffectivelyInvisibleChunk(false, false);
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(10, 10), LayerAt(0)->bounds());
-  EXPECT_FALSE(LayerAt(0)->DrawsContent());
+  EXPECT_FALSE(LayerAt(0)->draws_content());
   EXPECT_FALSE(LayerAt(0)->GetPicture());
 }
 
@@ -2507,7 +2507,7 @@ TEST_P(PaintArtifactCompositorTest,
   UpdateWithEffectivelyInvisibleChunk(true, false);
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(20, 10), LayerAt(0)->bounds());
-  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_TRUE(LayerAt(0)->draws_content());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
                   {RectWithColor(gfx::RectF(0, 0, 10, 10), Color::kBlack)})));
@@ -2518,7 +2518,7 @@ TEST_P(PaintArtifactCompositorTest,
   UpdateWithEffectivelyInvisibleChunk(false, true);
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(20, 20), LayerAt(0)->bounds());
-  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_TRUE(LayerAt(0)->draws_content());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
                   {RectWithColor(gfx::RectF(0, 10, 10, 10), Color::kWhite)})));
@@ -2529,7 +2529,7 @@ TEST_P(PaintArtifactCompositorTest,
   UpdateWithEffectivelyInvisibleChunk(true, true);
   ASSERT_EQ(1u, LayerCount());
   EXPECT_EQ(gfx::Size(20, 20), LayerAt(0)->bounds());
-  EXPECT_TRUE(LayerAt(0)->DrawsContent());
+  EXPECT_TRUE(LayerAt(0)->draws_content());
   EXPECT_THAT(LayerAt(0)->GetPicture(),
               Pointee(DrawsRectangles(
                   {RectWithColor(gfx::RectF(0, 0, 10, 10), Color::kBlack),
@@ -2639,7 +2639,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipRotatedNotSupported) {
   EXPECT_TRUE(mask_isolation_0.HasRenderSurface());
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
-  EXPECT_TRUE(clip_mask0->DrawsContent());
+  EXPECT_TRUE(clip_mask0->draws_content());
   EXPECT_TRUE(clip_mask0->HitTestable());
   EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
   // c1 should be applied in the clip mask layer.
@@ -2732,7 +2732,7 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(mask_isolation_0.HasRenderSurface());
 
   EXPECT_EQ(SynthesizedClipLayerAt(0), clip_mask0);
-  EXPECT_TRUE(clip_mask0->DrawsContent());
+  EXPECT_TRUE(clip_mask0->draws_content());
   EXPECT_TRUE(clip_mask0->HitTestable());
   EXPECT_EQ(gfx::Size(300, 200), clip_mask0->bounds());
   EXPECT_EQ(c1_id, clip_mask0->clip_tree_index());
@@ -2744,7 +2744,7 @@ TEST_P(PaintArtifactCompositorTest,
 
   // The masks DrawsContent because it has content that it masks which also
   // DrawsContent.
-  EXPECT_TRUE(clip_mask0->DrawsContent());
+  EXPECT_TRUE(clip_mask0->draws_content());
 }
 
 TEST_P(

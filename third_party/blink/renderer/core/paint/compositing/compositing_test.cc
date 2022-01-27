@@ -1482,9 +1482,9 @@ TEST_P(CompositingSimTest, NonDrawableLayersIgnoredForRenderSurfaces) {
   Compositor().BeginFrame();
 
   auto* inner_element_layer = CcLayerByDOMElementId("inner");
-  EXPECT_FALSE(inner_element_layer->DrawsContent());
+  EXPECT_FALSE(inner_element_layer->draws_content());
   auto* outer_element_layer = CcLayerByDOMElementId("outer");
-  EXPECT_TRUE(outer_element_layer->DrawsContent());
+  EXPECT_TRUE(outer_element_layer->draws_content());
 
   // The inner element layer is only needed for hit testing and does not draw
   // content, so it should not cause a render surface.
@@ -2528,7 +2528,7 @@ TEST_P(CompositingSimTest, CompositorAnimationOfOpacityHasPaintedContent) {
       <div id="animation"></div>
   )HTML");
   Compositor().BeginFrame();
-  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
 }
 
 TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
@@ -2552,7 +2552,7 @@ TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
   )HTML");
   Compositor().BeginFrame();
   EXPECT_TRUE(CcLayerByDOMElementId("animation"));
-  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
 }
 
 TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
@@ -2589,11 +2589,11 @@ TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
   )HTML");
   Compositor().BeginFrame();
   EXPECT_TRUE(CcLayerByDOMElementId("animation"));
-  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->draws_content());
   // Though #child is not initially visible, it should be painted because it can
   // animate into view.
   EXPECT_TRUE(CcLayerByDOMElementId("child"));
-  EXPECT_TRUE(CcLayerByDOMElementId("child")->DrawsContent());
+  EXPECT_TRUE(CcLayerByDOMElementId("child")->draws_content());
 }
 
 }  // namespace blink

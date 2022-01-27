@@ -362,7 +362,7 @@ RenderSurfaceReason ComputeRenderSurfaceReason(const MutatorHost& mutator_host,
   // layers draw content for this subtree.
   bool at_least_two_layers_in_subtree_draw_content =
       num_descendants_that_draw_content > 0 &&
-      (layer->DrawsContent() || num_descendants_that_draw_content > 1);
+      (layer->draws_content() || num_descendants_that_draw_content > 1);
 
   bool may_have_transparency =
       layer->EffectiveOpacity() != 1.f ||
@@ -494,7 +494,7 @@ bool PropertyTreeBuilderContext::AddEffectNodeIfNeeded(
       OpacityIsAnimating(mutator_host_, layer);
   node->is_currently_animating_filter = FilterIsAnimating(mutator_host_, layer);
   node->effect_changed = layer->subtree_property_changed();
-  node->subtree_has_copy_request = layer->SubtreeHasCopyRequest();
+  node->subtree_has_copy_request = layer->subtree_has_copy_request();
   node->render_surface_reason = render_surface_reason;
   node->closest_ancestor_with_cached_render_surface_id =
       layer->cache_render_surface()
@@ -720,8 +720,7 @@ void PropertyTreeBuilderContext::BuildPropertyTrees() {
   property_trees_.is_main_thread = true;
   property_trees_.is_active = false;
 
-  if (layer_tree_host_->has_copy_request())
-    UpdateSubtreeHasCopyRequestRecursive(root_layer_);
+  UpdateSubtreeHasCopyRequestRecursive(root_layer_);
 
   if (!property_trees_.needs_rebuild) {
     clip_tree_.SetViewportClip(

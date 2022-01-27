@@ -1236,7 +1236,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
   Vector<int> effect_layer_counts(static_cast<wtf_size_t>(effect_tree.size()));
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
-    if (layer->DrawsContent())
+    if (layer->draws_content())
       effect_layer_counts[layer->effect_tree_index()]++;
   }
 

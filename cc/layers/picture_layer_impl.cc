@@ -1759,7 +1759,7 @@ bool PictureLayerImpl::CanHaveTilings() const {
     return false;
   if (raster_source_->IsSolidColor())
     return false;
-  if (!DrawsContent())
+  if (!draws_content())
     return false;
   if (!raster_source_->HasRecordings())
     return false;
@@ -1913,7 +1913,7 @@ void PictureLayerImpl::AsValueInto(
   state->SetBoolean("can_have_tilings", CanHaveTilings());
   state->SetBoolean("raster_source_solid_color",
                     raster_source_->IsSolidColor());
-  state->SetBoolean("draws_content", DrawsContent());
+  state->SetBoolean("draws_content", draws_content());
   state->SetBoolean("raster_source_has_recordings",
                     raster_source_->HasRecordings());
   state->SetDouble("max_contents_scale", MaximumTilingContentsScale());

@@ -2594,7 +2594,7 @@ TEST_P(VisualViewportTest, PaintScrollbar) {
   UpdateAllLifecyclePhases();
 
   auto check_scrollbar = [](const cc::Layer* scrollbar, float scale) {
-    EXPECT_TRUE(scrollbar->DrawsContent());
+    EXPECT_TRUE(scrollbar->draws_content());
     EXPECT_FALSE(scrollbar->HitTestable());
     EXPECT_TRUE(scrollbar->IsScrollbarLayerForTesting());
     EXPECT_EQ(

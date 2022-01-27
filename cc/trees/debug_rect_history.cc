@@ -90,7 +90,7 @@ void DebugRectHistory::SavePaintRects(LayerTreeImpl* tree_impl) {
   // list.
   for (auto* layer : *tree_impl) {
     Region invalidation_region = layer->GetInvalidationRegionForDebugging();
-    if (invalidation_region.IsEmpty() || !layer->DrawsContent())
+    if (invalidation_region.IsEmpty() || !layer->draws_content())
       continue;
 
     for (gfx::Rect rect : invalidation_region) {

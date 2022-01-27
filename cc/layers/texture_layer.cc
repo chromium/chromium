@@ -35,7 +35,7 @@ void TextureLayer::ClearClient() {
   DCHECK(IsMutationAllowed());
   client_ = nullptr;
   ClearTexture();
-  UpdateDrawsContent(HasDrawableContent());
+  SetDrawsContent(HasDrawableContent());
 }
 
 void TextureLayer::ClearTexture() {
@@ -121,7 +121,7 @@ void TextureLayer::SetTransferableResourceInternal(
   else
     SetNeedsPushProperties();
 
-  UpdateDrawsContent(HasDrawableContent());
+  SetDrawsContent(HasDrawableContent());
 }
 
 void TextureLayer::SetTransferableResource(

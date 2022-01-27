@@ -191,7 +191,7 @@ static std::unique_ptr<protocol::LayerTree::Layer> BuildObjectForLayer(
   // because the non-DrawsContent root layer is the parent of all DrawsContent
   // layers. We have to cheat the front-end by setting drawsContent to true for
   // the root layer.
-  bool draws_content = root == layer || layer->DrawsContent();
+  bool draws_content = root == layer || layer->draws_content();
 
   // TODO(pdr): Now that BlinkGenPropertyTrees has launched, we can remove
   // setOffsetX and setOffsetY.
@@ -388,7 +388,7 @@ Response InspectorLayerTreeAgent::makeSnapshot(const String& layer_id,
   Response response = LayerById(layer_id, layer);
   if (!response.IsSuccess())
     return response;
-  if (!layer->DrawsContent())
+  if (!layer->draws_content())
     return Response::ServerError("Layer does not draw content");
 
   auto picture = layer->GetPicture();

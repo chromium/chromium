@@ -309,7 +309,7 @@ void RenderSurfaceImpl::ClearAccumulatedContentRect() {
 
 void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
     LayerImpl* layer) {
-  DCHECK(layer->DrawsContent());
+  DCHECK(layer->draws_content());
   DCHECK_EQ(this, layer->render_target());
 
   // Root render surface doesn't accumulate content rect, it always uses
@@ -455,7 +455,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
       OwningEffectNode()->surface_contents_scale;
   // Resourceless mode does not support masks.
   if (draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE && mask_layer &&
-      mask_layer->DrawsContent() && !mask_layer->bounds().IsEmpty()) {
+      mask_layer->draws_content() && !mask_layer->bounds().IsEmpty()) {
     // The software renderer applies mask layer and blending in the wrong
     // order but kDstIn doesn't commute with masking. It is okay to not
     // support this configuration because kDstIn was introduced to replace

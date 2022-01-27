@@ -157,7 +157,7 @@ class CC_EXPORT LayerImpl {
 
   // Returns true if this layer has content to draw.
   void SetDrawsContent(bool draws_content);
-  bool DrawsContent() const { return draws_content_; }
+  bool draws_content() const { return draws_content_; }
 
   // Make the layer hit testable.
   void SetHitTestable(bool should_hit_test);

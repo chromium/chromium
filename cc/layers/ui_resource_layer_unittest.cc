@@ -60,7 +60,7 @@ TEST_F(UIResourceLayerTest, SetBitmap) {
 
   test_layer->Update();
 
-  EXPECT_FALSE(test_layer->DrawsContent());
+  EXPECT_FALSE(test_layer->draws_content());
 
   SkBitmap bitmap;
   bitmap.allocN32Pixels(10, 10);
@@ -69,7 +69,7 @@ TEST_F(UIResourceLayerTest, SetBitmap) {
   test_layer->SetBitmap(bitmap);
   test_layer->Update();
 
-  EXPECT_TRUE(test_layer->DrawsContent());
+  EXPECT_TRUE(test_layer->draws_content());
 }
 
 TEST_F(UIResourceLayerTest, SetUIResourceId) {
@@ -83,7 +83,7 @@ TEST_F(UIResourceLayerTest, SetUIResourceId) {
 
   test_layer->Update();
 
-  EXPECT_FALSE(test_layer->DrawsContent());
+  EXPECT_FALSE(test_layer->draws_content());
 
   bool is_opaque = false;
   std::unique_ptr<ScopedUIResource> resource =
@@ -92,7 +92,7 @@ TEST_F(UIResourceLayerTest, SetUIResourceId) {
   test_layer->SetUIResourceId(resource->id());
   test_layer->Update();
 
-  EXPECT_TRUE(test_layer->DrawsContent());
+  EXPECT_TRUE(test_layer->draws_content());
 
   // ID is preserved even when you set ID first and attach it to the tree.
   layer_tree_host()->SetRootLayer(nullptr);
@@ -102,7 +102,7 @@ TEST_F(UIResourceLayerTest, SetUIResourceId) {
   test_layer->SetUIResourceId(shared_resource->id());
   layer_tree_host()->SetRootLayer(test_layer);
   EXPECT_EQ(shared_resource->id(), test_layer->resource_id());
-  EXPECT_TRUE(test_layer->DrawsContent());
+  EXPECT_TRUE(test_layer->draws_content());
 }
 
 TEST_F(UIResourceLayerTest, BitmapClearedOnSetUIResourceId) {
@@ -159,7 +159,7 @@ TEST_F(UIResourceLayerTest, SharedBitmap) {
   layer1->SetBitmap(bitmap);
   bitmap.reset();
   layer1->Update();
-  EXPECT_TRUE(layer1->DrawsContent());
+  EXPECT_TRUE(layer1->draws_content());
   const auto resource_id = layer1->resource_id();
 
   // Second layer, same LTH. Resource is shared (has same ID).
@@ -167,7 +167,7 @@ TEST_F(UIResourceLayerTest, SharedBitmap) {
   layer_tree_host()->SetRootLayer(layer2);
   layer2->SetBitmap(bitmap_copy);
   layer2->Update();
-  EXPECT_TRUE(layer2->DrawsContent());
+  EXPECT_TRUE(layer2->draws_content());
   EXPECT_EQ(resource_id, layer2->resource_id());
 
   // Change bitmap, different resource id.
@@ -184,7 +184,7 @@ TEST_F(UIResourceLayerTest, SharedBitmap) {
   LayerTreeImplTestBase impl;
   impl.host()->SetRootLayer(layer1);
   layer1->Update();
-  EXPECT_TRUE(layer1->DrawsContent());
+  EXPECT_TRUE(layer1->draws_content());
   const auto other_lth_resource_id = layer1->resource_id();
   layer1->SetBitmap(other_bitmap);
   EXPECT_NE(other_lth_resource_id, layer1->resource_id());

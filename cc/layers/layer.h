@@ -546,8 +546,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // used when paying the cost of creating an intermediate texture is worth it,
   // even when the layer's subtree may be occluded, or not visible in the final
   // output.
-  void SetCacheRenderSurface(bool cache_render_surface);
-  bool cache_render_surface() const { return cache_render_surface_; }
+  void SetCacheRenderSurface(bool value) {
+    DCHECK(IsPropertyChangeAllowed());
+    SetBitFlag(value, kCacheRenderSurfaceFlagMask, /*invalidate=*/true);
+  }
+  bool cache_render_surface() const {
+    return GetBitFlag(kCacheRenderSurfaceFlagMask);
+  }
 
   // If the layer induces a render surface, this returns the cause for the
   // render surface. If the layer does not induce a render surface, this returns
@@ -558,9 +563,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // intermediate texture, called a RenderSurface. This mimics the need
   // for a RenderSurface that is caused by compositing effects such as masks
   // without needing to set up such effects.
-  void SetForceRenderSurfaceForTesting(bool force_render_surface);
+  void SetForceRenderSurfaceForTesting(bool value) {
+    DCHECK(IsPropertyChangeAllowed());
+    SetBitFlag(value, kForceRenderSurfaceForTestingFlagMask,
+               /*invalidate=*/true);
+  }
   bool force_render_surface_for_testing() const {
-    return force_render_surface_for_testing_;
+    return GetBitFlag(kForceRenderSurfaceForTestingFlagMask);
   }
 
   // When true the layer may contribute to the compositor's output. When false,
@@ -573,7 +582,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Will be false if SetIsDrawable(false) is called. But will also be false if
   // the layer itself has no content to contribute, even though the layer was
   // given SetIsDrawable(true).
-  bool DrawsContent() const;
+  bool draws_content() const { return GetBitFlag(kDrawsContentFlagMask); }
+  void SetDrawsContent(bool value);
 
   // Returns the number of layers in this layers subtree (excluding itself) for
   // which DrawsContent() is true.
@@ -608,18 +618,29 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   // While all layers have an index into the transform tree, this value
   // indicates whether the transform tree node was created for this layer.
-  void SetHasTransformNode(bool val) { has_transform_node_ = val; }
-  bool has_transform_node() const { return has_transform_node_; }
+  void SetHasTransformNode(bool value) {
+    SetBitFlag(value, kHasTransformNodeFlagMask);
+  }
+  bool has_transform_node() const {
+    return GetBitFlag(kHasTransformNodeFlagMask);
+  }
 
   // This value indicates whether a clip node was created for |this| layer.
-  void SetHasClipNode(bool val) { has_clip_node_ = val; }
+  void SetHasClipNode(bool val) { SetBitFlag(val, kHasClipNodeFlagMask); }
+  bool has_clip_node() const { return GetBitFlag(kHasClipNodeFlagMask); }
 
   // Sets that the content shown in this layer may be a video. This may be used
   // by the system compositor to distinguish between animations updating the
   // screen and video, which the user would be watching. This allows
   // optimizations like turning off the display when video is not playing,
   // without interfering with video playback.
-  void SetMayContainVideo(bool yes);
+  void SetMayContainVideo(bool value) {
+    SetBitFlag(value, kMayContainVideoFlagMask, /*invalidate=*/false,
+               /*needs_push=*/true);
+  }
+  bool may_contain_video() const {
+    return GetBitFlag(kMayContainVideoFlagMask);
+  }
 
   // Stable identifier for clients. See comment in cc/trees/element_id.h.
   void SetElementId(ElementId id);
@@ -767,10 +788,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // For layer tree mode only.
   // Internal to property tree construction. Set to true if this layer or any
   // layer below it in the tree has a CopyOutputRequest pending commit.
-  void SetSubtreeHasCopyRequest(bool subtree_has_copy_request);
-  // Internal to property tree construction. Returns true if this layer or any
-  // layer below it in the tree has a CopyOutputRequest pending commit.
-  bool SubtreeHasCopyRequest() const;
+  // This flag is valid only when LayerTreeHost::has_copy_request() is true
+  void SetSubtreeHasCopyRequest(bool value) {
+    SetBitFlag(value, kSubtreeHasCopyRequestFlagMask);
+  }
+  bool subtree_has_copy_request() const {
+    return GetBitFlag(kSubtreeHasCopyRequestFlagMask);
+  }
   // Internal to property tree construction. Removes all CopyOutputRequests from
   // this layer, moving them into |requests|.
   void TakeCopyRequests(
@@ -779,9 +803,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Internal to property tree construction. Set if the layer should not be
   // shown when its back face is visible to the user. This is a derived value
   // from SetDoubleSided().
-  void SetShouldCheckBackfaceVisibility(bool should_check_backface_visibility);
+  void SetShouldCheckBackfaceVisibility(bool value) {
+    SetBitFlag(value, kShouldCheckBackfaceVisibilityFlagMask,
+               /*invalidate=*/false, /*needs_push=*/true);
+  }
   bool should_check_backface_visibility() const {
-    return should_check_backface_visibility_;
+    return GetBitFlag(kShouldCheckBackfaceVisibilityFlagMask);
   }
 
   // For debugging, containing information about the associated DOM, etc.
@@ -818,9 +845,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // (the full tree is synced over).
   void SetNeedsFullTreeSync();
 
-  // Will recalculate whether the layer draws content and set draws_content_
-  // appropriately.
-  void UpdateDrawsContent(bool has_drawable_content);
   // May be overridden by subclasses if they have optional content, to return
   // false if there is no content to be displayed. If they do have content, then
   // they should return the value from this base class method.
@@ -879,6 +903,19 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
   // This should only be called from RemoveFromParent().
   void RemoveChild(Layer* child);
+
+  bool GetBitFlag(uint8_t mask) const;
+
+  // invalidate: if true and the flag's value changes, the host is marked as
+  //     needing a property tree update and commit.
+  // needs_push: if true and the flag's value changes, the layer is marked as
+  //     needing to push its properties to its corresponding LayerImpl, but
+  //     without marking the host as needing a property update or commit.
+  // return value: 'true' if the flag's value changes.
+  bool SetBitFlag(bool new_value,
+                  uint8_t mask,
+                  bool invalidate = false,
+                  bool needs_push = false);
 
   // When we detach or attach layer to new LayerTreeHost, all property trees'
   // indices becomes invalid.
@@ -1040,16 +1077,18 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // because it's used in base::AutoReset.
   bool ignore_set_needs_commit_;
 
-  bool draws_content_ : 1;
-  bool should_check_backface_visibility_ : 1;
-  // Force use of and cache render surface.
-  bool cache_render_surface_ : 1;
-  bool force_render_surface_for_testing_ : 1;
-  bool may_contain_video_ : 1;
-  bool has_transform_node_ : 1;
-  bool has_clip_node_ : 1;
-  // This value is valid only when LayerTreeHost::has_copy_request() is true
-  bool subtree_has_copy_request_ : 1;
+  enum : uint8_t {
+    kDrawsContentFlagMask = 1 << 0,
+    kShouldCheckBackfaceVisibilityFlagMask = 1 << 1,
+    kCacheRenderSurfaceFlagMask = 1 << 2,
+    kForceRenderSurfaceForTestingFlagMask = 1 << 3,
+    kMayContainVideoFlagMask = 1 << 4,
+    kHasTransformNodeFlagMask = 1 << 5,
+    kHasClipNodeFlagMask = 1 << 6,
+    kSubtreeHasCopyRequestFlagMask = 1 << 7
+  };
+  ProtectedSequenceReadable<uint8_t> bitflags_;
+
   ProtectedSequenceWritable<bool> subtree_property_changed_;
 
   std::unique_ptr<LayerDebugInfo> debug_info_;

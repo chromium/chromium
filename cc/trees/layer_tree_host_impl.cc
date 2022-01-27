@@ -3142,7 +3142,7 @@ absl::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
     // into Layer::HitTestable, so we make sure we don't skip surface layers
     // that draws content but has pointer-events: none property.
     if (!(layer->HitTestable() ||
-          (layer->is_surface_layer() && layer->DrawsContent())))
+          (layer->is_surface_layer() && layer->draws_content())))
       continue;
 
     if (layer->is_surface_layer()) {

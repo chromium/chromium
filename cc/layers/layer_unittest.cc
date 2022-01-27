@@ -1398,7 +1398,7 @@ class DrawsContentChangeLayer : public Layer {
 
   void SetFakeDrawsContent(bool fake_draws_content) {
     fake_draws_content_ = fake_draws_content;
-    UpdateDrawsContent(HasDrawableContent());
+    SetDrawsContent(HasDrawableContent());
   }
 
  private:
@@ -1438,7 +1438,7 @@ TEST_F(LayerTest, PushUpdatesShouldHitTest) {
   root_layer->SetIsDrawable(true);
   root_layer->SetHitTestable(true);
   CommitAndPushProperties(root_layer.get(), impl_layer.get());
-  EXPECT_TRUE(impl_layer->DrawsContent());
+  EXPECT_TRUE(impl_layer->draws_content());
   EXPECT_TRUE(impl_layer->HitTestable());
 
   // A layer that does not draw content and does not hit test without drawing
@@ -1446,14 +1446,14 @@ TEST_F(LayerTest, PushUpdatesShouldHitTest) {
   root_layer->SetIsDrawable(false);
   root_layer->SetHitTestable(false);
   CommitAndPushProperties(root_layer.get(), impl_layer.get());
-  EXPECT_FALSE(impl_layer->DrawsContent());
+  EXPECT_FALSE(impl_layer->draws_content());
   EXPECT_FALSE(impl_layer->HitTestable());
 
   // |SetHitTestableWithoutDrawsContent| should cause a layer to become hit
   // testable even though it does not draw content.
   root_layer->SetHitTestable(true);
   CommitAndPushProperties(root_layer.get(), impl_layer.get());
-  EXPECT_FALSE(impl_layer->DrawsContent());
+  EXPECT_FALSE(impl_layer->draws_content());
   EXPECT_TRUE(impl_layer->HitTestable());
 }
 

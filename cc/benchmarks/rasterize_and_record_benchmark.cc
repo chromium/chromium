@@ -119,7 +119,7 @@ RasterizeAndRecordBenchmark::CreateBenchmarkImpl(
 void RasterizeAndRecordBenchmark::RunOnLayer(PictureLayer* layer) {
   DCHECK(layer_tree_host_);
 
-  if (!layer->DrawsContent())
+  if (!layer->draws_content())
     return;
 
   ContentLayerClient* painter = layer->client();

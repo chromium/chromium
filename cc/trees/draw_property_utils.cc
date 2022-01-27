@@ -480,7 +480,7 @@ bool LayerNeedsUpdate(LayerType* layer,
   if (!layer_is_drawn)
     return false;
 
-  if (!layer->DrawsContent() || layer->bounds().IsEmpty())
+  if (!layer->draws_content() || layer->bounds().IsEmpty())
     return false;
 
   // The layer should not be drawn if (1) it is not double-sided and (2) the

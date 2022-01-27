@@ -2660,14 +2660,14 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingIfDoesNotDrawContent) {
   SetupDefaultTrees(gfx::Size(10, 10));
   SetContentsScaleOnBothLayers(1.f, 1.f, 1.f);
   pending_layer()->PushPropertiesTo(active_layer());
-  EXPECT_TRUE(pending_layer()->DrawsContent());
+  EXPECT_TRUE(pending_layer()->draws_content());
   EXPECT_TRUE(pending_layer()->CanHaveTilings());
   EXPECT_GE(pending_layer()->num_tilings(), 0u);
   EXPECT_GE(active_layer()->num_tilings(), 0u);
 
   // Set content to false, which should make CanHaveTilings return false.
   pending_layer()->SetDrawsContent(false);
-  EXPECT_FALSE(pending_layer()->DrawsContent());
+  EXPECT_FALSE(pending_layer()->draws_content());
   EXPECT_FALSE(pending_layer()->CanHaveTilings());
 
   // No tilings should be pushed to active layer.
@@ -4715,7 +4715,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
       host_impl()->pending_tree()->LayerById(active_occluding_layer->id());
   ASSERT_EQ(active_occluding_layer->bounds(),
             pending_occluding_layer->bounds());
-  ASSERT_TRUE(pending_occluding_layer->DrawsContent());
+  ASSERT_TRUE(pending_occluding_layer->draws_content());
   ASSERT_TRUE(pending_occluding_layer->contents_opaque());
   pending_occluding_layer->SetOffsetToTransformParent(
       pending_occluding_layer_position);
