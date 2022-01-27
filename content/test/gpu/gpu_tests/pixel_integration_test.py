@@ -4,12 +4,15 @@
 
 import logging
 import os
+import posixpath
 import sys
 import time
 
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_integration_test_base
+
+import gpu_path_util
 
 from telemetry.util import image_util
 
@@ -85,8 +88,8 @@ class PixelIntegrationTest(
       pages += namespace.DirectCompositionPages(cls.test_base_name)
       pages += namespace.HdrTestPages(cls.test_base_name)
     for p in pages:
-      yield (p.name, skia_gold_integration_test_base.GPU_RELATIVE_PATH + p.url,
-             (p))
+      yield (p.name, posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
+                                    p.url), (p))
 
   def RunActualGpuTest(self, test_path, *args):
     page = args[0]
@@ -241,9 +244,9 @@ class PixelIntegrationTest(
     tab.EvaluateJavaScript('domAutomationController._readyForActions = false')
     high_performance_tab = tab.browser.tabs.New()
     high_performance_tab.Navigate(
-        self.
-        UrlOfStaticFilePath(skia_gold_integration_test_base.GPU_RELATIVE_PATH +
-                            'functional_webgl_high_performance.html'),
+        self.UrlOfStaticFilePath(
+            posixpath.join(gpu_path_util.GPU_DATA_RELATIVE_PATH,
+                           'functional_webgl_high_performance.html')),
         script_to_evaluate_on_commit=test_harness_script)
     high_performance_tab.action_runner.WaitForJavaScriptCondition(
         'domAutomationController._finished', timeout=30)

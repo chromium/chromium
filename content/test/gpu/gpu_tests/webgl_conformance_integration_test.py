@@ -10,8 +10,9 @@ import sys
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests import webgl_test_util
+
+import gpu_path_util
 
 conformance_harness_script = r"""
   var testHarness = {};
@@ -412,9 +413,9 @@ class WebGLConformanceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # implicitly becomes the common base directory, i.e., the Chromium
     # src dir, and all URLs have to be specified relative to that.
     cls.SetStaticServerDirs([
-        os.path.join(path_util.GetChromiumSrcDir(),
+        os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                      webgl_test_util.conformance_relpath),
-        os.path.join(path_util.GetChromiumSrcDir(),
+        os.path.join(gpu_path_util.CHROMIUM_SRC_DIR,
                      webgl_test_util.extensions_relpath)
     ])
 

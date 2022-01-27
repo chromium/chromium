@@ -20,8 +20,9 @@ from chrome_telemetry_build import chromium_config
 from gpu_tests import context_lost_integration_test
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests import webgl_conformance_integration_test
+
+import gpu_path_util
 
 from py_utils import tempfile_ext
 
@@ -112,10 +113,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
   def _RunGpuIntegrationTests(self, test_name, extra_args=None):
     extra_args = extra_args or []
     unittest_config = chromium_config.ChromiumConfig(
-        top_level_dir=path_util.GetGpuTestDir(),
-        benchmark_dirs=[
-            os.path.join(path_util.GetGpuTestDir(), 'unittest_data')
-        ])
+        top_level_dir=gpu_path_util.GPU_DIR,
+        benchmark_dirs=[os.path.join(gpu_path_util.GPU_DIR, 'unittest_data')])
     with binary_manager.TemporarilyReplaceBinaryManager(None), \
          mock.patch.object(gpu_project_config, 'CONFIG', unittest_config):
       # TODO(crbug.com/1103792): Using NamedTemporaryFile() as a generator is
@@ -450,10 +449,8 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       test_args: A _IntegrationTestArgs instance to use.
     """
     config = chromium_config.ChromiumConfig(
-        top_level_dir=path_util.GetGpuTestDir(),
-        benchmark_dirs=[
-            os.path.join(path_util.GetGpuTestDir(), 'unittest_data')
-        ])
+        top_level_dir=gpu_path_util.GPU_DIR,
+        benchmark_dirs=[os.path.join(gpu_path_util.GPU_DIR, 'unittest_data')])
 
     with binary_manager.TemporarilyReplaceBinaryManager(None), \
          tempfile_ext.NamedTemporaryDirectory() as temp_dir:

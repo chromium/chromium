@@ -10,12 +10,13 @@ import posixpath
 import re
 import urllib.request
 
-import flake_suppressor
+import gpu_path_util
+
 from flake_suppressor import tag_utils
 
 from typ import expectations_parser
 
-CHROMIUM_SRC_DIR = flake_suppressor.CHROMIUM_SRC_DIR
+CHROMIUM_SRC_DIR = gpu_path_util.CHROMIUM_SRC_DIR
 RELATIVE_EXPECTATION_FILE_DIRECTORY = os.path.join('content', 'test', 'gpu',
                                                    'gpu_tests',
                                                    'test_expectations')

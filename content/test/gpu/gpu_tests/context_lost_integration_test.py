@@ -11,12 +11,10 @@ import time
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 from telemetry.core import exceptions
-
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                         'data', 'gpu')
 
 wait_timeout = 60  # seconds
 
@@ -209,7 +207,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # number of browser restarts between tests.
     cls.CustomizeBrowserArgs([cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   def _KillGPUProcess(self,
                       number_of_gpu_process_kills,

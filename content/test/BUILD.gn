@@ -784,32 +784,35 @@ group("telemetry_gpu_integration_test_support") {
   ]
 }
 
-group("telemetry_gpu_unittest_data") {
+group("telemetry_gpu_common_data") {
   testonly = true
   data = [
     "//content/test/data/gpu/",
+    "//content/test/gpu/gpu_path_util/",
     "//content/test/gpu/gpu_tests/",
     "//content/test/gpu/unittest_data/",
 
     "//content/test/gpu/gpu_project_config.py",
     "//content/test/gpu/run_gpu_integration_test.py",
-    "//content/test/gpu/run_unittests.py",
   ]
+}
+
+group("telemetry_gpu_unittest_data") {
+  testonly = true
+  data = [ "//content/test/gpu/run_unittests.py" ]
+  data_deps = [ ":telemetry_gpu_common_data" ]
 }
 
 group("telemetry_gpu_integration_test_data") {
   testonly = true
   data = [
-    "//content/test/data/gpu/",
     "//content/test/gpu/gold_inexact_matching/",
-    "//content/test/gpu/gpu_tests/",
     "//content/test/gpu/power_measurement_results/",
-    "//content/test/gpu/unittest_data/",
 
-    "//content/test/gpu/gpu_project_config.py",
     "//content/test/gpu/measure_power_intel.py",
     "//content/test/gpu/run_gpu_integration_test.py",
   ]
+  data_deps = [ ":telemetry_gpu_common_data" ]
 }
 
 # browsertest_support can be used by targets that run content_shell based

@@ -9,12 +9,12 @@ import sys
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 # Tests will be stored individually in subdirectories underneath this base
 # directory.
-_DATA_PATH = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                          'data', 'gpu', 'mediapipe')
+_DATA_PATH = os.path.join(gpu_path_util.GPU_DATA_DIR, 'mediapipe')
 
 
 class MediaPipeIntegrationTest(gpu_integration_test.GpuIntegrationTest):

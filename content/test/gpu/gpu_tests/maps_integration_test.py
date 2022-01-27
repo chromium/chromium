@@ -10,18 +10,18 @@ import sys
 from gpu_tests import common_browser_args as cba
 from gpu_tests import color_profile_manager
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests import pixel_test_pages
 from gpu_tests import expected_color_test
+
+import gpu_path_util
 
 from py_utils import cloud_storage
 from telemetry.util import image_util
 
-_MAPS_PERF_TEST_PATH = os.path.join(path_util.GetChromiumSrcDir(), 'tools',
-                                    'perf', 'page_sets', 'maps_perf_test')
+_MAPS_PERF_TEST_PATH = os.path.join(gpu_path_util.TOOLS_PERF_DIR, 'page_sets',
+                                    'maps_perf_test')
 
-_DATA_PATH = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                          'gpu', 'gpu_tests')
+_DATA_PATH = os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests')
 
 _TEST_NAME = 'Maps_maps'
 

@@ -3,21 +3,11 @@
 # found in the LICENSE file.
 """GPU-specific implementation of the unexpected passes' builders module."""
 
-import os
-import sys
-
 from unexpected_passes_common import builders
 from unexpected_passes_common import constants
 from unexpected_passes_common import data_types
 
-TOOLS_PERF_DIR = os.path.join(constants.CHROMIUM_SRC_DIR, 'tools', 'perf')
-
-sys.path.append(TOOLS_PERF_DIR)
-# TODO(crbug.com/1289421): Remove this disable.
-# pylint: disable=wrong-import-position
 from chrome_telemetry_build import android_browser_types as abt
-# pylint: enable=wrong-import-position
-sys.path.remove(TOOLS_PERF_DIR)
 
 
 class GpuBuilders(builders.Builders):

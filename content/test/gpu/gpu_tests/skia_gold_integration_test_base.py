@@ -14,19 +14,18 @@ from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests.skia_gold import gpu_skia_gold_properties
 from gpu_tests.skia_gold import gpu_skia_gold_session_manager
+
+import gpu_path_util
 
 from py_utils import cloud_storage
 
 from telemetry.util import image_util
 
-GPU_RELATIVE_PATH = 'content/test/data/gpu/'
-GPU_DATA_DIR = os.path.join(path_util.GetChromiumSrcDir(), GPU_RELATIVE_PATH)
 TEST_DATA_DIRS = [
-    GPU_DATA_DIR,
-    os.path.join(path_util.GetChromiumSrcDir(), 'media/test/data'),
+    gpu_path_util.GPU_DATA_DIR,
+    os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data'),
 ]
 
 SKIA_GOLD_CORPUS = 'chrome-gpu'

@@ -11,7 +11,8 @@ import os
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import skia_gold_matching_algorithms as algo
-from gpu_tests import path_util
+
+import gpu_path_util
 
 CRASH_TYPE_GPU = 'gpu'
 
@@ -120,7 +121,7 @@ def GetMediaStreamTestBrowserArgs(media_stream_source_relpath):
   return [
       '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream',
       '--use-file-for-fake-video-capture=' +
-      os.path.join(path_util.GetChromiumSrcDir(), media_stream_source_relpath)
+      os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, media_stream_source_relpath)
   ]
 
 

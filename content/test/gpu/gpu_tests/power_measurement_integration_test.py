@@ -25,13 +25,15 @@ This script is tested and works fine with the following video sites:
 
 import logging
 import os
+import posixpath
 import sys
 import time
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
-from gpu_tests import path_util
+
+import gpu_path_util
 
 import py_utils
 
@@ -45,11 +47,11 @@ _POWER_MEASUREMENT_DURATION = 15
 # Measures power in resolution of [x] milli-seconds.
 _POWER_MEASUREMENT_RESOLUTION = 100
 
-_GPU_RELATIVE_PATH = 'content/test/data/gpu/'
+_GPU_RELATIVE_PATH = gpu_path_util.GPU_DATA_RELATIVE_PATH
 
 _DATA_PATHS = [
-    os.path.join(path_util.GetChromiumSrcDir(), _GPU_RELATIVE_PATH),
-    os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
+    gpu_path_util.GPU_DATA_DIR,
+    os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data')
 ]
 
 _VIDEO_TEST_SCRIPT = r"""
@@ -328,28 +330,32 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                                             repeat=options.repeat,
                                             bypass_ipg=options.bypass_ipg))
       yield ('Video_720_MP4',
-             _GPU_RELATIVE_PATH + 'power_video_bear_1280x720_mp4.html',
+             posixpath.join(_GPU_RELATIVE_PATH,
+                            'power_video_bear_1280x720_mp4.html'),
              _PowerMeasurementTestArguments(test_func='Video',
                                             repeat=options.repeat,
                                             bypass_ipg=options.bypass_ipg,
                                             underlay=False,
                                             fullscreen=False))
       yield ('Video_720_MP4_Underlay',
-             _GPU_RELATIVE_PATH + 'power_video_bear_1280x720_mp4.html',
+             posixpath.join(_GPU_RELATIVE_PATH,
+                            'power_video_bear_1280x720_mp4.html'),
              _PowerMeasurementTestArguments(test_func='Video',
                                             repeat=options.repeat,
                                             bypass_ipg=options.bypass_ipg,
                                             underlay=True,
                                             fullscreen=False))
       yield ('Video_720_MP4_Fullscreen',
-             _GPU_RELATIVE_PATH + 'power_video_bear_1280x720_mp4.html',
+             posixpath.join(_GPU_RELATIVE_PATH,
+                            'power_video_bear_1280x720_mp4.html'),
              _PowerMeasurementTestArguments(test_func='Video',
                                             repeat=options.repeat,
                                             bypass_ipg=options.bypass_ipg,
                                             underlay=False,
                                             fullscreen=True))
       yield ('Video_720_MP4_Underlay_Fullscreen',
-             _GPU_RELATIVE_PATH + 'power_video_bear_1280x720_mp4.html',
+             posixpath.join(_GPU_RELATIVE_PATH,
+                            'power_video_bear_1280x720_mp4.html'),
              _PowerMeasurementTestArguments(test_func='Video',
                                             repeat=options.repeat,
                                             bypass_ipg=options.bypass_ipg,
@@ -359,7 +365,6 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls):
     super(cls, PowerMeasurementIntegrationTest).SetUpProcess()
-    path_util.SetupTelemetryPaths()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     assert cls._url_mode is not None

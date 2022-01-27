@@ -6,12 +6,13 @@ import os
 import sys
 import json
 
+import gpu_path_util
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 
-html_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
+html_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
                          'data', 'gpu', 'webcodecs')
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
+data_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test',
+                         'data')
 four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 
 frame_sources = ['camera', 'capture', 'offscreen', 'hw_decoder', 'sw_decoder']

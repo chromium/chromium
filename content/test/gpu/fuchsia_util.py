@@ -6,19 +6,12 @@ import argparse
 import os
 import shutil
 import subprocess
-import sys
 import tempfile
 
-from gpu_tests import path_util
+from gpu_path_util import setup_fuchsia_paths  # pylint: disable=unused-import
 
-sys.path.insert(0,
-                os.path.join(path_util.GetChromiumSrcDir(), 'build', 'fuchsia'))
-# This is disable is not a candidate for removal after path modification is
-# consolidated due to it being Fuchsia-specific.
-# pylint: disable=wrong-import-position
 from common_args import (AddCommonArgs, AddTargetSpecificArgs, ConfigureLogging,
                          GetDeploymentTargetForArgs)
-# pylint: enable=wrong-import-position
 
 
 def RunTestOnFuchsiaDevice(script_cmd):

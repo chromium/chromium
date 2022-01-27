@@ -12,13 +12,11 @@ import sys
 from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 from telemetry.util import image_util
 from telemetry.util import rgba_color
-
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                         'data', 'gpu')
 
 
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -65,7 +63,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(cls, ScreenshotSyncIntegrationTest).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args):

@@ -4,15 +4,12 @@
 
 from __future__ import print_function
 
-import os
 import sys
 import time
 
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                         'data', 'gpu')
+import gpu_path_util
 
 
 class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
@@ -38,7 +35,7 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(NoopSleepIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   def _Navigate(self, test_path):
     url = self.UrlOfStaticFilePath(test_path)

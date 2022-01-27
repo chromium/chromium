@@ -8,17 +8,13 @@ import json
 import os
 import sys
 
-from gpu_tests import path_util
 import gpu_project_config
+import gpu_path_util
+from gpu_path_util import setup_telemetry_paths  # pylint: disable=unused-import
 
-path_util.SetupTelemetryPaths()
-
-# TODO(crbug.com/1289421): Remove this disable.
-# pylint: disable=wrong-import-position
 from telemetry.testing import browser_test_runner
 from telemetry.testing import serially_executed_browser_test_case
 from py_utils import discover
-# pylint: enable=wrong-import-position
 
 
 def PostprocessJSON(file_name, run_test_args):
@@ -90,8 +86,7 @@ def ProcessArgs(args, parser=None):
       rest_args_filtered.append('--retry-only-retry-on-failure-tests')
     rest_args_filtered.append('--retry-limit=2')
   rest_args_filtered.extend(
-      ['--repository-absolute-path',
-       path_util.GetChromiumSrcDir()])
+      ['--repository-absolute-path', gpu_path_util.CHROMIUM_SRC_DIR])
   return rest_args_filtered
 
 

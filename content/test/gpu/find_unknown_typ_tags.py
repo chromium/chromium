@@ -16,14 +16,11 @@ import json
 import os
 import subprocess
 
-from gpu_tests import path_util
-path_util.SetupTelemetryPaths()
-# TODO(crbug.com/1289421): Remove this disable.
-# pylint: disable=wrong-import-position
+from gpu_path_util import setup_typ_paths  # pylint: disable=unused-import
+
 from gpu_tests import gpu_integration_test
 
 from typ import expectations_parser
-# pylint: enable=wrong-import-position
 
 BQ_QUERY_TEMPLATE = """\
 WITH

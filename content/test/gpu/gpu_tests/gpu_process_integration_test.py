@@ -10,11 +10,12 @@ import time
 from devil.android.sdk import version_codes
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 _GPU_PAGE_TIMEOUT = 30
 
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
+data_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'content', 'test',
                          'data')
 
 test_harness_script = r"""

@@ -4,15 +4,13 @@
 
 import os
 
-from gpu_tests import path_util
+import gpu_path_util
+# pylint: disable=unused-import
+from gpu_path_util import setup_tools_perf_paths
+# pylint: enable=unused-import
 
-path_util.AddDirToPathIfNeeded(path_util.GetChromiumSrcDir(), 'tools', 'perf')
-
-# TODO(crbug.com/1289421): Remove this disable.
-# pylint: disable=wrong-import-position
 from chrome_telemetry_build import chromium_config
-# pylint: enable=wrong-import-position
 
 CONFIG = chromium_config.ChromiumConfig(
-    top_level_dir=path_util.GetGpuTestDir(),
-    benchmark_dirs=[os.path.join(path_util.GetGpuTestDir(), 'gpu_tests')])
+    top_level_dir=gpu_path_util.GPU_DIR,
+    benchmark_dirs=[os.path.join(gpu_path_util.GPU_DIR, 'gpu_tests')])
