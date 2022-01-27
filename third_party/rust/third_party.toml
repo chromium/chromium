@@ -33,4 +33,4 @@
 cxxbridge-cmd = "1"
 cxx = "1"
 serde = "1"
-serde_jsonrc = "0.1"
+serde_jsonrc = { version="0.1", features=["unbounded_depth"] }
