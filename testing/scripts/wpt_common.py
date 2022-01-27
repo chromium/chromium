@@ -112,12 +112,11 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             self._process_wpt_report(self.wptreport)
 
     def get_wpt_revision(self):
-        path_to_readme = os.path.join(
-            common.SRC_DIR, "third_party", "wpt_tools", "README.chromium")
-        with open(path_to_readme) as f:
+        path_to_version = os.path.join(WEB_TESTS_DIR, 'external', 'Version')
+        with open(path_to_version) as f:
             for line in f.readlines():
                 if line.startswith("Version:"):
-                    rev = line.rstrip()[len("Version:"):].strip()
+                    rev = line[len("Version:"):].strip()
                     return rev
         return None
 
