@@ -99,6 +99,9 @@ std::string ExpectedOsPlatform() {
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "Linux";
 #endif
+#if BUILDFLAG(IS_FUCHSIA)
+  return "Fuchsia";
+#endif
 }
 
 }  // namespace
