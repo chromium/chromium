@@ -416,9 +416,9 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       std::string() /* icon_resource_id */, base::Time() /* last_launch_time */,
       base::Time() /* install_time */, app.sticky, app.notifications_enabled,
       arc::mojom::ArcResizeLockState::UNDEFINED,
-      true /* resize_lock_needs_confirmation */, true /* ready */,
-      false /* suspended */, launchable /* show_in_launcher*/,
-      false /* shortcut */, launchable);
+      true /* resize_lock_needs_confirmation */,
+      ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
+      launchable /* show_in_launcher*/, false /* shortcut */, launchable);
 }
 
 MATCHER_P(ArcPackageInfoIs, package, "") {

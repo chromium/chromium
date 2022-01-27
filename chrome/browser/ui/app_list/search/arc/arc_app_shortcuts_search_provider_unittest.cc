@@ -76,7 +76,7 @@ class ArcAppShortcutsSearchProviderTest
         std::string() /* intent_uri */, std::string() /* icon_resource_id */,
         false /* sticky */, true /* notifications_enabled */,
         true /* app_ready */, false /* suspended */, false /* shortcut */,
-        launchable);
+        launchable, ArcAppListPrefs::WindowLayout());
     const std::string app_id =
         ArcAppListPrefs::GetAppId(app_info.package_name, app_info.activity);
     EXPECT_TRUE(prefs->GetApp(app_id));

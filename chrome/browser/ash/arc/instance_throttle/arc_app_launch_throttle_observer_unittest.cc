@@ -19,10 +19,15 @@ namespace {
 
 ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
     const std::string package_name) {
-  return ArcAppListPrefs::AppInfo(package_name, package_name, "", "", "",
-                                  base::Time(), base::Time(), true, true,
-                                  arc::mojom::ArcResizeLockState::UNDEFINED,
-                                  true, true, true, true, true, true);
+  return ArcAppListPrefs::AppInfo(
+      package_name, package_name, "" /* activity */, "" /* intent_uri */,
+      "" /* icon_resource_id */, base::Time() /* last_launch_time */,
+      base::Time() /* install_time */, true /* sticky */,
+      true /* notifications_enabled */,
+      arc::mojom::ArcResizeLockState::UNDEFINED,
+      true /* resize_lock_needs_confirmation */,
+      ArcAppListPrefs::WindowLayout(), true /* ready */, true /* suspended */,
+      true /* show_in_launcher */, true /* shortcut */, true /* launchable */);
 }
 
 class ArcAppLaunchThrottleObserverTest : public testing::Test {
