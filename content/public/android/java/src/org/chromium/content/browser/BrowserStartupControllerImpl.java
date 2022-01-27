@@ -221,7 +221,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                             : BrowserStartType.FULL_BROWSER;
                     if (contentStart() > 0) {
                         // Failed. The callbacks may not have run, so run them.
-                        enqueueCallbackExecution(STARTUP_FAILURE);
+                        enqueueCallbackExecutionOnStartupFailure();
                     }
                 }
             });
@@ -230,7 +230,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // If we missed the minimalBrowserStarted() call, launch the full browser now if needed.
             // Otherwise, minimalBrowserStarted() will handle the full browser launch.
             mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-            if (contentStart() > 0) enqueueCallbackExecution(STARTUP_FAILURE);
+            if (contentStart() > 0) enqueueCallbackExecutionOnStartupFailure();
         }
     }
 
@@ -253,7 +253,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
                 mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
                 if (contentStart() > 0) {
                     // Failed. The callbacks may not have run, so run them.
-                    enqueueCallbackExecution(STARTUP_FAILURE);
+                    enqueueCallbackExecutionOnStartupFailure();
                     startedSuccessfully = false;
                 }
             }
@@ -365,7 +365,7 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
             // If startFullBrowser() fails, execute the callbacks right away. Otherwise,
             // callbacks will be deferred until browser startup completes.
             mCurrentBrowserStartType = BrowserStartType.FULL_BROWSER;
-            if (contentStart() > 0) enqueueCallbackExecution(STARTUP_FAILURE);
+            if (contentStart() > 0) enqueueCallbackExecutionOnStartupFailure();
             return;
         }
 
@@ -405,15 +405,11 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         mMinimalBrowserStartedCallbacks.clear();
     }
 
-    // Queue the callbacks to run. Since running the callbacks clears the list it is safe to call
-    // this more than once.
-    private void enqueueCallbackExecution(final int startupFailure) {
-        PostTask.postTask(UiThreadTaskTraits.BOOTSTRAP, new Runnable() {
-            @Override
-            public void run() {
-                executeEnqueuedCallbacks(startupFailure);
-            }
-        });
+    // Post a task to tell the callbacks that startup failed. Since the execution clears the
+    // callback lists, it is safe to call this more than once.
+    private void enqueueCallbackExecutionOnStartupFailure() {
+        PostTask.postTask(
+                UiThreadTaskTraits.BOOTSTRAP, () -> executeEnqueuedCallbacks(STARTUP_FAILURE));
     }
 
     private void postStartupCompleted(final StartupCallback callback) {
