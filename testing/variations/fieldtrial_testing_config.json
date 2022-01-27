@@ -1525,33 +1525,6 @@
             ]
         }
     ],
-    "ChromeOSKstaled": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "MglruBehavior",
-                    "params": {
-                        "KstaledRatio": "1"
-                    },
-                    "enable_features": [
-                        "KstaledSwap"
-                    ]
-                },
-                {
-                    "name": "KswapdBehavior",
-                    "params": {
-                        "KstaledRatio": "0"
-                    },
-                    "enable_features": [
-                        "KstaledSwap"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSRawPSIMetrics": [
         {
             "platforms": [
