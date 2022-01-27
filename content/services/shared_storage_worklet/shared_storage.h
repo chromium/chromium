@@ -49,7 +49,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
       v8::Global<v8::Promise::Resolver> global_resolver,
       bool success,
       const std::string& error_message,
-      const std::string& result);
+      const std::u16string& result);
 
   void OnLengthOperationFinished(
       v8::Isolate* isolate,

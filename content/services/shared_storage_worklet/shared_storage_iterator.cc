@@ -151,10 +151,11 @@ v8::Local<v8::Object> SharedStorageIterator::CreateIteratorResult(
 
   switch (mode_) {
     case Mode::kKey:
-      dict.Set<std::string>("value", entry->key);
+      dict.Set<std::u16string>("value", entry->key);
       break;
     case Mode::kKeyValue:
-      dict.Set<std::vector<std::string>>("value", {entry->key, entry->value});
+      dict.Set<std::vector<std::u16string>>("value",
+                                            {entry->key, entry->value});
       break;
   }
   return obj;

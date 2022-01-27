@@ -68,17 +68,17 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
   // shared_storage_worklet::mojom::SharedStorageWorkletServiceClient.
-  void SharedStorageSet(const std::string& key,
-                        const std::string& value,
+  void SharedStorageSet(const std::u16string& key,
+                        const std::u16string& value,
                         bool ignore_if_present,
                         SharedStorageSetCallback callback) override;
-  void SharedStorageAppend(const std::string& key,
-                           const std::string& value,
+  void SharedStorageAppend(const std::u16string& key,
+                           const std::u16string& value,
                            SharedStorageAppendCallback callback) override;
-  void SharedStorageDelete(const std::string& key,
+  void SharedStorageDelete(const std::u16string& key,
                            SharedStorageDeleteCallback callback) override;
   void SharedStorageClear(SharedStorageClearCallback callback) override;
-  void SharedStorageGet(const std::string& key,
+  void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override;
   void SharedStorageKeys(
       mojo::PendingRemote<

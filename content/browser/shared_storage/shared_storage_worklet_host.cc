@@ -102,8 +102,8 @@ void SharedStorageWorkletHost::EnterKeepAliveOnDocumentDestroyed(
 }
 
 void SharedStorageWorkletHost::SharedStorageSet(
-    const std::string& key,
-    const std::string& value,
+    const std::u16string& key,
+    const std::u16string& value,
     bool ignore_if_present,
     SharedStorageSetCallback callback) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
@@ -114,8 +114,8 @@ void SharedStorageWorkletHost::SharedStorageSet(
 }
 
 void SharedStorageWorkletHost::SharedStorageAppend(
-    const std::string& key,
-    const std::string& value,
+    const std::u16string& key,
+    const std::u16string& value,
     SharedStorageAppendCallback callback) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
@@ -125,7 +125,7 @@ void SharedStorageWorkletHost::SharedStorageAppend(
 }
 
 void SharedStorageWorkletHost::SharedStorageDelete(
-    const std::string& key,
+    const std::u16string& key,
     SharedStorageDeleteCallback callback) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
@@ -144,7 +144,7 @@ void SharedStorageWorkletHost::SharedStorageClear(
 }
 
 void SharedStorageWorkletHost::SharedStorageGet(
-    const std::string& key,
+    const std::u16string& key,
     SharedStorageGetCallback callback) {
   DCHECK(add_module_state_ == AddModuleState::kInitiated);
 
