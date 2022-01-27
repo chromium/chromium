@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
@@ -58,6 +59,8 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   void TabWasHidden();
 
  private:
+  bool IsTabSwitchMetric2FeatureEnabled();
+
   // Records histograms and trace events for the current tab switch.
   void RecordHistogramsAndTraceEvents(
       bool is_incomplete,
@@ -74,7 +77,7 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
 
   // Cache the feature value for faster lookups.
-  bool is_tab_switch_metric2_feature_enabled_;
+  absl::optional<bool> is_tab_switch_metric2_feature_enabled_;
 
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
 };
