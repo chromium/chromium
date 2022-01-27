@@ -416,8 +416,11 @@ int CalendarView::PositionOfSelectedDate() const {
 }
 
 void CalendarView::ResetToToday() {
-  if (event_list_container_)
-    return;
+  if (event_list_container_) {
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+    set_should_months_animate(false);
+  }
 
   calendar_view_controller_->UpdateMonth(base::Time::Now());
   content_view_->RemoveChildViewT(previous_label_);
@@ -441,6 +444,12 @@ void CalendarView::ResetToToday() {
   SetMonthViews();
   ScrollToToday();
   MaybeResetContentViewFocusBehavior();
+
+  if (event_list_container_) {
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+    months_animation_restart_timer_.Reset();
+  }
 }
 
 void CalendarView::UpdateHeaders() {
@@ -491,8 +500,10 @@ void CalendarView::ScrollToToday() {
           calendar_view_controller_->GetTodayRowBottomHeight() >
       scroll_view_->GetVisibleRect().bottom()) {
     base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);
-    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
-                                   PositionOfToday());
+    scroll_view_->ScrollToPosition(
+        scroll_view_->vertical_scroll_bar(),
+        PositionOfToday() +
+            (event_list_container_ ? calendar_utils::kDateVerticalPadding : 0));
   }
 }
 
