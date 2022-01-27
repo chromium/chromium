@@ -86,44 +86,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetContext) {
   EXPECT_EQ(context(), help_bubble_->GetContext());
 }
 
-// Note: if this test is flaky, it may need to be moved to an interactive UI
-// test instead; please contact dfried@.
-// TODO(crbug/1290983): Disabled because of failures on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ToggleFocusForAccessibility DISABLED_ToggleFocusForAccessibility
-#else
-#define MAYBE_ToggleFocusForAccessibility ToggleFocusForAccessibility
-#endif
-IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest,
-                       MAYBE_ToggleFocusForAccessibility) {
-  HelpBubbleParams params;
-  params.body_text = u"Hello world!";
-  HelpBubbleButtonParams button_params;
-  button_params.text = u"Button";
-  button_params.is_default = true;
-  params.buttons.emplace_back(std::move(button_params));
-  help_bubble_ =
-      registry()->CreateHelpBubble(GetAnchorElement(), std::move(params));
-  HelpBubbleView* const bubble_view =
-      help_bubble_->AsA<HelpBubbleViews>()->bubble_view();
-
-  // Toggle focus to the help widget and then wait for it to be focused.
-  {
-    WidgetFocusWaiter waiter(bubble_view->GetWidget());
-    waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { help_bubble_->ToggleFocusForAccessibility(); }));
-    EXPECT_TRUE(bubble_view->GetButtonForTesting(0)->HasFocus());
-  }
-
-  // Toggle focus to the anchor view and wait for it to become focused.
-  {
-    WidgetFocusWaiter waiter(GetAnchorElement()->view()->GetWidget());
-    waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { help_bubble_->ToggleFocusForAccessibility(); }));
-    EXPECT_TRUE(GetAnchorElement()->view()->HasFocus());
-  }
-}
-
 // Note: if this test is flaky (especially the final EXPECT_TRUE) it may be
 // that the browser window completely fills the test display and expanding it
 // does not work. Please look at the error message reported and make
