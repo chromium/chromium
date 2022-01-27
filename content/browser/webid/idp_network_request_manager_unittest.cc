@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
+using ClientIdMetadata = content::IdpNetworkRequestManager::ClientIdMetadata;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
@@ -39,6 +40,9 @@ const int kTestIdpBrandIconIdealSize = 32;
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
+const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
+const char kTestClientIdMetadataEndpoint[] =
+    "https://idp.test/client_id_metadata_endpoint";
 const char kTestRevokeEndpoint[] = "https://idp.test/revoke_endpoint";
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
@@ -84,6 +88,50 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     return {parsed_accounts_response, parsed_accounts,
             std::move(parsed_idp_metadata)};
+  }
+
+  std::string SendTokenRequestAndWaitForResponse(
+      const char* account,
+      const char* request,
+      net::HttpStatusCode http_status = net::HTTP_OK) {
+    const char response[] = R"({"id_token": "token"})";
+    GURL token_endpoint(kTestTokenEndpoint);
+    test_url_loader_factory().AddResponse(token_endpoint.spec(), response,
+                                          http_status);
+
+    std::string token;
+    base::RunLoop run_loop;
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus status, const std::string& token_response) {
+          token = token_response;
+          run_loop.Quit();
+        });
+    manager().SendTokenRequest(token_endpoint, account, request,
+                               std::move(callback));
+    run_loop.Run();
+    return token;
+  }
+
+  ClientIdMetadata SendClientIdMetadataRequestAndWaitForResponse(
+      const char* client_id,
+      net::HttpStatusCode http_status = net::HTTP_OK) {
+    const char response[] = R"({})";
+    GURL client_id_endpoint(kTestClientIdMetadataEndpoint);
+    test_url_loader_factory().AddResponse(
+        client_id_endpoint.spec() + "?client_id=" + client_id, response,
+        http_status);
+
+    ClientIdMetadata data;
+    base::RunLoop run_loop;
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus status, ClientIdMetadata metadata) {
+          data = metadata;
+          run_loop.Quit();
+        });
+    manager().FetchClientIdMetadata(client_id_endpoint, client_id,
+                                    std::move(callback));
+    run_loop.Run();
+    return data;
   }
 
   RevokeResponse SendRevokeRequestAndWaitForResponse(
@@ -585,12 +633,90 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
 }
 
+// Tests that we send the correct referrer for account requests.
+TEST_F(IdpNetworkRequestManagerTest, AccountRequestReferrer) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestAccountsEndpoint), request.url);
+        EXPECT_EQ(request.request_body, nullptr);
+        EXPECT_EQ(false, request.referrer.is_valid());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  ASSERT_TRUE(called);
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+}
+
+// Tests the token request implementation.
+TEST_F(IdpNetworkRequestManagerTest, TokenRequest) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        EXPECT_EQ(GURL(kTestTokenEndpoint), request.url);
+        EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
+
+        // Check that the request body is correct (should be "request")
+        ASSERT_NE(request.request_body, nullptr);
+        ASSERT_EQ(1ul, request.request_body->elements()->size());
+        const network::DataElement& elem =
+            request.request_body->elements()->at(0);
+        ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
+        const network::DataElementBytes& byte_elem =
+            elem.As<network::DataElementBytes>();
+        EXPECT_EQ("request", byte_elem.AsStringPiece());
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+  std::string token = SendTokenRequestAndWaitForResponse("account", "request");
+  ASSERT_TRUE(called);
+  ASSERT_EQ("token", token);
+}
+
+// Tests the client id metadata implementation.
+TEST_F(IdpNetworkRequestManagerTest, ClientIdMetadata) {
+  bool called = false;
+  auto interceptor =
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        called = true;
+        std::string url_string =
+            std::string(kTestClientIdMetadataEndpoint) + "?client_id=xxx";
+        EXPECT_EQ(GURL(url_string), request.url);
+        EXPECT_EQ(request.request_body, nullptr);
+        EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
+      });
+  test_url_loader_factory().SetInterceptor(interceptor);
+  ClientIdMetadata data = SendClientIdMetadataRequestAndWaitForResponse("xxx");
+  ASSERT_TRUE(called);
+  ASSERT_EQ("", data.privacy_policy_url);
+  ASSERT_EQ("", data.terms_of_service_url);
+}
+
 // Tests the revoke implementation.
 TEST_F(IdpNetworkRequestManagerTest, Revoke) {
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         called = true;
+        EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
+        // Check that the request body is correct
         ASSERT_NE(request.request_body, nullptr);
         ASSERT_EQ(1ul, request.request_body->elements()->size());
         const network::DataElement& elem =

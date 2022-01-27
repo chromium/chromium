@@ -211,11 +211,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void OnLogoutCompleted(std::unique_ptr<std::string> response_body);
 
   std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
-      const GURL& url) const;
+      const GURL& url,
+      bool send_referrer) const;
   std::unique_ptr<network::SimpleURLLoader> CreateCredentialedUrlLoader(
       const GURL& url,
-      absl::optional<std::string> request_body = absl::nullopt,
-      absl::optional<net::ReferrerPolicy> policy = absl::nullopt) const;
+      bool send_referrer,
+      absl::optional<std::string> request_body = absl::nullopt) const;
 
   // URL of the Identity Provider.
   GURL provider_;
