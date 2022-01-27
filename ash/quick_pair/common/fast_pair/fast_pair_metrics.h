@@ -257,6 +257,9 @@ void RecordConfirmPasskeyConfirmTime(base::TimeDelta total_confirm_time);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPairFailureRetry(int num_retries);
+
 }  // namespace quick_pair
 }  // namespace ash
 

@@ -755,6 +755,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.PairRetry.Count" units="count"
+    expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the count of the number of retry attempts needed for a successful
+    Fast Pair pairing, which can be zero if no retry was needed. Emitted
+    following the successful pairing. There are only three retry attempts before
+    failure is declared. No metric is emitted on failure.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

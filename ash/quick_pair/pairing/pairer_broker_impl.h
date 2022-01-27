@@ -59,6 +59,7 @@ class PairerBrokerImpl final : public PairerBroker {
 
   base::flat_map<std::string, std::unique_ptr<FastPairPairer>>
       fast_pair_pairers_;
+  base::flat_map<std::string, int> pair_failure_counts_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<FastPairUnpairHandler> fast_pair_unpair_handler_;
   base::ObserverList<Observer> observers_;
