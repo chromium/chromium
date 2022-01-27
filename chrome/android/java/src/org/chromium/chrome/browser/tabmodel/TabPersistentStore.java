@@ -647,8 +647,9 @@ public class TabPersistentStore {
             throws InterruptedException, ExecutionException {
         // If CriticalPersistedTabData flag is on and CriticalPersistedTabData was retrieved, no
         // need to attempt to retrieve TabState.
-        if (isCriticalPersistedTabDataEnabled() && serializedCriticalPersistedTabData != null
-                && serializedCriticalPersistedTabData.limit() != 0) {
+        if (isCriticalPersistedTabDataEnabled()
+                && !CriticalPersistedTabData.isEmptySerialization(
+                        serializedCriticalPersistedTabData)) {
             return null;
         }
         // If the Tab being restored is the Active Tab and the corresponding TabState prefetch
@@ -675,7 +676,9 @@ public class TabPersistentStore {
         boolean isIncognito = isIncognitoTabBeingRestored(
                 tabToRestore, tabState, serializedCriticalPersistedTabData);
 
-        if (tabState == null && serializedCriticalPersistedTabData == null) {
+        if (tabState == null
+                && CriticalPersistedTabData.isEmptySerialization(
+                        serializedCriticalPersistedTabData)) {
             if (tabToRestore.isIncognito == null) {
                 Log.w(TAG, "Failed to restore tab: not enough info about its type was available.");
                 return;
@@ -719,7 +722,9 @@ public class TabPersistentStore {
         }
 
         int tabId = tabToRestore.id;
-        if (tabState != null || serializedCriticalPersistedTabData != null) {
+        if (tabState != null
+                || !CriticalPersistedTabData.isEmptySerialization(
+                        serializedCriticalPersistedTabData)) {
             mTabCreatorManager.getTabCreator(isIncognito)
                     .createFrozenTab(tabState, serializedCriticalPersistedTabData, tabToRestore.id,
                             isIncognito, restoredIndex);
@@ -1491,7 +1496,7 @@ public class TabPersistentStore {
                                                 "Tabs.SavedTabLoadTime.CriticalPersistedTabData.%s",
                                                 res == null ? "Null" : "Exists"),
                                         SystemClock.elapsedRealtime() - startTime);
-                                if (res == null) {
+                                if (CriticalPersistedTabData.isEmptySerialization(res)) {
                                     loadTabState();
                                 } else {
                                     completeLoad(mTabToRestore, null, res);
@@ -1696,7 +1701,8 @@ public class TabPersistentStore {
             Log.i(TAG, "#isIncognitoTabBeingRestored from tabDetails:  " + tabDetails.isIncognito);
             // The TabState couldn't be restored, but we have some information about the tab.
             return tabDetails.isIncognito;
-        } else if (serializedCriticalPersistedTabData != null) {
+        } else if (!CriticalPersistedTabData.isEmptySerialization(
+                           serializedCriticalPersistedTabData)) {
             return FilePersistedTabDataStorage.isIncognito(tabDetails.id);
         } else {
             Log.i(TAG, "#isIncognitoTabBeingRestored defaulting to false");
@@ -1756,7 +1762,7 @@ public class TabPersistentStore {
                             }
                             ByteBuffer res =
                                     CriticalPersistedTabData.restore(activeTabId, isIncognito);
-                            if (res == null || res.limit() == 0) {
+                            if (CriticalPersistedTabData.isEmptySerialization(res)) {
                                 prefetchActiveTabTask(activeTabId, taskRunner);
                                 return null;
                             }

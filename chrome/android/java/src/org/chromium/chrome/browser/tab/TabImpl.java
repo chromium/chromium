@@ -227,7 +227,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         mIsTabSaveEnabledSupplier.set(false);
         mId = TabIdManager.getInstance().generateValidId(id);
         mIncognito = incognito;
-        if (serializedCriticalPersistedTabData != null && useCriticalPersistedTabData()) {
+        if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)
+                && useCriticalPersistedTabData()) {
             CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData, true);
             mUsedCriticalPersistedTabData = true;
         }
