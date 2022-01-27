@@ -321,10 +321,14 @@ void BreadcrumbPersistentStorageManager::WriteEvents() {
 
   const base::TimeDelta time_delta_since_last_write =
       base::TimeTicks::Now() - last_written_time_;
-  // Delay writing the event to disk if an event was just written or if the size
-  // of exisiting breadcrumbs is not yet known.
-  if (time_delta_since_last_write < kMinDelayBetweenWrites ||
-      !current_mapped_file_position_) {
+  if (!current_mapped_file_position_) {
+    // If the size of the existing breadcrumbs is not yet known, try again in
+    // |kMinDelayBetweenWrites|.
+    write_timer_.Start(FROM_HERE, kMinDelayBetweenWrites, this,
+                       &BreadcrumbPersistentStorageManager::WriteEvents);
+  } else if (time_delta_since_last_write < kMinDelayBetweenWrites) {
+    // If an event was just written, delay writing the event to disk in order to
+    // limit overhead.
     write_timer_.Start(FROM_HERE,
                        kMinDelayBetweenWrites - time_delta_since_last_write,
                        this, &BreadcrumbPersistentStorageManager::WriteEvents);
