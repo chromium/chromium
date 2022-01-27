@@ -37,20 +37,18 @@ TARGET_RESULTS_PER_QUERY = 20000
 # Subquery for getting all try builds that were used for CL submission. 30 days
 # is chosen because the ResultDB tables we pull data from only keep data around
 # for 30 days.
-SUBMITTED_BUILDS_SUBQUERY = """\
-  submitted_builds AS (
+SUBMITTED_BUILDS_TEMPLATE = """\
     SELECT
       CONCAT("build-", CAST(unnested_builds.id AS STRING)) as id
     FROM
-      `commit-queue.chromium.attempts`,
+      `commit-queue.{project_view}.attempts`,
       UNNEST(builds) as unnested_builds,
       UNNEST(gerrit_changes) as unnested_changes
     WHERE
       unnested_builds.host = "cr-buildbucket.appspot.com"
       AND unnested_changes.submit_status = "SUCCESS"
       AND start_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                     INTERVAL 30 DAY)
-  ),"""
+                                     INTERVAL 30 DAY)"""
 
 
 class BigQueryQuerier(object):

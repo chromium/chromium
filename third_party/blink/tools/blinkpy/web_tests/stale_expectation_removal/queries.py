@@ -78,6 +78,12 @@ WITH
     builder_type=common_constants.BuilderTypes.CI),
            final_selector_query=FINAL_SELECTOR_QUERY)
 
+SUBMITTED_BUILDS_SUBQUERY = """\
+  submitted_builds AS (
+{chromium_builds}
+  ),""".format(chromium_builds=queries_module.SUBMITTED_BUILDS_TEMPLATE.format(
+    project_view='chromium'))
+
 # Same as CI_BQ_QUERY_TEMPLATE, but for tryjobs. Only data from builds that
 # were used for CL submission is considered.
 TRY_BQ_QUERY_TEMPLATE = """\
@@ -99,7 +105,7 @@ WITH
   ),
 {results_subquery}
 {final_selector_query}
-""".format(submitted_builds_subquery=queries_module.SUBMITTED_BUILDS_SUBQUERY,
+""".format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY,
            results_subquery=RESULTS_SUBQUERY.format(
                builder_type=common_constants.BuilderTypes.TRY),
            final_selector_query=FINAL_SELECTOR_QUERY)
