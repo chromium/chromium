@@ -80,6 +80,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowAddAccountDialogCallsMojo);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           GetAccountsHangsWhenRemoteIsNull);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowAddAccountDialogUMA);
   FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
                            ShowReauthAccountDialogCallsMojo);
@@ -101,7 +103,21 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   FRIEND_TEST_ALL_PREFIXES(
       AccountManagerFacadeImplTest,
       AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization);
+
+  // Status of the mojo connection.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FacadeMojoStatus {
+    kOk = 0,
+    kUninitialized = 1,
+    kNoRemote = 2,
+    kVersionMismatch = 3,
+
+    kMaxValue = kVersionMismatch
+  };
+
   static std::string GetAccountAdditionResultStatusHistogramNameForTesting();
+  static std::string GetAccountsMojoStatusHistogramNameForTesting();
 
   // A utility class to fetch access tokens over Mojo.
   class AccessTokenFetcher;

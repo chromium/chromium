@@ -1138,6 +1138,13 @@ Unknown properties are collapsed to zero. -->
       label="Re-authentication flow triggered from a Chrome extension"/>
 </enum>
 
+<enum name="AccountManagerFacadeMojoStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Uninitialized"/>
+  <int value="2" label="No remote"/>
+  <int value="3" label="Version mismatch"/>
+</enum>
+
 <enum name="AccountManagerTokenLoadStatus">
   <int value="0" label="Success"/>
   <int value="1" label="File Read Error"/>
