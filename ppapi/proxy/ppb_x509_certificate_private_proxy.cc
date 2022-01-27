@@ -26,9 +26,6 @@ class X509CertificatePrivate : public PPB_X509Certificate_Private_Shared {
 
   bool ParseDER(const std::vector<char>& der,
                 PPB_X509Certificate_Fields* result) override;
-
- private:
-  void SendToBrowser(IPC::Message* msg);
 };
 
 X509CertificatePrivate::X509CertificatePrivate(PP_Instance instance)
@@ -42,10 +39,6 @@ bool X509CertificatePrivate::ParseDER(const std::vector<char>& der,
                                       PPB_X509Certificate_Fields* result) {
   return PPB_X509Util_Shared::GetCertificateFields(der.data(), der.size(),
                                                    result);
-}
-
-void X509CertificatePrivate::SendToBrowser(IPC::Message* msg) {
-  PluginGlobals::Get()->GetBrowserSender()->Send(msg);
 }
 
 }  // namespace
