@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_personalization_app_resources.h"
 #include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
@@ -126,10 +127,12 @@ void AddBooleans(content::WebUIDataSource* source) {
 
 PersonalizationAppUI::PersonalizationAppUI(
     content::WebUI* web_ui,
+    std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
     std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
     std::unique_ptr<PersonalizationAppUserProvider> user_provider,
     std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
     : ui::MojoWebUIController(web_ui),
+      ambient_provider_(std::move(ambient_provider)),
       theme_provider_(std::move(theme_provider)),
       user_provider_(std::move(user_provider)),
       wallpaper_provider_(std::move(wallpaper_provider)) {
@@ -163,6 +166,12 @@ PersonalizationAppUI::PersonalizationAppUI(
 }
 
 PersonalizationAppUI::~PersonalizationAppUI() = default;
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<personalization_app::mojom::AmbientProvider>
+        receiver) {
+  ambient_provider_->BindInterface(std::move(receiver));
+}
 
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::ThemeProvider> receiver) {

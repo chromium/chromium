@@ -280,3 +280,10 @@ interface UserProvider {
   // Select the downloaded profile image as the user image.
   SelectProfileImage();
 };
+
+// Provides APIs to expose Ambient mode settings.
+// Used by the Personalization Hub.
+interface AmbientProvider{
+    // Boolean pref for whether ambient mode is enabled.
+    IsAmbientModeEnabled() => (bool enabled);
+};

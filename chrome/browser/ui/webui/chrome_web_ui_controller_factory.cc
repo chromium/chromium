@@ -210,6 +210,7 @@
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_wallpaper_provider_impl.h"
@@ -588,15 +589,17 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
 template <>
 WebUIController* NewWebUI<ash::PersonalizationAppUI>(WebUI* web_ui,
                                                      const GURL& url) {
+  auto ambient_provider =
+      std::make_unique<PersonalizationAppAmbientProviderImpl>(web_ui);
   auto theme_provider =
       std::make_unique<PersonalizationAppThemeProviderImpl>(web_ui);
   auto user_provider =
       std::make_unique<PersonalizationAppUserProviderImpl>(web_ui);
   auto wallpaper_provider =
       std::make_unique<PersonalizationAppWallpaperProviderImpl>(web_ui);
-  return new ash::PersonalizationAppUI(web_ui, std::move(theme_provider),
-                                       std::move(user_provider),
-                                       std::move(wallpaper_provider));
+  return new ash::PersonalizationAppUI(
+      web_ui, std::move(ambient_provider), std::move(theme_provider),
+      std::move(user_provider), std::move(wallpaper_provider));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
