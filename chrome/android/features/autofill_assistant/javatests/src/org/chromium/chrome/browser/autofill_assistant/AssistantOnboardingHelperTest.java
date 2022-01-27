@@ -68,7 +68,7 @@ public class AssistantOnboardingHelperTest {
                     AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled();
             assert mModuleEntry != null;
             AssistantDependencies dependencies =
-                    mModuleEntry.createDependenciesFactory().createDependencies(
+                    new AssistantStaticDependenciesChrome().createDependencies(
                             mTestRule.getActivity());
             mOnboardingHelper =
                     mModuleEntry.createOnboardingHelper(mTestRule.getWebContents(), dependencies);

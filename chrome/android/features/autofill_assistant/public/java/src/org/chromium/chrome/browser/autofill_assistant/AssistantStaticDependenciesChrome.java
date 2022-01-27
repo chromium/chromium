@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.DimenRes;
@@ -35,6 +36,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
             mNativePointer = AssistantStaticDependenciesChromeJni.get().init(this);
         }
         return mNativePointer;
+    }
+
+    @Override
+    public AssistantDependencies createDependencies(Activity activity) {
+        return new AssistantDependenciesChrome(activity);
     }
 
     @Override

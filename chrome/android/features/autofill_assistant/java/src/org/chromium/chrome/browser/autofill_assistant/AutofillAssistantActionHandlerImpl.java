@@ -29,15 +29,15 @@ import java.util.Map;
  */
 class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandler {
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
-    private final AssistantDependenciesFactory mDependenciesFactory;
+    private final AssistantStaticDependencies mStaticDependencies;
     private final Supplier<WebContents> mWebContentsSupplier;
 
     AutofillAssistantActionHandlerImpl(OnboardingCoordinatorFactory onboardingCoordinatorFactory,
             Supplier<WebContents> webContentsSupplier,
-            AssistantDependenciesFactory dependenciesFactory) {
+            AssistantStaticDependencies staticDependencies) {
         mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
         mWebContentsSupplier = webContentsSupplier;
-        mDependenciesFactory = dependenciesFactory;
+        mStaticDependencies = staticDependencies;
     }
 
     @Override
@@ -142,7 +142,7 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         }
 
         return AutofillAssistantClient.createForWebContents(
-                webContents, mDependenciesFactory.createDependencies(activity));
+                webContents, mStaticDependencies.createDependencies(activity));
     }
 
     /**

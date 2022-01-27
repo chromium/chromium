@@ -20,7 +20,8 @@ public class AutofillAssistantTabHelper {
     public static void createForTab(Tab tab) {
         Starter starter = new Starter(()
                                               -> TabUtils.getActivity(tab),
-                tab.getWebContents(), AssistantDependencyUtilsChrome::isGsa,
+                tab.getWebContents(), new AssistantStaticDependenciesChrome(),
+                AssistantDependencyUtilsChrome::isGsa,
                 AssistantDependencyUtilsChrome::isMakeSearchesAndBrowsingBetterSettingEnabled,
                 new AssistantModuleInstallUiProviderChrome(tab));
         AssistantDependencyUtilsChrome.attachTabObserver(tab, starter);

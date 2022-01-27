@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.DimenRes;
@@ -22,6 +23,11 @@ import org.chromium.ui.util.AccessibilityUtil;
 public interface AssistantStaticDependencies {
     @CalledByNative
     long getNativePointer();
+
+    /**
+     * Create the Activity specific dependencies.
+     * */
+    AssistantDependencies createDependencies(Activity activity);
 
     AccessibilityUtil getAccessibilityUtil();
 

@@ -110,10 +110,7 @@ public class AutofillAssistantOverlayUiTest {
                                     activity.getBrowserControlsManager()),
                     activity.getCompositorViewHolderForTesting(),
                     mTestRule.getActivity().getRootUiCoordinatorForTesting().getScrimCoordinator(),
-                    model,
-                    new AssistantDependenciesFactoryChrome()
-                            .createStaticDependencies()
-                            .getAccessibilityUtil());
+                    model, new AssistantStaticDependenciesChrome().getAccessibilityUtil());
         });
     }
 

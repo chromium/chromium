@@ -104,8 +104,7 @@ public class AutofillAssistantUiTest {
     }
 
     private AssistantCoordinator createAndShowAssistantCoordinator() {
-        AssistantStaticDependencies staticDependencies =
-                new AssistantDependenciesFactoryChrome().createStaticDependencies();
+        AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             AssistantCoordinator coordinator = new AssistantCoordinator(getActivity(),
                     initializeBottomSheet(),

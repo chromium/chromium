@@ -30,6 +30,7 @@ public class Starter implements AssistantTabObserver, UserData {
     /** A supplier for the activity of the tab that this starter tracks. */
     private final Supplier<Activity> mActivitySupplier;
 
+    private final AssistantStaticDependencies mStaticDependencies;
     private final AssistantIsGsaFunction mIsGsaFunction;
     private final AssistantIsMsbbEnabledFunction mIsMsbbEnabledFunction;
     private final AssistantModuleInstallUi.Provider mModuleInstallUiProvider;
@@ -68,10 +69,11 @@ public class Starter implements AssistantTabObserver, UserData {
      * track of changes.
      */
     public Starter(Supplier<Activity> activitySupplier, @Nullable WebContents webContents,
-            AssistantIsGsaFunction isGsaFunction,
+            AssistantStaticDependencies staticDependencies, AssistantIsGsaFunction isGsaFunction,
             AssistantIsMsbbEnabledFunction isMsbbEnabledFunction,
             AssistantModuleInstallUi.Provider moduleInstallUiProvider) {
         mActivitySupplier = activitySupplier;
+        mStaticDependencies = staticDependencies;
         mIsGsaFunction = isGsaFunction;
         mIsMsbbEnabledFunction = isMsbbEnabledFunction;
         mModuleInstallUiProvider = moduleInstallUiProvider;
@@ -304,8 +306,7 @@ public class Starter implements AssistantTabObserver, UserData {
     private Object[] getOrCreateDependenciesAndOnboardingHelper() {
         if (mDependencies == null) {
             AutofillAssistantModuleEntry module = getModuleOrThrow();
-            mDependencies =
-                    module.createDependenciesFactory().createDependencies(mActivitySupplier.get());
+            mDependencies = mStaticDependencies.createDependencies(mActivitySupplier.get());
             mOnboardingHelper = module.createOnboardingHelper(mWebContents, mDependencies);
         }
 

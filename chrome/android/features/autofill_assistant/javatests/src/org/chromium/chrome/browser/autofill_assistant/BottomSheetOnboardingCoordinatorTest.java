@@ -109,8 +109,7 @@ public class BottomSheetOnboardingCoordinatorTest {
                                     .getRootUiCoordinatorForTesting()
                                     .getScrimCoordinator();
 
-        AssistantStaticDependencies staticDependencies =
-                new AssistantDependenciesFactoryChrome().createStaticDependencies();
+        AssistantStaticDependencies staticDependencies = new AssistantStaticDependenciesChrome();
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
                 mBottomSheetController,
                 ()

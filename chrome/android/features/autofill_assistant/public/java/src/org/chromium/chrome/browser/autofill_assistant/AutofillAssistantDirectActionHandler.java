@@ -271,6 +271,6 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
         if (entry == null) return null;
 
         return entry.createActionHandler(mContext, mBottomSheetController, mBrowserControls,
-                mRootView, mWebContentsSupplier, entry.createDependenciesFactory());
+                mRootView, mWebContentsSupplier, new AssistantStaticDependenciesChrome());
     }
 }

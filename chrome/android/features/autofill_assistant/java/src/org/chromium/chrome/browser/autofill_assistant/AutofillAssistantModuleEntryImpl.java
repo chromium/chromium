@@ -21,11 +21,6 @@ import org.chromium.content_public.browser.WebContents;
 @UsedByReflection("AutofillAssistantModuleEntryProvider.java")
 public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModuleEntry {
     @Override
-    public AssistantDependenciesFactory createDependenciesFactory() {
-        return new AssistantDependenciesFactoryChrome();
-    }
-
-    @Override
     public AssistantOnboardingHelper createOnboardingHelper(
             WebContents webContents, AssistantDependencies dependencies) {
         return new AssistantOnboardingHelperImpl(webContents, dependencies);
@@ -36,15 +31,13 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, View rootView,
             Supplier<WebContents> webContentsSupplier,
-            AssistantDependenciesFactory dependenciesFactory) {
-        AssistantStaticDependencies staticDependencies =
-                dependenciesFactory.createStaticDependencies();
+            AssistantStaticDependencies staticDependencies) {
         return new AutofillAssistantActionHandlerImpl(
                 new OnboardingCoordinatorFactory(context, bottomSheetController,
                         ()
                                 -> new AssistantBrowserControlsChrome(browserControls),
                         rootView, staticDependencies.getAccessibilityUtil(),
                         staticDependencies.createInfoPageUtil()),
-                webContentsSupplier, dependenciesFactory);
+                webContentsSupplier, staticDependencies);
     }
 }

@@ -37,14 +37,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
                 Supplier<WebContents> webContentsSupplier,
-                AssistantDependenciesFactory dependenciesFactory) {
+                AssistantStaticDependencies staticDependencies) {
             super(new OnboardingCoordinatorFactory(context, bottomSheetController,
                           ()
                                   -> new AssistantBrowserControlsChrome(browserControls),
-                          rootView,
-                          dependenciesFactory.createStaticDependencies().getAccessibilityUtil(),
-                          dependenciesFactory.createStaticDependencies().createInfoPageUtil()),
-                    webContentsSupplier, dependenciesFactory);
+                          rootView, staticDependencies.getAccessibilityUtil(),
+                          staticDependencies.createInfoPageUtil()),
+                    webContentsSupplier, staticDependencies);
         }
 
         @Override
@@ -63,11 +62,6 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     /** Mock module entry. */
     static class MockAutofillAssistantModuleEntry implements AutofillAssistantModuleEntry {
         @Override
-        public AssistantDependenciesFactory createDependenciesFactory() {
-            return new AssistantDependenciesFactoryChrome();
-        }
-
-        @Override
         public AssistantOnboardingHelper createOnboardingHelper(
                 WebContents webContents, AssistantDependencies dependencies) {
             return null;
@@ -78,9 +72,9 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
                 Supplier<WebContents> webContentsSupplier,
-                AssistantDependenciesFactory dependenciesFactory) {
+                AssistantStaticDependencies staticDependencies) {
             return new MockAutofillAssistantActionHandler(context, bottomSheetController,
-                    browserControls, rootView, webContentsSupplier, dependenciesFactory);
+                    browserControls, rootView, webContentsSupplier, staticDependencies);
         }
     }
 
