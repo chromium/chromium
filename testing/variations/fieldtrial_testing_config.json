@@ -5890,26 +5890,6 @@
             ]
         }
     ],
-    "TabRanker": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "disable_background_log_with_TabRanker": "false",
-                        "number_of_oldest_tabs_to_log_with_TabRanker": "0",
-                        "number_of_oldest_tabs_to_score_with_TabRanker": "0"
-                    },
-                    "enable_features": [
-                        "TabRanker"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabSearchFuzzySearch": [
         {
             "platforms": [
