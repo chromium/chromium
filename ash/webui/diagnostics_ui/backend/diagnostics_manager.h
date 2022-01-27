@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "ui/web_dialogs/web_dialog_ui.h"
-
 namespace ash {
 namespace diagnostics {
 
@@ -22,8 +20,7 @@ class InputDataProvider;
 // used by the Diagnostics SWA.
 class DiagnosticsManager {
  public:
-  DiagnosticsManager(SessionLogHandler* session_log_handler,
-                     content::WebUI* webui);
+  explicit DiagnosticsManager(SessionLogHandler* session_log_handler);
   ~DiagnosticsManager();
 
   DiagnosticsManager(const DiagnosticsManager&) = delete;
@@ -32,14 +29,13 @@ class DiagnosticsManager {
   NetworkHealthProvider* GetNetworkHealthProvider() const;
   SystemDataProvider* GetSystemDataProvider() const;
   SystemRoutineController* GetSystemRoutineController() const;
-  InputDataProvider* GetInputDataProvider();
+  InputDataProvider* GetInputDataProvider() const;
 
  private:
   std::unique_ptr<NetworkHealthProvider> network_health_provider_;
   std::unique_ptr<SystemDataProvider> system_data_provider_;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
   std::unique_ptr<InputDataProvider> input_data_provider_;
-  content::WebUI* webui_;
 };
 
 }  // namespace diagnostics

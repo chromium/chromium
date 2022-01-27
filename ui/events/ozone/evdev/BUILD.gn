@@ -184,7 +184,6 @@ component("evdev") {
   }
 
   visibility += [
-    "//ash/webui/diagnostics_ui/*",
     "//ui/chromeos/*",
     "//ui/ozone/*",
   ]
