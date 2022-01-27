@@ -103,7 +103,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   void CaretBlinkTimerFired(TimerBase*);
   void UpdateAppearance();
   void SetVisibleIfActive(bool visible);
-  bool IsVisibleIfActive() const { return effect_->Opacity() != 0; }
+  bool IsVisibleIfActive() const { return effect_->Opacity() == 1.f; }
 
   const Member<const SelectionEditor> selection_editor_;
   const Member<LocalFrame> frame_;

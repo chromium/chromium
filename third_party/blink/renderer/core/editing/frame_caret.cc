@@ -85,7 +85,10 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
     bool visible,
     const TransformPaintPropertyNodeOrAlias& local_transform_space) const {
   EffectPaintPropertyNode::State state;
-  state.opacity = visible ? 1.f : 0.f;
+  // Use 0.001f instead of 0 to ensure cc will add quad for the caret layer.
+  // This is especially useful on Mac to limit the damage during caret blinking
+  // within the CALayer for the caret.
+  state.opacity = visible ? 1.f : 0.001f;
   state.local_transform_space = &local_transform_space;
   DEFINE_STATIC_LOCAL(
       CompositorElementId, element_id,
