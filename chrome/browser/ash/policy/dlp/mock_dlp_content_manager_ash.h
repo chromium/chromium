@@ -40,6 +40,18 @@ class MockDlpContentManagerAsh : public DlpContentManagerAsh {
                const std::u16string& application_title,
                OnDlpRestrictionCheckedCallback callback),
               (override));
+  MOCK_METHOD(void,
+              OnScreenCaptureStarted,
+              (const std::string&,
+               std::vector<content::DesktopMediaID>,
+               const std::u16string&,
+               base::RepeatingClosure,
+               content::MediaStreamUI::StateChangeCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnScreenCaptureStopped,
+              (const std::string&, const content::DesktopMediaID&),
+              (override));
 
  protected:
   void Init() override;

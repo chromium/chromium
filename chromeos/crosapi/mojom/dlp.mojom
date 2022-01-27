@@ -14,6 +14,7 @@ enum DlpRestrictionLevel {
   kReport = 1,
   kWarn = 2,
   kBlock = 3,
+  [MinVersion=2] kNotSet = 4,
 };
 
 // Corresponds to RestrictionLevelAndUrl struct.
@@ -39,11 +40,22 @@ struct ScreenShareArea {
   string? window_id;
 };
 
+// Callback to control the state (pause/resume) of a remote screen share.
+[Stable]
+interface StateChangeDelegate {
+  // Request to pause the screen share.
+  OnPause@0();
+  // Request to resume the screen share.
+  OnResume@1();
+  // Request to stop the screen share. Should be called only once.
+  OnStop@2();
+};
+
 // Interface to communicate from Lacros DLP layer to Ash. Used to notify Ash
 // about changes in restrictions applied to web content in Lacros.
 //
-// Next MinVersion: 2
-// Next ID: 2
+// Next MinVersion: 3
+// Next ID: 4
 [Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
 interface Dlp {
   // Called when |restrictions| are changed for window with |window_id|.
@@ -53,4 +65,12 @@ interface Dlp {
   [MinVersion=1] CheckScreenShareRestriction@1(
       ScreenShareArea area, mojo_base.mojom.String16 application_title) =>
           (bool proceed);
+
+  // Called when screen share in Lacros is started.
+  [MinVersion=2] OnScreenShareStarted@2(string label, ScreenShareArea area,
+      mojo_base.mojom.String16 application_title,
+      pending_remote<StateChangeDelegate> delegate);
+
+  // Called when screen share in Lacros is stopped.
+  [MinVersion=2] OnScreenShareStopped@3(string label, ScreenShareArea area);
 };

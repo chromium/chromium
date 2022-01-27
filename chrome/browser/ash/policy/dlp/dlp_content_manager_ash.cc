@@ -251,16 +251,8 @@ void DlpContentManagerAsh::OnScreenCaptureStarted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const content::DesktopMediaID& id : screen_capture_ids) {
-    auto screen_share_info = std::make_unique<ScreenShareInfo>(
-        label, id, application_title, stop_callback, state_change_callback);
-    DCHECK(std::find_if(
-               running_screen_shares_.begin(), running_screen_shares_.end(),
-               [&screen_share_info](
-                   const std::unique_ptr<ScreenShareInfo>& info) -> bool {
-                 return info && *info == *screen_share_info;
-               }) == running_screen_shares_.end());
-
-    running_screen_shares_.push_back(std::move(screen_share_info));
+    AddScreenShare(label, id, application_title, stop_callback,
+                   state_change_callback);
   }
   CheckRunningScreenShares();
 }
@@ -290,122 +282,6 @@ void DlpContentManagerAsh::SetDlpContentManagerAshForTesting(
 /* static */
 void DlpContentManagerAsh::ResetDlpContentManagerAshForTesting() {
   g_dlp_content_manager = nullptr;
-}
-
-DlpContentManagerAsh::ScreenShareInfo::ScreenShareInfo(
-    const std::string& label,
-    const content::DesktopMediaID& media_id,
-    const std::u16string& application_title,
-    base::OnceClosure stop_callback,
-    content::MediaStreamUI::StateChangeCallback state_change_callback)
-    : label_(label),
-      media_id_(media_id),
-      application_title_(application_title),
-      stop_callback_(std::move(stop_callback)),
-      state_change_callback_(std::move(state_change_callback)) {}
-
-DlpContentManagerAsh::ScreenShareInfo::~ScreenShareInfo() {
-  // Hide notifications if necessary.
-  HideNotifications();
-}
-
-bool DlpContentManagerAsh::ScreenShareInfo::operator==(
-    const DlpContentManagerAsh::ScreenShareInfo& other) const {
-  return label_ == other.label_ && media_id_ == other.media_id_;
-}
-
-bool DlpContentManagerAsh::ScreenShareInfo::operator!=(
-    const DlpContentManagerAsh::ScreenShareInfo& other) const {
-  return !(*this == other);
-}
-
-const content::DesktopMediaID&
-DlpContentManagerAsh::ScreenShareInfo::GetMediaId() const {
-  return media_id_;
-}
-
-const std::string& DlpContentManagerAsh::ScreenShareInfo::GetLabel() const {
-  return label_;
-}
-
-const std::u16string&
-DlpContentManagerAsh::ScreenShareInfo::GetApplicationTitle() const {
-  // TODO(crbug.com/1264793): Don't cache the application name, but compute it
-  // here.
-  return application_title_;
-}
-
-bool DlpContentManagerAsh::ScreenShareInfo::IsRunning() const {
-  return state_ == State::kRunning;
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::Pause() {
-  DCHECK(state_ == State::kRunning);
-  state_change_callback_.Run(media_id_,
-                             blink::mojom::MediaStreamStateChange::PAUSE);
-  state_ = State::kPaused;
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::Resume() {
-  DCHECK(state_ == State::kPaused);
-  state_change_callback_.Run(media_id_,
-                             blink::mojom::MediaStreamStateChange::PLAY);
-  state_ = State::kRunning;
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::Stop() {
-  DCHECK(state_ != State::kStopped);
-  if (stop_callback_) {
-    std::move(stop_callback_).Run();
-    state_ = State::kStopped;
-  } else {
-    NOTREACHED();
-  }
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::MaybeUpdateNotifications() {
-  UpdatePausedNotification(/*show=*/state_ == State::kPaused);
-  UpdateResumedNotification(/*show=*/state_ == State::kRunning);
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::HideNotifications() {
-  UpdatePausedNotification(/*show=*/false);
-  UpdateResumedNotification(/*show=*/false);
-}
-
-base::WeakPtr<DlpContentManagerAsh::ScreenShareInfo>
-DlpContentManagerAsh::ScreenShareInfo::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::UpdatePausedNotification(
-    bool show) {
-  if ((notification_state_ == NotificationState::kShowingPausedNotification) ==
-      show)
-    return;
-  if (show) {
-    DCHECK(state_ == State::kPaused);
-    ShowDlpScreenSharePausedNotification(label_, application_title_);
-    notification_state_ = NotificationState::kShowingPausedNotification;
-  } else {
-    HideDlpScreenSharePausedNotification(label_);
-    notification_state_ = NotificationState::kNotShowingNotification;
-  }
-}
-
-void DlpContentManagerAsh::ScreenShareInfo::UpdateResumedNotification(
-    bool show) {
-  if ((notification_state_ == NotificationState::kShowingResumedNotification) ==
-      show)
-    return;
-  if (show) {
-    DCHECK(state_ == State::kRunning);
-    ShowDlpScreenShareResumedNotification(label_, application_title_);
-    notification_state_ = NotificationState::kShowingResumedNotification;
-  } else {
-    HideDlpScreenShareResumedNotification(label_);
-    notification_state_ = NotificationState::kNotShowingNotification;
-  }
 }
 
 DlpContentManagerAsh::VideoCaptureInfo::VideoCaptureInfo(
@@ -676,7 +552,7 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
   return info;
 }
 
-DlpContentManagerAsh::ConfidentialContentsInfo
+DlpContentManager::ConfidentialContentsInfo
 DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
     const content::DesktopMediaID& media_id) const {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_SCREEN) {
@@ -761,70 +637,6 @@ void DlpContentManagerAsh::CheckRunningVideoCapture() {
   }
 }
 
-void DlpContentManagerAsh::RemoveScreenShare(
-    const std::string& label,
-    const content::DesktopMediaID& media_id) {
-  base::EraseIf(
-      running_screen_shares_,
-      [=](const std::unique_ptr<ScreenShareInfo>& screen_share_info) -> bool {
-        return screen_share_info->GetLabel() == label &&
-               screen_share_info->GetMediaId() == media_id;
-      });
-}
-
-void DlpContentManagerAsh::CheckRunningScreenShares() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  for (std::unique_ptr<ScreenShareInfo>& screen_share :
-       running_screen_shares_) {
-    ConfidentialContentsInfo info =
-        GetScreenShareConfidentialContentsInfo(screen_share->GetMediaId());
-    if (IsBlocked(info.restriction_info)) {
-      if (screen_share->IsRunning()) {
-        screen_share->Pause();
-        MaybeReportEvent(info.restriction_info,
-                         DlpRulesManager::Restriction::kScreenShare);
-        DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, true);
-        screen_share->MaybeUpdateNotifications();
-      }
-      continue;
-    }
-    if (is_screen_share_warning_mode_enabled_ &&
-        IsWarn(info.restriction_info)) {
-      // Check which of the contents were already allowed and don't warn for
-      // those.
-      RemoveAllowedContents(info.confidential_contents,
-                            DlpRulesManager::Restriction::kScreenShare);
-      if (info.confidential_contents.IsEmpty()) {
-        // The user already allowed all the visible content.
-        if (!screen_share->IsRunning()) {
-          screen_share->Resume();
-          screen_share->MaybeUpdateNotifications();
-        }
-        continue;
-      }
-      if (screen_share->IsRunning()) {
-        screen_share->Pause();
-        screen_share->HideNotifications();
-      }
-      // base::Unretained(this) is safe here because DlpContentManagerAsh is
-      // initialized as a singleton that's always available in the system.
-      warn_notifier_->ShowDlpScreenShareWarningDialog(
-          base::BindOnce(&DlpContentManagerAsh::OnDlpScreenShareWarnDialogReply,
-                         base::Unretained(this), info.confidential_contents,
-                         screen_share->GetWeakPtr()),
-          info.confidential_contents, screen_share->GetApplicationTitle());
-      continue;
-    }
-    // No restrictions apply, only resume if necessary.
-    if (!screen_share->IsRunning()) {
-      screen_share->Resume();
-      DlpBooleanHistogram(dlp::kScreenSharePausedOrResumedUMA, false);
-      screen_share->MaybeUpdateNotifications();
-    }
-  }
-}
-
 // static
 base::TimeDelta DlpContentManagerAsh::GetPrivacyScreenOffDelayForTesting() {
   return kPrivacyScreenOffDelay;
@@ -864,30 +676,6 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
   }
   // No restrictions apply.
   std::move(callback).Run(true);
-}
-
-void DlpContentManagerAsh::OnDlpScreenShareWarnDialogReply(
-    const DlpConfidentialContents& confidential_contents,
-    base::WeakPtr<ScreenShareInfo> screen_share,
-    bool should_proceed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  if (!screen_share)
-    // The screen share was stopped before the dialog was addressed, so no need
-    // to do anything.
-    return;
-
-  if (should_proceed) {
-    screen_share->Resume();
-    for (const auto& content : confidential_contents.GetContents()) {
-      user_allowed_contents_cache_.Cache(
-          content, DlpRulesManager::Restriction::kScreenShare);
-    }
-    screen_share->MaybeUpdateNotifications();
-  } else {
-    screen_share->Stop();
-    RemoveScreenShare(screen_share->GetLabel(), screen_share->GetMediaId());
-  }
 }
 
 // ScopedDlpContentManagerAshForTesting

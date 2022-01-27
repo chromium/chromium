@@ -5,11 +5,13 @@
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace crosapi {
 
@@ -26,6 +28,8 @@ policy::DlpRulesManager::Level ConvertMojoToDlpRulesManagerLevel(
       return policy::DlpRulesManager::Level::kBlock;
     case crosapi::mojom::DlpRestrictionLevel::kAllow:
       return policy::DlpRulesManager::Level::kAllow;
+    case crosapi::mojom::DlpRestrictionLevel::kNotSet:
+      return policy::DlpRulesManager::Level::kNotSet;
   }
 }
 
@@ -51,6 +55,21 @@ policy::DlpContentRestrictionSet ConvertMojoToDlpContentRestrictionSet(
   return result;
 }
 
+content::DesktopMediaID AreaToDesktopMediaID(
+    const mojom::ScreenShareAreaPtr& area) {
+  aura::Window* window = area->window_id.has_value()
+                             ? GetShellSurfaceWindow(area->window_id.value())
+                             : ash::Shell::GetPrimaryRootWindow();
+  if (!window)
+    return content::DesktopMediaID();
+
+  const content::DesktopMediaID::Type media_type =
+      area->window_id.has_value() ? content::DesktopMediaID::TYPE_WINDOW
+                                  : content::DesktopMediaID::TYPE_SCREEN;
+
+  return content::DesktopMediaID::RegisterNativeWindow(media_type, window);
+}
+
 }  // namespace
 
 DlpAsh::DlpAsh() = default;
@@ -63,6 +82,7 @@ void DlpAsh::BindReceiver(mojo::PendingReceiver<mojom::Dlp> receiver) {
 
 void DlpAsh::DlpRestrictionsUpdated(const std::string& window_id,
                                     mojom::DlpRestrictionSetPtr restrictions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   aura::Window* window = GetShellSurfaceWindow(window_id);
   if (!window) {
     LOG(WARNING) << "Didn't find Lacros window with id: " << window_id;
@@ -79,24 +99,80 @@ void DlpAsh::CheckScreenShareRestriction(
     mojom::ScreenShareAreaPtr area,
     const std::u16string& application_title,
     CheckScreenShareRestrictionCallback callback) {
-  aura::Window* window = area->window_id.has_value()
-                             ? GetShellSurfaceWindow(area->window_id.value())
-                             : ash::Shell::GetPrimaryRootWindow();
-  const content::DesktopMediaID::Type media_type =
-      area->window_id.has_value() ? content::DesktopMediaID::TYPE_WINDOW
-                                  : content::DesktopMediaID::TYPE_SCREEN;
-  if (!window) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const content::DesktopMediaID media_id = AreaToDesktopMediaID(area);
+  if (media_id.is_null()) {
     std::move(callback).Run(/*allowed=*/true);
     return;
   }
-  const content::DesktopMediaID media_id =
-      content::DesktopMediaID::RegisterNativeWindow(media_type, window);
 
   policy::DlpContentManagerAsh* dlp_content_manager =
       policy::DlpContentManagerAsh::Get();
   DCHECK(dlp_content_manager);
   dlp_content_manager->CheckScreenShareRestriction(media_id, application_title,
                                                    std::move(callback));
+}
+
+void DlpAsh::OnScreenShareStarted(
+    const std::string& label,
+    mojom::ScreenShareAreaPtr area,
+    const ::std::u16string& application_title,
+    ::mojo::PendingRemote<mojom::StateChangeDelegate> delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const content::DesktopMediaID media_id = AreaToDesktopMediaID(area);
+  if (media_id.is_null())
+    return;
+
+  mojo::RemoteSetElementId id =
+      screen_share_remote_delegates_.Add(std::move(delegate));
+  base::RepeatingCallback stop_callback = base::BindRepeating(
+      &DlpAsh::StopScreenShare, weak_ptr_factory_.GetWeakPtr(), id);
+  base::RepeatingCallback state_change_callback = base::BindRepeating(
+      &DlpAsh::ChangeScreenShareState, weak_ptr_factory_.GetWeakPtr(), id);
+
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
+  DCHECK(dlp_content_manager);
+  dlp_content_manager->OnScreenCaptureStarted(
+      label, {media_id}, application_title, std::move(stop_callback),
+      std::move(state_change_callback));
+}
+
+void DlpAsh::OnScreenShareStopped(const std::string& label,
+                                  mojom::ScreenShareAreaPtr area) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const content::DesktopMediaID media_id = AreaToDesktopMediaID(area);
+  if (media_id.is_null())
+    return;
+
+  policy::DlpContentManagerAsh* dlp_content_manager =
+      policy::DlpContentManagerAsh::Get();
+  DCHECK(dlp_content_manager);
+  dlp_content_manager->OnScreenCaptureStopped(label, media_id);
+}
+
+void DlpAsh::ChangeScreenShareState(
+    mojo::RemoteSetElementId id,
+    const content::DesktopMediaID& media_id,
+    blink::mojom::MediaStreamStateChange new_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!screen_share_remote_delegates_.Contains(id))
+    return;
+  switch (new_state) {
+    case blink::mojom::MediaStreamStateChange::PAUSE:
+      screen_share_remote_delegates_.Get(id)->OnPause();
+      break;
+    case blink::mojom::MediaStreamStateChange::PLAY:
+      screen_share_remote_delegates_.Get(id)->OnResume();
+      break;
+  }
+}
+
+void DlpAsh::StopScreenShare(mojo::RemoteSetElementId id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!screen_share_remote_delegates_.Contains(id))
+    return;
+  screen_share_remote_delegates_.Get(id)->OnStop();
 }
 
 }  // namespace crosapi

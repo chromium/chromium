@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
+#include "content/public/browser/media_stream_request.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -63,6 +64,21 @@ class DlpContentManager : public DlpContentObserver {
       const std::u16string& application_title,
       OnDlpRestrictionCheckedCallback callback) = 0;
 
+  // Called when screen capture is started.
+  // |state_change_callback| will be called when restricted content will appear
+  // or disappear in the captured area.
+  virtual void OnScreenCaptureStarted(
+      const std::string& label,
+      std::vector<content::DesktopMediaID> screen_capture_ids,
+      const std::u16string& application_title,
+      base::RepeatingClosure stop_callback,
+      content::MediaStreamUI::StateChangeCallback state_change_callback) = 0;
+
+  // Called when screen capture is stopped.
+  virtual void OnScreenCaptureStopped(
+      const std::string& label,
+      const content::DesktopMediaID& media_id) = 0;
+
  protected:
   friend class DlpContentManagerTestHelper;
 
@@ -71,6 +87,74 @@ class DlpContentManager : public DlpContentObserver {
   void SetWarnNotifierForTesting(
       std::unique_ptr<DlpWarnNotifier> warn_notifier);
   void ResetWarnNotifierForTesting();
+
+  // Used to keep track of running screen shares.
+  class ScreenShareInfo {
+   public:
+    ScreenShareInfo(
+        const std::string& label,
+        const content::DesktopMediaID& media_id,
+        const std::u16string& application_title,
+        base::OnceClosure stop_callback,
+        content::MediaStreamUI::StateChangeCallback state_change_callback);
+    ~ScreenShareInfo();
+
+    bool operator==(const ScreenShareInfo& other) const;
+    bool operator!=(const ScreenShareInfo& other) const;
+
+    const content::DesktopMediaID& GetMediaId() const;
+    const std::string& GetLabel() const;
+    const std::u16string& GetApplicationTitle() const;
+    bool IsRunning() const;
+
+    // Pauses a running screen share.
+    // No-op if the screen share is already paused.
+    void Pause();
+    // Resumes a paused screen share.
+    // No-op if the screen share is already running.
+    void Resume();
+    // Stops the screen share. Can only be called once.
+    void Stop();
+
+    // If necessary, hides or shows the paused/resumed notification for this
+    // screen share. The notification should be updated after changing the state
+    // from running to paused, or paused to running.
+    void MaybeUpdateNotifications();
+
+    // If shown, hides both the paused and resumed notification for this screen
+    // share.
+    void HideNotifications();
+
+    base::WeakPtr<ScreenShareInfo> GetWeakPtr();
+
+   private:
+    enum class NotificationState {
+      kNotShowingNotification,
+      kShowingPausedNotification,
+      kShowingResumedNotification
+    };
+    enum class State { kRunning, kPaused, kStopped };
+    // Shows (if |show| is true) or hides (if |show| is false) paused
+    // notification for this screen share. Does nothing if the notification is
+    // already in the required state.
+    void UpdatePausedNotification(bool show);
+    // Shows (if |show| is true) or hides (if |show| is false) resumed
+    // notification for this screen share. Does nothing if the notification is
+    // already in the required state.
+    void UpdateResumedNotification(bool show);
+
+    std::string label_;
+    content::DesktopMediaID media_id_;
+    // TODO(crbug.com/1264793): Don't cache the application name.
+    std::u16string application_title_;
+    base::OnceClosure stop_callback_;
+    content::MediaStreamUI::StateChangeCallback state_change_callback_;
+    State state_ = State::kRunning;
+    NotificationState notification_state_ =
+        NotificationState::kNotShowingNotification;
+
+    base::WeakPtrFactory<ScreenShareInfo> weak_factory_{this};
+  };
 
   void SetIsScreenShareWarningModeEnabledForTesting(bool is_enabled);
 
@@ -127,6 +211,39 @@ class DlpContentManager : public DlpContentObserver {
                                      ConfidentialContentsInfo info,
                                      OnDlpRestrictionCheckedCallback callback);
 
+  // Returns which level, url, and information about visible confidential
+  // contents of screen share restriction that is currently enforced for
+  // |media_id|.
+  virtual ConfidentialContentsInfo GetScreenShareConfidentialContentsInfo(
+      const content::DesktopMediaID& media_id) const = 0;
+
+  // Adds screen share to be tracked in |running_screen_shares_|.
+  void AddScreenShare(
+      const std::string& label,
+      const content::DesktopMediaID& media_id,
+      const std::u16string& application_title,
+      base::RepeatingClosure stop_callback,
+      content::MediaStreamUI::StateChangeCallback state_change_callback);
+
+  // Removes screen share from |running_screen_shares_|.
+  void RemoveScreenShare(const std::string& label,
+                         const content::DesktopMediaID& media_id);
+
+  // Checks and stops the running screen shares if restricted content appeared
+  // in the corresponding areas.
+  void CheckRunningScreenShares();
+
+  // Called back from Screen Share warning dialogs that are shown during the
+  // screen share. Passes along the user's response, reflected in the value of
+  // |should_proceed| along to |callback| which handles continuing or cancelling
+  // the action based on this response. In case that |should_proceed| is true,
+  // also saves the |confidential_contents| that were allowed to be shared by
+  // the user to avoid future warnings.
+  void OnDlpScreenShareWarnDialogReply(
+      const DlpConfidentialContents& confidential_contents,
+      base::WeakPtr<ScreenShareInfo> screen_share,
+      bool should_proceed);
+
   // Called back from warning dialogs. Passes along the user's response,
   // reflected in the value of |should_proceed| along to |callback| which
   // handles continuing or cancelling the action based on this response. In case
@@ -160,6 +277,9 @@ class DlpContentManager : public DlpContentObserver {
   // being shown a warning for each type of restriction.
   // TODO(crbug.com/1264803): Change to DlpConfidentialContentsCache
   DlpConfidentialContentsCache user_allowed_contents_cache_;
+
+  // List of the currently running screen shares.
+  std::vector<std::unique_ptr<ScreenShareInfo>> running_screen_shares_;
 
   raw_ptr<DlpReportingManager> reporting_manager_{nullptr};
 

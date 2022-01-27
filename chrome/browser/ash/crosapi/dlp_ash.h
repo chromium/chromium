@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_ASH_CROSAPI_DLP_ASH_H_
 
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/media_stream_request.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace crosapi {
 
@@ -30,9 +33,29 @@ class DlpAsh : public mojom::Dlp {
       mojom::ScreenShareAreaPtr area,
       const std::u16string& application_title,
       CheckScreenShareRestrictionCallback callback) override;
+  void OnScreenShareStarted(
+      const std::string& label,
+      mojom::ScreenShareAreaPtr area,
+      const ::std::u16string& application_title,
+      ::mojo::PendingRemote<mojom::StateChangeDelegate> delegate) override;
+  void OnScreenShareStopped(const std::string& label,
+                            mojom::ScreenShareAreaPtr area) override;
 
  private:
+  // Callback to pass request to change screen share state to remote.
+  void ChangeScreenShareState(mojo::RemoteSetElementId id,
+                              const content::DesktopMediaID& media_id,
+                              blink::mojom::MediaStreamStateChange new_state);
+
+  // Callback to pass request to stop screen share to remote.
+  void StopScreenShare(mojo::RemoteSetElementId id);
+
   mojo::ReceiverSet<mojom::Dlp> receivers_;
+  mojo::RemoteSet<mojom::StateChangeDelegate> screen_share_remote_delegates_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<DlpAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace crosapi

@@ -26,10 +26,26 @@ class MockDlpContentManager : public DlpContentManager {
   MOCK_METHOD(void, OnVisibilityChanged, (content::WebContents*), (override));
   MOCK_METHOD(void,
               CheckScreenShareRestriction,
-              (const content::DesktopMediaID& media_id,
-               const std::u16string& application_title,
-               OnDlpRestrictionCheckedCallback callback),
+              (const content::DesktopMediaID&,
+               const std::u16string&,
+               OnDlpRestrictionCheckedCallback),
               (override));
+  MOCK_METHOD(void,
+              OnScreenCaptureStarted,
+              (const std::string&,
+               std::vector<content::DesktopMediaID>,
+               const std::u16string&,
+               base::RepeatingClosure,
+               content::MediaStreamUI::StateChangeCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnScreenCaptureStopped,
+              (const std::string&, const content::DesktopMediaID&),
+              (override));
+  MOCK_METHOD(ConfidentialContentsInfo,
+              GetScreenShareConfidentialContentsInfo,
+              (const content::DesktopMediaID&),
+              (const override));
 };
 
 }  // namespace policy
