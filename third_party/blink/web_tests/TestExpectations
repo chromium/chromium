@@ -3177,6 +3177,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-focus.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-backgrounds/background-attachment-local/attachment-local-clipping-color-5.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-text/hyphens/hyphens-vertical-001.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-text/hyphens/hyphens-vertical-001.html [ Failure ]
