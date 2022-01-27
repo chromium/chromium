@@ -52,9 +52,10 @@ suite('OSSettingsUi', function() {
    * @param {!Node} The DOM node for the section.
    */
   function verifySubpagesHidden(section) {
-    // Check if there are sub-pages to verify.
-    const pages = section.firstElementChild.shadowRoot.querySelector(
-        'settings-animated-pages');
+    // Check if there are any sub-pages to verify, being careful to filter out
+    // any dom-if and template noise when we search.
+    const pages = section.querySelector(`:not(dom-if, template)`)
+                      .shadowRoot.querySelector('settings-animated-pages');
     if (!pages) {
       return;
     }
