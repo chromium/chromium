@@ -16,6 +16,7 @@ namespace ash {
 class DesksTemplatesEventHandler;
 class DesksTemplatesItemView;
 class DeskTemplate;
+class PillButton;
 
 // A view that acts as the content view of the desks templates widget.
 // TODO(richui): Add details and ASCII.
@@ -63,8 +64,16 @@ class DesksTemplatesGridView : public views::View, public aura::WindowObserver {
   // as a result of mouse and gesture events.
   void OnLocatedEvent(ui::LocatedEvent* event, bool is_touch);
 
+  // Called when the feedback button is pressed. Shows the feedback dialog with
+  // desks templates information.
+  void OnFeedbackButtonPressed();
+
   // The views representing templates. They're owned by views hierarchy.
   std::vector<DesksTemplatesItemView*> grid_items_;
+
+  // Owned by views hierarchy. Temporary button to help users give feedback.
+  // TODO(crbug.com/1289880): Remove this button when it is no longer needed.
+  PillButton* feedback_button_ = nullptr;
 
   // The underlying window of the templates grid widget.
   aura::Window* widget_window_ = nullptr;

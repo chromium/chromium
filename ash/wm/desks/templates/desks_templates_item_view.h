@@ -41,6 +41,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   DesksTemplatesItemView& operator=(const DesksTemplatesItemView&) = delete;
   ~DesksTemplatesItemView() override;
 
+  DeskTemplate* desk_template() const { return desk_template_; }
   DesksTemplatesNameView* name_view() const { return name_view_; }
 
   // Updates the visibility state of the delete and launch buttons depending on

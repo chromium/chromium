@@ -11,6 +11,8 @@
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
@@ -1453,8 +1455,9 @@ TEST_F(DesksTemplatesTest, ShowTemplatesInAlphabeticalOrder) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
   ASSERT_TRUE(templates_grid_view);
 
+  // The grid has three items and one feedback button.
   views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(3ul, grid_views.size());
+  ASSERT_EQ(4ul, grid_views.size());
 
   // Tests that templates are sorted in alphabetical order.
   EXPECT_EQ(
@@ -2122,8 +2125,9 @@ TEST_F(DesksTemplatesTest, LayoutItemsInLandscape) {
   const auto* templates_grid_view =
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
 
+  // The grid has four items and one feedback button.
   views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(4ul, grid_views.size());
+  ASSERT_EQ(5ul, grid_views.size());
 
   // We expect the first three items to be laid out in one row.
   EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
@@ -2149,14 +2153,44 @@ TEST_F(DesksTemplatesTest, LayoutItemsInPortrait) {
   const auto* templates_grid_view =
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
 
+  // The grid has four items and one feedback button.
   views::View::Views grid_views = templates_grid_view->children();
-  ASSERT_EQ(4ul, grid_views.size());
+  ASSERT_EQ(5ul, grid_views.size());
 
   // We expect the first two items to be laid out in one row.
   EXPECT_EQ(grid_views[0]->bounds().y(), grid_views[1]->bounds().y());
   // And the last two items on the next row.
   EXPECT_NE(grid_views[0]->bounds().y(), grid_views[2]->bounds().y());
   EXPECT_EQ(grid_views[2]->bounds().y(), grid_views[3]->bounds().y());
+}
+
+// Tests that there is no overlap with the shelf on our smallest supported
+// resolution.
+TEST_F(DesksTemplatesTest, ItemsDoNotOverlapShelf) {
+  // The smallest display resolution we support is 1087x675.
+  UpdateDisplay("1000x600");
+
+  // Create 6 entries to max out the grid.
+  for (const std::string& name : {"A", "B", "C", "D", "E", "F"})
+    AddEntry(base::GUID::GenerateRandomV4(), name, base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid has six items and one feedback button.
+  views::View::Views grid_views = templates_grid_view->children();
+  ASSERT_EQ(7ul, grid_views.size());
+
+  const gfx::Rect shelf_bounds =
+      GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen();
+
+  // Test that none of the grid items overlap with the shelf.
+  for (views::View* view : grid_views)
+    EXPECT_FALSE(view->GetBoundsInScreen().Intersects(shelf_bounds));
 }
 
 // Tests record metrics when current template being replaced.

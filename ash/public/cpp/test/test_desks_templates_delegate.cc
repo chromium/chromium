@@ -57,4 +57,7 @@ bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
   return DeskTemplate::IsAppTypeSupported(window);
 }
 
+void TestDesksTemplatesDelegate::OpenFeedbackDialog(
+    const std::string& extra_diagnostics) {}
+
 }  // namespace ash

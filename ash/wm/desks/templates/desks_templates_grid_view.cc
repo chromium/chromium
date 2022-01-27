@@ -7,8 +7,13 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "ash/wm/desks/templates/desks_templates_animations.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
@@ -17,6 +22,7 @@
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event_handler.h"
@@ -33,6 +39,8 @@ constexpr int kPortraitMaxColumns = 2;
 
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr int kGridPaddingDp = 25;
+
+constexpr int kFeedbackButtonSpacingDp = 40;
 
 }  // namespace
 
@@ -163,6 +171,13 @@ void DesksTemplatesGridView::UpdateGridUI(
   for (auto& view : desk_template_views)
     grid_items_.push_back(AddChildView(std::move(view)));
 
+  feedback_button_ = AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
+      PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+
   const gfx::Size previous_size = size();
 
   GetWidget()->SetBounds(grid_bounds);
@@ -217,6 +232,17 @@ void DesksTemplatesGridView::Layout() {
 
     x += grid_item_size.width() + kGridPaddingDp;
   }
+
+  if (feedback_button_) {
+    // The feedback button is centered and `kFeedbackButtonSpacingDp` from the
+    // bottom most grid item.
+    const gfx::Size feedback_size = feedback_button_->GetPreferredSize();
+    feedback_button_->SetBoundsRect(gfx::Rect(
+        gfx::Point(
+            width() / 2 - feedback_size.width() / 2,
+            grid_items_.back()->bounds().bottom() + kFeedbackButtonSpacingDp),
+        feedback_size));
+  }
 }
 
 void DesksTemplatesGridView::AddedToWidget() {
@@ -266,6 +292,17 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
     default:
       return;
   }
+}
+
+void DesksTemplatesGridView::OnFeedbackButtonPressed() {
+  std::string extra_diagnostics;
+  for (DesksTemplatesItemView* grid_item : grid_items_)
+    extra_diagnostics += (grid_item->desk_template()->ToString() + "\n");
+
+  // Note that this will activate the dialog which will exit overview and delete
+  // `this`.
+  Shell::Get()->desks_templates_delegate()->OpenFeedbackDialog(
+      extra_diagnostics);
 }
 
 BEGIN_METADATA(DesksTemplatesGridView, views::View)
