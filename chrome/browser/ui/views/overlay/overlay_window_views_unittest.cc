@@ -27,6 +27,12 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/button_test_api.h"
 
+namespace {
+
+constexpr gfx::Size kMinWindowSize(200, 100);
+
+}  // namespace
+
 class TestPictureInPictureWindowController
     : public content::PictureInPictureWindowController {
  public:
@@ -81,7 +87,7 @@ class OverlayWindowViewsTest : public ChromeViewsTestBase {
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
     overlay_window_ = OverlayWindowViews::Create(&pip_window_controller_);
-    overlay_window_->set_minimum_size_for_testing({200, 100});
+    overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
   }
 
   void TearDown() override {
@@ -425,4 +431,18 @@ TEST_F(OverlayWindowViewsTest, DontPauseOnWidgetCloseWhenPauseNotAvailable) {
   EXPECT_CALL(pip_window_controller(), OnWindowDestroyed(false));
   overlay_window().CloseNow();
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(OverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
+  SetDisplayWorkArea({0, 0, 300, 200});
+  overlay_window().UpdateVideoSize({400, 300});
+
+  // Since the work area would force a max size smaller than the minimum size,
+  // the size is fixed at the minimum size.
+  EXPECT_EQ(kMinWindowSize, overlay_window().GetBounds().size());
+  EXPECT_EQ(kMinWindowSize, overlay_window().GetMaximumSize());
+
+  // The video should still be letterboxed to the correct aspect ratio.
+  EXPECT_EQ(gfx::Size(133, 100),
+            overlay_window().video_layer_for_testing()->size());
 }

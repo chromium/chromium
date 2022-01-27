@@ -1301,8 +1301,12 @@ void OverlayWindowViews::UpdateMaxSize(const gfx::Rect& work_area) {
   if (work_area.IsEmpty())
     return;
 
-  const auto new_max_size =
-      gfx::Size(work_area.width() / 2, work_area.height() / 2);
+  auto new_max_size = gfx::Size(work_area.width() / 2, work_area.height() / 2);
+
+  // Ensure |new_max_size| is not smaller than |min_size_|, or else we will
+  // crash.
+  new_max_size.SetToMax(min_size_);
+
   // Make sure we only run the logic to update the current size if the maximum
   // size actually changes. Running it unconditionally means also running it
   // when DPI <-> pixel computations introduce off-by-1 errors, which leads to
