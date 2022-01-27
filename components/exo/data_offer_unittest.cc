@@ -25,6 +25,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -35,7 +36,13 @@
 namespace exo {
 namespace {
 
-using DataOfferTest = test::ExoTestBase;
+class DataOfferTest : public test::ExoTestBase {
+ public:
+  void TearDown() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    test::ExoTestBase::TearDown();
+  }
+};
 
 class TestDataOfferDelegate : public DataOfferDelegate {
  public:
