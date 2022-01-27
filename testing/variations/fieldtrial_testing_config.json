@@ -5953,29 +5953,6 @@
             ]
         }
     ],
-    "ToolbarMicIphAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledDefault",
-                    "params": {
-                        "availability": ">=14",
-                        "event_trigger": "name:mic_toolbar_iph_triggered;comparator:==0;window:90;storage:90",
-                        "event_used": "name:successful_voice_search;comparator:==0;window:14;storage:90",
-                        "generic_message": "true",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_MicToolbar",
-                        "ToolbarMicIphAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "TopCat": [
         {
             "platforms": [
