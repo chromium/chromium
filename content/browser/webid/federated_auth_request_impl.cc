@@ -22,6 +22,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "url/url_constants.h"
 
@@ -844,6 +845,17 @@ void FederatedAuthRequestImpl::CompleteRequest(
     const std::string& id_token) {
   DCHECK(status == RequestIdTokenStatus::kSuccess || id_token.empty());
 
+  if (status != RequestIdTokenStatus::kSuccess) {
+    // It would be possible to add this inspector issue on the renderer, which
+    // will receive the callback. However, it is preferable to do so on the
+    // browser because this is closer to the source, which means adding
+    // additional metadata is easier. In addition, in the future we may only
+    // need to pass a small amount of information to the renderer in the case of
+    // an error, so it would be cleaner to do this by reporting the inspector
+    // issue from the browser.
+    AddInspectorIssue(status);
+  }
+
   CleanUp();
 
   if (auth_request_callback_)
@@ -861,6 +873,20 @@ void FederatedAuthRequestImpl::CleanUp() {
   show_accounts_dialog_time_ = base::TimeTicks();
   select_account_time_ = base::TimeTicks();
   id_token_response_time_ = base::TimeTicks();
+}
+
+void FederatedAuthRequestImpl::AddInspectorIssue(
+    blink::mojom::RequestIdTokenStatus status) {
+  DCHECK_NE(status, blink::mojom::RequestIdTokenStatus::kSuccess);
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  auto federated_auth_request_details =
+      blink::mojom::FederatedAuthRequestIssueDetails::New(status);
+  details->federated_auth_request_details =
+      std::move(federated_auth_request_details);
+  render_frame_host_->ReportInspectorIssue(
+      blink::mojom::InspectorIssueInfo::New(
+          blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue,
+          std::move(details)));
 }
 
 void FederatedAuthRequestImpl::CompleteLogoutRequest(

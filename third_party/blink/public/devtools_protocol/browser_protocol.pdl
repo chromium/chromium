@@ -773,6 +773,36 @@ experimental domain Audits
       # are respected. Any injected via javascript (or other means) are ignored.
       MetaTagModifiedHTML
 
+  type FederatedAuthRequestIssueDetails extends object
+    properties
+      FederatedAuthRequestIssueReason federatedAuthRequestIssueReason
+
+  # Represents the failure reason when a federated authentication reason fails.
+  # Should be updated alongside RequestIdTokenStatus in
+  # third_party/blink/public/mojom/webid/federated_auth_request.mojom to include
+  # all cases except for success.
+  type FederatedAuthRequestIssueReason extends string
+    enum
+      ApprovalDeclined
+      TooManyRequests
+      WellKnownHttpNotFound
+      WellKnownNoResponse
+      WellKnownInvalidResponse
+      ClientIdMetadataHttpNotFound
+      ClientIdMetadataNoResponse
+      ClientIdMetadataInvalidResponse
+      ErrorFetchingSignin
+      InvalidSigninResponse
+      AccountsHttpNotFound
+      AccountsNoResponse
+      AccountsInvalidResponse
+      IdTokenHttpNotFound
+      IdTokenNoResponse
+      IdTokenInvalidResponse
+      IdTokenInvalidRequest
+      ErrorIdToken
+      Canceled
+
   # This issue tracks client hints related issues. It's used to deprecate old
   # features, encourage the use of new ones, and provide general guidance.
   type ClientHintIssueDetails extends object
@@ -800,6 +830,7 @@ experimental domain Audits
       GenericIssue
       DeprecationIssue
       ClientHintIssue
+      FederatedAuthRequestIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -821,6 +852,7 @@ experimental domain Audits
       optional GenericIssueDetails genericIssueDetails
       optional DeprecationIssueDetails deprecationIssueDetails
       optional ClientHintIssueDetails clientHintIssueDetails
+      optional FederatedAuthRequestIssueDetails federatedAuthRequestIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

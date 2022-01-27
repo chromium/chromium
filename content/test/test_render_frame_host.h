@@ -139,6 +139,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
 
+  // Returns the number of FedCM issues sent to DevTools with the given
+  // RequestIdTokenStatus.
+  int GetFederatedAuthRequestIssueCount(
+      blink::mojom::RequestIdTokenStatus status);
+
   // If set, navigations will appear to have cleared the history list in the
   // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
   // False by default.
@@ -291,6 +296,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   int heavy_ad_issue_network_count_ = 0;
   int heavy_ad_issue_cpu_total_count_ = 0;
   int heavy_ad_issue_cpu_peak_count_ = 0;
+
+  // Keeps a count of federated authentication request issues sent to
+  // ReportInspectorIssue.
+  std::unordered_map<blink::mojom::RequestIdTokenStatus, int>
+      federated_auth_counts_;
 
   TestRenderFrameHostCreationObserver child_creation_observer_;
 

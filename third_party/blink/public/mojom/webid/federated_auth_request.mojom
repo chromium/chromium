@@ -10,6 +10,10 @@ import "url/mojom/url.mojom";
 //
 // Proposal: https://github.com/WICG/WebID
 
+// Represents the fetch result from a federated authentication request. Should
+// be updated alongside FederatedAuthRequestIssueReason in
+// third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
+// includes all cases except for kSuccess.
 enum RequestIdTokenStatus {
   kSuccess,
   kApprovalDeclined,

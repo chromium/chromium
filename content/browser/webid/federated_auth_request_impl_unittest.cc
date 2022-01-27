@@ -25,7 +25,8 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/test_renderer_host.h"
+#include "content/test/test_render_frame_host.h"
+#include "content/test/test_render_view_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -459,11 +460,9 @@ LogoutRequestPtr MakeLogoutRequest(const std::string& endpoint,
 
 }  // namespace
 
-class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
+class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
  protected:
-  FederatedAuthRequestImplTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  FederatedAuthRequestImplTest() = default;
   ~FederatedAuthRequestImplTest() override = default;
 
   FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
@@ -765,6 +764,18 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequests) {
       test_case.inputs.prefer_auto_sign_in);
   EXPECT_EQ(auth_response.first, test_case.expected.return_status);
   EXPECT_EQ(auth_response.second, test_case.expected.token);
+}
+
+TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
+  AuthRequestTestCase test_case = GetParam();
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(
+      main_test_rfh()->GetFederatedAuthRequestIssueCount(auth_response.first),
+      auth_response.first == RequestIdTokenStatus::kSuccess ? 0 : 1);
 }
 
 // Test Logout method success with multiple relying parties.

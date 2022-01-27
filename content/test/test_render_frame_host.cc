@@ -136,6 +136,10 @@ void TestRenderFrameHost::ReportInspectorIssue(
         heavy_ad_issue_cpu_peak_count_++;
         break;
     }
+  } else if (issue->code ==
+             blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
+    ++federated_auth_counts_[issue->details->federated_auth_request_details
+                                 ->status];
   }
   RenderFrameHostImpl::ReportInspectorIssue(std::move(issue));
 }
@@ -234,6 +238,14 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
       return heavy_ad_issue_network_count_ + heavy_ad_issue_cpu_total_count_ +
              heavy_ad_issue_cpu_peak_count_;
   }
+}
+
+int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
+    blink::mojom::RequestIdTokenStatus status) {
+  auto it = federated_auth_counts_.find(status);
+  if (it == federated_auth_counts_.end())
+    return 0;
+  return it->second;
 }
 
 void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {

@@ -8,6 +8,7 @@ import "url/mojom/url.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "third_party/blink/public/mojom/webid/federated_auth_request.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
@@ -21,6 +22,7 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kFederatedAuthRequestIssue,
   kGenericIssue,
 };
 
@@ -175,6 +177,10 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+struct FederatedAuthRequestIssueDetails {
+  RequestIdTokenStatus status;
+};
+
 enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
 };
@@ -195,6 +201,7 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  FederatedAuthRequestIssueDetails? federated_auth_request_details;
   GenericIssueDetails? generic_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };

@@ -119,6 +119,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   FederatedIdentitySharingPermissionContextDelegate*
   GetSharingPermissionContext();
 
+  // Creates an inspector issue related to a federated authentication request to
+  // the Issues panel in DevTools.
+  void AddInspectorIssue(blink::mojom::RequestIdTokenStatus status);
+
   const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   const url::Origin origin_;
 
