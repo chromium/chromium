@@ -56,7 +56,7 @@ GetPlatformSupportedVideoDecoderConfigs(
       GetPlatformDecoderImplementationType(gpu_workarounds, gpu_preferences,
                                            gpu_info);
 #if BUILDFLAG(IS_LINUX)
-  base::UmaHistogramEnumeration("Media.VaapiLinux.Supported",
+  base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",
                                 decoder_implementation);
 #endif
   switch (decoder_implementation) {
