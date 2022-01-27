@@ -163,10 +163,9 @@ void CdmService::CreateCdmFactory(
   if (!client_)
     return;
 
-  cdm_factory_receivers_.AddReceiver(
-      std::make_unique<CdmFactoryImpl>(client_.get(),
-                                       std::move(frame_interfaces)),
-      std::move(receiver));
+  cdm_factory_receivers_.Add(std::make_unique<CdmFactoryImpl>(
+                                 client_.get(), std::move(frame_interfaces)),
+                             std::move(receiver));
 }
 
 }  // namespace media
