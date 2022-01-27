@@ -41,6 +41,9 @@ namespace {
 constexpr char kPrintBackendRequiresElevatedPrivilegeHistogramName[] =
     "Printing.PrintBackend.DriversRequiringElevatedPrivilegeEncountered";
 
+// For fetching remote IDs when there is no printer name.
+constexpr char kEmptyPrinterName[] = "";
+
 // Amount of idle time to wait before resetting the connection to the service.
 constexpr base::TimeDelta kNoClientsRegisteredResetOnIdleTimeout =
     base::Seconds(10);
@@ -88,7 +91,6 @@ uint32_t PrintBackendServiceManager::RegisterClient() {
   // We don't know if a particular printer might be needed, so for now just
   // start for the blank `printer_name` which would cover queries like getting
   // the default printer and enumerating the list of printers.
-  constexpr char kEmptyPrinterName[] = "";
   std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
   auto iter = sandboxed_remotes_.find(remote_id);
   if (iter == sandboxed_remotes_.end()) {
@@ -156,9 +158,8 @@ void PrintBackendServiceManager::EnumeratePrinters(
   // Get a callback ID to represent this command.
   auto saved_callback_id = base::UnguessableToken::Create();
 
-  const std::string kEmptyPrinterName;
-  bool is_sandboxed;
   std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
+  bool is_sandboxed;
   auto& service = GetService(kEmptyPrinterName, &is_sandboxed);
 
   SaveCallback(GetRemoteSavedEnumeratePrintersCallbacks(is_sandboxed),
@@ -206,10 +207,9 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
   // Get a callback ID to represent this command.
   auto saved_callback_id = base::UnguessableToken::Create();
 
-  std::string remote_id =
-      GetRemoteIdForPrinterName(/*printer_name=*/std::string());
+  std::string remote_id = GetRemoteIdForPrinterName(kEmptyPrinterName);
   bool is_sandboxed;
-  auto& service = GetService(/*printer_name=*/std::string(), &is_sandboxed);
+  auto& service = GetService(kEmptyPrinterName, &is_sandboxed);
 
   SaveCallback(GetRemoteSavedGetDefaultPrinterNameCallbacks(is_sandboxed),
                remote_id, saved_callback_id, std::move(callback));
@@ -402,14 +402,13 @@ void PrintBackendServiceManager::ResetForTesting() {
 std::string PrintBackendServiceManager::GetRemoteIdForPrinterName(
     const std::string& printer_name) const {
   if (sandboxed_service_remote_for_test_) {
-    return std::string();  // Test environment is always just one instance for
-                           // all printers.
+    // Test environment is always just one instance for all printers.
+    return std::string();
   }
 
 #if BUILDFLAG(IS_WIN)
-  // Windows drivers are not thread safe.  Use a
-  // process per driver to prevent bad interactions
-  // when interfacing to multiple drivers in parallel.
+  // Windows drivers are not thread safe.  Use a process per driver to prevent
+  // bad interactions when interfacing to multiple drivers in parallel.
   // https://crbug.com/957242
   return printer_name;
 #else
