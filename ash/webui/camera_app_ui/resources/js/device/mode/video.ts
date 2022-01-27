@@ -4,6 +4,7 @@
 
 import {
   assert,
+  assertExists,
   assertInstanceof,
 } from '../../assert.js';
 import * as dom from '../../dom.js';
@@ -29,6 +30,7 @@ import {
   NoChunkError,
   PreviewVideo,
   Resolution,
+  toVideoTrackSettings,
   VideoType,
 } from '../../type.js';
 import {WaitableEvent} from '../../waitable_event.js';
@@ -273,6 +275,7 @@ export class Video extends ModeBase {
       try {
         const timestamp = Date.now();
         let blob: Blob;
+        assert(this.crosImageCapture !== null);
         if (await this.isBlobVideoSnapshotEnabled()) {
           const photoSettings: PhotoSettings = {
             imageWidth: this.snapshotResolution.width,
@@ -313,10 +316,12 @@ export class Video extends ModeBase {
     const waitable = new WaitableEvent();
     this.togglePausedInternal = waitable.wait();
 
+    assert(this.mediaRecorder !== null);
     assert(this.mediaRecorder.state !== 'inactive');
     const toBePaused = this.mediaRecorder.state !== 'paused';
     const toggledEvent = toBePaused ? 'pause' : 'resume';
     const onToggled = () => {
+      assert(this.mediaRecorder !== null);
       this.mediaRecorder.removeEventListener(toggledEvent, onToggled);
       state.set(state.State.RECORDING_PAUSED, toBePaused);
       this.togglePausedInternal = null;
@@ -350,7 +355,8 @@ export class Video extends ModeBase {
     const preference = encoderPreference.get(loadTimeData.getBoard()) ||
         {profile: h264.Profile.HIGH, multiplier: 2};
     const {profile, multiplier} = preference;
-    const {width, height, frameRate} = this.getVideoTrack().getSettings();
+    const {width, height, frameRate} =
+        toVideoTrackSettings(this.getVideoTrack().getSettings());
     const resolution = new Resolution(width, height);
     const bitrate = resolution.area * multiplier;
     const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
@@ -472,12 +478,16 @@ export class Video extends ModeBase {
       }
 
       if (isVideoTooShort()) {
+        assert(videoSaver !== null);
         toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
         await videoSaver.cancel();
-        return () => this.snapshotting;
+        return async () => {
+          await this.snapshotting;
+        };
       }
 
       return async () => {
+        assert(videoSaver !== null);
         await this.handler.onVideoCaptureDone({
           resolution: this.captureResolution,
           duration: this.recordTime.inMilliseconds(),
@@ -527,7 +537,7 @@ export class Video extends ModeBase {
     await new Promise<void>((resolve) => {
       let encodedFrames = 0;
       let start = 0.0;
-      const updateCanvas = (now) => {
+      const updateCanvas = (now: number) => {
         if (start === 0.0) {
           start = now;
         }
@@ -559,7 +569,7 @@ export class Video extends ModeBase {
       await new Promise((resolve, reject) => {
         let noChunk = true;
 
-        const ondataavailable = (event) => {
+        const ondataavailable = (event: BlobEvent) => {
           if (event.data && event.data.size > 0) {
             noChunk = false;
             saver.write(event.data);
@@ -567,6 +577,8 @@ export class Video extends ModeBase {
         };
 
         const onstop = async () => {
+          assert(this.mediaRecorder !== null);
+
           state.set(state.State.RECORDING, false);
           state.set(state.State.RECORDING_PAUSED, false);
           state.set(state.State.RECORDING_UI_PAUSED, false);
@@ -582,10 +594,15 @@ export class Video extends ModeBase {
             resolve(saver);
           }
         };
+
         const onstart = () => {
+          assert(this.mediaRecorder !== null);
+
           state.set(state.State.RECORDING, true);
           this.mediaRecorder.removeEventListener('start', onstart);
         };
+
+        assert(this.mediaRecorder !== null);
         this.mediaRecorder.addEventListener('dataavailable', ondataavailable);
         this.mediaRecorder.addEventListener('stop', onstop);
         this.mediaRecorder.addEventListener('start', onstart);
@@ -624,7 +641,7 @@ export class VideoFactory extends ModeFactory {
   produce(): ModeBase {
     let captureConstraints = null;
     if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
-      const {width, height} = this.captureResolution;
+      const {width, height} = assertExists(this.captureResolution);
       captureConstraints = {
         deviceId: this.constraints.deviceId,
         audio: this.constraints.audio,

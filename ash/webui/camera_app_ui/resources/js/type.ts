@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertExists, assertInstanceof} from './assert.js';
+
 /**
  * Photo or video resolution.
  */
@@ -190,6 +192,24 @@ export interface PerfEntry {
   perfInfo?: PerfInformation;
 }
 
+export interface VideoTrackSettings {
+  deviceId: string;
+  width: number;
+  height: number;
+  frameRate: number;
+}
+
+export function toVideoTrackSettings(mediaTrackSettings: MediaTrackSettings):
+    VideoTrackSettings {
+  const {deviceId, width, height, frameRate} = mediaTrackSettings;
+  return {
+    deviceId: assertExists(deviceId),
+    width: assertExists(width),
+    height: assertExists(height),
+    frameRate: assertExists(frameRate),
+  };
+}
+
 /**
  * A proxy to get preview video or stream with notification of when the video
  * stream is expired.
@@ -206,15 +226,15 @@ export class PreviewVideo {
   }
 
   getStream(): MediaStream {
-    return this.video.srcObject as MediaStream;
+    return assertInstanceof(this.video.srcObject, MediaStream);
   }
 
   getVideoTrack(): MediaStreamTrack {
     return this.getStream().getVideoTracks()[0];
   }
 
-  getVideoSettings(): MediaTrackSettings {
-    return this.getVideoTrack().getSettings();
+  getVideoSettings(): VideoTrackSettings {
+    return toVideoTrackSettings(this.getVideoTrack().getSettings());
   }
 
   isExpired(): boolean {
