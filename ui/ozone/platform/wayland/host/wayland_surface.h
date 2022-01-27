@@ -137,7 +137,7 @@ class WaylandSurface {
   // |dest_size_px|, which should be in physical pixels.
   // Note this method sends corresponding wayland requests immediately because
   // it does not need a new buffer attach to take effect.
-  void SetViewportDestination(const gfx::Size& dest_size_px);
+  void SetViewportDestination(const gfx::SizeF& dest_size_px);
 
   // Creates a wl_subsurface relating this surface and a parent surface,
   // |parent|. Callers take ownership of the wl_subsurface.
@@ -225,7 +225,7 @@ class WaylandSurface {
     // Wayland compositor will scale the (cropped) buffer content to fit the
     // |viewport_px|.
     // If empty, no scaling is applied.
-    gfx::Size viewport_px = {0, 0};
+    gfx::SizeF viewport_px = {0, 0};
 
     // The opacity of the wl_surface used to call zcr_blending_v1_set_alpha.
     float opacity = 1.f;
@@ -251,6 +251,7 @@ class WaylandSurface {
   State state_;
 
   bool SurfaceSubmissionInPixelCoordinates() const;
+
   // Creates (if not created) the synchronization surface and returns a pointer
   // to it.
   zwp_linux_surface_synchronization_v1* GetSurfaceSync();

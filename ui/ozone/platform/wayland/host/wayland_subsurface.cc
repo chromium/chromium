@@ -7,6 +7,8 @@
 #include <cstdint>
 
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -15,14 +17,13 @@
 namespace {
 
 // Returns DIP bounds of the subsurface relative to the parent surface.
-gfx::Rect AdjustSubsurfaceBounds(const gfx::Rect& bounds_px,
-                                 const gfx::Rect& parent_bounds_px,
-                                 float buffer_scale) {
-  const auto bounds_dip =
-      gfx::ScaleToEnclosingRect(bounds_px, 1.0f / buffer_scale);
+gfx::RectF AdjustSubsurfaceBounds(const gfx::RectF& bounds_px,
+                                  const gfx::RectF& parent_bounds_px,
+                                  float buffer_scale) {
+  const auto bounds_dip = gfx::ScaleRect(bounds_px, 1.0f / buffer_scale);
   const auto parent_bounds_dip =
-      gfx::ScaleToEnclosingRect(parent_bounds_px, 1.0f / buffer_scale);
-  return wl::TranslateBoundsToParentCoordinates(bounds_dip, parent_bounds_dip);
+      gfx::ScaleRect(parent_bounds_px, 1.0f / buffer_scale);
+  return wl::TranslateBoundsToParentCoordinatesF(bounds_dip, parent_bounds_dip);
 }
 
 }  // namespace
@@ -83,8 +84,8 @@ void WaylandSubsurface::CreateSubsurface() {
 }
 
 void WaylandSubsurface::ConfigureAndShowSurface(
-    const gfx::Rect& bounds_px,
-    const gfx::Rect& parent_bounds_px,
+    const gfx::RectF& bounds_px,
+    const gfx::RectF& parent_bounds_px,
     float buffer_scale,
     const WaylandSurface* reference_below,
     const WaylandSurface* reference_above) {
@@ -97,9 +98,12 @@ void WaylandSubsurface::ConfigureAndShowSurface(
       bounds_px, parent_bounds_px,
       connection_->surface_submission_in_pixel_coordinates() ? 1.f
                                                              : buffer_scale);
-  wl_subsurface_set_position(subsurface_.get(),
-                             bounds_dip_in_parent_surface.x(),
-                             bounds_dip_in_parent_surface.y());
+  // TODO(msisov): use an augmented_subsurface to pass rects without loosing
+  // subpixel precision.
+  gfx::Rect enclosed_rect_in_parent =
+      gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
+  wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
+                             enclosed_rect_in_parent.y());
 
   // Setup the stacking order of this subsurface.
   DCHECK(!reference_above || !reference_below);

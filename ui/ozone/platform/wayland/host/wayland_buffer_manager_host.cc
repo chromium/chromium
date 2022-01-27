@@ -270,7 +270,7 @@ void WaylandBufferManagerHost::CommitOverlays(
     return;
 
   for (auto& overlay : overlays) {
-    if (!ValidateBufferExistence(overlay->buffer_id)) {
+    if (!ValidateOverlayData(*overlay)) {
       TerminateGpuProcess();
       return;
     }
@@ -399,6 +399,27 @@ bool WaylandBufferManagerHost::ValidateBufferExistence(uint32_t buffer_id) {
   }
 
   return error_message_.empty();
+}
+
+bool WaylandBufferManagerHost::ValidateOverlayData(
+    const ui::ozone::mojom::WaylandOverlayConfig& overlay_data) {
+  if (!ValidateBufferExistence(overlay_data.buffer_id))
+    return false;
+
+  std::string reason;
+  if (std::isnan(overlay_data.bounds_rect.x()) ||
+      std::isnan(overlay_data.bounds_rect.y()) ||
+      std::isnan(overlay_data.bounds_rect.width()) ||
+      std::isnan(overlay_data.bounds_rect.height()) ||
+      std::isinf(overlay_data.bounds_rect.x()) ||
+      std::isinf(overlay_data.bounds_rect.y()) ||
+      std::isinf(overlay_data.bounds_rect.width()) ||
+      std::isinf(overlay_data.bounds_rect.height())) {
+    error_message_ = "Overlay bounds_rect is invalid (NaN or infinity).";
+    return false;
+  }
+
+  return true;
 }
 
 void WaylandBufferManagerHost::OnSubmission(gfx::AcceleratedWidget widget,

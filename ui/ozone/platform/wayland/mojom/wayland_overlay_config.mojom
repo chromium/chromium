@@ -31,7 +31,7 @@ struct WaylandOverlayConfig {
   // Specifies where it is supposed to be on the display in physical pixels.
   // This, after scaled by buffer_scale sets the destination rectangle of
   // Wayland Viewport.
-  gfx.mojom.Rect bounds_rect;
+  gfx.mojom.RectF bounds_rect;
 
   // Specifies the region within the buffer to be placed inside |bounds_rect|.
   // This sets the source rectangle of Wayland Viewport.

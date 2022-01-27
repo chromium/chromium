@@ -805,7 +805,7 @@ bool WaylandWindow::CommitOverlays(
   if (split == overlays.end() && overlays.front()->z_order == INT32_MIN)
     main_overlay = overlays.begin();
 
-  gfx::Size visual_size = (*main_overlay)->bounds_rect.size();
+  gfx::SizeF visual_size = (*main_overlay)->bounds_rect.size();
   float buffer_scale = (*main_overlay)->surface_scale_factor;
   auto& rounded_clip_bounds = (*main_overlay)->rounded_clip_bounds;
 

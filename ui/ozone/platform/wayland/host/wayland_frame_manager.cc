@@ -7,6 +7,8 @@
 #include <presentation-time-client-protocol.h>
 #include <sync/sync.h>
 
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -171,8 +173,9 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   bool empty_frame = !root_config || !root_config->buffer_id;
 
   if (!empty_frame) {
-    window_->UpdateVisualSize(root_config->bounds_rect.size(),
-                              root_config->surface_scale_factor);
+    window_->UpdateVisualSize(
+        gfx::ToRoundedSize(root_config->bounds_rect.size()),
+        root_config->surface_scale_factor);
   }
 
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
@@ -261,7 +264,8 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->SetRoundedClipBounds(config->rounded_clip_bounds);
   surface->SetOverlayPriority(config->priority_hint);
   if (set_opaque_region) {
-    std::vector<gfx::Rect> region_px = {gfx::Rect(config->bounds_rect.size())};
+    std::vector<gfx::Rect> region_px = {
+        gfx::Rect(gfx::ToRoundedSize(config->bounds_rect.size()))};
     surface->SetOpaqueRegion(config->enable_blend ? nullptr : &region_px);
   }
 

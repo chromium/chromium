@@ -327,7 +327,7 @@ void WaylandSurface::SetBlending(const bool use_blending) {
     pending_state_.use_blending = use_blending;
 }
 
-void WaylandSurface::SetViewportDestination(const gfx::Size& dest_size_px) {
+void WaylandSurface::SetViewportDestination(const gfx::SizeF& dest_size_px) {
   DCHECK(!apply_state_immediately_);
   pending_state_.viewport_px = dest_size_px;
 }
@@ -480,8 +480,8 @@ void WaylandSurface::ApplyPendingState() {
   //   2. buffer_scale (wl_surface.set_buffer_scale)
   //   3. crop and scale (wp_viewport.set*)
   // Apply buffer_transform (wl_surface.set_buffer_transform).
-  gfx::Size bounds = wl::ApplyWaylandTransform(
-      pending_state_.buffer_size_px,
+  gfx::SizeF bounds = wl::ApplyWaylandTransform(
+      gfx::SizeF(pending_state_.buffer_size_px),
       wl::ToWaylandTransform(pending_state_.buffer_transform));
   int32_t applying_surface_scale;
 
@@ -493,14 +493,14 @@ void WaylandSurface::ApplyPendingState() {
     applying_surface_scale = 1;
   } else {
     applying_surface_scale = pending_state_.buffer_scale;
-    bounds = gfx::ScaleToCeiledSize(bounds, 1.f / pending_state_.buffer_scale);
+    bounds = gfx::ScaleSize(bounds, 1.f / pending_state_.buffer_scale);
   }
   if (!SurfaceSubmissionInPixelCoordinates())
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
 
   gfx::RectF viewport_src_dip;
   if (pending_state_.crop.IsEmpty()) {
-    viewport_src_dip = gfx::RectF(gfx::SizeF(bounds));
+    viewport_src_dip = gfx::RectF(bounds);
     // Unset crop (wp_viewport.set_source).
     if (viewport()) {
       wp_viewport_set_source(viewport(), wl_fixed_from_int(-1),
@@ -529,7 +529,7 @@ void WaylandSurface::ApplyPendingState() {
   gfx::SizeF viewport_dst_dip =
       pending_state_.viewport_px.IsEmpty()
           ? viewport_src_dip.size()
-          : gfx::ScaleSize(gfx::SizeF(pending_state_.viewport_px),
+          : gfx::ScaleSize(pending_state_.viewport_px,
                            1.f / pending_state_.buffer_scale);
   if (viewport_dst_dip != viewport_src_dip.size()) {
     // Apply viewport scale (wp_viewport.set_destination).

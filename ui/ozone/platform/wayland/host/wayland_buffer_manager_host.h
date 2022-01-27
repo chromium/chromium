@@ -149,6 +149,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                            uint32_t buffer_id);
   bool ValidateDataFromGpu(const gfx::Size& size, uint32_t buffer_id);
   bool ValidateBufferExistence(uint32_t buffer_id);
+  bool ValidateOverlayData(
+      const ui::ozone::mojom::WaylandOverlayConfig& overlay_data);
 
   // Terminates the GPU process on invalid data received
   void TerminateGpuProcess();

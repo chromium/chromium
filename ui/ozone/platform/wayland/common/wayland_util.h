@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/platform_window/platform_window_init_properties.h"
@@ -55,6 +56,8 @@ void ReadDataFromFD(base::ScopedFD fd, std::vector<uint8_t>* contents);
 // Translates bounds relative to top level window to specified parent.
 gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
                                              const gfx::Rect& parent_bounds);
+gfx::RectF TranslateBoundsToParentCoordinatesF(const gfx::RectF& child_bounds,
+                                               const gfx::RectF& parent_bounds);
 // Translates bounds relative to parent window to top level window.
 gfx::Rect TranslateBoundsToTopLevelCoordinates(const gfx::Rect& child_bounds,
                                                const gfx::Rect& parent_bounds);
@@ -71,8 +74,8 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
                                 wl_output_transform transform);
 
 // Applies transformation to |size|.
-gfx::Size ApplyWaylandTransform(const gfx::Size& size,
-                                wl_output_transform transform);
+gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
+                                 wl_output_transform transform);
 
 // Returns the root WaylandWindow for the given wl_surface.
 ui::WaylandWindow* RootWindowFromWlSurface(wl_surface* surface);

@@ -33,8 +33,7 @@ TypeConverter<ui::ozone::mojom::WaylandOverlayConfigPtr,
       ui::ozone::mojom::WaylandOverlayConfig::New()};
   wayland_overlay_config->z_order = input.overlay_plane_data.z_order;
   wayland_overlay_config->transform = input.overlay_plane_data.plane_transform;
-  wayland_overlay_config->bounds_rect =
-      gfx::ToNearestRect(input.overlay_plane_data.display_bounds);
+  wayland_overlay_config->bounds_rect = input.overlay_plane_data.display_bounds;
   wayland_overlay_config->crop_rect = input.overlay_plane_data.crop_rect;
   wayland_overlay_config->enable_blend = input.overlay_plane_data.enable_blend;
   wayland_overlay_config->opacity = input.overlay_plane_data.opacity;
@@ -266,9 +265,10 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
   // the buffer to root_surface of wayland window.
   overlay_configs.push_back(ui::ozone::mojom::WaylandOverlayConfig::New(
       INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE, buffer_id,
-      surface_scale_factor, bounds_rect, gfx::RectF(1.f, 1.f) /* no crop */,
-      damage_region, false, 1.0f /*opacity*/, gfx::GpuFenceHandle(),
-      gfx::OverlayPriorityHint::kNone, gfx::RRectF()));
+      surface_scale_factor, gfx::RectF(bounds_rect),
+      gfx::RectF(1.f, 1.f) /* no crop */, damage_region, false,
+      1.0f /*opacity*/, gfx::GpuFenceHandle(), gfx::OverlayPriorityHint::kNone,
+      gfx::RRectF()));
 
   CommitOverlays(widget, std::move(overlay_configs));
 }
