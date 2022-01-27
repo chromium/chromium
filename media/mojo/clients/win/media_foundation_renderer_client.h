@@ -92,7 +92,8 @@ class MediaFoundationRendererClient : public Renderer, public RendererClient {
   void OnSetOutputRectDone(const gfx::Size& output_size, bool success);
   void InitializeDCOMPRenderingIfNeeded();
   void OnDCOMPSurfaceReceived(
-      const absl::optional<base::UnguessableToken>& token);
+      const absl::optional<base::UnguessableToken>& token,
+      const std::string& error);
   void OnDCOMPSurfaceHandleSet(bool success);
   void OnVideoFrameCreated(scoped_refptr<VideoFrame> video_frame);
   void OnCdmAttached(bool success);

@@ -65,7 +65,8 @@ class MediaFoundationRendererWrapper final
 
  private:
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
-                             base::win::ScopedHandle handle);
+                             base::win::ScopedHandle handle,
+                             const std::string& error);
   void OnDCOMPSurfaceHandleRegistered(
       GetDCOMPSurfaceCallback callback,
       const absl::optional<base::UnguessableToken>& token);

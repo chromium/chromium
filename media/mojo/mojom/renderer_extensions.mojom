@@ -58,8 +58,9 @@ interface FlingingRendererClientExtension {
 interface MediaFoundationRendererExtension {
   // Enables Direct Composition video rendering and gets the token associated
   // with the Direct Composition surface handle, which can be retrieved later
-  // in the GPU process using the token. Returns a null token on failures.
-  GetDCOMPSurface() => (mojo_base.mojom.UnguessableToken? token);
+  // in the GPU process using the token. Returns a null `token` on failures when
+  // `error` explains the failure reason.
+  GetDCOMPSurface() => (mojo_base.mojom.UnguessableToken? token, string error);
 
   // Notifies whether video is enabled.
   SetVideoStreamEnabled(bool enabled);

@@ -23,8 +23,9 @@ class MEDIA_EXPORT MediaFoundationRendererExtension {
   // method names in a separate CL.
 
   // Enables Direct Composition video rendering and returns the Direct
-  // Composition Surface handle.
-  using GetDCompSurfaceCB = base::OnceCallback<void(base::win::ScopedHandle)>;
+  // Composition Surface handle. On failure, `error` explains the error reason.
+  using GetDCompSurfaceCB = base::OnceCallback<void(base::win::ScopedHandle,
+                                                    const std::string& error)>;
   virtual void GetDCompSurface(GetDCompSurfaceCB callback) = 0;
 
   // Notifies renderer whether video is enabled.

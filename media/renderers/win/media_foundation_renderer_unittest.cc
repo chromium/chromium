@@ -233,7 +233,7 @@ TEST_F(MediaFoundationRendererTest, DirectCompositionHandle) {
   EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
   // Ignore the DirectComposition handle value returned as our |pmp_server_|
   // has no real implementation.
-  EXPECT_CALL(get_dcomp_surface_cb, Run(_));
+  EXPECT_CALL(get_dcomp_surface_cb, Run(_, _));
 
   mf_renderer_->Initialize(&media_resource_, &renderer_client_,
                            renderer_init_cb_.Get());

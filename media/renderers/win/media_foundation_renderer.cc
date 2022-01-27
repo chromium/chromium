@@ -451,16 +451,18 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
 
   HRESULT hr = SetDCompModeInternal();
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to set DComp mode: " << PrintHr(hr);
-    std::move(callback).Run(base::win::ScopedHandle());
+    std::string error = "Failed to set DComp mode: " + PrintHr(hr);
+    DLOG(ERROR) << error;
+    std::move(callback).Run(base::win::ScopedHandle(), error);
     return;
   }
 
   HANDLE surface_handle = INVALID_HANDLE_VALUE;
   hr = GetDCompSurfaceInternal(&surface_handle);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to get DComp surface: " << PrintHr(hr);
-    std::move(callback).Run(base::win::ScopedHandle());
+    std::string error = "Failed to get DComp surface: " + PrintHr(hr);
+    DLOG(ERROR) << error;
+    std::move(callback).Run(base::win::ScopedHandle(), error);
     return;
   }
 
@@ -472,12 +474,14 @@ void MediaFoundationRenderer::GetDCompSurface(GetDCompSurfaceCB callback) {
       process, surface_handle, process, &duplicated_handle,
       GENERIC_READ | GENERIC_EXECUTE, false, DUPLICATE_CLOSE_SOURCE);
   if (!result) {
-    DLOG(ERROR) << "Duplicate surface_handle failed: " << ::GetLastError();
-    std::move(callback).Run(base::win::ScopedHandle());
+    std::string error =
+        "Duplicate surface_handle failed: " + PrintHr(::GetLastError());
+    DLOG(ERROR) << error;
+    std::move(callback).Run(base::win::ScopedHandle(), error);
     return;
   }
 
-  std::move(callback).Run(base::win::ScopedHandle(duplicated_handle));
+  std::move(callback).Run(base::win::ScopedHandle(duplicated_handle), "");
 }
 
 // TODO(crbug.com/1070030): Investigate if we need to add
