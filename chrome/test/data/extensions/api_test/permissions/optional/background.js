@@ -207,29 +207,31 @@ chrome.test.getConfig(function(config) {
     },
 
     function requestOrigin() {
-      doReq('http://c.com', pass(function(success) { assertFalse(success); }));
+      doReq('http://c.com', pass(function(success) {
+        assertFalse(success);
 
-      chrome.permissions.getAll(pass(function(permissions) {
-        assertTrue(checkPermSetsEq(initialPermissions, permissions));
-      }));
-
-      listenOnce(chrome.permissions.onAdded,
-                 function(permissions) {
-        assertTrue(permissions.permissions.length == 0);
-        assertTrue(permissions.origins.length == 1);
-        assertTrue(permissions.origins[0] == 'http://*.c.com/*');
-      });
-      chrome.permissions.request(
-          {origins: ['http://*.c.com/*']},
-          pass(function(granted) {
-        assertTrue(granted);
         chrome.permissions.getAll(pass(function(permissions) {
-          assertTrue(checkPermSetsEq(permissionsWithOrigin, permissions));
+          assertTrue(checkPermSetsEq(initialPermissions, permissions));
         }));
-        chrome.permissions.contains(
-            {origins:['http://*.c.com/*']},
-            pass(function(result) { assertTrue(result); }));
-        doReq('http://c.com', pass(function(result) { assertTrue(result); }));
+
+        listenOnce(chrome.permissions.onAdded,
+                   function(permissions) {
+          assertTrue(permissions.permissions.length == 0);
+          assertTrue(permissions.origins.length == 1);
+          assertTrue(permissions.origins[0] == 'http://*.c.com/*');
+        });
+        chrome.permissions.request(
+            {origins: ['http://*.c.com/*']},
+            pass(function(granted) {
+          assertTrue(granted);
+          chrome.permissions.getAll(pass(function(permissions) {
+            assertTrue(checkPermSetsEq(permissionsWithOrigin, permissions));
+          }));
+          chrome.permissions.contains(
+              {origins:['http://*.c.com/*']},
+              pass(function(result) { assertTrue(result); }));
+          doReq('http://c.com', pass(function(result) { assertTrue(result); }));
+        }));
       }));
     },
 
