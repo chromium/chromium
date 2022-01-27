@@ -69,6 +69,7 @@ static_library("test_support") {
   deps = [
     "//ash/services/quick_pair/public/mojom",
     "//base/test:test_support",
+    "//components/image_fetcher/core",
     "//services/network/public/cpp",
     "//testing/gtest",
   ]

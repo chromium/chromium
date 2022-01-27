@@ -31,6 +31,7 @@ class QuickPairBrowserDelegateImpl final : public QuickPairBrowserDelegate {
   // QuickPairBrowserDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   signin::IdentityManager* GetIdentityManager() override;
+  std::unique_ptr<image_fetcher::ImageFetcher> GetImageFetcher() override;
   PrefService* GetActivePrefService() override;
   void RequestService(
       mojo::PendingReceiver<mojom::QuickPairService> receiver) override;
