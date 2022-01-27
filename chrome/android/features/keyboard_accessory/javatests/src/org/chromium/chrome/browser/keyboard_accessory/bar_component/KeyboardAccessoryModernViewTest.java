@@ -181,6 +181,22 @@ public class KeyboardAccessoryModernViewTest {
         }
 
         @Override
+        public void setPriorityNotification(String feature) {}
+
+        @Override
+        @Nullable
+        public String getPendingPriorityNotification() {
+            return null;
+        }
+
+        @Override
+        public void registerPriorityNotificationHandler(
+                String feature, Runnable priorityNotificationHandler) {}
+
+        @Override
+        public void unregisterPriorityNotificationHandler(String feature) {}
+
+        @Override
         public boolean isInitialized() {
             return true;
         }

@@ -98,6 +98,7 @@ TEST_F(NeverConditionValidatorTest, ShouldNeverMeetConditions) {
                                     event_model_, availability_model_,
                                     display_lock_controller_, nullptr, 0u)
                    .NoErrors());
+  EXPECT_FALSE(validator_.GetPendingPriorityNotification().has_value());
 }
 
 }  // namespace feature_engagement

@@ -111,6 +111,22 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   virtual base::android::ScopedJavaLocalRef<jobject> AcquireDisplayLock(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj);
+  virtual void SetPriorityNotification(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jobj,
+      const base::android::JavaParamRef<jstring>& jfeature);
+  virtual base::android::ScopedJavaLocalRef<jstring>
+  GetPendingPriorityNotification(JNIEnv* env,
+                                 const base::android::JavaRef<jobject>& jobj);
+  virtual void RegisterPriorityNotificationHandler(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jobj,
+      const base::android::JavaParamRef<jstring>& jfeature,
+      const base::android::JavaRef<jobject>& jcallback);
+  virtual void UnregisterPriorityNotificationHandler(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& jobj,
+      const base::android::JavaParamRef<jstring>& jfeature);
   virtual bool IsInitialized(JNIEnv* env,
                              const base::android::JavaRef<jobject>& jobj);
   virtual void AddOnInitializedCallback(

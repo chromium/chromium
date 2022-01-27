@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -190,6 +191,27 @@ class Tracker : public KeyedService, public base::SupportsUserData {
   // The DisplayLockHandle must be released on the main thread.
   // This method returns nullptr if no handle could be retrieved.
   virtual std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() = 0;
+
+  // Called by the client to notify the tracker that a priority notification
+  // should be shown. If a handler has already been registered, the IPH will be
+  // shown right away. Otherwise, the tracker will cache the priority feature
+  // and will show the IPH whenever a handler is registered in future. All other
+  // IPHs will be blocked until then. It isn't allowed to invoke this method
+  // again with another notification before the existing one is processed.
+  virtual void SetPriorityNotification(const base::Feature& feature) = 0;
+
+  // Called to get if there is a pending priority notification to be shown next.
+  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+
+  // Called by the client to register a handler for priority notifications. This
+  // will essentially contain the code to spin up an IPH.
+  virtual void RegisterPriorityNotificationHandler(
+      const base::Feature& feature,
+      base::OnceClosure callback) = 0;
+
+  // Unregister the handler. Must be called during client destruction.
+  virtual void UnregisterPriorityNotificationHandler(
+      const base::Feature& feature) = 0;
 
   // Returns whether the tracker has been successfully initialized. During
   // startup, this will be false until the internal models have been loaded at

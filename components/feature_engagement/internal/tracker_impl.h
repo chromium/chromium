@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
@@ -53,6 +54,12 @@ class TrackerImpl : public Tracker {
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
+  void SetPriorityNotification(const base::Feature& feature) override;
+  absl::optional<std::string> GetPendingPriorityNotification() override;
+  void RegisterPriorityNotificationHandler(const base::Feature& feature,
+                                           base::OnceClosure callback) override;
+  void UnregisterPriorityNotificationHandler(
+      const base::Feature& feature) override;
 
  private:
   // Invoked by the EventModel when it has been initialized.
@@ -101,6 +108,9 @@ class TrackerImpl : public Tracker {
   // The list of callbacks to invoke when initialization has finished. This
   // is cleared after the initialization has happened.
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
+
+  // Registered priority notification handlers for various features.
+  std::map<std::string, base::OnceClosure> priority_notification_handlers_;
 
   base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
 };

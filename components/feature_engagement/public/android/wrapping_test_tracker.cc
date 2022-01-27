@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/public/jni_headers/CppWrappedTestTracker_jni.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 
@@ -90,6 +91,21 @@ void WrappingTestTracker::DismissedWithSnooze(
 std::unique_ptr<DisplayLockHandle> WrappingTestTracker::AcquireDisplayLock() {
   return nullptr;
 }
+
+void WrappingTestTracker::SetPriorityNotification(
+    const base::Feature& feature) {}
+
+absl::optional<std::string>
+WrappingTestTracker::GetPendingPriorityNotification() {
+  return absl::nullopt;
+}
+
+void WrappingTestTracker::RegisterPriorityNotificationHandler(
+    const base::Feature& feature,
+    base::OnceClosure callback) {}
+
+void WrappingTestTracker::UnregisterPriorityNotificationHandler(
+    const base::Feature& feature) {}
 
 bool WrappingTestTracker::IsInitialized() const {
   return Java_CppWrappedTestTracker_isInitialized(
