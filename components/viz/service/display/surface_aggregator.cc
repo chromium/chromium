@@ -788,7 +788,7 @@ void SurfaceAggregator::EmitSurfaceContent(
         target_transform);
   }
 
-  if (needs_surface_damage_rect_list_) {
+  if (needs_surface_damage_rect_list_ && resolved_frame.WillDraw()) {
     AddSurfaceDamageToDamageList(
         /*default_damage_rect =*/gfx::Rect(), combined_transform,
         dest_root_target_clip_rect, dest_pass, &resolved_frame);
@@ -1185,7 +1185,8 @@ void SurfaceAggregator::CopyQuadsToPass(
 
   size_t overlay_damage_index = 0;
   const DrawQuad* quad_with_overlay_damage_index = nullptr;
-  if (needs_surface_damage_rect_list_) {
+  if (needs_surface_damage_rect_list_ &&
+      resolved_pass.aggregation().will_draw) {
     AddRenderPassFilterDamageToDamageList(
         target_transform, dest_root_target_clip_rect, &source_pass, dest_pass);
     quad_with_overlay_damage_index =
@@ -1241,7 +1242,8 @@ void SurfaceAggregator::CopyQuadsToPass(
         // this |source_pass| will have been added to the
         // |surface_damage_rect_list_| before this phase.
         if (source_pass.has_per_quad_damage &&
-            GetOptionalDamageRectFromQuad(quad).has_value()) {
+            GetOptionalDamageRectFromQuad(quad).has_value() &&
+            resolved_pass.aggregation().will_draw) {
           auto damage_rect_in_target_space =
               GetOptionalDamageRectFromQuad(quad);
           dest_shared_quad_state->overlay_damage_index =
