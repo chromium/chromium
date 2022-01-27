@@ -56,80 +56,89 @@ html[cvd="1"] {
     [0, 0, 1]
   ];
 
+  /** @enum {number} */
+  const Index = {
+    ZERO: 0,
+    ONE: 1,
+    TWO: 2,
+  };
+
+  /** @typedef {!Array<!Array<number>>} */
+  let Matrix;
 
   /**
-   * Adds two matrices.
-   * @param {!object} m1 A 3x3 matrix.
-   * @param {!object} m2 A 3x3 matrix.
-   * @return {!object} The 3x3 matrix m1 + m2.
+   * Creates a matrix with elements specified by the elementCalculator function.
+   * @param {!function(!Index, !Index): number} elementCalculator Given the i
+   *     and j indices of the element, calculates the value for the new matrix.
+   * @return {!Matrix}
    */
-  function add3x3(m1, m2) {
+  function matrixMaker3x3(elementCalculator) {
     const result = [];
-    for (let i = 0; i < 3; i++) {
+    for (const i of Object.values(Index)) {
       result[i] = [];
-      for (let j = 0; j < 3; j++) {
-        result[i].push(m1[i][j] + m2[i][j]);
+      for (const j of Object.values(Index)) {
+        result[i][j] = elementCalculator(i, j);
       }
     }
     return result;
+  }
+
+  /**
+   * Adds two matrices.
+   * @param {!Matrix} m1 A 3x3 matrix.
+   * @param {!Matrix} m2 A 3x3 matrix.
+   * @return {!Matrix} The 3x3 matrix m1 + m2.
+   */
+  function add3x3(m1, m2) {
+    /** @type {!function(!Index, !Index): number} */
+    const adder = (i, j) => m1[i][j] + m2[i][j];
+    return matrixMaker3x3(adder);
   }
 
 
   /**
    * Subtracts one matrix from another.
-   * @param {!object} m1 A 3x3 matrix.
-   * @param {!object} m2 A 3x3 matrix.
-   * @return {!object} The 3x3 matrix m1 - m2.
+   * @param {!Matrix} m1 A 3x3 matrix.
+   * @param {!Matrix} m2 A 3x3 matrix.
+   * @return {!Matrix} The 3x3 matrix m1 - m2.
    */
   function sub3x3(m1, m2) {
-    const result = [];
-    for (let i = 0; i < 3; i++) {
-      result[i] = [];
-      for (let j = 0; j < 3; j++) {
-        result[i].push(m1[i][j] - m2[i][j]);
-      }
-    }
-    return result;
+    /** @type {!function(!Index, !Index): number} */
+    const subtracter = (i, j) => m1[i][j] - m2[i][j];
+    return matrixMaker3x3(subtracter);
   }
 
 
   /**
    * Multiplies one matrix with another.
-   * @param {!object} m1 A 3x3 matrix.
-   * @param {!object} m2 A 3x3 matrix.
-   * @return {!object} The 3x3 matrix m1 * m2.
+   * @param {!Matrix} m1 A 3x3 matrix.
+   * @param {!Matrix} m2 A 3x3 matrix.
+   * @return {!Matrix} The 3x3 matrix m1 * m2.
    */
   function mul3x3(m1, m2) {
-    const result = [];
-    for (let i = 0; i < 3; i++) {
-      result[i] = [];
-      for (let j = 0; j < 3; j++) {
-        let sum = 0;
-        for (let k = 0; k < 3; k++) {
-          sum += m1[i][k] * m2[k][j];
-        }
-        result[i].push(sum);
+    /** @type {!function(!Index, !Index): number} */
+    const multiplier = (i, j) => {
+      let sum = 0;
+      for (const k of Object.values(Index)) {
+        sum += m1[i][k] * m2[k][j];
       }
+      return sum;
     }
-    return result;
+
+    return matrixMaker3x3(multiplier);
   }
 
 
   /**
    * Multiplies a matrix with a number.
-   * @param {!object} m A 3x3 matrix.
+   * @param {!Matrix} m A 3x3 matrix.
    * @param {!number} k A scalar multiplier.
-   * @return {!object} The 3x3 matrix m * k.
+   * @return {!Matrix} The 3x3 matrix m * k.
    */
   function mul3x3Scalar(m, k) {
-    const result = [];
-    for (let i = 0; i < 3; i++) {
-      result[i] = [];
-      for (let j = 0; j < 3; j++) {
-        result[i].push(k * m[i][j]);
-      }
-    }
-    return result;
+    /** @type {!function(!Index, !Index): number} */
+    const scaler = (i, j) => k * m[i][j];
+    return matrixMaker3x3(scaler);
   }
 
 
@@ -137,7 +146,7 @@ html[cvd="1"] {
 
   /**
    * Makes the SVG matrix string (of 20 values) for a given matrix.
-   * @param {!object} m A 3x3 matrix.
+   * @param {!Matrix} m A 3x3 matrix.
    * @return {!string} The SVG matrix string for m.
    */
   function svgMatrixStringFrom3x3(m) {
@@ -153,7 +162,7 @@ html[cvd="1"] {
 
   /**
    * Makes a human readable string for a given matrix.
-   * @param {!object} m A 3x3 matrix.
+   * @param {!Matrix} m A 3x3 matrix.
    * @return {!string} A human-readable string for m.
    */
   function humanReadbleStringFrom3x3(m) {
@@ -265,23 +274,19 @@ html[cvd="1"] {
    * @param {string} cvdType Type of CVD, either "PROTANOMALY" or
    *     "DEUTERANOMALY" or "TRITANOMALY".
    * @param {number} severity A real number in [0,1] denoting severity.
+   * @return {!Matrix}
    */
   function getCvdSimulationMatrix(cvdType, severity) {
     const cvdSimulationParam = cvdSimulationParams[cvdType];
     const severity_squared = severity * severity;
-    const matrix = [];
-    for (let i = 0; i < 3; i++) {
-      const row = [];
-      for (let j = 0; j < 3; j++) {
-        const paramRow = i*3+j;
-        const val = cvdSimulationParam[paramRow][0] * severity_squared
-                  + cvdSimulationParam[paramRow][1] * severity
-                  + cvdSimulationParam[paramRow][2];
-        row.push(val);
-      }
-      matrix.push(row);
+
+    const calculateElementValue = (i, j) => {
+      const paramRow = i*3+j;
+      return cvdSimulationParam[paramRow][0] * severity_squared
+           + cvdSimulationParam[paramRow][1] * severity
+           + cvdSimulationParam[paramRow][2];
     }
-    return matrix;
+    return matrixMaker3x3(calculateElementValue);
   }
 
 
@@ -291,6 +296,7 @@ html[cvd="1"] {
    * @param {string} cvdType Type of CVD, either "PROTANOMALY" or
    *     "DEUTERANOMALY" or "TRITANOMALY".
    * @param {number} delta A real number in [0,1] denoting color adjustment.
+   * @return {!Matrix}
    */
   function getCvdCorrectionMatrix(cvdType, delta) {
     cvdCorrectionParam = cvdCorrectionParams[cvdType];
@@ -308,6 +314,7 @@ html[cvd="1"] {
    * @param {number} delta A real number in [0,1] denoting color adjustment.
    * @param {boolean} simulate Whether to simulate the CVD type.
    * @param {boolean} enable Whether to enable color filtering.
+   * @return {!Matrix}
    */
   function getEffectiveCvdMatrix(cvdType, severity, delta, simulate, enable) {
     if (!enable) {
@@ -490,7 +497,7 @@ html[cvd="1"] {
 
   /**
    * Adds support for a color enhancement filter.
-   * @param {!Object} matrix 3x3 RGB transformation matrix.
+   * @param {!Matrix} matrix 3x3 RGB transformation matrix.
    */
   exports.injectColorEnhancementFilter = function(matrix) {
     setFilter(matrix);
