@@ -136,6 +136,10 @@ class HIDDetectionScreenTester extends ScreenElementApi {
     return keyboardTickIcon.isVisible();
   }
 
+  getNextButtonName() {
+    return loadTimeData.getString('hidDetectionContinue');
+  }
+
   canClickNext() {
     return this.nextButton.isEnabled();
   }
