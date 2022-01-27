@@ -23,6 +23,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/switch_thumb_tint.xml",
+    "java/res/color-night/switch_track_tint.xml",
     "java/res/color/chip_text_color_secondary.xml",
     "java/res/color/default_icon_color_accent1_tint_list.xml",
     "java/res/color/default_icon_color_dark_tint_list.xml",
@@ -42,7 +44,9 @@ android_resources("java_resources") {
     "java/res/color/progress_bar_bg_color.xml",
     "java/res/color/selection_control_button_tint.xml",
     "java/res/color/switch_thumb_tint.xml",
+    "java/res/color/switch_thumb_tint_incognito.xml",
     "java/res/color/switch_track_tint.xml",
+    "java/res/color/switch_track_tint_incognito.xml",
     "java/res/color/text_highlight_color.xml",
     "java/res/drawable-hdpi/btn_star_filled.png",
     "java/res/drawable-hdpi/ic_chrome.png",

@@ -85,6 +85,10 @@
         <item name="trackTint">@color/switch_track_tint</item>
         <item name="trackTintMode">src_in</item>
     </style>
+    <style name="Widget.BrowserUI.Switch.Incognito" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_tint_incognito</item>
+        <item name="trackTint">@color/switch_track_tint_incognito</item>
+    </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
@@ -181,12 +185,12 @@
     <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
          -->
     <style name="SwitchMaterialDark">
-        <item name="colorPrimaryNonDynamic">@color/baseline_primary_200</item>
-        <item name="colorPrimaryContainerNonDynamic">@color/baseline_primary_100</item>
-        <item name="colorSwitchThumbNormalNonDynamic">@color/baseline_neutral_100</item>
-        <item name="colorSwitchTrackNormalNonDynamic">@color/baseline_neutral_variant_400</item>
+        <!-- TODO(sinansahin): When we migrate the switch style to Material3, we should override
+             colorOnSurface and colorPrimary instead of these attributes because they are what
+             m3_selection_control_ripple_color_selector uses. -->
+        <item name="colorControlActivated">@color/default_control_color_active_dark</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
-        <item name="switchStyle">@style/Widget.BrowserUI.Switch</item>
+        <item name="switchStyle">@style/Widget.BrowserUI.Switch.Incognito</item>
     </style>
 
     <!-- Styling for an app menu item row. -->

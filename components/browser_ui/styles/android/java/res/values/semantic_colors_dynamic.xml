@@ -7,16 +7,25 @@
     <!--
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
+
     <macro name="default_control_color_active">?attr/colorPrimary</macro>
     <macro name="default_control_color_normal">?attr/colorOnSurfaceVariant</macro>
+
     <macro name="default_icon_color">?attr/colorOnSurface</macro>
     <macro name="default_icon_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_icon_color_inverse">?attr/colorOnSurfaceInverse</macro>
     <macro name="default_icon_color_on_accent1">?attr/colorOnPrimary</macro>
     <macro name="default_icon_color_secondary">?attr/colorOnSurfaceVariant</macro>
+
     <macro name="default_text_color">?attr/colorOnSurface</macro>
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
+
+    <macro name="switch_enabled_unchecked_color_dark">?attr/colorOutline</macro>
+    <macro name="switch_enabled_unchecked_color_light">?attr/colorOnSurface</macro>
+    <macro name="switch_track_disabled_color">?attr/colorOnSurface</macro>
+    <macro name="switch_thumb_disabled_color">?attr/colorOnSurfaceInverse</macro>
+
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
     <macro name="divider_line_bg_color">?attr/colorSurfaceVariant</macro>
     -->
@@ -24,16 +33,25 @@
     <!-- Temporarily holdback @color version. Use for checkin. -->
     <macro name="default_bg_color">@color/default_bg_color_baseline</macro>
     <macro name="default_bg_color_elev_0">@color/default_bg_color_elev_0_baseline</macro>
+
     <macro name="default_control_color_active">@color/default_control_color_active_baseline</macro>
     <macro name="default_control_color_normal">@color/default_control_color_normal_baseline</macro>
+
     <macro name="default_icon_color">@color/default_icon_color_baseline</macro>
     <macro name="default_icon_color_accent1">@color/default_icon_color_accent1_baseline</macro>
     <macro name="default_icon_color_inverse">@color/default_icon_color_inverse_baseline</macro>
     <macro name="default_icon_color_on_accent1">@color/default_icon_color_on_accent1_baseline</macro>
     <macro name="default_icon_color_secondary">@color/default_icon_color_secondary_baseline</macro>
+
     <macro name="default_text_color">@color/default_text_color_baseline</macro>
     <macro name="default_text_color_accent1">@color/default_text_color_blue_baseline</macro>
     <macro name="default_text_color_on_accent1">@color/default_text_color_on_accent1_baseline</macro>
+
+    <macro name="switch_enabled_unchecked_color_dark">@color/switch_enabled_unchecked_color_baseline_dark</macro>
+    <macro name="switch_enabled_unchecked_color_light">@color/switch_enabled_unchecked_color_baseline_light</macro>
+    <macro name="switch_track_disabled_color">@color/switch_track_disabled_color_baseline</macro>
+    <macro name="switch_thumb_disabled_color">@color/switch_thumb_disabled_color_baseline</macro>
+
     <macro name="hairline_stroke_color">@color/hairline_stroke_color_baseline</macro>
     <macro name="divider_line_bg_color">@color/divider_line_bg_color_baseline</macro>
 

@@ -4,7 +4,7 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@macro/switch_thumb_disabled_color" android:state_enabled="false"/>
-    <item android:color="@macro/default_control_color_active" android:state_checked="true"/>
-    <item android:color="@macro/switch_enabled_unchecked_color_dark"/>
+    <item android:color="@color/switch_thumb_disabled_color_baseline_dark" android:state_enabled="false"/>
+    <item android:color="@color/default_control_color_active_dark" android:state_checked="true"/>
+    <item android:color="@color/switch_enabled_unchecked_color_baseline_light"/>
 </selector>

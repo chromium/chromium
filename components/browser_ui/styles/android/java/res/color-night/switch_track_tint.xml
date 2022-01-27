@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
@@ -9,5 +9,5 @@
     <item android:alpha="@dimen/switch_track_enabled_alpha"
         android:color="@macro/default_control_color_active" android:state_checked="true"/>
     <item android:alpha="@dimen/switch_track_enabled_alpha"
-        android:color="@macro/switch_enabled_unchecked_color_dark"/>
+        android:color="@macro/switch_enabled_unchecked_color_light"/>
 </selector>
