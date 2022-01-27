@@ -60,8 +60,10 @@
     VLOG(0) << "SetupSystemUpdaterWithUpdaterPath complete. Result: " << rc;
     if (reply)
       reply(rc);
+    _server->TaskCompleted();
   }));
 
+  _server->TaskStarted();
   _callbackRunner->PostTask(
       FROM_HERE,
       base::BindOnce(&updater::PrivilegedHelperService::SetupSystemUpdater,
