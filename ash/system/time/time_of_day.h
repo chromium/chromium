@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -36,6 +37,10 @@ class ASH_EXPORT TimeOfDay {
     return offset_minutes_from_zero_hour_;
   }
 
+  // Sets `clock_` with a given `clock`, but this class does not own it.
+  // The clock is used to determine current time in `GetNow()`.
+  TimeOfDay& SetClock(base::Clock* clock);
+
   // Converts to an actual point in time today. If this fail for some reason,
   // base::Time() will be returned.
   base::Time ToTimeToday() const;
@@ -44,7 +49,14 @@ class ASH_EXPORT TimeOfDay {
   std::string ToString() const;
 
  private:
+  // Gets now time from the `clock_`, used for testing, or `base::Time::Now()`
+  // if `clock_` does not exist.
+  base::Time GetNow() const;
+
   int offset_minutes_from_zero_hour_;
+
+  // Optional Used in tests to override the time of "Now".
+  base::Clock* clock_ = nullptr;  // Not owned.
 };
 
 }  // namespace ash

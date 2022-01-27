@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,6 +66,19 @@ TEST(TimeOfDayTest, TestFromTime) {
   ASSERT_TRUE(base::Time::FromLocalExploded(now, &now_today));
   base::Time now_tomorrow = now_today + base::Days(1);
   EXPECT_EQ(TimeOfDay::FromTime(now_today), TimeOfDay::FromTime(now_tomorrow));
+}
+
+// Tests that if the clock is set the date today should follow the clock date.
+TEST(TimeOfDayTest, SetClock) {
+  base::SimpleTestClock test_clock;
+  base::Time time_now;
+  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 12:00:00", &time_now));
+  test_clock.SetNow(time_now);
+
+  TimeOfDay test_time = TimeOfDay(2 * 60).SetClock(&test_clock);
+  base::Time expected_time;
+  EXPECT_TRUE(base::Time::FromString("23 Dec 2021 2:00:00", &expected_time));
+  EXPECT_EQ(expected_time, test_time.ToTimeToday());
 }
 
 }  // namespace

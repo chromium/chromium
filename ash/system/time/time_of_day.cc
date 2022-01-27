@@ -32,9 +32,14 @@ bool TimeOfDay::operator==(const TimeOfDay& rhs) const {
   return offset_minutes_from_zero_hour_ == rhs.offset_minutes_from_zero_hour_;
 }
 
+TimeOfDay& TimeOfDay::SetClock(base::Clock* clock) {
+  clock_ = clock;
+  return *this;
+}
+
 base::Time TimeOfDay::ToTimeToday() const {
   base::Time::Exploded now;
-  base::Time::Now().LocalExplode(&now);
+  GetNow().LocalExplode(&now);
   now.hour = (offset_minutes_from_zero_hour_ / 60) % 24;
   now.minute = offset_minutes_from_zero_hour_ % 60;
   now.second = 0;
@@ -52,6 +57,10 @@ base::Time TimeOfDay::ToTimeToday() const {
 
 std::string TimeOfDay::ToString() const {
   return base::UTF16ToUTF8(base::TimeFormatTimeOfDay(ToTimeToday()));
+}
+
+base::Time TimeOfDay::GetNow() const {
+  return clock_ ? clock_->Now() : base::Time::Now();
 }
 
 }  // namespace ash
