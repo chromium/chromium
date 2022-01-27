@@ -3,8 +3,116 @@
 // found in the LICENSE file.
 
 // TODO(wnwen): Wrap calls.
+// TODO(anastasi): Change interface to remove unneeded promises.
+
+/** @typedef {string|number|boolean} */
+let StoredValue;
+/** @typedef {{newValue: StoredValue, oldValue: StoredValue}} */
+let Change;
 
 class Storage {
+  constructor() {
+    /** @private {number} */
+    this.defaultDelta_ = Storage.DEFAULT_DELTA;
+
+    /** @private {!Object<string, number>} */
+    this.siteDeltas_ = {};
+
+    /** @private {number} */
+    this.defaultSeverity_ = Storage.DEFAULT_SEVERITY;
+
+    /** @private {string} */
+    this.defaultType_ = Storage.INVALID_TYPE_PLACEHOLDER;
+
+    /** @private {boolean} */
+    this.defaultSimulate_ = Storage.DEFAULT_SIMULATE;
+
+    /** @private {boolean} */
+    this.defaultEnable_ = Storage.DEFAULT_ENABLE;
+
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
+    chrome.storage.onChanged.addListener(
+        this.onStorageChanged_.bind(this, (change) => change.newValue));
+    chrome.storage.local.get(
+        null /** all items */,
+        this.onStorageChanged_.bind(this, (newVal) => newVal));
+  }
+
+  /**
+   * Updates the cached values.
+   * @param {(function(Change): StoredValue) |
+   *    (function(StoredValue): StoredValue)} getValueFromAPIResult Gets the
+   *      new value from the result indexed at a key. When called by
+   *      storage.local.get(), this returns exactly what it is given. When
+   *      called by storage.onChanged, this extracts newValue (instead of
+   *      oldValue).
+   * @param {Object<string, Change>|Object<string, StoredValue>} changes The
+   *      updates from the chrome.storage API.
+   * @private
+   */
+  onStorageChanged_(getValueFromAPIResult, changes) {
+    if (changes[Storage.DELTA_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.DELTA_TAG]);
+      if (this.validDelta_(newVal)) {
+        this.defaultDelta_ = newVal;
+      } else {
+        this.defaultDelta_ = Storage.DEFAULT_DELTA;
+      }
+    }
+
+    if (changes[Storage.PER_SITE_DELTA_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.PER_SITE_DELTA_TAG]);
+      if (typeof (newVal) === 'object') {
+        for (const site of Object.keys(newVal)) {
+          if (!this.validDelta_(newVal[site])) {
+            newVal[site] = this.defaultDelta_;
+          }
+        }
+        this.siteDeltas_ = newVal;
+      } else {
+        this.siteDeltas_ = {};
+      }
+    }
+
+    if (changes[Storage.SEVERITY_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.SEVERITY_TAG]);
+      if (this.validSeverity_(newVal)) {
+        this.defaultSeverity_ = newVal;
+      } else {
+        this.defaultSeverity_ = Storage.DEFAULT_SEVERITY;
+      }
+    }
+
+    if (changes[Storage.TYPE_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.TYPE_TAG]);
+      if (this.validType_(newVal)) {
+        this.defaultType_ = newVal;
+      }
+    }
+
+    if (changes[Storage.SIMULATE_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.SIMULATE_TAG]);
+      if (this.validBoolean_(newVal)) {
+        this.defaultSimulate_ = newVal;
+      } else {
+        this.defaultSimulate_ = Storage.DEFAULT_SIMULATE;
+      }
+    }
+
+    if (changes[Storage.ENABLE_TAG]) {
+      const newVal = getValueFromAPIResult(changes[Storage.ENABLE_TAG]);
+      if (this.validBoolean_(newVal)) {
+        this.defaultEnable_ = newVal;
+      } else {
+        this.defaultEnable_ = Storage.DEFAULT_ENABLE;
+      }
+    }
+  }
+
   // ======= Delta setting =======
 
   /**
@@ -19,15 +127,7 @@ class Storage {
   /** @return {Promise<number>} */
   getDefaultDelta() {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.DELTA_TAG], (result) => {
-        let delta = result[Storage.DELTA_TAG];
-        if (this.validDelta_(delta)) {
-          resolve(delta);
-          return;
-        }
-        delta = Storage.DEFAULT_DELTA;
-        this.store_(Storage.DELTA_TAG, delta, () => resolve(delta));
-      });
+      resolve(this.defaultDelta_);
     });
   }
 
@@ -39,6 +139,7 @@ class Storage {
     if (!this.validDelta_(delta)) {
       delta = Storage.DEFAULT_DELTA;
     }
+    this.defaultDelta_ = delta;
     return new Promise(
         resolve => this.store_(Storage.DELTA_TAG, delta, resolve));
   }
@@ -49,15 +150,13 @@ class Storage {
    */
   getSiteDelta(site) {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.PER_SITE_DELTA_TAG], (result) => {
-        const siteDeltas = result [Storage.PER_SITE_DELTA_TAG] || {};
-        const delta = siteDeltas[site];
-        if (!this.validDelta_(delta)) {
-          this.getDefaultDelta().then(resolve);
-          return;
-        }
-        resolve(delta);
-      });
+      const delta = this.siteDeltas_[site];
+      if (!this.validDelta_(delta)) {
+        this.setSiteDelta(site, this.defaultDelta_);
+        resolve(this.defaultDelta_);
+        return;
+      }
+      resolve(delta);
     });
   }
 
@@ -67,20 +166,18 @@ class Storage {
    * @return {Promise}
    */
   setSiteDelta(site, delta) {
-    return new Promise(async resolve => {
+    return new Promise(resolve => {
       if (!this.validDelta_(delta)) {
-        delta = await this.getDefaultDelta();
+        delta = this.defaultDelta_;
       }
-      chrome.storage.local.get([Storage.PER_SITE_DELTA_TAG], (result) => {
-        const siteDeltas = result[Storage.PER_SITE_DELTA_TAG] || {};
-        siteDeltas[site] = delta;
-        this.store_(Storage.PER_SITE_DELTA_TAG, siteDeltas, resolve);
-      });
+      this.siteDeltas_[site] = delta;
+      this.store_(Storage.PER_SITE_DELTA_TAG, this.siteDeltas_, resolve);
     });
   }
 
   /** @return {Promise} */
   resetSiteDeltas() {
+    this.siteDeltas_ = {};
     return new Promise(
         resolve => this.store_(Storage.PER_SITE_DELTA_TAG, {}, resolve));
   }
@@ -99,15 +196,7 @@ class Storage {
   /** @return {Promise<number>} */
   getDefaultSeverity() {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.SEVERITY_TAG], (result) => {
-        let severity = result[Storage.SEVERITY_TAG];
-        if (this.validSeverity_(severity)) {
-          resolve(severity);
-          return;
-        }
-        severity = Storage.DEFAULT_SEVERITY;
-        this.store_(Storage.SEVERITY_TAG, severity, () => resolve(severity));
-      });
+      resolve(this.defaultSeverity_);
     });
   }
 
@@ -119,6 +208,7 @@ class Storage {
     if (!this.validSeverity_(severity)) {
       severity = Storage.DEFAULT_SEVERITY;
     }
+    this.defaultSeverity_ = severity;
     return new Promise(
         resolve => this.store_(Storage.SEVERITY_TAG, severity, resolve));
   }
@@ -138,15 +228,7 @@ class Storage {
   /** @return {Promise<string>} */
   getDefaultType() {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.TYPE_TAG], (result) => {
-        const type = result[Storage.TYPE_TAG];
-        if (this.validType_(type)) {
-          resolve(type);
-        } else {
-          // TODO(anastasi): add appropriate error handling
-          resolve(Storage.INVALID_TYPE_PLACEHOLDER);
-        }
-      });
+      resolve(this.defaultType_);
     });
   }
 
@@ -158,6 +240,7 @@ class Storage {
     if (!this.validType_(type)) {
       type = Storage.INVALID_TYPE_PLACEHOLDER;
     }
+    this.defaultType_ = type;
     return new Promise(resolve => this.store_(Storage.TYPE_TAG, type, resolve));
   }
 
@@ -166,16 +249,7 @@ class Storage {
   /** @return {Promise<boolean>} */
   getDefaultSimulate() {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.SIMULATE_TAG], (result) => {
-        let simulate = result[Storage.SIMULATE_TAG];
-
-        if (this.validBoolean_(simulate)) {
-          resolve(simulate);
-          return;
-        }
-        simulate = Storage.DEFAULT_SIMULATE;
-        this.store_(Storage.SIMULATE_TAG, simulate, () => resolve(simulate));
-      });
+      resolve(this.defaultSimulate_);
     });
   }
 
@@ -187,6 +261,7 @@ class Storage {
     if (!this.validBoolean_(simulate)) {
       simulate = Storage.DEFAULT_SIMULATE;
     }
+    this.defaultSimulate_ = simulate;
     return new Promise(
         resolve => this.store_(Storage.SIMULATE_TAG, simulate, resolve));
   }
@@ -196,16 +271,7 @@ class Storage {
   /** @return {Promise<boolean>} */
   getDefaultEnable() {
     return new Promise(resolve => {
-      chrome.storage.local.get([Storage.ENABLE_TAG], (result) => {
-        let enable = result[Storage.ENABLE_TAG];
-
-        if (this.validBoolean_(enable)) {
-          resolve(enable);
-          return;
-        }
-        enable = Storage.DEFAULT_ENABLE;
-        this.store_(Storage.ENABLE_TAG, enable, () => resolve(enable));
-      });
+      resolve(this.defaultEnable_);
     });
   }
 
@@ -217,6 +283,7 @@ class Storage {
     if (!this.validBoolean_(enable)) {
       enable = Storage.DEFAULT_ENABLE;
     }
+    this.defaultEnable_ = enable;
     return new Promise(
         resolve => this.store_(Storage.ENABLE_TAG, enable, resolve));
   }
