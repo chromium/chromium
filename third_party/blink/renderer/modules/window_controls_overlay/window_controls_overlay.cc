@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/window_controls_overlay.h"
+#include "third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/core/frame/window_controls_overlay_geometry_change_event.h"
+#include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay_geometry_change_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -38,7 +39,10 @@ WindowControlsOverlay* WindowControlsOverlay::windowControlsOverlay(
 }
 
 WindowControlsOverlay::WindowControlsOverlay(Navigator& navigator)
-    : Supplement<Navigator>(navigator) {}
+    : Supplement<Navigator>(navigator),
+      WindowControlsOverlayChangedDelegate(
+          navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr) {
+}
 
 WindowControlsOverlay::~WindowControlsOverlay() = default;
 

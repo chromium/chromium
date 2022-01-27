@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_
 
-#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -40,4 +40,4 @@ class WindowControlsOverlayGeometryChangeEvent final : public Event {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WINDOW_CONTROLS_OVERLAY_WINDOW_CONTROLS_OVERLAY_GEOMETRY_CHANGE_EVENT_H_

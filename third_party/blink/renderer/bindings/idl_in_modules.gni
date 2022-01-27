@@ -1185,6 +1185,23 @@ if (target_os != "android") {
           "abspath")
 }
 
+# WindowControlsOverlay
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (target_os != "android") {
+  static_idl_files_in_modules += get_path_info(
+          [
+            "//third_party/blink/renderer/modules/window_controls_overlay/navigator_window_controls_overlay.idl",
+            "//third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay.idl",
+            "//third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay_geometry_change_event.idl",
+            "//third_party/blink/renderer/modules/window_controls_overlay/window_controls_overlay_geometry_change_event_init.idl",
+          ],
+          "abspath")
+}
+
 # Statically-defined (not runtime-generated) IDL files in 'modules' component.
 # These IDL definitions are used only for testing.
 static_idl_files_in_modules_for_testing = get_path_info(

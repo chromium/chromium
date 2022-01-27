@@ -210,6 +210,10 @@ interface HIDInputReportEvent : Event
 interface HIDConnectionEvent : Event
 interface HID : EventTarget
 
+# Window Controls Overlay API is not implemented on Android.
+interface WindowControlsOverlay : EventTarget
+interface WindowControlsOverlayGeometryChangeEvent : Event
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only

@@ -142,6 +142,10 @@ class WebPrescientNetworking;
 class WebURLLoaderFactory;
 struct BlinkTransferableMessage;
 
+#if !BUILDFLAG(IS_ANDROID)
+class WindowControlsOverlayChangedDelegate;
+#endif
+
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
 // A LocalFrame is a frame hosted inside this process.
@@ -646,7 +650,12 @@ class CORE_EXPORT LocalFrame final
 #if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const gfx::Point& point);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
+  void RegisterWindowControlsOverlayChangedDelegate(
+      WindowControlsOverlayChangedDelegate*);
+#endif
 
   SystemClipboard* GetSystemClipboard();
 
@@ -684,6 +693,7 @@ class CORE_EXPORT LocalFrame final
 
   bool SwapIn();
 
+#if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_overrides, these getters are information about the
   // titlebar bounds sent over from the browser via UpdateWindowControlsOverlay
   // in LocalMainFrame that are needed to persist the lifetime of the frame.
@@ -693,6 +703,7 @@ class CORE_EXPORT LocalFrame final
   const gfx::Rect& GetWindowControlsOverlayRect() const {
     return window_controls_overlay_rect_;
   }
+#endif
 
   void LoadJavaScriptURL(const KURL& url);
 
@@ -926,8 +937,12 @@ class CORE_EXPORT LocalFrame final
 
   PaymentRequestToken payment_request_token_;
 
+#if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;
   gfx::Rect window_controls_overlay_rect_;
+  WeakMember<WindowControlsOverlayChangedDelegate>
+      window_controls_overlay_changed_delegate_;
+#endif
 
   // The evidence for or against a frame being an ad frame. `absl::nullopt` if
   // not yet set or if the frame is a top-level frame. (Only subframes can be

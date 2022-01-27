@@ -4894,6 +4894,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RenderIdleTime) {
   EXPECT_TRUE(browser_td >= renderer_td);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class WebContentsImplBrowserTestWindowControlsOverlay
     : public WebContentsImplBrowserTest {
  public:
@@ -5059,7 +5060,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   EXPECT_EQ(bounding_client_rect.height(), EvalJs(web_contents, "rect.height"));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
                        ValidatePageScaleChangesInfoAndFiresEvent) {
   auto* web_contents = shell()->web_contents();
@@ -5104,7 +5104,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   EXPECT_EQ(scaled_rect.height(), EvalJs(web_contents, "rect.height"));
   ValidateWindowsControlOverlayState(web_contents, scaled_rect, 60);
 }
-#endif
 
 class WebContentsImplBrowserTestWindowControlsOverlayNonOneDeviceScaleFactor
     : public WebContentsImplBrowserTestWindowControlsOverlay {
@@ -5146,6 +5145,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
   ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
 }
+#endif
 
 class RenderFrameCreatedObserver : public WebContentsObserver {
  public:
