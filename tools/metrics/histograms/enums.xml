@@ -86181,16 +86181,27 @@ would be helpful to identify which type is being sent.
 </enum>
 
 <enum name="SyncStopSource">
-  <int value="0" label="DEPRECATED 2018-06 Profile destruction">
-    Supposedly meant that Sync was stopped due to the profile being destroyed.
-    However, it was recorded during most profile destructions, even if Sync was
-    never enabled in the first place. We stopped recording this in 2018-06.
+  <int value="0" label="(deprecated) Profile destruction">
+    <obsolete>
+      Supposedly meant that Sync was stopped due to the profile being destroyed.
+      However, it was recorded during most profile destructions, even if Sync
+      was never enabled in the first place. We stopped recording this in
+      2018-06.
+    </obsolete>
   </int>
   <int value="1" label="Sign out"/>
   <int value="2" label="Birthday error"/>
   <int value="3" label="Chrome sync settings"/>
-  <int value="4" label="Android Chrome sync setting"/>
-  <int value="5" label="Android master sync setting"/>
+  <int value="4" label="(deprecated) Android Chrome sync setting">
+    <obsolete>
+      Removed on 01/2022.
+    </obsolete>
+  </int>
+  <int value="5" label="(deprecated) Android master sync setting">
+    <obsolete>
+      Removed on 01/2022.
+    </obsolete>
+  </int>
 </enum>
 
 <enum name="SyncTypedUrlDatabaseError">

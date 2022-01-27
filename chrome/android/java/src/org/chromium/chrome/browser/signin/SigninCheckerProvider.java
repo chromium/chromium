@@ -8,7 +8,6 @@ import androidx.annotation.MainThread;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 
 /**
@@ -23,10 +22,9 @@ public final class SigninCheckerProvider {
     @MainThread
     public static SigninChecker get() {
         if (sInstance == null) {
-            // SyncController and SyncErrorNotifier must be explicitly initialized.
+            // SyncErrorNotifier must be explicitly initialized.
             // TODO(crbug.com/1156620): Move the initializations elsewhere.
             SyncErrorNotifier.get();
-            SyncController.get();
             Profile profile = Profile.getLastUsedRegularProfile();
             sInstance = new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile),
                     IdentityServicesProvider.get().getAccountTrackerService(profile));

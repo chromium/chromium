@@ -388,9 +388,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
                 startMainActivityForSyncTest();
 
-                // Ensure SyncController is created.
-                TestThreadUtils.runOnUiThreadBlocking(() -> SyncController.get());
-
                 statement.evaluate();
             }
         }, desc);

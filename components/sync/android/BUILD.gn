@@ -23,7 +23,6 @@ java_cpp_enum("java_enums") {
   sources = [
     "//components/sync/base/model_type.h",
     "//components/sync/base/passphrase_enums.h",
-    "//components/sync/base/stop_source.h",
     "//components/sync/driver/sync_service_utils.h",
   ]
 }
