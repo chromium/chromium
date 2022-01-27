@@ -410,7 +410,7 @@
 #elif BUILDFLAG(IS_POSIX)
 #include "chrome/browser/chrome_browser_main_posix.h"
 #elif BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/chrome_browser_main_parts_fuchsia.h"
+#include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
