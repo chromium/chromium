@@ -214,11 +214,13 @@ void FrameCaret::SetVisibleIfActive(bool visible) {
   auto change_type = effect_->Update(
       *effect_->Parent(),
       CaretEffectNodeState(visible, effect_->LocalTransformSpace()));
-  DCHECK_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, change_type);
-  if (auto* compositor = frame_->View()->GetPaintArtifactCompositor()) {
-    if (compositor->DirectlyUpdateCompositedOpacityValue(*effect_)) {
-      effect_->CompositorSimpleValuesUpdated();
-      return;
+  if (is_composited_caret_enabled_) {
+    DCHECK_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, change_type);
+    if (auto* compositor = frame_->View()->GetPaintArtifactCompositor()) {
+      if (compositor->DirectlyUpdateCompositedOpacityValue(*effect_)) {
+        effect_->CompositorSimpleValuesUpdated();
+        return;
+      }
     }
   }
   // Fallback to full update if direct update is not available.
