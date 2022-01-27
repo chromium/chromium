@@ -84,6 +84,17 @@ class ASH_EXPORT ProgressIndicatorAnimationRegistry {
       const void* key,
       std::unique_ptr<HoldingSpaceProgressRingAnimation> animation);
 
+  // Erases all animations for all keys.
+  void EraseAllAnimations();
+
+  // Erases all animations for the specified `key`.
+  void EraseAllAnimationsForKey(const void* key);
+
+  // Erases all animations for all keys for which the specified `predicate`
+  // returns `true`.
+  void EraseAllAnimationsForKeyIf(
+      base::RepeatingCallback<bool(const void* key)> predicate);
+
   // TODO(dmblack): Move to private after completing refactor of
   // `ProgressIndicatorAnimationRegistry` and `HoldingSpaceAnimationRegistry`.
   template <typename AnimationType>

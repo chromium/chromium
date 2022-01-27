@@ -4,6 +4,8 @@
 
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 
+#include <set>
+
 namespace ash {
 namespace {
 
@@ -168,6 +170,34 @@ ProgressIndicatorAnimationRegistry::SetProgressRingAnimationForKey(
   return SetAnimationForKey(&ring_animations_by_key_,
                             &ring_animation_changed_callback_lists_by_key_, key,
                             std::move(animation));
+}
+
+void ProgressIndicatorAnimationRegistry::EraseAllAnimations() {
+  EraseAllAnimationsForKeyIf(
+      base::BindRepeating([](const void* key) { return true; }));
+}
+
+void ProgressIndicatorAnimationRegistry::EraseAllAnimationsForKey(
+    const void* key) {
+  SetProgressIconAnimationForKey(key, nullptr);
+  SetProgressRingAnimationForKey(key, nullptr);
+}
+
+void ProgressIndicatorAnimationRegistry::EraseAllAnimationsForKeyIf(
+    base::RepeatingCallback<bool(const void* key)> predicate) {
+  std::set<const void*> keys_to_erase;
+  for (const auto& icon_animation_by_key : icon_animations_by_key_) {
+    const void* key = icon_animation_by_key.first;
+    if (predicate.Run(key))
+      keys_to_erase.insert(key);
+  }
+  for (const auto& ring_animation_by_key : ring_animations_by_key_) {
+    const void* key = ring_animation_by_key.first;
+    if (predicate.Run(key))
+      keys_to_erase.insert(key);
+  }
+  for (const void* key : keys_to_erase)
+    EraseAllAnimationsForKey(key);
 }
 
 }  // namespace ash
