@@ -202,6 +202,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:presubmit",
+    use_python3 = True,
 )
 
 build_recipe(
