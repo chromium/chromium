@@ -190,7 +190,9 @@ bool DeveloperPrivateApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::ListValue& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), args.CreateDeepCopy(), browser(), api_test_utils::NONE);
+      function.get(),
+      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())),
+      browser(), api_test_utils::NONE);
 }
 
 const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {

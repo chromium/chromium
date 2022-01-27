@@ -386,7 +386,8 @@ void LogApiActivity(content::BrowserContext* browser_context,
 
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
-  action->set_args(args.CreateDeepCopy());
+  action->set_args(
+      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())));
   activity_log->LogAction(action);
 }
 

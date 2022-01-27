@@ -113,7 +113,8 @@ bool ManagementApiUnitTest::RunFunction(
     const scoped_refptr<ExtensionFunction>& function,
     const base::Value& args) {
   return extension_function_test_utils::RunFunction(
-      function.get(), base::Value::AsListValue(args).CreateDeepCopy(),
+      function.get(),
+      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())),
       browser(), api_test_utils::NONE);
 }
 
