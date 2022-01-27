@@ -118,6 +118,7 @@ class NativeLibInfo {
   // unittest LoadLibrary() directly.
   bool CreateSharedRelroFdForTesting();
 
+  void set_relro_fd_for_testing(int fd) { relro_fd_ = fd; }
   int get_relro_fd_for_testing() const { return relro_fd_; }
   size_t get_relro_start_for_testing() const { return relro_start_; }
   size_t get_load_size_for_testing() const { return load_size_; }

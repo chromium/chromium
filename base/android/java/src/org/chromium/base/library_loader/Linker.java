@@ -420,7 +420,14 @@ abstract class Linker {
             // nullified yet. With an invalid load address it is impossible to locate the RELRO
             // region in the current process. This could happen when the library loaded successfully
             // only after the fallback to no sharing.
-            return mRemoteLibInfo.mLoadAddress != 0;
+            //
+            // TODO(pasko): There is no need to check for |mLoadAddress| here because in the worst
+            // case the zero address will be ignored on the native side of the
+            // atomicReplaceRelroLocked(). The takeSharedRelrosFromBundle() relies on zero addresses
+            // being ignored in native anyway. It seems the only effect of removing this check here
+            // will be extra added samples to the RelroSharingStatus2 histogram. This will be a tiny
+            // bit smoother to do after M99.
+            return mLocalLibInfo.mLoadAddress != 0;
         }
         return false;
     }
