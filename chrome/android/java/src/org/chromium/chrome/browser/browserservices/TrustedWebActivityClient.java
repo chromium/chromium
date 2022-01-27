@@ -26,17 +26,13 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 import androidx.browser.trusted.TrustedWebActivityService;
-import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
-import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
 import org.chromium.chrome.browser.browserservices.constants.LocationUpdateError;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.DelegatedNotificationSmallIconFallback;
@@ -47,12 +43,9 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -63,8 +56,6 @@ import javax.inject.Singleton;
 @Singleton
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
-    private static final Executor UI_THREAD_EXECUTOR =
-            (Runnable r) -> PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, r);
 
     private static final String CHECK_LOCATION_PERMISSION_COMMAND_NAME =
             "checkAndroidLocationPermission";
@@ -75,7 +66,7 @@ public class TrustedWebActivityClient {
     private static final String STOP_LOCATION_COMMAND_NAME = "stopLocation";
     private static final String LOCATION_ARG_ENABLE_HIGH_ACCURACY = "enableHighAccuracy";
 
-    private final TrustedWebActivityServiceConnectionPool mConnection;
+    private final ConnectionPool mConnectionPool;
     private final TrustedWebActivityPermissionManager mDelegatesManager;
     private final TrustedWebActivityUmaRecorder mRecorder;
 
@@ -101,8 +92,7 @@ public class TrustedWebActivityClient {
      * Interface for callbacks to {@link #connectAndExecute}.
      */
     public interface ExecutionCallback {
-        void onConnected(Origin origin, TrustedWebActivityServiceConnection service)
-                throws RemoteException;
+        void onConnected(Origin origin, Connection service) throws RemoteException;
         default void onNoTwaFound() {}
     }
 
@@ -110,10 +100,19 @@ public class TrustedWebActivityClient {
      * Creates a TrustedWebActivityService.
      */
     @Inject
-    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connection,
+    public TrustedWebActivityClient(TrustedWebActivityServiceConnectionPool connectionPool,
             TrustedWebActivityPermissionManager delegatesManager,
             TrustedWebActivityUmaRecorder recorder) {
-        mConnection = connection;
+        this(TrustedWebActivityClientWrappers.wrap(connectionPool), delegatesManager, recorder);
+    }
+
+    /**
+     * Creates a TrustedWebActivityService for tests.
+     */
+    public TrustedWebActivityClient(ConnectionPool connectionPool,
+            TrustedWebActivityPermissionManager delegatesManager,
+            TrustedWebActivityUmaRecorder recorder) {
+        mConnectionPool = connectionPool;
         mDelegatesManager = delegatesManager;
         mRecorder = recorder;
     }
@@ -129,7 +128,7 @@ public class TrustedWebActivityClient {
         if (origin == null) return false;
         Set<Token> possiblePackages = mDelegatesManager.getAllDelegateApps(origin);
         if (possiblePackages == null) return false;
-        return mConnection.serviceExistsForScope(scope, possiblePackages);
+        return mConnectionPool.serviceExistsForScope(scope, possiblePackages);
     }
 
     /**
@@ -143,11 +142,11 @@ public class TrustedWebActivityClient {
         Resources res = ContextUtils.getApplicationContext().getResources();
         String channelDisplayName = res.getString(R.string.notification_category_group_general);
 
-        connectAndExecute(origin.uri(),
-                new ExecutionCallback() {
+        connectAndExecute(
+                origin.uri(), new ExecutionCallback() {
                     @Override
-                    public void onConnected(Origin originCopy,
-                            TrustedWebActivityServiceConnection service) throws RemoteException {
+                    public void onConnected(Origin originCopy, Connection service)
+                            throws RemoteException {
                         callback.onPermissionCheck(service.getComponentName(),
                                 service.areNotificationsEnabled(channelDisplayName));
                     }
@@ -169,8 +168,7 @@ public class TrustedWebActivityClient {
     public void checkLocationPermission(Origin origin, PermissionCheckCallback callback) {
         connectAndExecute(origin.uri(), new ExecutionCallback() {
             @Override
-            public void onConnected(Origin origin, TrustedWebActivityServiceConnection service)
-                    throws RemoteException {
+            public void onConnected(Origin origin, Connection service) throws RemoteException {
                 TrustedWebActivityCallback resultCallback = new TrustedWebActivityCallback() {
                     @Override
                     public void onExtraCallback(String callbackName, @Nullable Bundle bundle) {
@@ -203,8 +201,7 @@ public class TrustedWebActivityClient {
             Origin origin, boolean highAccuracy, TrustedWebActivityCallback locationCallback) {
         connectAndExecute(origin.uri(), new ExecutionCallback() {
             @Override
-            public void onConnected(Origin origin, TrustedWebActivityServiceConnection service)
-                    throws RemoteException {
+            public void onConnected(Origin origin, Connection service) throws RemoteException {
                 Bundle args = new Bundle();
                 args.putBoolean(LOCATION_ARG_ENABLE_HIGH_ACCURACY, highAccuracy);
                 Bundle executionResult = service.sendExtraCommand(
@@ -227,8 +224,7 @@ public class TrustedWebActivityClient {
     public void stopLocationUpdates(Origin origin) {
         connectAndExecute(origin.uri(), new ExecutionCallback() {
             @Override
-            public void onConnected(Origin origin, TrustedWebActivityServiceConnection service)
-                    throws RemoteException {
+            public void onConnected(Origin origin, Connection service) throws RemoteException {
                 service.sendExtraCommand(STOP_LOCATION_COMMAND_NAME, Bundle.EMPTY, null);
             }
         });
@@ -274,8 +270,8 @@ public class TrustedWebActivityClient {
         });
     }
 
-    private void fallbackToIconFromServiceIfNecessary(NotificationBuilderBase builder,
-            TrustedWebActivityServiceConnection service) throws RemoteException {
+    private void fallbackToIconFromServiceIfNecessary(
+            NotificationBuilderBase builder, Connection service) throws RemoteException {
         if (builder.hasSmallIconForContent() && builder.hasStatusBarIconBitmap()) {
             recordFallback(NO_FALLBACK);
             return;
@@ -327,24 +323,7 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        ListenableFuture<TrustedWebActivityServiceConnection> connection =
-                mConnection.connect(scope, possiblePackages, AsyncTask.THREAD_POOL_EXECUTOR);
-        connection.addListener(() -> {
-            try {
-                callback.onConnected(origin, connection.get());
-            } catch (RemoteException | InterruptedException e) {
-                // These failures could be transient - a RemoteException indicating that the TWA
-                // got killed as it was answering and an InterruptedException to do with threading
-                // on our side. In this case, there's not anything necessarily wrong with the TWA.
-                Log.w(TAG, "Failed to execute TWA command.", e);
-            } catch (ExecutionException | SecurityException e) {
-                // An ExecutionException means that we could not find a TWA to connect to and a
-                // SecurityException means that the TWA doesn't trust this app. In either cases we
-                // consider that there is no TWA for the scope.
-                Log.w(TAG, "Failed to connect to TWA to execute command", e);
-                callback.onNoTwaFound();
-            }
-        }, UI_THREAD_EXECUTOR);
+        mConnectionPool.connectAndExecute(scope, origin, possiblePackages, callback);
     }
 
     /**

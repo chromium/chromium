@@ -8,10 +8,10 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.browser.trusted.TrustedWebActivityCallback;
-import androidx.browser.trusted.TrustedWebActivityServiceConnection;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.payments.mojom.DigitalGoods.Acknowledge_Response;
 import org.chromium.payments.mojom.DigitalGoods.GetDetails_Response;
@@ -69,7 +69,8 @@ public class DigitalGoodsAdapter {
             Runnable onClientAppUnavailable) {
         mClient.connectAndExecute(scope, new TrustedWebActivityClient.ExecutionCallback() {
             @Override
-            public void onConnected(Origin origin, TrustedWebActivityServiceConnection service) {
+            public void onConnected(
+                    Origin origin, TrustedWebActivityClientWrappers.Connection service) {
                 // Wrap this call so that crashes in the TWA client don't cause crashes in Chrome.
                 Bundle result = null;
                 try {
