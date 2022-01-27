@@ -40,6 +40,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {MAX_PRIVACY_REVIEW_PROMO_IMPRESSION, PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl} from '../privacy_page/privacy_review/privacy_review_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
@@ -144,8 +145,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
        */
       showPrivacyReviewPromo_: {
         type: Boolean,
-        computed:
-            'computeShowPrivacyReviewPromo_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
+        value: false,
       },
 
       isManaged_: {
@@ -179,6 +179,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'updatePrivacyReviewPromoVisibility_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
+    ];
+  }
+
   pageVisibility: PageVisibility;
   inSearchMode: boolean;
   advancedToggleExpanded: boolean;
@@ -193,8 +199,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
 
+  private showPrivacyReviewPromo_: boolean;
+  private privacyReviewPromoWasShown_: boolean;
   private isManaged_: boolean;
   private isChildUser_: boolean;
+  private privacyReviewBrowserProxy_: PrivacyReviewBrowserProxy =
+      PrivacyReviewBrowserProxyImpl.getInstance();
 
   ready() {
     super.ready();
@@ -232,6 +242,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
 
     super.currentRouteChanged(newRoute, oldRoute);
+    if (newRoute === routes.PRIVACY) {
+      this.updatePrivacyReviewPromoVisibility_();
+    }
   }
 
   /**
@@ -252,11 +265,22 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         .get();
   }
 
-  private computeShowPrivacyReviewPromo_(): boolean {
-    return this.pageVisibility.privacy !== false &&
-        loadTimeData.getBoolean('privacyReviewEnabled') && !this.isManaged_ &&
-        !this.isChildUser_ && this.prefs !== undefined &&
-        !this.getPref('privacy_guide.viewed').value;
+  private updatePrivacyReviewPromoVisibility_() {
+    if (this.pageVisibility.privacy === false ||
+        !loadTimeData.getBoolean('privacyReviewEnabled') || this.isManaged_ ||
+        this.isChildUser_ || this.prefs === undefined ||
+        this.getPref('privacy_guide.viewed').value ||
+        this.privacyReviewBrowserProxy_.getPromoImpressionCount() >=
+            MAX_PRIVACY_REVIEW_PROMO_IMPRESSION ||
+        this.currentRoute_ !== routes.PRIVACY) {
+      this.showPrivacyReviewPromo_ = false;
+      return;
+    }
+    this.showPrivacyReviewPromo_ = true;
+    if (!this.privacyReviewPromoWasShown_) {
+      this.privacyReviewBrowserProxy_.incrementPromoImpressionCount();
+      this.privacyReviewPromoWasShown_ = true;
+    }
   }
 
   private onIsManagedChanged_(isManaged: boolean) {
