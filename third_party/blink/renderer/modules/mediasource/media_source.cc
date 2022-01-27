@@ -530,6 +530,17 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
 bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
                                           const String& type,
                                           bool enforce_codec_specificity) {
+  // Even after ExecutionContext teardown notification, bindings may still call
+  // code-behinds for a short while. If |context| is null, this is likely
+  // happening. To prevent possible null deref of |context| in this path, claim
+  // lack of support immediately without proceeding.
+  if (!context) {
+    DVLOG(1) << __func__ << "(" << type << ", "
+             << (enforce_codec_specificity ? "true" : "false")
+             << ") -> false (context is null)";
+    return false;
+  }
+
   // Section 2.2 isTypeSupported() method steps.
   // https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html#widl-MediaSource-isTypeSupported-boolean-DOMString-type
   // 1. If type is an empty string, then return false.
