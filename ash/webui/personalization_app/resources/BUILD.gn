@@ -48,7 +48,7 @@ static_js_files = [
   "trusted/wallpaper/wallpaper_observer.ts",
   "trusted/wallpaper/wallpaper_reducers.ts",
   "trusted/wallpaper/wallpaper_state.ts",
-  "trusted/wallpaper/wallpaper_subpage.ts",
+  "trusted/wallpaper/index.ts",
 
   "untrusted/iframe_api.ts",
   "untrusted/setup.ts",
@@ -83,6 +83,7 @@ polymer_js_files = [
   "trusted/wallpaper/wallpaper_images_element.ts",
   "trusted/wallpaper/wallpaper_preview_element.ts",
   "trusted/wallpaper/wallpaper_selected_element.ts",
+  "trusted/wallpaper/wallpaper_subpage_element.ts",
 
   "untrusted/collections_grid.ts",
   "untrusted/images_grid.ts",

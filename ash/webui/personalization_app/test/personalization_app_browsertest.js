@@ -150,13 +150,22 @@ TEST_F('WallpaperSubpageBrowserTest', 'HasWallpaperSubpageUrl', () => {
 
 TEST_F('WallpaperSubpageBrowserTest', 'LoadsCollectionsUntrustedIframe', () => {
   const router = document.querySelector('personalization-router');
-  assertTrue(!!router);
+  assertTrue(!!router, 'personalization-router should be top level element');
 
-  const collections = router.shadowRoot.querySelector('wallpaper-collections');
-  assertTrue(!!collections);
+  const wallpaperSubpage = router.shadowRoot.querySelector('wallpaper-subpage');
+  assertTrue(
+      !!wallpaperSubpage,
+      'wallpaper-subpage should be found under personalization-router');
+
+  const collections =
+      wallpaperSubpage.shadowRoot.querySelector('wallpaper-collections');
+  assertTrue(
+      !!collections,
+      'wallpaper-collections should be found under wallpaper-subpage');
+
 
   const iframe = collections.shadowRoot.getElementById('collections-iframe');
-  assertTrue(!!iframe);
+  assertTrue(!!iframe, 'iframe with id collections-iframe should be visible');
 
   assertEquals(
       'chrome-untrusted://personalization/untrusted/collections.html',

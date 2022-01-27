@@ -21,7 +21,7 @@ import './personalization_theme_element.js';
 import './user_preview_element.js';
 import './user/avatar_list_element.js';
 import './user/user_subpage_element.js';
-import './wallpaper/wallpaper_subpage.js';
+import './wallpaper/index.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 

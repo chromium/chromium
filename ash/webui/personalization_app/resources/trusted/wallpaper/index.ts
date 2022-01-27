@@ -15,6 +15,7 @@ import './wallpaper_fullscreen_element.js';
 import './wallpaper_images_element.js';
 import './wallpaper_preview_element.js';
 import './wallpaper_selected_element.js';
+import './wallpaper_subpage_element.js';
 import './styles.js';
 
 import {onMessageReceived} from './untrusted_message_handler.js';

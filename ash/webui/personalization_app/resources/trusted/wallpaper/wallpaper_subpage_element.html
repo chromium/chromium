@@ -1,0 +1,57 @@
+<style>
+  #wallpaperContainer {
+    display: grid;
+    grid-template-areas:
+      '. leftspacer selected   rightspacer .'
+      '. leftspacer .          rightspacer .'
+      '. leftspacer imagegrid  rightspacer .'
+      '. leftspacer .          rightspacer .';
+    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
+    grid-template-rows: 172px 12px 1fr 12px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  #leftspacer {
+    grid-area: leftspacer;
+  }
+
+  #rightspacer {
+    grid-area: rightspacer;
+  }
+
+  wallpaper-selected {
+    grid-area: selected;
+  }
+
+  wallpaper-collections,
+  wallpaper-images,
+  google-photos-collection,
+  local-images {
+    grid-area: imagegrid;
+  }
+</style>
+<div id="wallpaperContainer">
+  <!-- Prevent left margin from collapsing on narrow window in RTL -->
+  <div id="leftspacer"></div>
+  <wallpaper-selected path="[[path]]" collection-id="[[queryParams.id]]">
+  </wallpaper-selected>
+  <!-- do not use hidden$ here - need to listen on property change in
+          these elements. -->
+  <wallpaper-collections hidden="[[!shouldShowCollections_(path)]]">
+  </wallpaper-collections>
+  <wallpaper-images collection-id="[[queryParams.id]]"
+      hidden="[[!shouldShowCollectionImages_(path)]]"></wallpaper-images>
+  <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
+    <google-photos-collection album-id="[[queryParams.googlePhotosAlbumId]]"
+        hidden="[[!shouldShowGooglePhotosCollection_(path)]]">
+    </google-photos-collection>
+  </template>
+  <local-images hidden="[[!shouldShowLocalCollection_(path)]]">
+  </local-images>
+  <!-- Prevent the right margin from collapsing when window gets very
+           narrow -->
+  <div id="rightspacer"></div>
+  <wallpaper-fullscreen></wallpaper-fullscreen>
+</div>

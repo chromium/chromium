@@ -18,34 +18,6 @@
   personalization-breadcrumb {
     grid-area: breadcrumb;
   }
-  #wallpaperContainer {
-    display: grid;
-    flex-grow: 1;
-    grid-template-areas:
-      '. leftspacer selected   rightspacer .'
-      '. leftspacer .          rightspacer .'
-      '. leftspacer imagegrid  rightspacer .'
-      '. leftspacer .          rightspacer .';
-    grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
-    grid-template-rows: 172px 12px 1fr 12px;
-    position: relative;
-    width: 100%;
-  }
-  #leftspacer {
-    grid-area: leftspacer;
-  }
-  #rightspacer {
-    grid-area: rightspacer;
-  }
-  wallpaper-selected {
-    grid-area: selected;
-  }
-  wallpaper-collections,
-  wallpaper-images,
-  google-photos-collection,
-  local-images {
-    grid-area: imagegrid;
-  }
   personalization-toast {
     bottom: 16px;
     left: 16px;
@@ -59,6 +31,9 @@
     pointer-events: none;
     position: absolute;
     width: 100%;
+  }
+  wallpaper-subpage {
+    flex-grow: 1;
   }
 </style>
 <div id="container">
@@ -87,30 +62,8 @@
     <user-subpage></user-subpage>
   </template>
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
-    <div id="wallpaperContainer">
-      <!-- Prevent left margin from collapsing on narrow window in RTL -->
-      <div id="leftspacer"></div>
-      <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
-      </wallpaper-selected>
-      <!-- do not use hidden$ here - need to listen on property change in
-          these elements. -->
-      <wallpaper-collections hidden="[[!shouldShowCollections_(path_)]]">
-      </wallpaper-collections>
-      <wallpaper-images collection-id="[[queryParams_.id]]"
-        hidden="[[!shouldShowCollectionImages_(path_)]]"></wallpaper-images>
-      <template is="dom-if" if="[[isGooglePhotosIntegrationEnabled_()]]">
-        <google-photos-collection
-          album-id="[[queryParams_.googlePhotosAlbumId]]"
-          hidden="[[!shouldShowGooglePhotosCollection_(path_)]]">
-        </google-photos-collection>
-      </template>
-      <local-images hidden="[[!shouldShowLocalCollection_(path_)]]">
-      </local-images>
-      <!-- Prevent the right margin from collapsing when window gets very
-           narrow -->
-      <div id="rightspacer"></div>
-      <wallpaper-fullscreen></wallpaper-fullscreen>
-    </div>
+    <wallpaper-subpage path="[[path_]]" query-params="[[queryParams_]]">
+    </wallpaper-subpage>
   </template>
   <personalization-toast></personalization-toast>
 </div>

@@ -104,39 +104,16 @@ export class PersonalizationRouter extends PolymerElement {
     this.setProperties({path_: path, queryParams_: queryParams});
   }
 
-  private shouldShowCollections_(path: string): boolean {
-    return path === Paths.Collections;
-  }
-
-  private shouldShowCollectionImages_(path: string): boolean {
-    return path === Paths.CollectionImages;
-  }
-
-  private shouldShowGooglePhotosCollection_(path: string): boolean {
-    return path === Paths.GooglePhotosCollection;
-  }
-
-  private shouldShowLocalCollection_(path: string): boolean {
-    return path === Paths.LocalCollection;
-  }
-
-  /**
-   * Whether Google Photos integration is enabled.
-   */
-  private isGooglePhotosIntegrationEnabled_(): boolean {
-    return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
-  }
-
   private shouldShowRootPage_(path: string|null): boolean {
     return isPersonalizationHubEnabled() && path === Paths.Root;
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
-    return !!path?.startsWith(Paths.Ambient);
+    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.Ambient);
   }
 
   private shouldShowUserSubpage_(path: string|null): boolean {
-    return !!path?.startsWith(Paths.User);
+    return isPersonalizationHubEnabled() && !!path?.startsWith(Paths.User);
   }
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {
