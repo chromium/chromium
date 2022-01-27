@@ -10,6 +10,7 @@
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/view.h"
 
+class ChromePageInfoUiDelegate;
 class PageInfo;
 
 // The view that is used as a content view of the "Ad personalization" subpage
@@ -17,16 +18,19 @@ class PageInfo;
 class PageInfoAdPersonalizationContentView : public views::View,
                                              public PageInfoUI {
  public:
-  explicit PageInfoAdPersonalizationContentView(PageInfo* presenter);
+  explicit PageInfoAdPersonalizationContentView(
+      PageInfo* presenter,
+      ChromePageInfoUiDelegate* ui_delegate);
   ~PageInfoAdPersonalizationContentView() override;
 
   // PageInfoUI implementations.
   void SetAdPersonalizationInfo(const AdPersonalizationInfo& info) override;
 
  private:
-  raw_ptr<PageInfo> presenter_;
+  const raw_ptr<PageInfo> presenter_;
+  const raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
-  views::View* info_container_ = nullptr;
+  raw_ptr<views::View> info_container_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_AD_PERSONALIZATION_CONTENT_VIEW_H_

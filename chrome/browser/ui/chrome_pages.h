@@ -158,6 +158,7 @@ void ShowImportDialog(Browser* browser);
 void ShowAboutChrome(Browser* browser);
 void ShowSearchEngineSettings(Browser* browser);
 void ShowWebStore(Browser* browser);
+void ShowPrivacySandboxSettings(Browser* browser);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Shows the enterprise management info page in a browser tab.

@@ -11,6 +11,8 @@
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -163,6 +165,11 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
     }
   }
   return count > 1;
+}
+
+void ChromePageInfoUiDelegate::ShowPrivacySandboxSettings() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  chrome::ShowPrivacySandboxSettings(browser);
 }
 
 std::u16string ChromePageInfoUiDelegate::GetPermissionDetail(

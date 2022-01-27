@@ -22768,6 +22768,12 @@ should be able to be added at any place in this file.
   <description>Settings: Manage power</description>
 </action>
 
+<action name="Options_ShowPrivacySandbox">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <description>Settings: Privacy sandbox</description>
+</action>
+
 <action name="Options_ShowProxySettings">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

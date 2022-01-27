@@ -148,7 +148,8 @@ std::unique_ptr<views::View>
 PageInfoViewFactory::CreateAdPersonalizationPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(u"Lorem ipsum dolor"),
-      std::make_unique<PageInfoAdPersonalizationContentView>(presenter_));
+      std::make_unique<PageInfoAdPersonalizationContentView>(presenter_,
+                                                             ui_delegate_));
 }
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(

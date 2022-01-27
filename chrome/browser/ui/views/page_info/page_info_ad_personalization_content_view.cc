@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -19,8 +20,9 @@
 #include "ui/views/layout/flex_layout.h"
 
 PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
-    PageInfo* presenter)
-    : presenter_(presenter) {
+    PageInfo* presenter,
+    ChromePageInfoUiDelegate* ui_delegate)
+    : presenter_(presenter), ui_delegate_(ui_delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   info_container_ = AddChildView(std::make_unique<views::View>());
@@ -32,7 +34,8 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
   AddChildView(std::make_unique<PageInfoHoverButton>(
       base::BindRepeating(
           [](PageInfoAdPersonalizationContentView* view) {
-            // TODO(olesiamarukhno): Open settings.
+            // TODO(olesiamarukhno): Record metrics.
+            view->ui_delegate_->ShowPrivacySandboxSettings();
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),

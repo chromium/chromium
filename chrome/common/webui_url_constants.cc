@@ -544,6 +544,7 @@ const char kTriggeredResetProfileSettingsSubPage[] =
 const char kCreateProfileSubPage[] = "createProfile";
 const char kManageProfileSubPage[] = "manageProfile";
 const char kPeopleSubPage[] = "people";
+const char kPrivacySandboxSubPage[] = "privacySandbox";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kPrivacySandboxSubPagePath[] = "/privacySandbox";
