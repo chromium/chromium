@@ -868,10 +868,9 @@ bool FeedStream::ShouldForceSignedOutFeedQueryRequest(
          base::TimeTicks::Now() < signed_out_for_you_refreshes_until_;
 }
 
-RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
-                                               bool is_for_next_page) const {
-  const Stream* stream = FindStream(stream_type);
-  DCHECK(stream);
+RequestMetadata FeedStream::GetCommonRequestMetadata(
+    bool signed_in_request,
+    bool allow_expired_session_id) const {
   RequestMetadata result;
   result.chrome_info = chrome_info_;
   result.display_metrics = delegate_->GetDisplayMetrics();
@@ -881,34 +880,51 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
   result.acknowledged_notice_keys =
       NoticeCardTracker::GetAllAckowledgedKeys(profile_prefs_);
-  if (stream_type.IsWebFeed()) {
-    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
+
+  if (signed_in_request) {
+    result.client_instance_id = prefs::GetClientInstanceId(*profile_prefs_);
+  } else {
+    std::string session_id = GetSessionId();
+    if (!session_id.empty() &&
+        (allow_expired_session_id ||
+         feedstore::GetSessionIdExpiryTime(metadata_) > base::Time::Now())) {
+      result.session_id = session_id;
+    }
   }
 
+  DCHECK(result.session_id.empty() || result.client_instance_id.empty());
+  return result;
+}
+
+RequestMetadata FeedStream::GetSignedInRequestMetadata() const {
+  return GetCommonRequestMetadata(/*signed_in_request =*/true,
+                                  /*allow_expired_session_id =*/true);
+}
+
+RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
+                                               bool is_for_next_page) const {
+  const Stream* stream = FindStream(stream_type);
+  DCHECK(stream);
+  RequestMetadata result;
   if (is_for_next_page) {
     // If we are continuing an existing feed, use whatever session continuity
     // mechanism is currently associated with the stream: client-instance-id
     // for signed-in feed, session_id token for signed-out.
     DCHECK(stream->model);
-    if (stream->model->signed_in()) {
-      result.client_instance_id = prefs::GetClientInstanceId(*profile_prefs_);
-    } else {
-      result.session_id = GetSessionId();
-    }
+    result = GetCommonRequestMetadata(stream->model->signed_in(),
+                                      /*allow_expired_session_id =*/true);
   } else {
     // The request is for the first page of the feed. Use client_instance_id
     // for signed in requests and session_id token (if any, and not expired)
     // for signed-out.
-    if (IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type)) {
-      result.client_instance_id = prefs::GetClientInstanceId(*profile_prefs_);
-    } else if (!GetSessionId().empty() && feedstore::GetSessionIdExpiryTime(
-                                              metadata_) > base::Time::Now()) {
-      result.session_id = GetSessionId();
-    }
+    result = GetCommonRequestMetadata(
+        IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type),
+        /*allow_expired_session_id =*/false);
   }
 
-  DCHECK(result.session_id.empty() || result.client_instance_id.empty());
-
+  if (stream_type.IsWebFeed()) {
+    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
+  }
   return result;
 }
 

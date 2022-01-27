@@ -271,6 +271,14 @@ class FeedStream : public FeedApi,
   // Returns the model if it is loaded, or null otherwise.
   StreamModel* GetModel(const StreamType& stream_type);
 
+  // Gets request metadata assuming the account is signed-in. This is useful for
+  // uploading actions where stream type is not known, but sign-in status is
+  // required.
+  RequestMetadata GetSignedInRequestMetadata() const;
+
+  // Gets request metadata, looking up if session ID or client instance ID
+  // should be used based on the login state of Chrome and the model for the
+  // appropriate Stream.
   RequestMetadata GetRequestMetadata(const StreamType& stream_type,
                                      bool is_for_next_page) const;
 
@@ -372,6 +380,9 @@ class FeedStream : public FeedApi,
   void UpdateExperiments(Experiments experiments);
 
   NoticeCardTracker& GetNoticeCardTracker(const std::string& key);
+
+  RequestMetadata GetCommonRequestMetadata(bool signed_in_request,
+                                           bool allow_expired_session_id) const;
 
   // Unowned.
 
