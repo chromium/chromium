@@ -6,6 +6,7 @@
 
 import argparse
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
@@ -13,17 +14,19 @@ import tempfile
 import urllib.request
 import uuid
 
-FIREBASE_PROJECT = 'chrome-supersize'
-PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
-CASPIAN_FILES = [
+_STATIC_FILES_DIR = (pathlib.Path(__file__).parent / 'static').resolve()
+
+_FIREBASE_PROJECT = 'chrome-supersize'
+_PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
+_WASM_FILES = [
     'caspian_web.js',
     'caspian_web.wasm',
     'caspian_web.wasm.map',
 ]
 
-PROD = 'prod'
-STAGING = 'staging'
-DEV = 'dev'
+_PROD = 'prod'
+_STAGING = 'staging'
+_DEV = 'dev'
 
 
 def _FirebaseLogin():
@@ -58,42 +61,38 @@ def _FirebaseInitProjectDir(project_dir):
   return static_dir
 
 
-def _FirebaseDeploy(project_dir, deploy_mode=PROD):
+def _FirebaseDeploy(project_dir, deploy_mode=_PROD):
   """Deploy the project to firebase hosting."""
-  if deploy_mode == DEV:
+  if deploy_mode == _DEV:
     subprocess.check_call([
-        'firebase', '-P', FIREBASE_PROJECT, 'emulators:start', '--only',
+        'firebase', '-P', _FIREBASE_PROJECT, 'emulators:start', '--only',
         'hosting'
     ],
                           cwd=project_dir)
-  elif deploy_mode == STAGING:
+  elif deploy_mode == _STAGING:
     print('Note: deploying to staging requires firebase cli >= 8.12.0')
     subprocess.check_call([
-        'firebase', '-P', FIREBASE_PROJECT, 'hosting:channel:deploy', 'staging'
+        'firebase', '-P', _FIREBASE_PROJECT, 'hosting:channel:deploy', 'staging'
     ],
                           cwd=project_dir)
   else:
-    subprocess.check_call(['firebase', 'deploy', '-P', FIREBASE_PROJECT],
+    subprocess.check_call(['firebase', 'deploy', '-P', _FIREBASE_PROJECT],
                           cwd=project_dir)
 
 
-def _DownloadCaspianFiles(project_static_dir):
-  for f in CASPIAN_FILES:
-    with urllib.request.urlopen(PROD_URL + f) as response:
-      with open(os.path.join(project_static_dir, f), 'wb') as output:
-        shutil.copyfileobj(response, output)
+def _MaybeDownloadWasmFiles(force_download):
+  """Download WASM files if they are missing or stale."""
+  if not force_download:
+    if not all(_STATIC_FILES_DIR.joinpath(f).exists() for f in _WASM_FILES):
+      print(f'Some WASM files do not exist in: {_STATIC_FILES_DIR}')
+      force_download = True
 
-
-def _CopyStaticFiles(project_static_dir):
-  """Copy over static files from the static directory."""
-  static_files = os.path.normpath(
-      os.path.join(os.path.dirname(__file__), 'static'))
-  shutil.copytree(static_files, project_static_dir)
-  if not all(
-      os.path.exists(os.path.join(static_files, f)) for f in CASPIAN_FILES):
-    print(f'Some wasm files do not exist in ({static_files}). Using copies '
-          f'from {PROD_URL} instead.')
-    _DownloadCaspianFiles(project_static_dir)
+  if force_download:
+    for f in _WASM_FILES:
+      print(f'Downloading: {_PROD_URL + f}')
+      with urllib.request.urlopen(_PROD_URL + f) as response:
+        with open(_STATIC_FILES_DIR / f, 'wb') as output:
+          shutil.copyfileobj(response, output)
 
 
 def _FillInAndCopyTemplates(project_static_dir):
@@ -118,33 +117,37 @@ def main():
   deployment_mode_group.add_argument('--local',
                                      action='store_const',
                                      dest='deploy_mode',
-                                     const=DEV,
+                                     const=_DEV,
                                      help='Deploy a locally hosted server.')
   deployment_mode_group.add_argument(
       '--staging',
       action='store_const',
       dest='deploy_mode',
-      const=STAGING,
+      const=_STAGING,
       help='Deploy to staging channel (does not support authenticated '
       'requests).')
   deployment_mode_group.add_argument('--prod',
                                      action='store_const',
                                      dest='deploy_mode',
-                                     const=PROD,
+                                     const=_PROD,
                                      help='Deploy to prod.')
+  parser.add_argument('--download-wasm',
+                      action='store_true',
+                      help='Update local copy of WASM files.')
   options = parser.parse_args()
 
-  message = (f'This script deploys the viewer to {PROD_URL}.\n'
+  message = (f'This script deploys the viewer to {_PROD_URL}.\n'
              'Are you sure you want to continue?')
 
-  if options.deploy_mode != PROD or _Prompt(message):
+  if options.deploy_mode != _PROD or _Prompt(message):
     _CheckFirebaseCLI()
-    if options.deploy_mode != DEV:
+    if options.deploy_mode != _DEV:
       _FirebaseLogin()
     with tempfile.TemporaryDirectory(prefix='firebase-') as project_dir:
-      static_dir = _FirebaseInitProjectDir(project_dir)
-      _CopyStaticFiles(static_dir)
-      _FillInAndCopyTemplates(static_dir)
+      _MaybeDownloadWasmFiles(options.download_wasm)
+      project_static_dir = _FirebaseInitProjectDir(project_dir)
+      shutil.copytree(_STATIC_FILES_DIR, project_static_dir)
+      _FillInAndCopyTemplates(project_static_dir)
       _FirebaseDeploy(project_dir, deploy_mode=options.deploy_mode)
   else:
     print('Nothing was deployed.')
