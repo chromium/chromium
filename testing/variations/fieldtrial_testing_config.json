@@ -367,22 +367,6 @@
             ]
         }
     ],
-    "AndroidPictureInPictureAPI": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "PictureInPictureAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidRDSGlobal": [
         {
             "platforms": [
