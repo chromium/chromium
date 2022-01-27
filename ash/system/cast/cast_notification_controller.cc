@@ -111,7 +111,7 @@ void CastNotificationController::OnDevicesUpdated(
   }
 }
 
-void CastNotificationController::StopCasting() {
+void CastNotificationController::StopCasting(absl::optional<int> button_index) {
   CastConfigController::Get()->StopCasting(displayed_route_id_);
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_CAST_STOP_CAST);

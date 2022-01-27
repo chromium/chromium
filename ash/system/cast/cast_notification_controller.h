@@ -8,6 +8,7 @@
 #include "ash/public/cpp/cast_config_controller.h"
 
 #include "base/memory/weak_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -25,7 +26,7 @@ class CastNotificationController : public CastConfigController::Observer {
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
 
  private:
-  void StopCasting();
+  void StopCasting(absl::optional<int> button_index);
 
   // The cast activity id that we are displaying. If the user stops a cast, we
   // send this value to the config delegate so that we stop the right cast.
