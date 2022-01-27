@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
@@ -61,7 +62,6 @@ class IconView : public views::ImageView {
     ImageView::OnThemeChanged();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     gfx::ImageSkia image;
-    const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
     switch (icon_to_show_) {
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
         // kGooglePayLogoIcon is square overall, despite the drawn portion being
@@ -69,11 +69,15 @@ class IconView : public views::ImageView {
         // it whereas setting the icon size would rescale it incorrectly and
         // keep the bottom empty portion.
         image = gfx::ImageSkiaOperations::CreateTiledImage(
-            gfx::CreateVectorIcon(kGooglePayLogoIcon, color),
+            gfx::CreateVectorIcon(
+                kGooglePayLogoIcon,
+                GetColorProvider()->GetColor(kColorGooglePayLogo)),
             /*x=*/0, /*y=*/0, kGooglePayLogoWidth, kIconHeight);
         break;
       case TitleWithIconAndSeparatorView::Icon::GOOGLE_G:
-        image = gfx::CreateVectorIcon(kGoogleGLogoIcon, kIconHeight, color);
+        image =
+            gfx::CreateVectorIcon(kGoogleGLogoIcon, kIconHeight,
+                                  GetColorProvider()->GetColor(ui::kColorIcon));
         break;
     }
 

@@ -45,7 +45,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     return;
 
 #define E(chrome, native) {chrome, color_utils::GetSysSkColor(native)},
-  mixer.AddSet({kColorSetNative, {WIN_COLOR_IDS}});
+  mixer.AddSet({kColorSetNative, {PLATFORM_SPECIFIC_COLOR_IDS}});
 #undef E
 
   // Window Background

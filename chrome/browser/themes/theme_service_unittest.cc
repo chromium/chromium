@@ -78,11 +78,13 @@ std::ostream& operator<<(std::ostream& os, PrintableSkColor printable_color) {
 std::string ColorIdToString(int id) {
 #define E(color_id, theme_property_id, ...) \
   {theme_property_id, #theme_property_id},
+#define E_CPONLY(color_id)
 
   static constexpr const auto kMap =
       base::MakeFixedFlatMap<int, const char*>({CHROME_COLOR_IDS});
 
 #undef E
+#undef E_CPONLY
   constexpr char kPrefix[] = "ThemeProperties::";
 
   std::string id_str = kMap.find(id)->second;
@@ -327,8 +329,10 @@ class ThemeProviderRedirectedEquivalenceTest
 };
 
 #define E(color_id, theme_property_id, ...) theme_property_id,
+#define E_CPONLY(color_id)
 static constexpr int kTestIdValues[] = {CHROME_COLOR_IDS};
 #undef E
+#undef E_CPONLY
 
 INSTANTIATE_TEST_SUITE_P(
     ,

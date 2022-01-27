@@ -20,6 +20,8 @@
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND) \
   E(kColorDownloadShelfButtonText, \
     ThemeProperties::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT) \
+  /* Google branding colors. */ \
+  E_CPONLY(kColorGooglePayLogo) \
   /* Omnibox output colors. */ \
   E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \

@@ -178,8 +178,7 @@
   E(kColorWindowBackground, NativeTheme::kColorId_WindowBackground)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#define CHROMEOS_COLOR_IDS \
-  /* ChromeOS native colors */ \
+#define PLATFORM_SPECIFIC_COLOR_IDS \
   E_CPONLY(kColorNativeColor1) \
   E_CPONLY(kColorNativeColor1Shade1) \
   E_CPONLY(kColorNativeColor1Shade2) \
@@ -190,11 +189,8 @@
   E_CPONLY(kColorNativeColor6) \
   E_CPONLY(kColorNativeBaseColor) \
   E_CPONLY(kColorNativeSecondaryColor)
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#define WIN_COLOR_IDS \
-  /* Windows native colors */ \
+#elif BUILDFLAG(IS_WIN)
+#define PLATFORM_SPECIFIC_COLOR_IDS \
   E(kColorNative3dDkShadow, COLOR_3DDKSHADOW) \
   E(kColorNative3dLight, COLOR_3DLIGHT) \
   E(kColorNativeActiveBorder, COLOR_ACTIVEBORDER) \
@@ -225,19 +221,13 @@
   E(kColorNativeWindow, COLOR_WINDOW) \
   E(kColorNativeWindowFrame, COLOR_WINDOWFRAME) \
   E(kColorNativeWindowText, COLOR_WINDOWTEXT)
+#else
+#define PLATFORM_SPECIFIC_COLOR_IDS
 #endif
 
-#if BUILDFLAG(IS_WIN)
 #define COLOR_IDS \
   CROSS_PLATFORM_COLOR_IDS \
-  WIN_COLOR_IDS
-#elif BUILDFLAG(IS_CHROMEOS)
-#define COLOR_IDS \
-  CROSS_PLATFORM_COLOR_IDS \
-  CHROMEOS_COLOR_IDS
-#else
-#define COLOR_IDS CROSS_PLATFORM_COLOR_IDS
-#endif
+  PLATFORM_SPECIFIC_COLOR_IDS
 // clang-format on
 
 namespace ui {
