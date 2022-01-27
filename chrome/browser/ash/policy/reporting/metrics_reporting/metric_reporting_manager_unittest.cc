@@ -451,6 +451,44 @@ INSTANTIATE_TEST_SUITE_P(
 class MetricReportingManagerTelemetryTest : public MetricReportingManagerTest {
 };
 
+TEST_F(MetricReportingManagerTelemetryTest, OneShotCollectorBootPerformance) {
+  auto mock_delegate = std::make_unique<::testing::NiceMock<MockDelegate>>();
+  const auto init_delay = mock_delegate->GetInitDelay();
+  const auto upload_delay = mock_delegate->GetInitialUploadDelay();
+  auto* const mock_delegate_ptr = mock_delegate.get();
+  auto* const telemetry_queue_ptr = telemetry_queue_.get();
+  int collector_count = 0;
+
+  ON_CALL(*mock_delegate_ptr,
+          CreatePeriodicUploadReportQueue(Destination::TELEMETRY_METRIC,
+                                          Priority::MANUAL_BATCH, _,
+                                          ::ash::kReportUploadFrequency, _, 1))
+      .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
+  ON_CALL(*mock_delegate_ptr,
+          CreateOneShotCollector(_, telemetry_queue_ptr, _,
+                                 ::ash::kReportDeviceBootMode, true))
+      .WillByDefault(
+          [&]() { return std::make_unique<FakeCollector>(&collector_count); });
+
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(mock_delegate), nullptr);
+
+  EXPECT_EQ(collector_count, 0);
+
+  task_environment_.FastForwardBy(init_delay);
+
+  EXPECT_EQ(collector_count, 1);
+
+  task_environment_.FastForwardBy(upload_delay);
+
+  EXPECT_EQ(telemetry_queue_ptr->GetNumFlush(), 1);
+
+  ON_CALL(*mock_delegate_ptr, IsDeprovisioned).WillByDefault(Return(true));
+  metric_reporting_manager->DeviceSettingsUpdated();
+
+  EXPECT_EQ(collector_count, 0);
+}
+
 TEST_P(MetricReportingManagerTelemetryTest, Default) {
   const MetricReportingManagerTestCase& test_case = GetParam();
 

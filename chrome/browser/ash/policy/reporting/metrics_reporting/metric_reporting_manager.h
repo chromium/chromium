@@ -167,14 +167,13 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
       std::vector<Sampler*> additional_samplers = {});
-
   void UploadTelemetry();
-
-  void InitCrosHealthdInfoCollector(
+  void CreateCrosHealthdOneShotCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+      CrosHealthdMetricSampler::MetricType metric_type,
       const std::string& setting_path,
-      bool default_value);
-
+      bool default_value,
+      MetricReportQueue* metric_report_queue);
   void InitNetworkCollectors();
 
   void InitAudioCollectors();

@@ -278,16 +278,26 @@ void MetricReportingManager::DelayedInit() {
     return;
   }
 
-  InitCrosHealthdInfoCollector(
+  CreateCrosHealthdOneShotCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
-      ::ash::kReportDeviceCpuInfo, /*default_value=*/false);
-  InitCrosHealthdInfoCollector(
+      CrosHealthdMetricSampler::MetricType::kInfo, ::ash::kReportDeviceCpuInfo,
+      /*default_value=*/false, info_report_queue_.get());
+  CreateCrosHealthdOneShotCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kMemory,
-      ::ash::kReportDeviceMemoryInfo, /*default_value=*/false);
-  InitCrosHealthdInfoCollector(
+      CrosHealthdMetricSampler::MetricType::kInfo,
+      ::ash::kReportDeviceMemoryInfo,
+      /*default_value=*/false, info_report_queue_.get());
+  CreateCrosHealthdOneShotCollector(
       chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+      CrosHealthdMetricSampler::MetricType::kInfo,
       ::ash::kReportDeviceSecurityStatus,
-      /*default_value=*/false);
+      /*default_value=*/false, info_report_queue_.get());
+  CreateCrosHealthdOneShotCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry,
+      ::ash::kReportDeviceBootMode,
+      /*default_value=*/true, telemetry_report_queue_.get());
+
   if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
     // Network health info.
     // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
@@ -406,13 +416,15 @@ void MetricReportingManager::UploadTelemetry() {
   telemetry_report_queue_->Upload();
 }
 
-void MetricReportingManager::InitCrosHealthdInfoCollector(
+void MetricReportingManager::CreateCrosHealthdOneShotCollector(
     chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+    CrosHealthdMetricSampler::MetricType metric_type,
     const std::string& setting_path,
-    bool default_value) {
-  auto info_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      probe_category, CrosHealthdMetricSampler::MetricType::kInfo);
-  InitOneShotCollector(std::move(info_sampler), info_report_queue_.get(),
+    bool default_value,
+    MetricReportQueue* metric_report_queue) {
+  auto croshealthd_sampler =
+      std::make_unique<CrosHealthdMetricSampler>(probe_category, metric_type);
+  InitOneShotCollector(std::move(croshealthd_sampler), metric_report_queue,
                        setting_path, default_value);
 }
 
