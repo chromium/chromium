@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -284,7 +285,11 @@ const HTMLPopupElement* HTMLPopupElement::NearestOpenAncestralPopup(
 }
 
 void HTMLPopupElement::HandleLightDismiss(const Event& event) {
-  auto* target_node = event.target()->ToNode();
+  if (event.GetEventPath().IsEmpty())
+    return;
+  // Ensure that shadow DOM event retargeting is considered when computing
+  // the event target node.
+  auto* target_node = event.GetEventPath()[0].Target()->ToNode();
   if (!target_node)
     return;
   auto& document = target_node->GetDocument();

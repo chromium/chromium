@@ -33,6 +33,16 @@
 </popup>
 <button popup=p6>Popup 6</button>
 
+<my-element id="myElement">
+  <template shadowroot="open">
+    <button id=b7 onclick='showPopup7()'>Popup7</button>
+    <popup id=p7 anchor=b7 style="top: 100px;">
+      <p>Popup content.</p>
+      <input id="inside7" type="text" placeholder="some text">
+    </popup>
+  </template>
+</my-element>
+
 <style>
   #p1 { top:50px; }
   #p2 { top:50px; left:250px; }
@@ -71,6 +81,13 @@
   const popup4 = document.querySelector('#p4');
   const popup5 = document.querySelector('#p5');
   const popup6 = document.querySelector('#p6');
+  const button7 = document.querySelector('#myElement').shadowRoot.querySelector('#b7');
+  const popup7 = document.querySelector('#myElement').shadowRoot.querySelector('#p7');
+  const inside7 = document.querySelector('#myElement').shadowRoot.querySelector('#inside7');
+
+  function showPopup7() {
+    popup7.show();
+  }
 
   (async function() {
     setup({ explicit_done: true });
@@ -183,6 +200,17 @@
       assert_equals(popup6.scrollTop,50,'popup6 should be scrolled');
       popup6.hide();
     },'Scrolling within a popup should not close the popup');
+
+    button7.click();
+    assert_true(popup7.open,'invoking element should open popup');
+    inside7.click();
+    test(t => {
+      assert_true(popup7.open);
+    },'Clicking inside a shadow DOM popup does not close that popup');
+    await clickOn(outside);
+    test(t => {
+      assert_false(popup7.open);
+    },'Clicking outside a shadow DOM popup should close that popup');
 
     done();
   })();
