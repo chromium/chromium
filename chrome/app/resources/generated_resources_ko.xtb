@@ -77,7 +77,7 @@
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />자녀의 Google 계정에 웹 및 앱 활동이 사용 설정되어 있다면 관련 데이터가 자녀의 Google 계정에 저장될 수 있습니다. families.google.com에서 이러한 설정과 설정을 조정하는 방법을 자세히 알아보세요.<ph name="END_PARAGRAPH4" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="1076176485976385390">텍스트 커서로 페이지 탐색</translation>
 <translation id="1076698951459398590">테마 사용</translation>
 <translation id="1076766328672150609">자녀가 PIN을 사용해 기기를 잠금 해제할 수 있습니다</translation>
@@ -1362,7 +1362,7 @@
 <translation id="2330878972945412956"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 자동 보고서에는 사용하는 기능, 일반적인 메모리 사용량, Android 앱 진단 및 사용 데이터, 오류 등이 포함될 수 있습니다. 일부 합산 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움이 됩니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 ChromeOS 기기 설정에서 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Google 계정에 이미 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다. account.google.com에서 내 데이터를 보고 삭제하거나 계정 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">스토어에서 보기</translation>
 <translation id="2332192922827071008">환경설정 열기</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
@@ -2651,7 +2651,7 @@
 <translation id="3653411319514369774"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 언제 어떤 기능이 사용되었는지, 일반적인 메모리 사용량은 얼마나 되는지 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />자녀의 ChromeOS 기기 설정에서 언제든 보고서 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3653999333232393305"><ph name="HOST" />에서 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3654045516529121250">접근성 설정 확인</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{파일 1개에 영구적으로 액세스할 수 있습니다.}other{파일 #개에 영구적으로 액세스할 수 있습니다.}}</translation>
@@ -4181,6 +4181,7 @@
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
 <translation id="5275352920323889391">개</translation>
+<translation id="527605719918376753">탭 음소거</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
 <translation id="5277127016695466621">측면 패널 표시</translation>
 <translation id="5278823018825269962">상태 ID</translation>
@@ -5238,7 +5239,7 @@
 <translation id="6385599849914981574"><ph name="BEGIN_PARAGRAPH1" />ChromeOS 기기에서 자동 보고서를 전송하도록 허용하면 Google이 ChromeOS에서 해결할 문제와 개선할 기능의 우선순위를 정하는 데 도움이 됩니다. 보고서에는 사용한 기능, 일반적인 메모리 사용량 등의 정보가 포함될 수 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />언제든지 Chrome 기기 설정에서 이 보고서의 전송을 허용하거나 중지할 수 있습니다. 도메인 관리자는 관리 콘솔에서 이 설정을 변경할 수 있습니다.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />이 기능을 사용 중지해도 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 기능에는 영향을 미치지 않습니다.<ph name="END_PARAGRAPH3" />
-    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 '사용 및 진단 데이터 보내기'를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
+    <ph name="BEGIN_PARAGRAPH4" />기기 소유자가 "사용 및 진단 데이터 보내기"를 켜면 비정상 종료 보고서도 Google에 업로드될 수 있습니다.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6385994920693662133">경고 - 자세한 로깅이 사용 설정되었으며 아래의 로그에 URL 또는 기타 민감한 정보가 포함될 수 있습니다. 정보를 제출해도 되는지 검토하고 확인하시기 바랍니다.</translation>
 <translation id="6387674443318562538">수직 분할</translation>
 <translation id="6388429472088318283">언어 검색</translation>

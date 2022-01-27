@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">emër i panjohur</translation>
 <translation id="1041998700806130099">Mesazhi i fletës së punës</translation>
 <translation id="1048785276086539861">Kur redakton shënimet, ky dokument do të kthehet te pamja me një faqe</translation>
-<translation id="1049743911850919806">I fshehtë</translation>
 <translation id="1050038467049342496">Mbyll aplikacionet e tjera</translation>
 <translation id="1055184225775184556">&amp;Zhbëj shtimin</translation>
 <translation id="1056898198331236512">Paralajmërim</translation>
@@ -735,12 +734,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3345782426586609320">Sy</translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Historikun tënd të shfletimit
-          <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
-          <ph name="LIST_ITEM" />Informacionet e futura në formularë
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Kjo politikë është kopjuar automatikisht nga politika e vjetruar <ph name="OLD_POLICY" />. Duhet të përdorësh këtë politikë më mirë.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> kërkon të përdorë pajisjen dhe të dhënat e tua të realitetit virtual</translation>
 <translation id="3366477098757335611">Shiko kartat</translation>
@@ -1219,12 +1212,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4819347708020428563">Të redaktohen shënimet në pamjen e parazgjedhur?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Fletë të re të Google</translation>
 <translation id="4825507807291741242">I fuqishëm</translation>
-<translation id="4827402517081186284">Modaliteti "I fshehtë" nuk të bën të padukshëm në linjë:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sajtet e dinë kur i viziton ato<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Punëdhënësit ose shkollat mund të monitorojnë aktivitetin e shfletimit<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Ofruesit e shërbimit të internetit mund të monitorojnë trafikun e uebit<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Shpërfillur për shkak se politika mund të shtohet vetëm politika e përdoruesit të resë kompjuterike.</translation>
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
 <translation id="4838327282952368871">Si në ëndërr</translation>
 <translation id="4840250757394056958">Shiko historikun tënd të Chrome</translation>
@@ -1792,7 +1780,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6757797048963528358">Pajisja jote kaloi në gjumë.</translation>
 <translation id="6767985426384634228">Të përditësohet adresa?</translation>
 <translation id="6768213884286397650">Hagaki (Kartolinë)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth modalitetit "Të fshehtë"</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Vjollcë</translation>
 <translation id="6786747875388722282">Shtesat</translation>
@@ -2272,12 +2259,6 @@ Detaje shtesë:
 <translation id="8317207217658302555">Të përditësohet ARCore?</translation>
 <translation id="831997045666694187">Mbrëmje</translation>
 <translation id="8321476692217554900">njoftimet</translation>
-<translation id="8328484624016508118">Pas mbylljes së të gjitha skedave të modalitetit "Të fshehtë", Chrome pastron:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Aktivitetin tënd të shfletimit nga kjo pajisje<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Historikun tënd të kërkimeve nga kjo pajisje<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Informacionet e futura në formularë<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Qasja te <ph name="HOST_NAME" /> u refuzua</translation>
 <translation id="833262891116910667">Thekso</translation>
 <translation id="8339163506404995330">Faqet në <ph name="LANGUAGE" /> nuk do të përkthehen</translation>

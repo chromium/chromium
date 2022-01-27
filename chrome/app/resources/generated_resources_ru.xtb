@@ -1024,6 +1024,7 @@
 <translation id="2022395138980869975">Показать или скрыть боковую панель поиска</translation>
 <translation id="2023167225947895179">PIN-код слишком простой</translation>
 <translation id="202352106777823113">Скачивание остановлено, так как превышено время ожидания.</translation>
+<translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2025632980034333559">Произошел сбой <ph name="APP_NAME" />. Нажмите на это сообщение, чтобы вновь загрузить это расширение.</translation>
 <translation id="2028449514182362831">Функции, которые используют датчики движения, не будут работать</translation>
 <translation id="202918510990975568">Чтобы настроить параметры безопасности и входа, введите пароль.</translation>
@@ -1052,7 +1053,7 @@
 <translation id="2048554637254265991">Не удалось запустить менеджер контейнеров. Повторите попытку.</translation>
 <translation id="2048653237708779538">Действие недоступно</translation>
 <translation id="204914487372604757">Создать ярлык</translation>
-<translation id="2050339315714019657">Книжная</translation>
+<translation id="2050339315714019657">Вертикальное расположение</translation>
 <translation id="2053312383184521053">Данные о состоянии бездействия</translation>
 <translation id="2054240652864153171">Удалить данные <ph name="SITE_NAME" />, секционированные на сайте <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Вы автоматически выйдете из аккаунта на этих сайтах (в том числе на открытых вкладках).</translation>
@@ -1165,6 +1166,7 @@
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">Добавить подключение по Wi-Fi...</translation>
 <translation id="2162155940152307086">Синхронизация начнется, когда вы покинете страницу с настройками синхронизации.</translation>
+<translation id="2162926944953615670">Нет доступных профилей eSIM.</translation>
 <translation id="2163470535490402084">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и ещё 1 переключатель</translation>
@@ -1856,6 +1858,7 @@
 <translation id="2828650939514476812">Подключитесь к сети Wi-Fi</translation>
 <translation id="2831430281393059038">Устройство поддерживается.</translation>
 <translation id="2832124733806557606">Ребенок может использовать PIN-код для входа в аккаунт или разблокировки устройства.</translation>
+<translation id="2835177225987815960">Текущие настройки сканирования будут сброшены, включая назначенные переключатели и скорость автосканирования.</translation>
 <translation id="2835547721736623118">Сервис распознавания речи</translation>
 <translation id="2836269494620652131">Сбой</translation>
 <translation id="2836635946302913370">Вход с этим именем пользователя запрещен администратором.</translation>
@@ -3500,6 +3503,7 @@
 <translation id="4547659257713117923">Нет вкладок с других устройств</translation>
 <translation id="4547672827276975204">Автоматическое определение</translation>
 <translation id="4549791035683739768">На вашем электронном ключе нет сохраненных отпечатков пальцев.</translation>
+<translation id="4550926046134589611">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложении "<ph name="APP_NAME" />".</translation>
 <translation id="4551763574344810652">Чтобы отменить действие, нажмите <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
 <translation id="4553526521109675518">Чтобы изменить язык устройства, нужно перезапустить Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4554491709904933912">Выделять изображения перетаскиванием курсора для поиска с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
@@ -3788,6 +3792,7 @@
 <translation id="48704129375571883">Добавить ещё функции</translation>
 <translation id="4870758487381879312">Чтобы просмотреть сведения о конфигурации, введите пароль, полученный от администратора</translation>
 <translation id="4870903493621965035">Нет подключенных устройств</translation>
+<translation id="4870995365819149457">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в 1 сервисе.</translation>
 <translation id="4871308555310586478">Не из Интернет-магазина Chrome.</translation>
 <translation id="4871322859485617074">PIN-код содержит недопустимые символы.</translation>
 <translation id="4871370605780490696">Добавить закладку</translation>
@@ -4164,6 +4169,7 @@
 <translation id="526622169288322445">Другие действия с адресом <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
 <translation id="5275352920323889391">Собака</translation>
+<translation id="527605719918376753">Отключение звука на вкладке</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
 <translation id="5277127016695466621">Показать боковую панель</translation>
 <translation id="5278823018825269962">Идентификатор состояния</translation>
@@ -4823,6 +4829,7 @@
 <translation id="5969728632630673489">Уведомление о сочетаниях клавиш закрыто</translation>
 <translation id="5971037678316050792">Управление состоянием адаптера Bluetooth и подключением</translation>
 <translation id="597235323114979258">Другие места назначения печати</translation>
+<translation id="5972543790327947908">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />".</translation>
 <translation id="5972666587303800813">No-op</translation>
 <translation id="5972708806901999743">К началу</translation>
 <translation id="5972826969634861500">Запустить <ph name="PRODUCT_NAME" /></translation>
@@ -5193,6 +5200,7 @@
 <translation id="6355789186038748882">Это экспериментальный браузер (альфа-версия). Некоторые функции в нем могут отсутствовать или работать в ограниченном режиме. Чтобы сообщить о проблемах, нажмите "Справка &gt; Сообщить о проблеме".</translation>
 <translation id="635609604405270300">Не выключайте устройство.</translation>
 <translation id="63566973648609420">Ваши зашифрованные данные может прочитать только тот, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется <ph name="BEGIN_LINK" />сбросить параметры синхронизации<ph name="END_LINK" />.</translation>
+<translation id="6357305427698525450">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />" и "<ph name="APP_NAME_2" />".</translation>
 <translation id="6358884629796491903">Дракон</translation>
 <translation id="6359706544163531585">Отключить светлую тему</translation>
 <translation id="6361850914223837199">Сведения об ошибке:</translation>
@@ -5263,7 +5271,7 @@
 <translation id="6430814529589430811">Единый сертификат ASCII с кодировкой Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> настроит автоматические обновления для всех пользователей на этом компьютере.</translation>
 <translation id="6434104957329207050">Скорость точечного сканирования</translation>
-<translation id="6434309073475700221">Закрыть</translation>
+<translation id="6434309073475700221">Отменить</translation>
 <translation id="6434325376267409267">Чтобы использовать <ph name="APP_NAME" />, установите на устройство обновление системы.</translation>
 <translation id="6436164536244065364">Просмотреть в Интернет-магазине</translation>
 <translation id="6436610005579237680">Чтобы получать более точные ответы, предоставьте Google Ассистенту доступ к содержимому экрана, в том числе к сведениям о воспроизводимых композициях и видеороликах.</translation>
@@ -5711,6 +5719,7 @@
 <translation id="6900284862687837908">Фоновое приложение: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
 <translation id="6900651018461749106">Чтобы обновить аккаунт <ph name="USER_EMAIL" />, войдите ещё раз</translation>
+<translation id="6900654715912436255">Удалить эту поисковую систему?</translation>
 <translation id="6902066522699286937">Образец голоса</translation>
 <translation id="6902336033320348843">Раздел не поддерживается: <ph name="ERROR_LINE" />.</translation>
 <translation id="6902837902700739466">Подключите устройство к домену</translation>
@@ -5982,6 +5991,7 @@
 <translation id="7189234443051076392">Убедитесь, что на вашем устройстве достаточно свободного места.</translation>
 <translation id="7189451821249468368">Недостаточно лицензий для регистрации устройства. Чтобы решить эту проблему, свяжитесь с отделом продаж. Если вы считаете, что произошла ошибка, обратитесь в службу поддержки.</translation>
 <translation id="7189965711416741966">Отпечаток добавлен.</translation>
+<translation id="7191063546666816478">Некоторые поддерживаемые ссылки будут по-прежнему открываться в приложениях "<ph name="APP_NAME" />", "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и ещё в нескольких сервисах (<ph name="NUMBER_OF_OTHER_APPS" />).</translation>
 <translation id="7191159667348037">Неизвестный принтер (USB)</translation>
 <translation id="7193051357671784796">Это приложение добавила ваша организация. Перезапустите его, чтобы завершить установку.</translation>
 <translation id="7193374945610105795">Для сайта <ph name="ORIGIN" /> нет сохраненных паролей</translation>
@@ -7851,7 +7861,7 @@
 <translation id="9088234649737575428">Плагин "<ph name="PLUGIN_NAME" />" заблокирован в соответствии с корпоративной политикой</translation>
 <translation id="9088446193279799727">Не удалось настроить Linux. Подключитесь к Интернету и повторите попытку.</translation>
 <translation id="9088917181875854783">Подтвердите ключ доступа, отображенный на экране "<ph name="DEVICE_NAME" />":</translation>
-<translation id="9089416786594320554">Методы ввода</translation>
+<translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9090044809052745245">Под этим названием устройство будет отображаться у других.</translation>
 <translation id="9094033019050270033">Обновить пароль</translation>
 <translation id="9094038138851891550">Недопустимое имя пользователя.</translation>

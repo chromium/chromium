@@ -295,6 +295,7 @@
 <translation id="1293264513303784526">USB-C მოწყობილობა (მარცხენა პორტი)</translation>
 <translation id="1293556467332435079">ფაილები</translation>
 <translation id="1294807885394205587">ამას შეიძლება რამდენიმე წუთი დასჭირდეს. მიმდინარეობს კონტეინერების მმართველის გაშვება.</translation>
+<translation id="1296046226918222533">Linux-ის ვერსიის განახლება ვერ მოხერხდა შეფერხების გამო. აღნიშნულის შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია ჟურნალებში. ჟურნალები შენახულია <ph name="LOG_FILE" />-ში</translation>
 <translation id="1296911687402551044">არჩეული ჩანართის ჩამაგრება</translation>
 <translation id="1297175357211070620">დანიშნულება</translation>
 <translation id="129770436432446029">გამოგვეხმაურეთ, როგორია <ph name="EXPERIMENT_NAME" /></translation>
@@ -1691,6 +1692,7 @@
 <translation id="2684004000387153598">გასაგრძელებლად დაწკაპუნებით აირჩიეთ „კარგი“, ხოლო შემდეგ — „მომხმარებლის დამატება“, რათა შექმნათ ახალი პროფილი თქვენი ელფოსტის მისამართისთვის.</translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
 <translation id="2687407218262674387">Google-ის მომსახურების პირობები</translation>
+<translation id="2687621393791886981">მოგვიანებით მკითხეთ</translation>
 <translation id="2688196195245426394">შეცდომა სერვერზე მოწყობილობის დარეგისტრირებისას: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">ენის ვარიანტების ჩვენება</translation>
 <translation id="2691385045260836588">მოდელი</translation>
@@ -2787,6 +2789,7 @@
 <translation id="3799128412641261490">გადამრთველით წვდომის პარამეტრები</translation>
 <translation id="3800806661949714323">ყველას ჩვენება (რეკომენდებულია)</translation>
 <translation id="3800828618615365228">Google Chrome-ისა და ChromeOS-ის დამატებითი პირობები</translation>
+<translation id="3802486193901166966">ეს გაფართოება არ საჭიროებს სპეციალურ ნებართვებს და მას არ აქვს რაიმე სახის დამატებითი წვდომა საიტზე</translation>
 <translation id="380329542618494757">სახელი</translation>
 <translation id="3803345858388753269">ვიდეოს ხარისხი</translation>
 <translation id="380408572480438692">ეფექტურობის მონაცემების შეგროვების ჩართვის შემთხვევაში თქვენ დაეხმარებით Google-ს სისტემის გაუმჯობესებაში. მონაცემები არ გაიგზავნება, სანამ არ გაგზავნით შეფასების მოხსენებას (Alt-Shift-I) ეფექტურობის მონაცემებით. შეგიძლიათ ნებისმიერ დროს გამორთოთ შეგროვების ფუნქცია ამ ფანჯარაში.</translation>
@@ -3813,6 +3816,7 @@
 <translation id="4883436287898674711">ყველა <ph name="WEBSITE_1" /> ვებგვერდები</translation>
 <translation id="48838266408104654">&amp;ამოცანების მმართველი</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">ამ გაფართოებას არ აქვს საიტზე დამატებითი წვდომა</translation>
 <translation id="4887424188275796356">გახსნა სისტემის მაჩვენებლით</translation>
 <translation id="488785315393301722">დეტალების ჩვენება</translation>
 <translation id="4890773143211625964">პრინტერის დამატებითი პარამეტრების ჩვენება</translation>
@@ -3987,6 +3991,7 @@
 <translation id="5075910247684008552">დაუცველი კონტენტი ნაგულისხმევად დაბლოკილია დაცულ საიტებზე</translation>
 <translation id="5078638979202084724">ყველა ჩანართის სანიშნეებში ჩამატება</translation>
 <translation id="5078796286268621944">არასწორი პინი</translation>
+<translation id="5079010647467150187">ჩაშენებული VPN-ის დამატება...</translation>
 <translation id="5079950360618752063">შემოთავაზებული პაროლის გამოყენება</translation>
 <translation id="508059534790499809">Kerberos ბილეთის განახლება</translation>
 <translation id="5084230410268011727">საიტებისთვის მოძრაობისა და განათების სენსორების გამოყენების დაშვება</translation>
@@ -4168,6 +4173,7 @@
 <translation id="526622169288322445">სხვა ქმედებები „<ph name="ADDRESS_SUMMARY" />“-სთვის</translation>
 <translation id="5269977353971873915">ბეჭვდის შეცდომა</translation>
 <translation id="5275352920323889391">ძაღლი</translation>
+<translation id="527605719918376753">ჩანართების დადუმება</translation>
 <translation id="527605982717517565">ყოველთვის დაუშვით JavaScript <ph name="HOST" />-ზე</translation>
 <translation id="5277127016695466621">გვერდითი პანელის ჩვენება</translation>
 <translation id="5278823018825269962">სტატუსის ID</translation>
@@ -5538,6 +5544,7 @@
 <translation id="6709133671862442373">ახალი ამბები</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />-ით დაკავშირება</translation>
 <translation id="6710213216561001401">წინა</translation>
+<translation id="6710973041022512889">ვერსიის განახლება წარმატებით დასრულდა. აღნიშნულის შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია ჟურნალებში, რომლებიც შენახულია <ph name="LOG_FILE" />-ში</translation>
 <translation id="6711146141291425900">მიაბით <ph name="WEB_DRIVE" /> ანგარიში ჩამოტვირთვებისთვის</translation>
 <translation id="6712943853047024245">თქვენ უკვე შეინახეთ პაროლი ამ მომხმარებლის სახელით <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="6713233729292711163">სამსახურის პროფილის დამატება</translation>
@@ -7202,6 +7209,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">დაშვებულია <ph name="PERMISSION" /> და <ph name="COUNT" /> სხვა</translation>
 <translation id="8413385045638830869">ჯერ მკითხეთ (რეკომენდებულია)</translation>
+<translation id="8414249071344507766">მოგონებები დამალულია ორი დღით</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (სათავსო)</translation>
 <translation id="8417548266957501132">მშობლის პაროლი</translation>
 <translation id="8418445294933751433">ჩ&amp;ვენება ჩანართის სახით</translation>

@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">অজানা নাম</translation>
 <translation id="1041998700806130099">জব শিট মেসেজ</translation>
 <translation id="1048785276086539861">অ্যানোটেশন এডিট করার সময় এই ডকুমেন্ট আবার 'সিঙ্গেল পেজ ভিউ' মোডে দেখা যাবে</translation>
-<translation id="1049743911850919806">ছদ্মবেশী</translation>
 <translation id="1050038467049342496">অন্যান্য অ্যাপ্লিকেশানগুলি বন্ধ করুন</translation>
 <translation id="1055184225775184556">&amp;যোগ করাকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
@@ -737,12 +736,6 @@
 <translation id="3345782426586609320">চোখ</translation>
 <translation id="3355823806454867987">প্রক্সি সেটিংস পরিবর্তন করুন...</translation>
 <translation id="3360103848165129075">পেমেন্ট হ্যান্ডলার শিট</translation>
-<translation id="3361596688432910856">Chrome এ নিম্নলিখিত তথ্য <ph name="BEGIN_EMPHASIS" />সংরক্ষণ করা হয় না<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />আপনার ব্রাউজিং এর ইতিহাস
-          <ph name="LIST_ITEM" />কুকিজ এবং সাইটের ডেটা
-          <ph name="LIST_ITEM" />আপনি ফর্মে যে তথ্য দিয়েছেন
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">শীঘ্রই বন্ধ হওয়া <ph name="OLD_POLICY" /> নীতি থেকে এই নীতি অটোমেটিক পদ্ধতিতে কপি করা হয়েছে। পরিবর্তে এই নীতি ব্যবহার করতে হবে।</translation>
 <translation id="3364869320075768271"><ph name="URL" /> আপনার ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করার অনুমতি চাইছে</translation>
 <translation id="3366477098757335611">কার্ড দেখুন</translation>
@@ -1223,12 +1216,6 @@
 <translation id="4819347708020428563">ডিফল্ট ভিউতে অ্যানোটেশন এডিট করবেন?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, চটপট নতুন Google Sheet তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="4825507807291741242">ক্ষমতাশালী</translation>
-<translation id="4827402517081186284">'ছদ্মবেশী' মোড আপনাকে অনলাইন থাকাকালীন অদৃশ্য করে রাখে না:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />সাইটগুলি জানে যে আপনি কখন সেগুলি ভিজিট করেন<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />নিয়োগকর্তা বা স্কুল ব্রাউজিং অ্যাক্টিভিটি ট্র্যাক করতে পারে<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ইন্টারনেট পরিষেবা প্রদানকারী, ওয়েব ট্রাফিক মনিটর করতে পারে<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">উপেক্ষা করা হয়েছে কারণ নীতিটি শুধুমাত্র ক্লাউড ব্যবহারকারী নীতি দ্বারা সেট করা যেতে পারে।</translation>
 <translation id="483241715238664915">সতর্কতা চালু করুন</translation>
 <translation id="4838327282952368871">স্বপ্নালু</translation>
@@ -1797,7 +1784,6 @@
 <translation id="6757797048963528358">আপনার ডিভাইস নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="6767985426384634228">ঠিকানা আপডেট করবেন?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239">'ছদ্মবেশী' মোড সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">বেগুনি</translation>
 <translation id="6786747875388722282">এক্সটেনশানসমূহ</translation>
@@ -2277,12 +2263,6 @@
 <translation id="8317207217658302555">ARCore আপডেট করবেন?</translation>
 <translation id="831997045666694187">সন্ধ্যা</translation>
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>
-<translation id="8328484624016508118">সব 'ছদ্মবেশী' ট্যাব বন্ধ করার পরে, Chrome এগুলি মুছে ফেলে:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />এই ডিভাইস থেকে আপনার ব্রাউজিং অ্যাক্টিভিটি<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />এই ডিভাইস থেকে আপনার সার্চ ইতিহাস<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />ফর্মে লেখা তথ্য<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> এ অ্যাক্সেস অস্বীকার করা হয়েছে</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষার পৃষ্ঠার অনুবাদ করা হবে না</translation>

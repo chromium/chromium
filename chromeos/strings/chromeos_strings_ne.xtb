@@ -53,6 +53,7 @@
 <translation id="1643449475550628585">वालपेपर दैनिक रूपमा बदल्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
+<translation id="1668469839109562275">अन्तर्निर्मित VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिजल्भर प्रिजेन्ट</translation>
 <translation id="1715359911173058521">स्क्यानरसँग कनेक्ट गर्ने क्रममा कुनै समस्या आयो। नेटवर्क वा USB कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
@@ -487,7 +488,6 @@
 <translation id="7763470514545477072">डोमेन सफिक्ससँग मिल्दोजुल्दो</translation>
 <translation id="7769672763586021400">मोडेलको ID</translation>
 <translation id="7784116172884276937">कुनै पनि DNS सर्भर सेटअप गरिएको छैन</translation>
-<translation id="7786540085520432425">डिभाइस अपडेट गर्दा तपाईं विन्डो मिनिमाइज गर्न सक्नुहुन्छ तर डिभाइसको प्लग भने बिजुलीको स्रोतमा जोडिराख्नुहोस्। अपडेट गर्ने कार्य पूरा हुन केही मिनेट लाग्न सक्छ र अपडेट गर्ने क्रममा तपाईंको डिभाइसले काम नगर्न सक्छ</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7819857487979277519">PSK (WPA वा RSN)</translation>

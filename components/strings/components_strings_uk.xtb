@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">Невідоме ім’я</translation>
 <translation id="1041998700806130099">Повідомлення на аркуші вихідних даних</translation>
 <translation id="1048785276086539861">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці</translation>
-<translation id="1049743911850919806">Анонімний перегляд</translation>
 <translation id="1050038467049342496">Закрийте інші додатки</translation>
 <translation id="1055184225775184556">&amp;Відмінити додавання</translation>
 <translation id="1056898198331236512">Застереження</translation>
@@ -736,12 +735,6 @@
 <translation id="3345782426586609320">Очі</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
 <translation id="3360103848165129075">Аркуш обробника платежу</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />історію веб-перегляду
-          <ph name="LIST_ITEM" />файли cookie та дані із сайтів
-          <ph name="LIST_ITEM" />дані, які ви заповнюєте у формах
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Правило було автоматично скопійовано з правила <ph name="OLD_POLICY" />, яке не підтримується. Натомість потрібно застосувати це правило.</translation>
 <translation id="3364869320075768271">Сайт <ph name="URL" /> хоче отримати доступ до ваших даних і пристрою віртуальної реальності</translation>
 <translation id="3366477098757335611">Переглянути картки</translation>
@@ -1222,12 +1215,6 @@
 <translation id="4819347708020428563">Редагувати примітки в режимі перегляду за умовчанням?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="4825507807291741242">Потужний</translation>
-<translation id="4827402517081186284">В анонімному режимі ваші дії в Інтернеті не стають невидимими:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />коли ви відвідуєте веб-сайти, вони бачать це;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />роботодавці та заклади освіти можуть відстежувати ваші дії у веб-переглядачі;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />постачальники послуг Інтернету (ISP) можуть відстежувати веб-трафік.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ігнорується, оскільки це правило можна налаштувати лише через хмарні правила для користувачів.</translation>
 <translation id="483241715238664915">Увімкнути попередження</translation>
 <translation id="4838327282952368871">Мрійливий</translation>
@@ -1797,7 +1784,6 @@
 <translation id="6757797048963528358">Ваш пристрій перейшов у режим сну.</translation>
 <translation id="6767985426384634228">Оновити адресу?</translation>
 <translation id="6768213884286397650">Hagaki (листівка)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /> про анонімний режим</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фіолетовий</translation>
 <translation id="6786747875388722282">Розширення</translation>
@@ -2277,12 +2263,6 @@
 <translation id="8317207217658302555">Оновити ARCore?</translation>
 <translation id="831997045666694187">Увечері</translation>
 <translation id="8321476692217554900">сповіщення</translation>
-<translation id="8328484624016508118">Коли ви закриєте всі анонімні вкладки, у Chrome буде видалено:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />дані про ваші дії у веб-переглядачі на цьому пристрої;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />вашу історію пошуку на цьому пристрої;<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />інформацію, яку ви вводили у форми.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Відмовлено в доступі до хосту <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Виділити</translation>
 <translation id="8339163506404995330">Сторінки цією мовою (<ph name="LANGUAGE" />) не перекладатимуться</translation>

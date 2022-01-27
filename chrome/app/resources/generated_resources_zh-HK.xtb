@@ -512,7 +512,7 @@
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="152234381334907219">永不儲存</translation>
-<translation id="1523279371236772909">過去一個月看過</translation>
+<translation id="1523279371236772909">上個月看過</translation>
 <translation id="1523978563989812243">「文字轉語音」引擎</translation>
 <translation id="1524430321211440688">鍵盤</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
@@ -1254,7 +1254,7 @@
 <translation id="2232876851878324699">檔案含有一個憑證，但無法匯入：</translation>
 <translation id="2233502537820838181">更多資料(&amp;M)</translation>
 <translation id="223356358902285214">網絡和應用程式活動記錄</translation>
-<translation id="2234827758954819389">隱私權指南</translation>
+<translation id="2234827758954819389">私隱權指南</translation>
 <translation id="2234876718134438132">同步處理和 Google 服務</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238379619048995541">頻率狀態數據</translation>
@@ -1707,6 +1707,7 @@
 <translation id="2684004000387153598">如要繼續操作，請按一下 [確定]，然後按一下 [新增使用者]，即可為您的電郵地址建立新的設定檔。</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
+<translation id="2687621393791886981">稍後再詢問我</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2690024944919328218">顯示語言選項</translation>
 <translation id="2691385045260836588">型號</translation>
@@ -3111,7 +3112,7 @@
 <translation id="4095264805865317199">開啟流動網絡啟用使用者介面</translation>
 <translation id="4095507791297118304">主要顯示屏</translation>
 <translation id="4096508467498758490">停用開發人員模式擴充功能</translation>
-<translation id="4096797685681362305">過去一週看過</translation>
+<translation id="4096797685681362305">上星期看過</translation>
 <translation id="4097406557126260163">應用程式和擴充程式</translation>
 <translation id="409742781329613461">Chrome 提示</translation>
 <translation id="4097560579602855702">搜尋 Google</translation>
@@ -4189,6 +4190,7 @@
 <translation id="526622169288322445">可以對「<ph name="ADDRESS_SUMMARY" />」執行嘅其他動作</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5275352920323889391">狗</translation>
+<translation id="527605719918376753">將分頁設為靜音</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
 <translation id="5277127016695466621">顯示側面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
@@ -6466,7 +6468,7 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659154729610375585">仍要結束無痕模式嗎？</translation>
 <translation id="7659297516559011665">只儲存在此裝置上的密碼</translation>
-<translation id="7659336857671800422">查看隱私權指南</translation>
+<translation id="7659336857671800422">查看私隱權指南</translation>
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
@@ -7226,6 +7228,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">已允許<ph name="PERMISSION" />和其他 <ph name="COUNT" /> 個項目</translation>
 <translation id="8413385045638830869">事先詢問 (建議)</translation>
+<translation id="8414249071344507766">回憶集錦已隱藏兩天</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>
 <translation id="8417548266957501132">家長密碼</translation>
 <translation id="8418445294933751433">顯示為分頁(&amp;S)</translation>

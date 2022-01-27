@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">Ismeretlen név</translation>
 <translation id="1041998700806130099">Munkalapi üzenet</translation>
 <translation id="1048785276086539861">A jelölések szerkesztésekor a dokumentum visszaáll egyoldalas nézetre.</translation>
-<translation id="1049743911850919806">Inkognitó mód</translation>
 <translation id="1050038467049342496">Zárja be a többi alkalmazást</translation>
 <translation id="1055184225775184556">&amp;Hozzáadás visszavonása</translation>
 <translation id="1056898198331236512">Figyelmeztetés</translation>
@@ -734,12 +733,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3345782426586609320">Szem</translation>
 <translation id="3355823806454867987">Proxybeállítások módosítása...</translation>
 <translation id="3360103848165129075">Fizetési információk munkalapja</translation>
-<translation id="3361596688432910856">A Chrome <ph name="BEGIN_EMPHASIS" />nem menti<ph name="END_EMPHASIS" /> a következő adatokat:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Böngészési előzmények
-          <ph name="LIST_ITEM" />Cookie-k és webhelyadatok
-          <ph name="LIST_ITEM" />Űrlapokon megadott adatok
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Ezt a házirendet a rendszer automatikusan másolta át a megszüntetett <ph name="OLD_POLICY" /> házirendből. Használja ezt a házirendet.</translation>
 <translation id="3364869320075768271">A(z) <ph name="URL" /> webhely használni szeretné az Ön virtuálisvalóság-eszközeit és -adatait</translation>
 <translation id="3366477098757335611">Kártyák megtekintése</translation>
@@ -1220,12 +1213,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4819347708020428563">Szeretné a jelöléseket az alapértelmezett nézetben szerkeszteni?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új Google-táblázat gyors létrehozásához</translation>
 <translation id="4825507807291741242">Erőteljes</translation>
-<translation id="4827402517081186284">Az inkognitó mód nem teszi Önt láthatatlanná az interneten:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />A webhelyek tudják, amikor Ön felkeresi őket<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />A munkáltatók vagy az iskolák nyomon követhetik a böngészési tevékenységeket<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Az internetszolgáltatók figyelhetik az internetes forgalmat<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Figyelmen kívül hagyva, mert a szabályzatot csak a felhőalapú felhasználói szabályzat állíthatja be.</translation>
 <translation id="483241715238664915">Figyelmeztetések bekapcsolása</translation>
 <translation id="4838327282952368871">Álmodozó</translation>
 <translation id="4840250757394056958">Chrome-előzmények megtekintése</translation>
@@ -1794,7 +1782,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6757797048963528358">Eszköze alvó üzemmódba váltott.</translation>
 <translation id="6767985426384634228">Frissíti a címet?</translation>
 <translation id="6768213884286397650">Hagaki (képeslap)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> az inkognitó módról.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ibolyaszín</translation>
 <translation id="6786747875388722282">Bővítmények</translation>
@@ -2274,12 +2261,6 @@ További részletek:
 <translation id="8317207217658302555">Biztosan frissíti az ARCore platformot?</translation>
 <translation id="831997045666694187">Este</translation>
 <translation id="8321476692217554900">értesítések</translation>
-<translation id="8328484624016508118">Az összes inkognitó lap bezárása után a Chrome törli a következőket:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Az Ön ezen az eszközön végzett böngészési tevékenységeit<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Az Ön ezen az eszközön található keresési előzményeit<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Az űrlapokon megadott adatokat<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">A hozzáférés megtagadva a következőhöz: <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Kiemelés</translation>
 <translation id="8339163506404995330">A(z) <ph name="LANGUAGE" /> nyelvű oldalak nem lesznek lefordítva</translation>

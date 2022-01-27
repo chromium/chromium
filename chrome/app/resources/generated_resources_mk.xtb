@@ -1709,6 +1709,7 @@
 <translation id="2684004000387153598">За да продолжите, кликнете „Во ред“, а потоа кликнете „Додај лице“ за да создадете нов профил за адресата на е-пошта.</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="2687407218262674387">Услови за користење на Google</translation>
+<translation id="2687621393791886981">Прашај ме подоцна</translation>
 <translation id="2688196195245426394">Грешка при регистрирање на уредот на серверот: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Покажи ги опциите за јазик</translation>
 <translation id="2691385045260836588">Модел</translation>
@@ -4190,6 +4191,7 @@
 <translation id="526622169288322445">Повеќе дејства за <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Печатењето не успеа</translation>
 <translation id="5275352920323889391">Куче</translation>
+<translation id="527605719918376753">Исклучи звук на картичка</translation>
 <translation id="527605982717517565">Секогаш дозволи JavaScript на <ph name="HOST" /></translation>
 <translation id="5277127016695466621">Прикажи ја страничната табла</translation>
 <translation id="5278823018825269962">ID на статусот</translation>
@@ -7229,6 +7231,7 @@
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Дозволени: <ph name="PERMISSION" /> и уште <ph name="COUNT" /></translation>
 <translation id="8413385045638830869">Прашај прво (препорачано)</translation>
+<translation id="8414249071344507766">Спомените ќе бидат сокриени два дена</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (футрола за полнење)</translation>
 <translation id="8417548266957501132">Лозинка на родител</translation>
 <translation id="8418445294933751433">&amp;Прикажи како картичка</translation>

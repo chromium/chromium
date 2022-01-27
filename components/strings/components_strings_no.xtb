@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">ukjent navn</translation>
 <translation id="1041998700806130099">Jobbarkmelding</translation>
 <translation id="1048785276086539861">Når du redigerer annoteringer, går dette dokumentet tilbake til enkeltsidevisning</translation>
-<translation id="1049743911850919806">Inkognito</translation>
 <translation id="1050038467049342496">Lukk andre apper</translation>
 <translation id="1055184225775184556">&amp;Angre tilleggingen</translation>
 <translation id="1056898198331236512">Advarsel</translation>
@@ -736,12 +735,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3345782426586609320">Øyne</translation>
 <translation id="3355823806454867987">Endre innstillinger for proxy-tjener</translation>
 <translation id="3360103848165129075">Ark for betalingsbehandling</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />lagrer ikke<ph name="END_EMPHASIS" />
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />nettleserloggen din
-          <ph name="LIST_ITEM" />informasjonskapsler og nettstedsdata
-          <ph name="LIST_ITEM" />informasjon du skriver inn i skjemaer
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Denne regelen ble automatisk kopiert fra den avviklede regelen <ph name="OLD_POLICY" />. Du bør bruke denne regelen i stedet.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> vil bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="3366477098757335611">Vis kort</translation>
@@ -1222,12 +1215,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4819347708020428563">Vil du redigere annoteringer i standardvisningen?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="4825507807291741242">Kraftfull</translation>
-<translation id="4827402517081186284">Inkognito gjør deg ikke usynlig på nettet:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Nettsteder vet når du besøker dem.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Arbeidsgivere og skoler kan spore nettleseraktivitet.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internettleverandører kan overvåke nettrafikk.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignorert fordi regelen kun kan angis via brukerinnstillinger i nettskyen.</translation>
 <translation id="483241715238664915">Slå på varsler</translation>
 <translation id="4838327282952368871">Drømmende</translation>
@@ -1797,7 +1784,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6757797048963528358">Enheten din gikk inn i hvilemodus.</translation>
 <translation id="6767985426384634228">Oppdatere adresse?</translation>
 <translation id="6768213884286397650">Hagaki (postkort)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om Inkognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Fiolett</translation>
 <translation id="6786747875388722282">Utvidelser</translation>
@@ -2276,12 +2262,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8317207217658302555">Vil du oppdatere ARCore?</translation>
 <translation id="831997045666694187">Kveld</translation>
 <translation id="8321476692217554900">varsler</translation>
-<translation id="8328484624016508118">Når du lukker alle inkognitofaner, sletter Chrome
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />nettleseraktiviteten din fra denne enheten<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />søkeloggen din fra denne enheten<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />informasjon du har skrevet inn i skjemaer<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Forsøket på å koble til <ph name="HOST_NAME" /> ble avvist</translation>
 <translation id="833262891116910667">Fremhev</translation>
 <translation id="8339163506404995330">Sider på <ph name="LANGUAGE" /> oversettes ikke</translation>

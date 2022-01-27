@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">невядомае імя</translation>
 <translation id="1041998700806130099">Паведамленне аркуша задання</translation>
 <translation id="1048785276086539861">Калі вы будзеце змяняць анатацыі, гэты дакумент вернецца ў аднастаронкавы выгляд</translation>
-<translation id="1049743911850919806">Інкогніта</translation>
 <translation id="1050038467049342496">Закрыйце іншыя праграмы</translation>
 <translation id="1055184225775184556">&amp;Адрабіць дадаванне</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
@@ -736,12 +735,6 @@
 <translation id="3345782426586609320">Вочы</translation>
 <translation id="3355823806454867987">Змяніць налады проксі-сервера...</translation>
 <translation id="3360103848165129075">Аркуш апрацоўшчыка плацяжоў</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" /> наступную інфармацыю:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
-          <ph name="LIST_ITEM" />файлы cookie і даныя сайтаў;
-          <ph name="LIST_ITEM" />звесткі, якія ўводзіліся ў формах.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Гэта палітыка была аўтаматычна скапіравана з састарэлай палітыкі "<ph name="OLD_POLICY" />" – выкарыстоўвайце гэту новую палітыку.</translation>
 <translation id="3364869320075768271">Сайт <ph name="URL" /> запытвае дазвол выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
 <translation id="3366477098757335611">Прагляд картак</translation>
@@ -1221,12 +1214,7 @@
 <translation id="4819347708020428563">Збіраецеся змяняць анатацыі ў стандартным выглядзе?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую табліцу Google, націсніце Tab, затым Enter</translation>
 <translation id="4825507807291741242">Моцны</translation>
-<translation id="4827402517081186284">Рэжым інкогніта не робіць нябачнай вашу прысутнасць у інтэрнэце:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />сайты бачаць, калі вы іх наведваеце;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />работадаўцы і навучальныя ўстановы могуць адсочваць дзеянні ў браўзеры;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />інтэрнэт-правайдары могуць адсочваць інтэрнэт-трафік.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
+<translation id="4829962028570902310">Ігнаруецца, бо гэтыя правілы могуць задавацца толькі палітыкай для карыстальнікаў воблачных сэрвісаў.</translation>
 <translation id="483241715238664915">Уключыць папярэджанні</translation>
 <translation id="4838327282952368871">Летуценны</translation>
 <translation id="4840250757394056958">Праглядзець гісторыю Chrome</translation>
@@ -1795,7 +1783,6 @@
 <translation id="6757797048963528358">Прылада перайшла ў рэжым сну.</translation>
 <translation id="6767985426384634228">Абнавіць адрас?</translation>
 <translation id="6768213884286397650">Hagaki (паштоўка)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра рэжым інкогніта</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Фіялетавы</translation>
 <translation id="6786747875388722282">Пашырэнні</translation>
@@ -2276,12 +2263,6 @@
 <translation id="8317207217658302555">Абнавіць ARCore?</translation>
 <translation id="831997045666694187">Вечар</translation>
 <translation id="8321476692217554900">апавяшчэнні</translation>
-<translation id="8328484624016508118">Пасля закрыцця ўсіх укладак у рэжыме інкогніта, Chrome выдаліць:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />даныя пра дзеянні ў браўзеры, ажыццёўленыя на гэтай прыладзе;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />гісторыю пошуку з гэтай прылады;<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />звесткі, уведзеныя ў формах.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Доступ да хоста <ph name="HOST_NAME" /> забаронены</translation>
 <translation id="833262891116910667">Вылучэнне</translation>
 <translation id="8339163506404995330">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца</translation>

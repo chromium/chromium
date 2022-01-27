@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
 <translation id="1048785276086539861">Quando você editar as anotações, este documento voltará à visualização de uma página</translation>
-<translation id="1049743911850919806">Modo anônimo</translation>
 <translation id="1050038467049342496">Fechar outros apps</translation>
 <translation id="1055184225775184556">&amp;Desfazer adicionar</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -732,12 +731,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3345782426586609320">Olhos</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
-<translation id="3361596688432910856">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />seu histórico de navegação
-          <ph name="LIST_ITEM" />cookies e dados de sites
-          <ph name="LIST_ITEM" />informações fornecidas em formulários
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Esta política foi copiada automaticamente da política <ph name="OLD_POLICY" /> obsoleta. Use esta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quer usar seus dispositivos e dados de realidade virtual</translation>
 <translation id="3366477098757335611">Ver cartões</translation>
@@ -1213,12 +1206,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4819347708020428563">Editar anotações na visualização padrão?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4825507807291741242">Intenso</translation>
-<translation id="4827402517081186284">Com a navegação anônima, você não fica invisível on-line.
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sites sabem quando você os acessa<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Empregadores ou escolas podem rastrear a navegação<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Provedores de acesso à Internet podem monitorar o tráfego na Internet<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignorada porque a política só pode ser definida por políticas do usuário em nuvem.</translation>
 <translation id="483241715238664915">Ativar avisos</translation>
 <translation id="4838327282952368871">Sonho</translation>
@@ -1788,7 +1775,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
 <translation id="6767985426384634228">Atualizar endereço?</translation>
 <translation id="6768213884286397650">Hagaki (Postal)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> sobre a navegação anônima</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensões</translation>
@@ -2268,12 +2254,6 @@ Mais detalhes:
 <translation id="8317207217658302555">Atualizar o ARCore?</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
-<translation id="8328484624016508118">Após o fechamento de todas as guias anônimas, o Chrome apaga:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sua atividade de navegação no dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Seu histórico de pesquisa no dispositivo<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />As informações digitadas em formulários<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">O acesso a <ph name="HOST_NAME" /> foi negado</translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Páginas em <ph name="LANGUAGE" /> não serão traduzidas</translation>

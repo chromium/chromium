@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nepoznati naziv</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
 <translation id="1048785276086539861">Kad uredite napomene, dokument će se vratiti na prikaz pojedinačne stranice</translation>
-<translation id="1049743911850919806">Anonimno</translation>
 <translation id="1050038467049342496">Zatvorite ostale aplikacije</translation>
 <translation id="1055184225775184556">&amp;Poništi dodavanje</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
@@ -736,12 +735,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3345782426586609320">Oči</translation>
 <translation id="3355823806454867987">Promijeni proxy postavke...</translation>
 <translation id="3360103848165129075">List rukovatelja plaćanjima</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />neće spremati<ph name="END_EMPHASIS" /> sljedeće informacije:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />vašu povijest pregledavanja
-          <ph name="LIST_ITEM" />kolačiće i podatke o web-lokacijama
-          <ph name="LIST_ITEM" />informacije koje unesete u obrasce.
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Pravilo je automatski kopirano iz ukinutog pravila <ph name="OLD_POLICY" />. Trebali biste koristiti ovo pravilo.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> želi koristiti vaš uređaj i podatke virtualne stvarnosti</translation>
 <translation id="3366477098757335611">Prikaži kartice</translation>
@@ -1222,12 +1215,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4819347708020428563">Želite li urediti napomene u zadanom prikazu?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste brzo izradili novu Google tablicu</translation>
 <translation id="4825507807291741242">Snažno</translation>
-<translation id="4827402517081186284">Anonimni način rada ne čini vas nevidljivim na internetu:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />web-lokacije znaju kada ih posjećujete<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />poslodavci ili škole mogu pratiti vašu aktivnost pregledavanja<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />davatelji internetskih usluga mogu nadzirati web-promet<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Zanemareno jer se pravilo može postaviti samo putem korisničkih pravila oblaka.</translation>
 <translation id="483241715238664915">Uključite upozorenja</translation>
 <translation id="4838327282952368871">Sanjivo</translation>
@@ -1797,7 +1784,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6757797048963528358">Uređaj je u stanju mirovanja.</translation>
 <translation id="6767985426384634228">Želite li ažurirati adresu?</translation>
 <translation id="6768213884286397650">Hagaki (dopisnica)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o anonimnom načinu rada</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786747875388722282">Proširenja</translation>
@@ -2277,12 +2263,6 @@ Dodatne pojedinosti:
 <translation id="8317207217658302555">Ažurirati ARCore?</translation>
 <translation id="831997045666694187">Navečer</translation>
 <translation id="8321476692217554900">obavijesti</translation>
-<translation id="8328484624016508118">Nakon zatvaranja svih anonimnih kartica Chrome briše:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />vašu aktivnost pregledavanja na ovom uređaju<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />vašu povijest pretraživanja na ovom uređaju<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />podatke unesene u obrasce<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Pristup hostu <ph name="HOST_NAME" /> je odbijen</translation>
 <translation id="833262891116910667">Istakni</translation>
 <translation id="8339163506404995330">Neće se prevoditi <ph name="LANGUAGE" /></translation>

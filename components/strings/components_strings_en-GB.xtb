@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">unknown name</translation>
 <translation id="1041998700806130099">Job sheet message</translation>
 <translation id="1048785276086539861">When you edit annotations, this document will return to single-page view</translation>
-<translation id="1049743911850919806">Incognito</translation>
 <translation id="1050038467049342496">Close other apps</translation>
 <translation id="1055184225775184556">&amp;Undo add</translation>
 <translation id="1056898198331236512">Warning</translation>
@@ -735,12 +734,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3345782426586609320">Eyes</translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="3360103848165129075">Payment handler sheet</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" /> the following information:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Your browsing history
-          <ph name="LIST_ITEM" />Cookies and site data
-          <ph name="LIST_ITEM" />Information entered in forms
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">This policy was automatically copied from the deprecated <ph name="OLD_POLICY" /> policy. You should use this policy instead.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wants to use your virtual reality device and data</translation>
 <translation id="3366477098757335611">View cards</translation>
@@ -1221,12 +1214,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4819347708020428563">Edit annotations in default view?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4825507807291741242">Powerful</translation>
-<translation id="4827402517081186284">Incognito does not make you invisible online:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Sites know when you visit them<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Employers or schools can track browsing activity<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Internet service providers may monitor web traffic<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignored because the policy can only be set by cloud user policy.</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
 <translation id="4838327282952368871">Dreamy</translation>
@@ -1796,7 +1783,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6767985426384634228">Update address?</translation>
 <translation id="6768213884286397650">Hagaki (Postcard)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> about Incognito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensions</translation>
@@ -2276,12 +2262,6 @@ Additional details:
 <translation id="8317207217658302555">Update ARCore?</translation>
 <translation id="831997045666694187">Evening</translation>
 <translation id="8321476692217554900">notifications</translation>
-<translation id="8328484624016508118">After closing all Incognito tabs, Chrome clears:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Your browsing activity from this device<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Your search history from this device<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Information entered into forms<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Access to <ph name="HOST_NAME" /> was denied</translation>
 <translation id="833262891116910667">Highlight</translation>
 <translation id="8339163506404995330">Pages in <ph name="LANGUAGE" /> will not be translated</translation>

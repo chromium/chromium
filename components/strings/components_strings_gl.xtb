@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">nome descoñecido</translation>
 <translation id="1041998700806130099">Mensaxe da folla do traballo</translation>
 <translation id="1048785276086539861">Ao editar as anotacións, este documento volverá á vista dunha soa páxina</translation>
-<translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="1050038467049342496">Pecha outras aplicacións</translation>
 <translation id="1055184225775184556">&amp;Desfacer adición</translation>
 <translation id="1056898198331236512">Advertencia</translation>
@@ -735,12 +734,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3345782426586609320">Ollos</translation>
 <translation id="3355823806454867987">Cambiar configuración do proxy...</translation>
 <translation id="3360103848165129075">Folla do controlador de pagos</translation>
-<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />non gardará<ph name="END_EMPHASIS" /> a seguinte información:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />O teu historial de navegación
-          <ph name="LIST_ITEM" />As cookies e os datos de sitios
-          <ph name="LIST_ITEM" />A información introducida en formularios
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Esta política copiouse automaticamente desde unha política <ph name="OLD_POLICY" /> obsoleta. Debes utilizar esta política e non a antiga.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quere utilizar os teus datos e o teu dispositivo de realidade virtual</translation>
 <translation id="3366477098757335611">Ver tarxetas</translation>
@@ -1221,12 +1214,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4819347708020428563">Queres editar as anotacións na vista predeterminada?</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nova folla de cálculo de Google</translation>
 <translation id="4825507807291741242">Potente</translation>
-<translation id="4827402517081186284">O modo de incógnito non te converte en invisible en Internet:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />Os sitios saben cando os visitas.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />A túa empresa ou centro educativo pode facer un seguimento da actividade de navegación.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Os fornecedores de servizos de Internet poden supervisar o tráfico web.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Ignorada porque a política só pode ser configurada por unha política de usuario da nube.</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4838327282952368871">Onírico</translation>
@@ -1796,7 +1783,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6757797048963528358">O teu dispositivo entrou no modo de suspensión.</translation>
 <translation id="6767985426384634228">Queres actualizar este enderezo?</translation>
 <translation id="6768213884286397650">Hagaki (postal)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> sobre o modo de incógnito</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Violeta</translation>
 <translation id="6786747875388722282">Extensións</translation>
@@ -2276,12 +2262,6 @@ Detalles adicionais:
 <translation id="8317207217658302555">Queres actualizar ARCore?</translation>
 <translation id="831997045666694187">Serán</translation>
 <translation id="8321476692217554900">notificacións</translation>
-<translation id="8328484624016508118">Despois de pechar todas as pestanas do modo de incógnito, Chrome borra:
-<ph name="BEGIN_LIST" />
-<ph name="LIST_ITEM" />A túa actividade de navegación deste dispositivo.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />O teu historial de busca deste dispositivo.<ph name="END_LIST_ITEM" />
-<ph name="LIST_ITEM" />Os datos que escribises en formularios.<ph name="END_LIST_ITEM" />
-<ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Denegouse o acceso a <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Destacar</translation>
 <translation id="8339163506404995330">Non se traducirán as páxinas en <ph name="LANGUAGE" /></translation>

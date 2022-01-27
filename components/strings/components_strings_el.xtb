@@ -20,7 +20,6 @@
 <translation id="1038842779957582377">άγνωστο όνομα</translation>
 <translation id="1041998700806130099">Μήνυμα φύλλου εργασίας</translation>
 <translation id="1048785276086539861">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην προβολή μίας σελίδας.</translation>
-<translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
 <translation id="1050038467049342496">Κλείστε τις άλλες εφαρμογές</translation>
 <translation id="1055184225775184556">&amp;Αναίρεση προσθήκης</translation>
 <translation id="1056898198331236512">Προειδοποίηση</translation>
@@ -737,12 +736,6 @@
 <translation id="3345782426586609320">Μάτια</translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
 <translation id="3360103848165129075">Φύλλο δείκτη χειρισμού πληρωμών</translation>
-<translation id="3361596688432910856">Το Chrome <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" /> τις παρακάτω πληροφορίες:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Το ιστορικό περιήγησής σας
-          <ph name="LIST_ITEM" />Cookie και δεδομένα ιστοτόπου
-          <ph name="LIST_ITEM" />Πληροφορίες που εισάγετε σε φόρμες
-        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Αυτή η πολιτική αντιγράφηκε αυτόματα από την πολιτική <ph name="OLD_POLICY" /> που έχει καταργηθεί. Θα πρέπει να χρησιμοποιήσετε εναλλακτικά αυτήν την πολιτική.</translation>
 <translation id="3364869320075768271">Το <ph name="URL" /> θέλει να χρησιμοποιήσει τη συσκευή και τα δεδομένα εικονικής πραγματικότητας.</translation>
 <translation id="3366477098757335611">Προβολή καρτών</translation>
@@ -1224,12 +1217,6 @@
 <translation id="4819347708020428563">Επεξεργασία σχολιασμών στην προεπιλεγμένη προβολή;</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4825507807291741242">Ισχυρό</translation>
-<translation id="4827402517081186284">Η Ανώνυμη περιήγηση δεν σας κάνει αόρατους στο διαδίκτυο:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Οι ιστότοποι γνωρίζουν πότε τους επισκέπτεστε.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Οι εργοδότες ή τα εκπαιδευτικά ιδρύματα μπορούν να παρακολουθούν τη δραστηριότητα περιήγησης.<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Οι πάροχοι υπηρεσιών διαδικτύου μπορούν να παρακολουθούν την επισκεψιμότητα στον ιστό.<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="4829962028570902310">Έγινε παράβλεψη επειδή η πολιτική μπορεί να οριστεί μόνο από χρήστη πολιτικής cloud.</translation>
 <translation id="483241715238664915">Ενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4838327282952368871">Ονειρικό</translation>
@@ -1801,7 +1788,6 @@
 <translation id="6757797048963528358">Η συσκευή σας τέθηκε σε αδράνεια.</translation>
 <translation id="6767985426384634228">Ενημέρωση διεύθυνσης;</translation>
 <translation id="6768213884286397650">Hagaki (Ταχυδρομική κάρτα)</translation>
-<translation id="6774185088257932239"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με την Ανώνυμη περιήγηση</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="67862343314499040">Βιολετί</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
@@ -2282,12 +2268,6 @@
 <translation id="8317207217658302555">Ενημέρωση ARCore;</translation>
 <translation id="831997045666694187">Βράδυ</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>
-<translation id="8328484624016508118">Μετά το κλείσιμο όλων των καρτελών ανώνυμης περιήγησης, το Chrome διαγράφει:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Τη δραστηριότητα περιήγησής σας από αυτήν τη συσκευή<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Το ιστορικό αναζήτησής σας από αυτήν τη συσκευή<ph name="END_LIST_ITEM" />
-          <ph name="LIST_ITEM" />Τις πληροφορίες που είχαν καταχωριστεί σε φόρμες<ph name="END_LIST_ITEM" />
-        <ph name="END_LIST" /></translation>
 <translation id="8332188693563227489">Απορρίφθηκε η πρόσβαση στο κεντρικό υπολογιστή <ph name="HOST_NAME" /></translation>
 <translation id="833262891116910667">Επισήμανση</translation>
 <translation id="8339163506404995330">Οι σελίδες στα <ph name="LANGUAGE" /> δεν θα μεταφράζονται</translation>

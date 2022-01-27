@@ -53,6 +53,7 @@
 <translation id="1643449475550628585">ფონის სურათის ყოველდღიურად შეცვლა</translation>
 <translation id="1644574205037202324">ისტორია</translation>
 <translation id="1662989795263954667">გაჩერდა — მელანი გათავდა</translation>
+<translation id="1668469839109562275">ჩაშენებული VPN</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ის მომგვარებლის არსებობა</translation>
 <translation id="1715359911173058521">სკანერთან კავშირის პრობლემაა. შეამოწმეთ ქსელის ან USB კავშირი და ცადეთ ხელახლა.</translation>
@@ -488,7 +489,6 @@
 <translation id="7763470514545477072">დომენის სუფიქსის დამთხვევა</translation>
 <translation id="7769672763586021400">მოდელის ID</translation>
 <translation id="7784116172884276937">DNS სერვერები არ არის დაყენებული</translation>
-<translation id="7786540085520432425">განახლების მსვლელობისას შეგიძლიათ ჩაკეცოთ ფანჯარა, თუმცა არ გამოაერთოთ მოწყობილობა ელკვების წყაროდან. აღნიშნულს რამდენიმე წუთი დასჭირდება, რა დროსაც თქვენმა მოწყობილობამ, შესაძლოა, არ იმუშაოს</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7819857487979277519">PSK (WPA ან RSN)</translation>

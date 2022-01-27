@@ -297,6 +297,7 @@
 <translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1294807885394205587">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. కంటైనర్ మేనేజర్‌ను ప్రారంభిస్తోంది.</translation>
+<translation id="1296046226918222533">ఏదో తప్పు జరిగింది, Linux అప్‌గ్రేడ్ విఫలమైంది. ఎందుకు విఫలమైంది అనే దాని గురించి మరింత సమాచారాన్ని లాగ్స్‌లో కనుగొనవచ్చు. లాగ్స్ <ph name="LOG_FILE" />లో సేవ్ చేయబడ్డాయి</translation>
 <translation id="1296911687402551044">ఎంపిక చేసిన ట్యాబ్‌ను పిన్ చేయండి</translation>
 <translation id="1297175357211070620">గమ్యం</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />‌పై మీ ఫీడ్‌బ్యాక్‌ను పంపండి</translation>
@@ -2804,6 +2805,7 @@
 <translation id="3799128412641261490">స్విచ్ యాక్సెస్ సెట్టింగ్‌లు</translation>
 <translation id="3800806661949714323">అన్నీ చూపు (సిఫార్సు చేయబడింది)</translation>
 <translation id="3800828618615365228">Google Chrome, ChromeOS అదనపు నియమాలు</translation>
+<translation id="3802486193901166966">ఈ ఎక్స్‌టెన్షన్‌కు ప్రత్యేక అనుమతులు ఏవీ అవసరం లేదు, అలాగే అదనపు సైట్ యాక్సెస్ కూడా లేదు</translation>
 <translation id="380329542618494757">పేరు</translation>
 <translation id="3803345858388753269">వీడియో క్వాలిటీ</translation>
 <translation id="380408572480438692">పనితీరు డేటా సేకరణను ప్రారంభించడం అనేది, సమయానుగుణంగా సిస్టమ్‌ను మెరుగుపరచడంలో Googleకు సహాయపడుతుంది. మీరు అభిప్రాయ రిపోర్ట్‌ (Alt-Shift-I)ను ఫైల్ చేసి, పనితీరు డేటాను చేర్చే వరకు డేటా పంపబడదు. మీరు ఎప్పుడైనా సేకరణను నిలిపివేయడానికి ఈ స్క్రీన్‌కు తిరిగి రావచ్చు.</translation>
@@ -3834,6 +3836,7 @@
 <translation id="4883436287898674711">అన్ని <ph name="WEBSITE_1" /> వెబ్‌సైట్‌లు</translation>
 <translation id="48838266408104654">విధి సంచాలకులు</translation>
 <translation id="4884987973312178454">6x</translation>
+<translation id="4885692421645694729">ఈ ఎక్స్‌టెన్షన్‌కు అదనపు సైట్ యాక్సెస్ లేదు</translation>
 <translation id="4887424188275796356">సిస్టమ్ వ్యూయర్‌తో తెరవండి</translation>
 <translation id="488785315393301722">వివరాలను చూపించు</translation>
 <translation id="4890773143211625964">అధునాతన ప్రింటర్ ఎంపికలను చూపు</translation>
@@ -4008,6 +4011,7 @@
 <translation id="5075910247684008552">సురక్షితమైన సైట్‌లలో డిఫాల్ట్‌గానే అసురక్షితమైన కంటెంట్ బ్లాక్ చేయబడుతుంది</translation>
 <translation id="5078638979202084724">అన్ని టాబ్‌లను బుక్‌మార్క్ చేయండి</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
+<translation id="5079010647467150187">బిల్ట్-ఇన్ VPNని జోడించండి...</translation>
 <translation id="5079950360618752063">సూచించిన పాస్‌వర్డ్‌ని ఉపయోగించండి</translation>
 <translation id="508059534790499809">Kerberos టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="5084230410268011727">చలనం మరియు కాంతి సర్దుబాటు సెన్సార్‌లను ఉపయోగించడానికి సైట్‌లను అనుమతించు</translation>
@@ -4189,6 +4193,7 @@
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
 <translation id="5275352920323889391">కుక్క</translation>
+<translation id="527605719918376753">ట్యాబ్‌ను మ్యూట్ చేయి</translation>
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
 <translation id="5277127016695466621">సైడ్ ప్యానెల్‌ను చూడండి</translation>
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
@@ -5559,6 +5564,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" />ని ఉపయోగించి కనెక్ట్ చేయి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
+<translation id="6710973041022512889">అప్‌గ్రేడ్ విజయవంతంగా పూర్తయింది. వివరణాత్మక అప్‌గ్రేడ్ సమాచారం కోసం, లాగ్స్ <ph name="LOG_FILE" />లో సేవ్ చేయబడ్డాయి</translation>
 <translation id="6711146141291425900">డౌన్‌లోడ్‌ల కోసం <ph name="WEB_DRIVE" /> ఖాతాను లింక్ చేయండి</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> కోసం మీరు ఇప్పటికే ఈ యూజర్‌నేమ్‌తో పాస్‌వర్డ్‌ను సేవ్ చేశారు</translation>
 <translation id="6713233729292711163">వర్క్ ప్రొఫైల్‌ను జోడించండి</translation>
