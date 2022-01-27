@@ -593,6 +593,10 @@ void ExtensionFunction::SetDispatcher(
 }
 
 void ExtensionFunction::Shutdown() {
+  // Wait until the end of this function to delete |this|, in case
+  // OnBrowserContextShutdown() decrements the refcount.
+  scoped_refptr<ExtensionFunction> keep_alive{this};
+
   // Allow the extension function to perform any cleanup before nulling out
   // `browser_context_`.
   OnBrowserContextShutdown();
