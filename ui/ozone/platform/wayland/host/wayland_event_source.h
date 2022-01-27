@@ -81,6 +81,10 @@ class WaylandEventSource : public PlatformEventSource,
   // button released event is not delivered (e.g: window moving, drag and drop).
   void ResetPointerFlags();
 
+  // Forwards the call to WaylandEventWatcher, which calls
+  // wl_display_roundtrip_queue.
+  void RoundTripQueue();
+
  protected:
   // WaylandKeyboard::Delegate
   void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override;

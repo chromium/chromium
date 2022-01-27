@@ -64,6 +64,17 @@ void WaylandEventWatcher::StopProcessingEvents() {
   watching_ = false;
 }
 
+void WaylandEventWatcher::RoundTripQueue() {
+  // Read must be cancelled. Otherwise, wl_display_roundtrip_queue might block
+  // as its internal implementation also reads events, which may block if there
+  // are more than one preparation for reading within the same thread.
+  //
+  // TODO(1288181): this won't be needed once libevent is updated. See
+  // WaylandEventWatcherFdWatch::OnFileCanReadWithoutBlocking for more details.
+  WlDisplayCancelRead();
+  wl_display_roundtrip_queue(display_, event_queue_);
+}
+
 bool WaylandEventWatcher::WlDisplayPrepareToRead() {
   if (prepared_)
     return true;

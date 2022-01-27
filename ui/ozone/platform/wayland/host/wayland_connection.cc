@@ -280,8 +280,9 @@ void WaylandConnection::RoundTripQueue() {
     return;
   }
 
+  DCHECK(event_source_);
   DCHECK(event_queue_.get());
-  wl_display_roundtrip_queue(display(), event_queue_.get());
+  event_source_->RoundTripQueue();
 }
 
 void WaylandConnection::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {

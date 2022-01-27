@@ -251,6 +251,10 @@ void WaylandEventSource::OnResetPointerFlags() {
   ResetPointerFlags();
 }
 
+void WaylandEventSource::RoundTripQueue() {
+  event_watcher_->RoundTripQueue();
+}
+
 const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
   return pointer_location_;
 }
