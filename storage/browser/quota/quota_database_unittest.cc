@@ -480,40 +480,6 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
-TEST_P(QuotaDatabaseTest, DeleteStorageKeyInfo) {
-  QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
-  EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));
-
-  const StorageKey storage_key =
-      StorageKey::CreateFromStringForTesting("http://example-a/");
-  QuotaErrorOr<BucketInfo> temp_bucket1 =
-      db.CreateBucketForTesting(storage_key, "temp1", kTemp);
-  QuotaErrorOr<BucketInfo> temp_bucket2 =
-      db.CreateBucketForTesting(storage_key, "temp2", kTemp);
-  QuotaErrorOr<BucketInfo> perm_bucket =
-      db.CreateBucketForTesting(storage_key, "perm", kPerm);
-
-  db.DeleteStorageKeyInfo(storage_key, kTemp);
-
-  QuotaErrorOr<BucketInfo> result =
-      db.GetBucket(storage_key, temp_bucket1->name, kTemp);
-  ASSERT_FALSE(result.ok());
-  ASSERT_EQ(result.error(), QuotaError::kNotFound);
-
-  result = db.GetBucket(storage_key, temp_bucket2->name, kTemp);
-  ASSERT_FALSE(result.ok());
-  ASSERT_EQ(result.error(), QuotaError::kNotFound);
-
-  result = db.GetBucket(storage_key, perm_bucket->name, kPerm);
-  ASSERT_TRUE(result.ok());
-
-  db.DeleteStorageKeyInfo(storage_key, kPerm);
-
-  result = db.GetBucket(storage_key, perm_bucket->name, kPerm);
-  ASSERT_FALSE(result.ok());
-  ASSERT_EQ(result.error(), QuotaError::kNotFound);
-}
-
 TEST_P(QuotaDatabaseTest, SetStorageKeyLastModifiedTime) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());
   EXPECT_TRUE(EnsureOpened(&db, EnsureOpenedMode::kCreateIfNotFound));

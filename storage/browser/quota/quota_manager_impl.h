@@ -322,8 +322,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                             blink::mojom::StorageType type,
                             bool enabled);
 
-  // DeleteHostData (surprisingly enough) deletes data of a particular
-  // blink::mojom::StorageType associated with a set of storage keys.
+  // DeleteHostData deletes buckets of a particular blink::mojom::StorageType
+  // with storage keys that match the specified host.
   // DeleteBucketData will only delete the specified bucket.
   // Each method additionally requires a `quota_client_types` which specifies
   // the types of QuotaClients to delete from the storage key.
@@ -452,7 +452,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class GetUsageInfoTask;
   class StorageKeyGathererTask;
   class BucketDataDeleter;
-  class StorageKeyDataDeleter;
   class HostDataDeleter;
   class DumpQuotaTableHelper;
   class DumpBucketTableHelper;
@@ -532,13 +531,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DeleteBucketDataInternal(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
-  // Cleans up BucketDataDeleter tasks that have completed.
-  void DidDeleteBucketData();
+  // Cleans up deleter tasks that have completed.
+  void DidDeleteHostData(HostDataDeleter* deleter);
+  void DidDeleteBucketData(BucketDataDeleter* deleter);
 
   // Methods for eviction logic.
   void StartEviction();
-  void DeleteStorageKeyFromDatabase(const blink::StorageKey& storage_key,
-                                    blink::mojom::StorageType type);
   void DeleteBucketFromDatabase(BucketId bucket_id,
                                 base::OnceCallback<void(QuotaError)> callback);
 
@@ -749,7 +747,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   GetVolumeInfoFn get_volume_info_fn_;
 
   std::unique_ptr<EvictionRoundInfoHelper> eviction_helper_;
-  std::vector<std::unique_ptr<BucketDataDeleter>> bucket_data_deleters_;
+  std::map<HostDataDeleter*, std::unique_ptr<HostDataDeleter>>
+      host_data_deleters_;
+  std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
+      bucket_data_deleters_;
   std::unique_ptr<StorageKeyGathererTask> storage_key_gatherer_;
 
   SEQUENCE_CHECKER(sequence_checker_);

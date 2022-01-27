@@ -188,10 +188,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // QuotaError if not found or the operation has failed.
   QuotaErrorOr<BucketTableEntry> GetBucketInfo(BucketId bucket_id);
 
-  // Removes all buckets for `storage_key` with `type`.
-  QuotaError DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
-                                  blink::mojom::StorageType type);
-
   // Deletes the specified bucket. This method is virtual for testing.
   virtual QuotaError DeleteBucketInfo(BucketId bucket_id);
 
