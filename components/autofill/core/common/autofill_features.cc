@@ -164,13 +164,6 @@ const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses{
     "AutofillEnableLabelPrecedenceForTurkishAddresses",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled and user is signed in, a footer indicating user's e-mail address
-// and profile picture will appear at the bottom of corresponding password
-// InfoBars.
-const base::Feature kAutofillEnablePasswordInfoBarAccountIndicationFooter{
-    "AutofillEnablePasswordInfoBarAccountIndicationFooter",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the parsing of a sequence of fields that follows the pattern of Name,
 // Surname.
 // TODO(crbug.com/1277480): Remove once launched.
