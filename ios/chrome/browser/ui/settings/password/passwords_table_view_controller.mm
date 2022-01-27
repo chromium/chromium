@@ -1703,11 +1703,6 @@ void RemoveFormsToBeDeleted(
   ItemType itemType =
       static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
-    case ItemTypeLinkHeader:
-    case ItemTypeHeader:
-    case ItemTypeSavePasswordsSwitch:
-    case ItemTypeManagedSavePasswords:
-      break;
     case ItemTypePasswordsInOtherApps:
       [self.handler showPasswordsInOtherAppsPromo];
       break;
@@ -1758,8 +1753,12 @@ void RemoveFormsToBeDeleted(
       BlockToOpenURL(self, self.dispatcher)(url);
       break;
     }
-    case ItemTypeOnDeviceEncryptionOptInDescription:
     case ItemTypeLastCheckTimestampFooter:
+    case ItemTypeOnDeviceEncryptionOptInDescription:
+    case ItemTypeLinkHeader:
+    case ItemTypeHeader:
+    case ItemTypeSavePasswordsSwitch:
+    case ItemTypeManagedSavePasswords:
       NOTREACHED();
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
