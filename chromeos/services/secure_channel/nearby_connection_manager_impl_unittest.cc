@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/authenticated_channel_impl.h"
@@ -15,7 +16,6 @@
 #include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_disconnector.h"
 #include "chromeos/services/secure_channel/nearby_connection.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

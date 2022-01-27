@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/components/proximity_auth/proximity_monitor_observer.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gmock_move_support.h"
@@ -23,7 +24,6 @@
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -13,14 +13,13 @@
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
 class AuthenticatedChannel;
+enum class ConnectionPriority;
 
 // Attempts to create connections to remote devices. If a connection request
 // fails or is canceled, the client will be notified. If a connection is

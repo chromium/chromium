@@ -31,8 +31,8 @@
 #include "ash/components/phonehub/tether_controller_impl.h"
 #include "ash/components/phonehub/user_action_recorder_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace ash {

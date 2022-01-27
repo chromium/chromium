@@ -8,12 +8,12 @@
 #include <memory>
 #include <ostream>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

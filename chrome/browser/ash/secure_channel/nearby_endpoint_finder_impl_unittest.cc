@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"

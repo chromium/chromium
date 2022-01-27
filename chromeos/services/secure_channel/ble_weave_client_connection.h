@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
@@ -23,7 +24,6 @@
 #include "chromeos/services/secure_channel/ble_weave_packet_receiver.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"

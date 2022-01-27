@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECTION_ATTEMPT_BASE_H_
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/pending_connection_request.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace chromeos {
 

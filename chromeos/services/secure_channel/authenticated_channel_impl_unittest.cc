@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/test/bind.h"
@@ -20,8 +22,6 @@
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

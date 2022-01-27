@@ -12,14 +12,14 @@
 #include "ash/components/phonehub/camera_roll_thumbnail_decoder.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;

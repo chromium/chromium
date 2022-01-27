@@ -8,10 +8,10 @@
 #include <ostream>
 #include <string>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 
 namespace chromeos {
 

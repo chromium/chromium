@@ -8,6 +8,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file.h"
@@ -21,7 +22,6 @@
 #include "chromeos/services/secure_channel/fake_file_payload_listener.h"
 #include "chromeos/services/secure_channel/fake_message_receiver.h"
 #include "chromeos/services/secure_channel/fake_single_client_proxy.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

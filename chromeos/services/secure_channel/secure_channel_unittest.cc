@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +20,6 @@
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_context.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

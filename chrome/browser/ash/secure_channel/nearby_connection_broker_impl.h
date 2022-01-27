@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -18,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash {

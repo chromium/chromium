@@ -7,10 +7,10 @@
 #include <netinet/in.h>
 
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace phonehub {

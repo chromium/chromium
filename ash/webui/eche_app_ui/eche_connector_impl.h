@@ -7,11 +7,11 @@
 
 #include "ash/webui/eche_app_ui/eche_connector.h"
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/containers/queue.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace eche_app {

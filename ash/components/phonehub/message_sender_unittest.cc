@@ -10,9 +10,9 @@
 #include <string>
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

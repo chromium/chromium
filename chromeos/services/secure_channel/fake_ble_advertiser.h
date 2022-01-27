@@ -11,9 +11,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/ble_advertiser.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/shared_resource_scheduler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

@@ -7,10 +7,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/register_payload_file_request.h"
 
 namespace chromeos {

@@ -12,7 +12,7 @@
 
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace phonehub {

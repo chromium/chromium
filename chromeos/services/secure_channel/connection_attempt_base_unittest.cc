@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
@@ -22,8 +24,6 @@
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_request.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

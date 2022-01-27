@@ -5,9 +5,9 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_
 
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

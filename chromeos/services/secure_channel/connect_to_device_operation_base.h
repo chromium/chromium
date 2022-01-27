@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_BASE_H_
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/connect_to_device_operation.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

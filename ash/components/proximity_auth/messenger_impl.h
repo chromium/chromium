@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "ash/components/proximity_auth/messenger.h"
+#include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 
 namespace base {
 class DictionaryValue;

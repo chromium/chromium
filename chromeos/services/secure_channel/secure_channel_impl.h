@@ -10,13 +10,13 @@
 #include <tuple>
 #include <vector>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/pending_connection_manager.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace device {

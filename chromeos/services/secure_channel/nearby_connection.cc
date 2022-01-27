@@ -4,6 +4,8 @@
 
 #include "chromeos/services/secure_channel/nearby_connection.h"
 
+#include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
@@ -13,8 +15,6 @@
 #include "base/strings/string_split.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

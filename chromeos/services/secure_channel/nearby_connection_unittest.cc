@@ -4,6 +4,8 @@
 
 #include "chromeos/services/secure_channel/nearby_connection.h"
 
+#include "ash/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -13,8 +15,6 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_nearby_connector.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

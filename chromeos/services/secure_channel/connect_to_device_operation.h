@@ -5,10 +5,10 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_CONNECT_TO_DEVICE_OPERATION_H_
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace chromeos {
 

@@ -10,6 +10,7 @@
 #include "ash/components/proximity_auth/metrics.h"
 #include "ash/components/proximity_auth/proximity_auth_client.h"
 #include "ash/components/proximity_auth/proximity_monitor_impl.h"
+#include "ash/services/secure_channel/public/cpp/client/client_channel.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/secure_channel/public/cpp/client/client_channel.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
 namespace proximity_auth {

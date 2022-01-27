@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "base/containers/flat_map.h"
 #include "chromeos/services/secure_channel/active_connection_manager.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/multiplexed_channel.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 
 namespace chromeos {
 

@@ -14,12 +14,12 @@
 #include "ash/components/proximity_auth/smart_lock_metrics_recorder.h"
 #include "ash/components/proximity_auth/unlock_manager.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace base {

@@ -7,10 +7,11 @@
 
 #include <memory>
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/ble_listener_failure_type.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/pending_ble_connection_request_base.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace chromeos {
 

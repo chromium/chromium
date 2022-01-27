@@ -4,11 +4,11 @@
 
 source_set("shared") {
   sources = [
-    "connection_medium.cc",
-    "connection_medium.h",
-    "connection_priority.cc",
-    "connection_priority.h",
-    "presence_monitor.h",
+    "//ash/services/secure_channel/public/cpp/shared/connection_medium.cc",
+    "//ash/services/secure_channel/public/cpp/shared/connection_medium.h",
+    "//ash/services/secure_channel/public/cpp/shared/connection_priority.cc",
+    "//ash/services/secure_channel/public/cpp/shared/connection_priority.h",
+    "//ash/services/secure_channel/public/cpp/shared/presence_monitor.h",
   ]
 
   deps = [ "//base" ]

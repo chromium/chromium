@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -20,7 +21,6 @@
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"
 #include "chromeos/services/secure_channel/file_transfer_update_callback.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "chromeos/services/secure_channel/wire_message.h"

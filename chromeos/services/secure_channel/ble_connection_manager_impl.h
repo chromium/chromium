@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_clock.h"
@@ -16,7 +17,6 @@
 #include "chromeos/services/secure_channel/ble_scanner.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "chromeos/services/secure_channel/secure_channel.h"
 
 namespace device {

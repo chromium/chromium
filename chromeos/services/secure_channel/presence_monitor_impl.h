@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_
 
+#include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
 #include "chromeos/services/secure_channel/presence_monitor_delegate.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/presence_monitor.h"
 
 namespace device {
 

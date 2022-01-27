@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
@@ -19,8 +21,6 @@
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/pending_connection_manager.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 namespace chromeos {

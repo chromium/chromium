@@ -7,12 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_request_delegate.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

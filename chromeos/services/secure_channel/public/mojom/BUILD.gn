@@ -6,9 +6,9 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "nearby_connector.mojom",
-    "secure_channel.mojom",
-    "secure_channel_types.mojom",
+    "//ash/services/secure_channel/public/mojom/nearby_connector.mojom",
+    "//ash/services/secure_channel/public/mojom/secure_channel.mojom",
+    "//ash/services/secure_channel/public/mojom/secure_channel_types.mojom",
   ]
 
   public_deps = [
@@ -29,8 +29,8 @@ mojom("mojom") {
         },
       ]
 
-      traits_headers = [ "secure_channel_mojom_traits.h" ]
-      traits_sources = [ "secure_channel_mojom_traits.cc" ]
+      traits_headers = [ "//ash/services/secure_channel/public/mojom/secure_channel_mojom_traits.h" ]
+      traits_sources = [ "//ash/services/secure_channel/public/mojom/secure_channel_mojom_traits.cc" ]
       traits_public_deps =
           [ "//chromeos/services/secure_channel/public/cpp/shared" ]
     },
@@ -40,7 +40,7 @@ mojom("mojom") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "secure_channel_mojom_traits_unittest.cc" ]
+  sources = [ "//ash/services/secure_channel/public/mojom/secure_channel_mojom_traits_unittest.cc" ]
 
   deps = [
     ":mojom",

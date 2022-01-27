@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

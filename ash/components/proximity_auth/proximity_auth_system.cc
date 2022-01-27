@@ -7,8 +7,8 @@
 #include "ash/components/proximity_auth/proximity_auth_client.h"
 #include "ash/components/proximity_auth/remote_device_life_cycle_impl.h"
 #include "ash/components/proximity_auth/unlock_manager_impl.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
 namespace proximity_auth {
 

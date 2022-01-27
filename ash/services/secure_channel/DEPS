@@ -1,0 +1,5 @@
+include_rules = [
+  "+ash/constants",
+  "+chromeos/services/device_sync",
+  "+chromeos/services/secure_channel",
+]

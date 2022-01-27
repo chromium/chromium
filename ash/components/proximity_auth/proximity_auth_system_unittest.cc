@@ -11,6 +11,7 @@
 #include "ash/components/proximity_auth/mock_proximity_auth_client.h"
 #include "ash/components/proximity_auth/proximity_auth_profile_pref_manager.h"
 #include "ash/components/proximity_auth/unlock_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -20,7 +21,6 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

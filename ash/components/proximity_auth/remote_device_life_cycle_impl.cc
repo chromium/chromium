@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "ash/components/proximity_auth/messenger_impl.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 
 namespace proximity_auth {
 

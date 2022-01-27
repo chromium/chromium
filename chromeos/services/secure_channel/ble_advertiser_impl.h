@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,7 +17,6 @@
 #include "chromeos/services/secure_channel/ble_advertiser.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
-#include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

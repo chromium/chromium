@@ -18,7 +18,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace base {

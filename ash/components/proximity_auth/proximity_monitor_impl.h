@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/components/proximity_auth/proximity_monitor.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

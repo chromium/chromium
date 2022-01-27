@@ -6,12 +6,12 @@
 #define ASH_COMPONENTS_PHONEHUB_FEATURE_STATUS_PROVIDER_IMPL_H_
 
 #include "ash/components/phonehub/feature_status_provider.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"

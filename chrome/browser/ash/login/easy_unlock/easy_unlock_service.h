@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/easy_unlock/smartlock_state_handler.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class AccountId;
