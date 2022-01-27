@@ -19,8 +19,6 @@
 #include "base/time/tick_clock.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"
-#include "components/data_reduction_proxy/core/browser/data_store.h"
-#include "components/data_use_measurement/core/data_use_measurement.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/backoff_entry.h"
@@ -39,26 +37,12 @@ class DataReductionProxySettings;
 class MockDataReductionProxyService : public DataReductionProxyService {
  public:
   MockDataReductionProxyService(
-      data_use_measurement::DataUseMeasurement* data_use_measurement,
       DataReductionProxySettings* settings,
       PrefService* prefs,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
   ~MockDataReductionProxyService() override;
 
   MOCK_METHOD2(SetProxyPrefs, void(bool enabled, bool at_startup));
-  MOCK_METHOD7(UpdateContentLengths,
-               void(int64_t data_used,
-                    int64_t original_size,
-                    bool data_reduction_proxy_enabled,
-                    const std::string& mime_type,
-                    bool is_user_traffic,
-                    data_use_measurement::DataUseUserData::DataUseContentType
-                        content_type,
-                    int32_t service_hash_code));
-  MOCK_METHOD3(UpdateDataUseForHost,
-               void(int64_t network_bytes,
-                    int64_t original_bytes,
-                    const std::string& host));
 };
 
 // Test version of |DataReductionProxyService|, which bypasses initialization in
@@ -67,45 +51,12 @@ class MockDataReductionProxyService : public DataReductionProxyService {
 class TestDataReductionProxyService : public DataReductionProxyService {
  public:
   TestDataReductionProxyService(
-      data_use_measurement::DataUseMeasurement* data_use_measurement,
       DataReductionProxySettings* settings,
       PrefService* prefs,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner);
   ~TestDataReductionProxyService() override;
-
-  bool ignore_blocklist() const { return ignore_blocklist_; }
-
- private:
-  // Whether the long term blocklist rules should be ignored.
-  bool ignore_blocklist_ = false;
 };
 
-// Test version of |DataStore|. Uses an in memory hash map to store data.
-class TestDataStore : public data_reduction_proxy::DataStore {
- public:
-  TestDataStore();
-
-  ~TestDataStore() override;
-
-  void InitializeOnDBThread() override {}
-
-  DataStore::Status Get(base::StringPiece key, std::string* value) override;
-
-  DataStore::Status Put(const std::map<std::string, std::string>& map) override;
-
-  DataStore::Status Delete(base::StringPiece key) override;
-
-  DataStore::Status RecreateDB() override;
-
-  std::map<std::string, std::string>* map() { return &map_; }
-
- private:
-  std::map<std::string, std::string> map_;
-};
-
-// Builds a test version of the Data Reduction Proxy stack for use in tests.
-// Takes in various |TestContextOptions| which controls the behavior of the
-// underlying objects.
 class DataReductionProxyTestContext {
  public:
   // Allows for a fluent builder interface to configure what kind of objects
@@ -138,8 +89,6 @@ class DataReductionProxyTestContext {
     bool use_mock_service_;
     bool skip_settings_initialization_;
     std::unique_ptr<DataReductionProxySettings> settings_;
-    std::unique_ptr<data_use_measurement::DataUseMeasurement>
-        data_use_measurement_;
   };
 
   DataReductionProxyTestContext(const DataReductionProxyTestContext&) = delete;
@@ -201,16 +150,11 @@ class DataReductionProxyTestContext {
 
  private:
   DataReductionProxyTestContext(
-      std::unique_ptr<data_use_measurement::DataUseMeasurement>
-          data_use_measurement,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       std::unique_ptr<TestingPrefServiceSimple> simple_pref_service,
       std::unique_ptr<DataReductionProxySettings> settings,
       std::unique_ptr<DataReductionProxyService> service,
       unsigned int test_context_flags);
-
-  std::unique_ptr<data_use_measurement::DataUseMeasurement>
-      data_use_measurement_;
 
   unsigned int test_context_flags_;
 

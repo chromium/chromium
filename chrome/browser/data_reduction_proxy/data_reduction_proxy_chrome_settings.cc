@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -19,7 +20,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -27,10 +27,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
-#include "components/data_reduction_proxy/core/browser/data_store.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
@@ -56,6 +53,13 @@ namespace {
 
 constexpr base::FilePath::CharType kLiteVideoOptOutDBFilename[] =
     FILE_PATH_LITERAL("lite_video_opt_out.db");
+
+const base::FilePath::CharType kHostDataUseDBName[] =
+    FILE_PATH_LITERAL("data_reduction_proxy_leveldb");
+
+void DeleteHostDataUseDatabaseOnDBThread(const base::FilePath& database_file) {
+  base::DeleteFile(database_file);
+}
 
 // Deletes Previews opt-out database file. Opt-out database is no longer needed
 // since Previews has been turned down.
@@ -218,7 +222,6 @@ void DataReductionProxyChromeSettings::Shutdown() {
 
 void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
     Profile* profile,
-    std::unique_ptr<data_reduction_proxy::DataStore> store,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner) {
   profile_ = profile;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -237,16 +240,9 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
       base::BindOnce(DeleteLiteVideosOptOutDatabaseOnDBThread,
                      profile_path.Append(kLiteVideoOptOutDBFilename)));
 
-#if BUILDFLAG(IS_ANDROID)
-  // On mobile we write Data Reduction Proxy prefs directly to the pref service.
-  // On desktop we store Data Reduction Proxy prefs in memory, writing to disk
-  // every 60 minutes and on termination. Shutdown hooks must be added for
-  // Android and iOS in order for non-zero delays to be supported.
-  // (http://crbug.com/408264)
-  base::TimeDelta commit_delay = base::TimeDelta();
-#else
-  base::TimeDelta commit_delay = base::Minutes(60);
-#endif
+  db_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(DeleteHostDataUseDatabaseOnDBThread,
+                                profile_path.Append(kHostDataUseDBName)));
 
   PrefService* profile_prefs = profile->GetPrefs();
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
@@ -254,9 +250,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
           ->GetURLLoaderFactoryForBrowserProcess();
   std::unique_ptr<data_reduction_proxy::DataReductionProxyService> service =
       std::make_unique<data_reduction_proxy::DataReductionProxyService>(
-          this, profile_prefs, std::move(store),
-          data_use_measurement::ChromeDataUseMeasurement::GetInstance(),
-          db_task_runner, commit_delay);
+          this, profile_prefs);
   data_reduction_proxy::DataReductionProxySettings::
       InitDataReductionProxySettings(profile_prefs, std::move(service));
 

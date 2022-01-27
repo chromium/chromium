@@ -96,6 +96,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.BypassedBytes.NotBypassed" units="bytes"
     expires_after="M85">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>bengr@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -106,6 +109,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.DaysSinceEnabled" units="days"
     expires_after="2021-03-10">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -119,6 +125,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.DeleteBrowsingHistory.NumBuckets"
     units="units" expires_after="M77">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -145,6 +154,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.HistoricalDataUsageLoadTime" units="ms"
     expires_after="M77">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>kundaji@chromium.org</owner>
   <summary>
     Time taken to load historical data usage from Level DB into memory. This UMA
@@ -155,6 +167,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.LastWeekAggregateKB.Services"
     enum="DataUseServicesHash" expires_after="2022-07-03">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -170,6 +185,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="DataReductionProxy.LastWeekAggregateKB.UserTraffic.Downstream.ContentType"
     enum="DataUseContentType" expires_after="2022-07-03">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -184,11 +202,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.LevelDBOpenStatus"
     enum="DataReductionProxyStoreStatus" expires_after="M77">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>kundaji@chromium.org</owner>
   <summary>Status of calling Open() on Data Reduction Proxy LevelDB.</summary>
 </histogram>
 
 <histogram name="DataReductionProxy.LevelDBSize" units="KB" expires_after="M77">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>kundaji@chromium.org</owner>
   <summary>Size of Data Reduction Proxy LevelDB measured at startup.</summary>
 </histogram>
@@ -207,6 +231,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.ReportSaveDataSavings.ParseResult"
     enum="Boolean" expires_after="2021-04-01">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -217,6 +244,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.SavingsCleared.Reason"
     enum="DataReductionProxySavingsClearedReason" expires_after="M77">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -227,6 +257,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.SnackbarPromo.DataSavings" units="MB"
     expires_after="M85">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>bengr@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -238,6 +271,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.StartupNegativeSavingsPercent" units="%"
     expires_after="2021-08-01">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -249,6 +285,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.StartupSavingsPercent" units="%"
     expires_after="2021-08-01">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -272,6 +311,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.ThisWeekAggregateKB.Services"
     enum="DataUseServicesHash" expires_after="2022-07-03">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -287,6 +329,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="DataReductionProxy.ThisWeekAggregateKB.UserTraffic.Downstream.ContentType"
     enum="DataUseContentType" expires_after="2022-07-03">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -301,6 +346,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DataReductionProxy.UIAction" enum="DataReductionProxyUIAction"
     expires_after="2022-07-11">
+  <obsolete>
+    Obsoleted Jan 2022.
+  </obsolete>
   <owner>bengr@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

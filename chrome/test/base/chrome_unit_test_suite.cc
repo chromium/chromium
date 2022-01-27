@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
@@ -98,10 +97,6 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
-    // To ensure that NetworkConnectionTracker doesn't complain in unit_tests
-    // about outstanding listeners.
-    data_use_measurement::ChromeDataUseMeasurement::DeleteInstance();
-
     browser_content_client_.reset();
     utility_content_client_.reset();
     content_client_.reset();

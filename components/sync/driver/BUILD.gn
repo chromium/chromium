@@ -92,7 +92,6 @@ static_library("driver") {
     "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/data_use_measurement/core",
     "//components/invalidation/impl:feature_list",
     "//components/keyed_service/core",
     "//components/metrics",

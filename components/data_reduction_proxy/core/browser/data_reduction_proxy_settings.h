@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_metrics.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
@@ -31,7 +30,6 @@ class Clock;
 namespace data_reduction_proxy {
 
 class DataReductionProxyService;
-class DataReductionProxyCompressionStats;
 
 // Values of the UMA DataReductionProxy.StartupState histogram.
 // This enum must remain synchronized with DataReductionProxyStartupState
@@ -120,24 +118,6 @@ class DataReductionProxySettings {
   // Enables or disables the data reduction proxy.
   void SetDataReductionProxyEnabled(bool enabled);
 
-  // Returns the time in microseconds that the last update was made to the
-  // daily original and received content lengths.
-  int64_t GetDataReductionLastUpdateTime();
-
-  // Clears all data saving statistics for the given |reason|.
-  void ClearDataSavingStatistics(DataReductionProxySavingsClearedReason reason);
-
-  // Returns the difference between the total original size of all HTTP content
-  // received from the network and the actual size of the HTTP content received.
-  int64_t GetTotalHttpContentLengthSaved();
-
-  // Returns aggregate received and original content lengths over the specified
-  // number of days, as well as the time these stats were last updated.
-  void GetContentLengths(unsigned int days,
-                         int64_t* original_content_length,
-                         int64_t* received_content_length,
-                         int64_t* last_update_time);
-
   // Records that the data reduction proxy is unreachable or not.
   void SetUnreachable(bool unreachable);
 
@@ -145,8 +125,6 @@ class DataReductionProxySettings {
   // if no request has successfully completed through proxy, even though atleast
   // some of them should have.
   bool IsDataReductionProxyUnreachable();
-
-  ContentLengthList GetDailyContentLengths(const char* pref_name);
 
   // Configures data reduction proxy. |at_startup| is true when this method is
   // called in response to creating or loading a new profile.
@@ -226,23 +204,7 @@ class DataReductionProxySettings {
 
   void OnProxyEnabledPrefChange();
 
-  // Records data savings percentage histogram at chrome startup, for users who
-  // have browsed a reasonable amount. Positive and negative savings are
-  // recorded in a separate histogram.
-  void RecordStartupSavings() const;
-
-  void ResetDataReductionStatistics();
-
   bool unreachable_;
-
-  // The number of requests to reload the page with images from the Lo-Fi
-  // UI until Lo-Fi is disabled for the remainder of the session.
-  int lo_fi_user_requests_for_images_per_session_;
-
-  // The number of consecutive sessions where Lo-Fi was disabled for
-  // Lo-Fi to be disabled until the next implicit opt out epoch, which may be in
-  // a later session, or never.
-  int lo_fi_consecutive_session_disables_;
 
   std::unique_ptr<DataReductionProxyService> data_reduction_proxy_service_;
 

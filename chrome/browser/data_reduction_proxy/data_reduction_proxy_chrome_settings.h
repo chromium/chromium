@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_H_
 #define CHROME_BROWSER_DATA_REDUCTION_PROXY_DATA_REDUCTION_PROXY_CHROME_SETTINGS_H_
 
-#include <memory>
-
 #include "base/memory/raw_ptr.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,10 +15,6 @@ class Profile;
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
-
-namespace data_reduction_proxy {
-class DataStore;
-}  // namespace data_reduction_proxy
 
 class PrefService;
 
@@ -59,11 +53,9 @@ class DataReductionProxyChromeSettings
   // Overrides KeyedService::Shutdown:
   void Shutdown() override;
 
-  // Initialize the settings object with the given profile, data store, and db
-  // task runner.
+  // Initialize the settings object.
   void InitDataReductionProxySettings(
       Profile* profile,
-      std::unique_ptr<data_reduction_proxy::DataStore> store,
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner);
 
   // Public for testing.

@@ -66,7 +66,6 @@ class DataReductionProxySettingsTestBase : public testing::Test {
   base::SingleThreadTaskExecutor io_task_executor_{base::MessagePumpType::IO};
   std::unique_ptr<DataReductionProxyTestContext> test_context_;
   std::unique_ptr<DataReductionProxySettings> settings_;
-  base::Time last_update_time_;
   std::map<std::string, std::string> synthetic_field_trials_;
 };
 

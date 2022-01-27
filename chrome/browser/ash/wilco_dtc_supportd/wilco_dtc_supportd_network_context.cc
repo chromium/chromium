@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -128,13 +127,7 @@ void WilcoDtcSupportdNetworkContextImpl::OnLoadingStateUpdate(
 void WilcoDtcSupportdNetworkContextImpl::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
-    int64_t sent_bytes) {
-  if (auto* data_use =
-          data_use_measurement::ChromeDataUseMeasurement::GetInstance()) {
-    data_use->ReportNetworkServiceDataUse(network_traffic_annotation_id_hash,
-                                          recv_bytes, sent_bytes);
-  }
-}
+    int64_t sent_bytes) {}
 
 void WilcoDtcSupportdNetworkContextImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>

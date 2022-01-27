@@ -73,10 +73,6 @@ class PageResourceDataUse {
 
   int resource_id_;
 
-  // Compression ratio estimated from the response headers if data saver was
-  // used.
-  double data_reduction_proxy_compression_ratio_estimate_;
-
   uint64_t total_received_bytes_ = 0;
   uint64_t last_update_bytes_ = 0;
   uint64_t encoded_body_length_ = 0;

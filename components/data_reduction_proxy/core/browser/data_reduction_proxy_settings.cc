@@ -77,13 +77,6 @@ void DataReductionProxySettings::InitDataReductionProxySettings(
       prefs::kDataSaverEnabled,
       base::BindRepeating(&DataReductionProxySettings::OnProxyEnabledPrefChange,
                           base::Unretained(this)));
-
-#if BUILDFLAG(IS_ANDROID)
-  if (IsDataSaverEnabledByUser(is_off_the_record_profile_, prefs_)) {
-    data_reduction_proxy_service_->compression_stats()
-        ->SetDataUsageReportingEnabled(true);
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void DataReductionProxySettings::SetCallbackToRegisterSyntheticFieldTrial(
@@ -145,39 +138,11 @@ bool DataReductionProxySettings::IsDataReductionProxyManaged() {
 
 void DataReductionProxySettings::SetDataReductionProxyEnabled(bool enabled) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
   if (GetOriginalProfilePrefs()->GetBoolean(prefs::kDataSaverEnabled) !=
       enabled) {
     GetOriginalProfilePrefs()->SetBoolean(prefs::kDataSaverEnabled, enabled);
     OnProxyEnabledPrefChange();
-#if BUILDFLAG(IS_ANDROID)
-    data_reduction_proxy_service_->compression_stats()
-        ->SetDataUsageReportingEnabled(enabled);
-#endif  // BUILDFLAG(IS_ANDROID)
   }
-}
-
-int64_t DataReductionProxySettings::GetDataReductionLastUpdateTime() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-  return data_reduction_proxy_service_->compression_stats()
-      ->GetLastUpdateTime();
-}
-
-void DataReductionProxySettings::ClearDataSavingStatistics(
-    DataReductionProxySavingsClearedReason reason) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-  data_reduction_proxy_service_->compression_stats()->ClearDataSavingStatistics(
-      reason);
-}
-
-int64_t DataReductionProxySettings::GetTotalHttpContentLengthSaved() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  return data_reduction_proxy_service_->compression_stats()
-             ->GetHttpOriginalContentLength() -
-         data_reduction_proxy_service_->compression_stats()
-             ->GetHttpReceivedContentLength();
 }
 
 void DataReductionProxySettings::SetUnreachable(bool unreachable) {
@@ -221,12 +186,6 @@ void DataReductionProxySettings::OnProxyEnabledPrefChange() {
     observer.OnDataSaverEnabledChanged(enabled);
 }
 
-void DataReductionProxySettings::ResetDataReductionStatistics() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-  data_reduction_proxy_service_->compression_stats()->ResetStatistics();
-}
-
 void DataReductionProxySettings::MaybeActivateDataReductionProxy(
     bool at_startup) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -252,7 +211,6 @@ void DataReductionProxySettings::MaybeActivateDataReductionProxy(
   if (enabled &&
       !prefs->GetBoolean(prefs::kDataReductionProxyWasEnabledBefore)) {
     prefs->SetBoolean(prefs::kDataReductionProxyWasEnabledBefore, true);
-    ResetDataReductionStatistics();
   }
   if (!at_startup) {
     if (IsDataReductionProxyEnabled()) {
@@ -287,65 +245,12 @@ void DataReductionProxySettings::RecordDataReductionInit() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   RecordStartupState(IsDataReductionProxyEnabled() ? PROXY_ENABLED
                                                    : PROXY_DISABLED);
-  RecordStartupSavings();
 }
 
 void DataReductionProxySettings::RecordStartupState(
     ProxyStartupState state) const {
   UMA_HISTOGRAM_ENUMERATION(kUMAProxyStartupStateHistogram, state,
                             PROXY_STARTUP_STATE_COUNT);
-}
-
-void DataReductionProxySettings::RecordStartupSavings() const {
-  // Minimum bytes the user should have browsed, for the data savings percent
-  // UMA to be recorded at startup.
-  const unsigned int kMinOriginalContentLengthBytes =
-      10 * 1024 * 1024;  // 10 MB.
-
-  if (!IsDataReductionProxyEnabled())
-    return;
-
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-  int64_t original_content_length =
-      data_reduction_proxy_service_->compression_stats()
-          ->GetHttpOriginalContentLength();
-  int64_t received_content_length =
-      data_reduction_proxy_service_->compression_stats()
-          ->GetHttpReceivedContentLength();
-  if (original_content_length < kMinOriginalContentLengthBytes)
-    return;
-  int savings_percent =
-      static_cast<int>(((original_content_length - received_content_length) /
-                        (float)original_content_length) *
-                       100.0);
-  if (savings_percent >= 0) {
-    UMA_HISTOGRAM_PERCENTAGE("DataReductionProxy.StartupSavingsPercent",
-                             savings_percent > 0 ? savings_percent : 0);
-  }
-  if (savings_percent < 0) {
-    UMA_HISTOGRAM_PERCENTAGE("DataReductionProxy.StartupNegativeSavingsPercent",
-                             -savings_percent);
-  }
-}
-
-ContentLengthList DataReductionProxySettings::GetDailyContentLengths(
-    const char* pref_name) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-  return data_reduction_proxy_service_->compression_stats()
-      ->GetDailyContentLengths(pref_name);
-}
-
-void DataReductionProxySettings::GetContentLengths(
-    unsigned int days,
-    int64_t* original_content_length,
-    int64_t* received_content_length,
-    int64_t* last_update_time) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(data_reduction_proxy_service_->compression_stats());
-
-  data_reduction_proxy_service_->compression_stats()->GetContentLengths(
-      days, original_content_length, received_content_length, last_update_time);
 }
 
 }  // namespace data_reduction_proxy

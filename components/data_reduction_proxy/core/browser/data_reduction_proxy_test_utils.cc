@@ -14,10 +14,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/browser/data_store.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -48,75 +46,25 @@ enum TestContextOptions {
 namespace data_reduction_proxy {
 
 MockDataReductionProxyService::MockDataReductionProxyService(
-    data_use_measurement::DataUseMeasurement* data_use_measurement,
     DataReductionProxySettings* settings,
     PrefService* prefs,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner)
-    : DataReductionProxyService(settings,
-                                prefs,
-                                std::make_unique<TestDataStore>(),
-                                data_use_measurement,
-                                task_runner,
-                                base::TimeDelta()) {}
+    : DataReductionProxyService(settings, prefs) {}
 
 MockDataReductionProxyService::~MockDataReductionProxyService() {}
 
 TestDataReductionProxyService::TestDataReductionProxyService(
-    data_use_measurement::DataUseMeasurement* data_use_measurement,
     DataReductionProxySettings* settings,
     PrefService* prefs,
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner)
-    : DataReductionProxyService(settings,
-                                prefs,
-                                std::make_unique<TestDataStore>(),
-                                data_use_measurement,
-                                db_task_runner,
-                                base::TimeDelta()) {}
+    : DataReductionProxyService(settings, prefs) {}
 
 TestDataReductionProxyService::~TestDataReductionProxyService() {}
-
-TestDataStore::TestDataStore() {}
-
-TestDataStore::~TestDataStore() {}
-
-DataStore::Status TestDataStore::Get(base::StringPiece key,
-                                     std::string* value) {
-  auto value_iter = map_.find(std::string(key));
-  if (value_iter == map_.end())
-    return NOT_FOUND;
-
-  value->assign(value_iter->second);
-  return OK;
-}
-
-DataStore::Status TestDataStore::Put(
-    const std::map<std::string, std::string>& map) {
-  for (auto iter = map.begin(); iter != map.end(); ++iter)
-    map_[iter->first] = iter->second;
-
-  return OK;
-}
-
-DataStore::Status TestDataStore::Delete(base::StringPiece key) {
-  map_.erase(std::string(key));
-
-  return OK;
-}
-
-DataStore::Status TestDataStore::RecreateDB() {
-  map_.clear();
-
-  return OK;
-}
 
 DataReductionProxyTestContext::Builder::Builder()
     : use_mock_config_(false),
       use_mock_service_(false),
-      skip_settings_initialization_(false),
-      data_use_measurement_(
-          std::make_unique<data_use_measurement::DataUseMeasurement>(
-              nullptr,
-              network::TestNetworkConnectionTracker::GetInstance())) {}
+      skip_settings_initialization_(false) {}
 
 DataReductionProxyTestContext::Builder::~Builder() {}
 
@@ -174,19 +122,16 @@ DataReductionProxyTestContext::Builder::Build() {
   if (use_mock_service_) {
     test_context_flags |= USE_MOCK_SERVICE;
     service = std::make_unique<MockDataReductionProxyService>(
-        data_use_measurement_.get(), settings_.get(), pref_service.get(),
-        task_runner);
+        settings_.get(), pref_service.get(), task_runner);
   } else {
     service = std::make_unique<TestDataReductionProxyService>(
-        data_use_measurement_.get(), settings_.get(), pref_service.get(),
-        task_runner);
+        settings_.get(), pref_service.get(), task_runner);
   }
 
   std::unique_ptr<DataReductionProxyTestContext> test_context(
       new DataReductionProxyTestContext(
-          std::move(data_use_measurement_), task_runner,
-          std::move(pref_service), std::move(settings_), std::move(service),
-          test_context_flags));
+          task_runner, std::move(pref_service), std::move(settings_),
+          std::move(service), test_context_flags));
 
   if (!skip_settings_initialization_)
     test_context->InitSettingsWithoutCheck();
@@ -195,21 +140,16 @@ DataReductionProxyTestContext::Builder::Build() {
 }
 
 DataReductionProxyTestContext::DataReductionProxyTestContext(
-    std::unique_ptr<data_use_measurement::DataUseMeasurement>
-        data_use_measurement,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     std::unique_ptr<TestingPrefServiceSimple> simple_pref_service,
     std::unique_ptr<DataReductionProxySettings> settings,
     std::unique_ptr<DataReductionProxyService> service,
     unsigned int test_context_flags)
-    : data_use_measurement_(std::move(data_use_measurement)),
-      test_context_flags_(test_context_flags),
+    : test_context_flags_(test_context_flags),
       task_runner_(task_runner),
       simple_pref_service_(std::move(simple_pref_service)),
       settings_(std::move(settings)),
       service_(std::move(service)) {
-  DCHECK(data_use_measurement_);
-
   if (service_)
     data_reduction_proxy_service_ = service_.get();
   else

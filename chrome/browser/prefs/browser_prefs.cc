@@ -18,7 +18,6 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/component_updater_prefs.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -688,10 +687,6 @@ const char kStabilityIncompleteSessionEndCount[] =
 const char kStabilitySessionEndCompleted[] =
     "user_experience_metrics.stability.session_end_completed";
 
-// Deprecated 01/2022.
-constexpr char kHasSeenLiteModeInfoBar[] =
-    "litemode.https-image-compression.user-has-seen-infobar";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 12/2021.
 const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
@@ -720,6 +715,32 @@ const char kSearchGeolocationPreDisclosureMetricsRecorded[] =
 const char kSearchGeolocationPostDisclosureMetricsRecorded[] =
     "search_geolocation_post_disclosure_metrics_recorded";
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 01/2022.
+constexpr char kHasSeenLiteModeInfoBar[] =
+    "litemode.https-image-compression.user-has-seen-infobar";
+const char kDailyHttpContentLengthLastUpdateDate[] =
+    "data_reduction.last_update_date";
+const char kDailyHttpOriginalContentLength[] =
+    "data_reduction.daily_original_length";
+const char kDailyHttpReceivedContentLength[] =
+    "data_reduction.daily_received_length";
+const char kDataUsageReportingEnabled[] = "data_usage_reporting.enabled";
+const char kHttpReceivedContentLength[] = "http_received_content_length";
+const char kHttpOriginalContentLength[] = "http_original_content_length";
+const char kThisWeekNumber[] = "data_reduction.this_week_number";
+const char kThisWeekServicesDownstreamBackgroundKB[] =
+    "data_reduction.this_week_services_downstream_background_kb";
+const char kThisWeekServicesDownstreamForegroundKB[] =
+    "data_reduction.this_week_services_downstream_foreground_kb";
+const char kLastWeekServicesDownstreamBackgroundKB[] =
+    "data_reduction.last_week_services_downstream_background_kb";
+const char kLastWeekServicesDownstreamForegroundKB[] =
+    "data_reduction.last_week_services_downstream_foreground_kb";
+const char kThisWeekUserTrafficContentTypeDownstreamKB[] =
+    "data_reduction.this_week_user_traffic_contenttype_downstream_kb";
+const char kLastWeekUserTrafficContentTypeDownstreamKB[] =
+    "data_reduction.last_week_user_traffic_contenttype_downstream_kb";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -942,6 +963,25 @@ void RegisterProfilePrefsForMigration(
 #endif
 
   registry->RegisterBooleanPref(kHasSeenLiteModeInfoBar, false);
+  registry->RegisterInt64Pref(kDailyHttpContentLengthLastUpdateDate, 0L);
+  registry->RegisterListPref(kDailyHttpOriginalContentLength);
+  registry->RegisterListPref(kDailyHttpReceivedContentLength);
+  registry->RegisterBooleanPref(kDataUsageReportingEnabled, false);
+  registry->RegisterInt64Pref(kHttpReceivedContentLength, 0);
+  registry->RegisterInt64Pref(kHttpOriginalContentLength, 0);
+  registry->RegisterIntegerPref(kThisWeekNumber, 0);
+  registry->RegisterDictionaryPref(kThisWeekServicesDownstreamBackgroundKB,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kThisWeekServicesDownstreamForegroundKB,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kLastWeekServicesDownstreamBackgroundKB,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kLastWeekServicesDownstreamForegroundKB,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kThisWeekUserTrafficContentTypeDownstreamKB,
+                                   PrefRegistry::LOSSY_PREF);
+  registry->RegisterDictionaryPref(kLastWeekUserTrafficContentTypeDownstreamKB,
+                                   PrefRegistry::LOSSY_PREF);
 }
 
 }  // namespace
@@ -952,7 +992,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // keep this list alphabetized.
   browser_shutdown::RegisterPrefs(registry);
   data_reduction_proxy::RegisterPrefs(registry);
-  data_use_measurement::ChromeDataUseMeasurement::RegisterPrefs(registry);
   BrowserProcessImpl::RegisterPrefs(registry);
   ChromeContentBrowserClient::RegisterLocalStatePrefs(registry);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1832,9 +1871,20 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 01/2022.
   profile_prefs->ClearPref(kHasSeenLiteModeInfoBar);
-
-  // Added 01/2022.
   syncer::SyncTransportDataPrefs::MigrateInvalidationVersions(profile_prefs);
+  profile_prefs->ClearPref(kDailyHttpContentLengthLastUpdateDate);
+  profile_prefs->ClearPref(kDailyHttpOriginalContentLength);
+  profile_prefs->ClearPref(kDailyHttpReceivedContentLength);
+  profile_prefs->ClearPref(kDataUsageReportingEnabled);
+  profile_prefs->ClearPref(kHttpReceivedContentLength);
+  profile_prefs->ClearPref(kHttpOriginalContentLength);
+  profile_prefs->ClearPref(kThisWeekNumber);
+  profile_prefs->ClearPref(kThisWeekServicesDownstreamBackgroundKB);
+  profile_prefs->ClearPref(kThisWeekServicesDownstreamForegroundKB);
+  profile_prefs->ClearPref(kLastWeekServicesDownstreamBackgroundKB);
+  profile_prefs->ClearPref(kLastWeekServicesDownstreamForegroundKB);
+  profile_prefs->ClearPref(kThisWeekUserTrafficContentTypeDownstreamKB);
+  profile_prefs->ClearPref(kLastWeekUserTrafficContentTypeDownstreamKB);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

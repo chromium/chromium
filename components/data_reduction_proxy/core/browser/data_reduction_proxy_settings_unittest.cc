@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
@@ -45,70 +44,6 @@ class DataReductionProxySettingsTest
     test_context_->RunUntilIdle();
   }
 };
-
-TEST_F(DataReductionProxySettingsTest, TestResetDataReductionStatistics) {
-  int64_t original_content_length;
-  int64_t received_content_length;
-  int64_t last_update_time;
-  settings_->ResetDataReductionStatistics();
-  settings_->GetContentLengths(kNumDaysInHistory,
-                               &original_content_length,
-                               &received_content_length,
-                               &last_update_time);
-  EXPECT_EQ(0L, original_content_length);
-  EXPECT_EQ(0L, received_content_length);
-  EXPECT_EQ(last_update_time_.ToInternalValue(), last_update_time);
-}
-
-TEST_F(DataReductionProxySettingsTest, TestContentLengths) {
-  int64_t original_content_length;
-  int64_t received_content_length;
-  int64_t last_update_time;
-
-  // Request |kNumDaysInHistory| days.
-  settings_->GetContentLengths(kNumDaysInHistory,
-                               &original_content_length,
-                               &received_content_length,
-                               &last_update_time);
-  const unsigned int days = kNumDaysInHistory;
-  // Received content length history values are 0 to |kNumDaysInHistory - 1|.
-  int64_t expected_total_received_content_length = (days - 1L) * days / 2;
-  // Original content length history values are 0 to
-  // |2 * (kNumDaysInHistory - 1)|.
-  long expected_total_original_content_length = (days - 1L) * days;
-  EXPECT_EQ(expected_total_original_content_length, original_content_length);
-  EXPECT_EQ(expected_total_received_content_length, received_content_length);
-  EXPECT_EQ(last_update_time_.ToInternalValue(), last_update_time);
-
-  // Request |kNumDaysInHistory - 1| days.
-  settings_->GetContentLengths(kNumDaysInHistory - 1,
-                               &original_content_length,
-                               &received_content_length,
-                               &last_update_time);
-  expected_total_received_content_length -= (days - 1);
-  expected_total_original_content_length -= 2 * (days - 1);
-  EXPECT_EQ(expected_total_original_content_length, original_content_length);
-  EXPECT_EQ(expected_total_received_content_length, received_content_length);
-
-  // Request 0 days.
-  settings_->GetContentLengths(0,
-                               &original_content_length,
-                               &received_content_length,
-                               &last_update_time);
-  expected_total_received_content_length = 0;
-  expected_total_original_content_length = 0;
-  EXPECT_EQ(expected_total_original_content_length, original_content_length);
-  EXPECT_EQ(expected_total_received_content_length, received_content_length);
-
-  // Request 1 day. First day had 0 bytes so should be same as 0 days.
-  settings_->GetContentLengths(1,
-                               &original_content_length,
-                               &received_content_length,
-                               &last_update_time);
-  EXPECT_EQ(expected_total_original_content_length, original_content_length);
-  EXPECT_EQ(expected_total_received_content_length, received_content_length);
-}
-
 
 TEST(DataReductionProxySettingsStandaloneTest, TestIsProxyEnabledOrManaged) {
   base::test::SingleThreadTaskEnvironment task_environment{
@@ -328,20 +263,6 @@ TEST(DataReductionProxySettingsStandaloneTest,
   histogram_tester.ExpectTotalCount("DataReductionProxy.DaysSinceEnabled", 0);
   EXPECT_EQ(0, drp_test_context->pref_service()->GetInt64(
                    prefs::kDataReductionProxyLastEnabledTime));
-}
-
-TEST_F(DataReductionProxySettingsTest, TestGetDailyContentLengths) {
-  ContentLengthList result =
-      settings_->GetDailyContentLengths(prefs::kDailyHttpOriginalContentLength);
-
-  ASSERT_FALSE(result.empty());
-  ASSERT_EQ(kNumDaysInHistory, result.size());
-
-  for (size_t i = 0; i < kNumDaysInHistory; ++i) {
-    long expected_length =
-        static_cast<long>((kNumDaysInHistory - 1 - i) * 2);
-    ASSERT_EQ(expected_length, result[i]);
-  }
 }
 
 }  // namespace data_reduction_proxy

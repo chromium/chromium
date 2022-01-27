@@ -22,40 +22,12 @@ void RegisterSyncableProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
 
   registry->RegisterInt64Pref(prefs::kDataReductionProxyLastEnabledTime, 0L);
-
-  registry->RegisterBooleanPref(prefs::kDataUsageReportingEnabled, false);
-
-  registry->RegisterInt64Pref(prefs::kHttpReceivedContentLength, 0);
-  registry->RegisterInt64Pref(prefs::kHttpOriginalContentLength, 0);
-
-  registry->RegisterListPref(prefs::kDailyHttpOriginalContentLength);
-
-  registry->RegisterListPref(prefs::kDailyHttpReceivedContentLength);
-
-  registry->RegisterInt64Pref(prefs::kDailyHttpContentLengthLastUpdateDate, 0L);
-
-  registry->RegisterIntegerPref(prefs::kThisWeekNumber, 0);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekServicesDownstreamBackgroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekServicesDownstreamForegroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekServicesDownstreamBackgroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekServicesDownstreamForegroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekUserTrafficContentTypeDownstreamKB,
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
-      PrefRegistry::LOSSY_PREF);
 }
 
 void RegisterSimpleProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kDataReductionProxyWasEnabledBefore, false);
 
-  registry->RegisterBooleanPref(prefs::kDataUsageReportingEnabled, false);
   RegisterPrefs(registry);
 }
 
@@ -63,30 +35,6 @@ void RegisterSimpleProfilePrefs(PrefRegistrySimple* registry) {
 // |list_pref_map_| in Init() of DataReductionProxyCompressionStats.
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kDataReductionProxyLastEnabledTime, 0L);
-  registry->RegisterInt64Pref(prefs::kHttpReceivedContentLength, 0);
-  registry->RegisterInt64Pref(
-      prefs::kHttpOriginalContentLength, 0);
-  registry->RegisterListPref(
-      prefs::kDailyHttpOriginalContentLength);
-  registry->RegisterListPref(prefs::kDailyHttpReceivedContentLength);
-  registry->RegisterInt64Pref(
-      prefs::kDailyHttpContentLengthLastUpdateDate, 0L);
-
-  registry->RegisterIntegerPref(prefs::kThisWeekNumber, 0);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekServicesDownstreamBackgroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekServicesDownstreamForegroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekServicesDownstreamBackgroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekServicesDownstreamForegroundKB, PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kThisWeekUserTrafficContentTypeDownstreamKB,
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kLastWeekUserTrafficContentTypeDownstreamKB,
-      PrefRegistry::LOSSY_PREF);
 }
 
 }  // namespace data_reduction_proxy

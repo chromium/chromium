@@ -134,7 +134,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/data_reduction_proxy/core/browser/data_store_impl.h"
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -1591,8 +1590,6 @@ void ProfileImpl::InitializeDataReductionProxy() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  std::unique_ptr<data_reduction_proxy::DataStore> store(
-      new data_reduction_proxy::DataStoreImpl(GetPath()));
   DataReductionProxyChromeSettingsFactory::GetForBrowserContext(this)
-      ->InitDataReductionProxySettings(this, std::move(store), db_task_runner);
+      ->InitDataReductionProxySettings(this, db_task_runner);
 }

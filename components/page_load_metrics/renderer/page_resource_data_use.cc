@@ -4,7 +4,6 @@
 
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -14,7 +13,6 @@ namespace page_load_metrics {
 
 PageResourceDataUse::PageResourceDataUse()
     : resource_id_(-1),
-      data_reduction_proxy_compression_ratio_estimate_(1.0),
       total_received_bytes_(0),
       last_update_bytes_(0),
       is_complete_(false),
@@ -37,8 +35,6 @@ void PageResourceDataUse::DidStartResponse(
     const network::mojom::URLResponseHead& response_head,
     network::mojom::RequestDestination request_destination) {
   resource_id_ = resource_id;
-  data_reduction_proxy_compression_ratio_estimate_ =
-      data_reduction_proxy::EstimateCompressionRatioFromHeaders(&response_head);
 
   proxy_used_ = !response_head.proxy_server.is_direct();
   mime_type_ = response_head.mime_type;
@@ -121,8 +117,6 @@ mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
   resource_data_update->received_data_length = total_received_bytes_;
   resource_data_update->delta_bytes = CalculateNewlyReceivedBytes();
   resource_data_update->is_complete = is_complete_;
-  resource_data_update->data_reduction_proxy_compression_ratio_estimate =
-      data_reduction_proxy_compression_ratio_estimate_;
   resource_data_update->reported_as_ad_resource = reported_as_ad_resource_;
   resource_data_update->is_main_frame_resource = is_main_frame_resource_;
   resource_data_update->mime_type = mime_type_;
