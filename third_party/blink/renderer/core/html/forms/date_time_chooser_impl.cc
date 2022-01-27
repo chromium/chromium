@@ -272,4 +272,8 @@ void DateTimeChooserImpl::DidClosePopup() {
   client_->DidEndChooser();
 }
 
+void DateTimeChooserImpl::AdjustSettings(Settings& popup_settings) {
+  AdjustSettingsFromOwnerColorScheme(popup_settings);
+}
+
 }  // namespace blink

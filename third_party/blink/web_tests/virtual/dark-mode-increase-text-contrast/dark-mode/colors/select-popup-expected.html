@@ -1,0 +1,25 @@
+<!doctype html>
+<meta name="color-scheme" content="dark">
+<script src="../../../../fast/forms/resources/picker-common.js"></script>
+<style>
+  select, option {
+    color: white;
+    background-color: #121212;
+  }
+</style>
+<select id="menu">
+  <option></option>
+  <option>OPTION1</option>
+  <!-- Not able to reproduce the effect of the text contrast effect in "normal"
+       rendering. Ideally OPTION2 should not have any styles in this
+       expectation. -->
+  <option style="color-scheme:light;color:black;background:white">OPTION2</option>
+  <option style="color:black;background:white">OPTION3</option>
+  <option style="color:black;background:white">OPTION4</option>
+</select>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    openPickerAppearanceOnly(document.getElementById("menu"), () => testRunner.notifyDone());
+  }
+</script>

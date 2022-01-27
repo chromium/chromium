@@ -47,6 +47,7 @@ class Locale;
 class Page;
 class PagePopup;
 class PagePopupController;
+class Settings;
 
 class CORE_EXPORT PagePopupClient {
  public:
@@ -93,9 +94,13 @@ class CORE_EXPORT PagePopupClient {
   // This is called when popup content or its owner's position changed.
   virtual void Update(bool force_update) {}
 
+  // Called when creating the popup to allow the popup implementation to adjust
+  // the settings used for the popup document.
+  virtual void AdjustSettings(Settings& popup_settings) {}
+
   virtual ~PagePopupClient() = default;
 
-  // Helper functions to be used in PagePopupClient::writeDocument().
+  // Helper functions to be used in PagePopupClient::WriteDocument().
   static void AddString(const String&, SharedBuffer*);
   static void AddJavaScriptString(const String&, SharedBuffer*);
   static void AddProperty(const char* name, const String& value, SharedBuffer*);
@@ -108,6 +113,9 @@ class CORE_EXPORT PagePopupClient {
                           SharedBuffer*);
   static void AddProperty(const char* name, const gfx::Rect&, SharedBuffer*);
   void AddLocalizedProperty(const char* name, int resource_id, SharedBuffer*);
+
+ protected:
+  void AdjustSettingsFromOwnerColorScheme(Settings& popup_settings);
 };
 
 inline void PagePopupClient::AddString(const String& str, SharedBuffer* data) {

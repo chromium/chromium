@@ -69,6 +69,7 @@ class CORE_EXPORT DateTimeChooserImpl final : public DateTimeChooser,
   Element& OwnerElement() override;
   ChromeClient& GetChromeClient() override;
   void DidClosePopup() override;
+  void AdjustSettings(Settings& popup_settings) override;
 
   Member<LocalFrame> frame_;
   Member<DateTimeChooserClient> client_;

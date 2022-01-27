@@ -285,4 +285,8 @@ void ColorChooserPopupUIController::OpenSystemColorChooser() {
   LOG(INFO) << "OpenSystemColorChooser() Called";
 }
 
+void ColorChooserPopupUIController::AdjustSettings(Settings& popup_settings) {
+  AdjustSettingsFromOwnerColorScheme(popup_settings);
+}
+
 }  // namespace blink

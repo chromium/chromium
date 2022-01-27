@@ -346,30 +346,12 @@ void WebPagePopupImpl::Initialize(WebViewImpl* opener_web_view,
       main_settings.GetAvailablePointerTypes());
   page_->GetSettings().SetPrimaryPointerType(
       main_settings.GetPrimaryPointerType());
+  page_->GetSettings().SetPreferredColorScheme(
+      main_settings.GetPreferredColorScheme());
+  page_->GetSettings().SetForceDarkModeEnabled(
+      main_settings.GetForceDarkModeEnabled());
 
-  // The style can be out-of-date if e.g. a key event handler modified the
-  // OwnerElement()'s style before the default handler started opening the
-  // popup. If the key handler forced a style update the style may be up-to-date
-  // and null.
-  // Note that if there's a key event handler which changes the color-scheme
-  // between the key is pressed and the popup is opened, the color-scheme of the
-  // form element and its popup may not match.
-  // If we think it's important to have an up-to-date style here, we need to run
-  // an UpdateStyleAndLayoutTree() before opening the popup in the various
-  // default event handlers.
-  if (const auto* style = popup_client_->OwnerElement().GetComputedStyle()) {
-    // Avoid using dark color scheme stylesheet for popups when forced colors
-    // mode is active.
-    // TODO(iopopesc): move this to popup CSS when the FocedColors feature is
-    // enabled by default.
-    bool in_forced_colors_mode =
-        popup_client_->OwnerElement().GetDocument().InForcedColorsMode();
-    page_->GetSettings().SetPreferredColorScheme(
-        style->UsedColorScheme() == mojom::blink::ColorScheme::kDark &&
-                !in_forced_colors_mode
-            ? mojom::blink::PreferredColorScheme::kDark
-            : mojom::blink::PreferredColorScheme::kLight);
-  }
+  popup_client_->AdjustSettings(page_->GetSettings());
   popup_client_->CreatePagePopupController(*page_, *this);
 
   ProvideContextFeaturesTo(*page_, std::make_unique<PagePopupFeaturesClient>());

@@ -444,6 +444,7 @@ ListPicker.prototype._applyItemStyle = function(element, styleConfig) {
   style.color = styleConfig.color ? styleConfig.color : '';
   style.backgroundColor =
       styleConfig.backgroundColor ? styleConfig.backgroundColor : '';
+  style.colorScheme = styleConfig.colorScheme ? styleConfig.colorScheme : '';
   style.fontSize =
       styleConfig.fontSize !== undefined ? styleConfig.fontSize + 'px' : '';
   style.fontWeight = styleConfig.fontWeight ? styleConfig.fontWeight : '';
