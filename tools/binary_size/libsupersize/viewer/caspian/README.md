@@ -82,3 +82,16 @@ Make sure to:
    git pull origin main --tags
    ```
 2.  Update this README's Emscripten version above, then follow its steps.
+
+## Code Overview
+
+Caspian is a port of the Python implementation, and tries as much as possible to
+follow the same patterns and names as the Python. Keeping them as similar as
+possible makes it easier to keep them in sync.
+
+### Code Style
+
+Follow Chrome's C++ [styleguide] where possible. One notable exception is that
+Caspian does not use `//base` due to the current lack of WASM support in it.
+
+[styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md

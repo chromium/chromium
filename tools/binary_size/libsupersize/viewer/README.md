@@ -46,13 +46,19 @@ perform authenticated fetches, like `viewer.html` does.
 
 [see here]: https://docs.google.com/document/d/1qstcG9DxtwoohCnslvLs6Z7UfvO-dlkNi0s8PH-HYtI/edit?usp=sharing
 
-## Developer Overview
+## Code Overview
 
 The viewer has no server component beyond static file serving. `.size` files
 are parsed using WebAssembly (`caspian/` directory). The `.wasm` module runs
 within a Web Worker in order to not block the browser's UI thread. Node
 information is sent to the main page via JSON on-demand (when tree nodes
 are expanded).
+
+### Code Style
+
+Code should follow Chrome's [styleguide] where possible.
+
+[styleguide]: https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 
 ### static/index.html
 
