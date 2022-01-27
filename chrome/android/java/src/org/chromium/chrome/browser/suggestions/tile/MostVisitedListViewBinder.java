@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks;
+package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.chromium.chrome.browser.tasks.MostVisitedListProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
 
 import android.view.View;
 import android.view.ViewGroup;

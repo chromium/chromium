@@ -29,9 +29,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedListCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MvTilesLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.mv_tiles.MostVisitedTileNavigationDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -62,8 +65,12 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
+    private final Activity mActivity;
+    private final Supplier<Tab> mParentTabSupplier;
 
-    /** This flag should be reset once {@link mMostVisitedList#destroyMVTiles()} is called. */
+    /**
+     * This flag should be reset once {@link MostVisitedListCoordinator#destroyMVTiles} is called.
+     */
     private boolean mIsMVTilesInitialized;
 
     /** {@see TabManagementDelegate#createTasksSurface} */
@@ -82,6 +89,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView) {
+        mActivity = activity;
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
         mView.initialize(activityLifecycleDispatcher,
                 parentTabSupplier.hasValue() && parentTabSupplier.get().isIncognito(),
@@ -94,6 +102,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
+        mParentTabSupplier = parentTabSupplier;
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
@@ -130,8 +139,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
         if (hasMVTiles) {
             MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
-            mMostVisitedList = new MostVisitedListCoordinator(activity, mvTilesLayout,
-                    mPropertyModel, parentTabSupplier, snackbarManager, windowAndroid);
+            mMostVisitedList = new MostVisitedListCoordinator(
+                    activity, mvTilesLayout, mPropertyModel, snackbarManager, windowAndroid);
             mMostVisitedList.initialize();
         }
         if (hasQueryTiles) {
@@ -152,7 +161,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
         if (!mIsMVTilesInitialized && mMostVisitedList != null) {
-            mMostVisitedList.initWithNative();
+            mMostVisitedList.initWithNative(new MostVisitedTileNavigationDelegate(
+                    mActivity, Profile.getLastUsedRegularProfile(), mParentTabSupplier));
             mIsMVTilesInitialized = true;
         }
         mMediator.initialize();

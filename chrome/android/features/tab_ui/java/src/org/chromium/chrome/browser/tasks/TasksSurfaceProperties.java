@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.tasks;
 
-import static org.chromium.chrome.browser.tasks.MostVisitedListProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedListProperties.IS_VISIBLE;
 
 import android.text.TextWatcher;
 import android.view.View;

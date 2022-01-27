@@ -2,46 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks;
+package org.chromium.chrome.browser.suggestions.tile;
 
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
-import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
-import org.chromium.chrome.browser.suggestions.tile.Tile;
-import org.chromium.chrome.browser.suggestions.tile.TileGroup;
-import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
-import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
-import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,7 +33,7 @@ import java.util.List;
  *
  * TODO(mattsimmons): Move logic and view manipulation into the mediator/viewbinder. (and add tests)
  */
-class MostVisitedListCoordinator implements TileGroup.Observer {
+public class MostVisitedListCoordinator implements TileGroup.Observer {
     private static final String TAG = "TopSites";
     public static final String CONTEXT_MENU_USER_ACTION_PREFIX = "Suggestions";
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
@@ -60,10 +42,9 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
     // There's a limit of 12 in {@link MostVisitedSitesBridge#setObserver}.
     private static final int MAX_RESULTS = 12;
     private final Activity mActivity;
-    private WindowAndroid mWindowAndroid;
+    private final WindowAndroid mWindowAndroid;
     private final MvTilesLayout mMvTilesLayout;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final Supplier<Tab> mParentTabSupplier;
     private final SnackbarManager mSnackbarManager;
     private TileGroup mTileGroup;
     private TileGroup.Delegate mTileGroupDelegate;
@@ -76,14 +57,13 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
     private ImageFetcher mImageFetcher;
 
     public MostVisitedListCoordinator(Activity activity, MvTilesLayout mvTilesLayout,
-            PropertyModel propertyModel, Supplier<Tab> parentTabSupplier,
-            SnackbarManager snackbarManager, WindowAndroid windowAndroid) {
+            PropertyModel propertyModel, SnackbarManager snackbarManager,
+            WindowAndroid windowAndroid) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mMvTilesLayout = mvTilesLayout;
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, mMvTilesLayout, MostVisitedListViewBinder::bind);
-        mParentTabSupplier = parentTabSupplier;
         mSnackbarManager = snackbarManager;
     }
 
@@ -94,7 +74,6 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
         // pre-native.
         if (!mInitializationComplete
-                && ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)
                 && TabUiFeatureUtilities.supportInstantStart(
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity)) {
             try {
@@ -115,8 +94,9 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
      * Called before the TasksSurface is showing to initialize MV tiles.
      * {@link MostVisitedListCoordinator#destroyMVTiles()} is called after the TasksSurface hides.
      */
-    public void initWithNative() {
+    public void initWithNative(SuggestionsNavigationDelegate navigationDelegate) {
         Profile profile = Profile.getLastUsedRegularProfile();
+        mNavigationDelegate = navigationDelegate;
         mImageFetcher = new ImageFetcher(profile);
         if (mRenderer == null) {
             // This function is never called in incognito mode.
@@ -125,8 +105,6 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         } else {
             mRenderer.setImageFetcher(mImageFetcher);
         }
-        mNavigationDelegate = new MostVisitedTileNavigationDelegate(
-                mActivity, profile, null, null, null, mParentTabSupplier);
         mSuggestionsUiDelegate = new MostVisitedSuggestionsUiDelegate(
                 mNavigationDelegate, profile, mSnackbarManager);
         Runnable closeContextMenuCallback = mActivity::closeContextMenu;
@@ -186,74 +164,6 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         updateOfflineBadge(tile);
     }
 
-    private static class MostVisitedTileNavigationDelegate extends SuggestionsNavigationDelegate {
-        private Supplier<Tab> mParentTabSupplier;
-        private TabDelegate mTabDelegate;
-
-        public MostVisitedTileNavigationDelegate(Activity activity, Profile profile,
-                NativePageHost host, TabModelSelector tabModelSelector, Tab tab,
-                Supplier<Tab> parentTabSupplier) {
-            super(activity, profile, host, tabModelSelector, tab);
-            mParentTabSupplier = parentTabSupplier;
-            mTabDelegate = new TabDelegate(false);
-        }
-
-        @Override
-        public boolean isOpenInNewTabInGroupEnabled() {
-            return false;
-        }
-
-        /**
-         * Opens the suggestions page without recording metrics.
-         *
-         * @param windowOpenDisposition How to open (new window, current tab, etc).
-         * @param url The url to navigate to.
-         */
-        @Override
-        public void navigateToSuggestionUrl(
-                int windowOpenDisposition, String url, boolean inGroup) {
-            assert !inGroup;
-            switch (windowOpenDisposition) {
-                case WindowOpenDisposition.CURRENT_TAB:
-                case WindowOpenDisposition.NEW_BACKGROUND_TAB:
-                    ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
-                            new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
-                            windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                            /*incognito=*/null, mParentTabSupplier.get());
-                    SuggestionsMetrics.recordTileTapped();
-                    break;
-                case WindowOpenDisposition.OFF_THE_RECORD:
-                    ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(
-                            new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK),
-                            true /*incognito*/, mParentTabSupplier.get());
-                    break;
-                case WindowOpenDisposition.NEW_WINDOW:
-                    openUrlInNewWindow(new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK));
-                    break;
-                case WindowOpenDisposition.SAVE_TO_DISK:
-                    // TODO(crbug.com/1202321): Downloading toast is not shown maybe due to the
-                    // webContent is null for start surface.
-                    saveUrlForOffline(url);
-                    break;
-                default:
-                    assert false;
-            }
-        }
-
-        private void saveUrlForOffline(String url) {
-            // TODO(crbug.com/1193816): Namespace shouldn't be NTP_SUGGESTIONS_NAMESPACE since it's
-            // not on NTP.
-            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
-                    .savePageLater(url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
-                            true /* userRequested */);
-        }
-
-        private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {
-            mTabDelegate.createTabInOtherWindow(loadUrlParams, mActivity,
-                    mParentTabSupplier.get() == null ? -1 : mParentTabSupplier.get().getId());
-        }
-    }
-
     /** Called when the TasksSurface is hidden. */
     public void destroyMVTiles() {
         mMvTilesLayout.destroy();
@@ -284,8 +194,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    boolean isMVTilesCleanedUp() {
+    public boolean isMVTilesCleanedUp() {
         return mTileGroupDelegate == null && mTileGroup == null;
     }
 

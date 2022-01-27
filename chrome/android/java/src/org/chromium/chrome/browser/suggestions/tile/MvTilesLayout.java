@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks;
+package org.chromium.chrome.browser.suggestions.tile;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -14,8 +14,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
-import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 
 /**
