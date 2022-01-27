@@ -86,6 +86,7 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
+    ::testing::Test::SetUp();
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
@@ -105,6 +106,11 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
                                                   language_model_.get());
     manager_->GetLanguageState()->set_translation_declined(false);
     infobar_manager_ = std::make_unique<TestInfoBarManager>();
+  }
+
+  void TearDown() override {
+    infobar_manager_->ShutDown();
+    ::testing::Test::TearDown();
   }
 
   std::unique_ptr<TranslateInfoBarDelegate> ConstructInfoBarDelegate() {
