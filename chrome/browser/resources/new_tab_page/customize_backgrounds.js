@@ -158,7 +158,8 @@ class CustomizeBackgroundsElement extends mixinBehaviors
    */
   onImageClick_(e) {
     const image = this.$.imagesRepeat.itemForElement(e.target);
-    if (this.theme.isCustomBackground && this.theme.backgroundImage !== image) {
+    if (this.theme.isCustomBackground &&
+        this.theme.backgroundImage.url.url !== image.imageUrl.url) {
       this.pageHandler_.onCustomizeDialogAction(
           CustomizeDialogAction.kBackgroundsImageSelected);
     }

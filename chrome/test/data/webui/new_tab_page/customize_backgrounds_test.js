@@ -152,7 +152,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     assertStyle(customizeBackgrounds.$.images, 'display', 'none');
   });
 
-  test('select image', async () => {
+  test('select different image', async () => {
     const image = {
       attribution1: 'image_0',
       imageUrl: {url: 'https://example.com/image.png'},
@@ -162,6 +162,10 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
     }));
+    customizeBackgrounds.theme.isCustomBackground = true;
+    customizeBackgrounds.theme.backgroundImage = {
+      url: {url: 'https://example.com/notthesameimage.png'}
+    };
     customizeBackgrounds.selectedCollection = createCollection(0);
     await flushTasks();
     const element =
@@ -171,6 +175,30 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
     assertFalse(element.classList.contains('selected'));
     element.click();
     assertEquals(1, handler.getCallCount('setBackgroundImage'));
+    assertEquals(1, handler.getCallCount('onCustomizeDialogAction'));
+  });
+
+  test('select same image', async () => {
+    const image = {
+      attribution1: 'image_0',
+      imageUrl: {url: 'https://example.com/image.png'},
+      previewImageUrl: {url: 'https://example.com/image.png'},
+    };
+    const customizeBackgrounds = await createCustomizeBackgrounds();
+    handler.setResultFor('getBackgroundImages', Promise.resolve({
+      images: [image],
+    }));
+    customizeBackgrounds.theme.isCustomBackground = true;
+    customizeBackgrounds.theme.backgroundImage = {
+      url: {url: 'https://example.com/image.png'}
+    };
+    customizeBackgrounds.selectedCollection = createCollection(0);
+    await flushTasks();
+    const element =
+        customizeBackgrounds.shadowRoot.querySelector('#images .tile');
+    element.click();
+    assertEquals(1, handler.getCallCount('setBackgroundImage'));
+    assertEquals(0, handler.getCallCount('onCustomizeDialogAction'));
   });
 
   test('image selected by current theme', async () => {
