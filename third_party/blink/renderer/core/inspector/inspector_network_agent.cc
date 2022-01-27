@@ -1276,8 +1276,10 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
   if (bypass_service_worker_.Get())
     request.SetSkipServiceWorker(true);
 
-  if (attach_debug_stack_enabled_.Get()) {
-    DCHECK(!request.GetDevToolsStackId().has_value());
+  if (attach_debug_stack_enabled_.Get() &&
+      // Preserving existing stack id when cloning requests instead of
+      // overwriting
+      !request.GetDevToolsStackId().has_value()) {
     ExecutionContext* context = nullptr;
     if (worker_global_scope_) {
       context = worker_global_scope_.Get();
