@@ -4,7 +4,9 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('provisioningPageTitleText')]]</h1>
-    <div id="provisioningDeviceStatus">[[statusString_]]</div>
+    <div id="provisioningDeviceStatus" class="instructions">
+      [[statusString_]]
+    </div>
     <div>
       <cr-button id="retryProvisioningButton" class="cancel-button"
           on-click="onRetryProvsioningButtonClicked_"

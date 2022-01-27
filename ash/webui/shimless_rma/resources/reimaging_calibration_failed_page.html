@@ -4,7 +4,9 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('calibrationFailedTitleText')]]</h1>
-    <div>[[i18n('calibrationFailedInstructionsText')]]</div>
+    <div class="instructions">
+      [[i18n('calibrationFailedInstructionsText')]]
+    </div>
     <div>
       <cr-button id="retryCalibrationButton" class="cancel-button"
           on-click="onRetryCalibrationButtonClicked_"

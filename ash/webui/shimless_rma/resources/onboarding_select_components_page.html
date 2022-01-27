@@ -1,10 +1,14 @@
 <style include="cr-shared-style shimless-rma-shared">
+  #reworkFlowLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('selectComponentsTitleText')]]</h1>
-    <div>
+    <div class="instructions">
       <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
     </div>
   </div>

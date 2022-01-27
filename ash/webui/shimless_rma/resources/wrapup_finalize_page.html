@@ -4,7 +4,9 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('finalizePageTitleText')]]</h1>
-    <div id="finalizationMessage">[[finalizationMessage_]]</div>
+    <div id="finalizationMessage" class="instructions">
+      [[finalizationMessage_]]
+    </div>
     <div>
       <cr-button id="retryFinalizationButton" class="cancel-button"
           on-click="onRetryFinalizationButtonClicked_"

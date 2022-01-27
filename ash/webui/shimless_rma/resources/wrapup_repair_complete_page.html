@@ -1,4 +1,4 @@
-<style include="cr-shared-style shimless-rma-shared">
+<style include="cr-shared-style shimless-rma-shared shimless-fonts">
   cr-dialog::part(dialog) {
     width: 700px;
   }
@@ -21,12 +21,20 @@
   }
 
   .button-label {
-    color: black;
+    color: var(--shimless-button-label-text-color);
+    font-family: var(--shimless-button-label-font-family);
+    font-size: var(--shimless-button-label-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    line-height: var(--shimless-button-label-line-height);
     margin-bottom: 5px;
   }
 
   .button-description {
-    color: grey;
+    color: var(--shimless-instructions-text-color);
+    font-family: var(--shimless-instructions-font-family);
+    font-size: var(--shimless-instructions-font-size);
+    font-weight: var(--shimless-regular-font-weight);
+    line-height: var(--shimless-instructions-line-height);
   }
 
   .button-icon {
@@ -54,7 +62,9 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('repairCompletedTitleText')]]</h1>
-    <div>[[i18n('repairCompletedDescriptionText')]]</div>
+    <div class="instructions">
+      [[i18n('repairCompletedDescriptionText')]]
+    </div>
     <cr-button id="shutDownButton" on-click="onShutDownButtonClick_"
         disabled="[[allButtonsDisabled]]">
         [[i18n('repairCompleteShutDownButtonText')]]
@@ -134,7 +144,8 @@
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">
       [[i18n('rmaLogsCancelButtonText')]]
     </cr-button>
-    <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">
+    <cr-button id="rmaLogButton" class="text-button pill" 
+        on-click="onRmaLogButtonClick_">
       [[i18n('rmaLogsSaveToUsbButtonText')]]
     </cr-button>
   </div>

@@ -5,13 +5,13 @@
 <link rel="stylesheet" href="chrome://resources/cr_elements/md_select_css.html">
 
 <template>
-  <style include="cr-shared-style md-select">
+  <style include="cr-shared-style md-select shimless-fonts">
     html {
       background-color: var(--cros-bg-color);
     }
 
     .indented-description {
-      color: gray; /* TODO(joonbug): update cros color */
+      color: var(--shimless-instructions-text-color);
       padding: 0 0 0 48px; /* specify all to override */
     }
 
@@ -23,6 +23,29 @@
     .large-spinner {
       height: 300px;
       width: 300px;
+    }
+
+    h1 {
+      color: var(--shimless-title-text-color);
+      font-family: var(--shimless-title-font-family);
+      font-size: var(--shimless-title-font-size);
+      font-weight: var(--shimless-medium-font-weight);
+      line-height: var(--shimless-title-line-height);
+    }
+
+    .instructions {
+      color: var(--shimless-instructions-text-color);
+      font-family: var(--shimless-instructions-font-family);
+      font-size: var(--shimless-instructions-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-instructions-line-height);
+    }
+
+    cr-input {
+      font-family: var(--shimless-input-font-family);
+      font-size: var(--shimless-input-font-size);
+      font-weight: var(--shimless-regular-font-weight);
+      line-height: var(--shimless-input-line-height);
     }
   </style>
 </template>

@@ -37,6 +37,7 @@ polymer_element_files = [
   "reimaging_provisioning_page.js",
   "repair_component_chip.js",
   "shimless_rma.js",
+  "shimless_rma_fonts_css.js",
   "shimless_rma_shared_css.js",
   "splash_screen.js",
   "wrapup_finalize_page.js",

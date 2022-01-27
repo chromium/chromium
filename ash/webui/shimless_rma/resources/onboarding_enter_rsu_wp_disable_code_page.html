@@ -1,4 +1,4 @@
-<style include="cr-shared-style shimless-rma-shared">
+<style include="cr-shared-style shimless-rma-shared shimless-fonts">
   #dialogBody {
     overflow-wrap: anywhere;
   }
@@ -8,7 +8,11 @@
   }
 
   #inputValidationLabel {
-    color: var(--google-grey-600);
+    color: var(--shimless-hint-text-color);
+    font-family: var(--shimless-hint-font-family);
+    font-size: var(--shimless-hint-font-size);
+    font-weight: var(--shimless-medium-font-weight);
+    line-height: var(--shimless-hint-line-height);
   }
 
   :host([rsu-code-invalid_]) #inputValidationLabel {
@@ -22,15 +26,24 @@
   #inputContainer {
     width: 275px;
   }
+
+  #rsuCodeDialogLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
 
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('rsuCodePageTitleText')]]</h1>
-    <div>
+    <div class="instructions">
       <span inner-h-t-m-l="[[rsuInstructionsText_]]"></span>
     </div>
     <div id="inputContainer">
+      <div id="inputValidationLabel">
+        [[i18n('rsuCodeLabelText')]]
+        <span id="rsuCodeLengthLabel">[[rsuCodeLengthLabel_]]</span>
+      </div>
       <cr-input
           id="rsuCode"
           value="{{rsuCode_}}"
@@ -39,10 +52,6 @@
           auto-validate
           disabled="[[allButtonsDisabled]]">
       </cr-input>
-      <div id="inputValidationLabel">
-        [[i18n('rsuCodeLabelText')]]
-        <span id="rsuCodeLengthLabel">[[rsuCodeLengthLabel_]]</span>
-      </div>
     </div>
   </div>
   <div slot="body">

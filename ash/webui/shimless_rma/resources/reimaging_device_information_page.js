@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';

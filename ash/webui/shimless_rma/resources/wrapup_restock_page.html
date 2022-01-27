@@ -4,7 +4,7 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('restockTitleText')]]</h1>
-    <div>[[i18n('restockInstructionsText')]]</div>
+    <div class="instructions">[[i18n('restockInstructionsText')]]</div>
     <cr-button id="continue" on-click="onRestockContinueButtonClicked_"
         disabled="[[allButtonsDisabled]]">
       [[i18n('restockContinueButtonText')]]
