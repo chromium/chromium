@@ -668,6 +668,7 @@ public class VoiceRecognitionHandlerTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            setAudioCapturePref(true);
             mHandler.removeObserver(mObserver);
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
             mWindowAndroid.destroy();
