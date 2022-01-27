@@ -153,17 +153,17 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
 
   auto entries = std::make_unique<base::ListValue>();
   for (size_t i = 0; i != coverage_entries->GetList().size(); ++i) {
-    base::DictionaryValue* entry = nullptr;
-    CHECK(coverage_entries->GetDictionary(i, &entry));
+    base::Value& entry = coverage_entries->GetList()[i];
+    CHECK(entry.is_dict());
 
-    std::string* script_id = entry->FindStringKey("scriptId");
+    std::string* script_id = entry.FindStringKey("scriptId");
     CHECK(script_id);
     const auto it = script_id_map_.find(*script_id);
     if (it == script_id_map_.end())
       continue;
 
-    CHECK(entry->SetString("hash", it->second));
-    entries->Append(entry->CreateDeepCopy());
+    CHECK(entry.SetStringKey("hash", it->second));
+    entries->Append(entry.CreateDeepCopy());
   }
 
   std::string url = host->GetURL().spec();
