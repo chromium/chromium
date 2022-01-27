@@ -2869,4 +2869,11 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         return getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding)
                 - getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding);
     }
+
+    @Override
+    @VisibleForTesting
+    public boolean isAnimationRunningForTesting() {
+        return mUrlFocusChangeInProgress || mBrandColorTransitionActive
+                || mOptionalButtonAnimationRunning;
+    }
 }

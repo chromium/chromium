@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
+import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -56,6 +57,7 @@ public class OmniboxTestUtils {
     private final @NonNull AutocompleteCoordinator mAutocomplete;
     private final @NonNull UrlBar mUrlBar;
     private final @NonNull Instrumentation mInstrumentation;
+    private final @Nullable ToolbarLayout mToolbar;
 
     /**
      * Class describing individual suggestion, delivering access to broad range of information.
@@ -91,8 +93,10 @@ public class OmniboxTestUtils {
         mActivity = activity;
         if (activity instanceof SearchActivity) {
             mLocationBar = mActivity.findViewById(R.id.search_location_bar);
+            mToolbar = null;
         } else {
             mLocationBar = mActivity.findViewById(R.id.location_bar);
+            mToolbar = mActivity.findViewById(R.id.toolbar);
         }
         mAutocomplete = mLocationBar.getAutocompleteCoordinator();
         mUrlBar = mActivity.findViewById(R.id.url_bar);
@@ -107,12 +111,24 @@ public class OmniboxTestUtils {
     }
 
     /**
+     * Waits for all the animations to complete.
+     * Allows any preceding operation to kick off an animation.
+     */
+    public void waitAnimationsComplete() {
+        // Note: SearchActivity has no toolbar and no animations, but we still need to
+        // give keyboard a bit of time to pop up (requested with delay).
+        do {
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        } while (mToolbar != null && mToolbar.isAnimationRunningForTesting());
+    }
+
+    /**
      * Check that the Omnibox reaches the expected focus state.
      *
      * @param active Whether the Omnibox is expected to have focus or not.
      */
     public void checkFocus(boolean active) {
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        waitAnimationsComplete();
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     "unexpected Omnibox focus state", mUrlBar.hasFocus(), Matchers.is(active));
@@ -135,6 +151,7 @@ public class OmniboxTestUtils {
      * Request the Omnibox focus and wait for soft keyboard to show.
      */
     public void requestFocus() {
+        waitAnimationsComplete();
         // During early startup (before completion of its first onDraw), the UrlBar
         // is not focusable. Tests have to wait for that to happen before trying to focus it.
         CriteriaHelper.pollUiThread(() -> {
@@ -151,6 +168,7 @@ public class OmniboxTestUtils {
      * Expects the Omnibox to be focused before the call.
      */
     public void clearFocus() {
+        waitAnimationsComplete();
         sendKey(KeyEvent.KEYCODE_BACK);
         checkFocus(false);
     }

@@ -840,6 +840,14 @@ public abstract class ToolbarLayout
     }
 
     /**
+     * Returns whether there are any ongoing animations.
+     */
+    @VisibleForTesting
+    public boolean isAnimationRunningForTesting() {
+        return false;
+    }
+
+    /**
      * Sets the toolbar hairline color, if the toolbar has a hairline below it.
      * @param toolbarColor The toolbar color to base the hairline color on.
      */
