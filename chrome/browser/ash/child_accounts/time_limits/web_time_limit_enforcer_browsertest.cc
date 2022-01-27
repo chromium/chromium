@@ -429,7 +429,14 @@ IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, WebContentTitleSet) {
   EXPECT_EQ(web_contents->GetTitle(), title);
 }
 
-IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest, EnsureQueryIsCleared) {
+// TODO(crbug.com/1291093): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EnsureQueryIsCleared DISABLED_EnsureQueryIsCleared
+#else
+#define MAYBE_EnsureQueryIsCleared EnsureQueryIsCleared
+#endif
+IN_PROC_BROWSER_TEST_F(WebTimeLimitEnforcerThrottleTest,
+                       MAYBE_EnsureQueryIsCleared) {
   AllowlistUrlRegx(kExampleHost);
   BlockWeb();
 
