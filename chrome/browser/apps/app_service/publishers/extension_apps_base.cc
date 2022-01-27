@@ -193,6 +193,7 @@ void ExtensionAppsBase::SetShowInFields(const extensions::Extension* extension,
   app.show_in_shelf = show;
   app.show_in_search = show;
   app.show_in_management = show;
+  app.handles_intents = show;
 }
 
 void ExtensionAppsBase::SetShowInFields(

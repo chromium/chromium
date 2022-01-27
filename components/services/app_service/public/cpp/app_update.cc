@@ -212,6 +212,7 @@ void AppUpdate::Merge(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(show_in_shelf);
   SET_OPTIONAL_VALUE(show_in_search);
   SET_OPTIONAL_VALUE(show_in_management);
+  SET_OPTIONAL_VALUE(handles_intents);
 
   // When adding new fields to the App type, this function should also be
   // updated.
@@ -755,6 +756,10 @@ apps::mojom::OptionalBool AppUpdate::HandlesIntents() const {
     return mojom_state_->handles_intents;
   }
   return apps::mojom::OptionalBool::kUnknown;
+}
+
+absl::optional<bool> AppUpdate::GetHandlesIntents() const {
+  GET_VALUE_WITH_FALLBACK(handles_intents, absl::nullopt)
 }
 
 bool AppUpdate::HandlesIntentsChanged() const {

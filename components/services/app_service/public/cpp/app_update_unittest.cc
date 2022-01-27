@@ -93,6 +93,8 @@ class AppUpdateTest : public testing::Test {
 
   absl::optional<bool> expect_show_in_management_;
 
+  absl::optional<bool> expect_handles_intents_;
+
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
 
   void CheckExpects(const AppUpdate& u) {
@@ -144,6 +146,8 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_show_in_management_, u.GetShowInManagement());
 
+    EXPECT_EQ(expect_handles_intents_, u.GetHandlesIntents());
+
     EXPECT_EQ(account_id_, u.AccountId());
   }
 
@@ -175,6 +179,7 @@ class AppUpdateTest : public testing::Test {
     expect_show_in_shelf_ = absl::nullopt;
     expect_show_in_search_ = absl::nullopt;
     expect_show_in_management_ = absl::nullopt;
+    expect_handles_intents_ = absl::nullopt;
     CheckExpects(u);
 
     if (delta) {
@@ -618,6 +623,26 @@ class AppUpdateTest : public testing::Test {
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_show_in_management_, state->show_in_management);
+      CheckExpects(u);
+    }
+
+    // HandlesIntents tests.
+
+    if (state) {
+      state->handles_intents = false;
+      expect_handles_intents_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->handles_intents = true;
+      expect_handles_intents_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_handles_intents_, state->handles_intents);
       CheckExpects(u);
     }
   }

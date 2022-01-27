@@ -78,6 +78,7 @@ void SetAppAllowed(bool allowed, apps::App& app) {
   app.show_in_shelf = allowed;
   app.show_in_search = allowed;
   app.show_in_management = allowed;
+  app.handles_intents = allowed;
 }
 
 std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,

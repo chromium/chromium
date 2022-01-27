@@ -1567,6 +1567,8 @@ std::unique_ptr<App> ArcApps::CreateApp(
     app->show_in_management = show;
   }
 
+  app->handles_intents = show;
+
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
 }

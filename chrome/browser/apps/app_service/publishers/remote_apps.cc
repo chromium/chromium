@@ -72,6 +72,7 @@ std::unique_ptr<App> RemoteApps::CreateApp(
   app->show_in_management = false;
   app->show_in_search = true;
   app->show_in_shelf = false;
+  app->handles_intents = true;
   return app;
 }
 

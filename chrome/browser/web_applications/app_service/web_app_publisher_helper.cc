@@ -316,6 +316,8 @@ void WebAppPublisherHelper::SetWebAppShowInFields(const WebApp* web_app,
     app.show_in_shelf = app.show_in_search =
         chromeos_data.show_in_search && should_show_app;
     app.show_in_management = chromeos_data.show_in_management;
+    app.handles_intents =
+        chromeos_data.handles_file_open_intents ? true : app.show_in_launcher;
     return;
   }
 
@@ -324,6 +326,7 @@ void WebAppPublisherHelper::SetWebAppShowInFields(const WebApp* web_app,
   app.show_in_shelf = true;
   app.show_in_search = true;
   app.show_in_management = true;
+  app.handles_intents = true;
 }
 
 void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,

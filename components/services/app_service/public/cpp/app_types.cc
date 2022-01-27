@@ -40,6 +40,7 @@ std::unique_ptr<App> App::Clone() const {
   app->show_in_shelf = show_in_shelf;
   app->show_in_search = show_in_search;
   app->show_in_management = show_in_management;
+  app->handles_intents = handles_intents;
 
   return app;
 }
@@ -227,6 +228,7 @@ std::unique_ptr<App> ConvertMojomAppToApp(
   app->show_in_shelf = GetOptionalBool(mojom_app->show_in_shelf);
   app->show_in_search = GetOptionalBool(mojom_app->show_in_search);
   app->show_in_management = GetOptionalBool(mojom_app->show_in_management);
+  app->handles_intents = GetOptionalBool(mojom_app->handles_intents);
 
   return app;
 }

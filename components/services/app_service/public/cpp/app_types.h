@@ -156,6 +156,10 @@ struct COMPONENT_EXPORT(APP_TYPES) App {
   absl::optional<bool> show_in_search;
   absl::optional<bool> show_in_management;
 
+  // True if the app is able to handle intents and should be shown in intent
+  // surfaces.
+  absl::optional<bool> handles_intents;
+
   // TODO(crbug.com/1253250): Add other App struct fields.
 
   // When adding new fields to the App type, the `Clone` function and the

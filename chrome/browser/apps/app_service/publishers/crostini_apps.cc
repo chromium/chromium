@@ -342,6 +342,7 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   app->show_in_launcher = crostini_enabled_;
   app->show_in_shelf = crostini_enabled_;
   app->show_in_search = true;
+  app->handles_intents = crostini_enabled_;
   AppPublisher::Publish(std::move(app));
 }
 
