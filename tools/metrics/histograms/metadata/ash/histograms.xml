@@ -2498,8 +2498,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
-    expires_after="2021-01-26">
-  <owner>anasalazar@google.com</owner>
+    expires_after="2022-01-24">
+  <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
     Tracks the number of menu items that are enabled in a shelf item's secondary
@@ -2508,8 +2508,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.SelectedMenuItemIndex" units="Index"
-    expires_after="2021-01-26">
-  <owner>anasalazar@google.com</owner>
+    expires_after="2022-01-24">
+  <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
     Tracks the index of the selected menu item in a shelf item's secondary menu.
@@ -2533,7 +2533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Shelf.NumberOfItems" units="Icons"
     expires_after="2022-04-24">
-  <owner>anasalazar@google.com</owner>
+  <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
     The number of icons in the shelf, not including the App Launcher icon. This
@@ -2542,8 +2542,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfPinnedItems" units="Icons"
-    expires_after="2022-02-20">
-  <owner>anasalazar@google.com</owner>
+    expires_after="2023-01-24">
+  <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
     The number of pinned icons in the shelf, not including the App Launcher
@@ -2552,8 +2552,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.NumberOfUnpinnedItems" units="Icons"
-    expires_after="2022-02-06">
-  <owner>anasalazar@google.com</owner>
+    expires_after="2023-01-24">
+  <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
     The number of unpinned icons in the shelf. This metric is recorded every 30
