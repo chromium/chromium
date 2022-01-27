@@ -413,6 +413,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   };
   ASSERT_TRUE(trigger_subframe_tab_switch());
 
+  // If TabSwitchMetrics2 is enabled, both Browser.Tabs.TotalSwitchDuration.*
+  // and Browser.Tabs.TotalSwitchDuration2.* will be logged.
+  const size_t expected_histogram_count =
+      base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2) ? 2 : 1;
+
   bool got_incomplete_tab_switch = false;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   do {
@@ -454,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
         histogram_tester
                 .GetTotalCountsForPrefix(
                     "Browser.Tabs.TotalIncompleteSwitchDuration")
-                .size() == 1) {
+                .size() == expected_histogram_count) {
       LOG(ERROR) << "Incomplete tab switch - try again.";
       got_incomplete_tab_switch = true;
       ASSERT_TRUE(trigger_subframe_tab_switch());
@@ -464,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // single TotalSwitchDuration histogram to be logged.
   } while (histogram_tester
                .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
-               .size() != 1);
+               .size() != expected_histogram_count);
 }
 
 // Auto-resize is only implemented for Ash and GuestViews. So we need to inject
