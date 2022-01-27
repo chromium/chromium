@@ -33,8 +33,7 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
       const NGTableTypes::Columns& column_constraints,
       LayoutUnit undistributable_space,
       bool is_fixed_layout,
-      bool is_layout_pass,
-      bool skip_collapsed_columns);
+      bool is_layout_pass);
 
   static void DistributeColspanCellsToColumns(
       const NGTableTypes::ColspanCells& colspan_cells,

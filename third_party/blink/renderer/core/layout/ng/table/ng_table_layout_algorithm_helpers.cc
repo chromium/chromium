@@ -893,8 +893,7 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
     const NGTableTypes::Columns& column_constraints,
     LayoutUnit undistributable_space,
     bool is_fixed_layout,
-    bool is_layout_pass,
-    bool skip_collapsed_columns) {
+    bool is_layout_pass) {
   MinMaxSizes min_max;
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-width
   // Compute standard GRID_MIN/GRID_MAX. They are sum of column_constraints.
@@ -919,8 +918,6 @@ MinMaxSizes NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
   LayoutUnit non_percent_max_size_sum;
   float percent_sum = 0;
   for (const NGTableTypes::Column& column : column_constraints.data) {
-    if (skip_collapsed_columns && column.is_collapsed)
-      continue;
     if (column.min_inline_size) {
       // In fixed layout, constrained cells minimum inline size is their
       // maximum.

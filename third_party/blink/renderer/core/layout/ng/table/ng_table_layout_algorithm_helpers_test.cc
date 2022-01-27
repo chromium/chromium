@@ -194,7 +194,6 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   LayoutUnit undistributable_space;
   bool is_fixed_layout = false;
   bool is_layout_pass = true;
-  bool skip_collapsed_columns = false;
 
   // No percentages, just sums up min/max.
   column_constraints->data.push_back(MakeColumn(10, 100));
@@ -203,7 +202,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
 
   MinMaxSizes minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(60));
   EXPECT_EQ(minmax.max_size, LayoutUnit(600));
 
@@ -215,14 +214,14 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 10));
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(990));
 
   is_layout_pass = false;
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(119));
 
@@ -235,7 +234,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
   column_constraints->data.push_back(MakeColumn(10, 800));
   minmax = NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
       node, *column_constraints, undistributable_space, is_fixed_layout,
-      is_layout_pass, skip_collapsed_columns);
+      is_layout_pass);
   EXPECT_EQ(minmax.min_size, LayoutUnit(30));
   EXPECT_EQ(minmax.max_size, LayoutUnit(1000));
 }

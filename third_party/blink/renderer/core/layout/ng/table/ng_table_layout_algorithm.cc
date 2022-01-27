@@ -166,8 +166,7 @@ LayoutUnit ComputeAssignableTableInlineSize(
   const MinMaxSizes grid_min_max =
       NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
           table, column_constraints, undistributable_space, is_fixed_layout,
-          /* is_layout_pass */ true,
-          /* skip_collapsed_columns */ false);
+          /* is_layout_pass */ true);
 
   // Standard: "used width of the table".
   LayoutUnit used_table_inline_size = ComputeUsedInlineSizeForTableFragment(
@@ -594,8 +593,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
   const MinMaxSizes grid_min_max =
       NGTableAlgorithmHelpers::ComputeGridInlineMinMax(
           Node(), *column_constraints, undistributable_space, is_fixed_layout,
-          /* is_layout_pass */ false,
-          /* skip_collapsed_columns */ false);
+          /* is_layout_pass */ false);
 
   MinMaxSizes min_max{
       std::max(grid_min_max.min_size, caption_constraint.min_size),
