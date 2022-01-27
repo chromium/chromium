@@ -397,25 +397,11 @@ TEST_F(UmaPageLoadMetricsObserverTest, FailedProvisionalLoad) {
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramLoad, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstImagePaint, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFailedProvisionalLoad, 1);
 
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDuration, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDurationNoCommit, 1);
-}
-
-TEST_F(UmaPageLoadMetricsObserverTest, FailedBackgroundProvisionalLoad) {
-  // Test that failed provisional event does not get logged in the
-  // histogram if it happened in the background
-  GURL url(kDefaultTestUrl);
-  web_contents()->WasHidden();
-  content::NavigationSimulator::NavigateAndFailFromDocument(
-      url, net::ERR_TIMED_OUT, main_rfh());
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFailedProvisionalLoad, 0);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, Reload) {

@@ -273,9 +273,6 @@ const char kHistogramLoadTypeParseStartNewNavigation[] =
 const char kHistogramFirstForeground[] =
     "PageLoad.PageTiming.NavigationToFirstForeground";
 
-const char kHistogramFailedProvisionalLoad[] =
-    "PageLoad.PageTiming.NavigationToFailedProvisionalLoad";
-
 const char kHistogramUserGestureNavigationToForwardBack[] =
     "PageLoad.PageTiming.ForegroundDuration.PageEndReason."
     "ForwardBackNavigation.UserGesture";
@@ -823,17 +820,6 @@ UmaPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 
 void UmaPageLoadMetricsObserver::OnFailedProvisionalLoad(
     const page_load_metrics::FailedProvisionalLoadInfo& failed_load_info) {
-  // Only handle actual failures; provisional loads that failed due to another
-  // committed load or due to user action are recorded in
-  // AbortsPageLoadMetricsObserver.
-  if (failed_load_info.error != net::OK &&
-      failed_load_info.error != net::ERR_ABORTED) {
-    if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
-            failed_load_info.time_to_failed_provisional_load, GetDelegate())) {
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramFailedProvisionalLoad,
-                          failed_load_info.time_to_failed_provisional_load);
-    }
-  }
   // Provide an empty PageLoadTiming, since we don't have any timing metrics
   // for failed provisional loads.
   RecordForegroundDurationHistograms(page_load_metrics::mojom::PageLoadTiming(),

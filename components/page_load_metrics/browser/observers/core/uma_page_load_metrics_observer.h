@@ -77,8 +77,6 @@ extern const char kHistogramLoadTypeParseStartReload[];
 extern const char kHistogramLoadTypeParseStartForwardBack[];
 extern const char kHistogramLoadTypeParseStartNewNavigation[];
 
-extern const char kHistogramFailedProvisionalLoad[];
-
 extern const char kHistogramUserGestureNavigationToForwardBack[];
 
 extern const char kHistogramPageTimingForegroundDuration[];

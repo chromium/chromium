@@ -3646,7 +3646,6 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   PageDismissalScope in_page_dismissal;
   auto& before_unload_event = *MakeGarbageCollected<BeforeUnloadEvent>();
   before_unload_event.initEvent(event_type_names::kBeforeunload, false, true);
-  const base::TimeTicks beforeunload_event_start = base::TimeTicks::Now();
 
   {
     // We want to avoid progressing to kBeforeUnloadEventHandled if the page
@@ -3660,12 +3659,6 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
     dom_window_->DispatchEvent(before_unload_event, this);
   }
 
-  const base::TimeTicks beforeunload_event_end = base::TimeTicks::Now();
-  DEFINE_STATIC_LOCAL(
-      CustomCountHistogram, beforeunload_histogram,
-      ("DocumentEventTiming.BeforeUnloadDuration", 0, 10000000, 50));
-  beforeunload_histogram.CountMicroseconds(beforeunload_event_end -
-                                           beforeunload_event_start);
   if (!before_unload_event.defaultPrevented())
     DefaultEventHandler(before_unload_event);
 

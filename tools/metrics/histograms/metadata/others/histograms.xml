@@ -5054,23 +5054,8 @@ chromium-metrics-reviews@google.com.
   <owner>sullivan@chromium.org</owner>
   <summary>
     Milliseconds spent in beforeunload dialog. Does not include time to process
-    beforeunload event in JavaScript (see
-    DocumentEventTiming.BeforeUnloadDuration). Recorded immediately after
-    closing dialog, upon user confirmation to navigate away from the page.
-  </summary>
-</histogram>
-
-<histogram name="DocumentEventTiming.BeforeUnloadDuration" units="microseconds"
-    expires_after="M77">
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Microseconds spent in beforeunload.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    beforeunload event in JavaScript. Recorded immediately after closing dialog,
+    upon user confirmation to navigate away from the page.
   </summary>
 </histogram>
 
