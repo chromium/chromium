@@ -127,7 +127,28 @@
         },
         "prefs": {
           "browser.default_browser_setting_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultBrowserSettingEnabled": false
+        },
+        "prefs": {
+          "browser.default_browser_setting_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "browser.default_browser_setting_enabled": {
+            "location": "local_state",
+            "default_value": false
           }
         }
       }
@@ -1180,11 +1201,34 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "native_notifications.allowed": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "AllowNativeNotifications": true
         },
         "prefs": {
-          "native_notifications.allowed": {}
+          "native_notifications.allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowNativeNotifications": false
+        },
+        "prefs": {
+          "native_notifications.allowed": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
@@ -1195,11 +1239,34 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "system_notifications.allowed": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "AllowSystemNotifications": true
         },
         "prefs": {
-          "system_notifications.allowed": {}
+          "system_notifications.allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowSystemNotifications": false
+        },
+        "prefs": {
+          "system_notifications.allowed": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
@@ -1976,11 +2043,34 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "plugins.always_open_pdf_externally": {
+            "location": "user_profile",
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "AlwaysOpenPdfExternally": true
         },
         "prefs": {
-          "plugins.always_open_pdf_externally": {}
+          "plugins.always_open_pdf_externally": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AlwaysOpenPdfExternally": false
+        },
+        "prefs": {
+          "plugins.always_open_pdf_externally": {
+            "location": "user_profile",
+            "value": false
+          }
         }
       }
     ]
@@ -5988,9 +6078,28 @@
         },
         "prefs": {
           "select_file_dialogs.allowed": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           },
-          "download.prompt_for_download": {}
+          "download.prompt_for_download": {
+            "check_for_recommended": false,
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowFileSelectionDialogs": true
+        },
+        "prefs": {
+          "select_file_dialogs.allowed": {
+            "location": "local_state",
+            "value": true
+          },
+          "download.prompt_for_download": {
+            "check_for_recommended": false,
+            "default_value": false
+          }
         }
       }
     ]
