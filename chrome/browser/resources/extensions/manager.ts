@@ -675,4 +675,10 @@ class ExtensionsManagerElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-manager': ExtensionsManagerElement;
+  }
+}
+
 customElements.define(ExtensionsManagerElement.is, ExtensionsManagerElement);

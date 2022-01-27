@@ -75,7 +75,7 @@ function getErrorSeverityText_(
   return warn;
 }
 
-interface ExtensionsErrorPageElement {
+export interface ExtensionsErrorPageElement {
   $: {
     closeButton: HTMLElement,
   };
@@ -83,7 +83,7 @@ interface ExtensionsErrorPageElement {
 
 const ExtensionsErrorPageElementBase = CrContainerShadowMixin(PolymerElement);
 
-class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
+export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {
     return 'extensions-error-page';
   }
@@ -382,6 +382,12 @@ class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-error-page': ExtensionsErrorPageElement;
   }
 }
 

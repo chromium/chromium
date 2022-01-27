@@ -5,15 +5,15 @@
 import 'chrome://extensions/extensions.js';
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
-import {eventToPromise, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {findMatches} from './test_util.js';
 
 /** @fileoverview Suite of tests for the extensions error console. */
 suite('CrExtensionsErrorConsoleTest', function() {
-  const STACK_ERRORS = 'li';
-  const ACTIVE_ERROR_IN_STACK = 'li[tabindex="0"]';
+  const STACK_ERRORS: string = 'li';
+  const ACTIVE_ERROR_IN_STACK: string = 'li[tabindex="0"]';
 
   // Initialize an extension activity log item before each test.
   setup(function() {

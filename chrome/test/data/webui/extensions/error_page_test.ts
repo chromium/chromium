@@ -5,30 +5,39 @@
 /** @fileoverview Suite of tests for extensions-detail-view. */
 import 'chrome://extensions/extensions.js';
 
+import {ErrorPageDelegate, ExtensionsErrorPageElement} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {ClickMock, createExtensionInfo} from './test_util.js';
 
-window.extension_error_page_tests = {};
-extension_error_page_tests.suiteName = 'ExtensionErrorPageTest';
-/** @enum {string} */
-extension_error_page_tests.TestNames = {
-  Layout: 'layout',
-  CodeSection: 'code section',
-  ErrorSelection: 'error selection',
+const extension_error_page_tests = {
+  suiteName: 'ExtensionErrorPageTest',
+  TestNames: {
+    Layout: 'layout',
+    CodeSection: 'code section',
+    ErrorSelection: 'error selection',
+  },
 };
 
-/** @implements {ErrorPageDelegate} */
-class MockErrorPageDelegate extends ClickMock {
-  /** @override */
-  deleteErrors(extensionId, errorIds, type) {}
+Object.assign(window, {extension_error_page_tests: extension_error_page_tests});
 
-  /** @override */
-  requestFileSource(args) {
+class MockErrorPageDelegate extends ClickMock implements ErrorPageDelegate {
+  requestFileSourceArgs: chrome.developerPrivate.RequestFileSourceProperties|
+      undefined;
+  requestFileSourceResolver:
+      PromiseResolver<chrome.developerPrivate.RequestFileSourceResponse> =
+          new PromiseResolver();
+
+  deleteErrors(
+      _extensionId: string, _errorIds?: number[],
+      _type?: chrome.developerPrivate.ErrorType) {}
+
+  requestFileSource(args: chrome.developerPrivate.RequestFileSourceProperties) {
     this.requestFileSourceArgs = args;
     this.requestFileSourceResolver = new PromiseResolver();
     return this.requestFileSourceResolver.promise;
@@ -36,19 +45,17 @@ class MockErrorPageDelegate extends ClickMock {
 }
 
 suite(extension_error_page_tests.suiteName, function() {
-  /** @type {chrome.developerPrivate.ExtensionInfo} */
-  let extensionData;
+  let extensionData: chrome.developerPrivate.ExtensionInfo;
 
-  /** @type {ExtensionsErrorPageElement} */
-  let errorPage;
+  let errorPage: ExtensionsErrorPageElement;
 
-  /** @type {MockErrorPageDelegate} */
-  let mockDelegate;
+  let mockDelegate: MockErrorPageDelegate;
 
-  const extensionId = 'a'.repeat(32);
+  const extensionId: string = 'a'.repeat(32);
 
   // Common data for runtime errors.
   const runtimeErrorBase = {
+    occurrences: 1,
     type: chrome.developerPrivate.ErrorType.RUNTIME,
     extensionId: extensionId,
     fromIncognito: false,
@@ -66,9 +73,14 @@ suite(extension_error_page_tests.suiteName, function() {
     document.body.innerHTML = '';
     const runtimeError = Object.assign(
         {
+          contextUrl: 'Unknown',
           source: 'chrome-extension://' + extensionId + '/source.html',
           message: 'message',
+          renderProcessId: 0,
+          renderViewId: 0,
+          canInspect: false,
           id: 1,
+          stackTrace: [],
           severity: chrome.developerPrivate.ErrorLevel.ERROR,
         },
         runtimeErrorBase);
@@ -87,16 +99,18 @@ suite(extension_error_page_tests.suiteName, function() {
     flush();
 
     const testIsVisible = isChildVisible.bind(null, errorPage);
-    expectTrue(testIsVisible('#closeButton'));
-    expectTrue(testIsVisible('#heading'));
-    expectTrue(testIsVisible('#errorsList'));
+    assertTrue(testIsVisible('#closeButton'));
+    assertTrue(testIsVisible('#heading'));
+    assertTrue(testIsVisible('#errorsList'));
 
-    let errorElements = errorPage.shadowRoot.querySelectorAll('.error-item');
-    expectEquals(1, errorElements.length);
-    let error = errorElements[0];
-    expectEquals(
-        'message', error.querySelector('.error-message').textContent.trim());
-    expectTrue(error.querySelector('iron-icon').icon === 'cr:error');
+    let errorElements = errorPage.shadowRoot!.querySelectorAll('.error-item');
+    assertEquals(1, errorElements.length);
+    let error = errorElements[0]!;
+    assertEquals(
+        'message',
+        error.querySelector<HTMLElement>(
+                 '.error-message')!.textContent!.trim());
+    assertTrue(error.querySelector('iron-icon')!.icon === 'cr:error');
 
     const manifestError = Object.assign(
         {
@@ -108,16 +122,17 @@ suite(extension_error_page_tests.suiteName, function() {
         manifestErrorBase);
     errorPage.set('data.manifestErrors', [manifestError]);
     flush();
-    errorElements = errorPage.shadowRoot.querySelectorAll('.error-item');
-    expectEquals(2, errorElements.length);
-    error = errorElements[0];
-    expectEquals(
+    errorElements = errorPage.shadowRoot!.querySelectorAll('.error-item');
+    assertEquals(2, errorElements.length);
+    error = errorElements[0]!;
+    assertEquals(
         'invalid key',
-        error.querySelector('.error-message').textContent.trim());
-    expectTrue(error.querySelector('iron-icon').icon === 'cr:warning');
+        error.querySelector<HTMLElement>(
+                 '.error-message')!.textContent!.trim());
+    assertTrue(error.querySelector('iron-icon')!.icon === 'cr:warning');
 
     mockDelegate.testClickingCalls(
-        error.querySelector('.icon-delete-gray'), 'deleteErrors',
+        error.querySelector<HTMLElement>('.icon-delete-gray')!, 'deleteErrors',
         [extensionId, [manifestError.id]]);
   });
 
@@ -127,24 +142,25 @@ suite(extension_error_page_tests.suiteName, function() {
 
         assertTrue(!!mockDelegate.requestFileSourceArgs);
         const args = mockDelegate.requestFileSourceArgs;
-        expectEquals(extensionId, args.extensionId);
-        expectEquals('source.html', args.pathSuffix);
-        expectEquals('message', args.message);
+        assertEquals(extensionId, args.extensionId);
+        assertEquals('source.html', args.pathSuffix);
+        assertEquals('message', args.message);
 
-        expectTrue(!!mockDelegate.requestFileSourceResolver);
+        assertTrue(!!mockDelegate.requestFileSourceResolver);
         const code = {
           beforeHighlight: 'foo',
           highlight: 'bar',
           afterHighlight: 'baz',
           message: 'quu',
+          title: '',
         };
         mockDelegate.requestFileSourceResolver.resolve(code);
         mockDelegate.requestFileSourceResolver.promise.then(function() {
           flush();
-          expectEquals(
+          assertEquals(
               code,
-              errorPage.shadowRoot.querySelector('extensions-code-section')
-                  .code);
+              errorPage.shadowRoot!.querySelector(
+                                       'extensions-code-section')!.code);
           done();
         });
       });
@@ -167,41 +183,43 @@ suite(extension_error_page_tests.suiteName, function() {
     errorPage.push('data.runtimeErrors', nextRuntimeError);
     flush();
 
-    const errorElements =
-        errorPage.shadowRoot.querySelectorAll('.error-item .start');
+    const errorElements = errorPage.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.error-item .start');
     const ironCollapses =
-        errorPage.shadowRoot.querySelectorAll('iron-collapse');
-    expectEquals(2, errorElements.length);
-    expectEquals(2, ironCollapses.length);
+        errorPage.shadowRoot!.querySelectorAll('iron-collapse');
+    assertEquals(2, errorElements.length);
+    assertEquals(2, ironCollapses.length);
 
     // The first error should be focused by default, and we should have
     // requested the source for it.
-    expectEquals(extensionData.runtimeErrors[0], errorPage.getSelectedError());
-    expectTrue(!!mockDelegate.requestFileSourceArgs);
+    assertEquals(extensionData.runtimeErrors[0], errorPage.getSelectedError());
+    assertTrue(!!mockDelegate.requestFileSourceArgs);
     let args = mockDelegate.requestFileSourceArgs;
-    expectEquals('source.html', args.pathSuffix);
-    expectTrue(ironCollapses[0].opened);
-    expectFalse(ironCollapses[1].opened);
-    mockDelegate.requestFileSourceResolver.resolve(null);
+    assertEquals('source.html', args.pathSuffix);
+    assertTrue(ironCollapses[0]!.opened);
+    assertFalse(ironCollapses[1]!.opened);
+    mockDelegate.requestFileSourceResolver.resolve(undefined);
 
     mockDelegate.requestFileSourceResolver = new PromiseResolver();
     mockDelegate.requestFileSourceArgs = undefined;
 
     // Tap the second error. It should now be selected and we should request
     // the source for it.
-    errorElements[1].click();
-    expectEquals(nextRuntimeError, errorPage.getSelectedError());
-    expectTrue(!!mockDelegate.requestFileSourceArgs);
+    errorElements[1]!.click();
+    assertEquals(nextRuntimeError, errorPage.getSelectedError());
+    assertTrue(!!mockDelegate.requestFileSourceArgs);
     args = mockDelegate.requestFileSourceArgs;
-    expectEquals('other_source.html', args.pathSuffix);
-    expectTrue(ironCollapses[1].opened);
-    expectFalse(ironCollapses[0].opened);
+    assertEquals('other_source.html', args.pathSuffix);
+    assertTrue(ironCollapses[1]!.opened);
+    assertFalse(ironCollapses[0]!.opened);
 
-    expectEquals(
+    assertEquals(
         'Unknown',
-        ironCollapses[0].querySelector('.context-url').textContent.trim());
-    expectEquals(
+        ironCollapses[0]!.querySelector<HTMLElement>(
+                             '.context-url')!.textContent!.trim());
+    assertEquals(
         nextRuntimeError.contextUrl,
-        ironCollapses[1].querySelector('.context-url').textContent.trim());
+        ironCollapses[1]!.querySelector<HTMLElement>(
+                             '.context-url')!.textContent!.trim());
   });
 });

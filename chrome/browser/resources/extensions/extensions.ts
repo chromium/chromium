@@ -13,6 +13,7 @@ export {ActivityLogStreamElement} from './activity_log/activity_log_stream.js';
 export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from './activity_log/activity_log_stream_item.js';
 export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
+export {ErrorPageDelegate, ExtensionsErrorPageElement} from './error_page.js';
 export {ItemDelegate} from './item.js';
 export {UserAction} from './item_util.js';
 // <if expr="chromeos">
