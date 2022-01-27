@@ -458,14 +458,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 }
 
 // This test checks the supported SVC scalability mode.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CheckSupportedSVCScalabilityModes \
-  DISABLED_CheckSupportedSVCScalabilityModes
-#else
-#define MAYBE_CheckSupportedSVCScalabilityModes \
-  CheckSupportedSVCScalabilityModes
-#endif
-TEST_F(VaapiTest, MAYBE_CheckSupportedSVCScalabilityModes) {
+TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
 #if BUILDFLAG(IS_CHROMEOS)
   const std::vector<SVCScalabilityMode> kSupportedTemporalSVC = {
       SVCScalabilityMode::kL1T2, SVCScalabilityMode::kL1T3};
