@@ -486,6 +486,43 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
   EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
+                       ModelExecutesAndUsesCachedResult) {
+  {
+    base::HistogramTester histogram_tester;
+
+    GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+        false, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    GURL url2(embedded_test_server()->GetURL("a.com", "/hello.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+
+    RetryForHistogramUntilCountReached(
+        &histogram_tester,
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated",
+        true, 1);
+
+    base::RunLoop().RunUntilIdle();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+        true, 1);
+  }
+}
+
 class PageContentAnnotationsServiceBatchVisitTest
     : public PageContentAnnotationsServiceNoHistoryTest {
  public:
@@ -530,6 +567,11 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
 
   base::RunLoop().RunUntilIdle();
 
+  // The cache is missed because we are batching requests. The cache check
+  // happens before adding a visit annotation request to the batch.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+      false, 2);
   histogram_tester.ExpectUniqueSample(
       "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true, 1);
 
@@ -597,6 +639,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitNoAnnotateTest,
       "PageContentAnnotations.AnnotateVisit.BatchAnnotationStarted", true, 1);
   histogram_tester.ExpectUniqueSample(
       "PageContentAnnotations.AnnotateVisit.QueueFullVisitDropped", true, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PageContentAnnotations.AnnotateVisitResultCached",
+      false, 4);
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentAnnotationsService."

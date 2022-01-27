@@ -269,6 +269,9 @@ base::TimeDelta BatchAnnotationValidationStartupDelay();
 // The size of batches to run for validation.
 size_t BatchAnnotationsValidationBatchSize();
 
+// The maximum size of the visit annotation cache.
+size_t MaxVisitAnnotationCacheSize();
+
 }  // namespace features
 }  // namespace optimization_guide
 
