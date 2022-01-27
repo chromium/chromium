@@ -22,12 +22,12 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/app_constants/constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "ui/aura/window.h"
 
@@ -40,7 +40,7 @@ apps::AppTypeName GetAppTypeNameForChromeApp(
     Profile* profile,
     const std::string& app_id,
     apps::mojom::LaunchContainer container) {
-  if (app_id == extension_misc::kChromeAppId) {
+  if (app_id == app_constants::kChromeAppId) {
     return apps::AppTypeName::kChromeBrowser;
   }
 
@@ -139,7 +139,7 @@ bool IsBrowser(aura::Window* window) {
 
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
   return app_type_name == apps::AppTypeName::kChromeBrowser &&
-         app_id != extension_misc::kChromeAppId;
+         app_id != app_constants::kChromeAppId;
 }
 
 bool IsAppOpenedWithBrowserWindow(Profile* profile,

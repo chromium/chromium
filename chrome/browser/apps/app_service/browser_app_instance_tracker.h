@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -41,7 +42,7 @@ class BrowserAppInstanceObserver;
 // browsers' native window activation to maintain a list of running apps and
 // notify its registered observers of any changes:
 // - apps running in WebContents (web apps, hosted apps, V1 packaged apps)
-// - browser instances (registered with app ID |extension_misc::kChromeAppId|).
+// - browser instances (registered with app ID |app_constants::kChromeAppId|).
 class BrowserAppInstanceTracker : public TabStripModelObserver,
                                   public BrowserTabStripTrackerDelegate,
                                   public wm::ActivationChangeObserver,

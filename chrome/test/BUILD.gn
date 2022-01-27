@@ -3804,6 +3804,7 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
         "//chromeos/ui/wm",
+        "//components/app_constants",
         "//components/app_restore",
         "//components/arc:arc_test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
@@ -6444,6 +6445,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/share/core:share_targets_unittest",
+      "//components/app_constants",
       "//components/media_router/common:test_support",
       "//components/services/app_service/public/cpp:publisher",
       "//components/services/app_service/public/cpp:test_support",
@@ -6762,6 +6764,7 @@ test("unit_tests") {
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/u2f",
       "//chromeos/ui/wm",
+      "//components/app_constants",
       "//components/app_restore:unit_tests",
       "//components/arc:arc_test_support",
       "//components/arc/common",

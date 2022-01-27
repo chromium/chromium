@@ -19,13 +19,13 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/ukm/app_source_url_recorder.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/common/constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -692,7 +692,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
     // For the browser window, if a tab of the browser is activated, we don't
     // need to calculate the browser window running time.
-    if (app_id == extension_misc::kChromeAppId &&
+    if (app_id == app_constants::kChromeAppId &&
         browser_to_tab_list_.HasActivatedTab(update.Window())) {
       SetWindowInActivated(app_id, update.InstanceId(), kInActivated);
       return;
@@ -712,7 +712,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
       base::UnguessableToken browser_id;
       GetBrowserIdAndState(update, browser_id, state);
       if (browser_id) {
-        SetWindowInActivated(extension_misc::kChromeAppId, browser_id,
+        SetWindowInActivated(app_constants::kChromeAppId, browser_id,
                              kInActivated);
       }
     }
@@ -754,8 +754,8 @@ void AppPlatformMetrics::GetBrowserIdAndState(
   state = InstanceState::kUnknown;
   proxy->InstanceRegistry().ForInstancesWithWindow(
       browser_window, [&](const InstanceUpdate& browser_update) {
-        if (browser_update.AppId() == extension_misc::kChromeAppId ||
-            browser_update.AppId() == extension_misc::kLacrosAppId) {
+        if (browser_update.AppId() == app_constants::kChromeAppId ||
+            browser_update.AppId() == app_constants::kLacrosAppId) {
           browser_id = browser_update.InstanceId();
           state = browser_update.State();
         }
@@ -790,7 +790,7 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
     // TODO(crbug.com/1251501): Handle lacros window.
     SetWindowActivated(AppType::kChromeApp, AppTypeName::kChromeBrowser,
                        AppTypeNameV2::kChromeBrowser,
-                       extension_misc::kChromeAppId, browser_id);
+                       app_constants::kChromeAppId, browser_id);
   }
 }
 
@@ -909,7 +909,7 @@ void AppPlatformMetrics::RecordAppsCount(apps::mojom::AppType app_type) {
        &app_count_per_install_reason](const apps::AppUpdate& update) {
         if (app_type != apps::mojom::AppType::kUnknown &&
             (update.AppType() != app_type ||
-             update.AppId() == extension_misc::kChromeAppId)) {
+             update.AppId() == app_constants::kChromeAppId)) {
           return;
         }
 

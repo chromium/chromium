@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/constants.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/aura/window.h"
@@ -160,7 +160,7 @@ void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
     const base::UnguessableToken& instance_id) {
   // For the browser window, if a tab of the browser is activated, we don't
   // need to update, because we can reuse the active tab's app id.
-  if (app_id == extension_misc::kChromeAppId &&
+  if (app_id == app_constants::kChromeAppId &&
       browser_to_tab_list_.HasActivatedTab(window)) {
     return;
   }
@@ -207,7 +207,7 @@ void AppPlatformInputMetrics::SetAppInfoForInactivatedWindow(
 
   auto app_id = browser_to_tab_list_.GetActivatedTabAppId(browser_window);
   if (app_id.empty()) {
-    app_id = extension_misc::kChromeAppId;
+    app_id = app_constants::kChromeAppId;
   }
 
   window_to_app_info_[browser_window].app_id = app_id;

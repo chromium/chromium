@@ -62,6 +62,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -326,7 +327,7 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
     return;
   }
 
-  if (app_id == extension_misc::kChromeAppId) {
+  if (app_id == app_constants::kChromeAppId) {
     std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile()));
     return;
   }
@@ -500,7 +501,7 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
     return;
   }
 
-  std::string app_id = extension_misc::kChromeAppId;
+  std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
   DCHECK(registry);
@@ -526,7 +527,7 @@ void ExtensionAppsChromeOs::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
 
-  std::string app_id = extension_misc::kChromeAppId;
+  std::string app_id = app_constants::kChromeAppId;
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile());
   DCHECK(registry);

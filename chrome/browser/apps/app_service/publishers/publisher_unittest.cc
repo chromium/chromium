@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -446,7 +447,7 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 };
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
-  VerifyApp(AppType::kStandaloneBrowser, extension_misc::kLacrosAppId, "Lacros",
+  VerifyApp(AppType::kStandaloneBrowser, app_constants::kLacrosAppId, "Lacros",
             Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
             {"chrome"}, base::Time(), base::Time(), apps::Permissions(),
             /*is_platform_app=*/false,
