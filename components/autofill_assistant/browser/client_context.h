@@ -19,7 +19,7 @@ class ClientContext {
   // Updates the client context based on the current state of the client.
   virtual void Update(const TriggerContext& trigger_context) = 0;
   // Updates the payments client token. This is not part of the normal update.
-  virtual void SetPaymentsClientToken(const std::string& client_token);
+  virtual void SetPaymentsClientToken(const std::string& client_token) = 0;
   // Returns the proto representation of this client context.
   virtual ClientContextProto AsProto() const = 0;
 };
