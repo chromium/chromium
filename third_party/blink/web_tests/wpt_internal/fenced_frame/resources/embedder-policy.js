@@ -1,6 +1,4 @@
-// This file should be loaded alongside with utils.js and
-// /common/get-host-info.sub.js.
-//
+// This file should be loaded alongside with utils.js.
 // This file is loaded by:
 // - embedder-no-coep.https.html
 // - embedder-require-corp.https.html
@@ -19,27 +17,17 @@ function generateHeader(headers) {
 // Setup a fenced frame for embedder-* WPTs.
 async function setupTest(test_type, uuid) {
   let headers = ["Supports-Loading-Mode,fenced-frame"];
-  let hostname = ''
   switch (test_type) {
     case "coep:require-corp":
       headers.push("cross-origin-embedder-policy,require-corp");
       break;
     case "no coep":
       break;
-    case "cross:coep:require-corp":
-      // Make sure a different site is used.
-      hostname = get_host_info().REMOTE_HOST;
-      headers.push("cross-origin-embedder-policy,require-corp");
-      break;
     default:
       assert_unreachable("unknown test_type:" + test_type);
       break;
   }
-  const tmp_url = new URL('resources/embeddee.html', location.href);
-  if (hostname) {
-    tmp_url.hostname = hostname;
-  }
-  tmp_url.searchParams.append("pipe", generateHeader(headers));
-  const url = generateURL(tmp_url.toString(), [uuid]);
+  const header_pipe = generateHeader(headers);
+  const url = generateURL('resources/embeddee.html?pipe=' + header_pipe, [uuid]);
   return attachFencedFrame(url);
 }
