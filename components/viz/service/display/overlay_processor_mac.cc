@@ -48,6 +48,10 @@ gfx::Rect OverlayProcessorMac::GetAndResetOverlayDamage() {
   return result;
 }
 
+void OverlayProcessorMac::SetIsVideoCaptureEnabled(bool enabled) {
+  ca_layer_overlay_processor_->SetIsVideoCaptureEnabled(enabled);
+}
+
 void OverlayProcessorMac::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,

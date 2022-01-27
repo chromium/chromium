@@ -451,6 +451,8 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   // Skip overlay processing
   if (!overlays_allowed_ || !enable_ca_renderer_) {
     result = gfx::kCALayerFailedOverlayDisabled;
+  } else if (video_capture_enabled_) {
+    result = gfx::kCALayerFailedVideoCaptureEnabled;
   } else if (!render_pass->copy_requests.empty()) {
     result = gfx::kCALayerFailedCopyRequests;
   } else if (num_visible_quads > max_quad_list_size_) {
