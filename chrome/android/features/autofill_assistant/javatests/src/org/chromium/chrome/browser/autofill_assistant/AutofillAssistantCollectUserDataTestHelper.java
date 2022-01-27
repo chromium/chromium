@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAn
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantUserDataEventType;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -97,7 +96,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
      */
     static class MockDelegate implements AssistantCollectUserDataDelegate {
         AssistantAutofillProfile mContact;
-        AutofillAddress mAddress;
+        AssistantAutofillProfile mShippingAddress;
         AutofillPaymentInstrument mPaymentMethod;
         AssistantLoginChoice mLoginChoice;
 
@@ -118,7 +117,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
         public void onShippingAddressChanged(
                 @Nullable AssistantCollectUserDataModel.AddressModel addressModel,
                 @AssistantUserDataEventType int eventType) {
-            mAddress = addressModel == null ? null : addressModel.mOption;
+            mShippingAddress = addressModel == null ? null : addressModel.mOption;
         }
 
         @Override

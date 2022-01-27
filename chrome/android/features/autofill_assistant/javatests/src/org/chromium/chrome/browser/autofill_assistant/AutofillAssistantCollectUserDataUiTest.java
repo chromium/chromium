@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -345,7 +344,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         /* Test delegate status. */
         assertThat(delegate.mPaymentMethod, nullValue());
         assertThat(delegate.mContact, nullValue());
-        assertThat(delegate.mAddress, nullValue());
+        assertThat(delegate.mShippingAddress, nullValue());
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice, nullValue());
     }
@@ -595,8 +594,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                     Collections.singletonList(new ContactModel(contact)));
             model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
                     new ContactModel(contact));
-            AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
-                    mTestRule.getActivity(), profile);
+            AssistantAutofillProfile address = createDummyAddress(profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
                     Collections.singletonList(new AddressModel(address)));
             model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS,
@@ -672,7 +670,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         // does not trigger a notification.
         assertThat(delegate.mPaymentMethod, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
-        assertThat(delegate.mAddress, is(nullValue()));
+        assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice, is(nullValue()));
 
@@ -680,10 +678,8 @@ public class AutofillAssistantCollectUserDataUiTest {
             AssistantAutofillProfile contact = createDummyContact(profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
                     Collections.singletonList(new ContactModel(contact)));
-            AutofillAddress address = AssistantCollectUserDataModel.createAutofillAddress(
-                    mTestRule.getActivity(), profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
-                    Collections.singletonList(new AddressModel(address)));
+                    Collections.singletonList(new AddressModel(createDummyAddress(profile))));
             AutofillPaymentInstrument paymentInstrument =
                     AssistantCollectUserDataModel.createAutofillPaymentInstrument(
                             mTestRule.getWebContents(), creditCard, profile);
@@ -697,7 +693,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         // Check delegate status. Setting items again will not send a notification to the delegate.
         assertThat(delegate.mPaymentMethod, is(nullValue()));
         assertThat(delegate.mContact, is(nullValue()));
-        assertThat(delegate.mAddress, is(nullValue()));
+        assertThat(delegate.mShippingAddress, is(nullValue()));
         assertThat(delegate.mTermsStatus, is(AssistantTermsAndConditionsState.NOT_SELECTED));
         assertThat(delegate.mLoginChoice, is(nullValue()));
     }
@@ -1172,5 +1168,15 @@ public class AutofillAssistantCollectUserDataUiTest {
                 /* locality= */ "",
                 /* dependentLocality= */ "", /* postalCode= */ "", /* sortingCode= */ "",
                 /* countryCode= */ "", phone, email, /* languageCode= */ "en-US");
+    }
+
+    private AssistantAutofillProfile createDummyAddress(
+            PersonalDataManager.AutofillProfile profile) {
+        return new AssistantAutofillProfile(profile.getGUID(), profile.getOrigin(),
+                profile.getIsLocal(), profile.getHonorificPrefix(), profile.getFullName(),
+                profile.getCompanyName(), profile.getStreetAddress(), profile.getRegion(),
+                profile.getLocality(), profile.getDependentLocality(), profile.getPostalCode(),
+                profile.getSortingCode(), profile.getCountryCode(), profile.getPhoneNumber(),
+                profile.getEmailAddress(), profile.getLanguageCode());
     }
 }

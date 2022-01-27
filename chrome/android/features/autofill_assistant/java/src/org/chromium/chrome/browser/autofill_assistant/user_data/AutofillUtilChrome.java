@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.autofill_assistant.user_data;
 
 import android.content.Context;
 
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
+import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 
@@ -65,5 +68,38 @@ public class AutofillUtilChrome {
                 name, phone, email, editor.checkContactCompletionStatus(name, phone, email),
                 editor.getRequestPayerName(), editor.getRequestPayerPhone(),
                 editor.getRequestPayerEmail());
+    }
+
+    /**
+     * Transform an {@link AssistantAutofillProfile} into an {@link AutofillAddress}.
+     *
+     * @param profile The {@link AssistantAutofillProfile} to transform.
+     * @param context The context the app is currently run as.
+     * @return The equivalent {@link AutofillAddress}.
+     */
+    public static AutofillAddress assistantAutofillProfileToAutofillAddress(
+            AssistantAutofillProfile profile, Context context) {
+        return new AutofillAddress(context, assistantAutofillProfileToAutofillProfile(profile),
+                CompletenessCheckType.IGNORE_PHONE);
+    }
+
+    /**
+     * Get the label for an {@link AssistantAutofillProfile} used as a shipping address.
+     *
+     * @param profile The {@link AssistantAutofillProfile}.
+     * @param withCountry Flag to add country.
+     * @return The label.
+     */
+    public static String getShippingAddressLabel(
+            AssistantAutofillProfile profile, boolean withCountry) {
+        if (withCountry) {
+            return PersonalDataManager.getInstance()
+                    .getShippingAddressLabelWithCountryForPaymentRequest(
+                            assistantAutofillProfileToAutofillProfile(profile));
+        } else {
+            return PersonalDataManager.getInstance()
+                    .getShippingAddressLabelWithoutCountryForPaymentRequest(
+                            assistantAutofillProfileToAutofillProfile(profile));
+        }
     }
 }

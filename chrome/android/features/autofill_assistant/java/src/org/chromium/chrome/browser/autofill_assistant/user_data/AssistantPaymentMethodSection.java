@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillProfile;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.payments.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
@@ -179,10 +180,12 @@ public class AssistantPaymentMethodSection
         return TextUtils.equals(profileA.getGUID(), profileB.getGUID());
     }
 
-    void onAddressesChanged(List<AutofillAddress> addresses) {
+    void onAddressesChanged(List<AssistantAutofillProfile> addresses) {
         // TODO(crbug.com/806868): replace suggested billing addresses (remove if necessary).
-        for (AutofillAddress address : addresses) {
-            addAutocompleteInformationToEditor(address);
+        for (AssistantAutofillProfile address : addresses) {
+            addAutocompleteInformationToEditor(
+                    AutofillUtilChrome.assistantAutofillProfileToAutofillAddress(
+                            address, mContext));
         }
     }
 

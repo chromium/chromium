@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
-import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -21,8 +20,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.additional_secti
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputSection.TextInputFactory;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantTextInputType;
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.WebContents;
@@ -90,13 +87,13 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         }
     }
 
-    /** Model wrapper for an {@code AutofillAddress}. */
-    public static class AddressModel extends OptionModel<AutofillAddress> {
-        public AddressModel(AutofillAddress address, List<String> errors) {
+    /** Model wrapper for an {@code AssistantAutofillProfile}. */
+    public static class AddressModel extends OptionModel<AssistantAutofillProfile> {
+        public AddressModel(AssistantAutofillProfile address, List<String> errors) {
             super(address, errors);
         }
 
-        public AddressModel(AutofillAddress address) {
+        public AddressModel(AssistantAutofillProfile address) {
             super(address);
         }
     }
@@ -179,7 +176,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey REQUEST_LOGIN_CHOICE =
             new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<List<AutofillAddress>>
+    public static final WritableObjectPropertyKey<List<AssistantAutofillProfile>>
             AVAILABLE_BILLING_ADDRESSES = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_CONTACTS =
@@ -365,7 +362,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     @CalledByNative
     private void setSelectedShippingAddress(
-            @Nullable AutofillAddress shippingAddress, String[] errors) {
+            @Nullable AssistantAutofillProfile shippingAddress, String[] errors) {
         set(SELECTED_SHIPPING_ADDRESS,
                 shippingAddress == null ? null
                                         : new AddressModel(shippingAddress, Arrays.asList(errors)));
@@ -505,19 +502,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     @CalledByNative
     private static void addShippingAddress(
-            List<AddressModel> addresses, AutofillAddress address, String[] errors) {
+            List<AddressModel> addresses, AssistantAutofillProfile address, String[] errors) {
         addresses.add(new AddressModel(address, Arrays.asList(errors)));
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    @Nullable
-    public static AutofillAddress createAutofillAddress(
-            Context context, @Nullable PersonalDataManager.AutofillProfile profile) {
-        if (profile == null) {
-            return null;
-        }
-        return new AutofillAddress(context, profile, CompletenessCheckType.IGNORE_PHONE);
     }
 
     @CalledByNative
@@ -526,18 +512,18 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static List<AutofillAddress> createBillingAddressList() {
+    private static List<AssistantAutofillProfile> createBillingAddressList() {
         return new ArrayList<>();
     }
 
     @CalledByNative
     private static void addBillingAddress(
-            List<AutofillAddress> addresses, AutofillAddress address) {
+            List<AssistantAutofillProfile> addresses, AssistantAutofillProfile address) {
         addresses.add(address);
     }
 
     @CalledByNative
-    private void setAvailableBillingAddresses(List<AutofillAddress> addresses) {
+    private void setAvailableBillingAddresses(List<AssistantAutofillProfile> addresses) {
         set(AVAILABLE_BILLING_ADDRESSES, addresses);
     }
 

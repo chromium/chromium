@@ -48,7 +48,7 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
             AssistantCollectUserDataNativeDelegateJni.get().onShippingAddressChanged(
                     mNativeAssistantCollectUserDataDelegate,
                     AssistantCollectUserDataNativeDelegate.this,
-                    addressModel == null ? null : addressModel.mOption.getProfile(), eventType);
+                    addressModel == null ? null : addressModel.mOption, eventType);
         }
     }
 
@@ -130,7 +130,7 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 @Nullable AssistantAutofillProfile contactProfile, int eventType);
         void onShippingAddressChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
-                @Nullable PersonalDataManager.AutofillProfile address, int eventType);
+                @Nullable AssistantAutofillProfile address, int eventType);
         void onCreditCardChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable PersonalDataManager.CreditCard card,

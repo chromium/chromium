@@ -64,8 +64,9 @@ void AssistantCollectUserDataDelegate::OnShippingAddressChanged(
   }
 
   auto shipping_address = std::make_unique<autofill::AutofillProfile>();
-  autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
-      jaddress, env, shipping_address.get());
+  ui_controller_android_utils::PopulateAutofillProfileFromJava(
+      jaddress, env, shipping_address.get(),
+      base::android::GetDefaultLocaleString());
   ui_controller_->OnShippingAddressChanged(
       std::move(shipping_address), static_cast<UserDataEventType>(event_type));
 }

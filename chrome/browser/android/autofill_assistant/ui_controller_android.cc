@@ -1338,11 +1338,9 @@ void UiControllerAndroid::OnUserDataChanged(
   auto jselected_shipping_address =
       selected_shipping_address == nullptr
           ? nullptr
-          : Java_AssistantCollectUserDataModel_createAutofillAddress(
-                env, jcontext,
-                autofill::PersonalDataManagerAndroid::
-                    CreateJavaProfileFromNative(env,
-                                                *selected_shipping_address));
+          : ui_controller_android_utils::CreateAssistantAutofillProfile(
+                env, *selected_shipping_address,
+                base::android::GetDefaultLocaleString());
   const auto& selected_shipping_address_errors =
       user_data::GetShippingAddressValidationErrors(selected_shipping_address,
                                                     *collect_user_data_options);
@@ -1377,14 +1375,10 @@ void UiControllerAndroid::OnUserDataChanged(
     auto jbillinglist =
         Java_AssistantCollectUserDataModel_createBillingAddressList(env);
     for (const auto& address : user_data.available_addresses_) {
-      auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
-          env, jcontext,
-          autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *address->profile));
-      if (jaddress) {
-        Java_AssistantCollectUserDataModel_addBillingAddress(env, jbillinglist,
-                                                             jaddress);
-      }
+      Java_AssistantCollectUserDataModel_addBillingAddress(
+          env, jbillinglist,
+          ui_controller_android_utils::CreateAssistantAutofillProfile(
+              env, *address->profile, base::android::GetDefaultLocaleString()));
     }
     Java_AssistantCollectUserDataModel_setAvailableBillingAddresses(
         env, jmodel, jbillinglist);
@@ -1395,18 +1389,15 @@ void UiControllerAndroid::OnUserDataChanged(
     auto address_indices = user_data::SortShippingAddressesByCompleteness(
         *collect_user_data_options, user_data.available_addresses_);
     for (int index : address_indices) {
-      auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
-          env, jcontext,
-          autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *user_data.available_addresses_[index]->profile));
-      if (jaddress) {
-        const auto& errors = user_data::GetShippingAddressValidationErrors(
-            user_data.available_addresses_[index]->profile.get(),
-            *collect_user_data_options);
-        Java_AssistantCollectUserDataModel_addShippingAddress(
-            env, jshippinglist, jaddress,
-            base::android::ToJavaArrayOfStrings(env, errors));
-      }
+      const auto& errors = user_data::GetShippingAddressValidationErrors(
+          user_data.available_addresses_[index]->profile.get(),
+          *collect_user_data_options);
+      Java_AssistantCollectUserDataModel_addShippingAddress(
+          env, jshippinglist,
+          ui_controller_android_utils::CreateAssistantAutofillProfile(
+              env, *user_data.available_addresses_[index]->profile,
+              base::android::GetDefaultLocaleString()),
+          base::android::ToJavaArrayOfStrings(env, errors));
     }
     Java_AssistantCollectUserDataModel_setAvailableShippingAddresses(
         env, jmodel, jshippinglist);
