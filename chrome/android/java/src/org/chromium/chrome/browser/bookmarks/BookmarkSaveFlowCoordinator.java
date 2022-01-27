@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -26,6 +25,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -42,18 +42,15 @@ public class BookmarkSaveFlowCoordinator {
     private final PropertyModelChangeProcessor<PropertyModel, ViewLookupCachingFrameLayout,
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
+    private final BottomSheetObserver mSheetObserver;
 
-    private CallbackController mCallbackController = new CallbackController();
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
     private BookmarkSaveFlowMediator mMediator;
     private View mBookmarkSaveFlowView;
-
     private BookmarkModel mBookmarkModel;
-
-    private boolean mClosedViaRunnable;
-
     private UserEducationHelper mUserEducationHelper;
+    private boolean mClosedViaRunnable;
 
     /**
      * @param context The {@link Context} associated with this cooridnator.
@@ -68,6 +65,15 @@ public class BookmarkSaveFlowCoordinator {
             @NonNull UserEducationHelper userEducationHelper) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
+        mSheetObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetContentChanged(BottomSheetContent newContent) {
+                if (newContent != mBottomSheetContent) {
+                    destroy();
+                }
+            }
+        };
+        mBottomSheetController.addObserver(mSheetObserver);
         mUserEducationHelper = userEducationHelper;
         mBookmarkModel = new BookmarkModel();
         mDestroyChecker = new DestroyChecker();
@@ -152,9 +158,8 @@ public class BookmarkSaveFlowCoordinator {
                         .build());
     }
 
-    private void close() {
-        mDestroyChecker.checkNotDestroyed();
-
+    @VisibleForTesting
+    void close() {
         mClosedViaRunnable = true;
         mBottomSheetController.hideContent(mBottomSheetContent, true);
     }
@@ -162,8 +167,7 @@ public class BookmarkSaveFlowCoordinator {
     private void setupAutodismiss() {
         if (!BookmarkFeatures.isImprovedSaveFlowAutodismissEnabled()) return;
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
-                mCallbackController.makeCancelable(this::close),
+        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE, this::close,
                 BookmarkFeatures.getImprovedSaveFlowAutodismissTimeMs());
     }
 
@@ -171,11 +175,12 @@ public class BookmarkSaveFlowCoordinator {
         mDestroyChecker.checkNotDestroyed();
         mDestroyChecker.destroy();
 
+        mBottomSheetController.removeObserver(mSheetObserver);
+
         // The bottom sheet was closed by a means other than one of the edit actions.
         if (mClosedViaRunnable) {
             RecordUserAction.record("MobileBookmark.SaveFlow.ClosedWithoutEditAction");
         }
-        mCallbackController.destroy();
 
         mMediator.destroy();
         mMediator = null;
@@ -212,9 +217,7 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         @Override
-        public void destroy() {
-            BookmarkSaveFlowCoordinator.this.destroy();
-        }
+        public void destroy() {}
 
         @Override
         public int getPriority() {
@@ -265,5 +268,9 @@ public class BookmarkSaveFlowCoordinator {
     @VisibleForTesting
     View getViewForTesting() {
         return mBookmarkSaveFlowView;
+    }
+
+    boolean getIsDestroyedForTesting() {
+        return mDestroyChecker.isDestroyed();
     }
 }

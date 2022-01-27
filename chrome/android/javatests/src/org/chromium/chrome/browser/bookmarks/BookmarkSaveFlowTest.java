@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -129,6 +130,21 @@ public class BookmarkSaveFlowTest {
         });
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow");
+    }
+
+    @Test
+    @MediumTest
+    public void testBookmarkSaveFlow_DestroyAfterHidden() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            mBookmarkSaveFlowCoordinator.show(id);
+            mBookmarkSaveFlowCoordinator.close();
+            return null;
+        });
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mBookmarkSaveFlowCoordinator.getIsDestroyedForTesting(),
+                "Save flow coordinator not destroyed.");
     }
 
     @Test
