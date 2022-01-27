@@ -2267,6 +2267,14 @@
       name: "TimeZoneChangeEvent",
       status: "experimental",
     },
+    // This feature allows touch dragging and a context menu to occur
+    // simultaneously, with the assumption that the menu is non-modal.  Without
+    // this feature, a long-press touch gesture can start either a drag or a
+    // context-menu in Blink, not both (more precisely, a context menu is shown
+    // only if a drag cannot be started).
+    {
+      name: "TouchDragAndContextMenu",
+    },
     // Many websites disable mouse support when touch APIs are available.  We'd
     // like to enable this always but can't until more websites fix this bug.
     // Chromium sets this conditionally (eg. based on the presence of a

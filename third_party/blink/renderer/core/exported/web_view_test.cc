@@ -3005,9 +3005,10 @@ TEST_F(WebViewTest, TouchDragContextMenuWithoutDrag) {
           web_view->MainFrameImpl()->GetFrame()));
 }
 
-// Tests that a touch drag context menu is enabled, a dragend does not show a
-// context menu after a drag.
-TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
+// Tests that a dragend does not show a context menu after a drag when
+// touch-drag-context-menu is enabled.
+TEST_F(WebViewTest, TouchDragContextMenuAtDragEnd) {
+  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(false);
   RegisterMockedHttpURLLoad("long_press_draggable_div.html");
 
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
@@ -3040,12 +3041,16 @@ TEST_F(WebViewTest, TouchDragContextMenuWithDrag) {
   web_view->MainFrameViewWidget()->DragSourceEndedAt(
       dragend_point, dragend_point, ui::mojom::blink::DragOperation::kNone,
       base::DoNothing());
+
+  // TODO(https://crbug.com/1290905): When TouchDragAndContextMenu is enabled,
+  // this becomes true.  This shouldn't be the case.
   EXPECT_FALSE(
       web_view->GetPage()->GetContextMenuController().ContextMenuNodeForFrame(
           web_view->MainFrameImpl()->GetFrame()));
 }
 
-TEST_F(WebViewTest, showContextMenuOnLongPressingLinks) {
+TEST_F(WebViewTest, ContextMenuOnLinkAndImageLongPress) {
+  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(false);
   RegisterMockedHttpURLLoad("long_press_links_and_images.html");
 
   url_test_helpers::RegisterMockedURLLoad(
@@ -3064,13 +3069,59 @@ TEST_F(WebViewTest, showContextMenuOnLongPressingLinks) {
 
   EXPECT_TRUE(
       TapElementById(WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
-  EXPECT_EQ("anchor contextmenu",
-            web_view->MainFrameImpl()->GetDocument().Title());
+  EXPECT_EQ("contextmenu@a,", web_view->MainFrameImpl()->GetDocument().Title());
 
   EXPECT_TRUE(
       TapElementById(WebInputEvent::Type::kGestureLongPress, image_tag_id));
-  EXPECT_EQ("image contextmenu",
+  EXPECT_EQ("contextmenu@a,contextmenu@img,",
             web_view->MainFrameImpl()->GetDocument().Title());
+}
+
+TEST_F(WebViewTest, ContextMenuAndDragOnImageLongPress) {
+  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(true);
+  RegisterMockedHttpURLLoad("long_press_links_and_images.html");
+
+  url_test_helpers::RegisterMockedURLLoad(
+      ToKURL("http://www.test.com/foo.png"),
+      test::CoreTestDataPath("white-1x1.png"));
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_links_and_images.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebString image_tag_id = WebString::FromUTF8("imageTag");
+
+  EXPECT_TRUE(
+      TapElementById(WebInputEvent::Type::kGestureLongPress, image_tag_id));
+  EXPECT_EQ("dragstart@img,contextmenu@img,",
+            web_view->MainFrameImpl()->GetDocument().Title().Ascii());
+}
+
+TEST_F(WebViewTest, ContextMenuAndDragOnLinkLongPress) {
+  ScopedTouchDragAndContextMenuForTest touch_drag_and_context_menu(true);
+
+  RegisterMockedHttpURLLoad("long_press_links_and_images.html");
+
+  url_test_helpers::RegisterMockedURLLoad(
+      ToKURL("http://www.test.com/foo.png"),
+      test::CoreTestDataPath("white-1x1.png"));
+  WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
+      base_url_ + "long_press_links_and_images.html");
+
+  web_view->SettingsImpl()->SetTouchDragDropEnabled(true);
+  web_view->MainFrameViewWidget()->Resize(gfx::Size(500, 300));
+  UpdateAllLifecyclePhases();
+  RunPendingTasks();
+
+  WebString anchor_tag_id = WebString::FromUTF8("anchorTag");
+
+  EXPECT_TRUE(
+      TapElementById(WebInputEvent::Type::kGestureLongPress, anchor_tag_id));
+  EXPECT_EQ("dragstart@a,contextmenu@a,",
+            web_view->MainFrameImpl()->GetDocument().Title().Ascii());
 }
 
 TEST_F(WebViewTest, LongPressEmptyEditableSelection) {
@@ -6078,7 +6129,7 @@ TEST_F(WebViewTest, UpdateTargetURLWithInvalidURL) {
 }
 
 // Regression test for https://crbug.com/1112987
-TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
+TEST_F(WebViewTest, LongPressThenLongTapLinkInIframeStartsContextMenu) {
   RegisterMockedHttpURLLoad("long_press_link_in_iframe.html");
 
   WebViewImpl* web_view = web_view_helper_.InitializeAndLoad(
@@ -6101,15 +6152,15 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
           ->GetFrameView()
           ->FrameToScreen(anchor->GetLayoutObject()->AbsoluteBoundingBoxRect())
           .CenterPoint();
-  WebGestureEvent event(WebInputEvent::Type::kGestureLongPress,
-                        WebInputEvent::kNoModifiers,
-                        WebInputEvent::GetStaticTimeStampForTests(),
-                        WebGestureDevice::kTouchscreen);
-  event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
 
+  WebGestureEvent longpress_event(WebInputEvent::Type::kGestureLongPress,
+                                  WebInputEvent::kNoModifiers,
+                                  WebInputEvent::GetStaticTimeStampForTests(),
+                                  WebGestureDevice::kTouchscreen);
+  longpress_event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
   EXPECT_EQ(WebInputEventResult::kHandledSystem,
             web_view->MainFrameWidget()->HandleInputEvent(
-                WebCoalescedInputEvent(event, ui::LatencyInfo())));
+                WebCoalescedInputEvent(longpress_event, ui::LatencyInfo())));
 
   WebGestureEvent tap_event(WebInputEvent::Type::kGestureLongTap,
                             WebInputEvent::kNoModifiers,
@@ -6117,7 +6168,14 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
                             WebGestureDevice::kTouchscreen);
   tap_event.SetPositionInWidget(gfx::PointF(center.x(), center.x()));
 
-  EXPECT_EQ(WebInputEventResult::kNotHandled,
+  // If touch-drag-and-context-menu is enabled, we expect an ongoing drag
+  // operation at the moment a tap is dispatched.  This changes the outcome of
+  // the tap event-handler below to "suppressed".
+  WebInputEventResult expected_tap_handling_result =
+      RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()
+          ? WebInputEventResult::kHandledSuppressed
+          : WebInputEventResult::kNotHandled;
+  EXPECT_EQ(expected_tap_handling_result,
             web_view->MainFrameWidget()->HandleInputEvent(
                 WebCoalescedInputEvent(tap_event, ui::LatencyInfo())));
   EXPECT_EQ("anchor contextmenu",

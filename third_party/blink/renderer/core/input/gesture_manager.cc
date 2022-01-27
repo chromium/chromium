@@ -390,23 +390,32 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   gesture_context_menu_deferred_ = false;
 
-  bool hit_test_contains_links = hit_test_result.URLElement() ||
-                                 !hit_test_result.AbsoluteImageURL().IsNull() ||
-                                 !hit_test_result.AbsoluteMediaURL().IsNull();
-  if (!hit_test_contains_links &&
-      mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
-    gesture_context_menu_deferred_ = true;
-    return WebInputEventResult::kHandledSystem;
+  bool drag_started = false;
+  if (RuntimeEnabledFeatures::TouchDragAndContextMenuEnabled()) {
+    drag_started =
+        mouse_event_manager_->HandleDragDropIfPossible(targeted_event);
+  } else {
+    bool hit_test_contains_links =
+        hit_test_result.URLElement() ||
+        !hit_test_result.AbsoluteImageURL().IsNull() ||
+        !hit_test_result.AbsoluteMediaURL().IsNull();
+    if (!hit_test_contains_links &&
+        mouse_event_manager_->HandleDragDropIfPossible(targeted_event)) {
+      gesture_context_menu_deferred_ = true;
+      return WebInputEventResult::kHandledSystem;
+    }
   }
 
   Node* inner_node = hit_test_result.InnerNode();
-  if (inner_node && inner_node->GetLayoutObject() &&
+  if (!drag_started && inner_node && inner_node->GetLayoutObject() &&
       selection_controller_->HandleGestureLongPress(hit_test_result)) {
     mouse_event_manager_->FocusDocumentView();
   }
 
   if (frame_->GetSettings() &&
       frame_->GetSettings()->GetShowContextMenuOnMouseUp()) {
+    // TODO(https://crbug.com/1290905): Prevent a contextmenu after a
+    // finger-drag when TouchDragAndContextMenu is enabled.
     gesture_context_menu_deferred_ = true;
     return WebInputEventResult::kNotHandled;
   }
