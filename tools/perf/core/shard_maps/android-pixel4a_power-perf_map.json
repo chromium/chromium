@@ -3,9 +3,6 @@
         "benchmarks": {
             "power.mobile": {
                 "abridged": false
-            },
-            "system_health.scroll_jank_mobile": {
-                "abridged": false
             }
         }
     },
@@ -68,6 +65,22 @@
     "9": {
         "benchmarks": {
             "power.mobile": {
+                "abridged": false
+            }
+        }
+    },
+    "10": {
+        "benchmarks": {
+            "system_health.scroll_jank_mobile": {
+                "end": 5,
+                "abridged": false
+            }
+        }
+    },
+    "11": {
+        "benchmarks": {
+            "system_health.scroll_jank_mobile": {
+                "begin": 5,
                 "abridged": false
             }
         }
