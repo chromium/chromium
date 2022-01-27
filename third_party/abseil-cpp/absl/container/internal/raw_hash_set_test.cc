@@ -1244,7 +1244,7 @@ ExpectedStats XorSeedExpectedStats() {
     case 16:
       if (kRandomizesInserts) {
         return {0.1,
-                1.0,
+                2.0,
                 {{0.95, 0.1}},
                 {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
       } else {
@@ -1258,7 +1258,7 @@ ExpectedStats XorSeedExpectedStats() {
   return {};
 }
 
-TEST(Table, DISABLED_EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
+TEST(Table, EnsureNonQuadraticTopNXorSeedByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
   for (size_t size : sizes) {
@@ -1330,17 +1330,17 @@ ExpectedStats LinearTransformExpectedStats() {
                 {{0.95, 0.3}},
                 {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
       } else {
-        return {0.15,
-                0.5,
-                {{0.95, 0.3}},
-                {{0.95, 0}, {0.99, 3}, {0.999, 15}, {0.9999, 25}}};
+        return {0.4,
+                0.6,
+                {{0.95, 0.5}},
+                {{0.95, 1}, {0.99, 14}, {0.999, 23}, {0.9999, 26}}};
       }
     case 16:
       if (kRandomizesInserts) {
         return {0.1,
                 0.4,
                 {{0.95, 0.3}},
-                {{0.95, 0}, {0.99, 1}, {0.999, 8}, {0.9999, 15}}};
+                {{0.95, 1}, {0.99, 2}, {0.999, 9}, {0.9999, 15}}};
       } else {
         return {0.05,
                 0.2,
@@ -1352,7 +1352,7 @@ ExpectedStats LinearTransformExpectedStats() {
   return {};
 }
 
-TEST(Table, DISABLED_EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
+TEST(Table, EnsureNonQuadraticTopNLinearTransformByProbeSeqLength) {
   ProbeStatsPerSize stats;
   std::vector<size_t> sizes = {Group::kWidth << 5, Group::kWidth << 10};
   for (size_t size : sizes) {

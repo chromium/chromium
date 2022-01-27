@@ -1539,6 +1539,14 @@ class raw_hash_set {
     return !(a == b);
   }
 
+  template <typename H>
+  friend typename std::enable_if<H::template is_hashable<value_type>::value,
+                                 H>::type
+  AbslHashValue(H h, const raw_hash_set& s) {
+    return H::combine(H::combine_unordered(std::move(h), s.begin(), s.end()),
+                      s.size());
+  }
+
   friend void swap(raw_hash_set& a,
                    raw_hash_set& b) noexcept(noexcept(a.swap(b))) {
     a.swap(b);

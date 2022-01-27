@@ -188,6 +188,8 @@ if (build_with_chromium) {
         "absl/container:node_slot_policy_test",
         "absl/container:sample_element_size_test",
         "absl/hash:low_level_hash_test",
+        # TODO(crbug.com/1291484): Re-enable when fixed.
+        # "absl/hash:hash_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
         "absl/profiling:exponential_biased_test",
