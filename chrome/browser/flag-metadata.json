@@ -3880,12 +3880,12 @@
   {
     "name": "messages-for-android-chrome-survey",
     "owners": [ "pavely", "aishwaryarj" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-infrastructure",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-instant-apps",
@@ -3900,17 +3900,17 @@
   {
     "name": "messages-for-android-notification-blocked",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-passwords",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-permission-update",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-popup-blocked",
@@ -3920,7 +3920,7 @@
   {
     "name": "messages-for-android-pwa-install",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-reader-mode",
@@ -3935,7 +3935,7 @@
   {
     "name": "messages-for-android-save-card",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "messages-for-android-sync-error",
@@ -3945,7 +3945,7 @@
   {
     "name": "messages-for-android-update-password",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 105
   },
   {
     "name": "metal",
