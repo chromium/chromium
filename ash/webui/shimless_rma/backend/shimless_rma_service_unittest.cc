@@ -1073,6 +1073,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
           RMAD_REPAIR_STATUS_ORIGINAL);
+  component->set_identifier("Keyboard_1");
   // second component
   component = components_repair_state.mutable_state()
                   ->mutable_components_repair()
@@ -1081,6 +1082,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
           RMAD_REPAIR_STATUS_REPLACED);
+  component->set_identifier("Touchpad_1");
   const std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -1104,11 +1106,13 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
         EXPECT_EQ(components[0].repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_ORIGINAL);
+        EXPECT_EQ(components[0].identifier(), "Keyboard_1");
         EXPECT_EQ(components[1].component(),
                   rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
         EXPECT_EQ(components[1].repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_REPLACED);
+        EXPECT_EQ(components[1].identifier(), "Touchpad_1");
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1175,11 +1179,15 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
         EXPECT_EQ(state.components_repair().components(0).repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_REPLACED);
+        EXPECT_EQ(state.components_repair().components(0).identifier(),
+                  "Keyboard_1");
         EXPECT_EQ(state.components_repair().components(1).component(),
                   rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
         EXPECT_EQ(state.components_repair().components(1).repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_ORIGINAL);
+        EXPECT_EQ(state.components_repair().components(1).identifier(),
+                  "Touchpad_1");
         EXPECT_EQ(state.components_repair().mainboard_rework(), false);
       });
   base::RunLoop run_loop;
@@ -1196,10 +1204,12 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   components[0].set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
           RMAD_REPAIR_STATUS_REPLACED);
+  components[0].set_identifier("Keyboard_1");
   components[1].set_component(rmad::RmadComponent::RMAD_COMPONENT_TOUCHPAD);
   components[1].set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
           RMAD_REPAIR_STATUS_ORIGINAL);
+  components[1].set_identifier("Touchpad_1");
 
   shimless_rma_provider_->SetComponentList(
       std::move(components),

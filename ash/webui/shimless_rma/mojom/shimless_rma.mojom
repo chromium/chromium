@@ -264,6 +264,7 @@ enum ComponentRepairStatus {
 struct Component {
   ComponentType component;
   ComponentRepairStatus state;
+  string identifier;
 };
 
 // Enumeration of all instructions for next steps after manually disabling write

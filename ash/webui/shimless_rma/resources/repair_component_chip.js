@@ -47,7 +47,7 @@ export class RepairComponentChipElement extends PolymerElement {
       componentName: {type: String, value: ''},
 
       /** @type {string} */
-      componentId: {type: String, value: ''},
+      componentIdentifier: {type: String, value: ''},
     };
   }
 

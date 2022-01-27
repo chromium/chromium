@@ -618,6 +618,15 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
 }
 
 // static
+const std::string&
+StructTraits<ash::shimless_rma::mojom::ComponentDataView,
+             rmad::ComponentsRepairState_ComponentRepairStatus>::
+    identifier(
+        const rmad::ComponentsRepairState_ComponentRepairStatus& component) {
+  return component.identifier();
+}
+
+// static
 MojomWpDisableAction
 EnumTraits<MojomWpDisableAction, ProtoWpDisableAction>::ToMojom(
     ProtoWpDisableAction action) {

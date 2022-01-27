@@ -96,6 +96,9 @@ class StructTraits<ash::shimless_rma::mojom::ComponentDataView,
     return component.repair_status();
   }
 
+  static const std::string& identifier(
+      const rmad::ComponentsRepairState_ComponentRepairStatus& component);
+
   static bool Read(ash::shimless_rma::mojom::ComponentDataView data,
                    rmad::ComponentsRepairState_ComponentRepairStatus* out);
 };

@@ -437,6 +437,7 @@ void ShimlessRmaService::SetComponentList(
         state_proto_.mutable_components_repair()->add_components();
     proto_component->set_component(component.component());
     proto_component->set_repair_status(component.repair_status());
+    proto_component->set_identifier(component.identifier());
   }
   TransitionNextStateGeneric(std::move(callback));
 }

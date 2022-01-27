@@ -149,18 +149,42 @@ export const fakeRsuChallengeQrCode = {
 
 /** @type {!Array<!Component>} */
 export const fakeComponents = [
-  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
-  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
-  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kOriginal},
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_1'
+  },
+  {
+    component: ComponentType.kBattery,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Battery_XYZ_Lithium'
+  },
+  {
+    component: ComponentType.kTouchpad,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Touchpad_XYZ_2'
+  },
 ];
 
 // onboarding_select_components_page_test needs a components list covering all
 // possible repair states.
 /** @type {!Array<!Component>} */
 export const fakeComponentsForRepairStateTest = [
-  {component: ComponentType.kCamera, state: ComponentRepairStatus.kOriginal},
-  {component: ComponentType.kBattery, state: ComponentRepairStatus.kMissing},
-  {component: ComponentType.kTouchpad, state: ComponentRepairStatus.kReplaced},
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_1'
+  },
+  {
+    component: ComponentType.kBattery,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Battery_XYZ_Lithium'
+  },
+  {
+    component: ComponentType.kTouchpad,
+    state: ComponentRepairStatus.kReplaced,
+    identifier: 'Touchpad_XYZ_2'
+  },
 ];
 
 /** @type {!Array<!CalibrationComponentStatus>} */

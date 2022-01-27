@@ -22,14 +22,16 @@ export function repairComponentChipElementTest() {
 
   /**
    * @param {string} componentName
+   * @param {string} componentIdentifier
    * @return {!Promise}
    */
-  function initializeRepairComponentChip(componentName) {
+  function initializeRepairComponentChip(componentName, componentIdentifier) {
     assertFalse(!!component);
 
     component = /** @type {!RepairComponentChipElement} */ (
         document.createElement('repair-component-chip'));
     component.componentName = componentName;
+    component.componentIdentifier = componentIdentifier;
     assertTrue(!!component);
     document.body.appendChild(component);
 
@@ -46,18 +48,26 @@ export function repairComponentChipElementTest() {
   }
 
   test('ComponentRenders', async () => {
-    await initializeRepairComponentChip('cpu');
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
     assertTrue(!!component);
     assertFalse(component.checked);
 
-    const componentNameSpanElement =
-        component.shadowRoot.querySelector('#componentName');
-    assertTrue(!!componentNameSpanElement);
-    assertEquals(componentNameSpanElement.textContent, 'cpu');
+    const nameElement = component.shadowRoot.querySelector('#componentName');
+    assertTrue(!!nameElement);
+    assertEquals(nameElement.textContent, name);
+
+    const identifierElement =
+        component.shadowRoot.querySelector('#componentIdentifier');
+    assertTrue(!!identifierElement);
+    assertEquals(identifierElement.textContent, identifier);
   });
 
   test('ComponentToggleCheckedOnClick', async () => {
-    await initializeRepairComponentChip('cpu');
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
 
     const checkIcon = component.shadowRoot.querySelector('#checkIcon');
 
@@ -71,7 +81,9 @@ export function repairComponentChipElementTest() {
   });
 
   test('ComponentNoToggleOnDisabled', async () => {
-    await initializeRepairComponentChip('cpu');
+    const name = 'cpu';
+    const identifier = 'cpu_123';
+    await initializeRepairComponentChip(name, identifier);
     component.disabled = true;
     await flushTasks();
 

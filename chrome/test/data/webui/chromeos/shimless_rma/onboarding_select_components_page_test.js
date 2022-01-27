@@ -112,12 +112,15 @@ export function onboardingSelectComponentsPageTest() {
         component.shadowRoot.querySelector('#componentTouchpad');
     assertFalse(reworkFlowLink.hidden);
     assertEquals('Camera', cameraComponent.componentName);
+    assertEquals('Camera_XYZ_1', cameraComponent.componentIdentifier);
     assertFalse(cameraComponent.disabled);
     assertFalse(cameraComponent.checked);
     assertEquals('Battery', batteryComponent.componentName);
+    assertEquals('Battery_XYZ_Lithium', batteryComponent.componentIdentifier);
     assertTrue(batteryComponent.disabled);
     assertFalse(batteryComponent.checked);
     assertEquals('Touchpad', touchpadComponent.componentName);
+    assertEquals('Touchpad_XYZ_2', touchpadComponent.componentIdentifier);
     assertFalse(touchpadComponent.disabled);
     assertTrue(touchpadComponent.checked);
   });
