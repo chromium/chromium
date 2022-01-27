@@ -454,6 +454,7 @@ AbstractTts.DEBUG = true;
  */
 AbstractTts.CHARACTER_DICTIONARY = {
   ' ': 'space',
+  '\u00a0': 'space',
   '`': 'backtick',
   '~': 'tilde',
   '!': 'exclamation',

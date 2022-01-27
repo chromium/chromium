@@ -1520,30 +1520,6 @@ TEST_F('ChromeVoxEditingTest', 'SelectAllBareTextContent', function() {
       });
 });
 
-TEST_F('ChromeVoxEditingTest', 'NonBreakingSpaceNewLine', function() {
-  const mockFeedback = this.createMockFeedback();
-  this.runWithLoadedTree(
-      `
-    <div contenteditable role="textbox">&nbsp</div>
-  `,
-      async function(root) {
-        await this.focusFirstTextField(root);
-
-        mockFeedback
-            .call(() => {
-              const node = root.find({role: RoleType.INLINE_TEXT_BOX});
-              const line = new editing.EditableLine(node, 0, node, 0);
-              const prev = new editing.EditableLine(node.root, 1, node.root, 1);
-              const editableHandler = DesktopAutomationHandler.instance
-                                          .textEditHandler_.editableText_;
-              editableHandler.handleSpeech_(
-                  line, prev, line, line, prev, prev, true, []);
-            })
-            .expectSpeech('\n')
-            .replay();
-      });
-});
-
 TEST_F('ChromeVoxEditingTest', 'InputEvents', function() {
   const site = `<input type="text"></input>`;
   this.runWithLoadedTree(site, async function(root) {
@@ -2249,6 +2225,56 @@ TEST_F('ChromeVoxEditingTest', 'NativeCharWordCommands', function() {
         .expectSpeech('is')
         .call(this.press(KeyCode.LEFT, {ctrl: true}))
         .expectSpeech('This')
+
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable="true" role="textbox">
+      <p>A</p>
+      <div><table>
+        <colgroup><col><col></colgroup>
+        <tbody>
+          <tr>
+            <td><div><span>&nbsp;</span></div></td>
+            <td><div><span>&nbsp;</span></div></td>
+          </tr>
+          <tr>
+            <td><div><span>&nbsp;</span></div></td>
+            <td><div><span>&nbsp;</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div><div></div></div>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    const textField = root.find({role: RoleType.TEXT_FIELD});
+    mockFeedback.expectSpeech('Text area')
+        .call(this.press(KeyCode.HOME, {ctrl: true}))
+        .call(this.press(KeyCode.RIGHT))
+        .call(this.press(KeyCode.RIGHT))
+        .call(this.press(KeyCode.RIGHT))
+        // Non-breaking spaces (\u00a0) get preprocessed later by TtsBackground
+        // to ' '. This comes as part of speak line output in
+        // AutomationRichEditableText.
+        .expectSpeech('\u00a0', 'row 1 column 1')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0', 'row 1 column 2')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0', 'row 2 column 1')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('\u00a0', 'row 2 column 2')
 
         .replay();
   });

@@ -564,14 +564,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     }
 
     const curBase = baseLineOnStart ? endLine : startLine;
-    if (cur.text === '\u00a0' && cur.hasCollapsedSelection() &&
-        !cur.end.node.nextOnLine) {
-      // This is a specific pattern seen in Google Docs. A single node (static
-      // text/in line text box), containing a non-breaking-space signifies a new
-      // line.
-      ChromeVox.tts.speak('\n', QueueMode.CATEGORY_FLUSH);
-    } else if (
-        (cur.startContainer.role === RoleType.TEXT_FIELD ||
+    if ((cur.startContainer.role === RoleType.TEXT_FIELD ||
          (cur.startContainer === prev.startContainer &&
           cur.endContainer === prev.endContainer)) &&
         cur.startContainerValue !== prev.startContainerValue) {
