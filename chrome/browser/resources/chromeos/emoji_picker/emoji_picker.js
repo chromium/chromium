@@ -252,7 +252,8 @@ export class EmojiPicker extends PolymerElement {
     const initializationPromise = Promise.all([
       this.apiProxy_.getFeatureList().then(
           (response) => this.setActiveFeatures(response.featureList)),
-      this.fetchEmojiData(),
+      this.fetchOrderingData(this.emojiDataUrl + '_start.json')
+          .then(data => this.onEmojiDataLoaded(data))
     ]);
 
     initializationPromise.then(() => {
@@ -264,7 +265,7 @@ export class EmojiPicker extends PolymerElement {
             CATEGORY_BUTTON_CLICK,
             ev => this.set('category', ev.detail.categoryName));
         this.addEventListener(EMOJI_REMAINING_DATA_LOADED, () => {
-          this.fetchEmoticonData().then((data) => {
+          this.fetchOrderingData(EMOTICON_ORDERING_JSON).then((data) => {
             this.emoticonData = data;
             this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
           });
@@ -299,25 +300,14 @@ export class EmojiPicker extends PolymerElement {
     this.v2Enabled = featureList.includes(Feature.EMOJI_PICKER_EXTENSION);
   }
 
-  fetchEmojiData() {
-    return new Promise((resolve, reject) => {
+  /**
+   * @param {string} url
+   */
+  fetchOrderingData(url) {
+    return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
-      xhr.onloadend = () => {
-        this.onEmojiDataLoaded(xhr.responseText);
-        resolve();
-      };
-      xhr.open('GET', this.emojiDataUrl + '_start.json');
-      xhr.send();
-    });
-  }
-
-  fetchEmoticonData() {
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onloadend = () => {
-        resolve(JSON.parse(xhr.responseText));
-      };
-      xhr.open('GET', EMOTICON_ORDERING_JSON);
+      xhr.onloadend = () => resolve(JSON.parse(xhr.responseText));
+      xhr.open('GET', url);
       xhr.send();
     });
   }
@@ -681,23 +671,22 @@ export class EmojiPicker extends PolymerElement {
     }
   }
 
+  /**
+   * @param {!EmojiGroupData} data
+   */
   onEmojiDataLoaded(data) {
-    const emojidata = /** @type {!EmojiGroupData} */ (JSON.parse(data));
     // There is quite a lot of emoji data to load which causes slow rendering.
     // Just load the first emoji category immediately, and defer loading of the
     // other categories (which will be off screen).
-    this.emojiData = [emojidata[0]];
-    afterNextRender(this, () => {
-      const xhr = new XMLHttpRequest();
-      xhr.onloadend = () => this.onEmojiDataLoadedRemaining(xhr.responseText);
-      xhr.open('GET', this.emojiDataUrl + '_remaining.json');
-      xhr.send();
-    });
+    this.emojiData = [data[0]];
+    afterNextRender(
+        this,
+        () => this.fetchOrderingData(`${this.emojiDataUrl}_remaining.json`)
+                  .then(data => this.onEmojiDataLoadedRemaining(data)));
   }
 
   onEmojiDataLoadedRemaining(data) {
-    const emojidata = /** @type {!EmojiGroupData} */ (JSON.parse(data));
-    this.push('emojiData', ...emojidata);
+    this.push('emojiData', ...data);
     this.dispatchEvent(createCustomEvent(EMOJI_REMAINING_DATA_LOADED));
   }
 
