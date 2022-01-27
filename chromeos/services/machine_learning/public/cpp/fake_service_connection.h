@@ -270,6 +270,9 @@ class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
       chromeos::machine_learning::mojom::Rotation rotation,
       mojom::DocumentScanner::DoPostProcessingCallback callback) override;
 
+  // Flush all relevant Mojo pipes.
+  void FlushForTesting();
+
  private:
   void ScheduleCall(base::OnceClosure call);
   void HandleLoadBuiltinModelCall(

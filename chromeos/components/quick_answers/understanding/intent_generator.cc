@@ -172,6 +172,10 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
       .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
 }
 
+void IntentGenerator::FlushForTesting() {
+  text_classifier_.FlushForTesting();
+}
+
 void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
                                         LoadModelResult result) {
   if (result != LoadModelResult::OK) {

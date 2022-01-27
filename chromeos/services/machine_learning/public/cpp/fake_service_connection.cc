@@ -227,6 +227,21 @@ void FakeServiceConnectionImpl::RunPendingCalls() {
   pending_calls_.clear();
 }
 
+void FakeServiceConnectionImpl::FlushForTesting() {
+  clone_ml_service_receivers_.FlushForTesting();
+  machine_learning_service_.FlushForTesting();
+  model_receivers_.FlushForTesting();
+  graph_receivers_.FlushForTesting();
+  text_classifier_receivers_.FlushForTesting();
+  handwriting_receivers_.FlushForTesting();
+  web_platform_handwriting_receivers_.FlushForTesting();
+  grammar_checker_receivers_.FlushForTesting();
+  soda_recognizer_receivers_.FlushForTesting();
+  text_suggester_receivers_.FlushForTesting();
+  document_scanner_receivers_.FlushForTesting();
+  soda_client_remotes_.FlushForTesting();
+}
+
 void FakeServiceConnectionImpl::HandleLoadBuiltinModelCall(
     mojo::PendingReceiver<mojom::Model> receiver,
     mojom::MachineLearningService::LoadBuiltinModelCallback callback) {

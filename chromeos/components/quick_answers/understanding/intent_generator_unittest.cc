@@ -64,6 +64,12 @@ class IntentGeneratorTest : public QuickAnswersTestBase {
     intent_info_ = intent_info;
   }
 
+  // Flush all relevant Mojo pipes.
+  void FlushForTesting() {
+    intent_generator_->FlushForTesting();
+    fake_service_connection_.FlushForTesting();
+  }
+
  protected:
   void UseFakeServiceConnection(
       const std::vector<TextAnnotationPtr>& annotations =
@@ -95,7 +101,7 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
   request.context.device_properties.preferred_languages = "es";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate translation intent.
   EXPECT_EQ(IntentType::kTranslation, intent_info_.intent_type);
@@ -115,7 +121,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
   request.context.device_properties.preferred_languages = "en";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate translation intent since the detected language is the
   // same as system language.
@@ -134,7 +140,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLocale) {
   request.context.device_properties.preferred_languages = "es,en,zh";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate translation intent since the detected language is in
   // the preferred languages list.
@@ -153,7 +159,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
   request.context.device_properties.preferred_languages = "es-MX,en-US,zh-CN";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate translation intent since the detected language is in
   // the preferred languages list.
@@ -175,7 +181,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
   request.context.device_properties.preferred_languages = "es";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate translation intent since the length of the selected
   // text is above the threshold.
@@ -212,7 +218,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithAnnotation) {
 
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate dictionary intent which is prioritized against
   // translation.
@@ -229,7 +235,7 @@ TEST_F(IntentGeneratorTest, TranslationIntentDeviceLanguageNotSet) {
   request.selected_text = "quick answers";
   intent_generator_->GenerateIntent(request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate translation intent since the device language is not
   // set.
@@ -260,7 +266,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationDefinitionIntent) {
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate dictionary intent.
   EXPECT_EQ(IntentType::kDictionary, intent_info_.intent_type);
@@ -291,7 +297,7 @@ TEST_F(IntentGeneratorTest,
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate dictionary intent since the extra characters is below the
   // threshold.
@@ -323,7 +329,7 @@ TEST_F(IntentGeneratorTest,
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate dictionary intent since the extra characters is above
   // the threshold.
@@ -354,7 +360,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationUnitIntentExtraChars) {
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate unit conversion intent.
   EXPECT_EQ(IntentType::kUnit, intent_info_.intent_type);
@@ -384,7 +390,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationUnitIntentUtf16Char) {
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate unit conversion intent.
   EXPECT_EQ(IntentType::kUnit, intent_info_.intent_type);
@@ -414,7 +420,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationUnitIntentExtraCharsAboveThreshold) {
 
   intent_generator_->GenerateIntent(*quick_answers_request);
 
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should not generate unit conversion intent since the extra characters is
   // above the threshold.
@@ -431,7 +437,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentNoAnnotation) {
   UseFakeServiceConnection(annotations);
 
   intent_generator_->GenerateIntent(*quick_answers_request);
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate unknown intent since no annotation found.
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
@@ -453,7 +459,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentNoEntity) {
   UseFakeServiceConnection(annotations);
 
   intent_generator_->GenerateIntent(*quick_answers_request);
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate unknown intent since no entity found.
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
@@ -481,7 +487,7 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentUnSupportedEntity) {
   UseFakeServiceConnection(annotations);
 
   intent_generator_->GenerateIntent(*quick_answers_request);
-  task_environment_.RunUntilIdle();
+  FlushForTesting();
 
   // Should generate unknown intent unsupported entity is provided.
   EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);

@@ -39,6 +39,9 @@ class IntentGenerator {
   // Generate intent from the |request|. Virtual for testing.
   virtual void GenerateIntent(const QuickAnswersRequest& request);
 
+  // Flush all relevant Mojo pipes.
+  void FlushForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(IntentGeneratorTest,
                            TextAnnotationIntentNoAnnotation);
