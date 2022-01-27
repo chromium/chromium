@@ -2,6 +2,7 @@
   "facets": {
     "fuchsia.test": {
       "injected-services": {
+        "fuchsia.buildinfo.Provider": "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cmx",
         "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx"
       },
       "system-services": [
@@ -17,6 +18,7 @@
       "config-data"
     ],
     "services": [
+      "fuchsia.buildinfo.Provider",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.ProfileProvider",

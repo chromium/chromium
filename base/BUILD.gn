@@ -1760,6 +1760,8 @@ mixed_component("base") {
       "files/file_util_fuchsia.cc",
       "files/file_util_posix.cc",
       "files/memory_mapped_file_posix.cc",
+      "fuchsia/build_info.cc",
+      "fuchsia/build_info.h",
       "fuchsia/default_job.cc",
       "fuchsia/default_job.h",
       "fuchsia/file_utils.cc",
@@ -1851,6 +1853,7 @@ mixed_component("base") {
     ]
 
     deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
       "//third_party/fuchsia-sdk/sdk/pkg/async-default",
@@ -3744,6 +3747,7 @@ test("base_unittests") {
     sources += [
       "files/dir_reader_posix_unittest.cc",
       "files/file_descriptor_watcher_posix_unittest.cc",
+      "fuchsia/build_info_unittest.cc",
       "fuchsia/file_utils_unittest.cc",
       "fuchsia/filtered_service_directory_unittest.cc",
       "fuchsia/fuchsia_logging_unittest.cc",
@@ -3768,6 +3772,7 @@ test("base_unittests") {
       ":test_interface_impl",
       ":test_log_listener_safe",
       ":testfidl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",

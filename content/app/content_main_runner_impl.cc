@@ -177,6 +177,10 @@
 #include "content/browser/android/browser_startup_controller.h"
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/build_info.h"
+#endif
+
 namespace content {
 extern int GpuMain(MainFunctionParams);
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -754,6 +758,15 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
     exit_manager_ = std::make_unique<base::AtExitManager>();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Cache the BuildInfo for this process.
+  // This avoids requiring that all callers of certain base:: functions first
+  // ensure the cache is populated.
+  // Making the blocking call now also avoids the potential for blocking later
+  // in when it might be user-visible.
+  base::FetchAndCacheSystemBuildInfo();
+#endif
 
   int exit_code = 0;
   if (!GetContentClient())

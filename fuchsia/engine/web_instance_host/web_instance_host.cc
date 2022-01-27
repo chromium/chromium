@@ -447,9 +447,10 @@ std::vector<std::string> GetRequiredServicesForConfig(
   // at:
   //   https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams.service_directory
   std::vector<std::string> services{
-      "fuchsia.device.NameProvider",     "fuchsia.fonts.Provider",
-      "fuchsia.intl.PropertyProvider",   "fuchsia.logger.LogSink",
-      "fuchsia.memorypressure.Provider", "fuchsia.process.Launcher",
+      "fuchsia.buildinfo.Provider", "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",     "fuchsia.intl.PropertyProvider",
+      "fuchsia.logger.LogSink",     "fuchsia.memorypressure.Provider",
+      "fuchsia.process.Launcher",
       "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
       "fuchsia.sysmem.Allocator"};
 

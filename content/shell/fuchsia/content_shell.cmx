@@ -9,6 +9,7 @@
     ],
     "services": [
       "fuchsia.accessibility.semantics.SemanticsManager",
+      "fuchsia.buildinfo.Provider",
       "fuchsia.device.NameProvider",
       "fuchsia.fonts.Provider",
       "fuchsia.input.virtualkeyboard.ControllerCreator",

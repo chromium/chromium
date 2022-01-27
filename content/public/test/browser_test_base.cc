@@ -131,6 +131,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/build_info.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -397,6 +398,13 @@ void BrowserTestBase::SetUp() {
   command_line->AppendSwitch(switches::kDisableGpu);
 
   ui::fuchsia::IgnorePresentCallsForTest();
+
+  // Clear the per-process cached BuildInfo, which was initialized by
+  // TestSuite::Initialize(), to prevent a DCHECK for multiple calls during
+  // in-process browser tests. There is not a single TestSuite for all browser
+  // tests and some use the cached values, so skipping the earlier
+  // initialization is not an option.
+  base::ClearCachedBuildInfoForTesting();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

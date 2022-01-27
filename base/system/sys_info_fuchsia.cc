@@ -7,12 +7,16 @@
 #include <sys/statvfs.h>
 #include <zircon/syscalls.h>
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/build_info.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/clamped_math.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -165,7 +169,7 @@ void SysInfo::SetAmountOfTotalDiskSpace(const FilePath& path, int64_t bytes) {
 
 // static
 std::string SysInfo::OperatingSystemVersion() {
-  return zx_system_get_version_string();
+  return std::string(GetBuildInfoVersion());
 }
 
 // static

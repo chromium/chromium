@@ -37,6 +37,7 @@ namespace {
 // All services must be listed in cast_runner.cmx.
 static constexpr const char* kServices[] = {
     "fuchsia.accessibility.semantics.SemanticsManager",
+    "fuchsia.buildinfo.Provider",
     "fuchsia.device.NameProvider",
     "fuchsia.fonts.Provider",
     "fuchsia.input.virtualkeyboard.ControllerCreator",

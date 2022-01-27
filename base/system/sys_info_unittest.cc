@@ -144,6 +144,12 @@ TEST_F(SysInfoTest, NestedVolumesAmountOfTotalDiskSpace) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+
+TEST_F(SysInfoTest, OperatingSystemVersion) {
+  std::string version = SysInfo::OperatingSystemVersion();
+  EXPECT_FALSE(version.empty());
+}
+
 TEST_F(SysInfoTest, OperatingSystemVersionNumbers) {
   int32_t os_major_version = -1;
   int32_t os_minor_version = -1;

@@ -9,6 +9,7 @@
 #include <zircon/processargs.h>
 #include <zircon/syscalls/policy.h>
 
+#include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
@@ -147,10 +148,15 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
 
 // Services that are passed to all processes.
 constexpr auto kDefaultServices = base::make_span((const char* const[]) {
+  // TODO(crbug.com/1286960): Remove this and/or intl below if an alternative
+  // solution does not require access to the service in all processes.
+  fuchsia::buildinfo::Provider::Name_,
+
 // DebugData service is needed only for profiling.
 #if BUILDFLAG(CLANG_PROFILING)
-  "fuchsia.debugdata.DebugData",
+      "fuchsia.debugdata.DebugData",
 #endif
+
       fuchsia::intl::PropertyProvider::Name_, fuchsia::logger::LogSink::Name_
 });
 

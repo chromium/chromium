@@ -14,6 +14,7 @@
       "vulkan"
     ],
     "services": [
+      "fuchsia.buildinfo.Provider",
       "fuchsia.device.NameProvider",
       "fuchsia.element.GraphicalPresenter",
       "fuchsia.fonts.Provider",

@@ -71,6 +71,10 @@
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/build_info.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #if defined(_DEBUG)
 #include <crtdbg.h>
@@ -416,15 +420,26 @@ int TestSuite::Run() {
   mac::ScopedNSAutoreleasePool scoped_pool;
 #endif
 
-  Initialize();
-
   std::string client_func =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kTestChildProcess);
 
+#if BUILDFLAG(IS_FUCHSIA)
+  // Cache the BuildInfo so individual tests do not need to worry about it.
+  // Some ProcessUtilTest cases, which use kTestChildProcess, do not pass any
+  // services, so skip this if that switch is not found.
+  // This must be called before Initialize() because, for example,
+  // content::ContentTestSuite::Initialize() may use the cached values.
+  if (client_func.empty())
+    FetchAndCacheSystemBuildInfo();
+#endif
+
+  Initialize();
+
   // Check to see if we are being run as a client process.
   if (!client_func.empty())
     return multi_process_function_list::InvokeChildProcessTest(client_func);
+
 #if BUILDFLAG(IS_IOS)
   test_listener_ios::RegisterTestEndListener();
 #endif

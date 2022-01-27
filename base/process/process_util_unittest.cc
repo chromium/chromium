@@ -27,6 +27,7 @@
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
@@ -73,12 +74,17 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include <lib/fdio/fdio.h>
 #include <lib/fdio/limits.h>
+#include <lib/fdio/spawn.h>
+#include <lib/sys/cpp/component_context.h>
 #include <zircon/process.h>
 #include <zircon/processargs.h>
 #include <zircon/syscalls.h>
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
+#include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/process_context.h"
+#include "base/test/bind.h"
 #endif
 
 namespace base {
@@ -94,7 +100,7 @@ const char kSignalFileTerm[] = "TerminatedChildProcess.die";
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-const char kSignalFileClone[] = "ClonedTmpDir.die";
+const char kSignalFileClone[] = "ClonedDir.die";
 const char kDataDirHasStaged[] = "DataDirHasStaged.die";
 const char kFooDirHasStaged[] = "FooDirHasStaged.die";
 const char kFooDirDoesNotHaveStaged[] = "FooDirDoesNotHaveStaged.die";
@@ -171,6 +177,8 @@ std::string ProcessUtilTest::GetSignalFilePath(const char* filename) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   FilePath tmp_dir;
   PathService::Get(DIR_TEMP, &tmp_dir);
+  // Ensure the directory exists to avoid harder to debug issues later.
+  CHECK(PathExists(tmp_dir));
   tmp_dir = tmp_dir.Append(filename);
   return tmp_dir.value();
 #else
@@ -232,7 +240,6 @@ TEST_F(ProcessUtilTest, DISABLED_GetTerminationStatusExit) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-
 MULTIPROCESS_TEST_MAIN(CheckDataDirHasStaged) {
   if (!PathExists(base::FilePath("/data/staged"))) {
     return 1;
@@ -327,22 +334,36 @@ TEST_F(ProcessUtilTest, TransferHandleToPath) {
   EXPECT_EQ(kSuccess, exit_code);
 }
 
-MULTIPROCESS_TEST_MAIN(CheckTmpFileExists) {
-  // Look through the filesystem to ensure that no other directories
-  // besides "tmp" are in the namespace.
+// Look through the filesystem to ensure that no other directories
+// besides |expected_path| are in the namespace.
+// Since GetSignalFilePath() uses "/tmp", tests for paths other than this must
+// include two paths. "/tmp" must always be last.
+int CheckOnlyOnePathExists(StringPiece expected_path) {
+  bool is_expected_path_tmp = expected_path == "/tmp";
+  std::vector<FilePath> paths;
+
   base::FileEnumerator enumerator(
       base::FilePath("/"), false,
       base::FileEnumerator::FILES | base::FileEnumerator::DIRECTORIES);
-  base::FilePath next_path;
-  while (!(next_path = enumerator.Next()).empty()) {
-    if (next_path != base::FilePath("/tmp")) {
-      LOG(ERROR) << "Clone policy violation: found non-tmp directory "
-                 << next_path.MaybeAsASCII();
-      return 1;
-    }
+  for (auto path = enumerator.Next(); !path.empty(); path = enumerator.Next()) {
+    paths.push_back(std::move(path));
   }
+
+  EXPECT_EQ(paths.size(), is_expected_path_tmp ? 1u : 2u);
+  EXPECT_EQ(paths[0], base::FilePath(expected_path))
+      << "Clone policy violation: found non-tmp directory "
+      << paths[0].MaybeAsASCII();
+
+  if (!is_expected_path_tmp) {
+    EXPECT_EQ(paths[1], base::FilePath("/tmp"));
+  }
+
   WaitToDie(ProcessUtilTest::GetSignalFilePath(kSignalFileClone).c_str());
   return kSuccess;
+}
+
+MULTIPROCESS_TEST_MAIN(CheckOnlyTmpExists) {
+  return CheckOnlyOnePathExists("/tmp");
 }
 
 TEST_F(ProcessUtilTest, CloneTmp) {
@@ -354,7 +375,7 @@ TEST_F(ProcessUtilTest, CloneTmp) {
   options.paths_to_clone.push_back(base::FilePath("/tmp"));
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
-  Process process(SpawnChildWithOptions("CheckTmpFileExists", options));
+  Process process(SpawnChildWithOptions("CheckOnlyTmpExists", options));
   ASSERT_TRUE(process.IsValid());
 
   SignalChildren(signal_file.c_str());
@@ -386,7 +407,12 @@ TEST_F(ProcessUtilTest, TransferInvalidHandleFails) {
   remove(signal_file.c_str());
   Process process(
       SpawnChildWithOptions("CheckMountedDirDoesNotExist", options));
-  ASSERT_FALSE(process.IsValid());
+  EXPECT_FALSE(process.IsValid());
+}
+
+MULTIPROCESS_TEST_MAIN(NeverCalled) {
+  CHECK(false) << "Process should not have been launched.";
+  return 99;
 }
 
 TEST_F(ProcessUtilTest, CloneInvalidDirFails) {
@@ -399,31 +425,33 @@ TEST_F(ProcessUtilTest, CloneInvalidDirFails) {
   options.paths_to_clone.push_back(base::FilePath("/definitely_not_a_dir"));
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
-  Process process(SpawnChildWithOptions("CheckTmpFileExists", options));
-  ASSERT_FALSE(process.IsValid());
+  Process process(SpawnChildWithOptions("NeverCalled", options));
+  EXPECT_FALSE(process.IsValid());
 }
 
-// Test that we can clone other directories. CheckTmpFileExists will return an
-// error code if it detects a directory other than "/tmp", so we can use that as
-// a signal that it successfully detected another entry in the root namespace.
+MULTIPROCESS_TEST_MAIN(CheckOnlyDataExists) {
+  return CheckOnlyOnePathExists("/data");
+}
+
 TEST_F(ProcessUtilTest, CloneAlternateDir) {
   const std::string signal_file =
       ProcessUtilTest::GetSignalFilePath(kSignalFileClone);
   remove(signal_file.c_str());
 
   LaunchOptions options;
-  options.paths_to_clone.push_back(base::FilePath("/tmp"));
   options.paths_to_clone.push_back(base::FilePath("/data"));
+  // The DIR_TEMP path is used by GetSignalFilePath().
+  options.paths_to_clone.push_back(base::FilePath("/tmp"));
   options.spawn_flags = FDIO_SPAWN_CLONE_STDIO;
 
-  Process process(SpawnChildWithOptions("CheckTmpFileExists", options));
+  Process process(SpawnChildWithOptions("CheckOnlyDataExists", options));
   ASSERT_TRUE(process.IsValid());
 
   SignalChildren(signal_file.c_str());
 
   int exit_code = 42;
   EXPECT_TRUE(process.WaitForExit(&exit_code));
-  EXPECT_EQ(1, exit_code);
+  EXPECT_EQ(kSuccess, exit_code);
 }
 
 TEST_F(ProcessUtilTest, HandlesToTransferClosedOnSpawnFailure) {
