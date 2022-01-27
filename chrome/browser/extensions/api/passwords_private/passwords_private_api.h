@@ -314,6 +314,19 @@ class PasswordsPrivateRemoveInsecureCredentialFunction
   ResponseAction Run() override;
 };
 
+class PasswordsPrivateMuteInsecureCredentialFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("passwordsPrivate.muteInsecureCredential",
+                             PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL)
+
+ protected:
+  ~PasswordsPrivateMuteInsecureCredentialFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 class PasswordsPrivateStartPasswordCheckFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("passwordsPrivate.startPasswordCheck",

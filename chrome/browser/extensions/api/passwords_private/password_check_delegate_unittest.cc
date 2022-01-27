@@ -751,6 +751,59 @@ TEST_F(PasswordCheckDelegateTest, RemoveInsecureCredentialSuccess) {
   EXPECT_FALSE(delegate().RemoveInsecureCredential(credential));
 }
 
+// Test that muting a insecure password succeeds.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialSuccess) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_TRUE(delegate().MuteInsecureCredential(credential));
+  RunUntilIdle();
+  EXPECT_TRUE(store()
+                  .stored_passwords()
+                  .at(kExampleCom)
+                  .back()
+                  .password_issues.at(InsecureType::kLeaked)
+                  .is_muted.value());
+
+  // Expect another mute of the same credential to fail.
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
+// Test that muting a insecure password fails if the underlying insecure
+// credential no longer exists.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialStaleData) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  store().RemoveLogin(form);
+  RunUntilIdle();
+
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
+// Test that muting a insecure password fails if the ids don't match.
+TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialIdMismatch) {
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  AddIssueToForm(&form, InsecureType::kLeaked);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  InsecureCredential credential =
+      std::move(delegate().GetCompromisedCredentials().at(0));
+  EXPECT_EQ(0, credential.id);
+  credential.id = 1;
+
+  EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
+}
+
 // Tests that we don't create an entry in the database if there is no matching
 // saved password.
 TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {

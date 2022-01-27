@@ -312,6 +312,17 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       MuteInsecureCredentialSucceeds) {
+  AddCompromisedCredential(0);
+  EXPECT_TRUE(RunPasswordsSubtest("muteInsecureCredentialSucceeds"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MuteInsecureCredentialFails) {
+  EXPECT_TRUE(RunPasswordsSubtest("muteInsecureCredentialFails")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, StartPasswordCheck) {
   set_start_password_check_state(
       password_manager::BulkLeakCheckService::State::kRunning);

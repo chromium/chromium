@@ -75,6 +75,11 @@ class PasswordCheckDelegate
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential);
 
+  // Attempts to mute |credential| from the password store. Returns whether
+  // the mute succeeded.
+  bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential);
+
   // Requests to start a check for insecure passwords. Invokes |callback| once a
   // check is running or the request was stopped via StopPasswordCheck().
   void StartPasswordCheck(

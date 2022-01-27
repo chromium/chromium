@@ -99,6 +99,8 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
       base::StringPiece new_password) override;
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
+  bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;

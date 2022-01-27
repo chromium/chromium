@@ -80,6 +80,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // delegate knows of a insecure credential with the same id.
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
+  // Fake implementation of MuteInsecureCredential. This succeeds if the
+  // delegate knows of a insecure credential with the same id.
+  bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;

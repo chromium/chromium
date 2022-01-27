@@ -1681,6 +1681,7 @@ enum HistogramValue {
   DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE = 1618,
   AUTOTESTPRIVATE_STARTARC = 1619,
   AUTOTESTPRIVATE_STOPARC = 1620,
+  PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL = 1621,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

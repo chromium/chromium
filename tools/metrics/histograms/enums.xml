@@ -31395,6 +31395,7 @@ Called by update_extension_histograms.py.-->
   <int value="1618" label="DEVELOPERPRIVATE_REMOVEUSERSPECIFIEDSITE"/>
   <int value="1619" label="AUTOTESTPRIVATE_STARTARC"/>
   <int value="1620" label="AUTOTESTPRIVATE_STOPARC"/>
+  <int value="1621" label="PASSWORDSPRIVATE_MUTEINSECURECREDENTIAL"/>
 </enum>
 
 <enum name="ExtensionIconState">

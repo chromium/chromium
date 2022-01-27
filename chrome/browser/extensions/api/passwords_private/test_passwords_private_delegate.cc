@@ -278,6 +278,16 @@ bool TestPasswordsPrivateDelegate::RemoveInsecureCredential(
                        }) != 0;
 }
 
+// Fake implementation of MuteInsecureCredential. This succeeds if the
+// delegate knows of a insecure credential with the same id.
+bool TestPasswordsPrivateDelegate::MuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
+                     [&credential](const auto& insecure_credential) {
+                       return insecure_credential.id == credential.id;
+                     });
+}
+
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   start_password_check_triggered_ = true;

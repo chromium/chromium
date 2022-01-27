@@ -544,6 +544,11 @@ bool PasswordsPrivateDelegateImpl::RemoveInsecureCredential(
   return password_check_delegate_.RemoveInsecureCredential(credential);
 }
 
+bool PasswordsPrivateDelegateImpl::MuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return password_check_delegate_.MuteInsecureCredential(credential);
+}
+
 void PasswordsPrivateDelegateImpl::StartPasswordCheck(
     StartPasswordCheckCallback callback) {
   password_check_delegate_.StartPasswordCheck(std::move(callback));

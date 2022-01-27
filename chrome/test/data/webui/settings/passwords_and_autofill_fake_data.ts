@@ -287,6 +287,7 @@ export function makeCompromisedCredential(
     compromiseTime: Date.now() - (elapsedMinSinceCompromise * 60000),
     elapsedTimeSinceCompromise: `${elapsedMinSinceCompromise} minutes ago`,
     compromiseType: type,
+    isMuted: false,
   };
   return credential;
 }
