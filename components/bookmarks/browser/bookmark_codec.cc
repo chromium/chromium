@@ -196,29 +196,15 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
   const base::Value* bb_value = roots->FindDictKey(kBookmarkBarFolderNameKey);
   const base::Value* other_folder_value =
       roots->FindDictKey(kOtherBookmarkFolderNameKey);
+  const base::Value* mobile_folder_value =
+      roots->FindDictKey(kMobileBookmarkFolderNameKey);
 
-  if (!bb_value || !other_folder_value)
+  if (!bb_value || !other_folder_value || !mobile_folder_value)
     return false;
 
   DecodeNode(*bb_value, nullptr, bb_node);
   DecodeNode(*other_folder_value, nullptr, other_folder_node);
-
-  // Fail silently if we can't deserialize mobile bookmarks. We can't require
-  // them to exist in order to be backwards-compatible with older versions of
-  // chrome.
-  const base::Value* mobile_folder_value =
-      roots->FindDictKey(kMobileBookmarkFolderNameKey);
-  if (mobile_folder_value) {
-    DecodeNode(*mobile_folder_value, nullptr, mobile_folder_node);
-  } else {
-    // If we didn't find the mobile folder, we're almost guaranteed to have a
-    // duplicate id when we add the mobile folder. Consequently, if we don't
-    // intend to reassign ids in the future (ids_valid_ is still true), then at
-    // least reassign the mobile bookmarks to avoid it colliding with anything
-    // else.
-    if (ids_valid_)
-      ReassignIDsHelper(mobile_folder_node);
-  }
+  DecodeNode(*mobile_folder_value, nullptr, mobile_folder_node);
 
   if (!DecodeMetaInfo(*roots, &model_meta_info_map_))
     return false;
