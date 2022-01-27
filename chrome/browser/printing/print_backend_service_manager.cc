@@ -55,6 +55,20 @@ PrintBackendServiceManager::PrintBackendServiceManager() = default;
 
 PrintBackendServiceManager::~PrintBackendServiceManager() = default;
 
+void PrintBackendServiceManager::SetCrashKeys(const std::string& printer_name) {
+  if (sandboxed_service_remote_for_test_)
+    return;
+
+  // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
+  // any residual accesses left into the printer drivers from the browser
+  // process.
+  base::ScopedAllowBlocking allow_blocking;
+  scoped_refptr<PrintBackend> print_backend =
+      PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
+  crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
+      print_backend->GetPrinterDriverInfo(printer_name));
+}
+
 uint32_t PrintBackendServiceManager::RegisterClient() {
   uint32_t client_id = ++last_client_id_;
 
@@ -173,16 +187,7 @@ void PrintBackendServiceManager::FetchCapabilities(
   SaveCallback(GetRemoteSavedFetchCapabilitiesCallbacks(is_sandboxed),
                remote_id, saved_callback_id, std::move(callback));
 
-  if (!sandboxed_service_remote_for_test_) {
-    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
-    // any residual accesses left into the printer drivers from the browser
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    scoped_refptr<PrintBackend> print_backend =
-        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
-    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
-  }
+  SetCrashKeys(printer_name);
 
   DVLOG(1) << "Sending FetchCapabilities on remote `" << remote_id
            << "`, saved callback ID of " << saved_callback_id;
@@ -234,16 +239,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
       GetRemoteSavedGetPrinterSemanticCapsAndDefaultsCallbacks(is_sandboxed),
       remote_id, saved_callback_id, std::move(callback));
 
-  if (!sandboxed_service_remote_for_test_) {
-    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
-    // any residual accesses left into the printer drivers from the browser
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    scoped_refptr<PrintBackend> print_backend =
-        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
-    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
-  }
+  SetCrashKeys(printer_name);
 
   DVLOG(1) << "Sending GetPrinterSemanticCapsAndDefaults on remote `"
            << remote_id << "`, saved callback ID of " << saved_callback_id;
@@ -271,16 +267,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
   SaveCallback(GetRemoteSavedUpdatePrintSettingsCallbacks(is_sandboxed),
                remote_id, saved_callback_id, std::move(callback));
 
-  if (!sandboxed_service_remote_for_test_) {
-    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
-    // any residual accesses left into the printer drivers from the browser
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    scoped_refptr<PrintBackend> print_backend =
-        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
-    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
-  }
+  SetCrashKeys(printer_name);
 
   DVLOG(1) << "Sending UpdatePrintSettings on remote `" << remote_id
            << "`, saved callback ID of " << saved_callback_id;
@@ -311,16 +298,7 @@ void PrintBackendServiceManager::StartPrinting(
   SaveCallback(GetRemoteSavedStartPrintingCallbacks(is_sandboxed), remote_id,
                saved_callback_id, std::move(callback));
 
-  if (!sandboxed_service_remote_for_test_) {
-    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
-    // any residual accesses left into the printer drivers from the browser
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    scoped_refptr<PrintBackend> print_backend =
-        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
-    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
-  }
+  SetCrashKeys(printer_name);
 
   DVLOG(1) << "Sending StartPrinting on remote `" << remote_id
            << "`, saved callback ID of " << saved_callback_id;
@@ -353,16 +331,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
   SaveCallback(GetRemoteSavedRenderPrintedPageCallbacks(is_sandboxed),
                remote_id, saved_callback_id, std::move(callback));
 
-  if (!sandboxed_service_remote_for_test_) {
-    // TODO(crbug.com/1227561)  Remove local call for driver info, don't want
-    // any residual accesses left into the printer drivers from the browser
-    // process.
-    base::ScopedAllowBlocking allow_blocking;
-    scoped_refptr<PrintBackend> print_backend =
-        PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
-    crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
-        print_backend->GetPrinterDriverInfo(printer_name));
-  }
+  SetCrashKeys(printer_name);
 
   // Page numbers are 0-based for the printing context.
   const uint32_t page_index = page.page_number() - 1;

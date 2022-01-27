@@ -149,8 +149,14 @@ class PrintBackendServiceManager {
       RemoteSavedCallbacks<mojom::ResultCode>;
 #endif
 
+  using RemotesMap =
+      base::flat_map<std::string,
+                     mojo::Remote<printing::mojom::PrintBackendService>>;
+
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
+
+  void SetCrashKeys(const std::string& printer_name);
 
   // Determine the remote ID that is used for the specified `printer_name`.
   std::string GetRemoteIdForPrinterName(const std::string& printer_name) const;
@@ -256,10 +262,6 @@ class PrintBackendServiceManager {
   void RunSavedCallbacksResult(RemoteSavedCallbacks<T>& saved_callbacks,
                                const std::string& remote_id,
                                T result);
-
-  using RemotesMap =
-      base::flat_map<std::string,
-                     mojo::Remote<printing::mojom::PrintBackendService>>;
 
   // Keep separate mapping of remotes for sandboxed vs. unsandboxed services.
   RemotesMap sandboxed_remotes_;
