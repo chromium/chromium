@@ -14,7 +14,7 @@
   typography: {
     font_families: {
       font_family_google_sans: "'Google Sans', 'Noto Sans', sans-serif",
-      font_family_roboto: "Roboto, 'Noto Sans', sans-serif",
+      font_family_roboto: "Roboto, 'Roboto', 'Noto Sans', sans-serif",
     },
     typefaces: {
       headline_1: {
