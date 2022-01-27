@@ -13,6 +13,7 @@
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
 #include <va/va_version.h>
+#include <xf86drm.h>
 
 #include <algorithm>
 #include <string>
@@ -37,6 +38,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -553,12 +555,30 @@ VADisplayState* VADisplayState::Get() {
 
 // static
 void VADisplayState::PreSandboxInitialization() {
-  const char kDriRenderNode0Path[] = "/dev/dri/renderD128";
-  base::File drm_file = base::File(
-      base::FilePath::FromUTF8Unsafe(kDriRenderNode0Path),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
-  if (drm_file.IsValid())
+  constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
+  // This loop ends on either the first card that does not exist or the first
+  // render node that is not vgem.
+  for (int i = 128;; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
+    base::File drm_file =
+        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+    if (!drm_file.IsValid())
+      return;
+    // Skip the virtual graphics memory manager device.
+    drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+    if (!version)
+      continue;
+    std::string version_name(
+        version->name,
+        base::checked_cast<std::string::size_type>(version->name_len));
+    drmFreeVersion(version);
+    if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+      continue;
     VADisplayState::Get()->SetDrmFd(drm_file.GetPlatformFile());
+    return;
+  }
 }
 
 VADisplayState::VADisplayState()
