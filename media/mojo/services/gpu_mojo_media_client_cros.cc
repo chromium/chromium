@@ -23,7 +23,8 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
   switch (GetPlatformDecoderImplementationType(
       *traits.gpu_workarounds, traits.gpu_preferences, traits.gpu_info)) {
-    case VideoDecoderType::kVaapi: {
+    case VideoDecoderType::kVaapi:
+    case VideoDecoderType::kV4L2: {
       auto frame_pool = std::make_unique<PlatformVideoFramePool>(
           traits.gpu_memory_buffer_factory);
       auto frame_converter = MailboxVideoFrameConverter::Create(
@@ -63,6 +64,7 @@ GetPlatformSupportedVideoDecoderConfigs(
     case VideoDecoderType::kVda:
       return std::move(get_vda_configs).Run();
     case VideoDecoderType::kVaapi:
+    case VideoDecoderType::kV4L2:
       return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
     default:
       return absl::nullopt;
@@ -74,8 +76,13 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_preferences.enable_chromeos_direct_video_decoder)
+  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
+#if BUILDFLAG(USE_VAAPI)
     return VideoDecoderType::kVaapi;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+    return VideoDecoderType::kV4L2;
+#endif
+  }
   return VideoDecoderType::kVda;
 #elif BUILDFLAG(ENABLE_VULKAN)
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
