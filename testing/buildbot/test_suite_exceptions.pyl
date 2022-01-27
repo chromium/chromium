@@ -1297,6 +1297,11 @@
           ],
         },
       },
+      'android-12-x64-fyi-rel': {
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'android-arm64-proguard-rel': {
         'swarming': {
           'shards': 16,
