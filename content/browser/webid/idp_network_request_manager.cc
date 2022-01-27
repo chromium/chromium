@@ -103,24 +103,28 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
+void AddCsrfHeader(network::ResourceRequest* request) {
+  // Using a random 64-bit header value. This is just to keep service
+  // implementations from assuming any particular static value.
+  const int kBytes = 64 / 8;
+  std::string webid_header_value;
+  base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
+  request->headers.SetHeader(kSecFedCmCsrfHeader, webid_header_value);
+}
+
 std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
     GURL target_url,
     url::Origin initiator) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   auto target_origin = url::Origin::Create(target_url);
   auto site_for_cookies = net::SiteForCookies::FromOrigin(target_origin);
+  AddCsrfHeader(resource_request.get());
   resource_request->request_initiator = initiator;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kRequestBodyContentType);
 
-  // Using a random 64-bit header value. This is just to keep service
-  // implementations from assuming any particular static value.
-  const int kBytes = 64 / 8;
-  std::string webid_header_value;
-  base::Base64Encode(base::RandBytesAsString(kBytes), &webid_header_value);
-  resource_request->headers.SetHeader(kSecFedCmCsrfHeader, webid_header_value);
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
@@ -835,6 +839,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
       network::mojom::CredentialsMode::kInclude;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kRequestBodyContentType);
+  AddCsrfHeader(resource_request.get());
   // TODO(kenrb): Not following redirects is important for security because
   // this bypasses CORB. Ensure there is a test added.
   // https://crbug.com/1155312.
