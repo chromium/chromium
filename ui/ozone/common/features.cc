@@ -16,9 +16,13 @@ const base::Feature kWaylandOverlayDelegation{"WaylandOverlayDelegation",
 // to properly composite the buffers. This mode is used to support fractional
 // scale factor.
 const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates{
-    "WaylandSurfaceSubmissionInPixelCoordinates",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
+  "WaylandSurfaceSubmissionInPixelCoordinates",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
