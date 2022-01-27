@@ -153,8 +153,22 @@ class PrintBackendServiceManager {
       base::flat_map<std::string,
                      mojo::Remote<printing::mojom::PrintBackendService>>;
 
+  // PrintBackendServiceManager needs to be able to run a callback either after
+  // a successful return from the service or after the remote was disconnected.
+  // This structure is used to save the callback's context.
+  struct CallbackContext {
+    bool is_sandboxed;
+    std::string remote_id;
+    base::UnguessableToken saved_callback_id;
+  };
+
   PrintBackendServiceManager();
   ~PrintBackendServiceManager();
+
+  static void LogCallToRemote(base::StringPiece name,
+                              const CallbackContext& context);
+  static void LogCallbackFromRemote(base::StringPiece name,
+                                    const CallbackContext& context);
 
   void SetCrashKeys(const std::string& printer_name);
 
@@ -202,6 +216,12 @@ class PrintBackendServiceManager {
   GetRemoteSavedRenderPrintedPageCallbacks(bool sandboxed);
 #endif
 
+  // Helper function to get the service and initialize a `context` for a given
+  // `printer_name`.
+  const mojo::Remote<printing::mojom::PrintBackendService>&
+  GetServiceAndCallbackContext(const std::string& printer_name,
+                               CallbackContext& context);
+
   // Helper function to save outstanding callbacks.
   template <class T, class X>
   void SaveCallback(RemoteSavedCallbacks<T>& saved_callbacks,
@@ -217,37 +237,23 @@ class PrintBackendServiceManager {
                            X data);
 
   // Local callback wrappers for mojom calls.
-  void EnumeratePrintersDone(bool sandboxed,
-                             const std::string& remote_id,
-                             const base::UnguessableToken& saved_callback_id,
+  void EnumeratePrintersDone(const CallbackContext& context,
                              mojom::PrinterListResultPtr printer_list);
   void FetchCapabilitiesDone(
-      bool sandboxed,
-      const std::string& remote_id,
-      const base::UnguessableToken& saved_callback_id,
+      const CallbackContext& context,
       mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info);
   void GetDefaultPrinterNameDone(
-      bool sandboxed,
-      const std::string& remote_id,
-      const base::UnguessableToken& saved_callback_id,
+      const CallbackContext& context,
       mojom::DefaultPrinterNameResultPtr printer_name);
   void GetPrinterSemanticCapsAndDefaultsDone(
-      bool sandboxed,
-      const std::string& remote_id,
-      const base::UnguessableToken& saved_callback_id,
+      const CallbackContext& context,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
-  void UpdatePrintSettingsDone(bool sandboxed,
-                               const std::string& remote_id,
-                               const base::UnguessableToken& saved_callback_id,
+  void UpdatePrintSettingsDone(const CallbackContext& context,
                                mojom::PrintSettingsResultPtr printer_caps);
-  void StartPrintingDone(bool sandboxed,
-                         const std::string& remote_id,
-                         const base::UnguessableToken& saved_callback_id,
+  void StartPrintingDone(const CallbackContext& context,
                          mojom::ResultCode result);
 #if BUILDFLAG(IS_WIN)
-  void RenderPrintedPageDone(bool sandboxed,
-                             const std::string& remote_id,
-                             const base::UnguessableToken& saved_callback_id,
+  void RenderPrintedPageDone(const CallbackContext& context,
                              mojom::ResultCode result);
 #endif
 
