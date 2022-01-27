@@ -41,13 +41,6 @@ chromium-metrics-reviews@google.com.
 <variants name="KeySystemWithRobustness">
   <variant name="ClearKey" summary="Clear Key key system"/>
   <variant name="Unknown" summary="Unknown key system"/>
-  <variant name="Widevine" summary="Widevine key system">
-    <obsolete>
-      Deprecated as of 11/2021, when we split some Media.EME.Widevine UMAs into
-      Media.EME.Widevine.HardwareSecure and Media.EME.Widevine.SoftwareSecure
-      ones.
-    </obsolete>
-  </variant>
   <variant name="Widevine.HardwareSecure"
       summary="Hardware secure Widevine key system"/>
   <variant name="Widevine.SoftwareSecure"
@@ -938,15 +931,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Device status received in response to device authorization request.
   </summary>
-</histogram>
-
-<histogram name="Media.Audio.Render.OutputStreamDuration" units="ms"
-    expires_after="2022-01-30">
-  <obsolete>
-    Removed Mar 2020. Use Media.Audio.Render.OutputStreamDuration2 instead.
-  </obsolete>
-  <owner>olka@chromium.org</owner>
-  <owner>henrika@chromium.org</owner>
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputStreamDuration2" units="ms"
@@ -3059,33 +3043,6 @@ chromium-metrics-reviews@google.com.
     frame) when an instance of MojoVideoDecoder successfuly decode the first 150
     frames of a video stream.
   </summary>
-</histogram>
-
-<histogram name="Media.MojoVideoDecoderServiceTiming.{Impl}.{Method}"
-    units="ms" expires_after="M95">
-  <obsolete>
-    Removed Aug 2021.
-  </obsolete>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    The duration of MojoVideoDecoderService method calls. Recorded every call.
-  </summary>
-  <token key="Impl">
-    <variant name="Alternate"
-        summary="Timing for the kAlternate media::VideoDecoderImplementation.">
-      <obsolete>
-        Removed when D3D11/DXVA VideoDecoder implementations became mutually
-        exclusive in M93.
-      </obsolete>
-    </variant>
-    <variant name="Default"
-        summary="Timing for the kDefault media::VideoDecoderImplementation."/>
-  </token>
-  <token key="Method">
-    <variant name="Construct" summary="The time taken for Construct()."/>
-    <variant name="Destruct" summary="Time time taken for destruction."/>
-  </token>
 </histogram>
 
 <histogram name="Media.MSE.AudioCodec" enum="MSECodec" expires_after="never">

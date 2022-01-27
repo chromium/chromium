@@ -1871,21 +1871,6 @@ chromium-metrics-reviews@google.com.
   <summary>Result of a single attempt to upload system logs.</summary>
 </histogram>
 
-<histogram name="Enterprise.UploadJobSuccess" enum="EnterpriseUploadJobSuccess"
-    expires_after="M87">
-  <obsolete>
-    Removed 2022/01
-  </obsolete>
-  <owner>bmalcolm@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Number of retries the client did to execute an UploadJob. It's recorded
-    after the request has been completed, either successfully after 0 or more
-    retries, with a failure because of too many retries or if the UploadJob is
-    interrupted (destroyed before it could succeed or fail).
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
     enum="GoogleServiceAuthError" expires_after="2022-06-26">
   <owner>agawronska@chromium.org</owner>

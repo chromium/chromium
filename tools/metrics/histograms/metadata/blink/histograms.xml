@@ -473,18 +473,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.WillReadFrequently"
-    enum="BooleanWillReadFrequently" expires_after="2021-01-31">
-  <obsolete>
-    Expired on 2021-01-31. This metric was replaced with
-    Blink.Canvas.2DLayerBridge.WillReadFrequently
-  </obsolete>
-  <owner>fserb@chromium.org</owner>
-  <summary>
-    Logs if the canvas is initialized to be read frequently or not.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ColorGamut.Destination" enum="Gamut" expires_after="M85">
   <owner>brianosman@chromium.org</owner>
   <owner>mcasas@google.com</owner>
@@ -2872,53 +2860,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Path"/>
     <variant name="Rectangle"/>
     <variant name="Text"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Blink.{Host}.RenderTaskDuration.{Thread}.{Context}.{Resource}.{Filter}"
-    units="microseconds" expires_after="2022-05-11">
-  <obsolete>
-    Removed in M93. This metric was replaced with
-    Blink.{Host}.RenderTaskDuration.{Context}.{Filter}
-  </obsolete>
-  <owner>junov@chromium.org</owner>
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Time spent executing a script task that draws content to a {Context} context
-    of a {Host}.
-
-    Note: This metric drops reports on clients with low-resolution clocks, which
-    means these reports will be biased against a portion of the population on
-    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-  <token key="Host">
-    <variant name="Canvas"/>
-    <variant name="OffscreenCanvas"/>
-  </token>
-  <token key="Thread">
-    <variant name="MainThread"/>
-    <variant name="Worker"/>
-  </token>
-  <token key="Context">
-    <variant name="2D"/>
-    <variant name="ImageBitmap"/>
-    <variant name="WebGL"/>
-    <variant name="WebGL2"/>
-    <variant name="WebGPU"/>
-  </token>
-  <token key="Resource">
-    <variant name="Bitmap"/>
-    <variant name="PassThrough"/>
-    <variant name="SharedBitmap"/>
-    <variant name="SharedImage"/>
-    <variant name="SkiaDawnSharedImage"/>
-    <variant name="SwapChain"/>
-  </token>
-  <token key="Filter">
-    <variant name="All"/>
-    <variant name="Animation"/>
   </token>
 </histogram>
 

@@ -654,19 +654,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.LoadTime" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The time it takes for the Feed to load entries from the storage.
-  </summary>
-</histogram>
-
 <histogram
     name="ContentSuggestions.Feed.Network.CompressedResponseSizeKB{NetworkRequestType}"
     units="KB" expires_after="2023-03-01">
@@ -745,19 +732,6 @@ chromium-metrics-reviews@google.com.
     The HTTP response status for a network request made by the Feed component.
   </summary>
   <token key="Type" variants="FeedNetworkRequestType"/>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.Network.TokenDuration" units="ms"
-    expires_after="M89">
-  <obsolete>
-    Removed along with FeedV1 in M89
-  </obsolete>
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    The amount of time it takes to get an access token for signed in users.
-  </summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.TokenFetchStatus"
