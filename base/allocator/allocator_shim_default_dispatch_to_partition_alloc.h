@@ -59,7 +59,7 @@ BASE_EXPORT void* PartitionRealloc(const base::allocator::AllocatorDispatch*,
                                    void* context);
 
 BASE_EXPORT void PartitionFree(const base::allocator::AllocatorDispatch*,
-                               void* address,
+                               void* object,
                                void* context);
 
 BASE_EXPORT size_t

@@ -145,9 +145,9 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
     void* ptr = root.AllocFlagsNoHooks(0, object_size, PartitionPageSize());
     EXPECT_TRUE(ptr);
     if (i == 0)
-      first = root.AdjustPointerForExtrasSubtract(ptr);
+      first = root.ObjectToSlotStart(ptr);
     else if (i == num_slots - 1)
-      last = root.AdjustPointerForExtrasSubtract(ptr);
+      last = root.ObjectToSlotStart(ptr);
   }
 
   EXPECT_EQ(SlotSpan::FromSlotStart(first), SlotSpan::FromSlotStart(last));
@@ -160,8 +160,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   EXPECT_TRUE(bucket.active_slot_spans_head !=
               SlotSpan::get_sentinel_slot_span());
 
-  return {bucket.active_slot_spans_head, root.AdjustPointerForExtrasAdd(first),
-          root.AdjustPointerForExtrasAdd(last)};
+  return {bucket.active_slot_spans_head, root.SlotStartToObject(first),
+          root.SlotStartToObject(last)};
 }
 
 bool IsInFreeList(uintptr_t slot_start) {
@@ -265,8 +265,7 @@ void TestDanglingReference(PartitionAllocPCScanTest& test,
     // Check that the object is no longer in the quarantine.
     EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that the object is in the freelist now.
-    EXPECT_TRUE(
-        IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
+    EXPECT_TRUE(IsInFreeList(value_root->ObjectToSlotStart(value)));
   }
 }
 
@@ -283,7 +282,7 @@ void TestDanglingReferenceNotVisited(PartitionAllocPCScanTest& test,
   // it was not scanned from the non-scannable partition.
   EXPECT_FALSE(test.IsInQuarantine(value));
   // Check that the object is in the freelist now.
-  EXPECT_TRUE(IsInFreeList(value_root->AdjustPointerForExtrasSubtract(value)));
+  EXPECT_TRUE(IsInFreeList(value_root->ObjectToSlotStart(value)));
 }
 
 }  // namespace
@@ -368,8 +367,8 @@ TEST_F(PartitionAllocPCScanTest,
 
   // Assert that the first and the last objects are in the same slot span but on
   // different partition pages.
-  ASSERT_EQ(SlotSpan::FromSlotInnerPtr(full_slot_span.first),
-            SlotSpan::FromSlotInnerPtr(full_slot_span.last));
+  ASSERT_EQ(SlotSpan::FromObject(full_slot_span.first),
+            SlotSpan::FromObject(full_slot_span.last));
   ASSERT_NE(
       reinterpret_cast<size_t>(full_slot_span.first) & PartitionPageBaseMask(),
       reinterpret_cast<size_t>(full_slot_span.last) & PartitionPageBaseMask());
@@ -397,9 +396,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromFullPage) {
   // Assert that the first and the last objects are in different slot spans but
   // in the same bucket.
   SlotSpan* source_slot_span =
-      ThreadSafePartitionRoot::SlotSpan::FromSlotInnerPtr(source_addr);
+      ThreadSafePartitionRoot::SlotSpan::FromObject(source_addr);
   SlotSpan* value_slot_span =
-      ThreadSafePartitionRoot::SlotSpan::FromSlotInnerPtr(value_addr);
+      ThreadSafePartitionRoot::SlotSpan::FromObject(value_addr);
   ASSERT_NE(source_slot_span, value_slot_span);
   ASSERT_EQ(source_slot_span->bucket, value_slot_span->bucket);
 
@@ -456,7 +455,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromSingleSlotSlotSpan) {
   using ValueList = SourceList;
 
   auto* source = SourceList::Create(root());
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(source);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromObject(source);
   ASSERT_TRUE(slot_span->CanStoreRawSize());
 
   auto* value = ValueList::Create(root());
@@ -601,13 +600,11 @@ void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
     // |source|.
     EXPECT_TRUE(test.IsInQuarantine(value));
     // Check that |value| is not in the freelist.
-    EXPECT_FALSE(
-        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    EXPECT_FALSE(IsInFreeList(test.root().ObjectToSlotStart(value)));
     // Run sweeper.
     test.FinishPCScanAsScanner();
     // Check that |value| still exists.
-    EXPECT_FALSE(
-        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    EXPECT_FALSE(IsInFreeList(test.root().ObjectToSlotStart(value)));
   }
   {
     // Get rid of the dangling reference.
@@ -617,14 +614,12 @@ void TestDanglingReferenceWithSafepoint(PartitionAllocPCScanTest& test,
     // Enter safepoint and scan from mutator.
     test.JoinPCScanAsMutator();
     // Check that |value| is not in the freelist yet, since sweeper didn't run.
-    EXPECT_FALSE(
-        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    EXPECT_FALSE(IsInFreeList(test.root().ObjectToSlotStart(value)));
     test.FinishPCScanAsScanner();
     // Check that the object is no longer in the quarantine.
     EXPECT_FALSE(test.IsInQuarantine(value));
     // Check that |value| is in the freelist now.
-    EXPECT_TRUE(
-        IsInFreeList(test.root().AdjustPointerForExtrasSubtract(value)));
+    EXPECT_TRUE(IsInFreeList(test.root().ObjectToSlotStart(value)));
   }
 }
 }  // namespace
@@ -673,13 +668,13 @@ TEST_F(PartitionAllocPCScanTest, StackScanning) {
         // |dangling_reference|.
         EXPECT_TRUE(IsInQuarantine(dangling_reference));
         // Check that value is not in the freelist.
-        EXPECT_FALSE(IsInFreeList(
-            root().AdjustPointerForExtrasSubtract(dangling_reference)));
+        EXPECT_FALSE(
+            IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
         // Run sweeper.
         FinishPCScanAsScanner();
         // Check that |dangling_reference| still exists.
-        EXPECT_FALSE(IsInFreeList(
-            root().AdjustPointerForExtrasSubtract(dangling_reference)));
+        EXPECT_FALSE(
+            IsInFreeList(root().ObjectToSlotStart(dangling_reference)));
       }();
     }();
   }();
@@ -693,11 +688,11 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   const size_t big_size = kMaxBucketed - SystemPageSize() + 1;
   void* ptr = root().Alloc(big_size, nullptr);
 
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(ptr);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromObject(ptr);
   ASSERT_TRUE(slot_span->CanStoreRawSize());
 
   uintptr_t source_end =
-      root().AdjustPointerForExtrasSubtract(ptr) + slot_span->GetRawSize();
+      root().ObjectToSlotStart(ptr) + slot_span->GetRawSize();
 
   auto* value = ValueList::Create(root());
 
@@ -750,7 +745,7 @@ TEST_F(PartitionAllocPCScanTest, TwoDanglingPointersToSameObject) {
   EXPECT_TRUE(IsInQuarantine(value));
 
   // Check that accounted size after the cycle is only sizeof ValueList.
-  auto* slot_span_metadata = SlotSpan::FromSlotInnerPtr(value);
+  auto* slot_span_metadata = SlotSpan::FromObject(value);
   const auto& quarantine =
       PCScan::scheduler().scheduling_backend().GetQuarantineData();
   EXPECT_EQ(slot_span_metadata->bucket->slot_size, quarantine.current_size);
@@ -791,7 +786,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
   using SourceList = List<64>;
 
   auto* value = ValueList::Create(root());
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(value);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromObject(value);
   ASSERT_TRUE(slot_span->CanStoreRawSize());
 
   auto* source = SourceList::Create(root());
@@ -835,11 +830,11 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     // Check if the tag overflows. If so, the object must be in quarantine.
     if (HasOverflowTag(reinterpret_cast<uintptr_t>(obj))) {
       EXPECT_TRUE(IsInQuarantine(obj));
-      EXPECT_FALSE(IsInFreeList(root().AdjustPointerForExtrasSubtract(obj)));
+      EXPECT_FALSE(IsInFreeList(root().ObjectToSlotStart(obj)));
       return;
     } else {
       EXPECT_FALSE(IsInQuarantine(obj));
-      EXPECT_TRUE(IsInFreeList(root().AdjustPointerForExtrasSubtract(obj)));
+      EXPECT_TRUE(IsInFreeList(root().ObjectToSlotStart(obj)));
     }
   }
 

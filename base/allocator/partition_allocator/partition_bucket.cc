@@ -313,8 +313,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
 
     PartitionPage<thread_safe>* first_page =
         reinterpret_cast<PartitionPage<thread_safe>*>(super_page_extent) + 1;
-    page = PartitionPage<thread_safe>::FromPtr(
-        reinterpret_cast<void*>(slot_start));
+    page = PartitionPage<thread_safe>::FromAddr(slot_start);
     // |first_page| and |page| may be equal, if there is no alignment padding.
     if (page != first_page) {
       PA_DCHECK(page > first_page);
@@ -534,10 +533,10 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
              root->next_partition_page_end);
   }
 
-  auto* gap_start_page = PartitionPage<thread_safe>::FromPtr(
-      reinterpret_cast<void*>(root->next_partition_page));
-  auto* gap_end_page = PartitionPage<thread_safe>::FromPtr(
-      reinterpret_cast<void*>(adjusted_next_partition_page));
+  auto* gap_start_page =
+      PartitionPage<thread_safe>::FromAddr(root->next_partition_page);
+  auto* gap_end_page =
+      PartitionPage<thread_safe>::FromAddr(adjusted_next_partition_page);
   for (auto* page = gap_start_page; page < gap_end_page; ++page) {
     PA_DCHECK(!page->is_valid);
     page->has_valid_span_after_this = 1;

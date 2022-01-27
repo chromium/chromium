@@ -48,8 +48,8 @@ TEST(HardeningTest, PartialCorruption) {
   // Even if it looks reasonable (valid encoded pointer), freelist corruption
   // detection will make the code crash, because shadow_ doesn't match
   // encoded_next_.
-  PartitionFreelistEntry::EmplaceAndInitForTest(
-      root.AdjustPointerForExtrasSubtract(data), to_corrupt, false);
+  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                to_corrupt, false);
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
 }
 
@@ -75,8 +75,8 @@ TEST(HardeningTest, OffHeapPointerCrashing) {
 
   // See "PartialCorruption" above for details. This time, make shadow_
   // consistent.
-  PartitionFreelistEntry::EmplaceAndInitForTest(
-      root.AdjustPointerForExtrasSubtract(data), to_corrupt, true);
+  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                to_corrupt, true);
 
   // Crashes, because |to_corrupt| is not on the same superpage as data.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
@@ -99,9 +99,9 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   root.Free(data2);
   root.Free(data);
 
-  auto* metadata = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(data);
-  PartitionFreelistEntry::EmplaceAndInitForTest(
-      root.AdjustPointerForExtrasSubtract(data), metadata, true);
+  uintptr_t slot_start = root.ObjectToSlotStart(data);
+  auto* metadata = SlotSpanMetadata<ThreadSafe>::FromSlotStart(slot_start);
+  PartitionFreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
 
   // Crashes, because |metadata| points inside the metadata area.
   EXPECT_DEATH(root.Alloc(kAllocSize, ""), "");
@@ -132,8 +132,8 @@ TEST(HardeningTest, SuccessfulCorruption) {
   root.Free(data2);
   root.Free(data);
 
-  PartitionFreelistEntry::EmplaceAndInitForTest(
-      root.AdjustPointerForExtrasSubtract(data), to_corrupt, true);
+  PartitionFreelistEntry::EmplaceAndInitForTest(root.ObjectToSlotStart(data),
+                                                to_corrupt, true);
 
   // Next allocation is what was in
   // root->bucket->active_slot_span_head->freelist_head, so not the corrupted

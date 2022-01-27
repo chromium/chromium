@@ -784,7 +784,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   // Write a new trailing cookie.
   if (allow_cookie) {
     auto* object =
-        reinterpret_cast<unsigned char*>(AdjustPointerForExtrasAdd(slot_start));
+        reinterpret_cast<unsigned char*>(SlotStartToObject(slot_start));
     internal::PartitionCookieWriteValue(object +
                                         slot_span->GetUsableSize(this));
   }
@@ -813,7 +813,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
-    uintptr_t slot_start = AdjustPointerForExtrasSubtract(ptr);
+    uintptr_t slot_start = ObjectToSlotStart(ptr);
     internal::PartitionRefCount* old_ref_count;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
@@ -879,7 +879,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
   }
   if (LIKELY(!overridden)) {
     // |ptr| may have been allocated in another root.
-    SlotSpan* slot_span = SlotSpan::FromSlotInnerPtr(ptr);
+    SlotSpan* slot_span = SlotSpan::FromObject(ptr);
     auto* old_root = PartitionRoot::FromSlotSpan(slot_span);
     bool success = false;
     bool tried_in_place_for_direct_map = false;

@@ -97,7 +97,7 @@ class BASE_EXPORT PCScan final {
   // Registers a newly allocated super page for |root|.
   static void RegisterNewSuperPage(Root* root, uintptr_t super_page_base);
 
-  ALWAYS_INLINE static void MoveToQuarantine(void* ptr,
+  ALWAYS_INLINE static void MoveToQuarantine(void* object,
                                              size_t usable_size,
                                              uintptr_t slot_start,
                                              size_t slot_size);
@@ -230,7 +230,7 @@ ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
     instance.JoinScan();
 }
 
-ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
+ALWAYS_INLINE void PCScan::MoveToQuarantine(void* object,
                                             size_t usable_size,
                                             uintptr_t slot_start,
                                             size_t slot_size) {
@@ -242,9 +242,10 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
     // TODO(bikineev): If we start protecting quarantine memory, we can lose
     // double-free coverage (the check below). Consider performing the
     // double-free check before protecting if eager clearing becomes default.
-    SecureMemset(ptr, 0, usable_size);
+    SecureMemset(object, 0, usable_size);
   }
 
+  // TODO(bartekn): Remove MTE untagging, once its done in the caller.
   uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
   auto* state_bitmap = StateBitmapFromAddr(unmasked_slot_start);
 

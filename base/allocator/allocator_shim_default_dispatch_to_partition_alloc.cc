@@ -362,16 +362,17 @@ void __real_free(void*);
 }  // extern "C"
 #endif
 
-void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
+void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   ScopedDisallowAllocations guard{};
 #if BUILDFLAG(IS_APPLE)
+  // TODO(bartekn): Add MTE unmasking here (and below).
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(
-                   reinterpret_cast<uintptr_t>(address)) &&
-               address)) {
+                   reinterpret_cast<uintptr_t>(object)) &&
+               object)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
-    return free(address);
+    return free(object);
   }
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -381,16 +382,16 @@ void PartitionFree(const AllocatorDispatch*, void* address, void* context) {
   // Android we have a PA_CHECK() rather than the branch here.
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_CHROMECAST)
   if (UNLIKELY(!base::IsManagedByPartitionAlloc(
-                   reinterpret_cast<uintptr_t>(address)) &&
-               address)) {
+                   reinterpret_cast<uintptr_t>(object)) &&
+               object)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
-    return __real_free(address);
+    return __real_free(object);
   }
 #endif
 
-  base::ThreadSafePartitionRoot::FreeNoHooks(address);
+  base::ThreadSafePartitionRoot::FreeNoHooks(object);
 }
 
 #if BUILDFLAG(IS_APPLE)

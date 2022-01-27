@@ -44,18 +44,30 @@ struct PartitionDirectMapMetadata {
   // super page.
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
+
+  ALWAYS_INLINE static PartitionDirectMapMetadata<thread_safe>* FromSlotSpan(
+      SlotSpanMetadata<thread_safe>* slot_span);
 };
 
 template <bool thread_safe>
-ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
-PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
+ALWAYS_INLINE PartitionDirectMapMetadata<thread_safe>*
+PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata =
       reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(slot_span);
   PA_DCHECK(&metadata->page.slot_span_metadata == slot_span);
-  return &metadata->direct_map_extent;
+  return metadata;
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE PartitionDirectMapExtent<thread_safe>*
+PartitionDirectMapExtent<thread_safe>::FromSlotSpan(
+    SlotSpanMetadata<thread_safe>* slot_span) {
+  PA_DCHECK(slot_span->bucket->is_direct_mapped());
+  return &PartitionDirectMapMetadata<thread_safe>::FromSlotSpan(slot_span)
+              ->direct_map_extent;
 }
 
 }  // namespace internal

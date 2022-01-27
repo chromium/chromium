@@ -221,8 +221,9 @@ struct GetSlotStartResult final {
 PA_SCAN_INLINE GetSlotStartResult
 GetSlotStartInSuperPage(uintptr_t maybe_inner_address) {
   PA_SCAN_DCHECK(IsManagedByNormalBuckets(maybe_inner_address));
-  // Don't use FromSlotInnerPtr() or FromPtr() because they expect a pointer to
-  // a valid slot span.
+  // Don't use SlotSpanMetadata::FromSlotInnerAddr() or
+  // PartitionPage::FromAddr(), because they expect an address within a super
+  // page payload area, which we don't know yet if |maybe_inner_address| is.
   const uintptr_t super_page = maybe_inner_address & kSuperPageBaseMask;
 
   const uintptr_t partition_page_index =
@@ -730,8 +731,7 @@ void PCScanTask::ClearQuarantinedSlotsAndPrepareCardTable() {
       // ScanPartitions.
       const size_t size = slot_span->GetUsableSize(root);
       if (clear_type == PCScan::ClearType::kLazy) {
-        void* object =
-            memory::RemaskPtr(root->AdjustPointerForExtrasAdd(slot_start));
+        void* object = memory::RemaskPtr(root->SlotStartToObject(slot_start));
         memset(object, 0, size);
       }
 #if PA_STARSCAN_USE_CARD_TABLE
@@ -943,11 +943,10 @@ void UnmarkInCardTable(uintptr_t slot_start,
     PartitionRoot<ThreadSafe>* root,
     SlotSpanMetadata<ThreadSafe>* slot_span,
     uintptr_t slot_start) {
-  void* object = root->AdjustPointerForExtrasAdd(slot_start);
-  // TODO(bartekn): Move the cast and MTE masking to a more suitable place.
+  void* object = root->SlotStartToObject(slot_start);
+  // TODO(bartekn): Move MTE masking into SlotStartToObject.
   object = memory::RemaskPtr(object);
-  root->FreeNoHooksImmediate(reinterpret_cast<uintptr_t>(object), slot_span,
-                             slot_start);
+  root->FreeNoHooksImmediate(object, slot_span, slot_start);
   UnmarkInCardTable(slot_start, slot_span);
   return slot_span->bucket->slot_size;
 }
