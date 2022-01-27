@@ -70,7 +70,8 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
   CreateJavaDependenciesIfNecessary();
   return std::make_unique<TriggerScriptBridgeAndroid>(
       base::android::AttachCurrentThread(),
-      GetWebContents().GetJavaWebContents(), dependencies_->GetJavaObject());
+      GetWebContents().GetJavaWebContents(),
+      dependencies_->GetJavaDependencies());
 }
 
 std::unique_ptr<ServiceRequestSender>
@@ -256,10 +257,10 @@ void StarterAndroid::CreateJavaDependenciesIfNecessary() {
     return;
   }
 
-  ScopedJavaGlobalRef<jobject> java_dependencies =
+  ScopedJavaGlobalRef<jobject> jdependencies =
       ScopedJavaGlobalRef<jobject>(*array.begin());
-  if (!java_dependencies.is_null()) {
-    dependencies_ = Dependencies::CreateFromJavaObject(java_dependencies);
+  if (!jdependencies.is_null()) {
+    dependencies_ = Dependencies::CreateFromJavaDependencies(jdependencies);
   }
 
   java_onboarding_helper_ = *(++array.begin());

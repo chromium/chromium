@@ -29,13 +29,17 @@ namespace autofill_assistant {
 
 static jlong JNI_AssistantStaticDependenciesChrome_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_object) {
-  return reinterpret_cast<intptr_t>(new DependenciesChrome(env, java_object));
+    const JavaParamRef<jobject>& jstatic_dependencies) {
+  // The dynamic_cast is necessary here to safely cast the resulting intptr back
+  // to DependenciesAndroid using reinterpret_cast.
+  return reinterpret_cast<intptr_t>(dynamic_cast<Dependencies*>(
+      new DependenciesChrome(env, jstatic_dependencies)));
 }
 
-DependenciesChrome::DependenciesChrome(JNIEnv* env,
-                                       const JavaParamRef<jobject>& java_object)
-    : Dependencies(env, java_object) {}
+DependenciesChrome::DependenciesChrome(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jstatic_dependencies)
+    : Dependencies(env, jstatic_dependencies) {}
 
 class AssistantFieldTrialUtilChrome : public AssistantFieldTrialUtil {
   bool RegisterSyntheticFieldTrial(

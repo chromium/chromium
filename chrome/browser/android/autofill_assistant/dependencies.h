@@ -20,13 +20,20 @@ namespace autofill_assistant {
 // and dependencies to the starter.
 class Dependencies {
  public:
-  static std::unique_ptr<Dependencies> CreateFromJavaObject(
-      base::android::ScopedJavaGlobalRef<jobject> java_object);
+  static std::unique_ptr<Dependencies> CreateFromJavaDependencies(
+      base::android::ScopedJavaGlobalRef<jobject> jdependencies);
 
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
+  static std::unique_ptr<Dependencies> CreateFromJavaStaticDependencies(
+      base::android::ScopedJavaGlobalRef<jobject> jstatic_dependencies);
+
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaStaticDependencies() const;
+  // Might not be null during initiation in starter_android.
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaDependencies() const;
+
+  void SetJavaDependencies(base::android::ScopedJavaGlobalRef<jobject>);
 
   static base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil(
-      const base::android::ScopedJavaGlobalRef<jobject>& java_object);
+      const base::android::ScopedJavaGlobalRef<jobject>& jstatic_dependencies);
 
   base::android::ScopedJavaGlobalRef<jobject> CreateAccessTokenUtil() const;
 
@@ -44,11 +51,14 @@ class Dependencies {
       content::BrowserContext* browser_context) const = 0;
 
  protected:
-  Dependencies(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& java_object);
+  Dependencies(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
  private:
-  const base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  const base::android::ScopedJavaGlobalRef<jobject> jstatic_dependencies_;
+  // Might be null during initiation in starter_android.
+  base::android::ScopedJavaGlobalRef<jobject> jdependencies_;
 };
 
 }  // namespace autofill_assistant

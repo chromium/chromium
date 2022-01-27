@@ -22,8 +22,9 @@ namespace autofill_assistant {
 // and dependencies to the starter.
 class DependenciesChrome : public Dependencies {
  public:
-  DependenciesChrome(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& java_object);
+  DependenciesChrome(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jstatic_dependencies);
 
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;

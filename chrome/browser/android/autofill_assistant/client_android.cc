@@ -70,8 +70,9 @@ JNI_AutofillAssistantClient_CreateForWebContents(
     const JavaParamRef<jobject>& jdependencies) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   std::unique_ptr<Dependencies> dependencies =
-      Dependencies::CreateFromJavaObject(
+      Dependencies::CreateFromJavaDependencies(
           ScopedJavaGlobalRef<jobject>(jdependencies));
+
   ClientAndroid::CreateForWebContents(web_contents, std::move(dependencies));
   return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
 }
@@ -421,7 +422,7 @@ std::string ClientAndroid::GetDebugContext() {
 base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return dependencies_->GetJavaObject();
+  return dependencies_->GetJavaDependencies();
 }
 
 int ClientAndroid::FindDirectAction(const std::string& action_name) {
@@ -450,7 +451,8 @@ void ClientAndroid::AttachUI(
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   if (!ui_controller_android_) {
     ui_controller_android_ = UiControllerAndroid::CreateFromWebContents(
-        GetWebContents(), dependencies_->GetJavaObject(), joverlay_coordinator);
+        GetWebContents(), dependencies_->GetJavaDependencies(),
+        joverlay_coordinator);
     if (!ui_controller_android_) {
       // The activity is not or not yet in a mode where attaching the UI is
       // possible.
@@ -579,7 +581,7 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
 
 bool ClientAndroid::IsAccessibilityEnabled() const {
   return Java_AutofillAssistantClient_isAccessibilityEnabled(
-      AttachCurrentThread(), dependencies_->GetJavaObject());
+      AttachCurrentThread(), dependencies_->GetJavaDependencies());
 }
 
 bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {

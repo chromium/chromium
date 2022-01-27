@@ -16,32 +16,49 @@ using ::base::android::ScopedJavaGlobalRef;
 
 namespace autofill_assistant {
 
-std::unique_ptr<Dependencies> Dependencies::CreateFromJavaObject(
-    ScopedJavaGlobalRef<jobject> java_object) {
+std::unique_ptr<Dependencies> Dependencies::CreateFromJavaDependencies(
+    ScopedJavaGlobalRef<jobject> jdependencies) {
+  std::unique_ptr<Dependencies> dependencies =
+      CreateFromJavaStaticDependencies(jdependencies);
+  dependencies->SetJavaDependencies(jdependencies);
+  return dependencies;
+}
+
+std::unique_ptr<Dependencies> Dependencies::CreateFromJavaStaticDependencies(
+    ScopedJavaGlobalRef<jobject> jstatic_dependencies) {
   const jlong object_ptr = Java_AssistantStaticDependencies_getNativePointer(
-      AttachCurrentThread(), java_object);
+      AttachCurrentThread(), jstatic_dependencies);
   return base::WrapUnique(reinterpret_cast<Dependencies*>(object_ptr));
 }
 
 Dependencies::Dependencies(JNIEnv* env,
-                           const JavaParamRef<jobject>& java_object)
-    : java_object_(java_object) {}
+                           const JavaParamRef<jobject>& jstatic_dependencies)
+    : jstatic_dependencies_(jstatic_dependencies) {}
 
-ScopedJavaGlobalRef<jobject> Dependencies::GetJavaObject() const {
-  return java_object_;
+void Dependencies::SetJavaDependencies(
+    base::android::ScopedJavaGlobalRef<jobject> jdependencies) {
+  jdependencies_ = jdependencies;
+}
+
+ScopedJavaGlobalRef<jobject> Dependencies::GetJavaStaticDependencies() const {
+  return jstatic_dependencies_;
+}
+
+ScopedJavaGlobalRef<jobject> Dependencies::GetJavaDependencies() const {
+  return jdependencies_;
 }
 
 ScopedJavaGlobalRef<jobject> Dependencies::CreateInfoPageUtil(
-    const ScopedJavaGlobalRef<jobject>& java_object) {
+    const ScopedJavaGlobalRef<jobject>& jstatic_dependencies) {
   return ScopedJavaGlobalRef<jobject>(
-      Java_AssistantStaticDependencies_createInfoPageUtil(AttachCurrentThread(),
-                                                          java_object));
+      Java_AssistantStaticDependencies_createInfoPageUtil(
+          AttachCurrentThread(), jstatic_dependencies));
 }
 
 ScopedJavaGlobalRef<jobject> Dependencies::CreateAccessTokenUtil() const {
   return ScopedJavaGlobalRef<jobject>(
       Java_AssistantStaticDependencies_createAccessTokenUtil(
-          AttachCurrentThread(), java_object_));
+          AttachCurrentThread(), jstatic_dependencies_));
 }
 
 Dependencies::~Dependencies() = default;
