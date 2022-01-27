@@ -44,7 +44,7 @@ namespace chromecast {
 std::unique_ptr<CastCoreWebUI> CastCoreWebUI::Create(
     content::WebUI* webui,
     const std::string host,
-    cast::v2::CoreApplicationService::Stub* core_app_service_stub) {
+    cast::v2::CoreApplicationServiceStub* core_app_service_stub) {
   return std::make_unique<CastCoreWebUI>(webui, host, core_app_service_stub);
 }
 #endif
@@ -52,7 +52,7 @@ std::unique_ptr<CastCoreWebUI> CastCoreWebUI::Create(
 GrpcWebUIController::GrpcWebUIController(
     content::WebUI* webui,
     const std::string host,
-    cast::v2::CoreApplicationService::Stub* core_app_service_stub)
+    cast::v2::CoreApplicationServiceStub* core_app_service_stub)
     : WebUIController(webui),
       web_contents_(webui->GetWebContents()),
       browser_context_(web_contents_->GetBrowserContext()) {

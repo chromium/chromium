@@ -4,7 +4,9 @@
 
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 
+#include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "chromecast/media/base/video_plane_controller.h"
 #include "components/cast/message_port/platform_message_port.h"
@@ -47,27 +49,37 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
 }
 
 StreamingRuntimeApplication::~StreamingRuntimeApplication() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   StopApplication();
 }
 
-void StreamingRuntimeApplication::HandleMessage(
-    const cast::web::Message& message,
-    cast::web::MessagePortStatus* response) {
-  message_port_service_->HandleMessage(message, response);
+cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
+StreamingRuntimeApplication::HandlePortMessage(cast::web::Message message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return message_port_service_->HandleMessage(std::move(message));
 }
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Streaming session started for " << *this << "!";
-  SetApplicationStarted();
+  SetApplicationState(
+      cast::v2::ApplicationStatusRequest::STARTED,
+      base::BindPostTask(
+          task_runner(),
+          base::BindOnce(
+              &StreamingRuntimeApplication::OnApplicationStateChanged,
+              weak_factory_.GetWeakPtr())));
 }
 
 void StreamingRuntimeApplication::OnError() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(WARNING) << "Streaming session for " << *this << " has hit an error!";
   StopApplication();
 }
 
 void StreamingRuntimeApplication::StartAvSettingsQuery(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Connect the port to allow for sending messages. Querying will be done by
   // the associated |receiver_session_client_|.
   message_port_service_->ConnectToPort(kMediaCapabilitiesBindingName,
@@ -77,15 +89,17 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
 void StreamingRuntimeApplication::OnResolutionChanged(
     const gfx::Rect& size,
     const ::media::VideoTransformation& transformation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   video_plane_controller_->SetGeometryFromMediaType(size, transformation);
 }
 
 void StreamingRuntimeApplication::InitializeApplication(
     StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(app_url().is_empty());
 
   message_port_service_ =
-      std::make_unique<MessagePortService>(grpc_cq_, core_app_stub());
+      std::make_unique<MessagePortService>(core_message_port_app_stub());
 
   // Bind Cast Transport.
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
@@ -113,6 +127,7 @@ void StreamingRuntimeApplication::InitializeApplication(
 }
 
 void StreamingRuntimeApplication::StopApplication() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!receiver_session_client_) {
     DLOG(INFO) << "Streaming session never started prior to " << *this
                << " stop.";
@@ -124,7 +139,21 @@ void StreamingRuntimeApplication::StopApplication() {
 }
 
 bool StreamingRuntimeApplication::IsStreamingApplication() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
+}
+
+void StreamingRuntimeApplication::OnApplicationStateChanged(
+    grpc::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to set application state to started: " << *this
+               << ", status=" << cast::utils::GrpcStatusToString(status);
+    StopApplication();
+    return;
+  }
+
+  DLOG(INFO) << "Application state changed to started";
 }
 
 }  // namespace chromecast

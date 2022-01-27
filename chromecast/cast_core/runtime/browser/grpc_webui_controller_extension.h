@@ -24,7 +24,7 @@ class GrpcWebUIControllerExtension
   GrpcWebUIControllerExtension(
       content::WebUI* webui,
       const std::string host,
-      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
+      cast::v2::CoreApplicationServiceStub* core_app_service_stub);
   ~GrpcWebUIControllerExtension() override;
 
   // extensions::ExtensionFunctionDispatcher::Delegate implementation:

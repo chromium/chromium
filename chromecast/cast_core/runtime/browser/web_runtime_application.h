@@ -24,8 +24,8 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
 
  private:
   // RuntimeApplicationBase implementation:
-  void HandleMessage(const cast::web::Message& message,
-                     cast::web::MessagePortStatus* response) override;
+  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
+      cast::web::Message message) override;
   void InitializeApplication(StatusCallback callback) override;
   bool IsStreamingApplication() const override;
 
@@ -33,7 +33,15 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   void InnerContentsCreated(CastWebContents* inner_contents,
                             CastWebContents* outer_contents) override;
 
+  void OnAllBindingsReceived(
+      StatusCallback callback,
+      cast::utils::GrpcStatusOr<cast::bindings::GetAllResponse> response_or);
+  void OnApplicationStateChanged(StatusCallback callback, grpc::Status status);
+
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<WebRuntimeApplication> weak_factory_{this};
 };
 
 }  // namespace chromecast

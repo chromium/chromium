@@ -39,7 +39,7 @@ class CastRuntimeMetricsRecorderService {
  private:
   void Report();
   void DrainBuffer();
-  void OnRecordComplete();
+  void OnMetricsRecorded();
 
   CastRuntimeMetricsRecorder* const metrics_recorder_;
   CastRuntimeActionRecorder* const action_recorder_;

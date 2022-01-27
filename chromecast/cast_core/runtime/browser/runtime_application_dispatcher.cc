@@ -276,6 +276,7 @@ void RuntimeApplicationDispatcher::OnApplicationLaunched(
     return;
   }
 
+  LOG(INFO) << "Application launched: " << *app_;
   reactor->Write(cast::runtime::LaunchApplicationResponse());
 }
 
@@ -321,12 +322,12 @@ void RuntimeApplicationDispatcher::RecordMetrics(
               std::move(request));
   std::move(call).InvokeAsync(base::BindPostTask(
       task_runner_,
-      base::BindOnce(&RuntimeApplicationDispatcher::OnMetricsRecordComplete,
+      base::BindOnce(&RuntimeApplicationDispatcher::OnMetricsRecorded,
                      weak_factory_.GetWeakPtr(),
                      std::move(record_complete_callback))));
 }
 
-void RuntimeApplicationDispatcher::OnMetricsRecordComplete(
+void RuntimeApplicationDispatcher::OnMetricsRecorded(
     CastRuntimeMetricsRecorderService::RecordCompleteCallback
         record_complete_callback,
     cast::utils::GrpcStatusOr<cast::metrics::RecordResponse> response_or) {

@@ -14,7 +14,7 @@
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/api_bindings/manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
@@ -30,8 +30,7 @@ class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
   // |cast_web_contents|, |grpc_cq|, and |core_app_stub| all need to outlive
   // |this|.
   BindingsManagerWebRuntime(
-      grpc::CompletionQueue* grpc_cq,
-      cast::v2::CoreApplicationService::Stub* core_app_stub);
+      cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub);
   ~BindingsManagerWebRuntime() override;
 
   BindingsManagerWebRuntime(const BindingsManagerWebRuntime&) = delete;
@@ -41,8 +40,8 @@ class BindingsManagerWebRuntime final : public cast_api_bindings::Manager,
   BindingsManagerWebRuntime& operator=(BindingsManagerWebRuntime&&) = delete;
 
   void AddBinding(base::StringPiece binding_script);
-  void HandleMessage(const cast::web::Message& message,
-                     cast::web::MessagePortStatus* response);
+  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandleMessage(
+      cast::web::Message message);
 
   // Returns a mojo::PendingRemote bound to |this|.
   // At most one bound remote can exist at the same time.

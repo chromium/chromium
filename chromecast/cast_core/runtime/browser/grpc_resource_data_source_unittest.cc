@@ -6,8 +6,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/grpc/src/include/grpcpp/channel.h"
-#include "third_party/grpc/src/include/grpcpp/create_channel.h"
 
 using ::testing::IsEmpty;
 
@@ -17,7 +15,7 @@ class GrpcResourceDataSourceTest : public ::testing::Test {
  public:
   GrpcResourceDataSourceTest()
       : grpc_resource_data_source_(
-            new GrpcResourceDataSource("chrome", true, stub_.get())) {}
+            new GrpcResourceDataSource("chrome", true, nullptr)) {}
 
  protected:
   std::string GetMimeType(const std::string& path) {
@@ -31,10 +29,6 @@ class GrpcResourceDataSourceTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::string core_application_service_address_ = "fake-address";
-  std::unique_ptr<cast::v2::CoreApplicationService::Stub> stub_ =
-      cast::v2::CoreApplicationService::NewStub(
-          grpc::CreateChannel(core_application_service_address_,
-                              grpc::InsecureChannelCredentials()));
   GrpcResourceDataSource* grpc_resource_data_source_;
 };
 

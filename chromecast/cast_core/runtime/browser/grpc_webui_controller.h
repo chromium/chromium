@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 
 namespace content {
 class BrowserContext;
@@ -34,7 +34,7 @@ class GrpcWebUIController : public content::WebUIController {
   GrpcWebUIController(
       content::WebUI* webui,
       const std::string host,
-      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
+      cast::v2::CoreApplicationServiceStub* core_app_service_stub);
   ~GrpcWebUIController() override;
 
   // Creates an instance of GrpcWebUIController.
@@ -42,7 +42,7 @@ class GrpcWebUIController : public content::WebUIController {
   static std::unique_ptr<GrpcWebUIController> Create(
       content::WebUI* webui,
       const std::string host,
-      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
+      cast::v2::CoreApplicationServiceStub* core_app_service_stub);
 
  protected:
   content::WebContents* web_contents() const;

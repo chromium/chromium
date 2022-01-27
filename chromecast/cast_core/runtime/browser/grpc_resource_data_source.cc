@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,7 +46,7 @@ constexpr const char kAllowedOriginPrefix[] = "chrome://";
 GrpcResourceDataSource::GrpcResourceDataSource(
     const std::string host,
     bool for_webui,
-    cast::v2::CoreApplicationService::Stub* core_app_service_stub)
+    cast::v2::CoreApplicationServiceStub* core_app_service_stub)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       host_(host),
@@ -64,38 +65,38 @@ void GrpcResourceDataSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  LOG(INFO) << "Starting Data request for " << url;
-  std::string path = content::URLDataSource::URLToRequestPath(url);
-  std::string contents;
+  DVLOG(1) << "Starting Data request for " << url;
 
-  // TODO(b/195894244): Replace this with gRPC framework from
-  // chromecast/cast_core.
-  grpc::Status status;
-  cast::v2::GetWebUIResourceResponse response;
-  {
-    grpc::ClientContext context;
-    cast::v2::GetWebUIResourceRequest request;
-    request.set_resource_id(path);
-    status =
-        core_app_service_stub_->GetWebUIResource(&context, request, &response);
-    contents = response.resource_path();
-  }
+  auto call = core_app_service_stub_->CreateCall<
+      cast::v2::CoreApplicationServiceStub::GetWebUIResource>();
+  call.request().set_resource_id(content::URLDataSource::URLToRequestPath(url));
+  std::move(call).InvokeAsync(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(&GrpcResourceDataSource::OnWebUiResourceReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback))));
+}
 
-  if (!status.ok()) {
-    LOG(ERROR) << "Failed to receive resource path response";
+void GrpcResourceDataSource::OnWebUiResourceReceived(
+    content::URLDataSource::GotDataCallback callback,
+    cast::utils::GrpcStatusOr<cast::v2::GetWebUIResourceResponse> response_or) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (!response_or.ok()) {
+    LOG(ERROR) << "Failed to receive resource path response: status="
+               << response_or.ToString();
     std::move(callback).Run(nullptr);
     return;
   }
 
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GrpcResourceDataSource::ReadResourceFile,
-                                weak_ptr_factory_.GetWeakPtr(), contents,
-                                std::move(callback)));
+  DVLOG(1) << "Got resource path: " << response_or->resource_path();
+  ReadResourceFile(response_or->resource_path(), std::move(callback));
 }
 
 void GrpcResourceDataSource::ReadResourceFile(
     base::StringPiece resource_file_path,
     content::URLDataSource::GotDataCallback callback) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
   base::FilePath path(resource_file_path);
   if (!base::PathExists(path)) {
     LOG(ERROR) << "Resource " << resource_file_path << " does not exist";
@@ -133,7 +134,6 @@ std::string GrpcResourceDataSource::GetMimeType(const std::string& path) {
   if (extension.empty()) {
     return kMimeTypeHtml;
   }
-
   if (base::EqualsCaseInsensitiveASCII(extension, kExtensionTypeCss)) {
     return kMimeTypeCss;
   }
@@ -160,7 +160,7 @@ std::string GrpcResourceDataSource::GetMimeType(const std::string& path) {
   }
 
   NOTREACHED() << "Unknown Mime type of file " << path;
-  return "";
+  return std::string();
 }
 
 bool GrpcResourceDataSource::ShouldServiceRequest(

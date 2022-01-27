@@ -33,8 +33,8 @@ class StreamingRuntimeApplication final
 
  private:
   // RuntimeApplicationBase implementation:
-  void HandleMessage(const cast::web::Message& message,
-                     cast::web::MessagePortStatus* response) override;
+  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandlePortMessage(
+      cast::web::Message message) override;
   void InitializeApplication(StatusCallback callback) override;
   void StopApplication() override;
   bool IsStreamingApplication() const override;
@@ -48,6 +48,8 @@ class StreamingRuntimeApplication final
       const gfx::Rect& size,
       const ::media::VideoTransformation& transformation) override;
 
+  void OnApplicationStateChanged(grpc::Status status);
+
   media::VideoPlaneController* video_plane_controller_;
 
   // Returns the network context used by |receiver_session_client_|.
@@ -58,6 +60,9 @@ class StreamingRuntimeApplication final
 
   // Object responsible for maintaining the lifetime of the streaming session.
   std::unique_ptr<StreamingReceiverSessionClient> receiver_session_client_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<StreamingRuntimeApplication> weak_factory_{this};
 };
 
 }  // namespace chromecast

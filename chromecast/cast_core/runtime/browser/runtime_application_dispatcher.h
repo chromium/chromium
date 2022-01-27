@@ -13,8 +13,6 @@
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
-#include "chromecast/cast_core/runtime/browser/grpc/grpc_method.h"
-#include "chromecast/cast_core/runtime/browser/grpc/grpc_server.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cast_core/public/src/proto/metrics/metrics_recorder.castcore.pb.h"
@@ -88,7 +86,7 @@ class RuntimeApplicationDispatcher {
   void RecordMetrics(cast::metrics::RecordRequest request,
                      CastRuntimeMetricsRecorderService::RecordCompleteCallback
                          record_complete_callback);
-  void OnMetricsRecordComplete(
+  void OnMetricsRecorded(
       CastRuntimeMetricsRecorderService::RecordCompleteCallback
           record_complete_callback,
       cast::utils::GrpcStatusOr<cast::metrics::RecordResponse> response_or);

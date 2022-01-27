@@ -13,9 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromecast/cast_core/runtime/browser/grpc/grpc_method.h"
 #include "components/cast/message_port/message_port.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
@@ -31,8 +30,7 @@ class MessagePortHandler final
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
       uint32_t channel_id,
       MessagePortService* message_port_service,
-      grpc::CompletionQueue* cq,
-      cast::v2::CoreApplicationService::Stub* core_app_stub,
+      cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~MessagePortHandler() override;
 
@@ -46,27 +44,6 @@ class MessagePortHandler final
   bool HandleMessage(const cast::web::Message& message);
 
  private:
-  class AsyncMessage final : public GrpcCall {
-   public:
-    AsyncMessage(const cast::web::Message& request,
-                 cast::v2::CoreApplicationService::Stub* core_app_stub,
-                 grpc::CompletionQueue* cq,
-                 base::WeakPtr<MessagePortHandler> port);
-    ~AsyncMessage() override;
-
-    // GrpcCall overrides.
-    void StepGRPC(grpc::Status status) override;
-
-   private:
-    base::WeakPtr<MessagePortHandler> port_;
-    bool was_request_;
-
-    cast::web::MessagePortStatus response_;
-    std::unique_ptr<
-        grpc::ClientAsyncResponseReader<cast::web::MessagePortStatus>>
-        response_reader_;
-  };
-
   enum class CloseError {
     kPipeError,
     kTimeout,
@@ -91,19 +68,19 @@ class MessagePortHandler final
 
   // Forwards |message| over this channel if possible, but queues it if there's
   // already a pending request.
-  bool ForwardMessage(cast::web::Message&& message);
+  bool ForwardMessage(cast::web::Message message);
 
   // Forwards |message| over this channel now.
-  void ForwardMessageNow(const cast::web::Message& message);
+  void ForwardMessageNow(cast::web::Message message);
 
   // Resets the timeout on the port that indicates we should close due to
   // inactivity.
   void ResetTimeout();
 
   // Callback invoked when an AsyncMessage gets a gRPC result.
-  void OnMessageComplete(bool ok,
-                         bool was_request,
-                         const cast::web::MessagePortStatus& response);
+  void OnPortMessagePosted(
+      bool was_request,
+      cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> response_or);
 
   // cast_api_bindings::MessagePort::Receiver overrides.
   bool OnMessage(base::StringPiece message,
@@ -112,20 +89,18 @@ class MessagePortHandler final
   void OnPipeError() override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  MessagePortService* message_port_service_;
-  grpc::CompletionQueue* grpc_cq_;
-  cast::v2::CoreApplicationService::Stub* core_app_stub_;
+  MessagePortService* const message_port_service_;
+  cast::v2::CoreMessagePortApplicationServiceStub* const core_app_stub_;
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
   uint32_t channel_id_;
 
   base::CancelableOnceClosure message_timeout_callback_;
   std::deque<cast::web::Message> pending_messages_;
-  AsyncMessage* pending_request_{nullptr};
-  bool awaiting_response_{false};
+  bool has_outstanding_request_{false};
+  bool is_awaiting_response_{false};
   bool started_{false};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
   base::WeakPtrFactory<MessagePortHandler> weak_factory_{this};
 };
 

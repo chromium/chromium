@@ -17,9 +17,8 @@
 namespace chromecast {
 
 BindingsManagerWebRuntime::BindingsManagerWebRuntime(
-    grpc::CompletionQueue* grpc_cq,
-    cast::v2::CoreApplicationService::Stub* core_app_stub)
-    : message_port_service_(grpc_cq, core_app_stub) {}
+    cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub)
+    : message_port_service_(core_app_stub) {}
 
 BindingsManagerWebRuntime::~BindingsManagerWebRuntime() = default;
 
@@ -28,10 +27,9 @@ void BindingsManagerWebRuntime::AddBinding(base::StringPiece binding_script) {
   bindings_[base::NumberToString(id)] = std::string(binding_script);
 }
 
-void BindingsManagerWebRuntime::HandleMessage(
-    const cast::web::Message& message,
-    cast::web::MessagePortStatus* response) {
-  message_port_service_.HandleMessage(message, response);
+cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
+BindingsManagerWebRuntime::HandleMessage(cast::web::Message message) {
+  return message_port_service_.HandleMessage(std::move(message));
 }
 
 mojo::PendingRemote<mojom::ApiBindings>

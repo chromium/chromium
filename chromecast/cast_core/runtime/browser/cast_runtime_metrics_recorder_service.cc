@@ -66,7 +66,7 @@ void CastRuntimeMetricsRecorderService::Report() {
   DrainBuffer();
 }
 
-void CastRuntimeMetricsRecorderService::OnRecordComplete() {
+void CastRuntimeMetricsRecorderService::OnMetricsRecorded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ack_pending_);
   ack_pending_ = false;
@@ -97,7 +97,7 @@ void CastRuntimeMetricsRecorderService::DrainBuffer() {
   ack_pending_ = true;
   record_metrics_callback_.Run(
       std::move(request),
-      base::BindOnce(&CastRuntimeMetricsRecorderService::OnRecordComplete,
+      base::BindOnce(&CastRuntimeMetricsRecorderService::OnMetricsRecorded,
                      weak_factory_.GetWeakPtr()));
 }
 

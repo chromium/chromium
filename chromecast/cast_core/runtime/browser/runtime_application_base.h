@@ -5,18 +5,16 @@
 #ifndef CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 #define CHROMECAST_CAST_CORE_RUNTIME_BROWSER_RUNTIME_APPLICATION_BASE_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_web_view.h"
-#include "chromecast/cast_core/runtime/browser/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/runtime/browser/runtime_application.h"
-#include "chromecast/cast_core/runtime/browser/runtime_application_service_grpc_impl.h"
-#include "chromecast/cast_core/runtime/browser/runtime_message_port_application_service_grpc_impl.h"
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/runtime_application_service.castcore.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/runtime_message_port_application_service.castcore.pb.h"
 
 namespace chromecast {
 
@@ -24,11 +22,7 @@ class CastWebService;
 
 // This class is for sharing code between Web and streaming RuntimeApplication
 // implementations, including Load and Launch behavior.
-class RuntimeApplicationBase
-    : public RuntimeApplication,
-      public GrpcServer,
-      public RuntimeApplicationServiceDelegate,
-      public RuntimeMessagePortApplicationServiceDelegate {
+class RuntimeApplicationBase : public RuntimeApplication {
  public:
   ~RuntimeApplicationBase() override;
 
@@ -45,9 +39,9 @@ class RuntimeApplicationBase
   // instance of the implementing object.
   virtual void StopApplication();
 
-  // Sets that the application has been started - the meaning of which is
-  // application-specific.
-  void SetApplicationStarted();
+  // Reports the application |state| to Cast Core.
+  void SetApplicationState(cast::v2::ApplicationStatusRequest::State state,
+                           StatusCallback callback);
 
   // Returns current TaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
@@ -60,25 +54,28 @@ class RuntimeApplicationBase
   // Returns a pointer to a CastWebView.
   CastWebView* cast_web_view() { return cast_web_view_.get(); }
 
-  // Returns a pointer to CoreApplicationService impl.
-  CoreApplicationServiceGrpc* core_app_stub() { return core_app_stub_.get(); }
+  // Returns a stub to CoreApplicationService.
+  cast::v2::CoreApplicationServiceStub* core_app_stub() {
+    return &*core_app_stub_;
+  }
+
+  // Returns a stub to CoreMessagePortApplicationService.
+  cast::v2::CoreMessagePortApplicationServiceStub*
+  core_message_port_app_stub() {
+    return &*core_message_port_app_stub_;
+  }
 
   // RuntimeApplication implementation:
   CastWebContents* GetCastWebContents() override;
 
-  // RuntimeApplicationServiceDelegate implementation:
-  void SetUrlRewriteRules(const cast::v2::SetUrlRewriteRulesRequest& request,
-                          cast::v2::SetUrlRewriteRulesResponse* response,
-                          GrpcMethod* callback) override;
-
-  // Processes an incoming |message|, returning the status of this processing in
-  // |response| after being received over gRPC.
-  virtual void HandleMessage(const cast::web::Message& message,
-                             cast::web::MessagePortStatus* response) = 0;
-
   // Called following the creation of a CastWebView. Must initialize the
   // application and set the application URL as a result.
   virtual void InitializeApplication(StatusCallback callback) = 0;
+
+  // Processes an incoming |message|, returning the status of this processing in
+  // |response| after being received over gRPC.
+  virtual cast::utils::GrpcStatusOr<cast::web::MessagePortStatus>
+  HandlePortMessage(cast::web::Message message) = 0;
 
  private:
   // RuntimeApplication implementation:
@@ -87,21 +84,22 @@ class RuntimeApplicationBase
   void Launch(cast::runtime::LaunchApplicationRequest request,
               StatusCallback callback) final;
 
+  // RuntimeApplicationService handlers:
+  void HandleSetUrlRewriteRules(
+      cast::v2::SetUrlRewriteRulesRequest request,
+      cast::v2::RuntimeApplicationServiceHandler::SetUrlRewriteRules::Reactor*
+          reactor);
+
+  // RuntimeMessagePortApplicationService handlers:
+  void HandlePostMessage(cast::web::Message request,
+                         cast::v2::RuntimeMessagePortApplicationServiceHandler::
+                             PostMessage::Reactor* reactor);
+
   // Called when a new CastWebView is created.
   void CreateCastWebView();
 
   // Called when application finished initialization.
   void OnApplicationInitialized(StatusCallback callback, grpc::Status status);
-
-  // RuntimeMessagePortApplicationServiceDelegate implementation:
-  void PostMessage(const cast::web::Message& request,
-                   cast::web::MessagePortStatus* response,
-                   GrpcMethod* callback) override;
-
-  // gRPC RPC Wrappers.
-  cast::v2::RuntimeApplicationService::AsyncService grpc_app_service_;
-  cast::v2::RuntimeMessagePortApplicationService::AsyncService
-      grpc_message_port_service_;
 
   // The |web_service_| used to create |cast_web_view_|.
   CastWebService* const web_service_;
@@ -111,6 +109,10 @@ class RuntimeApplicationBase
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  absl::optional<cast::utils::GrpcServer> grpc_server_;
+  absl::optional<cast::v2::CoreApplicationServiceStub> core_app_stub_;
+  absl::optional<cast::v2::CoreMessagePortApplicationServiceStub>
+      core_message_port_app_stub_;
   // Set to true when StopApplication() is called. This variable is required
   // rather than always executing StopApplication() in the dtor due to how
   // virtual function calls are handled during destruction.
@@ -118,7 +120,6 @@ class RuntimeApplicationBase
 
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;
-  std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};

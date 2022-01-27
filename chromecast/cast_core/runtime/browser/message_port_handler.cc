@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "chromecast/cast_core/runtime/browser/message_port_service.h"
 #include "components/cast/message_port/platform_message_port.h"
 
@@ -27,17 +28,14 @@ MessagePortHandler::MessagePortHandler(
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     uint32_t channel_id,
     MessagePortService* message_port_service,
-    grpc::CompletionQueue* cq,
-    cast::v2::CoreApplicationService::Stub* core_app_stub,
+    cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(std::move(task_runner)),
       message_port_service_(message_port_service),
-      grpc_cq_(cq),
       core_app_stub_(core_app_stub),
       message_port_(std::move(message_port)),
       channel_id_(channel_id) {
   DCHECK(message_port_service_);
-  DCHECK(grpc_cq_);
   DCHECK(core_app_stub_);
   message_port_->SetReceiver(this);
 }
@@ -91,13 +89,13 @@ bool MessagePortHandler::HandleMessage(const cast::web::Message& message) {
       return true;
     }
     case cast::web::Message::kResponse: {
-      if (!awaiting_response_) {
+      if (!is_awaiting_response_) {
         LOG(FATAL) << "Received response while not expecting one.";
         return false;
       }
       message_timeout_callback_.Cancel();
-      awaiting_response_ = false;
-      if (!pending_messages_.empty() && !pending_request_) {
+      is_awaiting_response_ = false;
+      if (!pending_messages_.empty() && !has_outstanding_request_) {
         ForwardNextMessage();
       }
       return true;
@@ -133,11 +131,13 @@ void MessagePortHandler::CloseWithError(CloseError error) {
   }
   Close();
 
-  cast::web::Message message;
-  message.mutable_status()->set_status(
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreMessagePortApplicationServiceStub::PostMessage>();
+  call.request().mutable_status()->set_status(
       cast::web::MessagePortStatus_Status_ERROR);
-  message.mutable_channel()->set_channel_id(channel_id_);
-  new AsyncMessage(message, core_app_stub_, grpc_cq_, nullptr);
+  call.request().mutable_channel()->set_channel_id(channel_id_);
+  std::move(call).InvokeAsync(base::DoNothing());
+
   message_port_service_->Remove(channel_id_);
 }
 
@@ -152,36 +152,44 @@ void MessagePortHandler::SendResponse(bool result) {
 
 void MessagePortHandler::ForwardNextMessage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!awaiting_response_);
+  DCHECK(!is_awaiting_response_);
   DCHECK(!pending_messages_.empty());
-  DCHECK(!pending_request_);
+  DCHECK(!has_outstanding_request_);
   cast::web::Message next = std::move(pending_messages_.front());
   pending_messages_.pop_front();
   ForwardMessageNow(std::move(next));
 }
 
-bool MessagePortHandler::ForwardMessage(cast::web::Message&& message) {
+bool MessagePortHandler::ForwardMessage(cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (message.has_request() &&
-      (!started_ || awaiting_response_ || !pending_messages_.empty() ||
-       pending_request_)) {
+      (!started_ || is_awaiting_response_ || !pending_messages_.empty() ||
+       has_outstanding_request_)) {
     pending_messages_.emplace_back(std::move(message));
     return true;
   }
 
-  ForwardMessageNow(message);
+  ForwardMessageNow(std::move(message));
   return true;
 }
 
-void MessagePortHandler::ForwardMessageNow(const cast::web::Message& message) {
+void MessagePortHandler::ForwardMessageNow(cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!message.has_request() || !pending_request_);
-  auto* async_message = new AsyncMessage(message, core_app_stub_, grpc_cq_,
-                                         weak_factory_.GetWeakPtr());
-  if (message.has_request()) {
+  DCHECK(!message.has_request() || !has_outstanding_request_);
+  bool was_request = message.has_request();
+  if (was_request) {
     DLOG_CHANNEL(INFO) << "Sending message: " << message.request().data();
-    pending_request_ = async_message;
-    awaiting_response_ = true;
+  }
+
+  auto call = core_app_stub_->CreateCall<
+      cast::v2::CoreMessagePortApplicationServiceStub::PostMessage>(
+      std::move(message));
+  std::move(call).InvokeAsync(base::BindPostTask(
+      task_runner_, base::BindOnce(&MessagePortHandler::OnPortMessagePosted,
+                                   weak_factory_.GetWeakPtr(), was_request)));
+  if (was_request) {
+    has_outstanding_request_ = true;
+    is_awaiting_response_ = true;
   }
   ResetTimeout();
 }
@@ -194,29 +202,29 @@ void MessagePortHandler::ResetTimeout() {
                                 kMessageTimeout);
 }
 
-void MessagePortHandler::OnMessageComplete(
-    bool ok,
+void MessagePortHandler::OnPortMessagePosted(
     bool was_request,
-    const cast::web::MessagePortStatus& response) {
+    cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> response_or) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pending_request_ = nullptr;
+  has_outstanding_request_ = false;
   message_timeout_callback_.Cancel();
   if (!message_port_) {
     return;
   }
 
-  if (!ok || response.status() != cast::web::MessagePortStatus_Status_OK) {
-    DLOG_CHANNEL(WARNING) << "Send failed (" << ok << ", "
+  if (!response_or.ok() ||
+      response_or->status() != cast::web::MessagePortStatus_Status_OK) {
+    DLOG_CHANNEL(WARNING) << "Send failed (" << response_or.ToString() << ", "
                           << cast::web::MessagePortStatus_Status_Name(
-                                 response.status())
+                                 response_or->status())
                           << ")";
     CloseAndRemove();
     return;
   }
 
-  if (was_request && awaiting_response_) {
+  if (was_request && is_awaiting_response_) {
     ResetTimeout();
-  } else if (!awaiting_response_ && !pending_messages_.empty()) {
+  } else if (!is_awaiting_response_ && !pending_messages_.empty()) {
     ForwardNextMessage();
   }
 }
@@ -253,28 +261,6 @@ bool MessagePortHandler::OnMessage(
 void MessagePortHandler::OnPipeError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CloseWithError(CloseError::kPipeError);
-}
-
-MessagePortHandler::AsyncMessage::AsyncMessage(
-    const cast::web::Message& request,
-    cast::v2::CoreApplicationService::Stub* core_app_stub,
-    grpc::CompletionQueue* cq,
-    base::WeakPtr<MessagePortHandler> port)
-    : port_(port), was_request_(request.has_request()) {
-  response_reader_ =
-      core_app_stub->PrepareAsyncPostMessage(&context_, request, cq);
-  response_reader_->StartCall();
-  response_reader_->Finish(&response_, &status_, static_cast<GRPC*>(this));
-}
-
-MessagePortHandler::AsyncMessage::~AsyncMessage() = default;
-
-void MessagePortHandler::AsyncMessage::StepGRPC(grpc::Status status) {
-  if (port_) {
-    port_->OnMessageComplete(status_.ok() && status.ok(), was_request_,
-                             response_);
-  }
-  delete this;
 }
 
 }  // namespace chromecast

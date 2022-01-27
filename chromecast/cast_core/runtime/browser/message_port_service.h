@@ -11,9 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromecast/cast_core/runtime/browser/grpc/grpc_method.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast/message_port/message_port.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_message_port_application_service.castcore.pb.h"
 #include "third_party/cast_core/public/src/proto/web/message_channel.pb.h"
 
 namespace chromecast {
@@ -26,21 +26,22 @@ class MessagePortService {
       std::unique_ptr<cast_api_bindings::MessagePort>*,
       std::unique_ptr<cast_api_bindings::MessagePort>*)>;
 
-  // |grpc_cq| and |core_app_stub| must outlive |this|.
-  MessagePortService(grpc::CompletionQueue* grpc_cq,
-                     cast::v2::CoreApplicationService::Stub* core_app_stub);
+  // |core_app_stub| must outlive |this|.
+  MessagePortService(
+      cast::v2::CoreMessagePortApplicationServiceStub* core_app_stub);
   ~MessagePortService();
 
   // Handles a message incoming from the gRPC API.  The message will be routed
-  // to the appropriate MessagePortHandler based on its channel ID.  |response|
-  // is set to |OK| if MessagePortHandler reports success and |ERROR| otherwise,
-  // including the case that there's no MessagePortHandler for the incoming
-  // channel ID.
-  void HandleMessage(const cast::web::Message& message,
-                     cast::web::MessagePortStatus* response);
+  // to the appropriate MessagePortHandler based on its channel ID. |response|
+  // is set to |OK| if MessagePortHandler reports success and |ERROR|
+  // otherwise, including the case that there's no MessagePortHandler for the
+  // incoming channel ID.
+  cast::utils::GrpcStatusOr<cast::web::MessagePortStatus> HandleMessage(
+      cast::web::Message message);
 
-  // Connects |port| to the remote port with name |port_name|.
-  bool ConnectToPort(base::StringPiece port_name,
+  // Connects |port| to the remote port with name |port_name|. Calls the
+  // callback with grpc::Status code.
+  void ConnectToPort(base::StringPiece port_name,
                      std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // Registers a port opened locally via a port transfer.  This allocates a
@@ -59,37 +60,17 @@ class MessagePortService {
   void Remove(uint32_t channel_id);
 
  private:
-  class AsyncConnect final : public GrpcCall {
-   public:
-    AsyncConnect(const cast::bindings::ConnectRequest& request,
-                 cast::v2::CoreApplicationService::Stub* core_app_stub,
-                 grpc::CompletionQueue* cq,
-                 base::WeakPtr<MessagePortService> service);
-    ~AsyncConnect() override;
-
-    void StepGRPC(grpc::Status status) override;
-
-   private:
-    base::WeakPtr<MessagePortService> service_;
-    cast::bindings::ConnectResponse response_;
-    std::unique_ptr<
-        grpc::ClientAsyncResponseReader<cast::bindings::ConnectResponse>>
-        response_reader_;
-
-    uint32_t channel_id_;
-  };
-
   std::unique_ptr<MessagePortHandler> MakeMessagePortHandler(
       uint32_t channel_id,
       std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // Callback invoked when AsyncConnect gets a gRPC result.
-  void OnConnectComplete(bool ok, uint32_t channel_id);
+  void OnPortConnectionEstablished(
+      uint32_t channel_id,
+      cast::utils::GrpcStatusOr<cast::bindings::ConnectResponse> response_or);
 
-  CreatePairCallback create_pair_;
-
-  grpc::CompletionQueue* grpc_cq_;
-  cast::v2::CoreApplicationService::Stub* core_app_stub_;
+  cast::v2::CoreMessagePortApplicationServiceStub* const core_app_stub_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   int next_outgoing_channel_id_{0};
   // NOTE: Keyed by channel_id of cast::web::MessageChannelDescriptor.

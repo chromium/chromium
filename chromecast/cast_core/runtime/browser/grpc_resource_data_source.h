@@ -8,7 +8,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/url_data_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
+#include "third_party/cast_core/public/src/proto/v2/core_application_service.castcore.pb.h"
 
 namespace chromecast {
 
@@ -20,7 +20,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
   GrpcResourceDataSource(
       const std::string host,
       bool for_webui,
-      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
+      cast::v2::CoreApplicationServiceStub* core_app_service_stub);
   ~GrpcResourceDataSource() override;
 
   void OverrideContentSecurityPolicyChildSrc(const std::string& data);
@@ -50,6 +50,11 @@ class GrpcResourceDataSource : public content::URLDataSource {
 
   bool ShouldDenyXFrameOptions() override;
 
+  // Helper methods.
+  void OnWebUiResourceReceived(
+      content::URLDataSource::GotDataCallback callback,
+      cast::utils::GrpcStatusOr<cast::v2::GetWebUIResourceResponse>
+          response_or);
   void ReadResourceFile(base::StringPiece path,
                         content::URLDataSource::GotDataCallback callback);
 
@@ -60,11 +65,12 @@ class GrpcResourceDataSource : public content::URLDataSource {
   // GrpcWebUIController and false otherwise. In practice, for all the
   // chrome://home/* urls this is set to true and false for chrome-resource://*
   const bool for_webui_;
-  cast::v2::CoreApplicationService::Stub* const core_app_service_stub_;
+  cast::v2::CoreApplicationServiceStub* const core_app_service_stub_;
 
   absl::optional<std::string> frame_src_;
   bool deny_xframe_options_ = true;
-  base::WeakPtrFactory<GrpcResourceDataSource> weak_ptr_factory_{this};
+
+  base::WeakPtrFactory<GrpcResourceDataSource> weak_factory_{this};
 };
 
 }  // namespace chromecast
