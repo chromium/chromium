@@ -77,6 +77,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class handles saving and loading tab state from the persistent storage.
@@ -279,8 +280,9 @@ public class TabPersistentStore {
     // Tracks whether this TabPersistentStore's tabs are being loaded.
     private boolean mLoadInProgress;
 
-    @VisibleForTesting
-    AsyncTask<TabState> mPrefetchActiveTabTask;
+    AsyncTask<TabState> mPrefetchTabStateActiveTabTask;
+
+    AsyncTask<ByteBuffer> mPrefetchCriticalPersistedTabDataActiveTabTask;
 
     /**
      * Creates an instance of a TabPersistentStore.
@@ -601,18 +603,19 @@ public class TabPersistentStore {
         // TabState is on a deprecation path and the intention is to replace with
         // CriticalPersistedTabData. So this workaround should be temporary.
         try (StrictModeContext ignored = StrictModeContext.allowUnbufferedIo()) {
-            TabState state;
             int restoredTabId = SharedPreferencesManager.getInstance().readInt(
                     ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, Tab.INVALID_TAB_ID);
-            if (restoredTabId == tabToRestore.id && mPrefetchActiveTabTask != null) {
-                state = mPrefetchActiveTabTask.get();
-            } else {
-                // Necessary to do on the UI thread as a last resort.
-                state = TabStateFileManager.restoreTabState(getStateDirectory(), tabToRestore.id);
-            }
-
-            restoreTab(tabToRestore, state,
-                    maybeRestoreCriticalPersistedTabDataSynchronously(tabToRestore), setAsActive);
+            // If the CriticalPersistedTabData flag is on, we try to restore
+            // CriticalPersistedTabData.
+            @Nullable
+            ByteBuffer serializedCriticalPersistedTabData =
+                    maybeRestoreCriticalPersistedTabData(restoredTabId, tabToRestore);
+            // If the CriticalPersistedTabData flag is off or we failed to read
+            // CriticalPersistedTabData we fall back to TabState.
+            @Nullable
+            TabState state = maybeRestoreTabState(
+                    serializedCriticalPersistedTabData, restoredTabId, tabToRestore);
+            restoreTab(tabToRestore, state, serializedCriticalPersistedTabData, setAsActive);
         } catch (Exception e) {
             // Catch generic exception to prevent a corrupted state from crashing the app
             // at startup.
@@ -622,14 +625,39 @@ public class TabPersistentStore {
         }
     }
 
-    private static ByteBuffer maybeRestoreCriticalPersistedTabDataSynchronously(
-            TabRestoreDetails tabToRestore) {
+    private @Nullable ByteBuffer maybeRestoreCriticalPersistedTabData(int restoredTabId,
+            TabRestoreDetails tabToRestore) throws InterruptedException, ExecutionException {
         if (!isCriticalPersistedTabDataEnabled()) return null;
+        // If Tab being restored is the active Tab and the CriticalPersistedTabData prefetch
+        // was initiated, use the prefetch result.
+        if (restoredTabId == tabToRestore.id
+                && mPrefetchCriticalPersistedTabDataActiveTabTask != null) {
+            return mPrefetchCriticalPersistedTabDataActiveTabTask.get();
+        }
         Boolean isIncognito = isIncognitoWithCPTDFallback(tabToRestore);
         if (isIncognito == null) {
             return null;
         }
+        // Fetch CriticalPersistedTabData on the UI thread as a last resort.
         return CriticalPersistedTabData.restore(tabToRestore.id, isIncognito);
+    }
+
+    private @Nullable TabState maybeRestoreTabState(ByteBuffer serializedCriticalPersistedTabData,
+            int restoredTabId, TabRestoreDetails tabToRestore)
+            throws InterruptedException, ExecutionException {
+        // If CriticalPersistedTabData flag is on and CriticalPersistedTabData was retrieved, no
+        // need to attempt to retrieve TabState.
+        if (isCriticalPersistedTabDataEnabled() && serializedCriticalPersistedTabData != null
+                && serializedCriticalPersistedTabData.limit() != 0) {
+            return null;
+        }
+        // If the Tab being restored is the Active Tab and the corresponding TabState prefetch
+        // was initiated, use the prefetch result.
+        if (restoredTabId == tabToRestore.id && mPrefetchTabStateActiveTabTask != null) {
+            return mPrefetchTabStateActiveTabTask.get();
+        }
+        // Necessary to do on the UI thread as a last resort.
+        return TabStateFileManager.restoreTabState(getStateDirectory(), tabToRestore.id);
     }
 
     /**
@@ -1710,7 +1738,38 @@ public class TabPersistentStore {
         final int activeTabId = SharedPreferencesManager.getInstance().readInt(
                 ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, Tab.INVALID_TAB_ID);
         if (activeTabId == Tab.INVALID_TAB_ID) return;
-        mPrefetchActiveTabTask = new BackgroundOnlyAsyncTask<TabState>() {
+        // If the CriticalPersistedTabData flag is on, try to prefetch
+        // CriticalPersistedTabData and fallback to prefetching TabState if there
+        // is no CriticalPersistedTabData.
+        if (isCriticalPersistedTabDataEnabled()) {
+            // This is an equivalent of the hack in TabStateFileManager whereby it is determined
+            // if the Tab is regular or incognito by the presence of the corresponding TabState
+            // file.
+            Boolean isIncognito = FilePersistedTabDataStorage.isIncognito(activeTabId);
+            mPrefetchCriticalPersistedTabDataActiveTabTask =
+                    new BackgroundOnlyAsyncTask<ByteBuffer>() {
+                        @Override
+                        protected ByteBuffer doInBackground() {
+                            if (isIncognito == null) {
+                                prefetchActiveTabTask(activeTabId, taskRunner);
+                                return null;
+                            }
+                            ByteBuffer res =
+                                    CriticalPersistedTabData.restore(activeTabId, isIncognito);
+                            if (res == null || res.limit() == 0) {
+                                prefetchActiveTabTask(activeTabId, taskRunner);
+                                return null;
+                            }
+                            return res;
+                        }
+                    }.executeOnTaskRunner(taskRunner);
+        } else {
+            prefetchActiveTabTask(activeTabId, taskRunner);
+        }
+    }
+
+    private void prefetchActiveTabTask(int activeTabId, TaskRunner taskRunner) {
+        mPrefetchTabStateActiveTabTask = new BackgroundOnlyAsyncTask<TabState>() {
             @Override
             protected TabState doInBackground() {
                 return TabStateFileManager.restoreTabState(getStateDirectory(), activeTabId);
@@ -1782,5 +1841,15 @@ public class TabPersistentStore {
     @VisibleForTesting
     public List<Pair<AsyncTask<DataInputStream>, String>> getTabListToMergeTasksForTesting() {
         return mPrefetchTabListToMergeTasks;
+    }
+
+    @VisibleForTesting
+    public AsyncTask<TabState> getPrefetchTabStateActiveTabTaskForTesting() {
+        return mPrefetchTabStateActiveTabTask;
+    }
+
+    @VisibleForTesting
+    public AsyncTask<ByteBuffer> getPrefetchCriticalPersistedTabDataActiveTabTaskForTesting() {
+        return mPrefetchCriticalPersistedTabDataActiveTabTask;
     }
 }
