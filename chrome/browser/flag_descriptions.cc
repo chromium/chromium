@@ -2976,6 +2976,14 @@ const char kContextualSearchForceCaptionName[] =
 const char kContextualSearchForceCaptionDescription[] =
     "Forces a caption to always be shown in the Touch to Search Bar.";
 
+const char kContextualSearchLiteralSearchTapName[] =
+    "Contextual Search literal search with tap";
+const char kContextualSearchLiteralSearchTapDescription[] =
+    "Enables Contextual Search to be activated with a single tap and produce "
+    "a literal search. This is intended to be used in conjunction with the "
+    "long-press resolve feature to allow both gestures to trigger a form of "
+    "Touch to Search.";
+
 const char kContextualSearchLongpressResolveName[] =
     "Contextual Search long-press Resolves";
 const char kContextualSearchLongpressResolveDescription[] =

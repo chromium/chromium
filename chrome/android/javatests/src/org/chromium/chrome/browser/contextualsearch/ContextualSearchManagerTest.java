@@ -208,13 +208,15 @@ public class ContextualSearchManagerTest {
     /** This represents the current fully-launched configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_NONE =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, false,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, false);
     /**
-     * This represents the Translations addition to the Longpress configuration.
+     * This represents the Translations addition to the Longpress with LiteralTap configuration.
      * This is likely the best launch candidate.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_LONGPRESS_RESOLVE, false,
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_LITERAL_SEARCH_TAP, true,
                     ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
 
     /** Feature maps that we use for individual tests. */
@@ -346,10 +348,14 @@ public class ContextualSearchManagerTest {
     private class ContextualSearchManagerTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
-            if (!mPolicy.canResolveLongpress() || mPolicy.isUserUndecided()) {
+            // TODO(donnd): remove support for the LiteralSearchTap Feature.
+            if (mPolicy.isLiteralSearchTapEnabled()) {
+                clickWordNode(nodeId);
+            } else if (!mPolicy.canResolveLongpress()) {
                 longPressNode(nodeId);
             } else {
-                Assert.fail("Cannot trigger a non-resolving gesture!");
+                Assert.fail(
+                        "Cannot trigger a non-resolving gesture with literal tap or non-resolve!");
             }
         }
 
@@ -1539,8 +1545,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTrigger(@EnabledFeature int enabledFeature) throws Exception {
-        // Mark the user undecided so we won't resolve the search.
-        mPolicy.overrideDecidedStateForTesting(false);
+        if (isConfigurationForResolvingGesturesOnly()) return;
         triggerNonResolve("states");
 
         Assert.assertNull(mFakeServer.getSearchTermRequested());
@@ -1591,8 +1596,6 @@ public class ContextualSearchManagerTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveSwipeExpand(@EnabledFeature int enabledFeature) throws Exception {
-        // Mark the user undecided so we won't resolve the search.
-        mPolicy.overrideDecidedStateForTesting(false);
         simulateNonResolveSearch("search");
         assertNoWebContents();
         assertLoadedNoUrl();
@@ -2741,8 +2744,6 @@ public class ContextualSearchManagerTest {
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Mark the user undecided so we won't resolve the search.
-        mPolicy.overrideDecidedStateForTesting(false);
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -2808,8 +2809,6 @@ public class ContextualSearchManagerTest {
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1032760")
     public void testNonResolveMultipleSwipeOnlyLoadsContentOnce(@EnabledFeature int enabledFeature)
             throws Exception {
-        // Mark the user undecided so we won't resolve the search.
-        mPolicy.overrideDecidedStateForTesting(false);
         // Simulate a non-resolve search and make sure no Content is created.
         simulateNonResolveSearch("search");
         assertNoWebContents();
@@ -3084,8 +3083,6 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testNonResolveTranslates(@EnabledFeature int enabledFeature) throws Exception {
-        // Mark the user undecided so we won't resolve the search.
-        mPolicy.overrideDecidedStateForTesting(false);
         // A non-resolving gesture on any word should trigger a forced translation.
         simulateNonResolveSearch("search");
         // Make sure we did try to trigger translate.
