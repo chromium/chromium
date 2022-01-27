@@ -265,9 +265,10 @@ void CleanExitBeacon::Initialize() {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug/1248239): Use the beacon file, if any, to maybe increment the
   // crash streak when the Extended Variations Safe Mode experiment is fully
-  // enabled on Android Chrome dev, beta, and stable.
+  // enabled on Android Chrome beta and stable.
   if (channel_ != version_info::Channel::UNKNOWN &&
-      channel_ != version_info::Channel::CANARY) {
+      channel_ != version_info::Channel::CANARY &&
+      channel_ != version_info::Channel::DEV) {
     beacon_file_contents.reset();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -308,9 +309,10 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug/1248239): Fully enable the Extended Variations Safe Mode
   // experiment on Android Chrome by using the beacon file's beacon value for
-  // clients in the SignalAndWriteViaFileUtil group on dev, beta, and stable.
+  // clients in the SignalAndWriteViaFileUtil group on beta and stable.
   if (channel_ != version_info::Channel::UNKNOWN &&
-      channel_ != version_info::Channel::CANARY) {
+      channel_ != version_info::Channel::CANARY &&
+      channel_ != version_info::Channel::DEV) {
     return local_state_beacon_value.value_or(true);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
