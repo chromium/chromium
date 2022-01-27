@@ -192,7 +192,7 @@ class OutputDeviceMixerImplTestBase {
     StrictMock<MockAudioSourceCallback> source_callback;
     // Set to true when independent rendering started successfully for the first
     // time.
-    bool independent_rendering_stream_was_open = false;
+    bool independent_rendergin_stream_was_open = false;
   };
 
   // Helper.
@@ -203,9 +203,6 @@ class OutputDeviceMixerImplTestBase {
     MixTrackMock* mix_track_mock;
   };
 
-  OutputDeviceMixerImplTestBase() {
-    ON_CALL(*this, MockCreateOutputStream).WillByDefault(Return(true));
-  }
   // Registers physical output stream creation.
   MOCK_METHOD1(MockCreateOutputStream,
                bool(const media::AudioParameters& params));
@@ -238,22 +235,9 @@ class OutputDeviceMixerImplTestBase {
             &mix_track_mocks_[mix_track_mocks_in_use_count_++]};
   }
 
-  void ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(
-      StreamUnderTest& stream_under_test) {
-    if (stream_under_test.mix_track_mock
-            ->independent_rendering_stream_was_open) {
-      EXPECT_CALL(stream_under_test.mix_track_mock->rendering_stream, Close());
-    }
-  }
-
   // Opens a MixabeOutputStream created by the mixer under test and sets
   // expectations on associated mocks.
-  void OpenAndVerifyStreamUnderTest(StreamUnderTest& stream_under_test,
-                                    PlaybackMode playback_mode) {
-    if (playback_mode == PlaybackMode::kIndependent) {
-      SetIndependentRenderingStreamOpenExpectations(
-          stream_under_test.mix_track_mock, /*open_success=*/true);
-    }
+  void OpenAndVerifyStreamUnderTest(StreamUnderTest& stream_under_test) {
     EXPECT_TRUE(stream_under_test.mixable_stream->Open());
     VerifyAndClearAllExpectations();
   }
@@ -261,7 +245,10 @@ class OutputDeviceMixerImplTestBase {
   // Closes a MixabeOutputStream created by the mixer under test and sets
   // expectations on associated mocks.
   void CloseAndVerifyStreamUnderTest(StreamUnderTest& stream_under_test) {
-    ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(stream_under_test);
+    if (stream_under_test.mix_track_mock
+            ->independent_rendergin_stream_was_open) {
+      EXPECT_CALL(stream_under_test.mix_track_mock->rendering_stream, Close());
+    }
     stream_under_test.mixable_stream->Close();
     VerifyAndClearAllExpectations();
   }
@@ -287,52 +274,35 @@ class OutputDeviceMixerImplTestBase {
     VerifyAndClearAllExpectations();
   }
 
-  // Sets expectations for the mixer to open the mixing stream.
-  void ExpectMixingGraphOutputStreamOpen() {
+  // Sets expectations for the mixer to start rendeing mixed audio.
+  void ExpectMixingGraphOutputStreamStarted() {
     EXPECT_CALL(*this,
-                MockCreateOutputStream(AudioParamsEq(mixer_output_params_)));
+                MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
+        .WillOnce(Return(true));
     EXPECT_CALL(mock_mixing_graph_output_stream_, Open())
         .WillOnce(Return(true));
-  }
-
-  void ExpectMixingGraphOutputStreamClosed() {
-    EXPECT_CALL(mock_mixing_graph_output_stream_, Close());
-  }
-
-  // Sets expectations for the mixer to start rendering mixed audio.
-  void ExpectMixingGraphOutputStreamStarted() {
     EXPECT_CALL(mock_mixing_graph_output_stream_, StartCalled());
     mixing_graph_output_stream_not_running_ = false;
   }
 
-  // Sets expectations for the mixer to stop rendering mixed audio.
+  // Sets expectations for the mixer to stop rendeing mixed audio.
   void ExpectMixingGraphOutputStreamStopped() {
     EXPECT_CALL(mock_mixing_graph_output_stream_, Stop);
+    EXPECT_CALL(mock_mixing_graph_output_stream_, Close);
     mixing_graph_output_stream_not_running_ = true;
-  }
-
-  void SetIndependentRenderingStreamOpenExpectations(
-      MixTrackMock* mix_track_mock,
-      bool open_success) {
-    ASSERT_FALSE(mix_track_mock->independent_rendering_stream_was_open);
-    EXPECT_CALL(*this,
-                MockCreateOutputStream(AudioParamsEq(mix_track_mock->params)));
-    EXPECT_CALL(mix_track_mock->rendering_stream, Open())
-        .WillOnce(Return(open_success));
-    if (!open_success) {
-      EXPECT_CALL(mix_track_mock->rendering_stream, Close());
-    }
-    mix_track_mock->independent_rendering_stream_was_open = open_success;
   }
 
   void ExpectPlaybackStarted(MixTrackMock* mix_track_mock,
                              PlaybackMode playback_mode) {
     if (playback_mode == PlaybackMode::kIndependent) {
-      if (!mix_track_mock->independent_rendering_stream_was_open) {
-        // If opening rendering stream during creation failed, it must be open
-        // on first start.
-        SetIndependentRenderingStreamOpenExpectations(mix_track_mock,
-                                                      /*open_success=*/true);
+      if (!mix_track_mock->independent_rendergin_stream_was_open) {
+        // The rendering straem must be open on first start.
+        EXPECT_CALL(*this, MockCreateOutputStream(
+                               AudioParamsEq(mix_track_mock->params)))
+            .WillOnce(Return(true));
+        EXPECT_CALL(mix_track_mock->rendering_stream, Open())
+            .WillOnce(Return(true));
+        mix_track_mock->independent_rendergin_stream_was_open = true;
       }
       EXPECT_CALL(mix_track_mock->rendering_stream, StartCalled());
     } else {
@@ -347,7 +317,7 @@ class OutputDeviceMixerImplTestBase {
   void ExpectPlaybackStopped(MixTrackMock* mix_track_mock,
                              PlaybackMode playback_mode) {
     if (playback_mode == PlaybackMode::kIndependent) {
-      if (mix_track_mock->independent_rendering_stream_was_open) {
+      if (mix_track_mock->independent_rendergin_stream_was_open) {
         EXPECT_CALL(mix_track_mock->rendering_stream, Stop);
       }
     } else {
@@ -509,7 +479,7 @@ TEST_P(OutputDeviceMixerImplTestWithDefault, OneUmixedStream_CreateClose) {
       .Times(0);
   EXPECT_CALL(mock_mixing_graph_output_stream_, Close()).Times(0);
 
-  CloseAndVerifyStreamUnderTest(stream_under_test);
+  stream_under_test.mixable_stream->Close();
 }
 
 TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_PhysicalStreamCreateFailed) {
@@ -532,8 +502,18 @@ TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_PhysicalStreamCreateFailed) {
   EXPECT_CALL(mock_mixing_graph_output_stream_, Open()).Times(0);
   EXPECT_CALL(mock_mixing_graph_output_stream_, Close()).Times(0);
 
-  EXPECT_FALSE(stream_under_test.mixable_stream->Open());
-  CloseAndVerifyStreamUnderTest(stream_under_test);
+  // Open() will work, but stream creation will fail on start and will result in
+  // OnError().
+  EXPECT_TRUE(stream_under_test.mixable_stream->Open());
+  EXPECT_CALL(stream_under_test.mix_track_mock->source_callback, OnError(_))
+      .Times(1);
+
+  stream_under_test.mixable_stream->Start(
+      &stream_under_test.mix_track_mock->source_callback);
+
+  stream_under_test.mixable_stream->Stop();
+
+  stream_under_test.mixable_stream->Close();
 }
 
 TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_PhysicalStreamOpenFailed) {
@@ -542,21 +522,39 @@ TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_PhysicalStreamOpenFailed) {
 
   // Fail opening physical stream for the mix track. Open() fails, physical
   // stream for independent rendering is not created.
-  SetIndependentRenderingStreamOpenExpectations(
-      stream_under_test.mix_track_mock,
-      /*open_success=*/false);
+  EXPECT_CALL(*this, MockCreateOutputStream(AudioParamsEq(
+                         stream_under_test.mix_track_mock->params)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(stream_under_test.mix_track_mock->rendering_stream, Open())
+      .WillOnce(Return(false));
+  EXPECT_CALL(stream_under_test.mix_track_mock->rendering_stream, Close());
 
+  EXPECT_CALL(*this,
+              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
+      .Times(0);
   EXPECT_CALL(mock_mixing_graph_output_stream_, Open()).Times(0);
   EXPECT_CALL(mock_mixing_graph_output_stream_, Close()).Times(0);
 
-  EXPECT_FALSE(stream_under_test.mixable_stream->Open());
-  CloseAndVerifyStreamUnderTest(stream_under_test);
+  EXPECT_TRUE(stream_under_test.mixable_stream->Open());
+
+  // Open() will work, but stream creation will fail on start and will result in
+  // OnError().
+  EXPECT_TRUE(stream_under_test.mixable_stream->Open());
+  EXPECT_CALL(stream_under_test.mix_track_mock->source_callback, OnError(_))
+      .Times(1);
+
+  stream_under_test.mixable_stream->Start(
+      &stream_under_test.mix_track_mock->source_callback);
+
+  stream_under_test.mixable_stream->Stop();
+
+  stream_under_test.mixable_stream->Close();
 }
 
 TEST_P(OutputDeviceMixerImplTestWithDefault, OneUmixedStream_CreateOpenClose) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest(GetParam());
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
   CloseAndVerifyStreamUnderTest(stream_under_test);
 }
 
@@ -564,8 +562,8 @@ TEST_F(OutputDeviceMixerImplTest, TwoUmixedStream_CreateOpenClose) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
   StreamUnderTest stream_under_test1 = CreateNextStreamUnderTest(mixer.get());
   StreamUnderTest stream_under_test2 = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test1, PlaybackMode::kIndependent);
-  OpenAndVerifyStreamUnderTest(stream_under_test2, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test1);
+  OpenAndVerifyStreamUnderTest(stream_under_test2);
   CloseAndVerifyStreamUnderTest(stream_under_test2);
   CloseAndVerifyStreamUnderTest(stream_under_test1);
 }
@@ -576,15 +574,29 @@ TEST_F(OutputDeviceMixerImplTest,
   StreamUnderTest stream_under_test1 = CreateNextStreamUnderTest(mixer.get());
   StreamUnderTest stream_under_test2 = CreateNextStreamUnderTest(mixer.get());
 
-  OpenAndVerifyStreamUnderTest(stream_under_test1, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test1);
   StartAndVerifyStreamUnderTest(stream_under_test1, PlaybackMode::kIndependent);
 
   // Failing to open stream_under_test2 does not affect stream_under_test2.
-  SetIndependentRenderingStreamOpenExpectations(
-      stream_under_test2.mix_track_mock, /*open_success=*/false);
-  EXPECT_FALSE(stream_under_test2.mixable_stream->Open());
+  EXPECT_CALL(*this, MockCreateOutputStream(AudioParamsEq(
+                         stream_under_test2.mix_track_mock->params)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(stream_under_test2.mix_track_mock->rendering_stream, Open())
+      .WillOnce(Return(false));
+  EXPECT_CALL(stream_under_test2.mix_track_mock->rendering_stream, Close());
+  EXPECT_CALL(stream_under_test2.mix_track_mock->source_callback, OnError(_))
+      .Times(1);
+
+  EXPECT_TRUE(stream_under_test2.mixable_stream->Open());
+
+  stream_under_test2.mixable_stream->Start(
+      &stream_under_test2.mix_track_mock->source_callback);
+
   VerifyAndClearAllExpectations();
-  CloseAndVerifyStreamUnderTest(stream_under_test2);
+
+  stream_under_test2.mixable_stream->Stop();
+  stream_under_test2.mixable_stream->Close();
+  VerifyAndClearAllExpectations();
 
   StopAndVerifyStreamUnderTest(stream_under_test1, PlaybackMode::kIndependent);
   CloseAndVerifyStreamUnderTest(stream_under_test1);
@@ -611,7 +623,7 @@ TEST_F(OutputDeviceMixerImplTest, OneUmixedStream_SetVolumeIsPropagated) {
   EXPECT_EQ(volume_result, volume2);
   EXPECT_EQ(stream_under_test.mix_track_mock->graph_input.GetVolume(), volume2);
 
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
 
   // Volume is propagated after MixableOutputStream::Open().
   stream_under_test.mixable_stream->GetVolume(&volume_result);
@@ -650,7 +662,7 @@ TEST_F(OutputDeviceMixerImplTest,
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
 
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
 
   {
     InSequence s;
@@ -696,8 +708,7 @@ TEST_F(OutputDeviceMixerImplTest,
   CloseAndVerifyStreamUnderTest(stream_under_test);
 }
 
-TEST_P(OutputDeviceMixerImplTest,
-       NStreamsOpen_StartStopListeningDoesNotStartMixing) {
+TEST_P(OutputDeviceMixerImplTest, NStreamsOpen_StartStopListeningHasNoEffect) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   int stream_count = GetParam();
@@ -705,21 +716,14 @@ TEST_P(OutputDeviceMixerImplTest,
   std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kIndependent);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
   }
 
   // The mixer may have streams open, but they are not playing, so
   // Start/StopListening has no effect.
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
-
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener);
-  VerifyAndClearAllExpectations();
-
   FastForwardToUnmixedPlayback();
   for (auto& stream_under_test : streams_under_test) {
     CloseAndVerifyStreamUnderTest(stream_under_test);
@@ -736,8 +740,7 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlaying_StartStopTwoListeners) {
   std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kIndependent);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kIndependent);
     playing_stream_mocks.insert((&streams_under_test.back())->mix_track_mock);
@@ -749,7 +752,6 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlaying_StartStopTwoListeners) {
   // We are playing at least one stream.
   // Expect switch to mixing when the first listener comes.
   ExpectIndependentPlaybackStopped(playing_stream_mocks);
-  ExpectMixingGraphOutputStreamOpen();
   ExpectMixingStarted(playing_stream_mocks);
   mixer->StartListening(&listener1);
   FastForwardToUnmixedPlayback();
@@ -774,7 +776,6 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlaying_StartStopTwoListeners) {
   VerifyAndClearAllExpectations();
 
   // Expect switching to unmixed playback after we fast-forward to the future.
-  ExpectMixingGraphOutputStreamClosed();
   ExpectMixingStopped(playing_stream_mocks);
   ExpectIndependentPlaybackStarted(playing_stream_mocks);
   FastForwardToUnmixedPlayback();
@@ -797,8 +798,7 @@ TEST_P(OutputDeviceMixerImplTest,
   std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kIndependent);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kIndependent);
     playing_stream_mocks.insert((&streams_under_test.back())->mix_track_mock);
@@ -809,7 +809,6 @@ TEST_P(OutputDeviceMixerImplTest,
   // We are playing at least one stream.
   // Expect switch to mixing when the listener comes.
   ExpectIndependentPlaybackStopped(playing_stream_mocks);
-  ExpectMixingGraphOutputStreamOpen();
   ExpectMixingStarted(playing_stream_mocks);
   mixer->StartListening(&listener);
   FastForwardToUnmixedPlayback();
@@ -825,7 +824,6 @@ TEST_P(OutputDeviceMixerImplTest,
 
   // Stop listening and expect the switch to unmixed playback upon the timeout.
   ExpectMixingStopped(playing_stream_mocks);
-  ExpectMixingGraphOutputStreamClosed();
   ExpectIndependentPlaybackStarted(playing_stream_mocks);
   mixer->StopListening(&listener);
   FastForwardToUnmixedPlayback();
@@ -846,15 +844,12 @@ TEST_P(OutputDeviceMixerImplTest,
     return;  // Not interesting.
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   std::vector<StreamUnderTest> streams_under_test;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kMixing);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kMixing);
   }
@@ -886,7 +881,6 @@ TEST_P(OutputDeviceMixerImplTest,
   // Now when we stop the listener, rendering of the mixing graph should
   // stop immediately. Mixing graph output stream will be closed.
   ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener);
   VerifyAndClearAllExpectations();
 }
@@ -895,7 +889,6 @@ TEST_P(OutputDeviceMixerImplTest, StartStopNStreamsWhileListening_DeleteMixer) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
   VerifyAndClearAllExpectations();
 
@@ -903,8 +896,7 @@ TEST_P(OutputDeviceMixerImplTest, StartStopNStreamsWhileListening_DeleteMixer) {
   std::vector<StreamUnderTest> streams_under_test;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kMixing);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kMixing);
   }
@@ -916,7 +908,6 @@ TEST_P(OutputDeviceMixerImplTest, StartStopNStreamsWhileListening_DeleteMixer) {
 
   if (stream_count)
     ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener);
   mixer = nullptr;
   // Mixer output stream must be closed immediately.
@@ -928,19 +919,17 @@ TEST_F(OutputDeviceMixerImplTest,
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
   VerifyAndClearAllExpectations();
 
   auto stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
   StartAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
   mixer->StopListening(&listener);
 
   // Since there are no listeners left, mixing playback must be stopped as soon
   // as the stream is gone.
   ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   StopAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
 
   CloseAndVerifyStreamUnderTest(stream_under_test);
@@ -957,16 +946,13 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsMixing_OnMixingStreamError) {
     return;  // Not interesting.
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   std::vector<StreamUnderTest> streams_under_test;
   std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kMixing);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kMixing);
     playing_stream_mocks.insert((&streams_under_test.back())->mix_track_mock);
@@ -976,8 +962,6 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsMixing_OnMixingStreamError) {
     EXPECT_CALL(stream_under_test.mix_track_mock->source_callback, OnError(_));
 
   ExpectMixingStopped(playing_stream_mocks);
-  ExpectMixingGraphOutputStreamClosed();  // To be able to recover in the
-                                          // future.
   mock_mixing_graph_output_stream_.SimulateError();
   VerifyAndClearAllExpectations();
 
@@ -997,41 +981,34 @@ TEST_F(OutputDeviceMixerImplTest, OnMixingStreamError_Recovers) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   std::vector<StreamUnderTest> streams_under_test;
   std::set<MixTrackMock*> playing_stream_mocks;
   for (int i = 0; i < 2; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kMixing);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                   PlaybackMode::kMixing);
     playing_stream_mocks.insert((&streams_under_test.back())->mix_track_mock);
   }
 
-  // Simulate the mixing stream error.
   for (auto& stream_under_test : streams_under_test)
     EXPECT_CALL(stream_under_test.mix_track_mock->source_callback, OnError(_));
+
   ExpectMixingStopped(playing_stream_mocks);
-  ExpectMixingGraphOutputStreamClosed();
   mock_mixing_graph_output_stream_.SimulateError();
   VerifyAndClearAllExpectations();
 
   // Opening and starting a new stream: mixing should retry and start
   // successfully.
   streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-  OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                               PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(streams_under_test.back());
 
   // Mixing should restart now.
-  ExpectMixingGraphOutputStreamOpen();
   ExpectMixingStarted(playing_stream_mocks);
   StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                 PlaybackMode::kMixing);
-  VerifyAndClearAllExpectations();
 
   for (auto& stream_under_test : streams_under_test) {
     StopAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
@@ -1039,7 +1016,6 @@ TEST_F(OutputDeviceMixerImplTest, OnMixingStreamError_Recovers) {
 
   // No playback, the listener is gone - we should stop mixing.
   ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener);
   VerifyAndClearAllExpectations();
 
@@ -1057,8 +1033,7 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingUmixed_DeviceChange) {
 
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kIndependent);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     if (i) {  // Leave one stream just open.
       StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                     PlaybackMode::kIndependent);
@@ -1068,9 +1043,9 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingUmixed_DeviceChange) {
   for (int i = 0; i < stream_count; ++i) {
     if (i) {
       EXPECT_CALL(streams_under_test[i].mix_track_mock->rendering_stream, Stop);
+      EXPECT_CALL(streams_under_test[i].mix_track_mock->rendering_stream,
+                  Close);
     }
-    ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(
-        streams_under_test[i]);
     EXPECT_CALL(*this, OnDeviceChangeForMixMember(AudioParamsEq(
                            streams_under_test[i].mix_track_mock->params)));
   }
@@ -1093,15 +1068,12 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingMixed_DeviceChange) {
   int stream_count = GetParam();
 
   MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   std::vector<StreamUnderTest> streams_under_test;
   for (int i = 0; i < stream_count; ++i) {
     streams_under_test.push_back(CreateNextStreamUnderTest(mixer.get()));
-    OpenAndVerifyStreamUnderTest(streams_under_test.back(),
-                                 PlaybackMode::kMixing);
+    OpenAndVerifyStreamUnderTest(streams_under_test.back());
     if (i) {  // Leave one stream just open.
       StartAndVerifyStreamUnderTest(streams_under_test.back(),
                                     PlaybackMode::kMixing);
@@ -1112,15 +1084,12 @@ TEST_P(OutputDeviceMixerImplTest, NStreamsPlayingMixed_DeviceChange) {
     if (i) {
       EXPECT_CALL(streams_under_test[i].mix_track_mock->graph_input, Stop);
     }
-    ExpectIndependentRenderingStreamStreamClosedIfItWasOpen(
-        streams_under_test[i]);
     EXPECT_CALL(*this, OnDeviceChangeForMixMember(AudioParamsEq(
                            streams_under_test[i].mix_track_mock->params)));
   }
 
   if (stream_count > 1)  // Since we do not start the first stream.
     ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
 
   mixer->ProcessDeviceChange();
   VerifyAndClearAllExpectations();
@@ -1140,12 +1109,10 @@ TEST_F(OutputDeviceMixerImplTest, OnMoreDataDeliversCallbacks) {
   MockListener listener1;
   MockListener listener2;
 
-  ExpectMixingGraphOutputStreamOpen();
   mixer->StartListening(&listener1);
-  VerifyAndClearAllExpectations();
 
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
   StartAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
 
   EXPECT_CALL(listener1, OnPlayoutData(_, _, _)).Times(1);
@@ -1169,26 +1136,20 @@ TEST_F(OutputDeviceMixerImplTest, OnMoreDataDeliversCallbacks) {
   CloseAndVerifyStreamUnderTest(stream_under_test);
 
   ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener2);
 }
 
 TEST_F(OutputDeviceMixerImplTest,
-       MixingStreamCreationFailureHandledOnMixingPlaybackStart) {
+       MixingStreamCreationFailureHandled_ListenerPresent) {
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
+
   MockListener listener;
-  // Fail creating the mixing stream.
-  EXPECT_CALL(*this,
-              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
-      .WillOnce(Return(false));
+
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
 
-  // Since the previous attempt to create the mixing stream failed, it will
-  // retry now when starting mixing playback. Fail it again.
   EXPECT_CALL(*this,
               MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
       .WillOnce(Return(false));
@@ -1214,24 +1175,17 @@ TEST_F(OutputDeviceMixerImplTest,
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   MockListener listener;
-  // Fail opening the mixing stream.
-  EXPECT_CALL(*this,
-              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)));
-  EXPECT_CALL(mock_mixing_graph_output_stream_, Open()).WillOnce(Return(false));
-  EXPECT_CALL(mock_mixing_graph_output_stream_, Close());
+
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
 
-  // Since the previous attempt to create the mixing stream failed, it will
-  // retry now when starting mixing playback. Fail it again.
   EXPECT_CALL(*this,
-              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)));
+              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
+      .WillOnce(Return(true));
   EXPECT_CALL(mock_mixing_graph_output_stream_, Open()).WillOnce(Return(false));
   EXPECT_CALL(mock_mixing_graph_output_stream_, Close());
-
   EXPECT_CALL(stream_under_test.mix_track_mock->source_callback, OnError(_));
 
   stream_under_test.mixable_stream->Start(
@@ -1255,11 +1209,12 @@ TEST_F(OutputDeviceMixerImplTest,
   MockListener listener;
 
   StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
+  OpenAndVerifyStreamUnderTest(stream_under_test);
   StartAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
 
   EXPECT_CALL(*this,
-              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)));
+              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
+      .WillOnce(Return(true));
   EXPECT_CALL(mock_mixing_graph_output_stream_, Open()).WillOnce(Return(false));
   EXPECT_CALL(mock_mixing_graph_output_stream_, Close());
   EXPECT_CALL(stream_under_test.mix_track_mock->rendering_stream, Stop);
@@ -1282,24 +1237,21 @@ TEST_F(OutputDeviceMixerImplTest,
   std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
 
   MockListener listener;
-  // Fail creating the mixing stream.
-  EXPECT_CALL(*this,
-              MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
-      .WillOnce(Return(false));
+
   mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
 
   StreamUnderTest stream_under_test1 = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test1, PlaybackMode::kMixing);
+  OpenAndVerifyStreamUnderTest(stream_under_test1);
 
-  // Fail creating the mixing stream again.
   EXPECT_CALL(*this,
               MockCreateOutputStream(AudioParamsEq(mixer_output_params_)))
       .WillOnce(Return(false));
+
   EXPECT_CALL(stream_under_test1.mix_track_mock->source_callback, OnError(_));
 
   stream_under_test1.mixable_stream->Start(
       &stream_under_test1.mix_track_mock->source_callback);
+
   VerifyAndClearAllExpectations();
 
   // Since mixing has not started, the mixer considers it as independent
@@ -1310,42 +1262,13 @@ TEST_F(OutputDeviceMixerImplTest,
 
   // This time mixing should be successful.
   StreamUnderTest stream_under_test2 = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test2, PlaybackMode::kMixing);
-
-  ExpectMixingGraphOutputStreamOpen();
+  OpenAndVerifyStreamUnderTest(stream_under_test2);
   StartAndVerifyStreamUnderTest(stream_under_test2, PlaybackMode::kMixing);
   StopAndVerifyStreamUnderTest(stream_under_test2, PlaybackMode::kMixing);
   CloseAndVerifyStreamUnderTest(stream_under_test2);
 
   ExpectMixingGraphOutputStreamStopped();
-  ExpectMixingGraphOutputStreamClosed();
   mixer->StopListening(&listener);
-}
-
-TEST_F(OutputDeviceMixerImplTest,
-       StartListening_OpenStream_StopListening_StartIndependentPlayback) {
-  std::unique_ptr<OutputDeviceMixer> mixer = CreateMixerUnderTest();
-
-  MockListener listener;
-  ExpectMixingGraphOutputStreamOpen();
-  mixer->StartListening(&listener);
-  VerifyAndClearAllExpectations();
-
-  StreamUnderTest stream_under_test = CreateNextStreamUnderTest(mixer.get());
-  OpenAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kMixing);
-
-  ExpectMixingGraphOutputStreamClosed();
-  mixer->StopListening(&listener);
-  VerifyAndClearAllExpectations();
-
-  // Since there were listeners attached when |stream_under_test| was open, its
-  // physical rendering stream is not open yet.
-  SetIndependentRenderingStreamOpenExpectations(
-      stream_under_test.mix_track_mock,
-      /*open_success=*/true);
-  StartAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
-  StopAndVerifyStreamUnderTest(stream_under_test, PlaybackMode::kIndependent);
-  CloseAndVerifyStreamUnderTest(stream_under_test);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
