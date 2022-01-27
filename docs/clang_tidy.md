@@ -83,6 +83,9 @@ $ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_
     --all
 ```
 
+To only run clang-tidy against certain files, replace the `--all` parameter with
+the individual file paths.
+
 All clang-tidy checks are run on Linux builds of Chromium, so please set up your
 `args.gn` to build Linux.
 
