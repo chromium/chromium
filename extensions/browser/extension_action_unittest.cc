@@ -178,4 +178,48 @@ TEST(ExtensionActionTest, PopupUrl) {
   ASSERT_EQ(url_baz, action->GetPopupUrl(100));
 }
 
+TEST(ExtensionActiontest, DeclarativeShows) {
+  std::unique_ptr<ExtensionAction> action =
+      CreateAction(ActionInfo(ActionInfo::TYPE_ACTION));
+
+  // Set the default for the action to be not visible.
+  action->SetIsVisible(ExtensionAction::kDefaultTabId, false);
+  EXPECT_FALSE(action->GetIsVisible(1));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(1));
+  EXPECT_FALSE(action->GetIsVisible(100));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(100));
+
+  // With a declarative show on a given tab, the action should be visible on
+  // that tab only, but shouldn't indicate that if ignoring the declarative
+  // values.
+  action->DeclarativeShow(1);
+  EXPECT_TRUE(action->GetIsVisible(1));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(1));
+  EXPECT_FALSE(action->GetIsVisible(100));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(100));
+
+  // Undo the declarative show. The visibility is reset.
+  action->UndoDeclarativeShow(1);
+  EXPECT_FALSE(action->GetIsVisible(1));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(1));
+  EXPECT_FALSE(action->GetIsVisible(100));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(100));
+
+  // If there is both a declarative and imperative visibility, it should be
+  // considered visible whether or not declarative shows are considered.
+  action->DeclarativeShow(1);
+  action->SetIsVisible(1, true);
+  EXPECT_TRUE(action->GetIsVisible(1));
+  EXPECT_TRUE(action->GetIsVisibleIgnoringDeclarative(1));
+  EXPECT_FALSE(action->GetIsVisible(100));
+  EXPECT_FALSE(action->GetIsVisibleIgnoringDeclarative(100));
+
+  // Similarly, the default can be returned even if we ignore declarative shows.
+  action->SetIsVisible(ExtensionAction::kDefaultTabId, true);
+  EXPECT_TRUE(action->GetIsVisible(1));
+  EXPECT_TRUE(action->GetIsVisibleIgnoringDeclarative(1));
+  EXPECT_TRUE(action->GetIsVisible(100));
+  EXPECT_TRUE(action->GetIsVisibleIgnoringDeclarative(100));
+}
+
 }  // namespace extensions

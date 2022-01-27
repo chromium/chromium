@@ -14,6 +14,8 @@
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_host_registry.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/test/result_catcher.h"
@@ -177,6 +179,69 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupFailures) {
          ]);)";
   RunScriptTest(kScript, *extension);
   EXPECT_FALSE(BrowserHasPopup(browser()));
+}
+
+// Tests that openPopup() will not succeed if a popup is only visible on a tab
+// because of a declarative condition.
+// https://crbug.com/1289846.
+IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest,
+                       DontOpenPopupForDeclarativelyShownAction) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  constexpr char kManifest[] =
+      R"({
+           "name": "My Extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { "service_worker": "worker.js" },
+           "action": { "default_popup": "popup.html" },
+           "permissions": ["declarativeContent"]
+         })";
+  constexpr char kWorkerJs[] = "// Intentionally blank";
+  constexpr char kPopupHtml[] = "<html>Hello, World!</html>";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorkerJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("popup.html"), kPopupHtml);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  constexpr char kDisableActionAndSetRule[] =
+      R"(await chrome.action.disable();
+         await chrome.declarativeContent.onPageChanged.addRules([{
+             conditions: [
+               new chrome.declarativeContent.PageStateMatcher({
+                 pageUrl: {hostEquals: 'example.com'}
+               })
+             ],
+             actions: [
+               new chrome.declarativeContent.ShowAction(),
+             ]
+         }]);
+         chrome.test.succeed();)";
+
+  WrapAndRunScript(kDisableActionAndSetRule, *extension);
+
+  GURL url = embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  int tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  const ExtensionAction* extension_action =
+      ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
+  ASSERT_TRUE(extension_action);
+  EXPECT_TRUE(extension_action->GetIsVisible(tab_id));
+  EXPECT_FALSE(extension_action->GetIsVisibleIgnoringDeclarative(tab_id));
+
+  constexpr char kTryOpenPopup[] =
+      R"(await chrome.test.assertPromiseRejects(
+             chrome.action.openPopup(),
+             'Error: Extension does not have a popup on the active tab.');
+         chrome.test.succeed();)";
+  WrapAndRunScript(kTryOpenPopup, *extension);
 }
 
 }  // namespace extensions

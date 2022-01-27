@@ -64,6 +64,8 @@ const char kInvalidColorError[] =
     "The color specification could not be parsed.";
 constexpr char kNoActiveWindowFound[] =
     "Could not find an active browser window.";
+constexpr char kNoActivePopup[] =
+    "Extension does not have a popup on the active tab.";
 
 bool g_report_error_for_invisible_icon = false;
 
@@ -91,6 +93,23 @@ Browser* FindLastActiveBrowserWindow(Profile* profile,
   }
 
   return nullptr;
+}
+
+// Returns true if the given `extension` has an active popup on the active tab
+// of `browser`.
+bool HasPopupOnActiveTab(Browser* browser,
+                         content::BrowserContext* browser_context,
+                         const Extension& extension) {
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  ExtensionAction* extension_action =
+      ExtensionActionManager::Get(browser_context)
+          ->GetExtensionAction(extension);
+  DCHECK(extension_action);
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  return extension_action->HasPopup(tab_id) &&
+         extension_action->GetIsVisibleIgnoringDeclarative(tab_id);
 }
 
 // Attempts to open `extension`'s popup in the given `browser`. Returns true on
@@ -670,18 +689,8 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  ExtensionAction* extension_action =
-      ExtensionActionManager::Get(browser_context())
-          ->GetExtensionAction(*extension());
-  DCHECK(extension_action);
-  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  if (!extension_action->HasPopup(tab_id) ||
-      !extension_action->GetIsVisible(tab_id)) {
-    return RespondNow(
-        Error("Extension does not have a popup on the active tab."));
-  }
+  if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))
+    return RespondNow(Error(kNoActivePopup));
 
   if (!OpenPopupInBrowser(*browser, *extension(), &error)) {
     DCHECK(!error.empty());
@@ -740,6 +749,9 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
 
   if (!browser)
     return RespondNow(Error(kNoActiveWindowFound));
+
+  if (!HasPopupOnActiveTab(browser, browser_context(), *extension()))
+    return RespondNow(Error(kNoActivePopup));
 
   std::string error;
   if (!OpenPopupInBrowser(*browser, *extension(), &error)) {
