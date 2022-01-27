@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
@@ -763,7 +764,16 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             mPropertyModel.set(
                     MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE);
             drawable = drawable.mutate();
-            ((AnimatedVectorDrawableCompat) drawable).start();
+            final AnimatedVectorDrawableCompat animatedDrawable =
+                    (AnimatedVectorDrawableCompat) drawable;
+            animatedDrawable.start();
+            animatedDrawable.registerAnimationCallback(new Animatable2Compat.AnimationCallback() {
+                @Override
+                public void onAnimationEnd(Drawable drawable) {
+                    if (mCurrentInfo == null || mCurrentInfo.icon != info.icon) return;
+                    animatedDrawable.start();
+                }
+            });
         }
 
         mPropertyModel.set(MessageBannerProperties.ICON, drawable);
