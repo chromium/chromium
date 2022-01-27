@@ -149,8 +149,12 @@ constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
  public:
   void RunAsyncSafe() override {
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::NORMAL);
+    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
+    // It looks like inside the function, we seem to call async unsafe API.
+    // For the mitigation, disabling this temporarily.
+    // We should revisit here, and see the impact of performance.
+    // base::PlatformThread::SetCurrentThreadPriority(
+    //   base::ThreadPriority::NORMAL);
   }
 };
 
