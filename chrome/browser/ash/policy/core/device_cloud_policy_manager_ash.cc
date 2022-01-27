@@ -257,7 +257,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     login_logout_reporter_ = ash::reporting::LoginLogoutReporter::Create(
         managed_session_service_.get());
     user_added_removed_reporter_ =
-        std::make_unique<::reporting::UserAddedRemovedReporter>();
+        ::reporting::UserAddedRemovedReporter::Create(
+            managed_session_service_.get());
     metric_reporting_manager_ = reporting::MetricReportingManager::Create(
         managed_session_service_.get());
   }
