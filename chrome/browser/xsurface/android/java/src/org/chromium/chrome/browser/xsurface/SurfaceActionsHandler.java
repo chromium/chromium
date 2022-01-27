@@ -60,4 +60,16 @@ public interface SurfaceActionsHandler {
      *         clicked URL
      */
     default void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {}
+
+    /**
+     * Attempts to follow a WebFeed. If the WebFeed cannot be followed immediately
+     * due to network limitations, the operation will be retried at a later time.
+     */
+    default void followWebFeed(String webFeedName) {}
+
+    /**
+     * Attempts to unfollow a WebFeed. If the WebFeed cannot be unfollowed immediately
+     * due to network limitations, the operation will be retried at a later time.
+     */
+    default void unfollowWebFeed(String webFeedName) {}
 }
