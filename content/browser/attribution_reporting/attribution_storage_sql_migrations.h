@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_MIGRATIONS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_SQL_MIGRATIONS_H_
 
-#include "content/browser/attribution_reporting/attribution_storage.h"
-
 namespace sql {
 class Database;
 class MetaTable;
@@ -47,8 +45,7 @@ namespace content {
 // failure.
 [[nodiscard]] bool UpgradeAttributionStorageSqlSchema(
     sql::Database* db,
-    sql::MetaTable* meta_table,
-    AttributionStorage::Delegate* delegate);
+    sql::MetaTable* meta_table);
 
 }  // namespace content
 

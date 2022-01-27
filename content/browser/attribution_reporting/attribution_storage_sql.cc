@@ -123,9 +123,10 @@ const int kCurrentVersionNumber = 15;
 const int kCompatibleVersionNumber = 15;
 
 // Latest version of the database that cannot be upgraded to
-// |kCurrentVersionNumber| without razing the database. No versions are
-// currently deprecated.
-const int kDeprecatedVersionNumber = 0;
+// |kCurrentVersionNumber| without razing the database.
+//
+// Versions 1-14 were deprecated by https://crrev.com/c/3421175.
+const int kDeprecatedVersionNumber = 14;
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {
@@ -1475,8 +1476,7 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
     return CreateSchema();
   }
 
-  return UpgradeAttributionStorageSqlSchema(db_.get(), &meta_table_,
-                                            delegate_.get());
+  return UpgradeAttributionStorageSqlSchema(db_.get(), &meta_table_);
 }
 
 bool AttributionStorageSql::CreateSchema() {
