@@ -386,40 +386,4 @@ if (enable_extensions) {
       deps += [ "//components/user_manager:test_support" ]
     }
   }
-
-  # TODO(rockot) bug 505926: This should be deleted for the same reason as
-  # chrome_extensions_browsertests.
-  source_set("chrome_extensions_interactive_uitests") {
-    testonly = true
-    sources = [ "browser/guest_view/mime_handler_view/mime_handler_view_interactive_uitest.cc" ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    # These are the deps from interactive_uitests minus some internal Chrome
-    # ones that aren't allowed to be included here and that aren't needed.
-    deps = [
-      "//chrome/browser",
-      "//chrome/browser/devtools",
-      "//chrome/renderer",
-      "//chrome/test:test_support",
-      "//components/sync",
-      "//content/app/resources",
-      "//crypto:platform",
-      "//crypto:test_support",
-      "//google_apis:test_support",
-      "//net",
-      "//net:net_resources",
-      "//net:test_support",
-      "//skia",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//third_party/hunspell",
-      "//third_party/icu",
-      "//third_party/libpng",
-      "//third_party/zlib",
-      "//ui/base:test_support",
-      "//ui/resources:ui_test_pak",
-      "//ui/web_dialogs:test_support",
-    ]
-  }
 }

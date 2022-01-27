@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -17,16 +13,13 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/browser/guest_view/mime_handler_view/test_mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
@@ -35,20 +28,17 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 
 using guest_view::GuestViewManager;
-using guest_view::GuestViewManagerDelegate;
 using guest_view::TestGuestViewManager;
-using guest_view::TestGuestViewManagerFactory;
 
 namespace extensions {
 
-// Counts the number of URL requests made for a given URL.
-class MimeHandlerViewTest : public ExtensionApiTest {
+class ChromeMimeHandlerViewInteractiveUITest : public ExtensionApiTest {
  public:
-  MimeHandlerViewTest() {
+  ChromeMimeHandlerViewInteractiveUITest() {
     GuestViewManager::set_factory_for_testing(&factory_);
   }
 
-  ~MimeHandlerViewTest() override {}
+  ~ChromeMimeHandlerViewInteractiveUITest() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -111,8 +101,7 @@ class MimeHandlerViewTest : public ExtensionApiTest {
   }
 
  private:
-  TestGuestViewManagerFactory factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  guest_view::TestGuestViewManagerFactory factory_;
 };
 
 // Test is flaky on Linux.  https://crbug.com/877627
@@ -121,7 +110,8 @@ class MimeHandlerViewTest : public ExtensionApiTest {
 #else
 #define MAYBE_Fullscreen Fullscreen
 #endif
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_Fullscreen) {
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
+                       MAYBE_Fullscreen) {
   RunTest("testFullscreen.csv");
 }
 
@@ -148,7 +138,8 @@ void WaitForFullscreenAnimation() {
 #else
 #define MAYBE_EscapeExitsFullscreen EscapeExitsFullscreen
 #endif
-IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, MAYBE_EscapeExitsFullscreen) {
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewInteractiveUITest,
+                       MAYBE_EscapeExitsFullscreen) {
   // Use the testing subclass of MimeHandlerViewGuest.
   GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
       base::BindRepeating(&TestMimeHandlerViewGuest::Create));
