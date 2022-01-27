@@ -180,8 +180,10 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
     LOG(ERROR) << "Invalid geoposition. Using default time for "
                << (sunrise ? "sunrise." : "sunset.");
-    return sunrise ? TimeOfDay(kDefaultSunriseTimeOffsetMinutes).ToTimeToday()
-                   : TimeOfDay(kDefaultSunsetTimeOffsetMinutes).ToTimeToday();
+    return TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
+                             : kDefaultSunsetTimeOffsetMinutes)
+        .SetClock(clock_)
+        .ToTimeToday();
   }
 
   icu::CalendarAstronomer astro(geoposition_->longitude,
@@ -192,7 +194,8 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
   // Note that the icu calendar works with milliseconds since epoch, and
   // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
-  const double midday_today_sec = TimeOfDay(12 * 60).ToTimeToday().ToDoubleT();
+  const double midday_today_sec =
+      TimeOfDay(12 * 60).SetClock(clock_).ToTimeToday().ToDoubleT();
   astro.setTime(midday_today_sec * 1000.0);
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);

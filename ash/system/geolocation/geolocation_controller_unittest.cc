@@ -45,12 +45,9 @@ class GeolocationControllerObserver : public GeolocationController::Observer {
     position_received_num_++;
   }
 
-  SimpleGeoposition position() const { return position_; }
   int position_received_num() const { return position_received_num_; }
 
  private:
-  SimpleGeoposition position_;
-
   // The number of times a new position is received.
   int position_received_num_ = 0;
 };
@@ -246,9 +243,37 @@ TEST_F(GeolocationControllerTest, SunsetSunriseDefault) {
             TimeOfDay(kDefaultSunriseTimeOffsetMinutes).ToTimeToday());
 }
 
-// TODO(crbug.com/1269915): Add a test for `GetSunsetTime()` and
-// `GetSunriseTime()` along with updating `TimeOfDay` to support setting a
-// clock to `test_clock_`, so the time can be tested deterministically.
+// Tests the behavior when there is a valid geoposition, sunrise and sunset
+// times are calculated correctly.
+TEST_F(GeolocationControllerTest, GetSunRiseSet) {
+  base::Time now;
+  EXPECT_TRUE(base::Time::FromUTCString("23 Dec 2021 12:00:00", &now));
+  test_clock_.SetNow(now);
+
+  base::Time sunrise;
+  EXPECT_TRUE(base::Time::FromUTCString("23 Dec 2021 04:14:36.626", &sunrise));
+  base::Time sunset;
+  EXPECT_TRUE(base::Time::FromUTCString("23 Dec 2021 14:59:58.459", &sunset));
+
+  // Prepare a valid geoposition.
+  Geoposition position;
+  position.latitude = 23.5;
+  position.longitude = 35.88;
+  position.status = Geoposition::STATUS_OK;
+  position.accuracy = 10;
+  position.timestamp = now;
+
+  GeolocationControllerObserver observer1;
+  controller_->AddObserver(&observer1);
+  EXPECT_TRUE(mock_timer_ptr_->IsRunning());
+  controller_->set_position_to_send(position);
+
+  EXPECT_EQ(0, controller_->geoposition_requests_num());
+  mock_timer_ptr_->Fire();
+  EXPECT_EQ(1, controller_->geoposition_requests_num());
+  EXPECT_EQ(controller_->GetSunsetTime(), sunset);
+  EXPECT_EQ(controller_->GetSunriseTime(), sunrise);
+}
 
 }  // namespace
 
