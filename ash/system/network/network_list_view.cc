@@ -558,9 +558,8 @@ std::u16string NetworkListView::GenerateAccessibilityDescription(
         return connection_status;
       }
       if (IsManagedByPolicy(info)) {
-        return l10n_util::GetStringFUTF16(
-            IDS_ASH_STATUS_TRAY_ETHERNET_A11Y_DESC_MANAGED, info.label,
-            connection_status);
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_ETHERNET_A11Y_DESC_MANAGED);
       }
       return info.label;
     case NetworkType::kWiFi: {
