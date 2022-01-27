@@ -270,7 +270,8 @@ class VideoEncoderTest : public ::testing::Test {
             config.output_profile, visible_rect, config.num_temporal_layers));
         break;
       case VideoCodec::kVP8:
-        bitstream_processors.emplace_back(new VP8Validator(visible_rect));
+        bitstream_processors.emplace_back(
+            new VP8Validator(visible_rect, config.num_temporal_layers));
         break;
       case VideoCodec::kVP9:
         bitstream_processors.emplace_back(new VP9Validator(

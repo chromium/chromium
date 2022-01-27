@@ -42,8 +42,9 @@ int VideoCodecProfileToVP9Profile(VideoCodecProfile profile) {
 }
 }  // namespace
 
-DecoderBufferValidator::DecoderBufferValidator(const gfx::Rect& visible_rect)
-    : visible_rect_(visible_rect) {}
+DecoderBufferValidator::DecoderBufferValidator(const gfx::Rect& visible_rect,
+                                               size_t num_temporal_layers)
+    : visible_rect_(visible_rect), num_temporal_layers_(num_temporal_layers) {}
 
 DecoderBufferValidator::~DecoderBufferValidator() = default;
 
@@ -62,11 +63,10 @@ H264Validator::H264Validator(VideoCodecProfile profile,
                              const gfx::Rect& visible_rect,
                              size_t num_temporal_layers,
                              absl::optional<uint8_t> level)
-    : DecoderBufferValidator(visible_rect),
+    : DecoderBufferValidator(visible_rect, num_temporal_layers),
       cur_pic_(new H264Picture),
       profile_(VideoCodecProfileToH264ProfileIDC(profile)),
-      level_(level),
-      num_temporal_layers_(num_temporal_layers) {}
+      level_(level) {}
 
 H264Validator::~H264Validator() = default;
 
@@ -246,8 +246,9 @@ bool H264Validator::UpdateCurrentPicture(const H264SliceHeader& slice_hdr) {
   return true;
 }
 
-VP8Validator::VP8Validator(const gfx::Rect& visible_rect)
-    : DecoderBufferValidator(visible_rect) {}
+VP8Validator::VP8Validator(const gfx::Rect& visible_rect,
+                           size_t num_temporal_layers)
+    : DecoderBufferValidator(visible_rect, num_temporal_layers) {}
 
 VP8Validator::~VP8Validator() = default;
 
@@ -263,6 +264,11 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
+  if (!header.show_frame) {
+    LOG(ERROR) << "|show_frame| should be always true";
+    return false;
+  }
+
   if (header.IsKeyframe()) {
     seen_keyframe_ = true;
     if (gfx::Rect(header.width, header.height) != visible_rect_) {
@@ -273,19 +279,87 @@ bool VP8Validator::Validate(const DecoderBuffer& decoder_buffer,
     }
   }
 
-  return seen_keyframe_ && header.show_frame;
+  if (!seen_keyframe_) {
+    LOG(ERROR) << "Bitstream cannot start with a delta frame";
+    return false;
+  }
+
+  if (num_temporal_layers_ == 1)
+    return true;
+
+  if (!metadata.vp8) {
+    LOG(ERROR) << "Metadata must be populated if temporal scalability is used.";
+    return false;
+  }
+
+  const uint8_t temporal_idx = metadata.vp8->temporal_idx;
+  if (temporal_idx >= num_temporal_layers_) {
+    LOG(ERROR) << "Invalid temporal id: "
+               << base::strict_cast<int>(temporal_idx);
+    return false;
+  }
+
+  if (header.IsKeyframe()) {
+    if (temporal_idx != 0) {
+      LOG(ERROR) << "Temporal id must be 0 on keyframe";
+      return false;
+    }
+    return true;
+  }
+
+  if (header.copy_buffer_to_golden != Vp8FrameHeader::NO_GOLDEN_REFRESH ||
+      header.copy_buffer_to_alternate != Vp8FrameHeader::NO_ALT_REFRESH) {
+    LOG(ERROR) << "Each reference frame is either updated by the current "
+               << "frame or unchanged in temporal layer encoding.";
+    return false;
+  }
+
+  const bool update_reference = header.refresh_last ||
+                                header.refresh_golden_frame ||
+                                header.refresh_alternate_frame;
+  if (metadata.vp8->non_reference != !update_reference) {
+    LOG(ERROR) << "|non_reference| must be true iff the frame does not update"
+               << "any reference buffer.";
+    return false;
+  }
+
+  if (num_temporal_layers_ == temporal_idx + 1) {
+    if (update_reference) {
+      LOG(ERROR) << "The frame in top temporal layer must not update "
+                    "reference frame.";
+      return false;
+    }
+  } else {
+    // TL0 can update last frame only and TL1 can update golden frame only when
+    // it is not top temporal layer.
+    if (temporal_idx == 0) {
+      if (!header.refresh_last || header.refresh_golden_frame ||
+          header.refresh_alternate_frame) {
+        LOG(ERROR) << "|refresh_last| only must be set on temporal layer 0";
+        return false;
+      }
+    } else if (temporal_idx == 1) {
+      if (header.refresh_last || !header.refresh_golden_frame ||
+          header.refresh_alternate_frame) {
+        LOG(ERROR) << "|refresh_golden_frame| only must be set on temporal "
+                   << "layer 1";
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 VP9Validator::VP9Validator(VideoCodecProfile profile,
                            const gfx::Rect& visible_rect,
                            size_t max_num_spatial_layers,
                            size_t num_temporal_layers)
-    : DecoderBufferValidator(visible_rect),
+    : DecoderBufferValidator(visible_rect, num_temporal_layers),
       parser_(/*parsing_compressed_header=*/false),
       profile_(VideoCodecProfileToVP9Profile(profile)),
       max_num_spatial_layers_(max_num_spatial_layers),
       cur_num_spatial_layers_(max_num_spatial_layers_),
-      num_temporal_layers_(num_temporal_layers),
       next_picture_id_(0) {}
 
 VP9Validator::~VP9Validator() = default;
