@@ -100,6 +100,12 @@ enum ProfileType {
   WORK_PROFILE = 1;
 }
 
+enum ProfileDisableReason {
+  DISABLE_REASON_UNKNOWN = 0;
+  DISABLE_REASON_NOT_SUPPORTED = 1;
+  DISABLE_REASON_DISABLED_BY_POLICY = 2;
+}
+
 enum DoNotDisturbCapability {
   DO_NOT_DISTURB_NORMAL = 0;
   DO_NOT_DISTURB_NOT_ALLOWED = 1;
@@ -147,6 +153,7 @@ message PhoneProperties {
   FindMyDeviceRingStatus ring_status = 9;
 
   ProfileType profile_type = 10;
+  ProfileDisableReason profile_disable_reason = 17;
 
   FindMyDeviceCapability find_my_device_capability = 11;
 
