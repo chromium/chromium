@@ -536,27 +536,6 @@
             ]
         }
     ],
-    "AssistAutocorrect": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20200925",
-                    "enable_features": [
-                        "AssistAutoCorrect"
-                    ]
-                },
-                {
-                    "name": "Enabled_20200201",
-                    "enable_features": [
-                        "AssistAutoCorrect"
-                    ]
-                }
-            ]
-        }
-    ],
     "AsyncFontAccess": [
         {
             "platforms": [
