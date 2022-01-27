@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 
 #include <memory>
-#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -192,9 +191,7 @@ TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
             frame_task_queue_controller_->GetAllTaskQueuesAndVoters().size());
   for (const auto& task_queue_and_voter :
        frame_task_queue_controller_->GetAllTaskQueuesAndVoters()) {
-    MainThreadTaskQueue* task_queue_ptr;
-    TaskQueue::QueueEnabledVoter* voter;
-    std::tie(task_queue_ptr, voter) = task_queue_and_voter;
+    auto [task_queue_ptr, voter] = task_queue_and_voter;
 
     EXPECT_NE(task_queue_ptr, nullptr);
     EXPECT_TRUE(all_task_queues.find(task_queue_ptr) != all_task_queues.end());

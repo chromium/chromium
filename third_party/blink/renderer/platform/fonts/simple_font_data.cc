@@ -314,8 +314,7 @@ static std::pair<int16_t, int16_t> TypoAscenderAndDescender(
 void SimpleFontData::ComputeNormalizedTypoAscentAndDescent() const {
   // Compute em height metrics from OS/2 sTypoAscender and sTypoDescender.
   SkTypeface* typeface = platform_data_.Typeface();
-  int16_t typo_ascender, typo_descender;
-  std::tie(typo_ascender, typo_descender) = TypoAscenderAndDescender(typeface);
+  auto [typo_ascender, typo_descender] = TypoAscenderAndDescender(typeface);
   if (typo_ascender > 0 &&
       TrySetNormalizedTypoAscentAndDescent(typo_ascender, typo_descender)) {
     return;

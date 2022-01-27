@@ -1022,9 +1022,7 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
 
-  LayoutUnit top;
-  LayoutUnit bottom;
-  std::tie(top, bottom) = SelectionTopAndBottom(*this);
+  auto [top, bottom] = SelectionTopAndBottom(*this);
 
   LayoutPoint flipped_point_in_container =
       LocationContainer()->FlipForWritingMode(point + PhysicalLocation());
