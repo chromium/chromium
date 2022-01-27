@@ -121,9 +121,6 @@ void LensSidePanelView::OnThemeChanged() {
       gfx::CreateVectorIcon(icon, color), 0, 0, kGoogleLensLogoWidth,
       kGoogleLensLogoHeight);
   branding_->SetImage(image);
-  separator_->SetColor(GetNativeTheme()->ShouldUseDarkColors()
-                           ? gfx::kGoogleGrey700
-                           : gfx::kGoogleGrey300);
 }
 
 void LensSidePanelView::CreateAndInstallHeader(
