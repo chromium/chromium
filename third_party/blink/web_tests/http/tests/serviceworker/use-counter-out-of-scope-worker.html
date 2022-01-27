@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<title>Worker: Use Counter for out-of-scope worker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script>
+
+// From web_feature.mojom
+const kWorkerControlledByServiceWorkerOutOfScope = 3859;
+const kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope = 3872;
+const kControlledWorkerWillBeUncontrolled = 3917;
+
+function isUseCounted(win, feature) {
+  return win.internals.isUseCounted(win.document, feature);
+}
+
+function observeUseCounter(win, feature) {
+  return win.internals.observeUseCounter(win.document, feature);
+}
+
+promise_test(async t => {
+  const frame1_url = 'resources/create-in-scope-worker.html';
+  const frame2_url = 'resources/create-out-of-scope-worker.html';
+  const service_worker_url = 'resources/empty.js';
+  const scope = 'resources/';
+
+  const registration = await service_worker_unregister_and_register(
+      t, service_worker_url, scope);
+  t.add_cleanup(() => service_worker_unregister(t, scope));
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const frame1 = await with_iframe(frame1_url);
+  t.add_cleanup(_ => frame1.remove());
+
+  const frame2 = await with_iframe(frame2_url);
+  t.add_cleanup(_ => frame2.remove());
+
+  await observeUseCounter(frame2.contentWindow,
+                          kWorkerControlledByServiceWorkerOutOfScope);
+
+  // Only `frame2` should record kWorkerControlledByServiceWorkerOutOfScope.
+  assert_false(isUseCounted(frame1.contentWindow,
+                            kWorkerControlledByServiceWorkerOutOfScope));
+  assert_true(isUseCounted(frame2.contentWindow,
+                           kWorkerControlledByServiceWorkerOutOfScope));
+  assert_false(isUseCounted(
+      frame2.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope));
+  assert_false(isUseCounted(
+      frame2.contentWindow,
+      kControlledWorkerWillBeUncontrolled));
+}, 'UseCounter for out-of-scope worker.');
+
+promise_test(async t => {
+  const frame_url = 'resources/create-out-of-scope-worker.html';
+  const service_worker_url = 'resources/respondwith-fetch-worker.php';
+  const scope = 'resources/';
+
+  const registration = await service_worker_unregister_and_register(
+      t, service_worker_url, scope);
+  t.add_cleanup(() => service_worker_unregister(t, scope));
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const frame = await with_iframe(frame_url);
+  t.add_cleanup(_ => frame.remove());
+
+  await observeUseCounter(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope);
+
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope));
+}, 'UseCounter for out-of-scope worker controlled by service worker with a ' +
+   'fetch event handler.');
+
+promise_test(async t => {
+  const frame_url = 'resources/create-out-of-scope-worker.html';
+  const service_worker_url = 'resources/respondwith-fetch-worker.php';
+  const scope1 = '/serviceworker/resources/';
+  const scope2 = '/serviceworker/';
+
+  const registration1 = await service_worker_unregister_and_register(
+      t, service_worker_url, scope1);
+  t.add_cleanup(() => service_worker_unregister(t, scope1));
+  await wait_for_state(t, registration1.installing, 'activated');
+
+  const registration2 = await service_worker_unregister_and_register(
+      t, service_worker_url, scope2);
+  t.add_cleanup(() => service_worker_unregister(t, scope2));
+  await wait_for_state(t, registration2.installing, 'activated');
+
+  const frame = await with_iframe(frame_url);
+  t.add_cleanup(_ => frame.remove());
+
+  await observeUseCounter(frame.contentWindow,
+                          kControlledWorkerWillBeUncontrolled);
+
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerOutOfScope));
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope));
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kControlledWorkerWillBeUncontrolled));
+}, 'UseCounter for a worker which is not controlled by any service workers.');
+
+promise_test(async t => {
+  const frame_url = 'resources/scope1/create-out-of-scope-worker.html';
+  const service_worker_url = 'resources/respondwith-fetch-worker.php';
+  const scope1 = 'resources/scope1/';
+  const scope2 = 'resources/scope2/';
+
+  const registration1 = await service_worker_unregister_and_register(
+      t, service_worker_url, scope1);
+  t.add_cleanup(() => service_worker_unregister(t, scope1));
+  await wait_for_state(t, registration1.installing, 'activated');
+
+  const registration2 = await service_worker_unregister_and_register(
+      t, service_worker_url, scope2);
+  t.add_cleanup(() => service_worker_unregister(t, scope2));
+  await wait_for_state(t, registration2.installing, 'activated');
+
+  const frame = await with_iframe(frame_url);
+  t.add_cleanup(_ => frame.remove());
+
+  await observeUseCounter(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope);
+
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerOutOfScope));
+  assert_true(isUseCounted(
+      frame.contentWindow,
+      kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope));
+  assert_false(isUseCounted(
+      frame.contentWindow,
+      kControlledWorkerWillBeUncontrolled));
+}, 'UseCounter for a worker which is controlled a different service worker.');
+
+</script>

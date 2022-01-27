@@ -1,0 +1,40 @@
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+const {HTTPS_REMOTE_ORIGIN} = get_host_info();
+
+if (location.protocol == 'http') {
+  location.protocol = 'https';
+} else {
+  promise_test(async (t) => {
+    frame = document.createElement('frame');
+    frame.src = 'resources/empty-coep.php';
+    document.body.appendChild(frame);
+    await new Promise((r) => frame.onload = r);
+    const url = `${HTTPS_REMOTE_ORIGIN}/resources/dummy.txt`;
+    const script = `
+        fetch('${url}', {mode: 'no-cors'}).catch(() => {});
+    `;
+    const worker = new frame.contentWindow.Worker(
+        'data:text/html,' + encodeURIComponent(script));
+
+    const reports = await new Promise((resolve) => {
+      const observer = new frame.contentWindow.ReportingObserver((reports) => {
+        resolve(reports.map(r => r.toJSON()));
+      });
+      observer.observe();
+    });
+
+    assert_equals(reports.length, 1);
+    assert_equals(reports[0].type, 'coep');
+    assert_equals(reports[0].url, frame.src);
+    assert_equals(reports[0].body.type, 'corp');
+    assert_equals(reports[0].body['blockedURL'], url);
+  }, 'COEP reports made by DedicatedWorker is reported to the owner document');
+}
+</script>
+</body>
+</html>
