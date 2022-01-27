@@ -708,7 +708,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // takes a long time due to latency etc.. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // |kIdTokenRequestDelay| seconds for better UX.
-  base::TimeTicks id_token_response_time_ = base::TimeTicks::Now();
+  id_token_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time = id_token_response_time_ - select_account_time_;
   if (fetch_time >= kIdTokenRequestDelay) {
     CompleteIdTokenRequest(status, id_token);
