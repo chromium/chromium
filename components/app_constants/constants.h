@@ -9,10 +9,16 @@
 
 namespace app_constants {
 
-// The extension id of the Chrome component application.
+// App IDs are a unique internal identifier for apps on Chrome OS. For
+// historical reasons, they are a SHA hash of some uniquely identifying
+// constant associated with an app, transposed from the [0-9a-f] range to [a-p]
+// (the same format used by Chrome's extension IDs). The following are app IDs
+// for the Chrome browser application on Chrome OS.
+
+// The ID of the Chrome component application as part of ash.
 COMPONENT_EXPORT(APP_CONSTANTS) extern const char kChromeAppId[];
 
-// Fake extension ID for the Lacros chrome browser application.
+// The ID of the Lacros Chrome browser application that runs outside of ash.
 COMPONENT_EXPORT(APP_CONSTANTS) extern const char kLacrosAppId[];
 
 }  // namespace app_constants
