@@ -16,6 +16,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/highlight_border.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/strings/string_util.h"
@@ -67,7 +68,7 @@ int GetCornerRadius(bool tablet_mode) {
 
 ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                                    bool tablet_mode)
-    : view_delegate_(view_delegate) {
+    : view_delegate_(view_delegate), is_tablet_mode_(tablet_mode) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
                                   base::Unretained(this)));
@@ -90,12 +91,8 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   StyleUtil::ConfigureInkDropAttributes(
       this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
-  if (tablet_mode) {
-    SetBackground(views::CreateRoundedRectBackground(
-        ColorProvider::Get()->GetBaseLayerColor(
-            ColorProvider::BaseLayerType::kTransparent80),
-        GetCornerRadius(/*tablet_mode=*/true)));
-  }
+
+  UpdateStyleForTabletMode();
 
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -136,6 +133,7 @@ void ContinueTaskView::OnThemeChanged() {
   views::View::OnThemeChanged();
   bubble_utils::ApplyStyle(title_, bubble_utils::LabelStyle::kBody);
   bubble_utils::ApplyStyle(subtitle_, bubble_utils::LabelStyle::kSubtitle);
+  UpdateStyleForTabletMode();
 }
 
 gfx::Size ContinueTaskView::GetMaximumSize() const {
@@ -295,6 +293,21 @@ void ContinueTaskView::CloseContextMenu() {
   if (!IsMenuShowing())
     return;
   context_menu_runner_->Cancel();
+}
+
+void ContinueTaskView::UpdateStyleForTabletMode() {
+  // Do nothing if the view is not in tablet mode.
+  if (!is_tablet_mode_)
+    return;
+
+  SetBackground(views::CreateRoundedRectBackground(
+      ColorProvider::Get()->GetBaseLayerColor(
+          ColorProvider::BaseLayerType::kTransparent80),
+      GetCornerRadius(/*tablet_mode=*/true)));
+  SetBorder(std::make_unique<HighlightBorder>(
+      GetCornerRadius(/*tablet_mode=*/true),
+      HighlightBorder::Type::kHighlightBorder2,
+      /*use_light_colors=*/false));
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)
