@@ -481,7 +481,13 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
 }
 
 // Test that a README file is created for profiles that didn't have it.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileReadmeCreated) {
+// TODO(https://crbug.com/1289754): Flaky on ChromeOS-Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_ProfileReadmeCreated DISABLED_ProfileReadmeCreated
+#else
+#define MAYBE_ProfileReadmeCreated ProfileReadmeCreated
+#endif
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_ProfileReadmeCreated) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
