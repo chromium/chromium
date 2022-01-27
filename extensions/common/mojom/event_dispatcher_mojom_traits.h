@@ -27,7 +27,7 @@ struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
     return filtering_info.instance_id.has_value();
   }
   static int instance_id(const extensions::EventFilteringInfo& filtering_info) {
-    return filtering_info.instance_id.value();
+    return filtering_info.instance_id.value_or(0);
   }
   static absl::optional<std::string> window_type(
       const extensions::EventFilteringInfo& filtering_info) {
@@ -39,7 +39,7 @@ struct StructTraits<extensions::mojom::EventFilteringInfoDataView,
   }
   static int window_exposed_by_default(
       const extensions::EventFilteringInfo& filtering_info) {
-    return filtering_info.window_exposed_by_default.value();
+    return filtering_info.window_exposed_by_default.value_or(0);
   }
 
   static bool Read(extensions::mojom::EventFilteringInfoDataView data,

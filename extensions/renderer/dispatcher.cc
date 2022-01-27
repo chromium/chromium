@@ -276,7 +276,8 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
       activity_logging_enabled_(false),
-      receiver_(this) {
+      receiver_(this),
+      dispatcher_(this) {
   bindings_system_ = CreateBindingsSystem(
       IPCMessageSender::CreateMainThreadIPCMessageSender());
 
@@ -769,7 +770,7 @@ void Dispatcher::RunScriptsAtDocumentIdle(content::RenderFrame* render_frame) {
   // |frame_helper| and |render_frame| might be dead by now.
 }
 
-void Dispatcher::DispatchEvent(
+void Dispatcher::DispatchEventHelper(
     const std::string& extension_id,
     const std::string& event_name,
     const base::ListValue& event_args,
@@ -975,7 +976,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_DeliverMessage, OnDeliverMessage)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnConnect, OnDispatchOnConnect)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchOnDisconnect, OnDispatchOnDisconnect)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
   IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -992,16 +992,24 @@ void Dispatcher::RegisterMojoInterfaces(
   // never deleted).
   associated_interfaces->AddInterface(base::BindRepeating(
       &Dispatcher::OnRendererAssociatedRequest, base::Unretained(this)));
+  associated_interfaces->AddInterface(base::BindRepeating(
+      &Dispatcher::OnEventDispatcherRequest, base::Unretained(this)));
 }
 
 void Dispatcher::UnregisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
   associated_interfaces->RemoveInterface(mojom::Renderer::Name_);
+  associated_interfaces->RemoveInterface(mojom::EventDispatcher::Name_);
 }
 
 void Dispatcher::OnRendererAssociatedRequest(
     mojo::PendingAssociatedReceiver<mojom::Renderer> receiver) {
   receiver_.Bind(std::move(receiver));
+}
+
+void Dispatcher::OnEventDispatcherRequest(
+    mojo::PendingAssociatedReceiver<mojom::EventDispatcher> dispatcher) {
+  dispatcher_.Bind(std::move(dispatcher));
 }
 
 void Dispatcher::ActivateExtension(const std::string& extension_id) {
@@ -1174,13 +1182,14 @@ void Dispatcher::SuspendExtension(
   // the browser know when we are starting and stopping the event dispatch, so
   // that it still considers the extension idle despite any activity the suspend
   // event creates.
-  DispatchEvent(extension_id, kOnSuspendEvent, base::ListValue(), nullptr);
+  DispatchEventHelper(extension_id, kOnSuspendEvent, base::ListValue(),
+                      nullptr);
   std::move(callback).Run();
 }
 
 void Dispatcher::CancelSuspendExtension(const std::string& extension_id) {
-  DispatchEvent(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
-                nullptr);
+  DispatchEventHelper(extension_id, kOnSuspendCanceledEvent, base::ListValue(),
+                      nullptr);
 }
 
 void Dispatcher::SetSystemFont(const std::string& font_family,
@@ -1296,10 +1305,10 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
       NULL);  // All render frames.
 }
 
-void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
-                                 const base::ListValue& event_args) {
+void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
+                               base::Value event_args) {
   content::RenderFrame* background_frame =
-      ExtensionFrameHelper::GetBackgroundPageFrame(params.extension_id);
+      ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
 
   // Synthesize a user gesture if this was in response to user action; this is
   // necessary if the gesture was e.g. by clicking on the extension toolbar
@@ -1310,27 +1319,28 @@ void Dispatcher::OnDispatchEvent(const mojom::DispatchEventParams& params,
   // the user gesture. This is intentional, since frames other than the
   // background page should have their own user gestures, such as through button
   // clicks.
-  if (params.is_user_gesture && background_frame) {
+  if (params->is_user_gesture && background_frame) {
     ScriptContext* background_context =
         ScriptContextSet::GetMainWorldContextForFrame(background_frame);
     if (background_context && bindings_system_->HasEventListenerInContext(
-                                  params.event_name, background_context)) {
+                                  params->event_name, background_context)) {
       background_frame->GetWebFrame()->NotifyUserActivation(
           blink::mojom::UserActivationNotificationType::kExtensionEvent);
     }
   }
 
-  DispatchEvent(params.extension_id, params.event_name, event_args,
-                mojom::EventFilteringInfo::From(params.filtering_info));
+  DispatchEventHelper(params->extension_id, params->event_name,
+                      base::Value::AsListValue(event_args),
+                      mojom::EventFilteringInfo::From(params->filtering_info));
 
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
     const Extension* extension =
-        RendererExtensionRegistry::Get()->GetByID(params.extension_id);
+        RendererExtensionRegistry::Get()->GetByID(params->extension_id);
     if (extension && BackgroundInfo::HasLazyBackgroundPage(extension)) {
       background_frame->Send(new ExtensionHostMsg_EventAck(
-          background_frame->GetRoutingID(), params.event_id));
+          background_frame->GetRoutingID(), params->event_id));
     }
   }
 }

@@ -6,6 +6,17 @@ module extensions.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
+// EventDispatch is a one-per-renderer-processs interface that is responsible
+// for triggering API events that extensions have registered listeners for in
+// the renderer (either the extension process renderer, for extension-origin
+// pages, or a web renderer, for content script listeners).
+// The interface is implemented in //extensions/renderer code, and is
+// called on the browser side by the EventRouter.
+interface EventDispatcher {
+    // Sent to the renderer to dispatch an event to a listener.
+    DispatchEvent(DispatchEventParams params,
+                  mojo_base.mojom.ListValue event_args);
+};
 
 // Typemapped to extensions::EventFilteringInfo.
 // TODO(yochio): Convert extensions::EventFilteringInfo usage to

@@ -151,7 +151,7 @@ const char EventRouter::kRegisteredServiceWorkerEvents[] =
 
 // static
 void EventRouter::DispatchExtensionMessage(
-    IPC::Sender* ipc_sender,
+    content::RenderProcessHost* rph,
     int worker_thread_id,
     content::BrowserContext* browser_context,
     const std::string& extension_id,
@@ -169,7 +169,29 @@ void EventRouter::DispatchExtensionMessage(
   params.is_user_gesture = user_gesture == USER_GESTURE_ENABLED;
   params.filtering_info = info->To<EventFilteringInfo>();
 
-  ipc_sender->Send(new ExtensionMsg_DispatchEvent(params, *event_args));
+  // TODO(crbug/1222550): Remove IPC->Send call after worker_thread_dispatcher
+  // is also mojofied.
+  if (worker_thread_id == kMainThreadId) {
+    Get(browser_context)->RouteDispatchEvent(rph, params.Clone(), *event_args);
+  } else {
+    rph->Send(new ExtensionMsg_DispatchEvent(params, *event_args));
+  }
+}
+
+void EventRouter::RouteDispatchEvent(content::RenderProcessHost* rph,
+                                     const mojom::DispatchEventParamsPtr params,
+                                     const ListValue& event_args) {
+  mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
+      rph_dispatcher_map_[rph];
+  if (!dispatcher.is_bound()) {
+    IPC::ChannelProxy* channel = rph->GetChannel();
+    if (!channel) {
+      return;
+    }
+    channel->GetRemoteAssociatedInterface(
+        dispatcher.BindNewEndpointAndPassReceiver());
+  }
+  dispatcher->DispatchEvent(params.Clone(), event_args.Clone());
 }
 
 // static
@@ -185,7 +207,7 @@ std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
 
 // static
 void EventRouter::DispatchEventToSender(
-    IPC::Sender* ipc_sender,
+    content::RenderProcessHost* rph,
     content::BrowserContext* browser_context,
     const std::string& extension_id,
     events::HistogramValue histogram_value,
@@ -202,8 +224,8 @@ void EventRouter::DispatchEventToSender(
       browser_context, extension_id, event_id, render_process_id,
       service_worker_version_id, histogram_value, event_name);
 
-  DispatchExtensionMessage(ipc_sender, worker_thread_id, browser_context,
-                           extension_id, event_id, event_name, event_args.get(),
+  DispatchExtensionMessage(rph, worker_thread_id, browser_context, extension_id,
+                           event_id, event_name, event_args.get(),
                            UserGestureState::USER_GESTURE_UNKNOWN,
                            std::move(info));
 }
@@ -570,6 +592,7 @@ void EventRouter::RenderProcessExited(
     const content::ChildProcessTerminationInfo& info) {
   listeners_.RemoveListenersForProcess(host);
   observed_process_set_.erase(host);
+  rph_dispatcher_map_.erase(host);
   host->RemoveObserver(this);
 }
 

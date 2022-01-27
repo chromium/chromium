@@ -30,10 +30,11 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "url/gurl.h"
 
@@ -118,7 +119,7 @@ class EventRouter : public KeyedService,
   // methods BroadcastEvent or DispatchEventToExtension.
   // Note that this method will dispatch the event with
   // UserGestureState:USER_GESTURE_UNKNOWN.
-  static void DispatchEventToSender(IPC::Sender* ipc_sender,
+  static void DispatchEventToSender(content::RenderProcessHost* rph,
                                     content::BrowserContext* browser_context,
                                     const std::string& extension_id,
                                     events::HistogramValue histogram_value,
@@ -356,7 +357,7 @@ class EventRouter : public KeyedService,
 
   // TODO(gdk): Document this.
   static void DispatchExtensionMessage(
-      IPC::Sender* ipc_sender,
+      content::RenderProcessHost* rph,
       int worker_thread_id,
       content::BrowserContext* browser_context,
       const std::string& extension_id,
@@ -445,6 +446,10 @@ class EventRouter : public KeyedService,
                                const std::string& event_name,
                                int64_t service_worker_version_id);
 
+  void RouteDispatchEvent(content::RenderProcessHost* rph,
+                          const mojom::DispatchEventParamsPtr params,
+                          const base::ListValue& event_args);
+
   // static
   static void DoDispatchEventToSenderBookkeeping(
       content::BrowserContext* context,
@@ -493,6 +498,10 @@ class EventRouter : public KeyedService,
   LazyEventDispatchUtil lazy_event_dispatch_util_;
 
   EventAckData event_ack_data_;
+
+  std::map<content::RenderProcessHost*,
+           mojo::AssociatedRemote<mojom::EventDispatcher>>
+      rph_dispatcher_map_;
 
   // All the Mojo receivers for the EventRouter. Keeps track of the render
   // process id.
