@@ -289,10 +289,10 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
     const std::vector<std::string>& expected_lines) {
   // Output the test path to help anyone who encounters a failure and needs
   // to know where to look.
-  VLOG(1) << "Testing: "
-          << test_file_path.NormalizePathSeparatorsTo('/').LossyDisplayName();
-  VLOG(1) << "Expected output: "
-          << expected_file.NormalizePathSeparatorsTo('/').LossyDisplayName();
+  LOG(INFO) << "Testing: "
+            << test_file_path.NormalizePathSeparatorsTo('/').LossyDisplayName();
+  LOG(INFO) << "Expected output: "
+            << expected_file.NormalizePathSeparatorsTo('/').LossyDisplayName();
 
   // Perform a diff (or write the initial baseline).
   std::vector<int> diff_lines = DiffLines(expected_lines, actual_lines);
@@ -323,9 +323,9 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
     // the end of the file when parsing the actual output from remote logs.
     diff += kMarkEndOfFile;
     diff += "\n";
-    VLOG(1) << "Diff:\n" << diff;
+    LOG(ERROR) << "Diff:\n" << diff;
   } else {
-    VLOG(1) << "Test output matches expectations.";
+    LOG(INFO) << "Test output matches expectations.";
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
