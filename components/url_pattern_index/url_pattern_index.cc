@@ -792,6 +792,11 @@ UrlPatternIndexMatcher::UrlPatternIndexMatcher(
     const flat::UrlPatternIndex* flat_index)
     : flat_index_(flat_index) {
   DCHECK(!flat_index || flat_index->n() == kNGramSize);
+  // Speculative investigation for crash (see crbug.com/1286207): check that we
+  // can access the ngram_index on each UrlPatternIndexMatcher without failure.
+  if (flat_index) {
+    CHECK_GT(flat_index->ngram_index()->size(), 0u);
+  }
 }
 
 UrlPatternIndexMatcher::~UrlPatternIndexMatcher() = default;
