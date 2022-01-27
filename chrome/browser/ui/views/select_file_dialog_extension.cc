@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -219,6 +220,7 @@ class SystemFilesAppDialogDelegate : public chromeos::SystemWebDialogDelegate,
   void AdjustWidgetInitParams(views::Widget::InitParams* params) override {
     params->shadow_type = views::Widget::InitParams::ShadowType::kDefault;
     auto* color_provider = ash::ColorProvider::Get();
+    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     params->init_properties_container.SetProperty(
         chromeos::kFrameActiveColorKey,
         color_provider->GetActiveDialogTitleBarColor());
@@ -550,6 +552,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
                               kFileManagerMinimumHeight};
     dialog_params.title = dialog_title;
     auto* color_provider = ash::ColorProvider::Get();
+    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     dialog_params.title_color = color_provider->GetActiveDialogTitleBarColor();
     dialog_params.title_inactive_color =
         color_provider->GetInactiveDialogTitleBarColor();
