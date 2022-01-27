@@ -350,3 +350,17 @@ grit("connectivity_diagnostics_resources") {
 
   output_dir = "$root_gen_dir/ash"
 }
+
+grit("multidevice_debug_resources") {
+  source =
+      "//ash/webui/multidevice_debug/resources/multidevice_debug_resources.grd"
+
+  outputs = [
+    "grit/ash_multidevice_debug_resources.h",
+    "grit/ash_multidevice_debug_resources_map.cc",
+    "grit/ash_multidevice_debug_resources_map.h",
+    "ash_multidevice_debug_resources.pak",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

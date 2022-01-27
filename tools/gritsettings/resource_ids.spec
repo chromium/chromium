@@ -532,6 +532,10 @@
     "META": {"sizes": {"includes": [120],}},
     "includes": [3320],
   },
+  "ash/webui/multidevice_debug/resources/multidevice_debug_resources.grd": {
+    "META": {"join": 2},
+    "includes": [3330],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/personalization_app/resources/ash_personalization_app_resources.grd": {
     "META": {"sizes": {"includes": [120],}},
     "includes": [3340],

@@ -41,13 +41,3 @@ test("chromeos_components_unittests") {
     "//ui/resources:ui_test_pak_data",
   ]
 }
-
-group("closure_compile") {
-  testonly = true
-
-  # TODO(https://crbug.com/1164001): closure_compile deps should be moved to
-  # the appropriate place during the code migration project.
-  deps = [
-    "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
-  ]
-}
