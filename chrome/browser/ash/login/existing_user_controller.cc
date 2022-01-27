@@ -1500,10 +1500,9 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
   UserContext new_user_context = user_context;
   std::string keyboard_layout;
   for (size_t i = 0; i < keyboard_layouts->GetList().size(); ++i) {
-    base::DictionaryValue* entry = nullptr;
-    keyboard_layouts->GetDictionary(i, &entry);
-    if (entry->FindBoolKey("selected").value_or(false)) {
-      const std::string* keyboard_layout_ptr = entry->FindStringKey("value");
+    base::Value& entry = keyboard_layouts->GetList()[i];
+    if (entry.FindBoolKey("selected").value_or(false)) {
+      const std::string* keyboard_layout_ptr = entry.FindStringKey("value");
       if (keyboard_layout_ptr)
         keyboard_layout = *keyboard_layout_ptr;
       break;
