@@ -30,13 +30,13 @@ class Browser : public base::SupportsUserData {
   ~Browser() override {}
 
   // Accessor for the owning ChromeBrowserState.
-  virtual ChromeBrowserState* GetBrowserState() const = 0;
+  virtual ChromeBrowserState* GetBrowserState() = 0;
 
   // Accessor for the WebStateList.
-  virtual WebStateList* GetWebStateList() const = 0;
+  virtual WebStateList* GetWebStateList() = 0;
 
   // Accessor for the CommandDispatcher.
-  virtual CommandDispatcher* GetCommandDispatcher() const = 0;
+  virtual CommandDispatcher* GetCommandDispatcher() = 0;
 
   // Adds and removes observers.
   virtual void AddObserver(BrowserObserver* observer) = 0;

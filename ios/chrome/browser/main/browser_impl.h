@@ -32,9 +32,9 @@ class BrowserImpl : public Browser {
   ~BrowserImpl() override;
 
   // Browser.
-  ChromeBrowserState* GetBrowserState() const override;
-  WebStateList* GetWebStateList() const override;
-  CommandDispatcher* GetCommandDispatcher() const override;
+  ChromeBrowserState* GetBrowserState() override;
+  WebStateList* GetWebStateList() override;
+  CommandDispatcher* GetCommandDispatcher() override;
   void AddObserver(BrowserObserver* observer) override;
   void RemoveObserver(BrowserObserver* observer) override;
 

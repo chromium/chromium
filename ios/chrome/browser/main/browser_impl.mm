@@ -42,15 +42,15 @@ BrowserImpl::~BrowserImpl() {
   }
 }
 
-ChromeBrowserState* BrowserImpl::GetBrowserState() const {
+ChromeBrowserState* BrowserImpl::GetBrowserState() {
   return browser_state_;
 }
 
-WebStateList* BrowserImpl::GetWebStateList() const {
+WebStateList* BrowserImpl::GetWebStateList() {
   return web_state_list_.get();
 }
 
-CommandDispatcher* BrowserImpl::GetCommandDispatcher() const {
+CommandDispatcher* BrowserImpl::GetCommandDispatcher() {
   return command_dispatcher_;
 }
 

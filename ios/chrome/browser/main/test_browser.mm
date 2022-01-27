@@ -49,15 +49,15 @@ TestBrowser::~TestBrowser() {
 
 #pragma mark - Browser
 
-ChromeBrowserState* TestBrowser::GetBrowserState() const {
+ChromeBrowserState* TestBrowser::GetBrowserState() {
   return browser_state_;
 }
 
-WebStateList* TestBrowser::GetWebStateList() const {
+WebStateList* TestBrowser::GetWebStateList() {
   return web_state_list_;
 }
 
-CommandDispatcher* TestBrowser::GetCommandDispatcher() const {
+CommandDispatcher* TestBrowser::GetCommandDispatcher() {
   return command_dispatcher_;
 }
 

@@ -159,7 +159,7 @@ void TabsSearchService::SearchWithinBrowsers(
 
   std::vector<web::WebState*> results;
 
-  for (const Browser* browser : browsers) {
+  for (Browser* browser : browsers) {
     WebStateList* webStateList = browser->GetWebStateList();
     for (int index = 0; index < webStateList->count(); ++index) {
       web::WebState* web_state = webStateList->GetWebStateAt(index);
