@@ -232,6 +232,10 @@
     "META": {"sizes": {"includes": [500],}},
     "includes": [1900],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/privacy_sandbox/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [1910],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/read_later/read_later_resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [1920],

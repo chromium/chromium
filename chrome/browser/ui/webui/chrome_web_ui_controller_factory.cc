@@ -140,6 +140,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
@@ -1199,6 +1200,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kCfmNetworkSettingsHost)
     return &NewWebUI<chromeos::cfm::NetworkSettingsDialogUi>;
 #endif  // BUILDFLAG(PLATFORM_CFM)
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (url.host_piece() == chrome::kChromeUIPrivacySandboxDialogHost)
+    return &NewWebUI<PrivacySandboxDialogUI>;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return nullptr;
 }

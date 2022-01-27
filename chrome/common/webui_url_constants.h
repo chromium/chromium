@@ -152,6 +152,8 @@ extern const char kChromeUIPolicyURL[];
 extern const char kChromeUIPredictorsHost[];
 extern const char kChromeUIPrefsInternalsHost[];
 extern const char kChromeUIPrintURL[];
+extern const char kChromeUIPrivacySandboxDialogHost[];
+extern const char kChromeUIPrivacySandboxDialogURL[];
 extern const char kChromeUIQuitHost[];
 extern const char kChromeUIQuitURL[];
 // TODO(crbug.com/1202165): Remove when new quota-internals page is done.
