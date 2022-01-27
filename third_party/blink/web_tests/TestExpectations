@@ -4488,6 +4488,9 @@ crbug.com/993365 external/wpt/css/css-transitions/Element-getAnimations.tentativ
 
 crbug.com/664450 http/tests/devtools/console/console-on-animation-worklet.js [ Skip ]
 
+# [css-transitions]
+crbug.com/1289685 external/wpt/css/css-transitions/properties-value-inherit-001.html [ Failure Pass ]
+
 crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-track-inband.html [ Skip ]
 
 crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
@@ -7215,6 +7218,10 @@ crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animat
 crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
 crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Skip ]
 crbug.com/1287915 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/non-registered-property-value.https.html [ Skip ]
+crbug.com/1233826 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-010.https.html [ Skip ]
+crbug.com/1233826 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-010.https.html [ Skip ]
+crbug.com/1233826 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-012.https.html [ Skip ]
+crbug.com/1233826 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-017.https.html [ Skip ]
 
 # Sheriff 2021-09-29
 crbug.com/1254163 [ Mac ] virtual/scroll-unification/ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm [ Failure ]
@@ -7582,8 +7589,6 @@ crbug.com/1290976 external/wpt/mediacapture-insertable-streams/MediaStreamTrackG
 crbug.com/1253323 [ Win ] http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Skip ]
 crbug.com/1253323 http/tests/devtools/persistence/automapping-urlencoded-paths.js [ Skip ]
 crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Skip ]
-
-crbug.com/1290780 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-012.https.html [ Failure ]
 
 # Sheriff 2022-01-26
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
