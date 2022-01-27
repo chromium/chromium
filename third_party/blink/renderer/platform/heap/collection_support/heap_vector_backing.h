@@ -144,17 +144,14 @@ struct TraceInCollectionTrait<kNoWeakHandling,
     //   This is fine because the fact that the object can be initialized
     //   with memset indicates that it is safe to treat the zerod slot
     //   as a valid object.
-    static_assert(!IsTraceableInCollectionTrait<Traits>::value ||
-                      Traits::kCanClearUnusedSlotsWithMemset ||
-                      std::is_polymorphic<T>::value,
-                  "HeapVectorBacking doesn't support objects that cannot be "
-                  "cleared as unused with memset.");
+    static_assert(
+        Traits::kCanClearUnusedSlotsWithMemset || std::is_polymorphic<T>::value,
+        "HeapVectorBacking doesn't support objects that cannot be "
+        "cleared as unused with memset.");
 
-    // This trace method is instantiated for vectors where
-    // IsTraceableInCollectionTrait<Traits>::value is false, but the trace
-    // method should not be called. Thus we cannot static-assert
-    // IsTraceableInCollectionTrait<Traits>::value but should runtime-assert it.
-    DCHECK(IsTraceableInCollectionTrait<Traits>::value);
+    // Bail out early if the contents are not actually traceable.
+    if constexpr (!IsTraceableInCollectionTrait<Traits>::value)
+      return;
 
     const T* array = reinterpret_cast<const T*>(self);
     const size_t length =

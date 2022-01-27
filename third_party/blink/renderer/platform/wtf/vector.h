@@ -339,25 +339,23 @@ class VectorBufferBase {
   const T* Buffer() const { return buffer_; }
   wtf_size_t capacity() const { return capacity_; }
 
+  static constexpr bool NeedsToClearUnusedSlots() {
+    // Tracing and finalization access all slots of a vector backing. In case
+    // there's work to be done there unused slots should be cleared.
+    return Allocator::kIsGarbageCollected &&
+           (IsTraceableInCollectionTrait<VectorTraits<T>>::value ||
+            VectorTraits<T>::kNeedsDestruction);
+  }
+
   void ClearUnusedSlots(T* from, T* to) {
-    // If the vector backing is garbage-collected and needs tracing or
-    // finalizing, we clear out the unused slots so that the visitor or the
-    // finalizer does not cause a problem when visiting the unused slots.
-    static_assert(
-        !Allocator::kIsGarbageCollected ||
-            IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-        "Type in garbage collected vectors should be traceable in collection");
-    if constexpr (Allocator::kIsGarbageCollected)
+    if constexpr (NeedsToClearUnusedSlots()) {
       AtomicMemzero(reinterpret_cast<void*>(from), sizeof(T) * (to - from));
+    }
   }
 
   void CheckUnusedSlots(const T* from, const T* to) {
 #if DCHECK_IS_ON() && !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
-    static_assert(
-        !Allocator::kIsGarbageCollected ||
-            IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-        "Type in garbage collected vectors should be traceable in collection");
-    if constexpr (Allocator::kIsGarbageCollected) {
+    if constexpr (NeedsToClearUnusedSlots()) {
       const unsigned char* unused_area =
           reinterpret_cast<const unsigned char*>(from);
       const unsigned char* end_address =
@@ -2033,8 +2031,6 @@ std::enable_if_t<A::kIsGarbageCollected>
 Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
   static_assert(Allocator::kIsGarbageCollected,
                 "Garbage collector must be enabled.");
-  static_assert(IsTraceableInCollectionTrait<VectorTraits<T>>::value,
-                "Type must be traceable in collection");
 
   const T* buffer = BufferSafe();
 

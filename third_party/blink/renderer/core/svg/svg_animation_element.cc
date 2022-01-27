@@ -80,7 +80,7 @@ static bool IsInZeroToOneRange(float value) {
 }
 
 static bool ParseKeyTimes(const String& string,
-                          Vector<float>& result,
+                          HeapVector<float>& result,
                           bool verify_order) {
   result.clear();
   Vector<String> parse_list;
@@ -161,6 +161,13 @@ static bool ParseKeySplines(const String& string,
     return false;
   }
   return true;
+}
+
+void SVGAnimationElement::Trace(Visitor* visitor) const {
+  visitor->Trace(key_times_from_attribute_);
+  visitor->Trace(key_times_for_paced_);
+  visitor->Trace(key_points_);
+  SVGSMILElement::Trace(visitor);
 }
 
 void SVGAnimationElement::ParseAttribute(
@@ -372,7 +379,7 @@ void SVGAnimationElement::CalculateKeyTimesForCalcModePaced() {
   use_paced_key_times_ = true;
   key_times_for_paced_.clear();
 
-  Vector<float> calculated_key_times;
+  HeapVector<float> calculated_key_times;
   float total_distance = 0;
   calculated_key_times.push_back(0);
   for (unsigned n = 0; n < values_count - 1; ++n) {
