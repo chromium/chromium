@@ -211,7 +211,8 @@ class GtkButtonPainter : public views::Painter {
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
   void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
     gfx::ImageSkia image(
-        std::make_unique<GtkButtonImageSource>(focus_, button_state_, size), 1);
+        std::make_unique<GtkButtonImageSource>(focus_, button_state_, size),
+        1.f);
     canvas->DrawImageInt(image, 0, 0);
   }
 
