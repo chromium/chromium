@@ -384,27 +384,22 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
   for (RecordDecl::field_iterator it = record->field_begin();
        it != record->field_end();
        ++it) {
-    if (options_.use_classify_type) {
-      switch (ClassifyType(it->getType().getTypePtr())) {
-        case TypeClassification::kTrivial:
-          trivial_member += 1;
-          break;
-        case TypeClassification::kNonTrivial:
-          non_trivial_member += 1;
-          break;
-        case TypeClassification::kTrivialTemplate:
-          trivial_member += 1;
-          break;
-        case TypeClassification::kNonTrivialTemplate:
-          templated_non_trivial_member += 1;
-          break;
-        case TypeClassification::kNonTrivialExternTemplate:
-          non_trivial_member += 1;
-          break;
-      }
-    } else {
-      CountType(it->getType().getTypePtr(), &trivial_member,
-                &non_trivial_member, &templated_non_trivial_member);
+    switch (ClassifyType(it->getType().getTypePtr())) {
+      case TypeClassification::kTrivial:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivial:
+        non_trivial_member += 1;
+        break;
+      case TypeClassification::kTrivialTemplate:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialTemplate:
+        templated_non_trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialExternTemplate:
+        non_trivial_member += 1;
+        break;
     }
   }
 
@@ -811,87 +806,6 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       // Stupid assumption: anything we see that isn't the above is a POD
       // or reference type.
       return TypeClassification::kTrivial;
-    }
-  }
-}
-
-void FindBadConstructsConsumer::CountType(const Type* type,
-                                          int* trivial_member,
-                                          int* non_trivial_member,
-                                          int* templated_non_trivial_member) {
-  switch (type->getTypeClass()) {
-    case Type::Record: {
-      auto* record_decl = type->getAsCXXRecordDecl();
-      // Simplifying; the whole class isn't trivial if the dtor is, but
-      // we use this as a signal about complexity.
-      // Note that if a record doesn't have a definition, it doesn't matter how
-      // it's counted, since the translation unit will fail to build. In that
-      // case, just count it as a trivial member to avoid emitting warnings that
-      // might be spurious.
-      if (!record_decl->hasDefinition() || record_decl->hasTrivialDestructor())
-        (*trivial_member)++;
-      else
-        (*non_trivial_member)++;
-      break;
-    }
-    case Type::TemplateSpecialization: {
-      TemplateName name =
-          dyn_cast<TemplateSpecializationType>(type)->getTemplateName();
-
-      // HACK: I'm at a loss about how to get the syntax checker to get
-      // whether a template is externed or not. For the first pass here,
-      // just do simple string comparisons.
-      if (TemplateDecl* decl = name.getAsTemplateDecl()) {
-        std::string base_name = decl->getQualifiedNameAsString();
-        if (base_name == "std::basic_string") {
-          (*non_trivial_member)++;
-          break;
-        }
-        if (options_.checked_ptr_as_trivial_member &&
-            base_name == "base::CheckedPtr") {
-          (*trivial_member)++;
-          break;
-        }
-        if (options_.raw_ptr_template_as_trivial_member &&
-            base_name == "base::raw_ptr") {
-          (*trivial_member)++;
-          break;
-        }
-      }
-
-        (*templated_non_trivial_member)++;
-      break;
-    }
-    case Type::Elaborated: {
-      CountType(dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr(),
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
-    }
-    case Type::Typedef: {
-      while (const TypedefType* TT = dyn_cast<TypedefType>(type)) {
-        if (auto* decl = TT->getDecl()) {
-          const std::string name = decl->getNameAsString();
-          auto* context = decl->getDeclContext();
-          if (name == "atomic_int" && context->isStdNamespace()) {
-            (*trivial_member)++;
-            return;
-          }
-          type = decl->getUnderlyingType().getTypePtr();
-        }
-      }
-      CountType(type,
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
-    }
-    default: {
-      // Stupid assumption: anything we see that isn't the above is a POD
-      // or reference type.
-      (*trivial_member)++;
-      break;
     }
   }
 }

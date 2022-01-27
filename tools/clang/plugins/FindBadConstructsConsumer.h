@@ -93,11 +93,6 @@ class FindBadConstructsConsumer
   };
   TypeClassification ClassifyType(const clang::Type* type);
 
-  void CountType(const clang::Type* type,
-                 int* trivial_member,
-                 int* non_trivial_member,
-                 int* templated_non_trivial_member);
-
   static RefcountIssue CheckRecordForRefcountIssue(
       const clang::CXXRecordDecl* record,
       clang::SourceLocation& loc);
