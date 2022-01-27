@@ -4,8 +4,6 @@
 
 #include "content/browser/attribution_reporting/attribution_policy.h"
 
-#include <memory>
-
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -20,70 +18,34 @@ const CommonSourceInfo::SourceType kSourceTypes[] = {
     CommonSourceInfo::SourceType::kEvent,
 };
 
-class ConfigurableAttributionPolicy : public AttributionPolicy {
- public:
-  explicit ConfigurableAttributionPolicy(bool should_noise)
-      : should_noise_(should_noise) {}
-
- protected:
-  bool ShouldNoiseTriggerData() const override { return should_noise_; }
-
-  uint64_t MakeNoisedTriggerData(uint64_t max) const override { return 1; }
-
- private:
-  bool should_noise_;
-};
-
 }  // namespace
 
 TEST(AttributionPolicyTest, HighEntropyTriggerData_StrippedToLowerBits) {
-  std::unique_ptr<AttributionPolicy> policy =
-      std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);
+  AttributionPolicy policy;
 
-  EXPECT_EQ(0u, policy->SanitizeTriggerData(
+  EXPECT_EQ(0u, policy.SanitizeTriggerData(
                     8, CommonSourceInfo::SourceType::kNavigation));
-  EXPECT_EQ(1u, policy->SanitizeTriggerData(
+  EXPECT_EQ(1u, policy.SanitizeTriggerData(
                     9, CommonSourceInfo::SourceType::kNavigation));
 
   EXPECT_EQ(
-      0u, policy->SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
+      0u, policy.SanitizeTriggerData(2, CommonSourceInfo::SourceType::kEvent));
   EXPECT_EQ(
-      1u, policy->SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
+      1u, policy.SanitizeTriggerData(3, CommonSourceInfo::SourceType::kEvent));
 }
 
 TEST(AttributionPolicyTest, LowEntropyTriggerData_Unchanged) {
-  std::unique_ptr<AttributionPolicy> policy =
-      std::make_unique<ConfigurableAttributionPolicy>(/*should_noise=*/false);
+  AttributionPolicy policy;
 
   for (uint64_t trigger_data = 0; trigger_data < 8; trigger_data++) {
     EXPECT_EQ(trigger_data,
-              policy->SanitizeTriggerData(
+              policy.SanitizeTriggerData(
                   trigger_data, CommonSourceInfo::SourceType::kNavigation));
   }
   for (uint64_t trigger_data = 0; trigger_data < 2; trigger_data++) {
     EXPECT_EQ(trigger_data,
-              policy->SanitizeTriggerData(
-                  trigger_data, CommonSourceInfo::SourceType::kEvent));
-  }
-}
-
-TEST(AttributionPolicyTest, SanitizeTriggerData_OutputHasNoise) {
-  // The policy should include noise when sanitizing data.
-  for (auto source_type : kSourceTypes) {
-    EXPECT_EQ(1LU, ConfigurableAttributionPolicy(/*should_noise=*/true)
-                       .SanitizeTriggerData(0UL, source_type));
-  }
-}
-
-// This test will fail flakily if noise is used.
-TEST(AttributionPolicyTest, DebugMode_TriggerDataNotNoised) {
-  const uint64_t trigger_data = 0UL;
-  for (auto source_type : kSourceTypes) {
-    for (int i = 0; i < 100; i++) {
-      EXPECT_EQ(trigger_data,
-                AttributionPolicy(/*debug_mode=*/true)
-                    .SanitizeTriggerData(trigger_data, source_type));
-    }
+              policy.SanitizeTriggerData(trigger_data,
+                                         CommonSourceInfo::SourceType::kEvent));
   }
 }
 

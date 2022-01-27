@@ -96,11 +96,6 @@ class CONTENT_EXPORT AttributionPolicy {
   AttributionMode GetAttributionMode(
       CommonSourceInfo::SourceType source_type) const;
 
- protected:
-  virtual bool ShouldNoiseTriggerData() const;
-
-  virtual uint64_t MakeNoisedTriggerData(uint64_t max) const;
-
  private:
   // Whether the API is running in debug mode. No noise or delay should be used.
   const bool debug_mode_;
