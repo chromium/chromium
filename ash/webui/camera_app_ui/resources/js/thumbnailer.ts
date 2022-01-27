@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from './assert.js';
+import {assertInstanceof} from './assert.js';
 import {
   EmptyThumbnailError,
   LoadError,
@@ -10,7 +10,7 @@ import {
   PlayError,
   PlayMalformedError,
 } from './type.js';
-import {newDrawingCanvas} from './util.js';
+import {canvasToJpegBlob, newDrawingCanvas} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
@@ -33,12 +33,7 @@ async function elementToJpegBlob(
     throw new EmptyThumbnailError();
   }
 
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      assert(blob !== null);
-      resolve(blob);
-    }, 'image/jpeg');
-  });
+  return canvasToJpegBlob(canvas);
 }
 
 /**

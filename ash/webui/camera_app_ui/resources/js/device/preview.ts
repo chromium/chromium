@@ -394,15 +394,7 @@ export class Preview {
     const {canvas, ctx} = util.newDrawingCanvas(
         {width: this.video.videoWidth, height: this.video.videoHeight});
     ctx.drawImage(this.video, 0, 0);
-    return new Promise((resolve, reject) => {
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob);
-        } else {
-          reject(new Error('Photo blob error.'));
-        }
-      }, 'image/jpeg');
-    });
+    return util.canvasToJpegBlob(canvas);
   }
 
   /**

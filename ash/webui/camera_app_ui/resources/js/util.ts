@@ -29,19 +29,23 @@ export function newDrawingCanvas(
   return {canvas, ctx};
 }
 
+export function canvasToJpegBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob !== null) {
+        resolve(blob);
+      } else {
+        reject(new Error('Failed to convert canvas to jpeg blob.'));
+      }
+    }, 'image/jpeg');
+  });
+}
+
 export function bitmapToJpegBlob(bitmap: ImageBitmap): Promise<Blob> {
   const {canvas, ctx} =
       newDrawingCanvas({width: bitmap.width, height: bitmap.height});
   ctx.drawImage(bitmap, 0, 0);
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error('Photo blob error.'));
-      }
-    }, 'image/jpeg');
-  });
+  return canvasToJpegBlob(canvas);
 }
 
 /**

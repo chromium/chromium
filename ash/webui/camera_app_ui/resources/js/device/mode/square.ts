@@ -29,11 +29,9 @@ async function cropSquare(blob: Blob): Promise<Blob> {
     ctx.drawImage(
         img, Math.floor((img.width - side) / 2),
         Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
-    const croppedBlob = await new Promise<Blob>((resolve) => {
-      // TODO(b/174190121): Patch important exif entries from input blob to
-      // result blob.
-      canvas.toBlob(resolve, 'image/jpeg');
-    });
+    // TODO(b/174190121): Patch important exif entries from input blob to
+    // result blob.
+    const croppedBlob = await util.canvasToJpegBlob(canvas);
     return croppedBlob;
   } finally {
     URL.revokeObjectURL(img.src);
