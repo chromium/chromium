@@ -774,6 +774,12 @@ int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
   return features::kInstallingServiceWorkerOutstandingThrottledLimit.Get();
 }
 
+// Note that ServiceWorkers can be for cross-origin iframes, and that it might
+// look like an escape from the Permissions-Policy enforced on documents. It is
+// safe however, even on platforms without OOPIF  because a ServiceWorker
+// controlling a cross-origin iframe would be put in  a different process from
+// the page, due to an origin mismatch in their cross-origin isolation.
+// See https://crbug.com/1290224 for details.
 bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
 }
