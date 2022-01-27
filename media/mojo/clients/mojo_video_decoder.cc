@@ -214,7 +214,7 @@ void MojoVideoDecoder::InitializeRemoteDecoder(
     absl::optional<base::UnguessableToken> cdm_id) {
   if (has_connection_error_) {
     DCHECK(init_cb_);
-    FailInit(std::move(init_cb_), DecoderStatus::Codes::kFailedToCreateDecoder);
+    FailInit(std::move(init_cb_), DecoderStatus::Codes::kDisconnected);
     return;
   }
 
@@ -244,9 +244,9 @@ void MojoVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (has_connection_error_) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb),
-                                  DecoderStatus::Codes::kNotInitialized));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(decode_cb),
+                                          DecoderStatus::Codes::kDisconnected));
     return;
   }
 
@@ -495,14 +495,14 @@ void MojoVideoDecoder::Stop() {
   base::WeakPtr<MojoVideoDecoder> weak_this = weak_this_;
 
   if (init_cb_)
-    std::move(init_cb_).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kDisconnected);
 
   if (!weak_this)
     return;
 
   for (auto& pending_decode : pending_decodes_) {
     // It would be ideal if we could get a reason for the interruption.
-    std::move(pending_decode.second).Run(DecoderStatus::Codes::kInterrupted);
+    std::move(pending_decode.second).Run(DecoderStatus::Codes::kDisconnected);
     if (!weak_this)
       return;
   }

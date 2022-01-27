@@ -70,7 +70,7 @@ void MojoAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // This could happen during reinitialization.
   if (!remote_decoder_.is_connected()) {
     DVLOG(1) << __func__ << ": Connection error happened.";
-    FailInit(std::move(init_cb), DecoderStatus::Codes::kFailedToCreateDecoder);
+    FailInit(std::move(init_cb), DecoderStatus::Codes::kDisconnected);
     return;
   }
 
@@ -103,9 +103,9 @@ void MojoAudioDecoder::Decode(scoped_refptr<DecoderBuffer> media_buffer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!remote_decoder_.is_connected()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(decode_cb),
+                                          DecoderStatus::Codes::kDisconnected));
     return;
   }
 
@@ -133,8 +133,8 @@ void MojoAudioDecoder::Reset(base::OnceClosure closure) {
   if (!remote_decoder_.is_connected()) {
     if (decode_cb_) {
       task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kFailed));
+          FROM_HERE, base::BindOnce(std::move(decode_cb_),
+                                    DecoderStatus::Codes::kDisconnected));
     }
 
     task_runner_->PostTask(FROM_HERE, std::move(closure));
@@ -188,12 +188,12 @@ void MojoAudioDecoder::OnConnectionError() {
   DCHECK(!remote_decoder_.is_connected());
 
   if (init_cb_) {
-    FailInit(std::move(init_cb_), DecoderStatus::Codes::kFailedToCreateDecoder);
+    FailInit(std::move(init_cb_), DecoderStatus::Codes::kDisconnected);
     return;
   }
 
   if (decode_cb_)
-    std::move(decode_cb_).Run(DecoderStatus::Codes::kFailed);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kDisconnected);
   if (reset_cb_)
     std::move(reset_cb_).Run();
 }

@@ -573,12 +573,14 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
       // However, since it's a dcheck, this seems okay.
       return;
     default:
-      DCHECK(result.has_error());
       // Anything other than `kOk` or `kAborted` is treated as an error.
+      DCHECK(result.has_error());
+      auto status = result.code() == DecoderStatus::Codes::kDisconnected
+                        ? PIPELINE_ERROR_DISCONNECTED
+                        : PIPELINE_ERROR_DECODE;
       task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VideoRendererImpl::OnPlaybackError,
-                         weak_factory_.GetWeakPtr(), PIPELINE_ERROR_DECODE));
+          FROM_HERE, base::BindOnce(&VideoRendererImpl::OnPlaybackError,
+                                    weak_factory_.GetWeakPtr(), status));
       return;
   }
 

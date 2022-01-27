@@ -18,6 +18,7 @@ struct DecoderStatusTraits {
     kAborted = 2,  // TODO(*) document _why_ aborted is a thing
     kInvalidArgument = 3,
     kInterrupted = 4,
+    kDisconnected = 5,  // Lost mojo connection, e.g remote crashed or teardown
 
     // Reasons for failing to decode
     kNotInitialized = 100,
