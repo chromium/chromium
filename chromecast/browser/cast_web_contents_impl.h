@@ -160,6 +160,11 @@ class CastWebContentsImpl : public CastWebContents,
     mojo::AssociatedReceiverSet<mojom::IdentificationSettingsManager> receivers;
   };
 
+  // Constructor used to create inner CastWebContents. This allows inner
+  // contents to share the same URL rewrite rules as the root.
+  CastWebContentsImpl(content::WebContents* web_contents,
+                      mojom::CastWebViewParamsPtr params,
+                      CastWebContents* parent);
   void OnPageLoading();
   void OnPageLoaded();
   void UpdatePageState();
@@ -177,7 +182,8 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents_;
   mojom::CastWebViewParamsPtr params_;
-  url_rewrite::UrlRequestRewriteRulesManager url_rewrite_rules_manager_;
+  absl::optional<url_rewrite::UrlRequestRewriteRulesManager>
+      url_rewrite_rules_manager_;
   PageState page_state_;
   PageState last_state_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
@@ -187,6 +193,7 @@ class CastWebContentsImpl : public CastWebContents,
   // Retained so that this observer can be removed before being destroyed:
   content::RenderProcessHost* main_process_host_;
 
+  CastWebContents* const parent_cast_web_contents_ = nullptr;
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
   base::Value renderer_features_{base::Value::Type::DICTIONARY};
 
