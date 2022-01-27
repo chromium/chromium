@@ -75,6 +75,7 @@
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_bridge.h"
+#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_demo_mode_preference_handler.h"
@@ -237,6 +238,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcPowerBridge::GetForBrowserContext(profile)->SetUserIdHash(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile));
   ArcPrintSpoolerBridge::GetForBrowserContext(profile);
+  ArcPrivacyItemsBridge::GetForBrowserContext(profile);
   ArcProcessService::GetForBrowserContext(profile);
   ArcPropertyBridge::GetForBrowserContext(profile);
   ArcProvisionNotificationService::GetForBrowserContext(profile);
