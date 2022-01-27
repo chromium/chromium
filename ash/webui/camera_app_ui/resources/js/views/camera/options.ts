@@ -100,7 +100,7 @@ export class Options implements CameraUI {
     });
   }
 
-  private updateVideoConstFpsOption(prefFps: number) {
+  private updateVideoConstFpsOption(prefFps: number|null) {
     this.toggleFps.checked = prefFps === 60;
     SUPPORTED_CONSTANT_FPS.forEach(
         (fps) => state.set(state.assertState(`fps-${fps}`), fps === prefFps));
@@ -160,7 +160,8 @@ export class Options implements CameraUI {
     let enabled = facing !== Facing.ENVIRONMENT;
 
     // Override mirroring only if mirroring was toggled manually.
-    if (this.videoDeviceId in this.mirroringToggles) {
+    if (this.videoDeviceId !== null &&
+        this.videoDeviceId in this.mirroringToggles) {
       enabled = this.mirroringToggles[this.videoDeviceId];
     }
 
@@ -171,8 +172,10 @@ export class Options implements CameraUI {
    * Saves the toggled mirror state for the current video device.
    */
   private saveMirroring() {
-    this.mirroringToggles[this.videoDeviceId] = this.toggleMirror.checked;
-    localStorage.set('mirroringToggles', this.mirroringToggles);
+    if (this.videoDeviceId !== null) {
+      this.mirroringToggles[this.videoDeviceId] = this.toggleMirror.checked;
+      localStorage.set('mirroringToggles', this.mirroringToggles);
+    }
   }
 
   /**
