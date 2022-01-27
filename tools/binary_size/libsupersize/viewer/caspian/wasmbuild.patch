@@ -108,6 +108,6 @@ index 0000000000000..fdc5120981de5
 +  executable_extension = ".js"
 +  link_outputs = [
 +    "{{output_dir}}/{{target_output_name}}.wasm",
-+    "{{output_dir}}/{{target_output_name}}.wasm.map",
++    "{{output_dir}}/{{target_output_name}}.wasm.debug.wasm",
 +  ]
 +}

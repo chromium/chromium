@@ -14,14 +14,17 @@ import tempfile
 import urllib.request
 import uuid
 
-_STATIC_FILES_DIR = (pathlib.Path(__file__).parent / 'static').resolve()
+_VIEWER_DIR = pathlib.Path(__file__).parent.resolve()
+_STATIC_FILES_DIR = _VIEWER_DIR / 'static'
 
 _FIREBASE_PROJECT = 'chrome-supersize'
 _PROD_URL = 'https://chrome-supersize.firebaseapp.com/'
 _WASM_FILES = [
     'caspian_web.js',
     'caspian_web.wasm',
-    'caspian_web.wasm.map',
+]
+_DEBUG_WASM_FILES = [
+    'caspian_web.wasm.debug.wasm',
 ]
 
 _PROD = 'prod'
@@ -44,9 +47,8 @@ def _CheckFirebaseCLI():
 
 def _FirebaseInitProjectDir(project_dir):
   """Create a firebase.json file that is needed for deployment."""
-  static_dir = os.path.join(project_dir, 'public')
-  with open(os.path.join(project_dir, 'firebase.json'), 'w') as f:
-    f.write("""
+  static_dir = project_dir / 'public'
+  project_dir.joinpath('firebase.json').write_text("""\
 {
   "hosting": {
     "public": "public",
@@ -91,18 +93,25 @@ def _MaybeDownloadWasmFiles(force_download):
     for f in _WASM_FILES:
       print(f'Downloading: {_PROD_URL + f}')
       with urllib.request.urlopen(_PROD_URL + f) as response:
-        with open(_STATIC_FILES_DIR / f, 'wb') as output:
+        with _STATIC_FILES_DIR.joinpath(f).open('wb') as output:
           shutil.copyfileobj(response, output)
 
 
 def _FillInAndCopyTemplates(project_static_dir):
   """Generate and copy over the templates/sw.js file."""
-  template_file = os.path.join(os.path.dirname(__file__), 'templates', 'sw.js')
+  src_path = _VIEWER_DIR / 'templates' / 'sw.js'
+  dst_path = project_static_dir / 'sw.js'
   cache_hash = uuid.uuid4().hex
+  dst_path.write_text(src_path.read_text().replace('{{cache_hash}}',
+                                                   cache_hash))
 
-  with open(template_file, 'r') as in_file:
-    with open(os.path.join(project_static_dir, 'sw.js'), 'w') as out_file:
-      out_file.write(in_file.read().replace('{{cache_hash}}', cache_hash))
+
+def _CopyStaticFiles(project_static_dir, *, include_debug_wasm):
+  shutil.copytree(_STATIC_FILES_DIR, project_static_dir)
+  # Don't upload the debug info since it's machine-dependent and large.
+  if not include_debug_wasm:
+    for f in _DEBUG_WASM_FILES:
+      project_static_dir.joinpath(f).unlink(missing_ok=True)
 
 
 def _Prompt(message):
@@ -144,9 +153,12 @@ def main():
     if options.deploy_mode != _DEV:
       _FirebaseLogin()
     with tempfile.TemporaryDirectory(prefix='firebase-') as project_dir:
+      project_dir = pathlib.Path(project_dir)
       _MaybeDownloadWasmFiles(options.download_wasm)
       project_static_dir = _FirebaseInitProjectDir(project_dir)
-      shutil.copytree(_STATIC_FILES_DIR, project_static_dir)
+      _CopyStaticFiles(project_static_dir,
+                       include_debug_wasm=options.deploy_mode == _DEV)
+      _FirebaseLogin()
       _FillInAndCopyTemplates(project_static_dir)
       _FirebaseDeploy(project_dir, deploy_mode=options.deploy_mode)
   else:

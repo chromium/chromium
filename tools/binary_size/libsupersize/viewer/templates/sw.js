@@ -9,7 +9,6 @@ const cacheName = '{{cache_hash}}';
 const filesToCache = [
   'auth.js',
   'auth-consts.js',
-  'caspian_web.wasm.map',
   'caspian_web.js',
   'caspian_web.wasm',
   'favicon.ico',
