@@ -242,6 +242,7 @@ bool IOSChromeSyncedTabDelegate::GetSessionStorageIfNeeded() const {
   // With slim navigation, the navigation manager is only restored when the tab
   // is displayed. Before restoration, the session storage must be used.
   bool should_use_storage =
+      !web_state_->IsRealized() ||
       web_state_->GetNavigationManager()->IsRestoreSessionInProgress();
   bool storage_has_navigation_items = false;
   if (should_use_storage) {
