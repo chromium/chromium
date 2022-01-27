@@ -605,6 +605,9 @@ public class ManageSyncSettingsTest {
         final ManageSyncSettings fragment = startManageSyncPreferencesFromSyncConsentFlow();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            // Sometimes the rendered image may not contain the scrollbar and cause flakiness.
+            // Hide the scrollbar altogether to reduce flakiness.
+            recyclerView.setVerticalScrollBarEnabled(false);
             recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
