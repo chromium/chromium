@@ -1390,6 +1390,9 @@ extern const char kTabOutlinesInLowContrastThemesDescription[];
 extern const char kTabSearchFuzzySearchName[];
 extern const char kTabSearchFuzzySearchDescription[];
 
+extern const char kTailoredSecurityIntegrationName[];
+extern const char kTailoredSecurityIntegrationDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 

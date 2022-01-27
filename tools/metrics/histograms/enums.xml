@@ -55005,6 +55005,7 @@ from previous Chrome versions.
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
   <int value="824961931" label="use-simple-cache-backend"/>
+  <int value="826519677" label="TailoredSecurityIntegration:disabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>
   <int value="830282555" label="DecodeJpeg420ImagesToYUV:enabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>
@@ -55286,6 +55287,7 @@ from previous Chrome versions.
   <int value="1043334401" label="disable-slimming-paint-invalidation"/>
   <int value="1043511715" label="CategoricalSearch:enabled"/>
   <int value="1044210009" label="SharingPeerConnectionReceiver:disabled"/>
+  <int value="1044873795" label="TailoredSecurityIntegration:enabled"/>
   <int value="1044928476"
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
