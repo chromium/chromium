@@ -717,11 +717,10 @@ bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
 
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     std::set<AccountId>* device_local_accounts_set) {
-  const base::ListValue* prefs_device_local_accounts =
-      &base::Value::AsListValue(
-          *GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData));
+  const base::Value* prefs_device_local_accounts =
+      GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData);
   std::vector<AccountId> device_local_accounts;
-  ParseUserList(*prefs_device_local_accounts, std::set<AccountId>(),
+  ParseUserList(prefs_device_local_accounts->GetList(), std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
   for (const AccountId& account_id : device_local_accounts) {
     policy::DeviceLocalAccount::Type type;

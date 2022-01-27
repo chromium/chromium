@@ -513,15 +513,15 @@ void UserManagerBase::UpdateUserAccountData(
   UpdateUserAccountLocale(account_id, account_data.locale());
 }
 
-void UserManagerBase::ParseUserList(const base::ListValue& users_list,
-                                    const std::set<AccountId>& existing_users,
-                                    std::vector<AccountId>* users_vector,
-                                    std::set<AccountId>* users_set) {
+void UserManagerBase::ParseUserList(
+    const base::Value::ConstListView& users_list,
+    const std::set<AccountId>& existing_users,
+    std::vector<AccountId>* users_vector,
+    std::set<AccountId>* users_set) {
   users_vector->clear();
   users_set->clear();
-  base::Value::ConstListView users_list_view = users_list.GetList();
-  for (size_t i = 0; i < users_list_view.size(); ++i) {
-    const std::string* email = users_list_view[i].GetIfString();
+  for (size_t i = 0; i < users_list.size(); ++i) {
+    const std::string* email = users_list[i].GetIfString();
     if (!email || email->empty()) {
       LOG(ERROR) << "Corrupt entry in user list at index " << i << ".";
       continue;
@@ -820,8 +820,8 @@ void UserManagerBase::EnsureUsersLoaded() {
   // Load regular users and supervised users.
   std::vector<AccountId> regular_users;
   std::set<AccountId> regular_users_set;
-  ParseUserList(base::Value::AsListValue(*prefs_regular_users),
-                device_local_accounts_set, &regular_users, &regular_users_set);
+  ParseUserList(prefs_regular_users->GetList(), device_local_accounts_set,
+                &regular_users, &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
     if (IsDeprecatedSupervisedAccountId(*it)) {

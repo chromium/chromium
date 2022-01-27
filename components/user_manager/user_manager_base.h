@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user.h"
@@ -28,7 +29,6 @@
 class PrefRegistrySimple;
 
 namespace base {
-class ListValue;
 class SingleThreadTaskRunner;
 }
 
@@ -155,11 +155,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // not full initialized yet" flag.
   virtual void SetIsCurrentUserNew(bool is_new);
 
-  // TODO(crbug.com/1187062): Refactor this to remove use of ListValue.
   // Helper function that converts users from |users_list| to |users_vector| and
   // |users_set|. Duplicates and users already present in |existing_users| are
   // skipped.
-  void ParseUserList(const base::ListValue& users_list,
+  void ParseUserList(const base::Value::ConstListView& users_list,
                      const std::set<AccountId>& existing_users,
                      std::vector<AccountId>* users_vector,
                      std::set<AccountId>* users_set);
