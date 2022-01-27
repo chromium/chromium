@@ -550,4 +550,28 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   GREYAssertTrue(promptPresented, @"'Signed Out' prompt not shown");
 }
 
+// Tests that the UI notifying the user is displayed when sync is disabled by an
+// administrator while the app is launched.
+- (void)testSyncDisabledPromptWhileAppVisible {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  // Enable SyncDisabled policy.
+  SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Check that the prompt is presented.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                     IDS_IOS_SYNC_SYNC_DISABLED))]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, condition);
+  GREYAssertTrue(promptPresented, @"'Sync Disabled' prompt not shown");
+}
+
 @end

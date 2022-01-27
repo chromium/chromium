@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#include "ios/web/public/thread/web_task_traits.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -76,7 +79,10 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
           base::Unretained(this)));
 
   // Try to show the alert in case the policy changed since last time.
-  ShowSyncDisabledPromptIfNeeded();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
@@ -114,9 +120,15 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
           syncer::prefs::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
-    [handler_ showSyncDisabledPrompt];
-    // Will never trigger again unless policy changes.
-    [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+    SceneState* scene_state =
+        SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+    BOOL scene_is_active =
+        scene_state.activationLevel >= SceneActivationLevelForegroundActive;
+    if (scene_is_active) {
+      [handler_ showSyncDisabledPrompt];
+      // Will never trigger again unless policy changes.
+      [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+    }
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
     // Will trigger again, if policy is turned back on.
     [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];

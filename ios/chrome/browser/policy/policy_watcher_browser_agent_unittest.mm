@@ -366,30 +366,32 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChanges) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledPrompt]);
-  agent->Initialize(mockHandler);
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, true);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, true);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  [[mockHandler reject] showSyncDisabledPrompt];
+    [[mockHandler reject] showSyncDisabledPrompt];
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
 }
 
 // Tests that the handler is called and the alert shown at startup as expected.
@@ -414,24 +416,28 @@ TEST_F(PolicyWatcherBrowserAgentTest, AlertIfSyncDisabledChangedAtColdStart) {
   AppState* app_state = [[AppState alloc] initWithBrowserLauncher:nil
                                                startupInformation:nil
                                               applicationDelegate:nil];
-  FakeSceneState* scene_state =
-      [[FakeSceneState alloc] initWithAppState:app_state];
-  scene_state.activationLevel = SceneActivationLevelForegroundActive;
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
+  @autoreleasepool {
+    FakeSceneState* scene_state =
+        [[FakeSceneState alloc] initWithAppState:app_state];
+    scene_state.activationLevel = SceneActivationLevelForegroundActive;
+    SceneStateBrowserAgent::CreateForBrowser(browser.get(), scene_state);
 
-  id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
-  OCMExpect([mockHandler showSyncDisabledPrompt]);
-  agent->Initialize(mockHandler);
+    id mockHandler = OCMProtocolMock(@protocol(PolicyChangeCommands));
+    OCMExpect([mockHandler showSyncDisabledPrompt]);
+    agent->Initialize(mockHandler);
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    base::RunLoop().RunUntilIdle();
 
-  [[mockHandler reject] showSyncDisabledPrompt];
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_TRUE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
 
-  // Update the pref.
-  browser_->GetBrowserState()->GetPrefs()->SetBoolean(
-      syncer::prefs::kSyncManaged, false);
+    [[mockHandler reject] showSyncDisabledPrompt];
 
-  EXPECT_OCMOCK_VERIFY(mockHandler);
-  EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+    // Update the pref.
+    browser_->GetBrowserState()->GetPrefs()->SetBoolean(
+        syncer::prefs::kSyncManaged, false);
+
+    EXPECT_OCMOCK_VERIFY(mockHandler);
+    EXPECT_FALSE([standard_defaults boolForKey:kSyncDisabledAlertShownKey]);
+  }
 }
