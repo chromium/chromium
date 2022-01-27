@@ -143,7 +143,7 @@ public class AwDarkModeTest {
 
         // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
-        mAwContents.getSettings().setAllowAlgorithmicDarkening(true);
+        mAwContents.getSettings().setAlgorithmicDarkeningAllowed(true);
         // Set force dark mode again to check no ordering issue.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
 
@@ -162,7 +162,7 @@ public class AwDarkModeTest {
 
         // Check setForceDarkMode has noops, otherwise ForceDarkening will be turned off.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
-        mAwContents.getSettings().setAllowAlgorithmicDarkening(true);
+        mAwContents.getSettings().setAlgorithmicDarkeningAllowed(true);
         // Set force dark mode again to check no ordering issue.
         mAwContents.getSettings().setForceDarkMode(AwSettings.FORCE_DARK_OFF);
 

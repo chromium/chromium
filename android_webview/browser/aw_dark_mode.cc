@@ -66,7 +66,7 @@ void AwDarkMode::PopulateWebPreferences(
     blink::web_pref::WebPreferences* web_prefs,
     int force_dark_mode,
     int force_dark_behavior,
-    bool allow_algorithmic_darkening) {
+    bool algorithmic_darkening_allowed) {
   if (!sShouldEnableSimplifiedDarkMode) {
     PopulateWebPreferencesForPreT(web_prefs, force_dark_mode,
                                   force_dark_behavior);
@@ -84,8 +84,8 @@ void AwDarkMode::PopulateWebPreferences(
     web_prefs->preferred_color_scheme =
         blink::mojom::PreferredColorScheme::kDark;
   } else if (prefers_dark_from_theme_) {
-    is_dark_mode_ = allow_algorithmic_darkening;
-    web_prefs->force_dark_mode_enabled = allow_algorithmic_darkening;
+    is_dark_mode_ = algorithmic_darkening_allowed;
+    web_prefs->force_dark_mode_enabled = algorithmic_darkening_allowed;
   }
 }
 

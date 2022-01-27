@@ -22,7 +22,7 @@ class AwDarkMode : public content::WebContentsObserver,
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs,
                               int force_dark_mode,
                               int force_dark_behavior,
-                              bool allow_algorithmic_darkening);
+                              bool algorithmic_darkening_allowed);
 
   void DetachFromJavaObject(
       JNIEnv* env,

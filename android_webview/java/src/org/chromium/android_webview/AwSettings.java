@@ -69,7 +69,7 @@ public class AwSettings {
     @ForceDarkMode
     private int mForceDarkMode = ForceDarkMode.FORCE_DARK_AUTO;
 
-    private boolean mAllowAlgorithmicDarkening;
+    private boolean mAlgorithmicDarkeningAllowed;
 
     public static final int FORCE_DARK_ONLY = ForceDarkBehavior.FORCE_DARK_ONLY;
     public static final int MEDIA_QUERY_ONLY = ForceDarkBehavior.MEDIA_QUERY_ONLY;
@@ -1694,22 +1694,22 @@ public class AwSettings {
         }
     }
 
-    public boolean getAllowAlgorithmicDarkening() {
+    public boolean isAlgorithmicDarkeningAllowed() {
         synchronized (mAwSettingsLock) {
-            return getAllowAlgorithmicDarkeningLocked();
+            return isAlgorithmicDarkeningAllowedLocked();
         }
     }
 
     @CalledByNative
-    private boolean getAllowAlgorithmicDarkeningLocked() {
+    private boolean isAlgorithmicDarkeningAllowedLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mAllowAlgorithmicDarkening;
+        return mAlgorithmicDarkeningAllowed;
     }
 
-    public void setAllowAlgorithmicDarkening(boolean allow) {
+    public void setAlgorithmicDarkeningAllowed(boolean allow) {
         synchronized (mAwSettingsLock) {
-            if (mAllowAlgorithmicDarkening != allow) {
-                mAllowAlgorithmicDarkening = allow;
+            if (mAlgorithmicDarkeningAllowed != allow) {
+                mAlgorithmicDarkeningAllowed = allow;
                 mEventHandler.updateWebkitPreferencesLocked();
             }
         }

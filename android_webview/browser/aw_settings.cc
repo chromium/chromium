@@ -509,7 +509,7 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
     aw_dark_mode->PopulateWebPreferences(
         web_prefs, Java_AwSettings_getForceDarkModeLocked(env, obj),
         Java_AwSettings_getForceDarkBehaviorLocked(env, obj),
-        Java_AwSettings_getAllowAlgorithmicDarkeningLocked(env, obj));
+        Java_AwSettings_isAlgorithmicDarkeningAllowedLocked(env, obj));
   }
 }
 
