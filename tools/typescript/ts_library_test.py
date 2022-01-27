@@ -206,10 +206,13 @@ class TsLibraryTest(unittest.TestCase):
           gen_dir,
           '--in_files',
           'errors.ts',
+          '--composite',
       ])
     except RuntimeError as err:
       self.assertTrue('Type \'number\' is not assignable to type \'string\'' \
                       in str(err))
+      self.assertFalse(
+          os.path.exists(os.path.join(gen_dir, 'tsconfig.tsbuildinfo')))
     else:
       self.fail('Failed to detect type error')
 
