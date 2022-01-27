@@ -3549,6 +3549,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.RegionCapture.CropTo.Result" enum="CropToResult"
+    expires_after="2023-01-25">
+  <owner>eladalon@chromium.org</owner>
+  <owner>jophba@chromium.org</owner>
+  <owner>mfoltz@chromium.org</owner>
+  <summary>
+    Tracks the result of calls to BrowserCaptureMediaStreamTrack.cropTo().
+  </summary>
+</histogram>
+
 <histogram name="Media.RegionCapture.ProduceCropTarget.Function.Result"
     enum="ProduceCropTargetFunctionResult" expires_after="2023-01-25">
   <owner>eladalon@chromium.org</owner>

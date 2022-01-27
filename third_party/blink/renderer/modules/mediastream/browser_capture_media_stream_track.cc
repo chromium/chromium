@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
@@ -20,6 +21,23 @@
 namespace blink {
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CropToResult {
+  kResolved = 0,
+  kUnsupportedPlatform = 1,
+  kInvalidCropTargetFormat = 2,
+  kRejectedWithErrorGeneric = 3,
+  kRejectedWithUnsupportedCaptureDevice = 4,
+  kRejectedWithErrorUnknownDeviceId = 5,
+  kRejectedWithNotImplemented = 6,
+  kMaxValue = kRejectedWithNotImplemented
+};
+
+void RecordUma(CropToResult result) {
+  base::UmaHistogramEnumeration("Media.RegionCapture.CropTo.Result", result);
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 // If crop_id is the empty string, returns an empty base::Token.
@@ -54,23 +72,28 @@ void ResolveCropPromise(ScriptPromiseResolver* resolver,
 
   switch (result) {
     case media::mojom::CropRequestResult::kSuccess:
+      RecordUma(CropToResult::kResolved);
       // TODO(crbug.com/1247761): Delay reporting success to the Web-application
       // until "seeing" the last frame cropped to the previous crop-target.
       resolver->Resolve();
       return;
     case media::mojom::CropRequestResult::kErrorGeneric:
+      RecordUma(CropToResult::kRejectedWithErrorGeneric);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown error.");
       return;
     case media::mojom::CropRequestResult::kUnsupportedCaptureDevice:
+      RecordUma(CropToResult::kRejectedWithUnsupportedCaptureDevice);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unsupported device.");
       return;
     case media::mojom::CropRequestResult::kErrorUnknownDeviceId:
+      RecordUma(CropToResult::kRejectedWithErrorUnknownDeviceId);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown device.");
       return;
     case media::mojom::CropRequestResult::kNotImplemented:
+      RecordUma(CropToResult::kRejectedWithNotImplemented);
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Not implemented.");
       return;
@@ -119,6 +142,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   ScriptPromise promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
+  RecordUma(CropToResult::kUnsupportedPlatform);
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kUnknownError, "Not supported on Android."));
   return promise;
@@ -127,6 +151,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
   const absl::optional<base::Token> crop_id_token =
       CropIdStringToToken(crop_id);
   if (!crop_id_token.has_value()) {
+    RecordUma(CropToResult::kInvalidCropTargetFormat);
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kUnknownError, "Invalid crop-ID."));
     return promise;
