@@ -44,6 +44,15 @@ class WebApp;
 }  // namespace web_app
 
 namespace apps_util {
+
+// Creates a file filter.
+apps::mojom::IntentFilterPtr CreateFileFilter(
+    const std::vector<std::string>& intent_actions,
+    const std::vector<std::string>& mime_types,
+    const std::vector<std::string>& file_extensions,
+    const std::string& activity_name = "",
+    bool include_directories = false);
+
 // Create intent filters for |web_app|.
 // The |scope| is needed because currently the correct app scope is not
 // provided through WebApp API for shortcuts.

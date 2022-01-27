@@ -406,6 +406,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   for (const auto& file_handler : web_app.file_handlers()) {
     WebAppFileHandlerProto* file_handler_proto =
         local_data->add_file_handlers();
+    DCHECK(file_handler.action.is_valid());
     file_handler_proto->set_action(file_handler.action.spec());
     file_handler_proto->set_display_name(
         base::UTF16ToUTF8(file_handler.display_name));

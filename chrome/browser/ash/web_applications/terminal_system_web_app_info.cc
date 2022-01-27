@@ -16,7 +16,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,13 +42,6 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForTerminalSystemWebApp() {
       *info);
   info->background_color = 0xFF202124;
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  {
-    apps::FileHandler handler;
-    handler.accept.emplace_back();
-    handler.accept.back().mime_type =
-        extensions::app_file_handler_util::kMimeTypeInodeDirectory;
-    info->file_handlers.push_back(std::move(handler));
-  }
   info->additional_search_terms = {
       "linux", "terminal", "crostini", "ssh",
       l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_APP_SEARCH_TERMS)};

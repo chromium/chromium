@@ -71,6 +71,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/browser/api/file_handlers/mime_util.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -579,6 +580,16 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   base::Extend(app->intent_filters,
                apps_util::CreateWebAppIntentFilters(
                    *web_app, registrar().GetAppScope(web_app->app_id())));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (web_app->app_id() == crostini::kCrostiniTerminalSystemAppId) {
+    app->intent_filters.push_back(apps_util::CreateFileFilter(
+        {apps_util::kIntentActionView},
+        /*mime_types=*/
+        {extensions::app_file_handler_util::kMimeTypeInodeDirectory},
+        /*file_extensions=*/{}));
+  }
+#endif
 
   app->icon_key = MakeIconKey(web_app);
 
