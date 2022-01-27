@@ -280,6 +280,8 @@ def main():
       want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so')
       want.append(
           'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan-preinit.a')
+      want.append(
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan_static.a')
   if sys.platform == 'darwin':
     want.extend([
       # AddressSanitizer runtime.
