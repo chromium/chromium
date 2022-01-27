@@ -5,14 +5,28 @@
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 
 #include <algorithm>
+#include <cstring>
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 
 namespace ash {
 
 namespace {
+
+// Defines a map type to map a camera model ID to the number of cameras of that
+// model that are currently connected.
+using ModelIdToCountMap = std::map<std::string, int>;
+
+// Using the given `cam_models_map` which tracks the number of cameras connected
+// of each model, returns the next `CameraId::number` for the given `model_id`.
+int GetNextCameraNumber(const std::string& model_id,
+                        ModelIdToCountMap* cam_models_map) {
+  return ++(*cam_models_map)[model_id];
+}
 
 // Returns true if the `incoming_list` (supplied by the video source provider)
 // contains different items than the ones in `current_list` (which is the
@@ -23,6 +37,7 @@ bool DidDevicesChange(
   if (incoming_list.size() != current_list.size())
     return true;
 
+  ModelIdToCountMap cam_models_map;
   for (const auto& incoming_camera : incoming_list) {
     const auto& device_id = incoming_camera.descriptor.device_id;
     const auto iter = std::find_if(current_list.begin(), current_list.end(),
@@ -32,9 +47,14 @@ bool DidDevicesChange(
     if (iter == current_list.end())
       return true;
 
+    const auto& incoming_model_id = incoming_camera.descriptor.model_id;
+    const int cam_number =
+        GetNextCameraNumber(incoming_model_id, &cam_models_map);
+
     const CameraInfo& found_info = *iter;
     if (found_info.display_name != incoming_camera.descriptor.display_name() ||
-        found_info.model_id != incoming_camera.descriptor.model_id) {
+        found_info.camera_id.model_id() != incoming_model_id ||
+        found_info.camera_id.number() != cam_number) {
       return true;
     }
   }
@@ -42,17 +62,53 @@ bool DidDevicesChange(
   return false;
 }
 
+// Returns the CameraInfo item in `list` whose ID is equal to the given `id`, or
+// nullptr if no such item exists.
+const CameraInfo* GetCameraInfoById(const CameraId& id,
+                                    const CameraInfoList& list) {
+  const auto iter = std::find_if(
+      list.begin(), list.end(),
+      [&id](const CameraInfo& info) { return info.camera_id == id; });
+  return iter == list.end() ? nullptr : &(*iter);
+}
+
+// Returns a reference to either the model ID (if available) or the display name
+// from the given `descriptor`.
+const std::string& PickModelIdOrDisplayName(
+    const media::VideoCaptureDeviceDescriptor& descriptor) {
+  return descriptor.model_id.empty() ? descriptor.display_name()
+                                     : descriptor.model_id;
+}
+
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// CameraId:
+
+CameraId::CameraId(std::string model_id, int number)
+    : model_id_(std::move(model_id)), number_(number) {
+  DCHECK(!model_id_.empty());
+  DCHECK_GE(number, 1);
+}
+
+bool CameraId::operator<(const CameraId& rhs) const {
+  const int result = std::strcmp(model_id_.c_str(), rhs.model_id_.c_str());
+  return result != 0 ? result : (number_ < rhs.number_);
+}
+
+std::string CameraId::ToString() const {
+  return base::StringPrintf("%s:%0d", model_id_.c_str(), number_);
+}
 
 // -----------------------------------------------------------------------------
 // CameraInfo:
 
-CameraInfo::CameraInfo(std::string device_id,
-                       std::string display_name,
-                       std::string model_id)
-    : device_id(std::move(device_id)),
-      display_name(std::move(display_name)),
-      model_id(std::move(model_id)) {}
+CameraInfo::CameraInfo(CameraId camera_id,
+                       std::string device_id,
+                       std::string display_name)
+    : camera_id(std::move(camera_id)),
+      device_id(std::move(device_id)),
+      display_name(std::move(display_name)) {}
 
 // -----------------------------------------------------------------------------
 // CaptureModeCameraController:
@@ -79,6 +135,16 @@ void CaptureModeCameraController::AddObserver(Observer* observer) {
 
 void CaptureModeCameraController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
+  selected_camera_ = std::move(camera_id);
+  RefreshCameraPreview();
+}
+
+void CaptureModeCameraController::SetShouldShowPreview(bool value) {
+  should_show_preview_ = value;
+  RefreshCameraPreview();
 }
 
 void CaptureModeCameraController::OnDevicesChanged(
@@ -119,14 +185,39 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
     return;
 
   available_cameras_.clear();
+  ModelIdToCountMap cam_models_map;
   for (const auto& device : devices) {
     const auto& descriptor = device.descriptor;
+    const auto& model_id_or_display_name = PickModelIdOrDisplayName(descriptor);
+    const int cam_number =
+        GetNextCameraNumber(model_id_or_display_name, &cam_models_map);
     available_cameras_.emplace_back(
-        descriptor.device_id, descriptor.display_name(), descriptor.model_id);
+        CameraId(model_id_or_display_name, cam_number), descriptor.device_id,
+        descriptor.display_name());
   }
 
   for (auto& observer : observers_)
     observer.OnAvailableCamerasChanged(available_cameras_);
+
+  RefreshCameraPreview();
+}
+
+void CaptureModeCameraController::RefreshCameraPreview() {
+  const CameraInfo* camera_info = GetCameraInfoForPreview();
+  if (!camera_info) {
+    // TODO(https://crbug.com/1290883): Destroy the preview if any.
+    camera_preview_widget_ = false;
+    return;
+  }
+
+  // TODO(https://crbug.com/1290883): Create the preview.
+  camera_preview_widget_ = true;
+}
+
+const CameraInfo* CaptureModeCameraController::GetCameraInfoForPreview() const {
+  if (!should_show_preview_ || !selected_camera_.is_valid())
+    return nullptr;
+  return GetCameraInfoById(selected_camera_, available_cameras_);
 }
 
 }  // namespace ash

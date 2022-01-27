@@ -47,10 +47,12 @@ void FakeVideoSourceProvider::Bind(
 }
 
 void FakeVideoSourceProvider::AddFakeCamera(const std::string& device_id,
-                                            const std::string& display_name) {
+                                            const std::string& display_name,
+                                            const std::string& model_id) {
   DCHECK(base::ranges::none_of(devices_, HasSameDeviceId(device_id)));
-  devices_.emplace_back(
-      media::VideoCaptureDeviceDescriptor(display_name, device_id));
+  devices_.emplace_back(media::VideoCaptureDeviceDescriptor(
+      display_name, device_id, model_id, media::VideoCaptureApi::UNKNOWN,
+      media::VideoCaptureControlSupport()));
   NotifyVideoCaptureDevicesChanged();
 }
 

@@ -21,26 +21,66 @@ namespace ash {
 
 class CaptureModeDelegate;
 
-struct CameraInfo {
-  CameraInfo(std::string device_id,
-             std::string display_name,
-             std::string model_id);
+// The ID used internally in capture mode to identify the camera.
+class ASH_EXPORT CameraId {
+ public:
+  CameraId() = default;
+  CameraId(std::string model_id, int number);
+  CameraId(CameraId&&) = default;
+  CameraId& operator=(CameraId&&) = default;
+  ~CameraId() = default;
 
-  // The ID of the camera device given to it by the system in its current
-  // connection instance (e.g. "/dev/video2"). Note that the same camera device
-  // can disconnect and reconnect with a different `device_id` (e.g. when the
-  // cable is flaky).
-  const std::string device_id;
+  bool is_valid() const { return !model_id_.empty(); }
+  const std::string& model_id() const { return model_id_; }
+  int number() const { return number_; }
 
-  // The name of the camera device as shown to the end user (e.g. "Integrated
-  // Webcam").
-  const std::string display_name;
+  bool operator==(const CameraId& rhs) const {
+    return model_id_ == rhs.model_id_ && number_ == rhs.number_;
+  }
+  bool operator!=(const CameraId& rhs) const { return !(*this == rhs); }
 
+  bool operator<(const CameraId& rhs) const;
+
+  std::string ToString() const;
+
+ private:
   // A unique hardware ID of the camera device in the form of
   // "[Vendor ID]:[Product ID]" (e.g. "0c45:6713"). Note that if multiple
   // cameras from the same vendor and of the same model are connected to the
   // device, they will all have the same `model_id`.
-  const std::string model_id;
+  // Note that in some cases, `media::VideoCaptureDeviceDescriptor::model_id`
+  // may not be present. In this case, this will be filled by the camera's
+  // display name.
+  std::string model_id_;
+
+  // A number that disambiguates cameras of the same type. For example if we
+  // have two connected cameras of the same type, the first one will have
+  // `number` set to 1, and the second's will be 2.
+  int number_ = 0;
+};
+
+struct CameraInfo {
+  CameraInfo(CameraId camera_id,
+             std::string device_id,
+             std::string display_name);
+  CameraInfo(CameraInfo&&) = default;
+  CameraInfo& operator=(CameraInfo&&) = default;
+
+  // The ID used to identify the camera device internally to the capture mode
+  // code, which should be more stable than the below `device_id` which may
+  // change multiple times for the same camera.
+  CameraId camera_id;
+
+  // The ID of the camera device given to it by the system in its current
+  // connection instance (e.g. "/dev/video2"). Note that the same camera device
+  // can disconnect and reconnect with a different `device_id` (e.g. when the
+  // cable is flaky). This ID is used to identify the camera to the video source
+  // provider in the video capture service.
+  std::string device_id;
+
+  // The name of the camera device as shown to the end user (e.g. "Integrated
+  // Webcam").
+  std::string display_name;
 };
 
 using CameraInfoList = std::vector<CameraInfo>;
@@ -68,9 +108,21 @@ class ASH_EXPORT CaptureModeCameraController
   ~CaptureModeCameraController() override;
 
   const CameraInfoList& available_cameras() const { return available_cameras_; }
+  const CameraId& selected_camera() const { return selected_camera_; }
+  bool camera_preview_widget() const { return camera_preview_widget_; }
+  bool should_show_preview() const { return should_show_preview_; }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Sets the currently selected camera to the whose ID is the given
+  // `camera_id`. If `camera_id` is invalid (see CameraId::is_valid()), this
+  // clears the selected camera.
+  void SetSelectedCamera(CameraId camera_id);
+
+  // Sets `should_show_preview_` to the given `value`, and refreshes the state
+  // of the camera preview.
+  void SetShouldShowPreview(bool value);
 
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
@@ -91,6 +143,14 @@ class ASH_EXPORT CaptureModeCameraController
   void OnCameraDevicesReceived(
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
+  // Shows or hides a preview of the currently selected camera depending on
+  // whether it's currently allowed and whether one is currently selected.
+  void RefreshCameraPreview();
+
+  // Returns a pointer to the CameraInfo item of the camera that should be used
+  // for the preview, or nullptr if no such camera exists.
+  const CameraInfo* GetCameraInfoForPreview() const;
+
   // Owned by CaptureModeController and guaranteed to be not null and to outlive
   // `this`.
   CaptureModeDelegate* const delegate_;
@@ -102,7 +162,26 @@ class ASH_EXPORT CaptureModeCameraController
 
   CameraInfoList available_cameras_;
 
+  // The currently selected camera. If its `is_valid()` is false, then no camera
+  // is currently selected.
+  CameraId selected_camera_;
+
   base::ObserverList<Observer> observers_;
+
+  // TODO(https://crbug.com/1290883): Remove this and replace it by the actual
+  // preview widget. This was added temporarily for testing purposes.
+  bool camera_preview_widget_ = false;
+
+  // Set to true when a preview of the currently selected camera (if any) should
+  // be shown. This happens when CaptureModeSession is started or switched to
+  // a video recording mode before recording starts. It is reset back to false
+  // when:
+  // - Video recording ends.
+  // - The selected camera is disconnected for longer than a grace period during
+  //   recording.
+  // - The capture mode session ends without starting any recording.
+  // - The capture mode session is switched to an image capture mode.
+  bool should_show_preview_ = false;
 
   // True if GetCameraDevices() was called and we're currently waiting for the
   // video source provider to give us the list.

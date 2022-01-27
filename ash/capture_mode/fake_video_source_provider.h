@@ -29,9 +29,10 @@ class FakeVideoSourceProvider
                 pending_receiver);
 
   // Simulate connecting and disconnecting a camera device with the given
-  // `device_id` and `display_name`.
+  // `device_id`, `display_name` and `model_id`.
   void AddFakeCamera(const std::string& device_id,
-                     const std::string& display_name);
+                     const std::string& display_name,
+                     const std::string& model_id);
   void RemoveFakeCamera(const std::string& device_id);
 
   // video_capture::mojom::VideoSourceProvider:
