@@ -213,14 +213,4 @@ void ScrollingCoordinator::WillBeDestroyed() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-bool ScrollingCoordinator::IsForMainFrame(
-    ScrollableArea* scrollable_area) const {
-  if (!IsA<LocalFrame>(page_->MainFrame()))
-    return false;
-
-  // FIXME(305811): Refactor for OOPI.
-  return scrollable_area ==
-         page_->DeprecatedLocalMainFrame()->View()->LayoutViewport();
-}
-
 }  // namespace blink

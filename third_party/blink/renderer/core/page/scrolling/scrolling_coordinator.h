@@ -117,8 +117,6 @@ class CORE_EXPORT ScrollingCoordinator final
   void Reset(LocalFrame*);
 
  protected:
-  bool IsForMainFrame(ScrollableArea*) const;
-
   Member<Page> page_;
 
  private:
