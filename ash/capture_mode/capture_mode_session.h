@@ -14,6 +14,7 @@
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -484,6 +485,8 @@ class ASH_EXPORT CaptureModeSession
       folder_selection_dialog_controller_;
 
   std::unique_ptr<UserNudgeController> user_nudge_controller_;
+
+  base::WeakPtrFactory<CaptureModeSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
