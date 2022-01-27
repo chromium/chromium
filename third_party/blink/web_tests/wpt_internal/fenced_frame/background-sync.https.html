@@ -4,14 +4,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
 <body>
 
 <script>
-const background_sync_register_key = KEYS['background-sync'];
-
-function base_path() {
-  return location.pathname.replace(/\/[^\/]*$/, '/');
-}
+const background_sync_register_key = token();
 
 async function test(url, message) {
   attachFencedFrame(url)
@@ -23,13 +20,14 @@ async function test(url, message) {
 }
 
 promise_test(async (t) => {
-  const fencedFrameUrl = 'resources/background-sync-inner.https.html';
+  const fencedFrameUrl =
+      generateURL('resources/background-sync-inner.https.html',
+          [background_sync_register_key]);
   await test(
       fencedFrameUrl,
       'background sync registration is disallowed inside a same-origin fenced frame');
 
-  const CROSS_ORIGIN_DESTINATION =
-      get_host_info()['HTTPS_REMOTE_ORIGIN'] + base_path() + fencedFrameUrl;
+  const CROSS_ORIGIN_DESTINATION = getRemoteOriginURL(fencedFrameUrl);
   await test(
       CROSS_ORIGIN_DESTINATION,
       'background sync registration is disallowed inside a cross-origin fenced frame');

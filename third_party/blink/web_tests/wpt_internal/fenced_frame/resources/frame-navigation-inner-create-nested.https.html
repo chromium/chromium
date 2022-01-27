@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="utils.js"></script>
 <title>Test nested fenced frame navigation (by a parent frame setting its src).</title>
 
@@ -9,32 +10,34 @@
       // This file is meant to run in a <fencedframe>. It communicates with
       // the embedder to confirm that nested fenced frames can be navigated.
 
-      const navigation_key = KEYS["frame_navigation"];
-      const navigation_ack_key = KEYS["frame_navigation ACK"];
+      const [navigation_key, navigation_ack_key] = parseKeylist();
 
       // Create URL prefixes to simulate different origins.
       // (www1 and www2 are different origins)
-      const url_prefix = location.href + "/../";
-      const origin1_prefix = url_prefix.replace("://", "://www1.");
-      const origin2_prefix = url_prefix.replace("://", "://www2.");
+      const simple_url = generateURL("frame-navigation-inner-simple.https.html",
+      [navigation_key, navigation_ack_key]);
 
-      const simple_url = "frame-navigation-inner-simple.https.html";
+      const origin1_simple_url = getRemoteOriginURL(simple_url);
+      const origin2_simple_url = getRemoteOriginURL(simple_url)
+          .toString().replace("www1", "www2");
+
+      const url_prefix = location.href + "/../";
 
       // Tell the embedder that this frame has loaded.
       writeValueToServer(navigation_key, "create-nested");
       await nextValueFromServer(navigation_ack_key);
 
       // Create an inner frame.
-      inner_frame = attachFencedFrame(origin1_prefix + simple_url);
+      inner_frame = attachFencedFrame(origin1_simple_url);
       // Wait for our parent to tell us they're done communicating.
       await nextValueFromServer(navigation_ack_key);
 
       // Navigate (cross-origin) and wait.
-      inner_frame.src = origin2_prefix + simple_url;
+      inner_frame.src = origin2_simple_url;
       await nextValueFromServer(navigation_ack_key);
 
       // Navigate (same-origin) and wait.
-      inner_frame.src = origin2_prefix + simple_url;
+      inner_frame.src = origin2_simple_url;
       await nextValueFromServer(navigation_ack_key);
     }
 

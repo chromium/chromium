@@ -3,19 +3,21 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="resources/utils.js"></script>
+  <script src="/common/utils.js"></script>
 
   <body>
 
     <script>
       promise_test(async () => {
-        const resize_lock_inner_page_is_ready_key =
-          KEYS["resize_lock_inner_page_is_ready"];
-        const resize_lock_resize_is_done_key =
-          KEYS["resize_lock_resize_is_done"];
-        const resize_lock_report_inner_dimensions_key =
-          KEYS["resize_lock_report_inner_dimensions"];
+        const resize_lock_inner_page_is_ready_key = token();
+        const resize_lock_resize_is_done_key = token();
+        const resize_lock_report_inner_dimensions_key = token();
 
-        const frame = attachFencedFrame("resources/resize-lock-inner.html");
+        const frame = attachFencedFrame(generateURL(
+            "resources/resize-lock-inner.html",
+            [resize_lock_inner_page_is_ready_key,
+             resize_lock_resize_is_done_key,
+             resize_lock_report_inner_dimensions_key]));
 
         await nextValueFromServer(resize_lock_inner_page_is_ready_key);
 

@@ -5,6 +5,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
@@ -13,6 +14,7 @@
 async function runTest(policy_header_in_primary_page,
                        policy_header_in_fenced_frame_page,
                        allow_attribute_iframe_in_fanced_frame) {
+  const permission_geolocation_key = token();
   const pipe_for_policy = 'pipe=header(Permissions-Policy,geolocation=self)';
   const test_runner_url =
       'resources/permission-geolocation-test-runner.html?' +
@@ -24,11 +26,11 @@ async function runTest(policy_header_in_primary_page,
   if (allow_attribute_iframe_in_fanced_frame) {
     fenced_frame_url_params.push('load_allow_attribute_iframe=true');
   }
-  const fenced_frame_url =
-      'permission-geolocation-inner.html?' +
+  const fenced_frame_url = 'permission-geolocation-inner.html?' +
       fenced_frame_url_params.join('&');
 
-  const win = window.open(test_runner_url);
+  const win = window.open(generateURL(test_runner_url,
+      [permission_geolocation_key]));
   await new Promise(resolve => {
     win.onload = resolve;
   });

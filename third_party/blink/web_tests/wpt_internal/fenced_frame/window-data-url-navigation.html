@@ -3,12 +3,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
 <script>
 promise_test(async () => {
-  const window_data_key = KEYS["data: URL"];
+  const window_data_key = token();
 
   const script = `
     <script src="${location.origin}/wpt_internal/fenced_frame/resources/utils.js"><\/script>

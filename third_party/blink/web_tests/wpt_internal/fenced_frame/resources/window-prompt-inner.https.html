@@ -8,7 +8,7 @@
     async function init() { // Needed in order to use top-level await.
       // This file is meant to run in a <fencedframe>. It reports back to the
       // outermost page whether or not it succeeded in showing a `window.prompt`.
-      const window_prompt_key = stringToStashKey("window.prompt");
+      const [window_prompt_key] = parseKeylist();
 
       let result = (window.prompt("Test prompt") == null) ? "pass" : "fail";
 

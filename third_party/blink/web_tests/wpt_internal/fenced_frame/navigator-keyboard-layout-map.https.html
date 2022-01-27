@@ -3,14 +3,17 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
 <script>
 promise_test(async () => {
-  const keyboard_layout_key = KEYS["keyboard.getLayoutMap"];
+  const keyboard_layout_key = token();
 
-  attachFencedFrame("resources/navigator-keyboard-layout-map-inner.html");
+  attachFencedFrame(generateURL(
+      "resources/navigator-keyboard-layout-map-inner.html",
+      [keyboard_layout_key]));
   const actual_result = await nextValueFromServer(keyboard_layout_key);
 
   assert_equals(actual_result, "rejected",

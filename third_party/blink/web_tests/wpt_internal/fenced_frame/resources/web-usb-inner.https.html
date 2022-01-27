@@ -13,7 +13,7 @@ window.onload = () => {
       // This file is meant to be navigated to from a <fencedframe> element. It
       // reports back to the page hosting the <fencedframe> whether or not
       // `navigator.usb.requestDevice` is allowed.
-      const usb_request_device_key = KEYS['usb.requestDevice'];
+      const [usb_request_device_key] = parseKeylist();
       try {
         await navigator.usb.requestDevice({ filters: [{ vendorId: 0 }] });
         writeValueToServer(usb_request_device_key, 'permission granted');

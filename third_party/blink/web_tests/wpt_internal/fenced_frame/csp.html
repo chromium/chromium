@@ -3,12 +3,13 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script src="resources/utils.js"></script>
+  <script src="/common/utils.js"></script>
 
   <body>
 
     <script>
       promise_test(async () => {
-        const csp_key = KEYS["csp"];
+        const csp_key = token();
 
         // The 'csp' property does not appear in the IDL definition for
         // fenced frames, so ensure that the 'csp' property didn't
@@ -17,7 +18,7 @@
                       false);
 
         const new_frame = document.createElement('fencedframe');
-        new_frame.src = "resources/csp-inner.html";
+        new_frame.src = generateURL("resources/csp-inner.html", [csp_key]);
 
         // This attribute will be ignored since the IDL for
         // fenced frames do not support the 'csp' attribute.

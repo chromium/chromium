@@ -11,7 +11,7 @@
 window.onload = () => {
   requestAnimationFrame(() => {
     simulateGesture(async function() {
-      const bluetooth_request_device_key = KEYS['bluetooth.requestDevice'];
+      const [bluetooth_request_device_key] = parseKeylist();
       try {
         await navigator.bluetooth.requestDevice({filters: [{name: 'device'}]});
         writeValueToServer(bluetooth_request_device_key,

@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 <script>
@@ -21,16 +22,20 @@ promise_test(async () => {
   // navigation). If the inner test passes, then we will check our
   // `history.length` and ensure that the inner fenced navigation did not
   // contribute to the joint session history.
-  const fenced_navigation_complete_key = KEYS["fenced_navigation_complete"];
+  const fenced_navigation_complete_key = token();
   // This is sent by us to the inner page to let it know that we're finished
   // observing the effects of the last navigation, and that it should perform
   // the next one for us to observe.
-  const outer_page_ready_for_next_fenced_navigation_key =
-      KEYS["outer_page_ready_for_next_fenced_navigation"];
+  const outer_page_ready_for_next_fenced_navigation_key = token();
 
-  attachFencedFrame("resources/history-length-fenced-navigations-replace-do-" +
-                    "not-contribute-to-joint-inner.html?level=top-level-" +
-                    "fenced-frame");
+  const level = "top-level-fenced-frame";
+
+  attachFencedFrame(generateURL(
+      "resources/history-length-fenced-navigations-replace-do-" +
+      "not-contribute-to-joint-inner.html",
+      [fenced_navigation_complete_key,
+       outer_page_ready_for_next_fenced_navigation_key,
+       level]));
 
   const tests = ["top-level-fenced-frame", "nested-fenced-frame", "nested-iframe"];
   for (test_type of tests) {

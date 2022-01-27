@@ -2,13 +2,13 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 <title>history-length-outer-page-navigation-not-reflected-in-fenced</title>
 
 <body>
 <script>
-const fenced_history_length_key = KEYS["fenced_history_length"];
-const outer_page_ready_for_next_navigation_key =
-  KEYS["outer_page_ready_for_next_navigation"];
+const fenced_history_length_key = token();
+const outer_page_ready_for_next_navigation_key = token();
 
 async function runTest(embed_scope_reporting) {
   const kAssertionDesc =  "history.length Should never reflect the length " +
@@ -41,17 +41,23 @@ async function runTest(embed_scope_reporting) {
   // Append an iframe to the outer page for subsequent navigations within
   // the iframe
   const iframe = document.createElement('iframe');
-  iframe.src = "resources/history-length-outer-page-navigation-" +
-    "not-reflected-in-fenced-inner.html?embed_scope=outer_page::iframe";
+  const embed_scope_iframe = "outer_page::iframe";
+  iframe.src = generateURL("resources/history-length-outer-page-navigation-" +
+      "not-reflected-in-fenced-inner.html",
+      [fenced_history_length_key, outer_page_ready_for_next_navigation_key,
+       embed_scope_iframe, null]);
   document.body.append(iframe);
 
   await nextValueFromServer(outer_page_ready_for_next_navigation_key);
 
   // Append a fenced frame to observe 'history.length' and report it back
   // to the outer page
-  attachFencedFrame("resources/history-length-outer-page-navigation-" +
-    "not-reflected-in-fenced-inner.html?embed_scope_reporting=" +
-    embed_scope_reporting + "&embed_scope=outer_page::fenced_frame"
+  const embed_scope_fenced_frame = "outer_page::fenced_frame";
+  attachFencedFrame(generateURL(
+      "resources/history-length-outer-page-navigation-" +
+      "not-reflected-in-fenced-inner.html",
+      [fenced_history_length_key, outer_page_ready_for_next_navigation_key,
+       embed_scope_fenced_frame, embed_scope_reporting])
   );
 
   // Wait for the 'embed_scope_reporting' to report 'history.length'

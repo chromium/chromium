@@ -10,14 +10,11 @@
   // fenced' Once loaded, it reports to the observed value of history.length to
   // the server so that the outer document can assert the value is 1.
 
-  const fenced_history_length_key = KEYS["fenced_history_length"];
-  const outer_page_ready_for_next_navigation_key =
-    KEYS["outer_page_ready_for_next_navigation"];
+  const [fenced_history_length_key, outer_page_ready_for_next_navigation_key,
+         embed_scope, embed_scope_reporting] =
+      parseKeylist();
 
   const url = new URL(location.href);
-
-  const embed_scope_reporting = url.searchParams.get("embed_scope_reporting")
-  const embed_scope = url.searchParams.get("embed_scope")
 
   if (embed_scope == "outer_page::iframe"){
     ////////////// BEGIN NAVIGATIONS
@@ -62,10 +59,11 @@
     // Append an iframe to the 'outer_page::fenced_frame' to report
     // history.length to the outer_page from within the iframe
     const iframe = document.createElement('iframe');
-    iframe.src =
-      "history-length-outer-page-navigation-not-reflected-in-fenced-inner.html"+
-      "?embed_scope_reporting=" + embed_scope_reporting +
-      "&embed_scope=outer_page::fenced_frame::iframe";
+    const embed_scope = "outer_page::fenced_frame::iframe";
+    iframe.src = generateURL(
+      "history-length-outer-page-navigation-not-reflected-in-fenced-inner.html",
+      [fenced_history_length_key, outer_page_ready_for_next_navigation_key,
+      embed_scope, embed_scope_reporting]);
     document.body.append(iframe);
     return
   }

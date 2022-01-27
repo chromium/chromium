@@ -9,7 +9,7 @@
 
 <script>
 promise_test(async () => {
-  const key = KEYS["dummy"];
+  const key = token();
   const test_value = "TESTVALUE";
 
   let server_value = await readValueFromServer(key);

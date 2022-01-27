@@ -7,28 +7,30 @@
 <body>
 <script>
 (async () => {
-  const ancestor_type = new URL(location.href).searchParams.get('ancestor_type');
   // This document is loaded into a fenced frame by
   // `navigate-ancestor-test-runner.html`. It creates a nested fenced frame and
   // navigates it to `navigate-ancestor-helper.html`.
 
+  // - navigate_ancestor_key:
   // Sent by `navigate-ancestor-destination.html`. We listen to it, and report
   // back to our embedder that it loaded correctly and did not navigate *this*
   // frame.
-  const navigate_ancestor_key = KEYS["navigate_ancestor"];
+  // - navigate_ancestor_from_nested_key:
   // Sent by us to our embedder to indicate (depending on the message) either:
   //   - PASS: The nested fenced frame was navigated correctly when it tried to
   //           navigate its ancestor (parent or top) frame
   //   - FAIL: When the nested fenced frame tried to navigate its ancestor
   //           frame, it actually navigated *this frame*, which is wrong
-  const navigate_ancestor_from_nested_key = KEYS["navigate_ancestor_from_nested"];
+  const [navigate_ancestor_key, navigate_ancestor_from_nested_key,
+      ancestor_type] = parseKeylist();
 
   window.onbeforeunload = e => {
     writeValueToServer(navigate_ancestor_from_nested_key,
                        `FAIL nested fenced frame ${ancestor_type}`);
   }
 
-  attachFencedFrame(`navigate-ancestor-helper.html?ancestor_type=${ancestor_type}`);
+  attachFencedFrame(generateURL(`navigate-ancestor-helper.html`,
+      [navigate_ancestor_key, ancestor_type]));
   await nextValueFromServer(navigate_ancestor_key);
   window.onbeforeunload = null;
   writeValueToServer(navigate_ancestor_from_nested_key, "PASS");

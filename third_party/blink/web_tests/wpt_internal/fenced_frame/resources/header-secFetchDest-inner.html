@@ -10,11 +10,13 @@
   // This file is meant to run in a <fencedframe>. It reports back to the
   // outermost page the value of `Sec-Fetch-Dest` in the request header for
   // nested iframes inside a fenced frame.
-  const sec_fetch_dest_value_key = KEYS["secFetchDest.value"];
+  const [sec_fetch_dest_value_key] = parseKeylist();
   const https_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const https_origin_url =
-      new URL('wpt_internal/fenced_frame/resources/check-header-sec-fetch-dest.py',
-              https_origin);
+      getRemoteOriginURL(
+          generateURL(
+              'check-header-sec-fetch-dest.py',
+              [sec_fetch_dest_value_key]));
 
   const iframe = document.createElement('iframe');
   iframe.src = https_origin_url;

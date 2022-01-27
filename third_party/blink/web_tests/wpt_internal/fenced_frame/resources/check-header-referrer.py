@@ -9,7 +9,8 @@ def main(request, response):
     script = u"""
         <script src="utils.js"></script>
         <script>
-            writeValueToServer(KEYS["referrer.value"], "%s")
+            const [referrer_key, _] = parseKeylist();
+            writeValueToServer(referrer_key, "%s")
         </script>
     """ % (isomorphic_decode(request.headers.get(b"referer", b"")))
     return (200, [], script)

@@ -5,7 +5,7 @@
 <body>
 <script>
 (async () => {
-  const presentation_receiver_key = KEYS["presentation.receiver"];
+  const [presentation_receiver_key] = parseKeylist();
   const result = await navigator.presentation.receiver;
   if (result == null) {
     writeValueToServer(presentation_receiver_key, "denied");

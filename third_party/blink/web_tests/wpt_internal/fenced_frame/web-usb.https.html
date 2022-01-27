@@ -8,9 +8,10 @@
 <body>
 <script>
 promise_test(async () => {
-  const usb_request_device_key = KEYS['usb.requestDevice'];
+  const usb_request_device_key = token();
 
-  attachFencedFrame('resources/web-usb-inner.https.html');
+  attachFencedFrame(generateURL('resources/web-usb-inner.https.html',
+      [usb_request_device_key]));
   // Get the result for the top-level fenced frame.
   const fenced_frame_result = await nextValueFromServer(usb_request_device_key);
   // It fails to request a USB device in a fenced frame. Refer to

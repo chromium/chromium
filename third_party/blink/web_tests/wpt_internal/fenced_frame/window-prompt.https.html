@@ -8,9 +8,10 @@
 <body>
   <script>
     promise_test(async () => {
-      const window_prompt_key = stringToStashKey("window.prompt");
+      const window_prompt_key = token();
 
-      attachFencedFrame("resources/window-prompt-inner.https.html");
+      attachFencedFrame(generateURL("resources/window-prompt-inner.https.html",
+          [window_prompt_key]));
 
       // Get the result for the top-level fenced frame.
       const fenced_frame_result = await nextValueFromServer(window_prompt_key);

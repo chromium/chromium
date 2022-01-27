@@ -3,10 +3,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 <script>
-const cookie_value_key = KEYS["cookie_value"];
+const cookie_value_key = token();
 const kAssertion = "Cookie accessed from unique fenced frame tree partition ";
 const kAssertion_outer = "Cookie values changed in the fenced frame tree should not impact the outer frame";
 
@@ -14,7 +15,9 @@ async function runTest(test_type) {
   document.cookie = 'A=outer; SameSite=Lax';
   document.cookie = 'B=outer; SameSite=None; Secure';
   const fenced_frame =
-    attachFencedFrame(`resources/unique-cookie-partition-inner.https.html?test_type=${test_type}`);
+    attachFencedFrame(generateURL(
+    `resources/unique-cookie-partition-inner.https.html`,
+    [cookie_value_key, test_type]));
 
   result = await nextValueFromServer(cookie_value_key);
   switch (test_type) {

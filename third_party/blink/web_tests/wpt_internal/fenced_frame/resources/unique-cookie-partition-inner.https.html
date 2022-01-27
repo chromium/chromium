@@ -11,13 +11,15 @@ async function init() {
   //   1.) A top-level fenced frame
   //   2.) An iframe within a fenced frame
   //   3.) A nested fenced frame
-  const test_type = new URL(location.href).searchParams.get('test_type');
 
   // Set cookies in the root fenced frame via document and cookieStore APIs.
-  const cookie_value_key = KEYS["cookie_value"];
+  const [cookie_value_key, test_type] = parseKeylist();
   document.cookie = 'C=fenced; SameSite=Lax';
   document.cookie = 'D=fenced; SameSite=None; Secure';
   await cookieStore.set('E', 'fenced');
+
+  const cookie_access_url = generateURL("cookie-access.https.html",
+      [cookie_value_key]);
 
   switch (test_type) {
     case "top-level fenced frame":
@@ -27,10 +29,10 @@ async function init() {
     case "nested iframe":
       const iframe = document.createElement('iframe');
       document.body.append(iframe);
-      iframe.src = `cookie-access.https.html`;
+      iframe.src = cookie_access_url;
       break;
     case "nested fenced frame":
-      const ff = attachFencedFrame("cookie-access.https.html");
+      const ff = attachFencedFrame(cookie_access_url);
       break;
   }
 }

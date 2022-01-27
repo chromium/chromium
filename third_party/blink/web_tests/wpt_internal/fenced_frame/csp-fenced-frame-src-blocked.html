@@ -3,11 +3,12 @@
 <title>Test Content-Security-Policy fenced-frame-src</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources//utils.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 <script>
-const key = KEYS["csp-fenced-frame-src-blocked"];
+const key = token();
 
 window.addEventListener('securitypolicyviolation', function(e) {
   // Write to the server even though the listener is in the same file in the
@@ -16,11 +17,14 @@ window.addEventListener('securitypolicyviolation', function(e) {
 });
 
 promise_test(async () => {
-  attachFencedFrame("resources/csp-fenced-frame-src-blocked-inner.html");
+  attachFencedFrame(generateURL(
+      "resources/csp-fenced-frame-src-blocked-inner.html",
+      [key]));
   const result = await nextValueFromServer(key);
 
-  const expected_blocked_uri =
-      new URL("resources/csp-fenced-frame-src-blocked-inner.html", location.href).toString();
+  const expected_blocked_uri = generateURL(
+      "resources/csp-fenced-frame-src-blocked-inner.html",
+      [key]).toString();
   assert_equals(result, "fenced-frame-src;" + expected_blocked_uri,
                 "The fenced frame is blocked because of CSP violation");
 }, "csp-fenced-frame-src-blocked");

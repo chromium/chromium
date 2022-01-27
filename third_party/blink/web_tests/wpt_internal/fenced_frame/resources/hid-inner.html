@@ -15,7 +15,7 @@ window.addEventListener("load", (async () => {
 
   const button = document.getElementById("button");
   button.addEventListener('click', async () => {
-    const hid_get_device_key = KEYS['hid.getDevice'];
+    const [hid_get_device_key] = parseKeylist();
     try {
       await navigator.hid.getDevices();
       writeValueToServer(hid_get_device_key,

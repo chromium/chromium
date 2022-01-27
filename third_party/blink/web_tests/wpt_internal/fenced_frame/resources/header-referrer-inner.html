@@ -11,10 +11,10 @@ async function init() { // Needed in order to use top-level await.
   //   1.) Nested iframes inside a fenced frame
   //   2.) Nested fenced frames
   //   3.) Top-level fenced frames (aka this frame) after initial navigation
-  const referrer_key = KEYS["referrer.value"];
-  const referrer_ack_key = KEYS["referrer.value ACK"];
+  const [referrer_key, referrer_ack_key] = parseKeylist();
 
-  const referrer_url = "check-header-referrer.py";
+  const referrer_url = generateURL("check-header-referrer.py",
+      [referrer_key, referrer_ack_key]);
 
   const iframe = document.createElement('iframe');
   iframe.src = referrer_url;

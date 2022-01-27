@@ -5,14 +5,16 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
 <script>
 promise_test(async t => {
-  const presentation_receiver_key = KEYS['presentation.receiver'];
+  const presentation_receiver_key = token();
 
-  attachFencedFrame('resources/presentation-receiver-inner.html');
+  attachFencedFrame(generateURL('resources/presentation-receiver-inner.html',
+      [presentation_receiver_key]));
   const actual_result = await nextValueFromServer(presentation_receiver_key);
 
   assert_equals(

@@ -10,10 +10,10 @@
 <script>
 
 window.runTest = async (fenced_frame_url) => {
-  const permission_geolocation_key = KEYS['permission.geolocation'];
+  const [permission_geolocation_key] = parseKeylist();
   await test_driver.set_permission({name: 'geolocation'}, 'granted', true);
 
-  attachFencedFrame(fenced_frame_url);
+  attachFencedFrame(generateURL(fenced_frame_url, [permission_geolocation_key]));
   const actual_result = await nextValueFromServer(permission_geolocation_key);
 
   assert_equals(

@@ -3,14 +3,16 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 <body>
 <script>
 
 promise_test(async t => {
-  const frame_type_key = KEYS['serviceWorker.frameType'];
-  const frame_type_ack_key = KEYS['serviceWorker.frameType ACK'];
+  const frame_type_key = token();
+  const frame_type_ack_key = token();
 
-  attachFencedFrame('resources/serviceWorker-frameType-inner.html');
+  attachFencedFrame(generateURL('resources/serviceWorker-frameType-inner.html',
+      [frame_type_key, frame_type_ack_key]));
 
   const frame_type_result = await nextValueFromServer(frame_type_key);
   assert_equals(frame_type_result, "top-level",

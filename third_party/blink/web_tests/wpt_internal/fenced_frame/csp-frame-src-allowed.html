@@ -4,13 +4,15 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 <script>
-const key = KEYS["csp-frame-src-allowed"];
+const key = token();
 
 promise_test(async () => {
-  attachFencedFrame("resources/csp-frame-src-allowed-inner.html");
+  attachFencedFrame(generateURL("resources/csp-frame-src-allowed-inner.html",
+      [key]));
   const result = await nextValueFromServer(key);
   assert_equals(result, "loaded",
                 "The fenced frame is loaded as expected");

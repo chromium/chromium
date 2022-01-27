@@ -7,16 +7,16 @@
 <body>
   <script>
     (async function () {
-      const background_fetch_register_key = KEYS['background-fetch'];
+      const [background_fetch_register_key, method] = parseKeylist();
       const file = 'background-fetch-inner.https.html.headers';
 
       navigator.serviceWorker.register("empty-worker.js", { scope: location.href });
       const registration = await navigator.serviceWorker.ready;
 
-      const param = location.search.slice(1);
+      const url = new URL(location.href);
 
       let promise;
-      switch (param) {
+      switch (method) {
         case 'fetch':
           promise = registration.backgroundFetch.fetch('test-fetch', file);
           break;
@@ -33,11 +33,11 @@
       promise
         .then(() => {
           writeValueToServer(background_fetch_register_key,
-            `[backgroundFetch.${param}] Unexpectedly started`);
+            `[backgroundFetch.${method}] Unexpectedly started`);
         })
         .catch(() => {
           writeValueToServer(background_fetch_register_key,
-            `[backgroundFetch.${param}] Failed inside fencedframe as expected`);
+            `[backgroundFetch.${method}] Failed inside fencedframe as expected`);
         })
         .finally(() => {
           registration.unregister();

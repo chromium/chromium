@@ -7,7 +7,8 @@ def main(request, response):
     script = u"""
         <script src="utils.js"></script>
         <script>
-            writeValueToServer(KEYS["secFetchDest.value"], "%s")
+            const [secfetch_key] = parseKeylist();
+            writeValueToServer(secfetch_key, "%s")
         </script>
     """ % (request.headers.get(b"sec-fetch-dest", b"none"))
     return (200, [], script)

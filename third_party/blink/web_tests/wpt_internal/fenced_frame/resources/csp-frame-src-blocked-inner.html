@@ -4,6 +4,6 @@
 <script>
   // This file is expected to be unreachable from `csp-frame-src-blocked.html`
   // in the parent directory because of CSP violation.
-  const key = KEYS["csp-frame-src-blocked"];
+  const [key] = parseKeylist();
   writeValueToServer(key, "loaded");
 </script>

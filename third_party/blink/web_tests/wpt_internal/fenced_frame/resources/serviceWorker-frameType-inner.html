@@ -19,8 +19,7 @@ function getFrameType(service_worker, url) {
   const registration = await navigator.serviceWorker.ready;
   const service_worker = registration.active;
 
-  const frame_type_key = KEYS['serviceWorker.frameType'];
-  const frame_type_ack_key = KEYS['serviceWorker.frameType ACK'];
+  const [frame_type_key, frame_type_ack_key] = parseKeylist();
 
   const frame_type = await getFrameType(service_worker, location.href);
   writeValueToServer(frame_type_key, frame_type);
@@ -30,7 +29,8 @@ function getFrameType(service_worker, url) {
   await nextValueFromServer(frame_type_ack_key);
 
   const iframe = document.createElement('iframe');
-  iframe.src = "serviceWorker-frameType-nested.html";
+  iframe.src = generateURL("serviceWorker-frameType-nested.html",
+      [frame_type_key]);
   document.body.append(iframe);
 })();
 </script>

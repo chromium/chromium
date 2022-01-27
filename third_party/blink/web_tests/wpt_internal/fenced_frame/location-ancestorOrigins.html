@@ -3,22 +3,24 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
 
 <body>
 
 <script>
 promise_test(async () => {
-  const location_ao_key = KEYS["location.ancestorOrigins"];
-  const location_ao_ack_key = KEYS["location.ancestorOrigins ACK"];
+  const location_ao_key = token();
+  const location_ao_ack_key = token();
 
   // We load the top-level fenced frame in a cross-origin, so that we can
   // more-completely verify the important cross-origin
   // `location.ancestorOrigins` case.
   const cross_origin = get_host_info().HTTP_REMOTE_ORIGIN;
-  const cross_origin_fenced_frame =
-      new URL('/wpt_internal/fenced_frame/resources/location-ancestorOrigins-inner.html',
-              cross_origin);
+  const cross_origin_fenced_frame = getRemoteOriginURL(generateURL(
+      'resources/location-ancestorOrigins-inner.html',
+      [location_ao_key, location_ao_ack_key]
+  ), https=false);
   attachFencedFrame(cross_origin_fenced_frame);
 
   // Get the result for the top-level fenced frame.

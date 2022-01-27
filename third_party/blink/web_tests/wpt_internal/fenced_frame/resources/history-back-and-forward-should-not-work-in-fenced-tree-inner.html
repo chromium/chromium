@@ -11,14 +11,12 @@
     // history navigations to observe whether these methods were successfuly
     // restricted for the fenced tree.
 
-    const history_navigation_performed_key =
-      KEYS["history_navigation_performed"];
-    const outer_page_ready_key = KEYS["outer_page_ready"];
+    const [history_navigation_performed_key, outer_page_ready_key,
+           embed_scope] = parseKeylist();
 
     (async function () {
       const url = new URL(location.href);
       const test = url.searchParams.get("test");
-      const embed_scope = url.searchParams.get("embed_scope");
 
       writeValueToServer(history_navigation_performed_key, "yes");
 
@@ -35,8 +33,12 @@
       if (embed_scope === "outerPage::fencedFrame::iframe") return;
 
       const iframe = document.createElement('iframe');
-      iframe.src = "history-back-and-forward-should-not-work-in-fenced-tree-" +
-        "inner.html?embed_scope=outerPage::fencedFrame::iframe";
+      const iframe_embed_scope = "outerPage::fencedFrame::iframe";
+      iframe.src = generateURL(
+          "history-back-and-forward-should-not-work-in-fenced-tree-" +
+          "inner.html",
+          [history_navigation_performed_key, outer_page_ready_key,
+           iframe_embed_scope]);
       document.body.append(iframe);
     })();
   </script>

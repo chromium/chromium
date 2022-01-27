@@ -3,15 +3,17 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
 <script>
 promise_test(async () => {
-  const ndef_write_key = KEYS["ndef.write"];
-  const ndef_scan_key = KEYS["ndef.scan"];
+  const ndef_write_key = token();
+  const ndef_scan_key = token();
 
-  attachFencedFrame("resources/web-nfc-inner.https.html");
+  attachFencedFrame(generateURL("resources/web-nfc-inner.https.html",
+      [ndef_write_key, ndef_scan_key]));
 
   let result = await nextValueFromServer(ndef_write_key);
   assert_equals(result, "rejected",

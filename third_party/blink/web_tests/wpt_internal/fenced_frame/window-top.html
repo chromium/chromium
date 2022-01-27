@@ -9,10 +9,11 @@
 
 <script>
 promise_test(async () => {
-  const window_top_key = KEYS["window.top"];
-  const window_top_ack_key = KEYS["window.top ACK"];
+  const window_top_key = token();
+  const window_top_ack_key = token();
 
-  attachFencedFrame("resources/window-top-inner.html");
+  attachFencedFrame(generateURL("resources/window-top-inner.html",
+      [window_top_key, window_top_ack_key, "not nested"]));
 
   // Get the result for the top-level fenced frame.
   const fenced_frame_result = await nextValueFromServer(window_top_key);

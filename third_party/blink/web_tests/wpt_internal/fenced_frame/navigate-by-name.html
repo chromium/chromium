@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
   <!-- This anchor element is clicked via script to navigate a target frame by
@@ -15,25 +16,30 @@
 
        [1]: https://html.spec.whatwg.org/C/#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
   -->
-<a target="target_frame"
-   href="resources/navigate-by-name-reporting-helper.html">
-  Click to navigate target frame</a>
 <script>
-const kAssertion = "The anchor element did not navigate a frame inside the " +
-                   "fenced frame boundary: ";
-// This is used by `navigate-by-name-reporting-helper.html` to let us know if
-// the navigation correctly opened a new top-level popup window, or
-// incorrectly targeted a browsing context inside the fenced frame boundary.
-const navigation_success_key = KEYS["navigation_success"];
-// This is sent by the `navigate-by-name-inner.html` to indicate that it has
-// set up a frame whose name is `target_frame`, that we are supposed to try
-// and navigate by name.
-const ready_for_navigation_key = KEYS["ready_for_navigation"];
-const a = document.querySelector('a');
+  const kAssertion = "The anchor element did not navigate a frame inside the " +
+                     "fenced frame boundary: ";
+  // This is used by `navigate-by-name-reporting-helper.html` to let us know if
+  // the navigation correctly opened a new top-level popup window, or
+  // incorrectly targeted a browsing context inside the fenced frame boundary.
+  const navigation_success_key = token();
+  // This is sent by the `navigate-by-name-inner.html` to indicate that it has
+  // set up a frame whose name is `target_frame`, that we are supposed to try
+  // and navigate by name.
+  const ready_for_navigation_key = token();
+
+  const a = document.createElement("a");
+  a.href = generateURL('resources/navigate-by-name-reporting-helper.html',
+      [navigation_success_key]);
+  a.innerText = "Click to navigate target frame";
+  a.target = "target_frame";
+  document.body.append(a);
 
 async function runTest(test_type) {
   const fenced_frame =
-    attachFencedFrame(`resources/navigate-by-name-inner.html?test_type=${test_type}`);
+    attachFencedFrame(generateURL(
+        `resources/navigate-by-name-inner.html`,
+        [ready_for_navigation_key, test_type]));
 
   // Wait for the fenced frame to say it is ready for us (the outer page) to
   // initiate a named frame navigation, targeting a frame inside the fence.

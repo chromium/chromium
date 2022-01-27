@@ -5,6 +5,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
 
 <body>
 
@@ -17,10 +18,11 @@ promise_test(async t => {
       HTMLScriptElement.supports('speculationrules'),
       '<script type="speculationrules"> is not supported');
 
-  const prerender_ready_key = KEYS['prerender READY'];
-  const prerender_loaded_key = KEYS['prerender LOADED'];
-  const prerender_activated_key = KEYS['prerender ACTIVATED'];
-  const url = 'resources/prerender-inner.html';
+  const prerender_ready_key = token();
+  const prerender_loaded_key = token();
+  const prerender_activated_key = token();
+  const url = generateURL('resources/prerender-inner.html',
+      [prerender_ready_key, prerender_loaded_key, prerender_activated_key]);
 
   // TODO: This test expects that the browser always triggers prerendering when
   // SpeculationRules is provided. But SpeculationRules allows browsers not to

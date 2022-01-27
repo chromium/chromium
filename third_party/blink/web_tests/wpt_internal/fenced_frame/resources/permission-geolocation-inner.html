@@ -5,7 +5,7 @@
 <body>
 <script>
 (async () => {
-  const permission_geolocation_key = KEYS['permission.geolocation'];
+  const [permission_geolocation_key] = parseKeylist();
   const result = await new Promise(resolve => {
     navigator.geolocation.getCurrentPosition(
         () => resolve('granted'), () => resolve('denied'));

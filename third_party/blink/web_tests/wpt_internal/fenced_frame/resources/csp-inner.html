@@ -9,7 +9,7 @@
 
   <body>
     <script>
-      const csp_key = KEYS["csp"];
+      const [csp_key] = parseKeylist();
 
       function fail() {
         writeValueToServer(csp_key,

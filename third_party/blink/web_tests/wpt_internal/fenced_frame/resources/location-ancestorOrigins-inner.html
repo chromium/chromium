@@ -12,10 +12,10 @@ async function init() { // Needed in order to use top-level await.
   //   2.) Nested iframes inside a fenced frame
   //   3.) Nested fenced frames
   const url = new URL(location.href);
-  const is_nested_fenced_frame = (url.search == "?nested");
 
-  const location_ao_key = KEYS["location.ancestorOrigins"];
-  const location_ao_ack_key = KEYS["location.ancestorOrigins ACK"];
+  const [location_ao_key, location_ao_ack_key, nested] = parseKeylist();
+
+  const is_nested_fenced_frame = nested == "nested";
 
   // Report `location.ancestorOrigins`.
   writeValueToServer(location_ao_key, Array.from(location.ancestorOrigins).join());
@@ -29,9 +29,12 @@ async function init() { // Needed in order to use top-level await.
   // the `location_ao_key` stash and we can write to it again.
   await nextValueFromServer(location_ao_ack_key);
 
+  const nested_url = generateURL("location-ancestorOrigins-inner.html",
+      [location_ao_key, location_ao_ack_key, "nested"]);
+
   // Send `location.ancestorOrigins` from an iframe.
   const iframe = document.createElement('iframe');
-  iframe.src = "location-ancestorOrigins-inner.html?nested";
+  iframe.src = nested_url;
   const load_promise = new Promise((resolve, reject) => {
     iframe.onload = resolve;
     iframe.onerror = reject;
@@ -42,7 +45,7 @@ async function init() { // Needed in order to use top-level await.
   // from the iframe.
   await nextValueFromServer(location_ao_ack_key);
 
-  attachFencedFrame("location-ancestorOrigins-inner.html?nested");
+  attachFencedFrame(nested_url);
 }
 
 init();

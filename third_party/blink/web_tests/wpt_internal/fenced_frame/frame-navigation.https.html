@@ -3,6 +3,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="resources/utils.js"></script>
 
 <body>
@@ -21,31 +22,36 @@ promise_test(async () => {
   //                        simple (origin 2)
   // simple (origin 2)
 
-  const navigation_key = KEYS["frame_navigation"];
-  const navigation_ack_key = KEYS["frame_navigation ACK"];
+  const navigation_key = token();
+  const navigation_ack_key = token();
 
   // Create URL prefixes to simulate different origins.
   // (www1 and www2 are different origins)
-  const url_prefix = location.href + "/../resources/";
-  const origin1_prefix = url_prefix.replace("://", "://www1.");
-  const origin2_prefix = url_prefix.replace("://", "://www2.");
-
-  const simple_url = "frame-navigation-inner-simple.https.html";
-  const create_nested_url = "frame-navigation-inner-create-nested.https.html";
+  const simple_url = generateURL(
+      "resources/frame-navigation-inner-simple.https.html",
+      [navigation_key, navigation_ack_key]);
+  const nested_url = generateURL(
+      "resources/frame-navigation-inner-create-nested.https.html",
+      [navigation_key, navigation_ack_key]);
+  const origin1_simple_url = getRemoteOriginURL(simple_url);
+  const origin2_nested_url = getRemoteOriginURL(nested_url)
+      .toString().replace("www1", "www2");
+  const origin2_simple_url = getRemoteOriginURL(simple_url)
+      .toString().replace("www1", "www2");
 
   // Create a root fenced frame.
-  root_frame = attachFencedFrame(origin1_prefix + simple_url);
+  root_frame = attachFencedFrame(origin1_simple_url);
   const root_load1_actual = await nextValueFromServer(navigation_key);
   const root_load1_expected = "pass";
   assert_equals(root_load1_actual, root_load1_expected,
                 "The 1st root fenced frame navigation succeeded");
 
   // Navigate the root fenced frame to a second site (which will nest).
-  root_frame.src = origin2_prefix + create_nested_url;
+  root_frame.src = origin2_nested_url;
   const root_load2_actual = await nextValueFromServer(navigation_key);
   const root_load2_expected = "create-nested";
   assert_equals(root_load2_actual, root_load2_expected,
-                "The 2nd root fenced frame navigation (cross-origin) succeeded");
+      "The 2nd root fenced frame navigation (cross-origin) succeeded");
   writeValueToServer(navigation_ack_key, "ACK");
 
   // Check that all of the nested navigations succeed.
@@ -58,7 +64,7 @@ promise_test(async () => {
   const nested_load2_actual = await nextValueFromServer(navigation_key);
   const nested_load2_expected = "pass";
   assert_equals(nested_load2_actual, nested_load2_expected,
-                "The 2nd nested fenced frame navigation (cross-origin) succeeded");
+      "The 2nd nested fenced frame navigation (cross-origin) succeeded");
   writeValueToServer(navigation_ack_key, "ACK");
 
   const nested_load3_actual = await nextValueFromServer(navigation_key);
@@ -68,7 +74,7 @@ promise_test(async () => {
   writeValueToServer(navigation_ack_key, "ACK");
 
   // Navigate the root fenced frame.
-  root_frame.src = origin2_prefix + simple_url;
+  root_frame.src = root_frame.src = origin2_simple_url;
   const root_load3_actual = await nextValueFromServer(navigation_key);
   const root_load3_expected = "pass";
   assert_equals(root_load3_actual, root_load3_expected,

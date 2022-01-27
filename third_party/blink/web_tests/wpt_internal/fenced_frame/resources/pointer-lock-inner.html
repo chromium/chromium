@@ -12,7 +12,7 @@ window.onload = () => {
     simulateGesture(async function() {
       const canvas = document.createElement('canvas');
       document.body.appendChild(canvas);
-      const pointer_lock_key = KEYS['pointer-lock'];
+      const [pointer_lock_key] = parseKeylist();
       const pointerlockerror_promise = new Promise(resolve => {
         document.addEventListener('pointerlockerror', resolve);
       });

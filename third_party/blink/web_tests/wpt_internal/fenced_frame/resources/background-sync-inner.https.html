@@ -7,12 +7,13 @@
 <body>
 <script>
 (async function() {
-  const background_sync_register_key = KEYS['background-sync'];
+  const [background_sync_register_key] = parseKeylist();
 
   navigator.serviceWorker.register("empty-worker.js", { scope: location.href });
   const registration = await navigator.serviceWorker.ready;
 
-  // This test verifies that one-shot syncs can not be registered from an fenced frame.
+  // This test verifies that one-shot syncs can not be registered from a
+  // fenced frame.
   registration.sync.register('fencedframe-oneshot').then(() => {
     writeValueToServer(background_sync_register_key, "unexpectedly registered");
   })

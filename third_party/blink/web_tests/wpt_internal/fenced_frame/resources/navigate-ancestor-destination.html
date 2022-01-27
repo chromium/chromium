@@ -11,6 +11,6 @@
   // verifying that this document loaded in the correct frame. We just simply
   // report that we successfully wound up in this document, to indicate that
   // we're finished.
-  const navigate_ancestor_key = KEYS["navigate_ancestor"];
+  const [navigate_ancestor_key] = parseKeylist();
   writeValueToServer(navigate_ancestor_key, "navigate-ancestor-destination.html");
 </script>
