@@ -45,10 +45,7 @@ class MockQuotaClient : public mojom::QuotaClient {
 
   ~MockQuotaClient() override;
 
-  // To add or modify mock data in this client.
-  void AddStorageKeyAndNotify(const blink::StorageKey& storage_key,
-                              blink::mojom::StorageType type,
-                              int64_t size);
+  // To modify mock data in this client.
   void ModifyStorageKeyAndNotify(const blink::StorageKey& storage_key,
                                  blink::mojom::StorageType type,
                                  int64_t delta);

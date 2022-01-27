@@ -36,18 +36,6 @@ MockQuotaClient::MockQuotaClient(
 
 MockQuotaClient::~MockQuotaClient() = default;
 
-void MockQuotaClient::AddStorageKeyAndNotify(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType storage_type,
-    int64_t size) {
-  DCHECK(storage_key_data_.find({storage_key, storage_type}) ==
-         storage_key_data_.end());
-  DCHECK_GE(size, 0);
-  storage_key_data_[{storage_key, storage_type}] = size;
-  quota_manager_proxy_->NotifyStorageModified(
-      client_type_, storage_key, storage_type, size, IncrementMockTime());
-}
-
 void MockQuotaClient::ModifyStorageKeyAndNotify(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType storage_type,
