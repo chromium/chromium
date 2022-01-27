@@ -24,6 +24,8 @@ enum class CSSMathOperator {
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token);
 String ToString(CSSMathOperator);
 
+bool IsComparison(CSSMathOperator);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_MATH_OPERATOR_H_

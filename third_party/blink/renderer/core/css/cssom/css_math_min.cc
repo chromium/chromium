@@ -71,7 +71,7 @@ void CSSMathMin::BuildCSSText(Nested, ParenLess, StringBuilder& result) const {
 }
 
 CSSMathExpressionNode* CSSMathMin::ToCalcExpressionNode() const {
-  CSSMathExpressionVariadicOperation::Operands operands;
+  CSSMathExpressionOperation::Operands operands;
   operands.ReserveCapacity(NumericValues().size());
   for (const auto& value : NumericValues()) {
     CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
@@ -89,8 +89,8 @@ CSSMathExpressionNode* CSSMathMin::ToCalcExpressionNode() const {
     NOTREACHED();
     return nullptr;
   }
-  return CSSMathExpressionVariadicOperation::Create(std::move(operands),
-                                                    CSSMathOperator::kMin);
+  return CSSMathExpressionOperation::CreateComparisonFunction(
+      std::move(operands), CSSMathOperator::kMin);
 }
 
 }  // namespace blink

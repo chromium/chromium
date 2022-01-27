@@ -5348,4 +5348,25 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationIgnoreVisitedPseudoInHas) {
   ASSERT_EQ(0U, element_count);
 }
 
+TEST_F(StyleEngineTest, CSSComparisonFunctionsUseCount) {
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(10px + 20%); }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      div { width: calc(min(10px, 20%) + max(20px, 10%)); }
+    </style>
+  )HTML");
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSComparisonFunctions));
+  ClearUseCounter(WebFeature::kCSSComparisonFunctions);
+}
+
 }  // namespace blink

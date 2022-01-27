@@ -46,4 +46,8 @@ String ToString(CSSMathOperator op) {
   }
 }
 
+bool IsComparison(CSSMathOperator op) {
+  return op == CSSMathOperator::kMin || op == CSSMathOperator::kMax;
+}
+
 }  // namespace blink

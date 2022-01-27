@@ -659,30 +659,11 @@ class MathFunctionParser {
                      CSSPrimitiveValue::ValueRange value_range)
       : source_range_(range), range_(range) {
     const CSSParserToken& token = range.Peek();
-    switch (token.FunctionId()) {
-      case CSSValueID::kCalc:
-      case CSSValueID::kWebkitCalc:
-        calc_value_ = CSSMathFunctionValue::Create(
-            CSSMathExpressionNode::ParseCalc(ConsumeFunction(range_)),
-            value_range);
-        break;
-      case CSSValueID::kMin:
-        calc_value_ = CSSMathFunctionValue::Create(
-            CSSMathExpressionNode::ParseMin(ConsumeFunction(range_)),
-            value_range);
-        break;
-      case CSSValueID::kMax:
-        calc_value_ = CSSMathFunctionValue::Create(
-            CSSMathExpressionNode::ParseMax(ConsumeFunction(range_)),
-            value_range);
-        break;
-      case CSSValueID::kClamp:
-        calc_value_ = CSSMathFunctionValue::Create(
-            CSSMathExpressionNode::ParseClamp(ConsumeFunction(range_)),
-            value_range);
-        break;
-      default:
-        break;
+    if (token.GetType() == kFunctionToken) {
+      calc_value_ = CSSMathFunctionValue::Create(
+          CSSMathExpressionNode::ParseMathFunction(token.FunctionId(),
+                                                   ConsumeFunction(range_)),
+          value_range);
     }
     if (calc_value_ && calc_value_->HasComparisons())
       context.Count(WebFeature::kCSSComparisonFunctions);
