@@ -23,7 +23,7 @@ class GrpcWebUiControllerFactory : public content::WebUIControllerFactory {
  public:
   GrpcWebUiControllerFactory(
       const std::vector<std::string> hosts,
-      cast::v2::CoreApplicationService::Stub core_app_service_stub);
+      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
   GrpcWebUiControllerFactory(const GrpcWebUiControllerFactory&) = delete;
   GrpcWebUiControllerFactory& operator=(const GrpcWebUiControllerFactory&) =
       delete;
@@ -45,7 +45,7 @@ class GrpcWebUiControllerFactory : public content::WebUIControllerFactory {
 
  private:
   const std::vector<std::string> hosts_;
-  cast::v2::CoreApplicationService::Stub core_app_service_stub_;
+  cast::v2::CoreApplicationService::Stub* const core_app_service_stub_;
 };
 
 }  // namespace chromecast

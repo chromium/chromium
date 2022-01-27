@@ -4,8 +4,11 @@
 
 #include "chromecast/cast_core/runtime/browser/runtime_application_base.h"
 
+#include "base/bind.h"
+#include "base/task/bind_post_task.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
+#include "chromecast/cast_core/grpc/grpc_status_or.h"
 #include "chromecast/cast_core/runtime/browser/grpc/grpc_method.h"
 #include "chromecast/cast_core/runtime/browser/url_rewrite/url_request_rewrite_type_converters.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
@@ -31,14 +34,33 @@ RuntimeApplicationBase::RuntimeApplicationBase(
 }
 
 RuntimeApplicationBase::~RuntimeApplicationBase() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_application_stopped_);
 }
 
-bool RuntimeApplicationBase::Load(
-    const cast::runtime::LoadApplicationRequest& request) {
-  if (!request.has_application_config() ||
-      !request.has_runtime_application_service_info()) {
-    return false;
+CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
+  DCHECK(cast_web_view_);
+  return cast_web_view_->cast_web_contents();
+}
+
+void RuntimeApplicationBase::Load(cast::runtime::LoadApplicationRequest request,
+                                  StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request.cast_session_id().empty()) {
+    std::move(callback).Run(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                         "Application session ID is missing"));
+    return;
+  }
+  if (!request.has_application_config()) {
+    std::move(callback).Run(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                         "Application config is missing"));
+    return;
+  }
+  if (request.runtime_application_service_info().grpc_endpoint().empty()) {
+    std::move(callback).Run(
+        grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                     "Application service endpoint is missing"));
+    return;
   }
 
   set_application_config(request.application_config());
@@ -55,9 +77,9 @@ bool RuntimeApplicationBase::Load(
   SetCompletionQueue(builder.AddCompletionQueue());
   SetServer(builder.BuildAndStart());
   if (!grpc_server_) {
-    LOG(ERROR) << "Failed to start server on path: " << *this
-               << ", endpoint=" << grpc_address;
-    return false;
+    std::move(callback).Run(grpc::Status(grpc::StatusCode::INTERNAL,
+                                         "Failed to start gRPC server"));
+    return;
   }
   StartRuntimeApplicationServiceMethods(
       &grpc_app_service_, weak_factory_.GetWeakPtr(), grpc_cq_, &is_shutdown_);
@@ -75,41 +97,53 @@ bool RuntimeApplicationBase::Load(
   GetCastWebContents()->SetUrlRewriteRules(std::move(mojom_rules));
 
   LOG(INFO) << "Successfully loaded: " << *this;
-  return true;
+  std::move(callback).Run(grpc::Status::OK);
 }
 
-bool RuntimeApplicationBase::Launch(
-    const cast::runtime::LaunchApplicationRequest& request) {
+void RuntimeApplicationBase::Launch(
+    cast::runtime::LaunchApplicationRequest request,
+    StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Launching application: " << *this;
 
-  if (!request.has_cast_media_service_info()) {
-    return false;
+  if (request.core_application_service_info().grpc_endpoint().empty()) {
+    std::move(callback).Run(
+        grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                     "Core application service endpoint is missing"));
+    return;
   }
+  if (request.cast_media_service_info().grpc_endpoint().empty()) {
+    std::move(callback).Run(grpc::Status(grpc::StatusCode::INVALID_ARGUMENT,
+                                         "Media service endpoint is missing"));
+    return;
+  }
+
+  auto core_channel = grpc::CreateChannel(
+      request.core_application_service_info().grpc_endpoint(),
+      grpc::InsecureChannelCredentials());
+  core_app_stub_ =
+      cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
 
   set_cast_media_service_grpc_endpoint(
       request.cast_media_service_info().grpc_endpoint());
 
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeApplicationBase::FinishLaunch,
-                     weak_factory_.GetWeakPtr(),
-                     request.core_application_service_info().grpc_endpoint()));
-  return true;
+  InitializeApplication(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(&RuntimeApplicationBase::OnApplicationInitialized,
+                     weak_factory_.GetWeakPtr(), std::move(callback))));
 }
 
-void RuntimeApplicationBase::FinishLaunch(
-    std::string core_application_service_endpoint) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  auto core_channel = grpc::CreateChannel(core_application_service_endpoint,
-                                          grpc::InsecureChannelCredentials());
-  core_app_stub_ =
-      cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
-
-  InitializeApplication(core_app_stub_.get(), GetCastWebContents());
+void RuntimeApplicationBase::OnApplicationInitialized(StatusCallback callback,
+                                                      grpc::Status status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!app_url().is_empty());
 
-  LOG(INFO) << "Application is initialized: " << *this;
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to launch application: " << *this
+               << ", status=" << cast::utils::GrpcStatusToString(status);
+    std::move(callback).Run(status);
+    return;
+  }
 
   const std::vector<int32_t> feature_permissions;
   const std::vector<std::string> additional_feature_permission_origins;
@@ -124,12 +158,14 @@ void RuntimeApplicationBase::FinishLaunch(
       ::chromecast::mojom::ZOrder::APP,
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 
-  LOG(INFO) << "Launch finished: " << *this;
+  LOG(INFO) << "Application is launched: " << *this;
+  std::move(callback).Run(grpc::Status::OK);
 }
 
 void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
                                          cast::web::MessagePortStatus* response,
                                          GrpcMethod* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cast_session_id().empty()) {
     callback->StepGRPC(grpc::Status(grpc::StatusCode::NOT_FOUND,
                                     "No active cast session for PostMessage"));
@@ -139,15 +175,11 @@ void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
   callback->StepGRPC(grpc::Status::OK);
 }
 
-CastWebContents* RuntimeApplicationBase::GetCastWebContents() {
-  DCHECK(cast_web_view_);
-  return cast_web_view_->cast_web_contents();
-}
-
 void RuntimeApplicationBase::SetUrlRewriteRules(
     const cast::v2::SetUrlRewriteRulesRequest& request,
     cast::v2::SetUrlRewriteRulesResponse* response,
     GrpcMethod* callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cast_session_id().empty()) {
     callback->StepGRPC(
         grpc::Status(grpc::StatusCode::NOT_FOUND,
@@ -164,6 +196,7 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
 }
 
 void RuntimeApplicationBase::SetApplicationStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   grpc::ClientContext context;
   cast::v2::ApplicationStatusRequest app_status;
   cast::v2::ApplicationStatusResponse unused;
@@ -173,14 +206,15 @@ void RuntimeApplicationBase::SetApplicationStarted() {
       core_app_stub_->SetApplicationStatus(&context, app_status, &unused);
 
   if (!status.ok()) {
+    // TODO(vigeni): Reset the application as this happens.
     LOG(ERROR) << "Failed to call SetApplicationStatus() when starting: "
-               << *this << ", status=" << status.error_message();
-  } else {
-    LOG(INFO) << "Application is started: " << *this;
+               << *this
+               << ", status=" << cast::utils::GrpcStatusToString(status);
   }
 }
 
 void RuntimeApplicationBase::CreateCastWebView() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->renderer_type = renderer_type_;
   params->handle_inner_contents = true;
@@ -193,6 +227,7 @@ void RuntimeApplicationBase::CreateCastWebView() {
 }
 
 void RuntimeApplicationBase::StopApplication() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Stopping application: " << *this;
 
   is_application_stopped_ = true;

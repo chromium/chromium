@@ -74,6 +74,12 @@ class RuntimeApplicationDispatcher {
           reactor);
 
   // Helper methods.
+  void OnApplicationLoaded(
+      cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
+      grpc::Status status);
+  void OnApplicationLaunched(
+      cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
+      grpc::Status status);
   void SendHeartbeat();
   void OnHeartbeatSent(
       cast::utils::GrpcStatusOr<

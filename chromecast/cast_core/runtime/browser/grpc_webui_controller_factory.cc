@@ -16,9 +16,8 @@ namespace chromecast {
 
 GrpcWebUiControllerFactory::GrpcWebUiControllerFactory(
     const std::vector<std::string> hosts,
-    cast::v2::CoreApplicationService::Stub core_app_service_stub)
-    : hosts_(std::move(hosts)),
-      core_app_service_stub_(std::move(core_app_service_stub)) {}
+    cast::v2::CoreApplicationService::Stub* core_app_service_stub)
+    : hosts_(std::move(hosts)), core_app_service_stub_(core_app_service_stub) {}
 
 GrpcWebUiControllerFactory::~GrpcWebUiControllerFactory() = default;
 

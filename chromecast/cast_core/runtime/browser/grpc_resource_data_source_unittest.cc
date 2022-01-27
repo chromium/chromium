@@ -17,7 +17,7 @@ class GrpcResourceDataSourceTest : public ::testing::Test {
  public:
   GrpcResourceDataSourceTest()
       : grpc_resource_data_source_(
-            new GrpcResourceDataSource("chrome", true, *stub_.get())) {}
+            new GrpcResourceDataSource("chrome", true, stub_.get())) {}
 
  protected:
   std::string GetMimeType(const std::string& path) {

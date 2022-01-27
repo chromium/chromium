@@ -151,39 +151,24 @@ void RuntimeApplicationDispatcher::HandleLoadApplication(
     application_watcher_->OnRuntimeApplicationChanged(app_.get());
   }
 
-  if (!app_->Load(request)) {
-    ResetApp();
-    reactor->Write(
-        grpc::Status(grpc::StatusCode::INTERNAL, "Failed to load application"));
-    return;
-  }
-
-  LOG(INFO) << "Application loaded: " << *app_;
-  cast::runtime::LoadApplicationResponse response;
-  response.mutable_message_port_info();
-  reactor->Write(std::move(response));
+  app_->Load(
+      std::move(request),
+      base::BindPostTask(
+          task_runner_,
+          base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLoaded,
+                         weak_factory_.GetWeakPtr(), std::move(reactor))));
 }
 
 void RuntimeApplicationDispatcher::HandleLaunchApplication(
     cast::runtime::LaunchApplicationRequest request,
     cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!app_->Launch(request)) {
-    std::stringstream err_stream;
-    err_stream << "failed to launch RuntimeApplication (session id: "
-               << app_->cast_session_id()
-               << ", app id: " << app_->app_config().app_id()
-               << ", cast media service endpoint: "
-               << (request.has_cast_media_service_info()
-                       ? request.cast_media_service_info().grpc_endpoint()
-                       : "NONE")
-               << ")";
-    ResetApp();
-    reactor->Write(grpc::Status(grpc::INTERNAL, err_stream.str()));
-    return;
-  }
-
-  reactor->Write(cast::runtime::LaunchApplicationResponse());
+  app_->Launch(
+      std::move(request),
+      base::BindPostTask(
+          task_runner_,
+          base::BindOnce(&RuntimeApplicationDispatcher::OnApplicationLaunched,
+                         weak_factory_.GetWeakPtr(), std::move(reactor))));
 }
 
 void RuntimeApplicationDispatcher::HandleStopApplication(
@@ -261,6 +246,37 @@ void RuntimeApplicationDispatcher::HandleStopMetricsRecorder(
   metrics_recorder_service_->OnCloseSoon(base::BindOnce(
       &RuntimeApplicationDispatcher::OnMetricsRecorderServiceStopped,
       weak_factory_.GetWeakPtr(), std::move(reactor)));
+}
+
+void RuntimeApplicationDispatcher::OnApplicationLoaded(
+    cast::runtime::RuntimeServiceHandler::LoadApplication::Reactor* reactor,
+    grpc::Status status) {
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to load application: " << *app_
+               << ", status=" << cast::utils::GrpcStatusToString(status);
+    ResetApp();
+    reactor->Write(status);
+    return;
+  }
+
+  LOG(INFO) << "Application loaded: " << *app_;
+  cast::runtime::LoadApplicationResponse response;
+  response.mutable_message_port_info();
+  reactor->Write(std::move(response));
+}
+
+void RuntimeApplicationDispatcher::OnApplicationLaunched(
+    cast::runtime::RuntimeServiceHandler::LaunchApplication::Reactor* reactor,
+    grpc::Status status) {
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to launch application: " << *app_
+               << ", status=" << cast::utils::GrpcStatusToString(status);
+    ResetApp();
+    reactor->Write(status);
+    return;
+  }
+
+  reactor->Write(cast::runtime::LaunchApplicationResponse());
 }
 
 void RuntimeApplicationDispatcher::SendHeartbeat() {

@@ -60,6 +60,9 @@ class RuntimeApplicationBase
   // Returns a pointer to a CastWebView.
   CastWebView* cast_web_view() { return cast_web_view_.get(); }
 
+  // Returns a pointer to CoreApplicationService impl.
+  CoreApplicationServiceGrpc* core_app_stub() { return core_app_stub_.get(); }
+
   // RuntimeApplication implementation:
   CastWebContents* GetCastWebContents() override;
 
@@ -73,24 +76,22 @@ class RuntimeApplicationBase
   virtual void HandleMessage(const cast::web::Message& message,
                              cast::web::MessagePortStatus* response) = 0;
 
-  // Called following the creation of a CastWebView, with which
-  // |cast_web_contents  is associated. Must set the application URL as a
-  // result.
-  virtual void InitializeApplication(CoreApplicationServiceGrpc* grpc_stub,
-                                     CastWebContents* cast_web_contents) = 0;
-
-  std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
+  // Called following the creation of a CastWebView. Must initialize the
+  // application and set the application URL as a result.
+  virtual void InitializeApplication(StatusCallback callback) = 0;
 
  private:
   // RuntimeApplication implementation:
-  bool Load(const cast::runtime::LoadApplicationRequest& request) final;
-  bool Launch(const cast::runtime::LaunchApplicationRequest& request) final;
+  void Load(cast::runtime::LoadApplicationRequest request,
+            StatusCallback callback) final;
+  void Launch(cast::runtime::LaunchApplicationRequest request,
+              StatusCallback callback) final;
 
   // Called when a new CastWebView is created.
   void CreateCastWebView();
 
-  // Called following Launch() on |task_runner_|.
-  void FinishLaunch(std::string core_application_service_endpoint);
+  // Called when application finished initialization.
+  void OnApplicationInitialized(StatusCallback callback, grpc::Status status);
 
   // RuntimeMessagePortApplicationServiceDelegate implementation:
   void PostMessage(const cast::web::Message& request,
@@ -117,7 +118,9 @@ class RuntimeApplicationBase
 
   // Renderer type used by this application.
   mojom::RendererType renderer_type_;
+  std::unique_ptr<CoreApplicationServiceGrpc> core_app_stub_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<RuntimeApplicationBase> weak_factory_{this};
 };
 

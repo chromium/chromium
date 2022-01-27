@@ -34,7 +34,7 @@ class GrpcWebUIController : public content::WebUIController {
   GrpcWebUIController(
       content::WebUI* webui,
       const std::string host,
-      cast::v2::CoreApplicationService::Stub core_app_service_stub);
+      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
   ~GrpcWebUIController() override;
 
   // Creates an instance of GrpcWebUIController.
@@ -42,7 +42,7 @@ class GrpcWebUIController : public content::WebUIController {
   static std::unique_ptr<GrpcWebUIController> Create(
       content::WebUI* webui,
       const std::string host,
-      cast::v2::CoreApplicationService::Stub core_app_service_stub);
+      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
 
  protected:
   content::WebContents* web_contents() const;

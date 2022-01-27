@@ -20,7 +20,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
   GrpcResourceDataSource(
       const std::string host,
       bool for_webui,
-      cast::v2::CoreApplicationService::Stub core_app_service_stub);
+      cast::v2::CoreApplicationService::Stub* core_app_service_stub);
   ~GrpcResourceDataSource() override;
 
   void OverrideContentSecurityPolicyChildSrc(const std::string& data);
@@ -60,7 +60,7 @@ class GrpcResourceDataSource : public content::URLDataSource {
   // GrpcWebUIController and false otherwise. In practice, for all the
   // chrome://home/* urls this is set to true and false for chrome-resource://*
   const bool for_webui_;
-  cast::v2::CoreApplicationService::Stub core_app_service_stub_;
+  cast::v2::CoreApplicationService::Stub* const core_app_service_stub_;
 
   absl::optional<std::string> frame_src_;
   bool deny_xframe_options_ = true;

@@ -45,12 +45,12 @@ constexpr const char kAllowedOriginPrefix[] = "chrome://";
 GrpcResourceDataSource::GrpcResourceDataSource(
     const std::string host,
     bool for_webui,
-    cast::v2::CoreApplicationService::Stub core_app_service_stub)
+    cast::v2::CoreApplicationService::Stub* core_app_service_stub)
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       host_(host),
       for_webui_(for_webui),
-      core_app_service_stub_(std::move(core_app_service_stub)) {
+      core_app_service_stub_(core_app_service_stub) {
   DCHECK(!host.empty());
 }
 
@@ -77,7 +77,7 @@ void GrpcResourceDataSource::StartDataRequest(
     cast::v2::GetWebUIResourceRequest request;
     request.set_resource_id(path);
     status =
-        core_app_service_stub_.GetWebUIResource(&context, request, &response);
+        core_app_service_stub_->GetWebUIResource(&context, request, &response);
     contents = response.resource_path();
   }
 

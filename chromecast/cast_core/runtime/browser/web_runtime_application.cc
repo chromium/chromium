@@ -33,9 +33,7 @@ void WebRuntimeApplication::HandleMessage(
   bindings_manager_->HandleMessage(message, response);
 }
 
-void WebRuntimeApplication::InitializeApplication(
-    CoreApplicationServiceGrpc* grpc_stub,
-    CastWebContents* cast_web_contents) {
+void WebRuntimeApplication::InitializeApplication(StatusCallback callback) {
   DCHECK(app_url().is_empty());
   set_app_url(GURL(app_config().cast_web_app_config().url()));
 
@@ -43,26 +41,29 @@ void WebRuntimeApplication::InitializeApplication(
   // chrome*://* that use WebUIs.
   const std::vector<std::string> hosts = {"home", "error", "cast_resources"};
   content::WebUIControllerFactory::RegisterFactory(
-      new GrpcWebUiControllerFactory(std::move(hosts), *grpc_stub));
+      new GrpcWebUiControllerFactory(std::move(hosts), core_app_stub()));
 
   cast::bindings::GetAllResponse bindings_response;
   {
     grpc::ClientContext context;
     cast::bindings::GetAllRequest bindings_request;
     grpc::Status bindings_status =
-        grpc_stub->GetAll(&context, bindings_request, &bindings_response);
+        core_app_stub()->GetAll(&context, bindings_request, &bindings_response);
   }
 
-  CastWebContents::Observer::Observe(cast_web_contents);
+  CastWebContents::Observer::Observe(GetCastWebContents());
 
   bindings_manager_ =
-      std::make_unique<BindingsManagerWebRuntime>(grpc_cq_, grpc_stub);
+      std::make_unique<BindingsManagerWebRuntime>(grpc_cq_, core_app_stub());
   for (int i = 0; i < bindings_response.bindings_size(); ++i) {
     bindings_manager_->AddBinding(
         bindings_response.bindings(i).before_load_script());
   }
-  cast_web_contents->ConnectToBindingsService(
+  GetCastWebContents()->ConnectToBindingsService(
       bindings_manager_->CreateRemote());
+
+  // Signal that application is initialized.
+  std::move(callback).Run(grpc::Status::OK);
 
   SetApplicationStarted();
 }

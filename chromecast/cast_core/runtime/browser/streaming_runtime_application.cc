@@ -81,12 +81,11 @@ void StreamingRuntimeApplication::OnResolutionChanged(
 }
 
 void StreamingRuntimeApplication::InitializeApplication(
-    CoreApplicationServiceGrpc* grpc_stub,
-    CastWebContents* cast_web_contents) {
+    StatusCallback callback) {
   DCHECK(app_url().is_empty());
 
   message_port_service_ =
-      std::make_unique<MessagePortService>(grpc_cq_, grpc_stub);
+      std::make_unique<MessagePortService>(grpc_cq_, core_app_stub());
 
   // Bind Cast Transport.
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
@@ -98,7 +97,7 @@ void StreamingRuntimeApplication::InitializeApplication(
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(server_port),
-      cast_web_contents, this,
+      GetCastWebContents(), this,
       /* supports_audio= */ app_config().app_id() !=
           openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
       /* supports_video= */ true);
@@ -108,6 +107,9 @@ void StreamingRuntimeApplication::InitializeApplication(
       cast_streaming::GetCastStreamingMediaSourceUrl().spec();
   set_app_url(GURL(
       base::StringPrintf(kStreamingPageUrlTemplate, streaming_url.c_str())));
+
+  // Signal that application is initialized.
+  std::move(callback).Run(grpc::Status::OK);
 }
 
 void StreamingRuntimeApplication::StopApplication() {

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "url/gurl.h"
@@ -21,6 +22,8 @@ class CastWebContents;
 // For example, Launch needs to respond with SetApplicationStatus.
 class RuntimeApplication {
  public:
+  using StatusCallback = base::OnceCallback<void(grpc::Status)>;
+
   RuntimeApplication();
   virtual ~RuntimeApplication() = 0;
 
@@ -44,17 +47,19 @@ class RuntimeApplication {
   virtual CastWebContents* GetCastWebContents() = 0;
 
   // Called before Launch() to perform any pre-launch loading that is
-  // necessary. This should return true if the load was successful and it's
-  // valid to call Launch, false otherwise.  If Load fails, |this| should be
-  // destroyed since it's not necessarily valid to retry Load with a new
-  // |request|.
-  virtual bool Load(const cast::runtime::LoadApplicationRequest& request) = 0;
+  // necessary. The |callback| will be called indicating if the operation
+  // succeeded or not. If Load fails, |this| should be destroyed since it's not
+  // necessarily valid to retry Load with a new |request|.
+  virtual void Load(cast::runtime::LoadApplicationRequest request,
+                    StatusCallback callback) = 0;
 
-  // Called to launch the application.  The application will indicate that it is
-  // started by calling SetApplicationStatus back over gRPC.  This should return
-  // true if initial processing of |request| succeeded, false otherwise.
-  virtual bool Launch(
-      const cast::runtime::LaunchApplicationRequest& request) = 0;
+  // Called to launch the application. The application will indicate that it is
+  // started by calling SetApplicationStatus back over gRPC. The |callback| will
+  // be called indicating if the operation succeeded or not. If Load fails,
+  // |this| should be destroyed since it's not necessarily valid to retry Load
+  // with a new |request|.
+  virtual void Launch(cast::runtime::LaunchApplicationRequest request,
+                      StatusCallback callback) = 0;
 
   // Returns whether this instance is associated with cast streaming.
   virtual bool IsStreamingApplication() const = 0;

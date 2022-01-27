@@ -14,16 +14,16 @@ namespace chromecast {
 std::unique_ptr<GrpcWebUIController> GrpcWebUIController::Create(
     content::WebUI* webui,
     const std::string host,
-    cast::v2::CoreApplicationService::Stub core_app_service_stub) {
-  return std::make_unique<GrpcWebUIControllerExtension>(
-      webui, host, std::move(core_app_service_stub));
+    cast::v2::CoreApplicationService::Stub* core_app_service_stub) {
+  return std::make_unique<GrpcWebUIControllerExtension>(webui, host,
+                                                        core_app_service_stub);
 }
 
 GrpcWebUIControllerExtension::GrpcWebUIControllerExtension(
     content::WebUI* webui,
     const std::string host,
-    cast::v2::CoreApplicationService::Stub core_app_service_stub)
-    : GrpcWebUIController(webui, host, std::move(core_app_service_stub)) {
+    cast::v2::CoreApplicationService::Stub* core_app_service_stub)
+    : GrpcWebUIController(webui, host, core_app_service_stub) {
   if (host == kCastWebUIHomeHost) {
     // We need an ExtensionWebContentsObserver to support the <webview> tag,
     // so make sure one exists (this is a no-op if one already does).
