@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_member.h"
@@ -155,7 +156,6 @@ class DeviceStatusCollector : public StatusCollector,
       const TpmStatusFetcher& tpm_status_fetcher,
       const EMMCLifetimeFetcher& emmc_lifetime_fetcher,
       const StatefulPartitionInfoFetcher& stateful_partition_info_fetcher,
-      const CrosHealthdDataFetcher& cros_healthd_data_fetcher,
       const GraphicsStatusFetcher& graphics_status_fetcher,
       const CrashReportInfoFetcher& crash_report_info_fetcher,
       base::Clock* clock = base::DefaultClock::GetInstance());

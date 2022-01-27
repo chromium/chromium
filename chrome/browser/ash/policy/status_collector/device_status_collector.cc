@@ -85,7 +85,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -1554,7 +1553,6 @@ DeviceStatusCollector::DeviceStatusCollector(
     const TpmStatusFetcher& tpm_status_fetcher,
     const EMMCLifetimeFetcher& emmc_lifetime_fetcher,
     const StatefulPartitionInfoFetcher& stateful_partition_info_fetcher,
-    const CrosHealthdDataFetcher& cros_healthd_data_fetcher,
     const GraphicsStatusFetcher& graphics_status_fetcher,
     const CrashReportInfoFetcher& crash_report_info_fetcher,
     base::Clock* clock)
@@ -1568,7 +1566,6 @@ DeviceStatusCollector::DeviceStatusCollector(
       tpm_status_fetcher_(tpm_status_fetcher),
       emmc_lifetime_fetcher_(emmc_lifetime_fetcher),
       stateful_partition_info_fetcher_(stateful_partition_info_fetcher),
-      cros_healthd_data_fetcher_(cros_healthd_data_fetcher),
       graphics_status_fetcher_(graphics_status_fetcher),
       crash_report_info_fetcher_(crash_report_info_fetcher),
       power_manager_(chromeos::PowerManagerClient::Get()),
@@ -1607,11 +1604,8 @@ DeviceStatusCollector::DeviceStatusCollector(
         base::BindRepeating(&ReadStatefulPartitionInfo);
   }
 
-  if (cros_healthd_data_fetcher_.is_null()) {
-    cros_healthd_data_fetcher_ =
-        base::BindRepeating(&DeviceStatusCollector::FetchCrosHealthdData,
-                            weak_factory_.GetWeakPtr());
-  }
+  cros_healthd_data_fetcher_ = base::BindRepeating(
+      &DeviceStatusCollector::FetchCrosHealthdData, weak_factory_.GetWeakPtr());
 
   if (graphics_status_fetcher_.is_null())
     graphics_status_fetcher_ = base::BindRepeating(&FetchGraphicsStatus);
@@ -1733,7 +1727,6 @@ DeviceStatusCollector::DeviceStatusCollector(
           DeviceStatusCollector::TpmStatusFetcher(),
           DeviceStatusCollector::EMMCLifetimeFetcher(),
           DeviceStatusCollector::StatefulPartitionInfoFetcher(),
-          DeviceStatusCollector::CrosHealthdDataFetcher(),
           DeviceStatusCollector::GraphicsStatusFetcher(),
           DeviceStatusCollector::CrashReportInfoFetcher()) {}
 
