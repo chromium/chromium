@@ -219,6 +219,10 @@
     margin-inline: 4px;
     padding-inline: 0;
   }
+
+  :host([v2-enabled]) .category-gap {
+    height: 16px;
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -345,11 +349,20 @@
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
-      <div data-group$="[[index]]">
+      <div data-group$="[[getDataGroupIndex('emoji', index)]]">
         <emoji-group data="[[item]]" preferred="[[preferenceMapping]]"
           v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
+    </template>
+    <div class="category-gap"></div>
+    <template is="dom-if" if="[[v2Enabled]]">
+      <template is="dom-repeat" items="[[emoticonData]]">
+        <div data-group$="[[getDataGroupIndex('emoticon', index)]]">
+          <emoji-group data="[[item]]" class="group">
+          </emoji-group>
+        </div>
+      </template>
     </template>
   </div>
 

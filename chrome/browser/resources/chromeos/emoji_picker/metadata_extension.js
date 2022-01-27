@@ -20,6 +20,7 @@ export const CATEGORY_DATA = [
   },
 ];
 
+// TODO(b/216190190): Change groupId to number type.
 export const V2_SUBCATEGORY_TABS = [
   {
     name: 'Recently Used',
@@ -214,8 +215,3 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 4
   },
 ];
-
-// TODO(b/211520561): remove this after the emoticon loading logic is finished.
-export const EMPTY_EMOTICON_DATA =
-    V2_SUBCATEGORY_TABS.filter((tab) => tab.category === 'emoticon')
-        .map(tab => ({group: tab.name, emoji: []}));

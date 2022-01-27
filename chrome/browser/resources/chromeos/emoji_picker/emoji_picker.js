@@ -17,11 +17,12 @@ import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_REMAINING_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK, V2_CONTENT_LOADED} from './events.js';
-import {EMPTY_EMOTICON_DATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js';
+import {V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
 
 const EMOJI_ORDERING_JSON_TEMPLATE = '/emoji_14_0_ordering';
+const EMOTICON_ORDERING_JSON = '/emoticon_test_ordering.json';
 
 // the name attributes below are used to label the group buttons.
 // the ordering group names are used for the group headings in the emoji picker.
@@ -133,9 +134,11 @@ export class EmojiPicker extends PolymerElement {
       emojiGroupTabs: {type: Array},
       /** @private {?EmojiGroupData} */
       emojiData: {
-        type: Object,
+        type: Array,
         observer: 'onEmojiDataChanged',
       },
+      /** @type {?EmojiGroupData} */
+      emoticonData: {type: Array, value: []},
       /** @private {Object<string,string>} */
       preferenceMapping: {type: Object},
       /** @private {!EmojiGroup} */
@@ -260,10 +263,13 @@ export class EmojiPicker extends PolymerElement {
             CATEGORY_BUTTON_CLICK,
             ev => this.set('category', ev.detail.categoryName));
         this.addEventListener(EMOJI_REMAINING_DATA_LOADED, () => {
-          // TODO(b/211520561): remove below line after the emoticon loading
-          // logic is finished.
-          this.emojiData = this.emojiData.concat(EMPTY_EMOTICON_DATA);
-          this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
+          this.fetchEmoticonData().then((data) => {
+            // TODO(b/214319678): modify the line below to allow consumption of
+            // the full emoticon data.
+            this.emoticonData =
+                data.map((group) => ({group: group.group, emoji: []}));
+            this.dispatchEvent(createCustomEvent(V2_CONTENT_LOADED));
+          });
         });
       }
     });
@@ -303,6 +309,17 @@ export class EmojiPicker extends PolymerElement {
         resolve();
       };
       xhr.open('GET', this.emojiDataUrl + '_start.json');
+      xhr.send();
+    });
+  }
+
+  fetchEmoticonData() {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onloadend = () => {
+        resolve(JSON.parse(xhr.responseText));
+      };
+      xhr.open('GET', EMOTICON_ORDERING_JSON);
       xhr.send();
     });
   }
@@ -762,6 +779,19 @@ export class EmojiPicker extends PolymerElement {
    */
   isNotFirstPage(pageNumber) {
     return pageNumber !== 1;
+  }
+
+  /**
+   * Calculate the data group index for emoji-group and emoticon-group that
+   * matches with the group id from subcategory metadata.
+   * @param {string} category
+   * @param {number} offsetIndex
+   * @returns
+   */
+  getDataGroupIndex(category, offsetIndex) {
+    const firstTabByCategory = V2_SUBCATEGORY_TABS.find(
+        tab => tab.category === category && tab.groupId !== 'history');
+    return parseInt(firstTabByCategory.groupId, 10) + offsetIndex;
   }
 }
 
