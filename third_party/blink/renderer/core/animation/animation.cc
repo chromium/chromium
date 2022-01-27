@@ -2659,10 +2659,8 @@ bool Animation::IsReplaceable() {
   // 1. The existence of the animation is not prescribed by markup. That is, it
   //    is not a CSS animation with an owning element, nor a CSS transition with
   //    an owning element.
-  if (IsCSSAnimation() || IsCSSTransition()) {
-    // TODO(crbug.com/981905): Add OwningElement method to Animation and
-    // override in CssAnimations and CssTransitions. Only bail here if the
-    // animation has an owning element.
+  if ((IsCSSAnimation() || IsCSSTransition()) && OwningElement()) {
+    // A CSS animation or transition that is bound to markup is not replaceable.
     return false;
   }
 
