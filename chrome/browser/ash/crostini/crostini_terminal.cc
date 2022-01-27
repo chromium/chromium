@@ -16,7 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
@@ -47,7 +47,10 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/views/image_model_utils.h"
 
 namespace crostini {
 
@@ -148,30 +151,6 @@ void LaunchTerminalImpl(Profile* profile,
     }
   }
   LOG(WARNING) << "Profile becomes invalid. Abort launching terminal.";
-}
-
-// Loads |resource_ids| and appends the gfx::ImageSkia results to |images|.
-// Invokes |callback| with |images| when complete.
-void LoadIconsFromResources(
-    std::vector<int> resource_ids,
-    std::vector<gfx::ImageSkia> images,
-    base::OnceCallback<void(std::vector<gfx::ImageSkia>)> callback) {
-  if (images.size() >= resource_ids.size()) {
-    return std::move(callback).Run(std::move(images));
-  }
-  auto resource_id = resource_ids[images.size()];
-  apps::LoadIconFromResource(
-      apps::IconType::kStandard, apps::kAppShortcutIconSizeDip, resource_id,
-      /*placeholder=*/false, apps::IconEffects::kNone,
-      base::BindOnce(
-          [](std::vector<int> resource_ids, std::vector<gfx::ImageSkia> images,
-             base::OnceCallback<void(std::vector<gfx::ImageSkia>)> callback,
-             apps::IconValuePtr icon) {
-            images.emplace_back(std::move(icon->uncompressed));
-            LoadIconsFromResources(std::move(resource_ids), std::move(images),
-                                   std::move(callback));
-          },
-          std::move(resource_ids), std::move(images), std::move(callback)));
 }
 
 }  // namespace
@@ -429,33 +408,23 @@ void AddTerminalMenuShortcuts(
     apps::mojom::MenuItemsPtr menu_items,
     apps::mojom::Publisher::GetMenuModelCallback callback,
     std::vector<gfx::ImageSkia> images) {
-  constexpr bool kIconIndexSSH = 0;
-  constexpr bool kIconIndexTerminal = 1;
-  if (images.empty()) {
-    std::vector<int> resource_ids = {IDR_LOGO_CROSTINI_TERMINAL_SSH,
-                                     IDR_CROSTINI_MASCOT};
-    return LoadIconsFromResources(
-        std::move(resource_ids), std::vector<gfx::ImageSkia>(),
-        base::BindOnce(
-            [](Profile* profile, int next_command_id,
-               apps::mojom::MenuItemsPtr menu_items,
-               apps::mojom::Publisher::GetMenuModelCallback callback,
-               std::vector<gfx::ImageSkia> images) {
-              AddTerminalMenuShortcuts(profile, next_command_id,
-                                       std::move(menu_items),
-                                       std::move(callback), std::move(images));
-            },
-            profile, next_command_id, std::move(menu_items),
-            std::move(callback)));
-  }
-
-  DCHECK_EQ(2, images.size());
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(
+          ui::NativeTheme::GetInstanceForWeb()->GetColorProviderKey(nullptr));
+  auto icon = [color_provider](const gfx::VectorIcon& icon) {
+    return views::GetImageSkiaFromImageModel(
+        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+                                       apps::kAppShortcutIconSizeDip),
+        color_provider);
+  };
+  gfx::ImageSkia terminal_ssh_icon = icon(kTerminalSshIcon);
+  gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
   if (base::FeatureList::IsEnabled(chromeos::features::kTerminalSSH)) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
     apps::AddShortcutCommandItem(
         next_command_id++, ShortcutIdForSSH(),
         l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_SSH),
-        images[kIconIndexSSH], &menu_items);
+        terminal_ssh_icon, &menu_items);
   }
 
   if (!CrostiniFeatures::Get()->IsEnabled(profile)) {
@@ -474,7 +443,7 @@ void AddTerminalMenuShortcuts(
           std::string label =
               base::StrCat({id.vm_name, ":", id.container_name});
           apps::AddShortcutCommandItem(next_command_id++, shortcut_id, label,
-                                       images[kIconIndexTerminal], &menu_items);
+                                       crostini_mascot_icon, &menu_items);
         }
       }
       return std::move(callback).Run(std::move(menu_items));
@@ -488,7 +457,7 @@ void AddTerminalMenuShortcuts(
     apps::AddShortcutCommandItem(
         next_command_id++, shortcut_id,
         l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_CONNECT_TO_LINUX),
-        images[kIconIndexTerminal], &menu_items);
+        crostini_mascot_icon, &menu_items);
   }
   std::move(callback).Run(std::move(menu_items));
 }
