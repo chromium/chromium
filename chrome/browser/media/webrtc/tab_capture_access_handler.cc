@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -24,9 +23,9 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 // This helper class is designed to live as long as the capture, and is used
@@ -172,7 +171,7 @@ void TabCaptureAccessHandler::HandleRequest(
   const bool is_allowlisted_extension =
       IsExtensionAllowedForScreenCapture(extension);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (request.video_type ==
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE) {
     // Use extension name as title for extensions and host/origin for drive-by
@@ -189,7 +188,7 @@ void TabCaptureAccessHandler::HandleRequest(
     // base::Unretained(this) is safe because TabCaptureAccessHandler is owned
     // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
     // destroyed when the browser process terminates.
-    policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
+    policy::DlpContentManager::Get()->CheckScreenShareRestriction(
         media_id, application_title,
         base::BindOnce(
             &TabCaptureAccessHandler::OnDlpRestrictionChecked,
@@ -201,7 +200,7 @@ void TabCaptureAccessHandler::HandleRequest(
             std::move(media_ui)));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   AcceptRequest(web_contents, request, std::move(callback),
                 is_allowlisted_extension, std::move(media_ui));
@@ -226,7 +225,7 @@ void TabCaptureAccessHandler::AcceptRequest(
                           std::move(ui));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void TabCaptureAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<content::WebContents> web_contents,
     std::unique_ptr<PendingAccessRequest> pending_request,
@@ -250,4 +249,4 @@ void TabCaptureAccessHandler::OnDlpRestrictionChecked(
              /*ui=*/nullptr);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

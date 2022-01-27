@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/capture_access_handler_base.h"
 #include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -19,11 +18,11 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace aura {
 class Window;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 class Extension;
@@ -105,7 +104,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
 
   WebContentsCollection web_contents_collection_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Called back after checking Data Leak Prevention (DLP) restrictions.
   void OnDlpRestrictionChecked(
       base::WeakPtr<content::WebContents> web_contents,
@@ -115,7 +114,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       bool is_dlp_allowed);
 
   aura::Window* primary_root_window_for_testing_ = nullptr;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_ACCESS_HANDLER_H_

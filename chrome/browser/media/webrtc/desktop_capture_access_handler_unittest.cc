@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -31,10 +30,10 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/mock_dlp_content_manager_ash.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
 #include "ui/aura/window.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "base/test/scoped_feature_list.h"
@@ -156,11 +155,11 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
     return access_handler_->pending_requests_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetPrimaryRootWindow(aura::Window* window) {
     access_handler_->primary_root_window_for_testing_ = window;
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
   raw_ptr<FakeDesktopMediaPickerFactory> picker_factory_;
@@ -369,12 +368,12 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
   extensions::ExtensionBuilder extensionBuilder(kComponentExtension);
   extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<aura::Window> primary_root_window =
       std::make_unique<aura::Window>(/*delegate=*/nullptr);
   primary_root_window->Init(ui::LAYER_NOT_DRAWN);
   SetPrimaryRootWindow(primary_root_window.get());
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   blink::mojom::MediaStreamRequestResult result;
   blink::MediaStreamDevices devices;
@@ -387,11 +386,11 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {
   EXPECT_EQ(1u, devices.size());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .WillOnce([&](const content::DesktopMediaID& media_id,
@@ -424,8 +423,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpNotRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .WillOnce([&](const content::DesktopMediaID& media_id,
@@ -459,8 +458,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpNotRestricted) {
 TEST_F(DesktopCaptureAccessHandlerTest,
        ScreenCaptureAccessDlpWebContentsDestroyed) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .Times(1)
@@ -495,8 +494,8 @@ TEST_F(DesktopCaptureAccessHandlerTest,
 
 TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .Times(1)
@@ -528,8 +527,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .Times(1)
@@ -561,8 +560,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .Times(1)
@@ -585,8 +584,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
 
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
   // Setup Data Leak Prevention restriction.
-  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
-  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_manager(
       &mock_dlp_content_manager);
   EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
       .Times(1)
@@ -606,4 +605,4 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
   EXPECT_EQ(1u, devices.size());
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)

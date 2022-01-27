@@ -57,9 +57,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
-#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#include "ui/base/ui_base_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "ui/base/ui_base_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
@@ -281,6 +284,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE &&
       kIsLoopbackAudioSupported;
 
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const content::DesktopMediaID screen_id =
       content::DesktopMediaID::RegisterNativeWindow(
@@ -288,21 +292,26 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
           primary_root_window_for_testing_
               ? primary_root_window_for_testing_
               : ash::Shell::Get()->GetPrimaryRootWindow());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const content::DesktopMediaID screen_id = content::DesktopMediaID(
+      content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
   // destroyed when the browser process terminates.
-  policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
+  policy::DlpContentManager::Get()->CheckScreenShareRestriction(
       screen_id, GetApplicationTitle(web_contents, extension),
       base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      std::move(pending_request), screen_id, capture_audio));
   return;
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   const content::DesktopMediaID screen_id = content::DesktopMediaID(
       content::DesktopMediaID::TYPE_SCREEN, webrtc::kFullDesktopScreenId);
   AcceptRequest(web_contents, std::move(pending_request), screen_id,
                 capture_audio);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
@@ -451,21 +460,21 @@ void DesktopCaptureAccessHandler::HandleRequest(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
   // destroyed when the browser process terminates.
-  policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
+  policy::DlpContentManager::Get()->CheckScreenShareRestriction(
       media_id, pending_request->application_title,
       base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      std::move(pending_request), media_id,
                      ShouldCaptureAudio(media_id, request)));
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
   AcceptRequest(web_contents, std::move(pending_request), media_id,
                 ShouldCaptureAudio(media_id, request));
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
@@ -608,20 +617,20 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
              blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
              /*ui=*/nullptr);
   } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // base::Unretained(this) is safe because DesktopCaptureAccessHandler is
     // owned by MediaCaptureDevicesDispatcher, which is a lazy singleton which
     // is destroyed when the browser process terminates.
-    policy::DlpContentManagerAsh::Get()->CheckScreenShareRestriction(
+    policy::DlpContentManager::Get()->CheckScreenShareRestriction(
         media_id, application_title,
         base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
                        base::Unretained(this), web_contents->GetWeakPtr(),
                        std::move(pending_request), media_id,
                        media_id.audio_share));
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
     AcceptRequest(web_contents, std::move(pending_request), media_id,
                   media_id.audio_share);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
   if (!queue.empty())
     ProcessQueuedAccessRequest(queue, web_contents);
@@ -675,7 +684,7 @@ void DesktopCaptureAccessHandler::AcceptRequest(
       .Run(devices, blink::mojom::MediaStreamRequestResult::OK, std::move(ui));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
     base::WeakPtr<content::WebContents> web_contents,
     std::unique_ptr<PendingAccessRequest> pending_request,
@@ -701,4 +710,4 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
   AcceptRequest(web_contents.get(), std::move(pending_request), media_id,
                 capture_audio);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
