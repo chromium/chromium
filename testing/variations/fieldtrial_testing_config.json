@@ -3941,25 +3941,6 @@
             ]
         }
     ],
-    "MojoPosixUseWritev": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoPosixUseWritev"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoStructuredMetrics": [
         {
             "platforms": [
