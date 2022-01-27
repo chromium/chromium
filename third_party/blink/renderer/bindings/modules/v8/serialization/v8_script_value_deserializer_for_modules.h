@@ -56,6 +56,7 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   VideoFrame* ReadVideoFrame();
   EncodedAudioChunk* ReadEncodedAudioChunk();
   EncodedVideoChunk* ReadEncodedVideoChunk();
+  MediaStreamTrack* ReadMediaStreamTrack();
 };
 
 }  // namespace blink

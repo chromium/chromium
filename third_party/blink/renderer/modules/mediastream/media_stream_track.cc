@@ -220,6 +220,15 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* original,
 
 }  // namespace
 
+MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context) {
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "dummy", MediaStreamSource::StreamType::kTypeVideo, "dummy",
+      false /* remote */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponent>(source);
+  return MakeGarbageCollected<MediaStreamTrack>(context, component);
+}
+
 MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
                                    MediaStreamComponent* component)
     : MediaStreamTrack(context,

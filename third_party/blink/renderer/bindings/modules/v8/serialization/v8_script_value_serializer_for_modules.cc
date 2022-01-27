@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_file_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_landmark.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
@@ -28,6 +30,7 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
@@ -76,6 +79,23 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     transfer_list->video_frames.push_back(video_frame);
     return true;
   }
+
+  if (V8MediaStreamTrack::HasInstance(object, isolate) &&
+      RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
+          CurrentExecutionContext(isolate))) {
+    MediaStreamTrack* track =
+        V8MediaStreamTrack::ToImpl(v8::Local<v8::Object>::Cast(object));
+    if (transferables.media_stream_tracks.Contains(track)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "MediaStreamTrack at index " + String::Number(object_index) +
+              " is a duplicate of an earlier MediaStreamTrack.");
+      return false;
+    }
+    transferables.media_stream_tracks.push_back(track);
+    return true;
+  }
+
   return false;
 }
 
@@ -203,6 +223,18 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
 
     auto data = wrappable->ToImpl<EncodedVideoChunk>()->buffer();
     return WriteDecoderBuffer(std::move(data), /*for_audio=*/false);
+  }
+  if (wrapper_type_info == V8MediaStreamTrack::GetWrapperTypeInfo() &&
+      RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "A MediaStreamTrack cannot be serialized for storage.");
+      return false;
+    }
+
+    return WriteMediaStreamTrack();
   }
   return false;
 }
@@ -469,6 +501,12 @@ bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
 
   WriteTag(for_audio ? kEncodedAudioChunkTag : kEncodedVideoChunkTag);
   WriteUint32(index);
+
+  return true;
+}
+
+bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack() {
+  WriteTag(kMediaStreamTrack);
 
   return true;
 }

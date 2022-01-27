@@ -64,6 +64,9 @@ class MODULES_EXPORT MediaStreamTrack
     virtual void TrackChangedState() = 0;
   };
 
+  // TODO(1288839): Implement to recreate MST after transfer
+  static MediaStreamTrack* Create(ExecutionContext* context);
+
   MediaStreamTrack(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrack(ExecutionContext*,
                    MediaStreamComponent*,

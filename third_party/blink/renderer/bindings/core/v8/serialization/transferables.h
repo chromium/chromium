@@ -21,6 +21,7 @@ class MojoHandle;
 class ReadableStream;
 class WritableStream;
 class TransformStream;
+class MediaStreamTrack;
 
 using ArrayBufferArray = HeapVector<Member<DOMArrayBufferBase>>;
 using ImageBitmapArray = HeapVector<Member<ImageBitmap>>;
@@ -30,6 +31,7 @@ using MojoHandleArray = HeapVector<Member<blink::MojoHandle>>;
 using ReadableStreamArray = HeapVector<Member<ReadableStream>>;
 using WritableStreamArray = HeapVector<Member<WritableStream>>;
 using TransformStreamArray = HeapVector<Member<TransformStream>>;
+using MediaStreamTrackArray = HeapVector<Member<MediaStreamTrack>>;
 
 class CORE_EXPORT Transferables final {
   STACK_ALLOCATED();
@@ -50,6 +52,7 @@ class CORE_EXPORT Transferables final {
   ReadableStreamArray readable_streams;
   WritableStreamArray writable_streams;
   TransformStreamArray transform_streams;
+  MediaStreamTrackArray media_stream_tracks;
 
   class CORE_EXPORT TransferList : public GarbageCollectedMixin {
    public:

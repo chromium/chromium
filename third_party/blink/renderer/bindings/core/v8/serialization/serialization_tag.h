@@ -75,8 +75,10 @@ enum SerializationTag {
   kReadableStreamTransferTag = 'r',   // index:uint32_t
   kTransformStreamTransferTag = 'm',  // index:uint32_t
   kWritableStreamTransferTag = 'w',   // index:uint32_t
-  kDOMPointTag = 'Q',                 // x:Double, y:Double, z:Double, w:Double
-  kDOMPointReadOnlyTag = 'W',         // x:Double, y:Double, z:Double, w:Double
+  // TODO(crbug.com/1288839): document format as soon as it is determined.
+  kMediaStreamTrack = 's',
+  kDOMPointTag = 'Q',          // x:Double, y:Double, z:Double, w:Double
+  kDOMPointReadOnlyTag = 'W',  // x:Double, y:Double, z:Double, w:Double
   kDOMRectTag = 'E',          // x:Double, y:Double, width:Double, height:Double
   kDOMRectReadOnlyTag = 'R',  // x:Double, y:Double, width:Double, height:Double
   kDOMQuadTag = 'T',          // p1:Double, p2:Double, p3:Double, p4:Double

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_directory_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
@@ -89,6 +90,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
       return ReadEncodedAudioChunk();
     case kEncodedVideoChunkTag:
       return ReadEncodedVideoChunk();
+    case kMediaStreamTrack:
+      return ReadMediaStreamTrack();
     default:
       break;
   }
@@ -520,6 +523,15 @@ V8ScriptValueDeserializerForModules::ReadEncodedVideoChunk() {
     return nullptr;
 
   return MakeGarbageCollected<EncodedVideoChunk>(buffers[index]);
+}
+
+MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
+  if (!RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    return nullptr;
+  }
+
+  return MediaStreamTrack::Create(ExecutionContext::From(GetScriptState()));
 }
 
 }  // namespace blink

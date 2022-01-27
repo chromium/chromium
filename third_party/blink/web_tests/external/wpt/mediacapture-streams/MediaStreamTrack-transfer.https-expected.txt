@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL MediaStreamTrack transfer to Worker promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Worker': Value at index 0 does not have a transferable type."
-Harness: the test ran to completion.
-
