@@ -350,7 +350,9 @@ void BrowserTabStripController::CloseTab(int model_index) {
 
 void BrowserTabStripController::ToggleTabAudioMute(int model_index) {
   content::WebContents* const contents = model_->GetWebContentsAt(model_index);
-  chrome::SetTabAudioMuted(contents, !contents->IsAudioMuted(),
+  bool mute_tab = !contents->IsAudioMuted();
+  UMA_HISTOGRAM_BOOLEAN("Media.Audio.TabAudioMuted", mute_tab);
+  chrome::SetTabAudioMuted(contents, mute_tab,
                            TabMutedReason::AUDIO_INDICATOR, std::string());
 }
 

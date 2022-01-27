@@ -1030,6 +1030,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.TabAudioMuted" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Logged when a user clicks on the audio indicator button in the tab strip.
+    Logs true if the click mutes the tab and false if the click unmutes the tab.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.TrackAudioRenderer.DeviceStatus"
     enum="OutputDeviceStatus" expires_after="never">
 <!-- expires-never: used for audio output devices monitoring. -->
