@@ -244,6 +244,7 @@ void FirmwareUpdateManager::NotifyUpdateListObservers() {
   for (auto& observer : update_list_observers_) {
     observer->OnUpdateListChanged(mojo::Clone(updates_));
   }
+  is_fetching_updates_ = false;
 }
 
 bool FirmwareUpdateManager::HasPendingUpdates() {
@@ -284,7 +285,10 @@ void FirmwareUpdateManager::FetchInProgressUpdate(
 
 // Query all updates for all devices.
 void FirmwareUpdateManager::RequestAllUpdates() {
-  DCHECK(!HasPendingUpdates());
+  if (is_fetching_updates_) {
+    return;
+  }
+  is_fetching_updates_ = true;
   RequestDevices();
 }
 

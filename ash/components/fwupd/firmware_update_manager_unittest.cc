@@ -75,6 +75,7 @@ class FakeUpdateObserver : public ash::firmware_update::mojom::UpdateObserver {
       std::vector<ash::firmware_update::mojom::FirmwareUpdatePtr>
           firmware_updates) override {
     updates_ = std::move(firmware_updates);
+    ++num_times_notified_;
   }
 
   mojo::PendingRemote<ash::firmware_update::mojom::UpdateObserver>
@@ -87,9 +88,12 @@ class FakeUpdateObserver : public ash::firmware_update::mojom::UpdateObserver {
     return updates_;
   }
 
+  int num_times_notified() { return num_times_notified_; }
+
  private:
   std::vector<ash::firmware_update::mojom::FirmwareUpdatePtr> updates_;
   mojo::Receiver<ash::firmware_update::mojom::UpdateObserver> receiver_{this};
+  int num_times_notified_ = 0;
 };
 
 class FakeUpdateProgressObserver
@@ -447,6 +451,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
     firmware_update_manager_->BeginUpdate(device_id, filepath);
   }
 
+  void RequestAllUpdates() { firmware_update_manager_->RequestAllUpdates(); }
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   std::unique_ptr<FwupdClient> dbus_client_;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
@@ -586,6 +592,46 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
                 kFakeUpdatePriorityForTesting),
             updates[0]->priority);
+}
+
+TEST_F(FirmwareUpdateManagerTest, RequestUpdatesMutipleTimes) {
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+
+  dbus_responses_.push_back(CreateTwoDeviceResponse());
+  dbus_responses_.push_back(CreateNoUpdateResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  base::RunLoop().RunUntilIdle();
+
+  const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
+      update_observer.updates();
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1, update_observer.num_times_notified());
+  ASSERT_EQ(1U, updates.size());
+
+  // Request all updates multiple times, this time while a request is already
+  // being made.
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  RequestAllUpdates();
+  RequestAllUpdates();
+  base::RunLoop().RunUntilIdle();
+  // Expect only one additional RequestAllUpdates() to go through.
+  ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(2, update_observer.num_times_notified());
+
+  // Now request all updates again, this time after the previous request has
+  // been completed.
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  RequestAllUpdates();
+  base::RunLoop().RunUntilIdle();
+  // Expect another additional RequestAllUpdates() to go through.
+  ASSERT_EQ(1U, updates.size());
+  ASSERT_EQ(3, update_observer.num_times_notified());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestInstall) {

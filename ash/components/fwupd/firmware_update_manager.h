@@ -190,6 +190,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // We only want to show the notification once, at startup.
   bool should_show_notification_ = true;
 
+  // Whether or not fetching updates in inflight.
+  bool is_fetching_updates_ = false;
+
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.
   mojo::RemoteSet<firmware_update::mojom::UpdateObserver>

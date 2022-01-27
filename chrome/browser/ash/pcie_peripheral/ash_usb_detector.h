@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
 #define CHROME_BROWSER_ASH_PCIE_PERIPHERAL_ASH_USB_DETECTOR_H_
 
+#include <memory>
+
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -45,15 +48,31 @@ class ASH_PUBLIC_EXPORT AshUsbDetector
                        bool allowed);
   void OnDeviceManagerConnectionError();
 
+  void RequestAllUpdatesWithRepeatDelay();
+  void RequestUpdates();
+
   void SetDeviceManagerForTesting(
       mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager);
+
+  void SetFetchUpdatesTimerForTesting(
+      std::unique_ptr<base::RepeatingTimer> timer);
+
+  void SetIsTesting(bool is_testing) { is_testing_ = is_testing; }
+
+  int num_request_for_fetch_updates_for_testing() {
+    return num_request_for_fetch_updates_for_testing_;
+  }
 
   mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
   mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient>
       client_receiver_{this};
 
   int32_t on_device_checked_counter_for_testing_ = 0;
+  int32_t num_request_for_fetch_updates_for_testing_ = 0;
   bool is_testing_ = false;
+
+  int num_request_updates_repeats_;
+  std::unique_ptr<base::RepeatingTimer> fetch_updates_repeating_timer_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<AshUsbDetector> weak_ptr_factory_{this};

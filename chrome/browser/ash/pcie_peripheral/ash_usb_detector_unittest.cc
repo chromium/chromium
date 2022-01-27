@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 
+#include <memory>
+
+#include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
+#include "base/timer/mock_timer.h"
+#include "base/timer/timer.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
@@ -48,6 +53,9 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
     ash_usb_detector_.reset();
+    PeripheralNotificationManager::Shutdown();
+    chromeos::PciguardClient::Shutdown();
+    chromeos::TypecdClient::Shutdown();
   }
 
   void ConnectToDeviceManager() {
@@ -56,6 +64,17 @@ class AshUsbDetectorTest : public BrowserWithTestWindowTest {
 
   int32_t GetOnDeviceCheckedCount() {
     return ash_usb_detector_->GetOnDeviceCheckedCountForTesting();
+  }
+
+  int32_t GetNumRequestForUpdates() {
+    return ash_usb_detector_->num_request_for_fetch_updates_for_testing();
+  }
+
+  void SetIsTesting() { ash_usb_detector_->SetIsTesting(/*is_testing=*/true); }
+
+  void SetFetchUpdatesTimerForTesting(
+      std::unique_ptr<base::RepeatingTimer> timer) {
+    ash_usb_detector_->SetFetchUpdatesTimerForTesting(std::move(timer));
   }
 
   device::FakeUsbDeviceManager device_manager_;
@@ -76,4 +95,81 @@ TEST_F(AshUsbDetectorTest, AddOneDevice) {
   EXPECT_EQ(1, GetOnDeviceCheckedCount());
 }
 
+TEST_F(AshUsbDetectorTest, RepeatRequestUpdates) {
+  SetIsTesting();
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  // Set up mock timer.
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  SetFetchUpdatesTimerForTesting(std::move(timer));
+
+  // Add a device.
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      /*vendor_id=*/0, /*product_id=*/1, kManufacturerName, kProductName_1,
+      /*serial_number=*/"002");
+
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Continue the timer to first iteration.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetNumRequestForUpdates());
+
+  // Continue the timer to next iteration.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, GetNumRequestForUpdates());
+
+  // Continue the timer to next iteration.
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, GetNumRequestForUpdates());
+}
+
+TEST_F(AshUsbDetectorTest, RepeatRequestUpdatesWithInterrupts) {
+  SetIsTesting();
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  // Set up mock timer.
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  SetFetchUpdatesTimerForTesting(std::move(timer));
+
+  // Add a device.
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      /*vendor_id=*/0, /*product_id=*/1, kManufacturerName, kProductName_1,
+      /*serial_number=*/"002");
+
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, GetNumRequestForUpdates());
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(2, GetNumRequestForUpdates());
+
+  // Now simulate removing a device. This will reset the repeat counter, expect
+  // 3 more repeats.
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(3, GetNumRequestForUpdates());
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(4, GetNumRequestForUpdates());
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(5, GetNumRequestForUpdates());
+}
 }  // namespace ash
