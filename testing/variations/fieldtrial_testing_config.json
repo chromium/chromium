@@ -2794,6 +2794,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "CreateCompositorWorkerContext": "true"
+                    },
                     "enable_features": [
                         "EarlyEstablishGpuChannel"
                     ]
