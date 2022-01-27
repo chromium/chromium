@@ -19,6 +19,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/fwupd/fwupd_client.h"
@@ -209,7 +210,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return firmware_update_manager_->GetNumUpdatesForTesting();
   }
 
-  void RequestDevices() { firmware_update_manager_->RequestDevices(); }
+  void RequestDevices() {
+    firmware_update_manager_->RequestDevices();
+    base::RunLoop().RunUntilIdle();
+  }
 
   void SetFakeUrlForTesting(const std::string& fake_url) {
     firmware_update_manager_->SetFakeUrlForTesting(fake_url);
@@ -556,7 +560,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestUpdatesClearsCache) {
   dbus_responses_.push_back(CreateOneUpdateResponse());
 
   RequestDevices();
-  base::RunLoop().RunUntilIdle();
 
   // Expect cache to clear and only 1 updates now instead of 2.
   const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& new_updates =
@@ -761,5 +764,22 @@ TEST_F(FirmwareUpdateManagerTest, NotificationNotShownIfNoCriticalUpdates) {
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   EXPECT_EQ(0, message_center_->notification_count());
+}
+
+TEST_F(FirmwareUpdateManagerTest, DeviceCountMetric) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  dbus_responses_.push_back(CreateOneDeviceResponse());
+  dbus_responses_.push_back(CreateOneUpdateResponse());
+  FakeUpdateObserver update_observer;
+  SetupObserver(&update_observer);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnStartup.DeviceCount", 1, 1);
+  RequestDevices();
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.DeviceCount", 1, 1);
 }
 }  // namespace ash

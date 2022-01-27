@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/fwupd/histogram_util.h"
 #include "ash/public/cpp/fwupd_download_client.h"
 #include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/base_paths.h"
@@ -240,6 +241,10 @@ void FirmwareUpdateManager::NotifyCriticalFirmwareUpdateReceived() {
   }
 }
 
+void FirmwareUpdateManager::RecordDeviceMetrics(int num_devices) {
+  firmware_update::metrics::EmitDeviceCount(num_devices, is_first_response_);
+}
+
 void FirmwareUpdateManager::NotifyUpdateListObservers() {
   for (auto& observer : update_list_observers_) {
     observer->OnUpdateListChanged(mojo::Clone(updates_));
@@ -450,6 +455,8 @@ void FirmwareUpdateManager::OnDeviceListResponse(
   // Clear all cached updates prior to fetching the new update list.
   updates_.clear();
 
+  RecordDeviceMetrics(devices->size());
+
   // Fire the observer with an empty list if there are no devices in the
   // response.
   if (devices->empty()) {
@@ -464,7 +471,6 @@ void FirmwareUpdateManager::OnDeviceListResponse(
 }
 
 void FirmwareUpdateManager::ShowNotificationIfRequired() {
-  should_show_notification_ = false;
   for (const auto& update : updates_) {
     if (update->priority == firmware_update::mojom::UpdatePriority::kCritical &&
         !base::Contains(devices_already_notified_, update->device_id)) {
@@ -490,13 +496,19 @@ void FirmwareUpdateManager::OnUpdateListResponse(
   // Remove the pending device.
   devices_pending_update_.erase(device_id);
 
-  // Fire the observer if there are no devices pending updates.
-  if (!HasPendingUpdates()) {
-    if (should_show_notification_) {
-      ShowNotificationIfRequired();
-    }
-    NotifyUpdateListObservers();
+  if (HasPendingUpdates()) {
+    return;
   }
+
+  // We only want to show the notification once, at startup.
+  if (is_first_response_) {
+    ShowNotificationIfRequired();
+  }
+
+  is_first_response_ = false;
+
+  // Fire the observer since there are no remaining devices pending updates.
+  NotifyUpdateListObservers();
 }
 
 void FirmwareUpdateManager::OnInstallResponse(bool success) {

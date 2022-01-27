@@ -759,6 +759,24 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
 </histogram>
 
+<histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
+    units="devices" expires_after="2023-01-01">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the total number of devices found. OnStartup is recorded when a user
+    first logs in and OnRefresh is recorded for any subsequent request. The
+    cases in which a subsequent request will be made are when the Firmware
+    Update SWA is launched, when an install is completed, and when we detect
+    that a device has been added or removed.
+  </summary>
+  <token key="Source">
+    <variant name="OnRefresh"/>
+    <variant name="OnStartup"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
     enum="BooleanReceived" expires_after="2022-06-01">
   <owner>rsorokin@chromium.org</owner>

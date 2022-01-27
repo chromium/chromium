@@ -21,6 +21,8 @@ component("fwupd") {
   sources = [
     "firmware_update_manager.cc",
     "firmware_update_manager.h",
+    "histogram_util.cc",
+    "histogram_util.h",
   ]
 }
 

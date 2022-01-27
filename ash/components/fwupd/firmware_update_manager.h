@@ -169,6 +169,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Call to notify observers that a new notification is needed.
   void NotifyCriticalFirmwareUpdateReceived();
 
+  // Records the # of devices found at startup and whenever the device list
+  // is refreshed.
+  void RecordDeviceMetrics(int num_devices);
+
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
   base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;
@@ -187,8 +191,9 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // The device update that is currently inflight.
   firmware_update::mojom::FirmwareUpdatePtr inflight_update_;
 
-  // We only want to show the notification once, at startup.
-  bool should_show_notification_ = true;
+  // Used to show the firmware update notification and to determine which
+  // metric to fire (Startup/Refresh).
+  bool is_first_response_ = true;
 
   // Whether or not fetching updates in inflight.
   bool is_fetching_updates_ = false;
