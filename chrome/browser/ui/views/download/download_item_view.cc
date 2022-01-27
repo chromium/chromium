@@ -1062,8 +1062,7 @@ void DownloadItemView::PaintDownloadProgress(
     const gfx::RectF& bounds,
     const base::TimeDelta& indeterminate_progress_time,
     int percent_done) const {
-  const SkColor color = GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
 
   // Draw background.
   cc::PaintFlags bg_flags;

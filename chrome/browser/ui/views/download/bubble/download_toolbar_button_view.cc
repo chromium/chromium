@@ -77,8 +77,7 @@ void DownloadToolbarButtonView::UpdateIcon() {
   const gfx::VectorIcon* new_icon;
   SkColor icon_color;
   if (icon_state_ == download::DownloadIconState::kProgress) {
-    icon_color = GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
+    icon_color = GetColorProvider()->GetColor(ui::kColorThrobber);
     new_icon = &kDownloadInProgressIcon;
   } else {
     icon_color = GetThemeProvider()->GetColor(

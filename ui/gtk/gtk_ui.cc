@@ -953,11 +953,6 @@ void GtkUi::UpdateColors() {
   active_selection_fg_color_ =
       color_provider->GetColor(ui::kColorTextfieldSelectionForeground);
 
-  colors_[ThemeProperties::COLOR_TAB_THROBBER_SPINNING] =
-      color_provider->GetColor(ui::kColorThrobber);
-  colors_[ThemeProperties::COLOR_TAB_THROBBER_WAITING] =
-      color_provider->GetColor(ui::kColorThrobberPreconnect);
-
   // Generate colors that depend on whether or not a custom window frame is
   // used.  These colors belong in |color_map| below, not |colors_|.
   for (bool custom_frame : {false, true}) {

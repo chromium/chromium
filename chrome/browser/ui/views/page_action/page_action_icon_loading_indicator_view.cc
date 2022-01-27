@@ -49,8 +49,7 @@ void PageActionIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   if (!throbber_start_time_)
     return;
 
-  const SkColor color = GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
   constexpr int kThrobberStrokeWidth = 2;
   gfx::PaintThrobberSpinning(canvas, GetLocalBounds(), color,
                              base::TimeTicks::Now() - *throbber_start_time_,
