@@ -142,6 +142,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // See crosapi::mojom::BrowserService::OpenUrl for more details.
   void OpenUrl(const GURL& url);
 
+  // If there's already a tab opening the URL in lacros-chrome, in some window
+  // of the primary profile, activate the tab. Otherwise, opens a tab for
+  // the given URL.
+  void SwitchToTab(const GURL& url);
+
   // Similar to NewWindow(), but restores a tab recently closed.
   // See crosapi::mojom::BrowserService::RestoreTab for more details
   void RestoreTab();
@@ -399,6 +404,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Disabling keep-alive here may shut down the browser in background.
   // (i.e., if there's no browser window opened, it may be shut down).
   void UpdateKeepAliveInBrowserIfNecessary(bool enabled);
+
+  // Shared implementation of OpenUrl and SwitchToTab.
+  void OpenUrlImpl(
+      const GURL& url,
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition);
 
   State state_ = State::NOT_INITIALIZED;
 

@@ -860,6 +860,29 @@ struct BrowserInitParams {
   bool is_device_enterprised_managed@35;
 };
 
+// Parameters to specify OpenUrl behavior.
+[Stable]
+struct OpenUrlParams {
+  // Decides the disposition of the opening page.
+  [Stable, Extensible]
+  enum WindowOpenDisposition {
+    // DEPRECATED. OpenUrl used to check the URL to decide the disposition
+    // of the page. This is kept just for the compatibility. New callers
+    // should not use this value.
+    [Default] kLegacyAutoDetection = 0,
+
+    // Opens a new tab and navigate to the given URL.
+    kNewForegroundTab = 1,
+
+    // If there's an existing tab showing the given URL, activate it.
+    // If not, if the tab is NTP and does not have history, navigate it
+    // to the given URL. Otherwise, opens a new tab and navigate it to
+    // the given URL.
+    kSwitchToTab = 2,
+  };
+  WindowOpenDisposition disposition@0;
+};
+
 // BrowserService defines the APIs that live in a browser (such as
 // lacros-chrome) and are accessed from ash-chrome.
 // IMPORTANT NOTE: If you are exposing a new capability from Lacros to Ash,
@@ -867,7 +890,7 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 62.
+// Next MinVersion: 63.
 // Next ID: 14
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
@@ -921,7 +944,8 @@ interface BrowserService {
   // such as web-page opening request from ash features, or Crostini/ARC apps.
   // Added in M96.
   [MinVersion=12]
-  OpenUrl@10(url.mojom.Url url) => ();
+  OpenUrl@10(url.mojom.Url url,
+             [MinVersion=62] OpenUrlParams? params) => ();
 
   // Restores a tab (or a window) recently closed in the browser with,
   // currently, the last used profile. Please see also RestoreTab command

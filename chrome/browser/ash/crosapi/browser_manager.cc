@@ -492,21 +492,14 @@ void BrowserManager::NewTab() {
 }
 
 void BrowserManager::OpenUrl(const GURL& url) {
-  auto result = MaybeStart(browser_util::InitialBrowserAction(
-      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}));
-  if (result != MaybeStartResult::kRunning)
-    return;
+  OpenUrlImpl(
+      url,
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab);
+}
 
-  if (!browser_service_.has_value()) {
-    LOG(ERROR) << "BrowserService was disconnected";
-    return;
-  }
-  if (browser_service_->interface_version <
-      mojom::BrowserService::kOpenUrlMinVersion) {
-    LOG(ERROR) << "BrowserService does not support OpenUrl";
-    return;
-  }
-  browser_service_->service->OpenUrl(url, base::DoNothing());
+void BrowserManager::SwitchToTab(const GURL& url) {
+  OpenUrlImpl(
+      url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab);
 }
 
 void BrowserManager::RestoreTab() {
@@ -1270,6 +1263,30 @@ void BrowserManager::RecordLacrosLaunchMode() {
 
   UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.ModeAndSource",
                             lacros_mode_and_source);
+}
+
+void BrowserManager::OpenUrlImpl(
+    const GURL& url,
+    crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition) {
+  auto result = MaybeStart(browser_util::InitialBrowserAction(
+      mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}));
+  if (result != MaybeStartResult::kRunning)
+    return;
+
+  if (!browser_service_.has_value()) {
+    LOG(ERROR) << "BrowserService was disconnected";
+    return;
+  }
+  if (browser_service_->interface_version <
+      mojom::BrowserService::kOpenUrlMinVersion) {
+    LOG(ERROR) << "BrowserService does not support OpenUrl";
+    return;
+  }
+
+  using OpenUrlParams = crosapi::mojom::OpenUrlParams;
+  auto params = OpenUrlParams::New();
+  params->disposition = disposition;
+  browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
 }
 
 }  // namespace crosapi

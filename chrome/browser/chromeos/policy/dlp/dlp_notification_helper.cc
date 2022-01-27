@@ -46,8 +46,15 @@ void OnNotificationClicked(const std::string id) {
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kDlpLearnMoreUrl), /*from_user_interaction=*/true);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(hidehiko): Instantiating BrowserServiceLacros here is an unexpected
+  // use case. Get rid of this by replacing with Navigate() API invocation
+  // directly.
   auto browser_service = std::make_unique<BrowserServiceLacros>();
-  browser_service->OpenUrl(GURL(kDlpLearnMoreUrl), base::DoNothing());
+  using OpenUrlParams = crosapi::mojom::OpenUrlParams;
+  auto params = OpenUrlParams::New();
+  params->disposition = OpenUrlParams::WindowOpenDisposition::kNewForegroundTab;
+  browser_service->OpenUrl(GURL(kDlpLearnMoreUrl), std::move(params),
+                           base::DoNothing());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   NotificationDisplayService::GetForProfile(

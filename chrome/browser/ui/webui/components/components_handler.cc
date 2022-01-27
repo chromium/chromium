@@ -180,7 +180,8 @@ void ComponentsHandler::HandleCrosUrlComponentsRedirect(
 #else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->OpenUrl(GURL(chrome::kChromeUIComponentsUrl));
+  crosapi::BrowserManager::Get()->SwitchToTab(
+      GURL(chrome::kChromeUIComponentsUrl));
 #endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

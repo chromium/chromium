@@ -42,7 +42,9 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       const std::u16string& group_id,
       NewWindowForDetachingTabCallback callback) override;
   void NewTab(NewTabCallback callback) override;
-  void OpenUrl(const GURL& url, OpenUrlCallback callback) override;
+  void OpenUrl(const GURL& url,
+               crosapi::mojom::OpenUrlParamsPtr params,
+               OpenUrlCallback callback) override;
   void RestoreTab(RestoreTabCallback callback) override;
   void HandleTabScrubbing(float x_offset) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
@@ -61,7 +63,10 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
   void OnGetCompressedHistograms(GetHistogramsCallback callback,
                                  const std::string& compressed_histogram);
 
-  void OpenUrlImpl(Profile* profile, const GURL& url, OpenUrlCallback callback);
+  void OpenUrlImpl(Profile* profile,
+                   const GURL& url,
+                   crosapi::mojom::OpenUrlParamsPtr params,
+                   OpenUrlCallback callback);
 
   // These *WithProfile() methods are called asynchronously by the corresponding
   // profile-less function, after loading the profile.
@@ -79,6 +84,7 @@ class BrowserServiceLacros : public crosapi::mojom::BrowserService,
       Profile* profile);
   void NewTabWithProfile(NewTabCallback callback, Profile* profile);
   void OpenUrlWithProfile(const GURL& url,
+                          crosapi::mojom::OpenUrlParamsPtr params,
                           OpenUrlCallback callback,
                           Profile* profile);
   void RestoreTabWithProfile(RestoreTabCallback callback, Profile* profile);

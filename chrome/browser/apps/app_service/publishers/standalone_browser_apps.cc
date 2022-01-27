@@ -198,7 +198,7 @@ void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
   // `browser_manager` may be null in tests.
   if (!browser_manager)
     return;
-  browser_manager->OpenUrl(GURL(chrome::kChromeUIContentSettingsURL));
+  browser_manager->SwitchToTab(GURL(chrome::kChromeUIContentSettingsURL));
 }
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {

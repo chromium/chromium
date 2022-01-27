@@ -816,7 +816,7 @@ bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
 #else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());
-  crosapi::BrowserManager::Get()->OpenUrl(GURL(chrome::kChromeUIAboutURL));
+  crosapi::BrowserManager::Get()->SwitchToTab(GURL(chrome::kChromeUIAboutURL));
 #endif
   return true;
 }
