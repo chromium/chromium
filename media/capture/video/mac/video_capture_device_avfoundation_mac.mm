@@ -906,7 +906,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   if (!_frameReceiver)
     return;
 
-  const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+  const base::TimeDelta pres_timestamp =
+      GetCMSampleBufferTimestamp(sampleBuffer);
+  if (start_timestamp_.is_zero()) {
+    start_timestamp_ = pres_timestamp;
+  }
+  const base::TimeDelta timestamp = pres_timestamp - start_timestamp_;
+
   bool logUma = !std::exchange(_capturedFirstFrame, true);
   if (logUma) {
     media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);
