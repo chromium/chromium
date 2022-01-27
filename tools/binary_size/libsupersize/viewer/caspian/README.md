@@ -65,14 +65,24 @@ lldb $OUT/caspian_cli validatediff supersize_diff.sizediff
 
 ## Debugging WASM
 
-Follow this article: https://developer.chrome.com/blog/wasm-debugging-2020/
+Based on this article: https://developer.chrome.com/blog/wasm-debugging-2020/
 
-Make sure to:
+The one-time setup steps are:
 
- * Run Chrome on the same machine you are serving from
- * Use Chrome Dev or Canary (`sudo apt-get install google-chrome-unstable`)
- * Install the reference extension
- * Enabled DWARF debugging in DevTools' experiments panel
+ * On the same machine as your source code:
+   * Install Chrome Canary (`sudo apt-get install google-chrome-unstable`)
+   * Open Chrome Canary
+ * Install the Chrome extension: https://goo.gle/wasm-debugging-extension
+ * Enable DWARF debugging in DevTools' experiments panel
+   * Gears button in top right, then "experiments" on left nav, then filter for "dwarf".
+
+The every-time steps are:
+
+ * Start server: `tools/binary_size/libsupersize/viewer/upload_html_viewer.py --local`
+ * Open `viewer.html` and load a file.
+ * Open DevTools to the "Sources" panel.
+ * Look for `tree-worker-wasm.js  > file://`
+ * Find the `.cc` files within it and set breakpoints.
 
 ## Updating Emscripten Version
 
