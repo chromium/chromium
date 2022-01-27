@@ -2995,29 +2995,6 @@
             ]
         }
     ],
-    "FirstPartySetsOriginTrial": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "FirstPartySetsIsDogfooder": "false"
-                    },
-                    "enable_features": [
-                        "FirstPartySets"
-                    ]
-                }
-            ]
-        }
-    ],
     "ForceSynchronousHTMLParsing": [
         {
             "platforms": [
