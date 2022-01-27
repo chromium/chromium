@@ -1251,6 +1251,18 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
         ChromeRLZTrackerDelegate::IsGoogleInStartpages(profile));
   }
 #endif  // BUILDFLAG(ENABLE_RLZ) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  language::LanguageUsageMetrics::RecordAcceptLanguages(
+      profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
+  language::LanguageUsageMetrics::RecordApplicationLanguage(
+      browser_process_->GetApplicationLocale());
+  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+      ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
+// On ChromeOS results in a crash. https://crbug.com/1151558
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  language::LanguageUsageMetrics::RecordPageLanguages(
+      *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeBrowserMainParts::PreBrowserStart() {
@@ -1678,18 +1690,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif
 
   HandleTestParameters(parsed_command_line());
-
-  language::LanguageUsageMetrics::RecordAcceptLanguages(
-      profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
-  language::LanguageUsageMetrics::RecordApplicationLanguage(
-      browser_process_->GetApplicationLocale());
-  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
-      ChromeTranslateClient::CreateTranslatePrefs(profile->GetPrefs()));
-// On ChromeOS results in a crash. https://crbug.com/1151558
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  language::LanguageUsageMetrics::RecordPageLanguages(
-      *UrlLanguageHistogramFactory::GetForBrowserContext(profile));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On mobile, the need for a clean shutdown arises only when the application
 // comes to the foreground (i.e. when MetricsService::OnAppEnterForeground() is
