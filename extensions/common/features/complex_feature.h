@@ -36,12 +36,14 @@ class ComplexFeature : public Feature {
                                      Manifest::Type type,
                                      mojom::ManifestLocation location,
                                      int manifest_version,
-                                     Platform platform) const override;
+                                     Platform platform,
+                                     int context_id) const override;
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
                                     const GURL& url,
-                                    Platform platform) const override;
-  Availability IsAvailableToEnvironment() const override;
+                                    Platform platform,
+                                    int context_id) const override;
+  Availability IsAvailableToEnvironment(int context_id) const override;
   bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const override;
   bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const override;
 

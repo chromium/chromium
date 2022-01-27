@@ -17,6 +17,7 @@
 #include "content/public/common/child_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
@@ -106,7 +107,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
           owner_extension,
           guest->owner_web_contents()->GetMainFrame()->GetProcess()->GetID(),
           &owner_site_url),
-      owner_site_url);
+      owner_site_url, util::GetBrowserContextId(context_));
 
   return availability.is_available();
 }

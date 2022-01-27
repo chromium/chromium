@@ -152,7 +152,7 @@ TEST_F(RulesRegistryServiceTest, DefaultRulesRegistryRegistered) {
 
     ASSERT_EQ(test_case.expect_api_enabled,
               FeatureProvider::GetAPIFeature("declarativeWebRequest")
-                  ->IsAvailableToEnvironment()
+                  ->IsAvailableToEnvironment(kUnspecifiedContextId)
                   .is_available());
 
     TestingProfile profile;

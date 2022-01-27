@@ -196,6 +196,9 @@ FEATURE_GRAMMAR = ({
             'subtype': str
         }
     },
+    'developer_mode_only': {
+        bool: {}
+    },
     'disallow_for_service_workers': {
         bool: {}
     },

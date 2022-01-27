@@ -20,6 +20,7 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_rules_registry.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
@@ -197,7 +198,8 @@ void RulesRegistryService::EnsureDefaultRulesRegistriesRegistered() {
   // declarativeWebRequest API is enabled. See crbug.com/693243.
   const bool is_api_enabled =
       FeatureProvider::GetAPIFeature("declarativeWebRequest")
-          ->IsAvailableToEnvironment()
+          ->IsAvailableToEnvironment(
+              util::GetBrowserContextId(browser_context_))
           .is_available();
   if (is_api_enabled) {
     // Persist the cache since it pertains to regular pages (i.e. not webviews).

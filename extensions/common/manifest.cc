@@ -165,9 +165,9 @@ class AvailableValuesFilter {
       return true;
 
     return feature
-        ->IsAvailableToManifest(manifest.hashed_id(), manifest.type(),
-                                manifest.location(),
-                                manifest.manifest_version())
+        ->IsAvailableToManifest(
+            manifest.hashed_id(), manifest.type(), manifest.location(),
+            manifest.manifest_version(), kUnspecifiedContextId)
         .is_available();
   }
 
@@ -296,7 +296,7 @@ bool Manifest::ValidateManifest(
       continue;
 
     Feature::Availability result = map_entry.second->IsAvailableToManifest(
-        hashed_id_, type_, location_, manifest_version_);
+        hashed_id_, type_, location_, manifest_version_, kUnspecifiedContextId);
     if (!result.is_available())
       warnings->push_back(InstallWarning(result.message(), map_entry.first));
   }

@@ -69,6 +69,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/favicon_base/favicon_url_parser.h"
@@ -99,6 +100,7 @@
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -433,6 +435,10 @@ ExtensionService::ExtensionService(Profile* profile,
 
   extension_action_storage_manager_ =
       std::make_unique<ExtensionActionStorageManager>(profile_);
+
+  SetCurrentDeveloperMode(
+      util::GetBrowserContextId(profile),
+      profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
 
   // How long is the path to the Extensions directory?
   UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ExtensionRootPathLength",

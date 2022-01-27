@@ -91,6 +91,7 @@
 #include "extensions/browser/zipfile_installer.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -900,6 +901,8 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
       return RespondNow(Error(kCannotUpdateChildAccountProfileSettingsError));
     prefs->SetBoolean(prefs::kExtensionsUIDeveloperMode,
                       *update.in_developer_mode);
+    SetCurrentDeveloperMode(util::GetBrowserContextId(browser_context()),
+                            *update.in_developer_mode);
   }
 
   return RespondNow(NoArguments());

@@ -17,6 +17,8 @@ class GURL;
 
 namespace extensions {
 
+constexpr int kUnspecifiedContextId = -1;
+
 class Extension;
 
 // Represents a single feature accessible to an extension developer, such as a
@@ -71,6 +73,7 @@ class Feature {
     FOUND_IN_BLOCKLIST,
     MISSING_COMMAND_LINE_SWITCH,
     FEATURE_FLAG_DISABLED,
+    REQUIRES_DEVELOPER_MODE,
   };
 
   // Container for AvailabiltyResult that also exposes a user-visible error
@@ -116,15 +119,17 @@ class Feature {
   Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,
                                      Manifest::Type type,
                                      mojom::ManifestLocation location,
-                                     int manifest_version) const {
+                                     int manifest_version,
+                                     int context_id) const {
     return IsAvailableToManifest(hashed_id, type, location, manifest_version,
-                                 GetCurrentPlatform());
+                                 GetCurrentPlatform(), context_id);
   }
   virtual Availability IsAvailableToManifest(const HashedExtensionId& hashed_id,
                                              Manifest::Type type,
                                              mojom::ManifestLocation location,
                                              int manifest_version,
-                                             Platform platform) const = 0;
+                                             Platform platform,
+                                             int context_id) const = 0;
 
   // Returns true if the feature is available to |extension|.
   Availability IsAvailableToExtension(const Extension* extension) const;
@@ -133,13 +138,16 @@ class Feature {
   // extension and context.
   Availability IsAvailableToContext(const Extension* extension,
                                     Context context,
-                                    const GURL& url) const {
-    return IsAvailableToContext(extension, context, url, GetCurrentPlatform());
+                                    const GURL& url,
+                                    int context_id) const {
+    return IsAvailableToContext(extension, context, url, GetCurrentPlatform(),
+                                context_id);
   }
   virtual Availability IsAvailableToContext(const Extension* extension,
                                             Context context,
                                             const GURL& url,
-                                            Platform platform) const = 0;
+                                            Platform platform,
+                                            int context_id) const = 0;
 
   // Returns true if the feature is available to the current environment,
   // without needing to know information about an Extension or any other
@@ -150,7 +158,7 @@ class Feature {
   // relies on an Extension now - maybe it will, one day, so if there's an
   // Extension available (or a runtime context, etc) then use the more targeted
   // method instead.
-  virtual Availability IsAvailableToEnvironment() const = 0;
+  virtual Availability IsAvailableToEnvironment(int context_id) const = 0;
 
   virtual bool IsIdInBlocklist(const HashedExtensionId& hashed_id) const = 0;
   virtual bool IsIdInAllowlist(const HashedExtensionId& hashed_id) const = 0;

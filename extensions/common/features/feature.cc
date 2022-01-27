@@ -41,9 +41,9 @@ Feature::Platform Feature::GetCurrentPlatform() {
 
 Feature::Availability Feature::IsAvailableToExtension(
     const Extension* extension) const {
-  return IsAvailableToManifest(extension->hashed_id(), extension->GetType(),
-                               extension->location(),
-                               extension->manifest_version());
+  return IsAvailableToManifest(
+      extension->hashed_id(), extension->GetType(), extension->location(),
+      extension->manifest_version(), kUnspecifiedContextId);
 }
 
 Feature::Feature() : no_parent_(false) {}

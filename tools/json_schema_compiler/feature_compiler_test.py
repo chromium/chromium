@@ -51,6 +51,7 @@ class FeatureCompilerTest(unittest.TestCase):
       ],
       'default_parent': True,
       'dependencies': ['dependency1', 'dependency2'],
+      'developer_mode_only': True,
       'disallow_for_service_workers': True,
       'extension_types': ['extension'],
       'location': 'component',

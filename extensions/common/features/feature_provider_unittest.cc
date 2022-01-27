@@ -54,29 +54,32 @@ TEST(FeatureProviderTest, ManifestFeatureAvailability) {
       ExtensionBuilder("test extension").Build();
 
   const Feature* feature = provider->GetFeature("description");
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL())
-                .result());
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      feature
+          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
+                                 GURL(), kUnspecifiedContextId)
+          .result());
 
   // This is a generic extension, so an app-only feature isn't allowed.
   feature = provider->GetFeature("app.background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::INVALID_TYPE,
-            feature
-                ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL())
-                .result());
+  EXPECT_EQ(
+      Feature::INVALID_TYPE,
+      feature
+          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
+                                 GURL(), kUnspecifiedContextId)
+          .result());
 
   // A feature not listed in the manifest isn't allowed.
   feature = provider->GetFeature("background");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::NOT_PRESENT,
-            feature
-                ->IsAvailableToContext(extension.get(),
-                                       Feature::UNSPECIFIED_CONTEXT, GURL())
-                .result());
+  EXPECT_EQ(
+      Feature::NOT_PRESENT,
+      feature
+          ->IsAvailableToContext(extension.get(), Feature::UNSPECIFIED_CONTEXT,
+                                 GURL(), kUnspecifiedContextId)
+          .result());
 }
 
 // Tests that a real permission feature is available for the correct types of
@@ -111,7 +114,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   EXPECT_EQ(Feature::IS_AVAILABLE,
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL())
+                                       GURL(), kUnspecifiedContextId)
                 .result());
 
   // A permission only available to allowlisted extensions returns availability
@@ -124,7 +127,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL())
+                                       GURL(), kUnspecifiedContextId)
                 .result());
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -134,7 +137,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
   EXPECT_EQ(Feature::NOT_PRESENT,
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
-                                       GURL())
+                                       GURL(), kUnspecifiedContextId)
                 .result());
 }
 

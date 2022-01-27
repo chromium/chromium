@@ -66,6 +66,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
@@ -708,8 +709,9 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
       if (guest_url.SchemeIs(content::kChromeUIScheme)) {
         auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
         if (feature
-                ->IsAvailableToContext(nullptr, Feature::WEBUI_CONTEXT,
-                                       guest_url)
+                ->IsAvailableToContext(
+                    nullptr, Feature::WEBUI_CONTEXT, guest_url,
+                    util::GetBrowserContextId(browser_context))
                 .is_available()) {
           skip_proxy = false;
         }

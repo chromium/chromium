@@ -234,6 +234,7 @@ int GetBrowserContextId(content::BrowserContext* context) {
     iter =
         context_map->insert(std::make_pair(original_context, next_id++)).first;
   }
+  DCHECK(iter->second != kUnspecifiedContextId);
   return iter->second;
 }
 

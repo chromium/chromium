@@ -296,6 +296,8 @@ if (enable_extensions) {
       "features/feature.h",
       "features/feature_channel.cc",
       "features/feature_channel.h",
+      "features/feature_developer_mode_only.cc",
+      "features/feature_developer_mode_only.h",
       "features/feature_flags.cc",
       "features/feature_flags.h",
       "features/feature_provider.cc",

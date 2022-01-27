@@ -173,7 +173,9 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
   auto provider = dependency_providers_.find("api");
   CHECK(provider != dependency_providers_.end());
 
-  if (api.IsAvailableToContext(extension, context, url).is_available())
+  // TODO(ghazale): We should pass a context ID into these methods.
+  if (api.IsAvailableToContext(extension, context, url, kUnspecifiedContextId)
+          .is_available())
     return true;
 
   // Check to see if there are any parts of this API that are allowed in this
@@ -181,7 +183,11 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
   const std::vector<const Feature*> features =
       provider->second->GetChildren(api);
   for (const Feature* feature : features) {
-    if (feature->IsAvailableToContext(extension, context, url).is_available())
+    // TODO(ghazale): We should pass a context ID into these methods.
+    if (feature
+            ->IsAvailableToContext(extension, context, url,
+                                   kUnspecifiedContextId)
+            .is_available())
       return true;
   }
 
@@ -210,8 +216,9 @@ Feature::Availability ExtensionAPI::IsAvailable(const std::string& full_name,
                                  std::string("Unknown feature: ") + full_name);
   }
 
-  Feature::Availability availability =
-      feature->IsAvailableToContext(extension, context, url);
+  // TODO(ghazale): We should pass a context ID into these methods.
+  Feature::Availability availability = feature->IsAvailableToContext(
+      extension, context, url, kUnspecifiedContextId);
   if (availability.is_available() || check_alias != CheckAliasStatus::ALLOWED)
     return availability;
 
@@ -318,7 +325,9 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
   CHECK(alias_feature) << "Cannot find alias feature " << alias
                        << " for API feature " << feature.name();
 
-  return alias_feature->IsAvailableToContext(extension, context, url);
+  // TODO(ghazale): We should pass a context ID into these methods.
+  return alias_feature->IsAvailableToContext(extension, context, url,
+                                             kUnspecifiedContextId);
 }
 
 base::StringPiece ExtensionAPI::GetSchemaStringPieceUnsafe(
