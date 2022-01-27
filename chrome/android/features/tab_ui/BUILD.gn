@@ -80,6 +80,7 @@ android_resources("java_resources") {
     "java/res/layout/tab_selection_editor_layout.xml",
     "java/res/layout/tab_selection_editor_toolbar.xml",
     "java/res/layout/tab_strip_item.xml",
+    "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",

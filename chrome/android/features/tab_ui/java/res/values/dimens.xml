@@ -75,4 +75,7 @@
     <integer name="tab_thumbnail_placeholder_selected_color_alpha">38</integer>
     <integer name="tab_grid_hovered_card_background_color_alpha">128</integer>
     <integer name="tab_grid_hovered_card_background_selected_color_alpha">26</integer>
+
+    <dimen name="tasks_surface_location_bar_url_text_size">18sp</dimen>
+    <dimen name="search_box_start_padding">16dp</dimen>
 </resources>
