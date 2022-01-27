@@ -156,14 +156,26 @@
       <message name="IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed." formatter_data="android_java">
         Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.
       </message>
-      <message name="IDS_NEW_TAB_OTR_NOT_SAVED" desc="Bullet points listing data that are not saved in the Incognito mode. 'Browsing history' means a history of visited websites. 'Cookies and site data' refers to data saved by websites on the user's device (e.g. sign-in state, preferences, etc.). 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
-        Chrome <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>won’t save<ph name="END_EMPHASIS">&lt;/em&gt;</ph> the following information:
-        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing history
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms
-        <ph name="END_LIST">&lt;/ul&gt;</ph>
-      </message>
+       <if expr="_google_chrome">
+        <message name="IDS_NEW_TAB_OTR_NOT_SAVED" desc="Bullet points listing data that are not saved in the Incognito mode. 'Browsing history' means a history of visited websites. 'Cookies and site data' refers to data saved by websites on the user's device (e.g. sign-in state, preferences, etc.). 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
+          Chrome <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>won’t save<ph name="END_EMPHASIS">&lt;/em&gt;</ph> the following information:
+          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing history
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms
+          <ph name="END_LIST">&lt;/ul&gt;</ph>
+        </message>
+      </if>
+      <if expr="not _google_chrome">
+        <message name="IDS_NEW_TAB_OTR_NOT_SAVED" desc="Bullet points listing data that are not saved in the Incognito mode. 'Browsing history' means a history of visited websites. 'Cookies and site data' refers to data saved by websites on the user's device (e.g. sign-in state, preferences, etc.). 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
+          Chromium <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>won’t save<ph name="END_EMPHASIS">&lt;/em&gt;</ph> the following information:
+          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing history
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Cookies and site data
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms
+          <ph name="END_LIST">&lt;/ul&gt;</ph>
+        </message>
+      </if>
       <message name="IDS_NEW_TAB_OTR_VISIBLE" desc="Bullet points listing entities that might be able to see the user's Incognito activity. The bullet points elaborate on the fact that Incognito only provides privacy with respect to other users on the same device. Websites you visit still know that you visited them. Your employer, school, and/or internet service provider can still monitor network traffic, even if it comes from the Incognito mode." formatter_data="android_java">
         Your activity <ph name="BEGIN_EMPHASIS">&lt;em&gt;</ph>might still be visible<ph name="END_EMPHASIS">&lt;/em&gt;</ph> to:
         <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
@@ -186,33 +198,65 @@
 
       <!-- Revamped Incognito New Tab Page strings -->
 
-      <message name="IDS_REVAMPED_INCOGNITO_NTP_TITLE" desc="Title of the Incognito new tab page." formatter_data="android_java">
-        Incognito
-      </message>
+      <if expr="_google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_TITLE" desc="Title of the Incognito new tab page." formatter_data="android_java">
+          Incognito in Chrome
+        </message>
+      </if>
+      <if expr="not _google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_TITLE" desc="Title of the Incognito new tab page." formatter_data="android_java">
+          Incognito in Chromium
+        </message>
+      </if>
       <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_HEADER" desc="Header for the 'Incognito does' section that informs users about what happens while browsing Incognito: browsing activity, search history and information entered in forms are not saved locally." formatter_data="android_java">
         What Incognito does
       </message>
-      <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
-        After closing all Incognito tabs, Chrome clears:
-        <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your browsing activity from this device<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Your search history from this device<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
-        <ph name="END_LIST">&lt;/ul&gt;</ph>
-      </message>
+      <if expr="_google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
+          When you close all Chrome Incognito tabs, your activity in those tabs is cleared from this device:
+          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Search history<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="END_LIST">&lt;/ul&gt;</ph>
+        </message>
+      </if>
+      <if expr="not _google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_DESCRIPTION" desc="Paragraph that informs users about Incognito's functionalities: browsing activity, search history and information entered in forms are not saved locally, they are cleared after closing all Incognito tabs. 'Browsing activity' refers to the browsing history (list of visited websites) and the cookies (data saved by websites on the user's device such as: sign-in state, preferences, etc.). 'Search history from this device' means that searches will not be saved locally or used as search suggestions in the future. 'Information entered in forms' refers to names, addresses, passwords etc. that users enter into forms on the web." formatter_data="android_java">
+          When you close all Chromium Incognito tabs, your activity in those tabs is cleared from this device:
+          <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Search history<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+            <ph name="LIST_ITEM">&lt;li&gt;</ph>Information entered in forms<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="END_LIST">&lt;/ul&gt;</ph>
+        </message>
+      </if>
       <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_HEADER" desc="Header for the 'Incognito doesn’t do' section that informs users that they are not invisible online." formatter_data="android_java">
         What Incognito doesn’t do
       </message>
       <message name="IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION" desc="Paragraph that informs users that their online activity is still visible while using Incognito. The bullet points list some examples of entities to which users are not invisible in Incognito and what they can observe. The bullet points elaborate on the fact that Incognito only provides privacy with respect to other users on the same device. Websites you visit still know that you visited them. Employers and schools can still track users' browsing activity and internet service providers can still monitor web traffic, even if it comes from the Incognito mode." formatter_data="android_java">
         Incognito does not make you invisible online:
         <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Sites know when you visit them<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Sites and the services they use can see visits<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
           <ph name="LIST_ITEM">&lt;li&gt;</ph>Employers or schools can track browsing activity<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
-          <ph name="LIST_ITEM">&lt;li&gt;</ph>Internet service providers may monitor web traffic<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
+          <ph name="LIST_ITEM">&lt;li&gt;</ph>Internet service providers can monitor web traffic<ph name="END_LIST_ITEM">&lt;/li&gt;</ph>
         <ph name="END_LIST">&lt;/ul&gt;</ph>
       </message>
-      <message name="IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE" desc="The link text displayed on the Incognito new tab page pointing users to the Incognito learn more page." formatter_data="android_java">
-        <ph name="BEGIN_LINK">&lt;a&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> about Incognito
+      <if expr="_google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE" desc="The link text displayed on the Incognito new tab page pointing users to the Incognito learn more page." formatter_data="android_java">
+          <ph name="BEGIN_LINK">&lt;a&gt;</ph>Learn more about Incognito in Chrome<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+      </if>
+      <if expr="not _google_chrome">
+        <message name="IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE" desc="The link text displayed on the Incognito new tab page pointing users to the Incognito learn more page." formatter_data="android_java">
+          <ph name="BEGIN_LINK">&lt;a&gt;</ph>Learn more about Incognito in Chromium<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+      </if>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE" desc="Label for the Block 3rd-party cookie checkbox on the Cookies category." formatter_data="android_java">
+        Block third party cookies in Incognito
+      </message>
+      <message name="IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE_SUBLABEL" desc="A sub-label below the Block 3rd-party cookie checkbox." formatter_data="android_java">
+        Sites can't use cookies that track you across the web. Features on some sites may break.
       </message>
 
 </grit-part>

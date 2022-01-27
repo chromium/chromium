@@ -283,6 +283,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
         IDS_REVAMPED_INCOGNITO_NTP_DOES_NOT_DESCRIPTION);
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_REVAMPED_INCOGNITO_NTP_LEARN_MORE);
+    replacements["cookieControlsTitle"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE);
+    replacements["cookieControlsDescription"] = l10n_util::GetStringUTF8(
+        IDS_REVAMPED_INCOGNITO_NTP_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   } else {
     replacements["incognitoTabHeading"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_TITLE);
@@ -292,6 +296,10 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
     replacements["learnMore"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
+    replacements["cookieControlsTitle"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
+    replacements["cookieControlsDescription"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
@@ -300,10 +308,6 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
           features::kUpdateHistoryEntryPointsInIncognito)
           ? IDS_NEW_INCOGNITO_TAB_TITLE
           : IDS_NEW_TAB_TITLE);
-  replacements["cookieControlsTitle"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-  replacements["cookieControlsDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   replacements["cookieControlsToggleChecked"] =
       cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
   replacements["hideTooltipIcon"] =
