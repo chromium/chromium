@@ -119,7 +119,7 @@ namespace tunnelserver {
 
 // kAssignedDomains is the list of defined tunnel server domains. These map
 // to values 0..256.
-static const char* kAssignedDomains[] = {"cable.ua5v.com"};
+static const char* kAssignedDomains[] = {"cable.ua5v.com", "cable.auth.com"};
 
 absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
   if (domain >= 256 || domain < base::size(kAssignedDomains)) {
