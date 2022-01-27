@@ -421,8 +421,12 @@ public class BottomSheetOnboardingCoordinatorTest {
         String expectedConfirmDialogText = "Accept";
         String expectedCloseDialogText = "Reject";
 
-        coordinator.addEntryToStringMap("onboarding_title", expectedTitle);
-        coordinator.addEntryToStringMap("onboarding_text", expectedMessage);
+        // If both are provided, split_onboarding_* should take precedence
+        coordinator.addEntryToStringMap("onboarding_title", "Should be ignored");
+        coordinator.addEntryToStringMap("onboarding_text", "Should be ignored");
+        coordinator.addEntryToStringMap("split_onboarding_title", expectedTitle);
+        coordinator.addEntryToStringMap("split_onboarding_text", expectedMessage);
+
         coordinator.addEntryToStringMap("terms_and_conditions", expectedTerms);
         coordinator.addEntryToStringMap("terms_and_conditions_url", expectedTermsUrl);
         coordinator.addEntryToStringMap(
@@ -497,8 +501,12 @@ public class BottomSheetOnboardingCoordinatorTest {
         String expectedConfirmDialogText = "Accept";
         String expectedCloseDialogText = "Reject";
 
-        coordinator.addEntryToStringMap("onboarding_title", expectedTitle);
-        coordinator.addEntryToStringMap("onboarding_text", expectedMessage);
+        // If both are provided, split_onboarding_* should take precedence
+        coordinator.addEntryToStringMap("onboarding_title", "Should be ignored");
+        coordinator.addEntryToStringMap("onboarding_text", "Should be ignored");
+        coordinator.addEntryToStringMap("split_onboarding_title", expectedTitle);
+        coordinator.addEntryToStringMap("split_onboarding_text", expectedMessage);
+
         coordinator.addEntryToStringMap("terms_and_conditions", expectedTerms);
         coordinator.addEntryToStringMap("terms_and_conditions_url", expectedTermsUrl);
         coordinator.addEntryToStringMap(
