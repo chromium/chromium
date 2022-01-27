@@ -20,6 +20,7 @@
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/shared_l10n_map.h"
+#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
@@ -149,12 +150,12 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     const std::string& extension_id,
                                     v8::Local<v8::Value> v8_substitutions,
                                     v8::Local<v8::Value> v8_options,
-                                    content::RenderFrame* render_frame,
+                                    IPC::Sender* message_sender,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
 
   std::string message = SharedL10nMap::GetInstance().GetMessage(
-      extension_id, message_name, render_frame);
+      extension_id, message_name, message_sender);
 
   std::vector<std::string> substitutions;
   // For now, we just suppress all errors, but that's really not the best.
@@ -284,10 +285,18 @@ RequestResult I18nHooksDelegate::HandleGetMessage(
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   DCHECK(script_context->extension());
   DCHECK(arguments[0]->IsString());
+
+  IPC::Sender* message_sender = nullptr;
+  if (script_context->IsForServiceWorker()) {
+    message_sender = WorkerThreadDispatcher::Get();
+  } else {
+    message_sender = script_context->GetRenderFrame();
+  }
+
   v8::Local<v8::Value> message = GetI18nMessage(
       gin::V8ToString(script_context->isolate(), arguments[0]),
       script_context->extension()->id(), arguments[1], arguments[2],
-      script_context->GetRenderFrame(), script_context->v8_context());
+      message_sender, script_context->v8_context());
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = message;

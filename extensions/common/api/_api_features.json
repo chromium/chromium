@@ -254,9 +254,6 @@
     "contexts": ["blessed_extension", "unblessed_extension", "content_script",
                  "lock_screen_extension"]
   },
-  "i18n.getMessage": {
-    "disallow_for_service_workers": true
-  },
   "idle": {
     "dependencies": ["permission:idle"],
     "contexts": ["blessed_extension"]
