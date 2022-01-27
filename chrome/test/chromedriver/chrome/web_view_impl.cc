@@ -286,14 +286,17 @@ Status WebViewImpl::GetUrl(std::string* url) {
   absl::optional<int> current_index = result.FindIntKey("currentIndex");
   if (!current_index)
     return Status(kUnknownError, "navigation history missing currentIndex");
-  base::ListValue* entries = nullptr;
-  if (!result.GetList("entries", &entries))
+  base::Value* entries = result.FindListKey("entries");
+  if (!entries)
     return Status(kUnknownError, "navigation history missing entries");
-  base::DictionaryValue* entry = nullptr;
-  if (!entries->GetDictionary(*current_index, &entry))
+  if (static_cast<int>(entries->GetList().size()) <= *current_index ||
+      !entries->GetList()[*current_index].is_dict()) {
     return Status(kUnknownError, "navigation history missing entry");
-  if (!entry->GetString("url", url))
+  }
+  base::Value& entry = entries->GetList()[*current_index];
+  if (!entry.FindStringKey("url"))
     return Status(kUnknownError, "navigation history entry is missing url");
+  *url = *entry.FindStringKey("url");
   return Status(kOk);
 }
 
@@ -383,19 +386,20 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
   if (!current_index)
     return Status(kUnknownError, "DevTools didn't return currentIndex");
 
-  base::ListValue* entries;
-  if (!result.GetList("entries", &entries))
+  base::Value* entries = result.FindListKey("entries");
+  if (!entries)
     return Status(kUnknownError, "DevTools didn't return entries");
 
-  base::DictionaryValue* entry;
-  if (!entries->GetDictionary(*current_index + delta, &entry)) {
+  if (static_cast<int>(entries->GetList().size()) <= *current_index + delta ||
+      !entries->GetList()[*current_index + delta].is_dict()) {
     // The WebDriver spec says that if there are no pages left in the browser's
     // history (i.e. |current_index + delta| is out of range), then we must not
     // navigate anywhere.
     return Status(kOk);
   }
 
-  absl::optional<int> entry_id = entry->FindIntKey("id");
+  base::Value& entry = entries->GetList()[*current_index + delta];
+  absl::optional<int> entry_id = entry.FindIntKey("id");
   if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
   params.SetInteger("entryId", *entry_id);
@@ -1393,7 +1397,7 @@ Status EvaluateScript(DevToolsClient* client,
     params.SetInteger("contextId", context_id);
   params.SetBoolean("returnByValue", return_type == ReturnByValue);
   params.SetBoolean("awaitPromise", awaitPromise);
-  base::DictionaryValue cmd_result;
+  base::Value cmd_result;
 
   Timeout local_timeout(timeout);
   Status status = client->SendCommandAndGetResultWithTimeout(
@@ -1401,7 +1405,7 @@ Status EvaluateScript(DevToolsClient* client,
   if (status.IsError())
     return status;
 
-  if (cmd_result.FindKey("exceptionDetails")) {
+  if (cmd_result.is_dict() && cmd_result.FindKey("exceptionDetails")) {
     std::string description = "unknown";
     if (const std::string* maybe_description =
             cmd_result.FindStringPath("result.description")) {
@@ -1411,10 +1415,11 @@ Status EvaluateScript(DevToolsClient* client,
                   "Runtime.evaluate threw exception: " + description);
   }
 
-  base::DictionaryValue* unscoped_result;
-  if (!cmd_result.GetDictionary("result", &unscoped_result))
+  base::Value* unscoped_result = cmd_result.FindDictKey("result");
+  if (!unscoped_result)
     return Status(kUnknownError, "evaluate missing dictionary 'result'");
-  result->reset(unscoped_result->DeepCopy());
+  auto result_value = base::Value::ToUniquePtrValue(unscoped_result->Clone());
+  *result = base::DictionaryValue::From(std::move(result_value));
   return Status(kOk);
 }
 
