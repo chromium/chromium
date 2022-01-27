@@ -693,7 +693,6 @@ void MediaStreamVideoTrack::GetSettings(
   if (format) {
     if (frame_rate_ == 0.0)
       settings.frame_rate = format->frame_rate;
-    settings.video_kind = GetVideoKindForFormat(*format);
   } else {
     // Format is only set for local tracks. For other tracks, use the frame rate
     // reported through settings callback SetSizeAndComputedFrameRate().

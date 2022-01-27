@@ -258,9 +258,6 @@ of all suites and resulting step names as of April 15th 2021:
   * `context_lost_tests`
   * `context_lost_validating_tests`
   * `gl_renderer_context_lost_tests`
-* `depth_capture`
-  * `depth_capture_tests`
-  * `gl_renderer_depth_capture_tests`
 * `hardware_accelerated_feature`
   * `gl_renderer_hardware_accelerated_feature_tests`
   * `hardware_accelerated_feature_tests`

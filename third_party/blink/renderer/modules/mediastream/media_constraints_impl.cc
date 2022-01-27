@@ -148,10 +148,6 @@ const char kAudioLatency[] = "latencyMs";
 // https://crbug.com/579729
 const char kGoogLeakyBucket[] = "googLeakyBucket";
 const char kPowerLineFrequency[] = "googPowerLineFrequency";
-// mediacapture-depth: videoKind key and VideoKindEnum values.
-const char kVideoKind[] = "videoKind";
-const char kVideoKindColor[] = "color";
-const char kVideoKindDepth[] = "depth";
 // Names used for testing.
 const char kTestConstraint1[] = "valid_and_supported_1";
 const char kTestConstraint2[] = "valid_and_supported_2";
@@ -436,14 +432,6 @@ static void ParseOldStyleNames(
           mojom::ConsoleMessageLevel::kWarning,
           "Obsolete constraint named " + String(constraint.name_) +
               " is ignored. Please stop using it."));
-    } else if (constraint.name_.Equals(kVideoKind)) {
-      if (!constraint.value_.Equals(kVideoKindColor) &&
-          !constraint.value_.Equals(kVideoKindDepth)) {
-        error_state.ThrowConstraintError("Illegal value for constraint",
-                                         constraint.name_);
-      } else {
-        result.video_kind.SetExact(constraint.value_);
-      }
     } else if (constraint.name_.Equals(kTestConstraint1) ||
                constraint.name_.Equals(kTestConstraint2)) {
       // These constraints are only for testing parsing.
@@ -843,14 +831,6 @@ bool ValidateAndCopyConstraintSet(
       return false;
     }
   }
-  if (constraints_in->hasVideoKind()) {
-    if (!ValidateAndCopyStringConstraint(
-            constraints_in->videoKind(), naked_treatment,
-            constraint_buffer.video_kind, error_state)) {
-      DCHECK(error_state.HadException());
-      return false;
-    }
-  }
   if (constraints_in->hasPan()) {
     CopyBooleanOrDoubleConstraint(constraints_in->pan(), naked_treatment,
                                   constraint_buffer.pan);
@@ -1130,8 +1110,6 @@ void ConvertConstraintSet(const MediaTrackConstraintSetPlatform& input,
     output->setDeviceId(ConvertString(input.device_id, naked_treatment));
   if (!input.group_id.IsUnconstrained())
     output->setGroupId(ConvertString(input.group_id, naked_treatment));
-  if (!input.video_kind.IsUnconstrained())
-    output->setVideoKind(ConvertString(input.video_kind, naked_treatment));
   if (!input.pan.IsUnconstrained())
     output->setPan(ConvertBooleanOrDouble(input.pan, naked_treatment));
   if (!input.tilt.IsUnconstrained())

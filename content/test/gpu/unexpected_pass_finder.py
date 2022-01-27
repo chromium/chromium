@@ -86,7 +86,6 @@ def ParseArgs():
       # distinguish WebGL 1 from WebGL 2.
       choices=[
           'context_lost',
-          'depth_capture',
           'hardware_accelerated_feature',
           'gpu_process',
           'info_collection',

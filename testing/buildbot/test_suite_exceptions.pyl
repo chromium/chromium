@@ -1518,13 +1518,6 @@
       },
     },
   },
-  'depth_capture_tests': {
-    'remove_from': [
-      # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
-      # exception once there is enough capacity to run these tests.
-      'Android FYI Release (Pixel 2)',
-    ],
-  },
   'device_unittests': {
     'modifications': {
       'android-12-x64-fyi-rel': {
@@ -1632,12 +1625,6 @@
   # SkiaRenderer is fully shipped on Chrome OS.
   # Don't run these on real devices due to capacity issues.
   'gl_renderer_context_lost_tests': {
-    'remove_from': [
-      'ChromeOS FYI Release (kevin)',
-      'Lacros FYI x64 Release (Intel)',
-    ],
-  },
-  'gl_renderer_depth_capture_tests': {
     'remove_from': [
       'ChromeOS FYI Release (kevin)',
       'Lacros FYI x64 Release (Intel)',

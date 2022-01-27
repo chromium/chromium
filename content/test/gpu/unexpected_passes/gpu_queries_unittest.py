@@ -604,7 +604,6 @@ class GetSuiteFilterClauseUnittest(unittest.TestCase):
     """Tests that no filter is returned for non-WebGL suites."""
     for suite in [
         'context_lost',
-        'depth_capture',
         'hardware_accelerated_feature',
         'gpu_process',
         'info_collection',

@@ -111,7 +111,7 @@ bool ConstraintSetHasNonImageCapture(
          constraint_set->hasFrameRate() || constraint_set->hasGroupId() ||
          constraint_set->hasHeight() || constraint_set->hasLatency() ||
          constraint_set->hasSampleRate() || constraint_set->hasSampleSize() ||
-         constraint_set->hasVideoKind() || constraint_set->hasWidth();
+         constraint_set->hasWidth();
 }
 
 bool ConstraintSetHasImageAndNonImageCapture(
@@ -609,11 +609,6 @@ MediaTrackSettings* MediaStreamTrack::getSettings() const {
     settings->setHeight(platform_settings.height);
   if (platform_settings.HasAspectRatio())
     settings->setAspectRatio(platform_settings.aspect_ratio);
-  if (RuntimeEnabledFeatures::MediaCaptureDepthVideoKindEnabled() &&
-      component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
-    if (platform_settings.HasVideoKind())
-      settings->setVideoKind(platform_settings.video_kind);
-  }
   settings->setDeviceId(platform_settings.device_id);
   if (!platform_settings.group_id.IsNull())
     settings->setGroupId(platform_settings.group_id);

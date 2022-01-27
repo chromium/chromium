@@ -24,12 +24,6 @@ dictionary MediaTrackSupportedConstraints {
     boolean deviceId = true;
     boolean groupId = true;
 
-    // Media Capture Depth Stream Extensions
-    // https://w3c.github.io/mediacapture-depth
-    // TODO(riju): videoKind attribute should be declared as partial
-    // dictionary but IDL parser can't support it yet. http://crbug.com/579896.
-    [RuntimeEnabled=MediaCaptureDepthVideoKind] boolean videoKind = true;
-
     // W3C Image Capture API
     // https://w3c.github.io/mediacapture-image/#mediatracksupportedconstraints-section
     // TODO(mcasas) move out when partial dictionaries are supported

@@ -34576,7 +34576,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="1935" label="MediaStreamConstraintsDisableLocalEcho"/>
   <int value="1936" label="MediaStreamConstraintsGroupIdAudio"/>
   <int value="1937" label="MediaStreamConstraintsGroupIdVideo"/>
-  <int value="1938" label="MediaStreamConstraintsVideoKind"/>
+  <int value="1938" label="OBSOLETE_MediaStreamConstraintsVideoKind"/>
   <int value="1939" label="OBSOLETE_MediaStreamConstraintsDepthNear"/>
   <int value="1940" label="OBSOLETE_MediaStreamConstraintsDepthFar"/>
   <int value="1941" label="OBSOLETE_MediaStreamConstraintsFocalLengthX"/>

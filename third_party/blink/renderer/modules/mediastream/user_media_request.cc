@@ -263,10 +263,6 @@ void CountVideoConstraintUses(ExecutionContext* context,
     counter.Count(WebFeature::kMediaStreamConstraintsGroupIdVideo);
   }
   if (RequestUsesDiscreteConstraint(
-          constraints, &MediaTrackConstraintSetPlatform::video_kind)) {
-    counter.Count(WebFeature::kMediaStreamConstraintsVideoKind);
-  }
-  if (RequestUsesDiscreteConstraint(
           constraints, &MediaTrackConstraintSetPlatform::media_stream_source)) {
     counter.Count(WebFeature::kMediaStreamConstraintsMediaStreamSourceVideo);
   }

@@ -1788,12 +1788,6 @@
           'has_native_resultdb_integration',
         ],
       },
-      'depth_capture': {
-        'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
@@ -2886,18 +2880,6 @@
           'has_native_resultdb_integration',
         ],
       },
-      'gl_renderer_depth_capture_tests': {
-        'telemetry_test_name': 'depth_capture',
-        'args': [
-          '--extra-browser-args=--disable-features=UseSkiaRenderer',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
       'gl_renderer_gpu_process_launch_tests': {
         'telemetry_test_name': 'gpu_process',
         'args': [
@@ -3090,21 +3072,6 @@
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
           '$$MAGIC_SUBSTITUTION_GPUIsASANFlag',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'depth_capture': {
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'mixins': [
           'has_native_resultdb_integration',
@@ -3322,14 +3289,6 @@
           'has_native_resultdb_integration',
         ],
       },
-      'depth_capture': {
-        'args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'args': [
@@ -3461,21 +3420,6 @@
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
           '$$MAGIC_SUBSTITUTION_GPUIsASANFlag',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'depth_capture': {
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'mixins': [
           'has_native_resultdb_integration',

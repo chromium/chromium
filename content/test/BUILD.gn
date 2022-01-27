@@ -748,11 +748,6 @@ group("telemetry_gpu_integration_test_support") {
     # added in the future.
     "//tools/perf/page_sets/maps_perf_test/",
 
-    # For depth_capture
-    "//content/test/data/media/depth_stream_test_utilities.js",
-    "//content/test/data/media/getusermedia-depth-capture.html",
-    "//content/test/data/media/webrtc_test_utilities.js",
-
     # For GpuProcess.video
     "//content/test/data/media/bear.ogv",
 
@@ -1336,7 +1331,6 @@ test("content_browsertests") {
     "../browser/webrtc/webrtc_content_browsertest_base.h",
     "../browser/webrtc/webrtc_data_browsertest.cc",
     "../browser/webrtc/webrtc_datachannel_browsertest.cc",
-    "../browser/webrtc/webrtc_depth_capture_browsertest.cc",
     "../browser/webrtc/webrtc_getusermedia_browsertest.cc",
     "../browser/webrtc/webrtc_image_capture_browsertest.cc",
     "../browser/webrtc/webrtc_internals_browsertest.cc",

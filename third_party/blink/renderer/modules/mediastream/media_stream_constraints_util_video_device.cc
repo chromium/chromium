@@ -43,10 +43,6 @@ using DistanceVector = WTF::Vector<double>;
 // device ID, noise reduction, resolution and frame rate.
 const int kNumDefaultDistanceEntries = 4;
 
-// VideoKind enum values. See https://w3c.github.io/mediacapture-depth.
-const char kVideoKindColor[] = "color";
-const char kVideoKindDepth[] = "depth";
-
 WebString ToWebString(mojom::blink::FacingMode facing_mode) {
   switch (facing_mode) {
     case mojom::blink::FacingMode::USER:
@@ -213,9 +209,6 @@ class CandidateFormat {
     return kMinDeviceCaptureFrameRate;
   }
 
-  // Convenience accessor for video kind using Blink type.
-  WebString VideoKind() const { return GetVideoKindForFormat(format_); }
-
   // This function tries to apply |constraint_set| to this candidate format
   // and returns true if successful. If |constraint_set| cannot be satisfied,
   // false is returned, and the name of one of the constraints that
@@ -255,12 +248,6 @@ class CandidateFormat {
 
     if (!SatisfiesFrameRateConstraint(constraint_set.frame_rate)) {
       UpdateFailedConstraintName(constraint_set.frame_rate,
-                                 failed_constraint_name);
-      return false;
-    }
-
-    if (!constraint_set.video_kind.Matches(VideoKind())) {
-      UpdateFailedConstraintName(constraint_set.video_kind,
                                  failed_constraint_name);
       return false;
     }
@@ -358,19 +345,16 @@ class CandidateFormat {
         track_fitness_with_rescale += 1.0;
       }
     }
-    double fitness = StringConstraintFitnessDistance(
-        VideoKind(), basic_constraint_set.video_kind);
+
     // If rescaling and not rescaling have the same fitness, prefer not
     // rescaling.
     if (track_fitness_without_rescale <= track_fitness_with_rescale) {
-      fitness += track_fitness_without_rescale;
       *track_settings = track_settings_without_rescale;
-    } else {
-      fitness += track_fitness_with_rescale;
-      *track_settings = track_settings_with_rescale;
+      return track_fitness_without_rescale;
     }
 
-    return fitness;
+    *track_settings = track_settings_with_rescale;
+    return track_fitness_with_rescale;
   }
 
   // Returns a custom "native" fitness distance that expresses how close the
@@ -709,12 +693,6 @@ VideoInputDeviceCapabilities& VideoInputDeviceCapabilities::operator=(
     VideoInputDeviceCapabilities&& other) = default;
 
 VideoInputDeviceCapabilities::~VideoInputDeviceCapabilities() = default;
-
-WebString GetVideoKindForFormat(const media::VideoCaptureFormat& format) {
-  return (format.pixel_format == media::PIXEL_FORMAT_Y16)
-             ? WebString::FromASCII(kVideoKindDepth)
-             : WebString::FromASCII(kVideoKindColor);
-}
 
 MediaStreamTrackPlatform::FacingMode ToPlatformFacingMode(
     mojom::blink::FacingMode video_facing) {

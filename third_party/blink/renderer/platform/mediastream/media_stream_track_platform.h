@@ -29,7 +29,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     bool HasSampleSize() const { return sample_size >= 0; }
     bool HasChannelCount() const { return channel_count >= 0; }
     bool HasLatency() const { return latency >= 0; }
-    bool HasVideoKind() const { return !video_kind.IsNull(); }
     // The variables are read from
     // MediaStreamTrack::GetSettings only.
     double frame_rate = -1.0;
@@ -48,9 +47,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     int32_t sample_size = -1;
     int32_t channel_count = -1;
     double latency = -1.0;
-
-    // Media Capture Depth Stream Extensions.
-    String video_kind;
 
     // Screen Capture extensions
     absl::optional<media::mojom::DisplayCaptureSurfaceType> display_surface;

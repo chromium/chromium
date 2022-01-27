@@ -1389,7 +1389,7 @@ enum WebFeature {
   kMediaStreamConstraintsDisableLocalEcho = 1935,
   kMediaStreamConstraintsGroupIdAudio = 1936,
   kMediaStreamConstraintsGroupIdVideo = 1937,
-  kMediaStreamConstraintsVideoKind = 1938,
+  kOBSOLETE_MediaStreamConstraintsVideoKind = 1938,
   kMediaStreamConstraintsMediaStreamSourceAudio = 1943,
   kMediaStreamConstraintsMediaStreamSourceVideo = 1944,
   kMediaStreamConstraintsRenderToAssociatedSink = 1945,
