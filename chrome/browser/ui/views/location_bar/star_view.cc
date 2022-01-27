@@ -191,7 +191,7 @@ void StarView::MenuClosed(ui::SimpleMenuModel* source) {
       !GetBubble()->GetWidget()->IsVisible()) {
     SetHighlighted(false);
   }
-  reading_list_entry_point_promo_handle_.reset();
+  reading_list_entry_point_promo_handle_.Release();
   menu_runner_.reset();
 }
 

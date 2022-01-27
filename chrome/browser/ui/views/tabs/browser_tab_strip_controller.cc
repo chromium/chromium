@@ -141,7 +141,7 @@ class BrowserTabStripController::TabContextMenuContents
   }
 
   void MenuClosed(ui::SimpleMenuModel*) override {
-    tab_groups_promo_handle_.reset();
+    tab_groups_promo_handle_.Release();
   }
 
   bool GetAcceleratorForCommandId(int command_id,
@@ -180,7 +180,7 @@ class BrowserTabStripController::TabContextMenuContents
   raw_ptr<BrowserTabStripController> controller_;
 
   // Handle we keep if showing menu IPH for tab groups.
-  absl::optional<FeaturePromoController::PromoHandle> tab_groups_promo_handle_;
+  FeaturePromoController::PromoHandle tab_groups_promo_handle_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

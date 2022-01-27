@@ -65,8 +65,7 @@ class StarView : public PageActionIconView,
 
   BooleanPrefMember edit_bookmarks_enabled_;
 
-  absl::optional<FeaturePromoController::PromoHandle>
-      reading_list_entry_point_promo_handle_;
+  FeaturePromoController::PromoHandle reading_list_entry_point_promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_

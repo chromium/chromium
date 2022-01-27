@@ -40,11 +40,15 @@ class FeaturePromoController {
  public:
   using BubbleCloseCallback = base::OnceClosure;
 
-  // When a caller wants to take ownership of the promo after a bubble
-  // is closed, this handle is given. It must be dropped in a timely
-  // fashion to ensure everything is cleaned up. If it isn't, it will
-  // make the IPH backend think it's still shwoing and block all other
-  // IPH indefinitely.
+  // Represents a promo that has been continued after its bubble has been
+  // hidden, as a result of calling CloseBubbleAndContinuePromo().
+  //
+  // The promo is considered still active until the handle is released or
+  // destroyed and no other promos will be allowed to show.
+  //
+  // PromoHandle is a value-typed, movable smart reference; default constructed
+  // instances are falsy (i.e. operator bool and is_valid() return false), as
+  // are any instances that have been moved or released.
   class PromoHandle {
    public:
     PromoHandle();
@@ -55,8 +59,16 @@ class FeaturePromoController {
 
     PromoHandle& operator=(PromoHandle&&);
 
-    explicit operator bool() const { return feature_; }
-    bool operator!() const { return !feature_; }
+    explicit operator bool() const { return is_valid(); }
+    bool operator!() const { return !is_valid(); }
+
+    // Returns whether the handle refers to a valid promo. Returns null for
+    // default-constructed objects and after being moved or released.
+    bool is_valid() const { return feature_; }
+
+    // Releases the promo and resets the handle. After release, operator bool
+    // will return false regardless of the previous state.
+    void Release();
 
    private:
     base::WeakPtr<FeaturePromoController> controller_;

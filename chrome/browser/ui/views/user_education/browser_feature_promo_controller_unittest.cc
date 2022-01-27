@@ -374,7 +374,7 @@ TEST_F(BrowserFeaturePromoControllerTest,
   // bubble, but doesn't yet tell the backend the promo finished.
 
   EXPECT_CALL(close_callback, Run()).Times(1);
-  absl::optional<FeaturePromoController::PromoHandle> promo_handle =
+  FeaturePromoController::PromoHandle promo_handle =
       controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
   EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_FALSE(GetPromoBubble());
@@ -385,7 +385,113 @@ TEST_F(BrowserFeaturePromoControllerTest,
   // Check handle destruction causes the backend to be notified.
 
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
-  promo_handle.reset();
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, PromoHandleDismissesPromoOnRelease) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoController::PromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  // Check handle destruction causes the backend to be notified.
+  EXPECT_TRUE(promo_handle);
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  promo_handle.Release();
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_FALSE(promo_handle);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       PromoHandleDismissesPromoOnOverwrite) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoController::PromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  // Check handle destruction causes the backend to be notified.
+
+  EXPECT_TRUE(promo_handle);
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  promo_handle = FeaturePromoController::PromoHandle();
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_FALSE(promo_handle);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       PromoHandleDismissesPromoExactlyOnce) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoController::PromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  // Check handle destruction causes the backend to be notified.
+
+  EXPECT_TRUE(promo_handle);
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  promo_handle.Release();
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_FALSE(promo_handle);
+  promo_handle.Release();
+  EXPECT_FALSE(promo_handle);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       PromoHandleDismissesPromoAfterMoveConstruction) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoController::PromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  // Check handle destruction causes the backend to be notified.
+
+  EXPECT_TRUE(promo_handle);
+  FeaturePromoController::PromoHandle promo_handle2(std::move(promo_handle));
+  EXPECT_TRUE(promo_handle2);
+  EXPECT_FALSE(promo_handle);
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  promo_handle2.Release();
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_FALSE(promo_handle2);
+}
+
+TEST_F(BrowserFeaturePromoControllerTest,
+       PromoHandleDismissesPromoAfterMoveAssignment) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  ASSERT_TRUE(controller_->MaybeShowPromo(kTestIPHFeature));
+
+  FeaturePromoController::PromoHandle promo_handle =
+      controller_->CloseBubbleAndContinuePromo(kTestIPHFeature);
+
+  // Check handle destruction causes the backend to be notified.
+
+  EXPECT_TRUE(promo_handle);
+  FeaturePromoController::PromoHandle promo_handle2;
+  promo_handle2 = std::move(promo_handle);
+  EXPECT_TRUE(promo_handle2);
+  EXPECT_FALSE(promo_handle);
+  EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
+  promo_handle2.Release();
+  EXPECT_CALL(*mock_tracker_, Dismissed).Times(0);
+  EXPECT_FALSE(promo_handle2);
 }
 
 TEST_F(BrowserFeaturePromoControllerTest,

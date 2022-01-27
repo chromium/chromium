@@ -23,21 +23,40 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/style/platform_style.h"
 
+FeaturePromoController::PromoHandle::PromoHandle() = default;
+
 FeaturePromoController::PromoHandle::PromoHandle(
     base::WeakPtr<FeaturePromoController> controller,
     const base::Feature* feature)
-    : controller_(std::move(controller)), feature_(feature) {}
-
-FeaturePromoController::PromoHandle::~PromoHandle() {
-  if (controller_)
-    controller_->FinishContinuedPromo(feature_);
+    : controller_(std::move(controller)), feature_(feature) {
+  DCHECK(feature_);
 }
 
-FeaturePromoController::PromoHandle::PromoHandle() = default;
-FeaturePromoController::PromoHandle::PromoHandle(PromoHandle&& other) = default;
+FeaturePromoController::PromoHandle::PromoHandle(PromoHandle&& other)
+    : controller_(std::move(other.controller_)),
+      feature_(std::exchange(other.feature_, nullptr)) {}
+
+FeaturePromoController::PromoHandle::~PromoHandle() {
+  Release();
+}
 
 FeaturePromoController::PromoHandle&
-FeaturePromoController::PromoHandle::operator=(PromoHandle&& other) = default;
+FeaturePromoController::PromoHandle::operator=(PromoHandle&& other) {
+  if (this != &other) {
+    Release();
+    controller_ = std::move(other.controller_);
+    feature_ = std::exchange(other.feature_, nullptr);
+  }
+
+  return *this;
+}
+
+void FeaturePromoController::PromoHandle::Release() {
+  if (controller_)
+    controller_->FinishContinuedPromo(feature_);
+  controller_.reset();
+  feature_ = nullptr;
+}
 
 FeaturePromoController::FeaturePromoController() = default;
 FeaturePromoController::~FeaturePromoController() = default;
