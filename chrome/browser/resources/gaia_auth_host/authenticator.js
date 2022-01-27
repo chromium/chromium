@@ -342,6 +342,11 @@ cr.define('cr.login', function() {
       this.syncTrustedVaultKeys_ = msg.value;
     },
     'closeView'(msg) {
+      // We need to resend the message to make sure it comes after the API
+      // 'confirm' call. The API calls go via different channel.
+      window.postMessage({method: 'resendCloseView'}, window.origin);
+    },
+    'resendCloseView'(msg) {
       if (!this.enableCloseView_) {
         return;
       }
@@ -949,7 +954,7 @@ cr.define('cr.login', function() {
      * Returns true if given HTML5 message is received from the webview element.
      * @param {Object} e Payload of the received HTML5 message.
      */
-    isGaiaMessage(e) {
+    isGaiaMessage_(e) {
       if (!this.isWebviewEvent_(e)) {
         return false;
       }
@@ -968,12 +973,28 @@ cr.define('cr.login', function() {
     }
 
     /**
+     * Returns true if given HTML5 message is received from the current window.
+     * @param {Object} e Payload of the received HTML5 message.
+     */
+    isSelfMessage_(e) {
+      if (e.origin !== window.origin) {
+        return false;
+      }
+
+      if (typeof e.data != 'object' || !e.data.hasOwnProperty('method')) {
+        return false;
+      }
+
+      return true;
+    }
+
+    /**
      * Invoked when an HTML5 message is received from the webview element.
      * @param {Object} e Payload of the received HTML5 message.
      * @private
      */
     onMessageFromWebview_(e) {
-      if (!this.isGaiaMessage(e)) {
+      if (!this.isGaiaMessage_(e) && !this.isSelfMessage_(e)) {
         return;
       }
 
