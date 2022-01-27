@@ -7,19 +7,26 @@ package org.chromium.ui.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
+import org.chromium.base.FileUtilsJni;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
@@ -35,6 +42,14 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectFileDialogTest {
+    @Mock
+    FileUtils.Natives mFileUtilsMocks;
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+    }
+
     /**
      * Returns the determined scope for the accepted |fileTypes|.
      */
@@ -164,6 +179,11 @@ public class SelectFileDialogTest {
 
     private void testFilePath(
             String path, SelectFileDialog selectFileDialog, boolean expectedPass) {
+        testFilePath(path, selectFileDialog, expectedPass, expectedPass);
+    }
+
+    private void testFilePath(String path, SelectFileDialog selectFileDialog,
+            boolean expectedFileSelectionResult, boolean expectedGetDisplayNameResult) {
         Uri[] uris = new Uri[1];
         uris[0] = Uri.fromFile(new File(path));
 
@@ -172,12 +192,15 @@ public class SelectFileDialogTest {
         SelectFileDialog.GetDisplayNameTask task2 =
                 selectFileDialog.new GetDisplayNameTask(ContextUtils.getApplicationContext(),
                         /* isMultiple = */ false, uris);
-        assertEquals(expectedPass, task.doInBackground());
-        assertEquals(expectedPass, null != task2.doInBackground());
+        assertEquals(expectedFileSelectionResult, task.doInBackground());
+        assertEquals(expectedGetDisplayNameResult, null != task2.doInBackground());
     }
 
     @Test
     public void testFilePathTasks() throws IOException {
+        FileUtilsJni.TEST_HOOKS.setInstanceForTesting(mFileUtilsMocks);
+        doReturn("/tmp/xyz.jpn").when(mFileUtilsMocks).getAbsoluteFilePath(any());
+
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
 
         // Obtain the data directory for RoboElectric. It should look something like:
@@ -207,6 +230,11 @@ public class SelectFileDialogTest {
         // Make sure that dataDir/../dataDir is treated the same as dataDir (and fail the request).
         testFilePath(dataDir + "/../" + lastComponent + "/xyz.jpg", selectFileDialog,
                 /* expectedPass= */ false);
+
+        // Tests invalid file path should fail file selection.
+        doReturn(new String()).when(mFileUtilsMocks).getAbsoluteFilePath(any());
+        testFilePath("\\/tmp/xyz.jpg", selectFileDialog,
+                /* expectedFileSelectionResult= */ false, /* expectedGetDisplayNameResult= */ true);
     }
 
     @Test

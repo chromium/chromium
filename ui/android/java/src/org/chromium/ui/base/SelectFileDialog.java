@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
@@ -641,7 +642,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     private static boolean isUnderAppDir(String path, Context context) {
         File file = new File(path);
         File dataDir = ContextCompat.getDataDir(context);
-
         try {
             String pathCanonical = file.getCanonicalPath();
             String dataDirCanonical = dataDir.getCanonicalPath();
@@ -912,7 +912,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
 
         @Override
         public Boolean doInBackground() {
-            return !isUnderAppDir(mFilePath, mContext);
+            // Don't allow invalid file path or files under app dir to be uploaded.
+            return !isUnderAppDir(mFilePath, mContext)
+                    && !FileUtils.getAbsoluteFilePath(mFilePath).isEmpty();
         }
 
         @Override
