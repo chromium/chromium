@@ -34,6 +34,7 @@ class DesksTemplatesGridView;
 class OverviewGridEventHandler;
 class OverviewItem;
 class PresentationTimeRecorder;
+class SaveDeskTemplateButton;
 
 // Represents a grid of windows in the Overview Mode in a particular root
 // window, and manages a selection widget that can be moved with the arrow keys.
@@ -362,6 +363,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void UpdateSaveDeskAsTemplateButton();
 
   bool IsSaveDeskAsTemplateButtonVisible() const;
+
+  // Returns the button if available, otherwise null.
+  SaveDeskTemplateButton* GetSaveDeskAsTemplateButton() const;
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,

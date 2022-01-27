@@ -1735,6 +1735,8 @@ component("ash") {
     "wm/desks/templates/desks_templates_presenter.h",
     "wm/desks/templates/desks_templates_util.cc",
     "wm/desks/templates/desks_templates_util.h",
+    "wm/desks/templates/save_desk_template_button.cc",
+    "wm/desks/templates/save_desk_template_button.h",
     "wm/desks/zero_state_button.cc",
     "wm/desks/zero_state_button.h",
     "wm/drag_details.cc",

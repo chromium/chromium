@@ -17,6 +17,7 @@
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
+#include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
@@ -252,6 +253,9 @@ OverviewHighlightController::GetTraversableViews() const {
         }
       }
     }
+
+    if (grid->IsSaveDeskAsTemplateButtonVisible())
+      traversable_views.push_back(grid->GetSaveDeskAsTemplateButton());
   }
   return traversable_views;
 }

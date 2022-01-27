@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -437,13 +438,17 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingBasic) {
   CheckDeskBarViewSize(desk_bar_view, "new desk button");
 
   // Tests that tabbing past the new desk button, we highlight the desks
-  // templates button.
+  // templates button and the button to save to a new desk template.
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB);
     EXPECT_EQ(
         desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
         GetHighlightedView());
     CheckDeskBarViewSize(desk_bar_view, "desks templates button");
+
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the overview items, we go back to the
@@ -464,9 +469,13 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
       GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   EXPECT_EQ(2u, desk_bar_view->mini_views().size());
 
-  // Tests that the first highlight item when reversing is the desks templates
-  // button if the feature is enabled.
+  // Tests that the first highlighted item when reversing is the save desk as
+  // template button, if the feature is enabled.
   if (IsDesksTemplatesEnabled()) {
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(
         desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
@@ -498,10 +507,14 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingReverse) {
   auto* item1 = GetOverviewItemForWindow(window1.get());
   EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
 
-  // Tests that we return to the desks templates button after reverse tabbing
-  // through the overview items if the feature was enabled.
+  // Tests that we return to the save desk as template button after reverse
+  // tabbing through the overview items if the feature was enabled.
   if (IsDesksTemplatesEnabled()) {
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+
     SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
     EXPECT_EQ(
         desk_bar_view->expanded_state_desks_templates_button()->inner_button(),
@@ -562,6 +575,10 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(
         desk_bar_view1->expanded_state_desks_templates_button()->inner_button(),
         GetHighlightedView());
+
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view1->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
 
   // Tests that the next tab will bring us to the first overview item on the
@@ -586,6 +603,10 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(
         desk_bar_view2->expanded_state_desks_templates_button()->inner_button(),
         GetHighlightedView());
+
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view2->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the items on the second display, the
@@ -610,6 +631,10 @@ TEST_P(DesksOverviewHighlightControllerTest, TabbingMultiDisplay) {
     EXPECT_EQ(
         desk_bar_view3->expanded_state_desks_templates_button()->inner_button(),
         GetHighlightedView());
+
+    SendKey(ui::VKEY_TAB);
+    EXPECT_EQ(desk_bar_view3->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
   }
 
   // Tests that after tabbing through the items on the third display, the next

@@ -19,14 +19,12 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/toast_catalog.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
@@ -41,6 +39,7 @@
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
+#include "ash/wm/desks/templates/save_desk_template_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
@@ -1850,12 +1849,10 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   if (!save_desk_as_template_widget_) {
     save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
-    save_desk_as_template_widget_->SetContentsView(std::make_unique<PillButton>(
-        base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
-                            weak_ptr_factory_.GetWeakPtr()),
-        l10n_util::GetStringUTF16(
-            IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON),
-        PillButton::Type::kIcon, &kSaveDeskAsTemplateIcon));
+    save_desk_as_template_widget_->SetContentsView(
+        std::make_unique<SaveDeskTemplateButton>(base::BindRepeating(
+            &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
+            weak_ptr_factory_.GetWeakPtr())));
   }
   save_desk_as_template_widget_->Show();
   PerformFadeInLayer(save_desk_as_template_widget_->GetLayer());
@@ -1866,8 +1863,8 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   auto* desk = DesksController::Get()->active_desk();
   if (presenter->GetEntryCount() >= presenter->GetMaxEntryCount() ||
       desk->num_supported_windows() == 0) {
-    auto* button = static_cast<PillButton*>(
-        save_desk_as_template_widget_->GetContentsView());
+    auto* button = GetSaveDeskAsTemplateButton();
+    DCHECK(button);
     button->SetState(views::Button::STATE_DISABLED);
   }
 
@@ -1893,6 +1890,13 @@ bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
   return save_desk_as_template_widget_ &&
          save_desk_as_template_widget_->IsVisible() &&
          save_desk_as_template_widget_->GetLayer()->GetTargetOpacity() == 1.f;
+}
+
+SaveDeskTemplateButton* OverviewGrid::GetSaveDeskAsTemplateButton() const {
+  return save_desk_as_template_widget_
+             ? static_cast<SaveDeskTemplateButton*>(
+                   save_desk_as_template_widget_->GetContentsView())
+             : nullptr;
 }
 
 void OverviewGrid::OnSplitViewStateChanged(
