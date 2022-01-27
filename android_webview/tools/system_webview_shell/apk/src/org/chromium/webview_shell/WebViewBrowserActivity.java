@@ -53,6 +53,7 @@ import androidx.webkit.TracingConfig;
 import androidx.webkit.TracingController;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
+import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
 import org.chromium.base.ContextUtils;
@@ -108,9 +109,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         sPermissions.put(PermissionRequest.RESOURCE_VIDEO_CAPTURE,
                 Manifest.permission.CAMERA);
     }
-
-    private static final Pattern WEBVIEW_VERSION_PATTERN =
-            Pattern.compile("(Chrome/)([\\d\\.]+)\\s");
 
     private EditText mUrlBar;
     private WebView mWebView;
@@ -389,13 +387,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             // turn them on for consistency with normal browsers.
             CookieManager.getInstance().setAcceptThirdPartyCookies(webview, true);
         }
-
-        Matcher matcher = WEBVIEW_VERSION_PATTERN.matcher(settings.getUserAgentString());
-        if (matcher.find()) {
-            mWebViewVersion = matcher.group(2);
-        } else {
-            mWebViewVersion = "-";
-        }
+        mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
         getSupportActionBar().setSubtitle(mWebViewVersion);
 
