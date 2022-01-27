@@ -708,7 +708,7 @@
     },
     {
       name: "CSSMixBlendModePlusLighter",
-      status: "test"
+      status: "stable"
     },
     {
       name: "CSSModules",
