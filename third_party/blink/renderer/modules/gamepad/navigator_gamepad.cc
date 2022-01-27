@@ -129,6 +129,8 @@ HeapVector<Member<Gamepad>> NavigatorGamepad::getGamepads(
 
   auto* navigator_gamepad = &NavigatorGamepad::From(navigator);
 
+  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
+  // permission policy implements the Gamepad API support.
   if (navigator.DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowSecurityError(kFencedFrameBlocked);
     return HeapVector<Member<Gamepad>>();
@@ -269,6 +271,9 @@ bool NavigatorGamepad::StartUpdatingIfAttached() {
   if (!DomWindow()) {
     return false;
   }
+
+  // TODO(https://crbug.com/1011006): Remove fenced frame specific code when
+  // permission policy implements the Gamepad API support.
   if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     return false;
   }
