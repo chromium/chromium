@@ -35,14 +35,14 @@ export const OptionsDialogMinWidth = 400;
 // The maximum height in pixels for the options dialog.
 export const OptionsDialogMaxHeight = 640;
 
-interface ExtensionsOptionsDialogElement {
+export interface ExtensionsOptionsDialogElement {
   $: {
     body: HTMLElement,
     dialog: CrDialogElement,
   };
 }
 
-class ExtensionsOptionsDialogElement extends PolymerElement {
+export class ExtensionsOptionsDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-options-dialog';
   }

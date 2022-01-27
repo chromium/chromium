@@ -21,9 +21,12 @@ export {KioskAppSettings, KioskBrowserProxy, KioskBrowserProxyImpl, KioskSetting
 // </if>
 export {Dialog, navigation, NavigationHelper, Page} from './navigation_helper.js';
 export {OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';
+export {ExtensionsOptionsDialogElement} from './options_dialog.js';
 export {ExtensionsPackDialogElement, PackDialogDelegate} from './pack_dialog.js';
 export {ExtensionsPackDialogAlertElement} from './pack_dialog_alert.js';
+export {ExtensionsRuntimeHostPermissionsElement} from './runtime_host_permissions.js';
 export {getPatternFromSite} from './runtime_hosts_dialog.js';
+export {ExtensionsRuntimeHostsDialogElement} from './runtime_hosts_dialog.js';
 export {Service, ServiceInterface} from './service.js';
 export {ExtensionsShortcutInputElement} from './shortcut_input.js';
 export {isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';

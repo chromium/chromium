@@ -3,24 +3,25 @@
 // found in the LICENSE file.
 
 /** @fileoverview Suite of tests for extension-options-dialog. */
-import {OptionsDialogMaxHeight, OptionsDialogMinWidth, Service} from 'chrome://extensions/extensions.js';
+import 'chrome://extensions/extensions.js';
 
+import {ExtensionsOptionsDialogElement, OptionsDialogMaxHeight, OptionsDialogMinWidth, Service} from 'chrome://extensions/extensions.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-window.extension_options_dialog_tests = {};
-extension_options_dialog_tests.suiteName = 'ExtensionOptionsDialogTests';
-/** @enum {string} */
-extension_options_dialog_tests.TestNames = {
-  Layout: 'Layout',
+const extension_options_dialog_tests = {
+  suiteName: 'ExtensionOptionsDialogTests',
+  TestNames: {
+    Layout: 'Layout',
+  },
 };
 
-suite(extension_options_dialog_tests.suiteName, function() {
-  /** @type {ExtensionsOptionsDialogElement} */
-  let optionsDialog;
+Object.assign(window, {extension_options_dialog_tests});
 
-  /** @type {chrome.developerPrivate.ExtensionInfo} */
-  let data;
+suite(extension_options_dialog_tests.suiteName, function() {
+  let optionsDialog: ExtensionsOptionsDialogElement;
+  let data: chrome.developerPrivate.ExtensionInfo;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -30,11 +31,11 @@ suite(extension_options_dialog_tests.suiteName, function() {
     const service = Service.getInstance();
     return service.getExtensionsInfo().then(function(info) {
       assertEquals(1, info.length);
-      data = info[0];
+      data = info[0]!;
     });
   });
 
-  function isDialogVisible() {
+  function isDialogVisible(): boolean {
     const dialogElement = optionsDialog.$.dialog.getNative();
     const rect = dialogElement.getBoundingClientRect();
     return rect.width * rect.height > 0;
@@ -58,12 +59,10 @@ suite(extension_options_dialog_tests.suiteName, function() {
           assertLE(rect.height, OptionsDialogMaxHeight);
           // This is the header height with default font size.
           assertGE(rect.height, 68);
-
-          assertEquals(
-              data.name,
-              assert(optionsDialog.shadowRoot.querySelector(
-                         '#icon-and-name-wrapper span'))
-                  .textContent.trim());
+          const nameElement = optionsDialog.shadowRoot!.querySelector(
+              '#icon-and-name-wrapper span');
+          assertTrue(!!nameElement);
+          assertEquals(data.name, nameElement.textContent!.trim());
         });
   });
 });

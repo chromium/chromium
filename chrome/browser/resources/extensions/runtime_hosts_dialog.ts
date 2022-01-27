@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -48,13 +49,14 @@ export function getPatternFromSite(site: string): string {
   return scheme + host + port + path;
 }
 
-interface ExtensionsRuntimeHostsDialogElement {
+export interface ExtensionsRuntimeHostsDialogElement {
   $: {
     dialog: CrDialogElement,
+    submit: CrButtonElement,
   };
 }
 
-class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
+export class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
   static get is() {
     return 'extensions-runtime-hosts-dialog';
   }
@@ -220,6 +222,12 @@ class ExtensionsRuntimeHostsDialogElement extends PolymerElement {
             () => {
               this.inputInvalid_ = true;
             });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-runtime-hosts-dialog': ExtensionsRuntimeHostsDialogElement;
   }
 }
 

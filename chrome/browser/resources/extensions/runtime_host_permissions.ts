@@ -32,14 +32,14 @@ interface RepeaterEvent extends CustomEvent {
   };
 }
 
-interface ExtensionsRuntimeHostPermissionsElement {
+export interface ExtensionsRuntimeHostPermissionsElement {
   $: {
     hostActionMenu: CrActionMenuElement,
-    'host-access': HTMLSelectElement,
+    hostAccess: HTMLSelectElement,
   };
 }
 
-class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
+export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   static get is() {
     return 'extensions-runtime-host-permissions';
   }
@@ -143,7 +143,7 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private revertingHostAccess_: boolean;
 
   private onHostAccessChange_() {
-    const selectMenu = this.$['host-access'];
+    const selectMenu = this.$.hostAccess;
     const access = selectMenu.value as chrome.developerPrivate.HostAccess;
 
     // Log a user action when the host access selection is changed by the user,
@@ -240,14 +240,14 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   }
 
   private onHostDialogCancel_() {
-    // The user canceled the dialog. Set host-access back to the old value,
+    // The user canceled the dialog. Set hostAccess back to the old value,
     // if the dialog was shown when just transitioning to a new state.
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.AddHostDialogCanceled');
     if (this.oldHostAccess_) {
       assert(this.permissions.hostAccess === this.oldHostAccess_);
       this.revertingHostAccess_ = true;
-      this.$['host-access'].value = this.oldHostAccess_;
+      this.$.hostAccess.value = this.oldHostAccess_;
       this.revertingHostAccess_ = false;
       this.oldHostAccess_ = null;
     }
@@ -298,6 +298,13 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private onLearnMoreClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.LearnMoreActivated');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-runtime-host-permissions':
+        ExtensionsRuntimeHostPermissionsElement;
   }
 }
 

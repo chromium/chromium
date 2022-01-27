@@ -4,18 +4,19 @@
 
 import 'chrome://extensions/extensions.js';
 
+import {ExtensionsRuntimeHostPermissionsElement} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {MetricsPrivateMock} from './test_util.js';
 
 suite('RuntimeHostPermissions', function() {
-  /** @type {RuntimeHostPermissionsElement} */ let element;
-  /** @type {TestService} */ let delegate;
-  /** @type {Function} */ let getUserActionCount;
+  let element: ExtensionsRuntimeHostPermissionsElement;
+  let delegate: TestService;
+  let metricsPrivateMock: MetricsPrivateMock;
 
   const HostAccess = chrome.developerPrivate.HostAccess;
   const ITEM_ID = 'a'.repeat(32);
@@ -30,11 +31,9 @@ suite('RuntimeHostPermissions', function() {
 
     document.body.appendChild(element);
 
-    chrome.metricsPrivate = new MetricsPrivateMock();
-    // For convenience, we define a shorter name to call getUserActionCount
-    // with.
-    getUserActionCount = (...args) =>
-        chrome.metricsPrivate.getUserActionCount(...args);
+    metricsPrivateMock = new MetricsPrivateMock();
+    chrome.metricsPrivate =
+        metricsPrivateMock as unknown as typeof chrome.metricsPrivate;
   });
 
   teardown(function() {
@@ -52,18 +51,18 @@ suite('RuntimeHostPermissions', function() {
     flush();
 
     const testIsVisible = isChildVisible.bind(null, element);
-    expectTrue(testIsVisible('#host-access'));
+    assertTrue(testIsVisible('#hostAccess'));
 
-    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
-    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+    const selectHostAccess = element.$.hostAccess;
+    assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
     // For on-click mode, there should be no runtime hosts listed.
-    expectFalse(testIsVisible('#hosts'));
+    assertFalse(testIsVisible('#hosts'));
 
     // Changing the data's access should change the UI appropriately.
     element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
     flush();
-    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
-    expectFalse(testIsVisible('#hosts'));
+    assertEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
+    assertFalse(testIsVisible('#hosts'));
 
     // Setting the mode to on specific sites should display the runtime hosts
     // list.
@@ -73,15 +72,14 @@ suite('RuntimeHostPermissions', function() {
       {host: 'https://chromium.org', granted: true}
     ]);
     flush();
-    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
-    expectTrue(testIsVisible('#hosts'));
+    assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+    assertTrue(testIsVisible('#hosts'));
     // Expect three entries in the list: the two hosts + the add-host button.
-    expectEquals(
+    assertEquals(
         3,
-        element.shadowRoot.querySelector('#hosts')
-            .getElementsByTagName('li')
+        element.shadowRoot!.querySelector('#hosts')!.getElementsByTagName('li')
             .length);
-    expectTrue(testIsVisible('#add-host'));
+    assertTrue(testIsVisible('#add-host'));
   });
 
   test('permissions display new site access menu', function() {
@@ -96,22 +94,22 @@ suite('RuntimeHostPermissions', function() {
     flush();
 
     const testIsVisible = isChildVisible.bind(null, element);
-    expectTrue(testIsVisible('#host-access'));
+    assertTrue(testIsVisible('#hostAccess'));
 
-    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
-    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+    const selectHostAccess = element.$.hostAccess;
+    assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
     // For on-click mode, there should be no runtime hosts listed.
-    expectFalse(testIsVisible('#hosts'));
+    assertFalse(testIsVisible('#hosts'));
 
     // Changing the data's access should change the UI appropriately.
     element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
     flush();
-    expectEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
-    expectFalse(testIsVisible('#hosts'));
+    assertEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
+    assertFalse(testIsVisible('#hosts'));
 
     element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
     flush();
-    expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+    assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     // TODO(crbug.com/1253673): Test the new "customize for each site" menu.
   });
 
@@ -125,34 +123,41 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
+    const selectHostAccess = element.$.hostAccess;
     assertTrue(!!selectHostAccess);
 
     // Changes the value of the selectHostAccess menu and fires the change
     // event, then verifies that the delegate was called with the correct
     // value.
-    function expectDelegateCallOnAccessChange(newValue) {
+    function assertDelegateCallOnAccessChange(
+        newValue: chrome.developerPrivate.HostAccess): Promise<void> {
       selectHostAccess.value = newValue;
       selectHostAccess.dispatchEvent(new CustomEvent('change'));
       return delegate.whenCalled('setItemHostAccess').then((args) => {
-        expectEquals(ITEM_ID, args[0] /* id */);
-        expectEquals(newValue, args[1] /* access */);
+        assertEquals(ITEM_ID, args[0] /* id */);
+        assertEquals(newValue, args[1] /* access */);
         delegate.resetResolver('setItemHostAccess');
       });
     }
 
     // Check that selecting different values correctly notifies the delegate.
-    await expectDelegateCallOnAccessChange(HostAccess.ON_ALL_SITES);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnAllSitesSelected'), 1);
-    await expectDelegateCallOnAccessChange(HostAccess.ON_CLICK);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnClickSelected'), 1);
+    await assertDelegateCallOnAccessChange(HostAccess.ON_ALL_SITES);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnAllSitesSelected'),
+        1);
+    await assertDelegateCallOnAccessChange(HostAccess.ON_CLICK);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnClickSelected'),
+        1);
     // Finally select back to all sites and ensure the user action for it has
     // incremented.
-    await expectDelegateCallOnAccessChange(HostAccess.ON_ALL_SITES);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnAllSitesSelected'), 2);
+    await assertDelegateCallOnAccessChange(HostAccess.ON_ALL_SITES);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnAllSitesSelected'),
+        2);
   });
 
   test('on select sites cancel', async () => {
@@ -165,7 +170,7 @@ suite('RuntimeHostPermissions', function() {
     element.permissions = permissions;
     flush();
 
-    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
+    const selectHostAccess = element.$.hostAccess;
     assertTrue(!!selectHostAccess);
 
     selectHostAccess.value = HostAccess.ON_SPECIFIC_SITES;
@@ -173,39 +178,47 @@ suite('RuntimeHostPermissions', function() {
 
     flush();
     const dialog =
-        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnClickSelected'), 0);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnSpecificSitesSelected'),
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnClickSelected'),
+        0);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnSpecificSitesSelected'),
         1);
 
-    expectTrue(dialog.updateHostAccess);
+    assertTrue(dialog.updateHostAccess);
 
     // Canceling the dialog should reset the selectHostAccess value to ON_CLICK,
     // since no host was added.
     assertTrue(dialog.isOpen());
     let whenClosed = eventToPromise('close', dialog);
-    dialog.shadowRoot.querySelector('.cancel-button').click();
+    dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
     await whenClosed;
 
     flush();
-    expectEquals(HostAccess.ON_CLICK, selectHostAccess.value);
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.AddHostDialogCanceled'),
+    assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.AddHostDialogCanceled'),
         1);
     // Reverting to a previous option when canceling the dialog doesn't count
     // as a user action, so the on-click action count should still be 0.
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnClickSelected'), 0);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnClickSelected'),
+        0);
     // Changing to a different option after this should still log a user action
-    // as expected.
+    // as asserted.
     selectHostAccess.value = HostAccess.ON_ALL_SITES;
     selectHostAccess.dispatchEvent(new CustomEvent('change'));
     flush();
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnAllSitesSelected'), 1);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnAllSitesSelected'),
+        1);
   });
 
   test('on select sites accept', function() {
@@ -218,24 +231,26 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const selectHostAccess = element.shadowRoot.querySelector('#host-access');
+    const selectHostAccess = element.$.hostAccess;
     assertTrue(!!selectHostAccess);
 
     selectHostAccess.value = HostAccess.ON_SPECIFIC_SITES;
     selectHostAccess.dispatchEvent(new CustomEvent('change'));
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.OnSpecificSitesSelected'),
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.OnSpecificSitesSelected'),
         1);
 
     flush();
     const dialog =
-        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
 
-    expectTrue(dialog.updateHostAccess);
+    assertTrue(dialog.updateHostAccess);
 
     // Make the add button clickable by entering valid input.
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     input.value = 'https://example.com';
     input.fire('input');
 
@@ -243,12 +258,12 @@ suite('RuntimeHostPermissions', function() {
     // selectHostAccess value at ON_SPECIFIC_SITES.
     assertTrue(dialog.isOpen());
     let whenClosed = eventToPromise('close', dialog);
-    dialog.shadowRoot.querySelector('.action-button').click();
+    dialog.$.submit.click();
     return whenClosed.then(() => {
       flush();
-      expectEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
-      expectEquals(
-          getUserActionCount(
+      assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
+      assertEquals(
+          metricsPrivateMock.getUserActionCount(
               'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
           1);
 
@@ -265,28 +280,34 @@ suite('RuntimeHostPermissions', function() {
       flush();
 
       // Open the dialog by clicking to edit the host permission.
-      const editHost = element.shadowRoot.querySelector('.edit-host');
+      const editHost =
+          element.shadowRoot!.querySelector<HTMLElement>('.edit-host');
+      assertTrue(!!editHost);
       editHost.click();
-      expectEquals(
-          getUserActionCount('Extensions.Settings.Hosts.ActionMenuOpened'), 1);
-      const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
-      const actionMenuEdit = actionMenu.querySelector('#action-menu-edit');
+      assertEquals(
+          metricsPrivateMock.getUserActionCount(
+              'Extensions.Settings.Hosts.ActionMenuOpened'),
+          1);
+      const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+      assertTrue(!!actionMenu);
+      const actionMenuEdit =
+          actionMenu.querySelector<HTMLElement>('#action-menu-edit');
       assertTrue(!!actionMenuEdit);
       actionMenuEdit.click();
       flush();
-      expectEquals(
-          getUserActionCount(
+      assertEquals(
+          metricsPrivateMock.getUserActionCount(
               'Extensions.Settings.Hosts.ActionMenuEditActivated'),
           1);
 
       // Verify that the dialog does not want to update the old host access.
       // Regression test for https://crbug.com/903082.
       const dialog =
-          element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
+          element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
       assertTrue(!!dialog);
-      expectTrue(dialog.$.dialog.open);
-      expectFalse(dialog.updateHostAccess);
-      expectEquals('https://example.com/*', dialog.currentSite);
+      assertTrue(dialog.$.dialog.open);
+      assertFalse(dialog.updateHostAccess);
+      assertEquals('https://example.com/*', dialog.currentSite);
     });
   });
 
@@ -304,20 +325,23 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const addHostButton = element.shadowRoot.querySelector('#add-host');
+    const addHostButton =
+        element.shadowRoot!.querySelector<HTMLElement>('#add-host');
     assertTrue(!!addHostButton);
-    expectTrue(isChildVisible(element, '#add-host'));
+    assertTrue(isChildVisible(element, '#add-host'));
 
     addHostButton.click();
     flush();
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.AddHostActivated'), 1);
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.AddHostActivated'),
+        1);
     const dialog =
-        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
-    expectTrue(dialog.$.dialog.open);
-    expectEquals(null, dialog.currentSite);
-    expectFalse(dialog.updateHostAccess);
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(null, dialog.currentSite);
+    assertFalse(dialog.updateHostAccess);
   });
 
   test('removing runtime host permissions', function() {
@@ -333,27 +357,30 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const editHost = element.shadowRoot.querySelector('.edit-host');
+    const editHost =
+        element.shadowRoot!.querySelector<HTMLElement>('.edit-host');
     assertTrue(!!editHost);
     editHost.click();
-    expectEquals(
-        getUserActionCount('Extensions.Settings.Hosts.ActionMenuOpened'), 1);
-    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
+            'Extensions.Settings.Hosts.ActionMenuOpened'),
+        1);
+    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!actionMenu);
-    expectTrue(actionMenu.open);
+    assertTrue(actionMenu.open);
 
-    const remove = actionMenu.querySelector('#action-menu-remove');
+    const remove = actionMenu.querySelector<HTMLElement>('#action-menu-remove');
     assertTrue(!!remove);
 
     remove.click();
-    expectEquals(
-        getUserActionCount(
+    assertEquals(
+        metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.ActionMenuRemoveActivated'),
         1);
     return delegate.whenCalled('removeRuntimeHostPermission').then((args) => {
-      expectEquals(ITEM_ID, args[0] /* id */);
-      expectEquals('https://chromium.org', args[1] /* site */);
-      expectFalse(actionMenu.open);
+      assertEquals(ITEM_ID, args[0] /* id */);
+      assertEquals('https://chromium.org', args[1] /* site */);
+      assertFalse(actionMenu.open);
     });
   });
 
@@ -370,20 +397,24 @@ suite('RuntimeHostPermissions', function() {
     element.set('permissions', permissions);
     flush();
 
-    const editHost = element.shadowRoot.querySelector('.edit-host');
+    const editHost =
+        element.shadowRoot!.querySelector<HTMLElement>('.edit-host');
+    assertTrue(!!editHost);
     editHost.click();
-    const actionMenu = element.shadowRoot.querySelector('cr-action-menu');
+    const actionMenu = element.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
 
-    const actionMenuEdit = actionMenu.querySelector('#action-menu-edit');
+    const actionMenuEdit =
+        actionMenu.querySelector<HTMLElement>('#action-menu-edit');
     assertTrue(!!actionMenuEdit);
 
     actionMenuEdit.click();
     flush();
     const dialog =
-        element.shadowRoot.querySelector('extensions-runtime-hosts-dialog');
+        element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
-    expectTrue(dialog.$.dialog.open);
-    expectFalse(dialog.updateHostAccess);
-    expectEquals('https://chromium.org', dialog.currentSite);
+    assertTrue(dialog.$.dialog.open);
+    assertFalse(dialog.updateHostAccess);
+    assertEquals('https://chromium.org', dialog.currentSite);
   });
 });

@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getPatternFromSite} from 'chrome://extensions/extensions.js';
+import 'chrome://extensions/extensions.js';
 
+import {ExtensionsRuntimeHostsDialogElement, getPatternFromSite} from 'chrome://extensions/extensions.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {MetricsPrivateMock} from './test_util.js';
 
 suite('RuntimeHostsDialog', function() {
-  /** @type {RuntimeHostsDialogElement} */ let dialog;
-  /** @type {TestService} */ let delegate;
+  let dialog: ExtensionsRuntimeHostsDialogElement;
+  let delegate: TestService;
+  let metricsPrivateMock: MetricsPrivateMock;
+
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
@@ -24,7 +28,9 @@ suite('RuntimeHostsDialog', function() {
 
     document.body.appendChild(dialog);
 
-    chrome.metricsPrivate = new MetricsPrivateMock();
+    metricsPrivateMock = new MetricsPrivateMock();
+    chrome.metricsPrivate =
+        metricsPrivateMock as unknown as typeof chrome.metricsPrivate;
   });
 
   teardown(function() {
@@ -32,7 +38,8 @@ suite('RuntimeHostsDialog', function() {
   });
 
   test('valid input', function() {
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');
@@ -52,7 +59,8 @@ suite('RuntimeHostsDialog', function() {
   test('invalid input', function() {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     assertFalse(input.invalid);
     const submit = dialog.$.submit;
     assertTrue(submit.disabled);
@@ -74,7 +82,8 @@ suite('RuntimeHostsDialog', function() {
   test('delegate indicates invalid input', function() {
     delegate.acceptRuntimeHostPermission = false;
 
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     const site = 'http://....a';
     input.value = site;
     input.fire('input');
@@ -94,7 +103,8 @@ suite('RuntimeHostsDialog', function() {
     const newPattern = 'http://chromium.org/*';
 
     dialog.currentSite = oldPattern;
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     input.value = newPattern;
     input.fire('input');
     const submit = dialog.$.submit;
@@ -102,45 +112,46 @@ suite('RuntimeHostsDialog', function() {
     submit.click();
     return delegate.whenCalled('removeRuntimeHostPermission')
         .then((args) => {
-          expectEquals(ITEM_ID, args[0] /* id */);
-          expectEquals(oldPattern, args[1] /* pattern */);
+          assertEquals(ITEM_ID, args[0] /* id */);
+          assertEquals(oldPattern, args[1] /* pattern */);
           return delegate.whenCalled('addRuntimeHostPermission');
         })
         .then((args) => {
-          expectEquals(ITEM_ID, args[0] /* id */);
-          expectEquals(newPattern, args[1] /* pattern */);
+          assertEquals(ITEM_ID, args[0] /* id */);
+          assertEquals(newPattern, args[1] /* pattern */);
           return eventToPromise('close', dialog);
         })
         .then(() => {
-          expectFalse(dialog.isOpen());
-          expectEquals(
-              chrome.metricsPrivate.getUserActionCount(
+          assertFalse(dialog.isOpen());
+          assertEquals(
+              metricsPrivateMock.getUserActionCount(
                   'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
               1);
         });
   });
 
   test('get pattern from url', function() {
-    expectEquals(
+    assertEquals(
         'https://example.com/*', getPatternFromSite('https://example.com/*'));
-    expectEquals(
+    assertEquals(
         'https://example.com/*', getPatternFromSite('https://example.com/'));
-    expectEquals(
+    assertEquals(
         'https://example.com/*', getPatternFromSite('https://example.com'));
-    expectEquals(
+    assertEquals(
         'https://*.example.com/*',
         getPatternFromSite('https://*.example.com/*'));
-    expectEquals('*://example.com/*', getPatternFromSite('example.com'));
-    expectEquals(
+    assertEquals('*://example.com/*', getPatternFromSite('example.com'));
+    assertEquals(
         'https://example.com:80/*',
         getPatternFromSite('https://example.com:80/*'));
-    expectEquals(
+    assertEquals(
         'http://localhost:3030/*', getPatternFromSite('http://localhost:3030'));
   });
 
   test('update site access', function() {
     dialog.updateHostAccess = true;
-    const input = dialog.shadowRoot.querySelector('cr-input');
+    const input = dialog.shadowRoot!.querySelector('cr-input');
+    assertTrue(!!input);
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');
