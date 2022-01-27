@@ -2045,7 +2045,7 @@ config("optimize") {
     } else {
       cflags = [ "-Os" ] + common_optimize_on_cflags
     }
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     # TODO(gbiv): This is partially favoring size over speed. CrOS exclusively
     # uses clang, and -Os in clang is more of a size-conscious -O2 than "size at
     # any cost" (AKA -Oz). It'd be nice to:
